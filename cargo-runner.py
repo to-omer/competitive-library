@@ -14,4 +14,5 @@ if __name__ == "__main__":
 
         subprocess.check_call(["cargo", "run", "--release", "--quiet", "--bin", names[sys.argv[1]]])
 
-    assert False
+    else:
+        assert False
