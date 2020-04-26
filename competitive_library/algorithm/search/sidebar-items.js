@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["binary_search",""],["lower_bound",""],["ternary_search",""],["upper_bound",""]],"trait":[["Bisect",""],["Trisect",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["AbelianGroup",""],["AbelianMonoid",""],["Associative",""],["Commutative",""],["Group",""],["Idempotent",""],["IdempotentMonoid",""],["Invertible",""],["Magma",""],["Monoid",""],["SemiGroup",""],["Unital",""]]});

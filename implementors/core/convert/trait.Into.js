@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["competitive_library"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/convert/trait.Into.html\" title=\"trait core::convert::Into\">Into</a>&lt;<a class=\"primitive\" href=\"https://doc.rust-lang.org/nightly/std/primitive.f64.html\">f64</a>&gt; for <a class=\"struct\" href=\"competitive_library/math/quad_double/struct.QuadDouble.html\" title=\"struct competitive_library::math::quad_double::QuadDouble\">QuadDouble</a>","synthetic":false,"types":["competitive_library::math::quad_double::QuadDouble"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

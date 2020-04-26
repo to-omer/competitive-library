@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["modu32_impl",""],["modulos",""]],"struct":[["Modu32",""]],"trait":[["Modulo",""]]});

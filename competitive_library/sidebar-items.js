@@ -1,1 +1,1 @@
-initSidebarItems({"macro":[["input",""],["input_inner",""],["read_value",""]],"mod":[["tools",""]]});
+initSidebarItems({"macro":[["impl_additive_identity",""],["impl_bitand_identity",""],["impl_bitor_identity",""],["impl_multiplicative_identity",""],["input",""],["input_inner",""],["read_value",""]],"mod":[["algebra",""],["algorithm",""],["data_structure",""],["geometry",""],["graph",""],["math",""],["string",""],["tools",""],["tree",""]]});

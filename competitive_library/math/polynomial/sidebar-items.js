@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["poly_add",""],["poly_assign",""],["poly_div",""],["poly_mod",""],["poly_mul",""],["poly_sub",""]],"mod":[["poly_mod_poly",""]],"struct":[["Polynomial",""]]});
