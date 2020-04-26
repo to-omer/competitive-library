@@ -1,10 +1,13 @@
 name: verify
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - uses: actions/checkout@v1
@@ -18,9 +21,24 @@ jobs:
     - name: Set up Cargo
       uses: actions-rs/cargo@v1
 
-    - name: Run tests
+    - name: Run test
+      run: cargo test
+
+    - name: Run verify
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-        GH_PAT: ${{ secrets.GH_PAT }}
       run: oj-verify run $(python verify-paths.py)
+
+    - name: Generate Cargo Doc
+      run: |
+        cargo doc --no-deps
+        cat <<EOT > target/doc/index.html
+        <!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=competitive_library/index.html"><title></title>
+        EOT
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+        with:
+        personal_token: ${{ secrets.GH_PAT }}
+        publish_dir: ./target/doc
