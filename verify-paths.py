@@ -1,5 +1,4 @@
 import toml
-import onlinejudge_verify
 
 if __name__ == "__main__":
     bindatas = toml.load("Cargo.toml").get("bin")
@@ -10,4 +9,4 @@ if __name__ == "__main__":
             if path is not None:
                 paths.append(path)
 
-    onlinejudge_verify.main(paths)
+    print(*paths)
