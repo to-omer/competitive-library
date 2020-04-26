@@ -13,20 +13,14 @@ jobs:
       uses: actions/setup-python@v1
 
     - name: Install dependencies
-      run: pip3 install -U online-judge-verify-helper
+      run: pip3 install -U online-judge-verify-helper toml
 
-
-    # required only if you want to verify C# script files
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.101'
-    - name: Install dependencies (C#)
-      run: dotnet tool install -g dotnet-script && echo ::add-path::$HOME/.dotnet/tools
-
+    - name: Set up Cargo
+      uses: actions-rs/cargo@v1
 
     - name: Run tests
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
+        # YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
         GH_PAT: ${{ secrets.GH_PAT }}
-      run: oj-verify all
+      run: python oj-run.py
