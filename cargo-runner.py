@@ -12,6 +12,6 @@ if __name__ == "__main__":
             if path is not None:
                 names[path] = name
 
-        subprocess.check_call(["cargo", "--release", "--quiet", "--bin", names[sys.argv[1]]])
+        subprocess.check_call(["cargo", "run", "--release", "--quiet", "--bin", names[sys.argv[1]]])
 
     assert False
