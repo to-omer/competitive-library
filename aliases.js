@@ -1,7 +1,7 @@
 var ALIASES = {};
 ALIASES["aplusb"] = {};
 ALIASES["bipartitematching"] = {};
-ALIASES["competitive_library"] = {};
+ALIASES["competitive"] = {};
 ALIASES["lca"] = {};
 ALIASES["many_aplusb"] = {};
 ALIASES["point_add_range_sum_binary_indexed_tree"] = {};
