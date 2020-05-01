@@ -162,24 +162,24 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">struct</span> <span class="ident">FordFulkerson</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FordFulkerson</span> {
     <span class="ident">graph</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RevEdge</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">used</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
 }
 <span class="kw">impl</span> <span class="ident">FordFulkerson</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FordFulkerson</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">FordFulkerson</span> {
         <span class="ident">FordFulkerson</span> {
             <span class="ident">graph</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[]; <span class="ident">n</span>],
             <span class="ident">used</span>: <span class="macro">vec</span><span class="macro">!</span>[],
         }
     }
-    <span class="kw">fn</span> <span class="ident">add_edge</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">from</span>: <span class="ident">usize</span>, <span class="ident">to</span>: <span class="ident">usize</span>, <span class="ident">cap</span>: <span class="ident">u64</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_edge</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">from</span>: <span class="ident">usize</span>, <span class="ident">to</span>: <span class="ident">usize</span>, <span class="ident">cap</span>: <span class="ident">u64</span>) {
         <span class="kw">let</span> <span class="ident">e1</span> <span class="op">=</span> <span class="ident">RevEdge</span>::<span class="ident">new</span>(<span class="ident">to</span>, <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">to</span>].<span class="ident">len</span>(), <span class="ident">cap</span>);
         <span class="kw">let</span> <span class="ident">e2</span> <span class="op">=</span> <span class="ident">RevEdge</span>::<span class="ident">new</span>(<span class="ident">from</span>, <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">from</span>].<span class="ident">len</span>(), <span class="number">0</span>);
         <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">from</span>].<span class="ident">push</span>(<span class="ident">e1</span>);
         <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">to</span>].<span class="ident">push</span>(<span class="ident">e2</span>);
     }
-    <span class="kw">fn</span> <span class="ident">dfs</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dfs</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
         <span class="kw">if</span> <span class="ident">u</span> <span class="op">=</span><span class="op">=</span> <span class="ident">t</span> {
             <span class="kw">return</span> <span class="ident">f</span>;
         }
@@ -197,7 +197,7 @@
         }
         <span class="number">0</span>
     }
-    <span class="kw">fn</span> <span class="ident">maximum_flow</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maximum_flow</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flow</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">loop</span> {
             <span class="self">self</span>.<span class="ident">used</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">len</span>()];

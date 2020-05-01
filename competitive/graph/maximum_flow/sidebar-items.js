@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Dinic",""],["RevEdge",""]]});
+initSidebarItems({"struct":[["Dinic",""],["FordFulkerson",""],["RevEdge",""]]});
