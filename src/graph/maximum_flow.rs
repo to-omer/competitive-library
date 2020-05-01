@@ -19,24 +19,24 @@ impl RevEdge {
 }
 
 #[derive(Debug)]
-struct FordFulkerson {
+pub struct FordFulkerson {
     graph: Vec<Vec<RevEdge>>,
     used: Vec<bool>,
 }
 impl FordFulkerson {
-    fn new(n: usize) -> FordFulkerson {
+    pub fn new(n: usize) -> FordFulkerson {
         FordFulkerson {
             graph: vec![vec![]; n],
             used: vec![],
         }
     }
-    fn add_edge(&mut self, from: usize, to: usize, cap: u64) {
+    pub fn add_edge(&mut self, from: usize, to: usize, cap: u64) {
         let e1 = RevEdge::new(to, self.graph[to].len(), cap);
         let e2 = RevEdge::new(from, self.graph[from].len(), 0);
         self.graph[from].push(e1);
         self.graph[to].push(e2);
     }
-    fn dfs(&mut self, u: usize, t: usize, f: u64) -> u64 {
+    pub fn dfs(&mut self, u: usize, t: usize, f: u64) -> u64 {
         if u == t {
             return f;
         }
@@ -54,7 +54,7 @@ impl FordFulkerson {
         }
         0
     }
-    fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
+    pub fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
         let mut flow = 0;
         loop {
             self.used = vec![false; self.graph.len()];
