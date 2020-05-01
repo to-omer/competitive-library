@@ -1,8 +1,8 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/staticrmq
 
-use competitive_library::algebra::operations::MinOperation;
-use competitive_library::data_structure::segment_tree::SegmentTree;
-use competitive_library::input;
+use competitive::algebra::operations::MinOperation;
+use competitive::data_structure::segment_tree::SegmentTree;
+use competitive::input;
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {

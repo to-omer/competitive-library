@@ -1,7 +1,7 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/unionfind
 
-use competitive_library::data_structure::union_find::UnionFind;
-use competitive_library::{input, input_inner};
+use competitive::data_structure::union_find::UnionFind;
+use competitive::{input, input_inner};
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {

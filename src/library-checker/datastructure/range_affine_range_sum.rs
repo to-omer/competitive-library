@@ -1,9 +1,9 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/range_affine_range_sum
 
-use competitive_library::algebra::operations::{AdditiveOperation, CartesianOperation, LinearOperation};
-use competitive_library::data_structure::segment_tree::LazySegmentTree;
-use competitive_library::math::modu32::{modulos::Modulo998244353, Modu32};
-use competitive_library::{input, input_inner};
+use competitive::algebra::operations::{AdditiveOperation, CartesianOperation, LinearOperation};
+use competitive::data_structure::segment_tree::LazySegmentTree;
+use competitive::math::modu32::{modulos::Modulo998244353, Modu32};
+use competitive::{input, input_inner};
 use std::io::Write;
 
 type M = Modu32<Modulo998244353>;

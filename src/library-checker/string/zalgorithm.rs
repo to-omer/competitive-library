@@ -1,7 +1,7 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/zalgorithm
 
-use competitive_library::input;
-use competitive_library::string::z_algorithm::Zarray;
+use competitive::input;
+use competitive::string::z_algorithm::Zarray;
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {

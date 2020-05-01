@@ -1,7 +1,7 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/bipartitematching
 
-use competitive_library::graph::maximum_flow::{Dinic, RevEdge};
-use competitive_library::input;
+use competitive::graph::maximum_flow::{Dinic, RevEdge};
+use competitive::input;
 use std::io::{BufWriter, StdoutLock, Write};
 
 fn solve<'a>(out: &mut BufWriter<StdoutLock<'a>>) -> std::io::Result<()> {

@@ -1,8 +1,8 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/staticrmq
 
-use competitive_library::algebra::operations::MinOperation;
-use competitive_library::data_structure::disjoint_sparse_table::DisjointSparseTable;
-use competitive_library::input;
+use competitive::algebra::operations::MinOperation;
+use competitive::data_structure::disjoint_sparse_table::DisjointSparseTable;
+use competitive::input;
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {

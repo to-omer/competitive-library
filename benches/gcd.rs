@@ -1,11 +1,11 @@
 #![feature(test)]
 extern crate test;
 
-use competitive_library::math::gcd::*;
+use competitive::math::gcd::*;
 
 #[bench]
 fn bench_gcd(b: &mut test::Bencher) {
-    use competitive_library::tools::random::Xorshift;
+    use competitive::tools::random::Xorshift;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
     let v = (0..Q).map(|_| (xor.next(), xor.next())).collect::<Vec<_>>();
@@ -20,7 +20,7 @@ fn bench_gcd(b: &mut test::Bencher) {
 
 #[bench]
 fn bench_gcd_binary(b: &mut test::Bencher) {
-    use competitive_library::tools::random::Xorshift;
+    use competitive::tools::random::Xorshift;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
     let v = (0..Q).map(|_| (xor.next(), xor.next())).collect::<Vec<_>>();
@@ -35,7 +35,7 @@ fn bench_gcd_binary(b: &mut test::Bencher) {
 
 #[bench]
 fn bench_extgcd(b: &mut test::Bencher) {
-    use competitive_library::tools::random::Xorshift;
+    use competitive::tools::random::Xorshift;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
     let v = (0..Q)
@@ -57,7 +57,7 @@ fn bench_extgcd(b: &mut test::Bencher) {
 
 #[bench]
 fn bench_extgcd_binary(b: &mut test::Bencher) {
-    use competitive_library::tools::random::Xorshift;
+    use competitive::tools::random::Xorshift;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
     let v = (0..Q)
@@ -79,7 +79,7 @@ fn bench_extgcd_binary(b: &mut test::Bencher) {
 
 #[bench]
 fn bench_modinv(b: &mut test::Bencher) {
-    use competitive_library::tools::random::Xorshift;
+    use competitive::tools::random::Xorshift;
     const M: i64 = 1_000_000_007;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
@@ -97,7 +97,7 @@ fn bench_modinv(b: &mut test::Bencher) {
 
 #[bench]
 fn bench_modinv_loop(b: &mut test::Bencher) {
-    use competitive_library::tools::random::Xorshift;
+    use competitive::tools::random::Xorshift;
     const M: i64 = 1_000_000_007;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
@@ -115,7 +115,7 @@ fn bench_modinv_loop(b: &mut test::Bencher) {
 
 #[bench]
 fn bench_modinv_extgcd_binary(b: &mut test::Bencher) {
-    use competitive_library::tools::random::Xorshift;
+    use competitive::tools::random::Xorshift;
     const M: u64 = 1_000_000_007;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;

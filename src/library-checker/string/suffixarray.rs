@@ -1,7 +1,7 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/suffixarray
 
-use competitive_library::input;
-use competitive_library::string::suffix_array::SuffixArray;
+use competitive::input;
+use competitive::string::suffix_array::SuffixArray;
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {

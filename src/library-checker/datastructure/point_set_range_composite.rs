@@ -1,9 +1,9 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/point_set_range_composite
 
-use competitive_library::algebra::operations::LinearOperation;
-use competitive_library::data_structure::segment_tree::SegmentTree;
-use competitive_library::math::modu32::{modulos::Modulo998244353, Modu32};
-use competitive_library::{input, input_inner};
+use competitive::algebra::operations::LinearOperation;
+use competitive::data_structure::segment_tree::SegmentTree;
+use competitive::math::modu32::{modulos::Modulo998244353, Modu32};
+use competitive::{input, input_inner};
 use std::io::Write;
 
 type M = Modu32<Modulo998244353>;

@@ -1,7 +1,7 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/scc
 
-use competitive_library::graph::strongly_connected_component::StronglyConnectedComponent;
-use competitive_library::input;
+use competitive::graph::strongly_connected_component::StronglyConnectedComponent;
+use competitive::input;
 use std::io::{BufWriter, StdoutLock, Write};
 
 fn solve<'a>(out: &mut BufWriter<StdoutLock<'a>>) -> std::io::Result<()> {

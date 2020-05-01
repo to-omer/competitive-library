@@ -1,6 +1,6 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/aplusb
 
-use competitive_library::input;
+use competitive::input;
 
 fn main() {
     input! { a, b };

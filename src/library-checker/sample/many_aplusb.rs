@@ -1,6 +1,6 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/many_aplusb
 
-use competitive_library::input;
+use competitive::input;
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {

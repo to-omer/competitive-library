@@ -1,9 +1,9 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/queue_operate_all_composite
 
-use competitive_library::algebra::operations::LinearOperation;
-use competitive_library::data_structure::sliding_winsow_aggregation::QueueAggregation;
-use competitive_library::math::modu32::{modulos::Modulo998244353, Modu32};
-use competitive_library::{input, input_inner};
+use competitive::algebra::operations::LinearOperation;
+use competitive::data_structure::sliding_winsow_aggregation::QueueAggregation;
+use competitive::math::modu32::{modulos::Modulo998244353, Modu32};
+use competitive::{input, input_inner};
 use std::io::Write;
 
 type M = Modu32<Modulo998244353>;

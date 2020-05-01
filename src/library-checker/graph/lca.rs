@@ -1,8 +1,8 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/lca
 
-use competitive_library::graph::Graph;
-use competitive_library::input;
-use competitive_library::tree::euler_tour::EulerTourForRichVertex;
+use competitive::graph::Graph;
+use competitive::input;
+use competitive::tree::euler_tour::EulerTourForRichVertex;
 use std::io::{BufWriter, StdoutLock, Write};
 
 fn solve<'a>(out: &mut BufWriter<StdoutLock<'a>>) -> std::io::Result<()> {

@@ -1,5 +1,5 @@
 use cargo_snippet::snippet;
-use competitive_library::input;
+use competitive::input;
 
 #[snippet]
 fn main() {

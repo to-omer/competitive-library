@@ -1,8 +1,8 @@
 // verify-helper: PROBLEM https://judge.yosupo.jp/problem/point_add_range_sum
 
-use competitive_library::algebra::operations::AdditiveOperation;
-use competitive_library::data_structure::segment_tree::SegmentTree;
-use competitive_library::{input, input_inner};
+use competitive::algebra::operations::AdditiveOperation;
+use competitive::data_structure::segment_tree::SegmentTree;
+use competitive::{input, input_inner};
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {
