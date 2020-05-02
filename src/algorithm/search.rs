@@ -5,41 +5,68 @@ pub trait Bisect: Copy {
     fn halve(self, other: Self) -> Self;
     fn section_end(self, other: Self) -> bool;
 }
+
 #[snippet("binary_search")]
-impl Bisect for usize {
-    fn halve(self, other: Self) -> Self {
-        if self > other {
-            other + (self - other) / 2
-        } else {
-            self + (other - self) / 2
-        }
+pub mod bisect_impl {
+    use super::*;
+    macro_rules! impl_bisect_unsigned {
+        ($t:ty) => {
+            impl Bisect for $t {
+                fn halve(self, other: Self) -> Self {
+                    if self > other {
+                        other + (self - other) / 2
+                    } else {
+                        self + (other - self) / 2
+                    }
+                }
+                fn section_end(self, other: Self) -> bool {
+                    (if self > other {
+                        self - other
+                    } else {
+                        other - self
+                    }) <= 1
+                }
+            }
+        };
     }
-    fn section_end(self, other: Self) -> bool {
-        (if self > other {
-            self - other
-        } else {
-            other - self
-        }) <= 1
+    macro_rules! impl_bisect_signed {
+        ($t:ty) => {
+            impl Bisect for $t {
+                fn halve(self, other: Self) -> Self {
+                    (self + other) / 2
+                }
+                fn section_end(self, other: Self) -> bool {
+                    (self - other).abs() <= 1
+                }
+            }
+        };
     }
+    macro_rules! impl_bisect_float {
+        ($t:ty) => {
+            impl Bisect for $t {
+                fn halve(self, other: Self) -> Self {
+                    (self + other) / 2.
+                }
+                fn section_end(self, other: Self) -> bool {
+                    (self - other).abs() <= 1e-8
+                }
+            }
+        };
+    }
+    impl_bisect_unsigned!(u8);
+    impl_bisect_unsigned!(u16);
+    impl_bisect_unsigned!(u32);
+    impl_bisect_unsigned!(u64);
+    impl_bisect_unsigned!(usize);
+    impl_bisect_signed!(i8);
+    impl_bisect_signed!(i16);
+    impl_bisect_signed!(i32);
+    impl_bisect_signed!(i64);
+    impl_bisect_signed!(isize);
+    impl_bisect_float!(f32);
+    impl_bisect_float!(f64);
 }
-#[snippet("binary_search")]
-impl Bisect for i64 {
-    fn halve(self, other: Self) -> Self {
-        (self + other) / 2
-    }
-    fn section_end(self, other: Self) -> bool {
-        (self - other).abs() <= 1
-    }
-}
-#[snippet("binary_search")]
-impl Bisect for f64 {
-    fn halve(self, other: Self) -> Self {
-        (self + other) / 2.
-    }
-    fn section_end(self, other: Self) -> bool {
-        (self - other).abs() <= 1e-8
-    }
-}
+
 #[snippet("binary_search")]
 pub fn binary_search<T: Bisect, F: Fn(T) -> bool>(f: F, ok: T, err: T) -> T {
     let mut ok = ok;
@@ -111,35 +138,60 @@ pub trait Trisect: Copy {
     fn section_end(self, other: Self) -> bool;
 }
 #[snippet("ternary_search")]
-impl Trisect for usize {
-    fn next(self, other: Self) -> (Self, Self) {
-        ((self * 2 + other) / 3, (self + other * 2) / 3)
+pub mod trisect_impl {
+    use super::*;
+    macro_rules! impl_trisect_unsigned {
+        ($t:ty) => {
+            impl Trisect for $t {
+                fn next(self, other: Self) -> (Self, Self) {
+                    ((self * 2 + other) / 3, (self + other * 2) / 3)
+                }
+                fn section_end(self, other: Self) -> bool {
+                    (if self > other {
+                        self - other
+                    } else {
+                        other - self
+                    }) <= 1
+                }
+            }
+        };
     }
-    fn section_end(self, other: Self) -> bool {
-        (if self > other {
-            self - other
-        } else {
-            other - self
-        }) <= 1
+    macro_rules! impl_trisect_signed {
+        ($t:ty) => {
+            impl Trisect for $t {
+                fn next(self, other: Self) -> (Self, Self) {
+                    ((self * 2 + other) / 3, (self + other * 2) / 3)
+                }
+                fn section_end(self, other: Self) -> bool {
+                    (self - other).abs() <= 1
+                }
+            }
+        };
     }
-}
-#[snippet("ternary_search")]
-impl Trisect for i64 {
-    fn next(self, other: Self) -> (Self, Self) {
-        ((self * 2 + other) / 3, (self + other * 2) / 3)
+    macro_rules! impl_trisect_float {
+        ($t:ty) => {
+            impl Trisect for $t {
+                fn next(self, other: Self) -> (Self, Self) {
+                    ((self * 2. + other) / 3., (self + other * 2.) / 3.)
+                }
+                fn section_end(self, other: Self) -> bool {
+                    (self - other).abs() <= 1e-8
+                }
+            }
+        };
     }
-    fn section_end(self, other: Self) -> bool {
-        (self - other).abs() <= 1
-    }
-}
-#[snippet("ternary_search")]
-impl Trisect for f64 {
-    fn next(self, other: Self) -> (Self, Self) {
-        ((self * 2. + other) / 3., (self + other * 2.) / 3.)
-    }
-    fn section_end(self, other: Self) -> bool {
-        (self - other).abs() <= 1e-8
-    }
+    impl_trisect_unsigned!(u8);
+    impl_trisect_unsigned!(u16);
+    impl_trisect_unsigned!(u32);
+    impl_trisect_unsigned!(u64);
+    impl_trisect_unsigned!(usize);
+    impl_trisect_signed!(i8);
+    impl_trisect_signed!(i16);
+    impl_trisect_signed!(i32);
+    impl_trisect_signed!(i64);
+    impl_trisect_signed!(isize);
+    impl_trisect_float!(f32);
+    impl_trisect_float!(f64);
 }
 #[snippet("ternary_search")]
 pub fn ternary_search<T: Trisect, F: Fn(T) -> U, U: PartialOrd>(f: F, left: T, right: T) -> T {
