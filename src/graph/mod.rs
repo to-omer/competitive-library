@@ -6,15 +6,14 @@ pub mod topological_sort;
 
 pub use base::*;
 
-// use cargo_snippet::snippet;
-
-// #[snippet("DirectedAcyclicGraph")]
+//
+// #[cargo_snippet::snippet("DirectedAcyclicGraph")]
 #[derive(Debug)]
 pub struct DirectedAcyclicGraph {
     graph: Vec<Vec<usize>>,
     cost: Vec<Option<usize>>,
 }
-// #[snippet("DirectedAcyclicGraph")]
+// #[cargo_snippet::snippet("DirectedAcyclicGraph")]
 impl DirectedAcyclicGraph {
     pub fn new(n: usize) -> DirectedAcyclicGraph {
         DirectedAcyclicGraph {

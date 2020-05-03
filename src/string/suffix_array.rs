@@ -1,13 +1,11 @@
-use cargo_snippet::snippet;
-
-#[snippet("SuffixArray")]
+#[cargo_snippet::snippet("SuffixArray")]
 #[derive(Clone, Debug)]
 pub struct SuffixArray<T> {
     pat: Vec<T>,
     sa: Vec<usize>,
     rank: Vec<usize>,
 }
-#[snippet("SuffixArray")]
+#[cargo_snippet::snippet("SuffixArray")]
 impl<T: Ord> SuffixArray<T> {
     pub fn new(pat: Vec<T>) -> Self {
         let n = pat.len();

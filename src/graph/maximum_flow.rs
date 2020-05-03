@@ -1,13 +1,11 @@
-use cargo_snippet::snippet;
-
-#[snippet("MaximumFlow")]
+#[cargo_snippet::snippet("MaximumFlow")]
 #[derive(Debug, Clone)]
 pub struct RevEdge {
     pub to: usize,
     pub rev: usize,
     pub cap: u64,
 }
-#[snippet("MaximumFlow")]
+#[cargo_snippet::snippet("MaximumFlow")]
 impl RevEdge {
     pub fn new(to: usize, rev: usize, cap: u64) -> RevEdge {
         RevEdge {
@@ -68,14 +66,14 @@ impl FordFulkerson {
     }
 }
 
-#[snippet("MaximumFlow")]
+#[cargo_snippet::snippet("MaximumFlow")]
 #[derive(Debug)]
 pub struct Dinic {
     pub graph: Vec<Vec<RevEdge>>,
     iter: Vec<usize>,
     level: Vec<usize>,
 }
-#[snippet("MaximumFlow")]
+#[cargo_snippet::snippet("MaximumFlow")]
 impl Dinic {
     pub fn new(n: usize) -> Dinic {
         Dinic {

@@ -1,6 +1,4 @@
-use cargo_snippet::snippet;
-
-#[snippet("Modu32")]
+#[cargo_snippet::snippet("Modu32")]
 pub trait Modulo: Copy {
     const MODULO: u32;
     #[inline]
@@ -8,7 +6,7 @@ pub trait Modulo: Copy {
         x % Self::MODULO
     }
 }
-#[snippet("Modu32")]
+#[cargo_snippet::snippet("Modu32")]
 pub mod modulos {
     use super::*;
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -27,7 +25,7 @@ pub mod modulos {
         const MODULO: u32 = 998_244_353;
     }
 }
-#[snippet("Modu32")]
+#[cargo_snippet::snippet("Modu32")]
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash)]
 pub struct Modu32<M = modulos::Modulo1000000007>
 where
@@ -36,7 +34,7 @@ where
     x: u32,
     phantom: std::marker::PhantomData<M>,
 }
-#[snippet("Modu32")]
+#[cargo_snippet::snippet("Modu32")]
 impl<M: Modulo> Modu32<M> {
     #[inline]
     pub fn new(x: u32) -> Self {
@@ -110,7 +108,7 @@ impl<M: Modulo> Modu32<M> {
         Self::new_unchecked(s)
     }
 }
-#[snippet("Modu32")]
+#[cargo_snippet::snippet("Modu32")]
 pub mod modu32_impl {
     use super::*;
     use std::{

@@ -1,14 +1,13 @@
 use super::*;
 use crate::data_structure::TotalOrd;
-use cargo_snippet::snippet;
 
-#[snippet("Line")]
+#[cargo_snippet::snippet("Line")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Line {
     p1: Point,
     p2: Point,
 }
-#[snippet("Line")]
+#[cargo_snippet::snippet("Line")]
 impl Line {
     pub fn new(p1: Point, p2: Point) -> Self {
         Line { p1: p1, p2: p2 }
@@ -37,13 +36,13 @@ impl Line {
     }
 }
 
-#[snippet("LineSegment")]
+#[cargo_snippet::snippet("LineSegment")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct LineSegment {
     p1: Point,
     p2: Point,
 }
-#[snippet("LineSegment")]
+#[cargo_snippet::snippet("LineSegment")]
 impl LineSegment {
     pub fn new(p1: Point, p2: Point) -> Self {
         LineSegment { p1: p1, p2: p2 }

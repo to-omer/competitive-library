@@ -1,16 +1,15 @@
 use crate::algebra::base::Group;
-use cargo_snippet::snippet;
 
-#[snippet("UnionFind")]
-#[snippet("WeightedUnionFind")]
+#[cargo_snippet::snippet("UnionFind")]
+#[cargo_snippet::snippet("WeightedUnionFind")]
 use std::collections::HashMap;
 
-#[snippet("UnionFind")]
+#[cargo_snippet::snippet("UnionFind")]
 #[derive(Clone, Debug)]
 pub struct UnionFind {
     parents: Vec<isize>,
 }
-#[snippet("UnionFind")]
+#[cargo_snippet::snippet("UnionFind")]
 impl UnionFind {
     pub fn new(n: usize) -> UnionFind {
         let parents = vec![-1; n];
@@ -98,14 +97,14 @@ fn test_union_find() {
     // println!("{:?}", uf.all_group_members())
 }
 
-#[snippet("WeightedUnionFind")]
+#[cargo_snippet::snippet("WeightedUnionFind")]
 #[derive(Clone, Debug)]
 pub struct WeightedUnionFind<G: Group> {
     group: G,
     parents: Vec<isize>,
     diff: Vec<G::T>,
 }
-#[snippet("WeightedUnionFind")]
+#[cargo_snippet::snippet("WeightedUnionFind")]
 impl<G: Group> WeightedUnionFind<G> {
     pub fn new(n: usize, group: G) -> Self {
         let parents = vec![-1; n];

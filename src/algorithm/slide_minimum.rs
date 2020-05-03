@@ -1,6 +1,4 @@
-use cargo_snippet::snippet;
-
-#[snippet]
+#[cargo_snippet::snippet]
 pub fn slide_minimum<T: Clone + Ord>(v: &Vec<T>, k: usize) -> Vec<usize> {
     let mut deq = std::collections::VecDeque::new();
     let mut res = vec![];

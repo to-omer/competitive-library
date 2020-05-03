@@ -1,12 +1,10 @@
-use cargo_snippet::snippet;
-
-#[snippet("binary_search")]
+#[cargo_snippet::snippet("binary_search")]
 pub trait Bisect: Copy {
     fn halve(self, other: Self) -> Self;
     fn section_end(self, other: Self) -> bool;
 }
 
-#[snippet("binary_search")]
+#[cargo_snippet::snippet("binary_search")]
 pub mod bisect_impl {
     use super::*;
     macro_rules! impl_bisect_unsigned {
@@ -67,7 +65,7 @@ pub mod bisect_impl {
     impl_bisect_float!(f64);
 }
 
-#[snippet("binary_search")]
+#[cargo_snippet::snippet("binary_search")]
 pub fn binary_search<T: Bisect, F: Fn(T) -> bool>(f: F, ok: T, err: T) -> T {
     let mut ok = ok;
     let mut err = err;
@@ -82,12 +80,12 @@ pub fn binary_search<T: Bisect, F: Fn(T) -> bool>(f: F, ok: T, err: T) -> T {
     ok
 }
 
-#[snippet("binary_search")]
+#[cargo_snippet::snippet("binary_search")]
 pub fn lower_bound<T: Bisect + Ord>(v: &[T], x: T) -> usize {
     binary_search(|i| v[i as usize] >= x, v.len() as i64, -1) as usize
 }
 
-#[snippet("binary_search")]
+#[cargo_snippet::snippet("binary_search")]
 pub fn upper_bound<T: Bisect + Ord>(v: &[T], x: T) -> usize {
     binary_search(|i| v[i as usize] > x, v.len() as i64, -1) as usize
 }
@@ -132,12 +130,12 @@ fn test_upper_bound() {
     assert_eq!(upper_bound(&v, 3), 7);
 }
 
-#[snippet("ternary_search")]
+#[cargo_snippet::snippet("ternary_search")]
 pub trait Trisect: Copy {
     fn next(self, other: Self) -> (Self, Self);
     fn section_end(self, other: Self) -> bool;
 }
-#[snippet("ternary_search")]
+#[cargo_snippet::snippet("ternary_search")]
 pub mod trisect_impl {
     use super::*;
     macro_rules! impl_trisect_unsigned {
@@ -193,7 +191,7 @@ pub mod trisect_impl {
     impl_trisect_float!(f32);
     impl_trisect_float!(f64);
 }
-#[snippet("ternary_search")]
+#[cargo_snippet::snippet("ternary_search")]
 pub fn ternary_search<T: Trisect, F: Fn(T) -> U, U: PartialOrd>(f: F, left: T, right: T) -> T {
     let mut left = left;
     let mut right = right;

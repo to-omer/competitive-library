@@ -5,30 +5,28 @@ pub mod segment_tree;
 pub mod sliding_winsow_aggregation;
 pub mod union_find;
 
-use cargo_snippet::snippet;
-
-#[snippet("Reverse")]
+#[cargo_snippet::snippet("Reverse")]
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub struct Rev<T>(pub T);
-#[snippet("Reverse")]
+#[cargo_snippet::snippet("Reverse")]
 impl<T: PartialOrd> PartialOrd for Rev<T> {
     fn partial_cmp(&self, other: &Rev<T>) -> Option<std::cmp::Ordering> {
         other.0.partial_cmp(&self.0)
     }
 }
-#[snippet("Reverse")]
+#[cargo_snippet::snippet("Reverse")]
 impl<T: Ord> Ord for Rev<T> {
     fn cmp(&self, other: &Rev<T>) -> std::cmp::Ordering {
         other.0.cmp(&self.0)
     }
 }
 
-#[snippet("TotalOrd")]
+#[cargo_snippet::snippet("TotalOrd")]
 #[derive(PartialEq, PartialOrd)]
 pub struct TotalOrd<T>(pub T);
-#[snippet("TotalOrd")]
+#[cargo_snippet::snippet("TotalOrd")]
 impl<T: PartialEq> Eq for TotalOrd<T> {}
-#[snippet("TotalOrd")]
+#[cargo_snippet::snippet("TotalOrd")]
 impl<T: PartialOrd> Ord for TotalOrd<T> {
     fn cmp(&self, other: &TotalOrd<T>) -> std::cmp::Ordering {
         self.0.partial_cmp(&other.0).unwrap()

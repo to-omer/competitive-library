@@ -1,14 +1,13 @@
 use crate::algebra::base::Monoid;
-use cargo_snippet::snippet;
 
-#[snippet("QueueAggregation")]
+#[cargo_snippet::snippet("QueueAggregation")]
 #[derive(Clone, Debug)]
 pub struct QueueAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
     monoid: M,
 }
-#[snippet("QueueAggregation")]
+#[cargo_snippet::snippet("QueueAggregation")]
 impl<M: Monoid> QueueAggregation<M> {
     pub fn new(monoid: M) -> Self {
         QueueAggregation {
@@ -84,14 +83,14 @@ impl<M: Monoid> QueueAggregation<M> {
     }
 }
 
-#[snippet("DequeAggregation")]
+#[cargo_snippet::snippet("DequeAggregation")]
 #[derive(Clone, Debug)]
 pub struct DequeAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
     monoid: M,
 }
-#[snippet("DequeAggregation")]
+#[cargo_snippet::snippet("DequeAggregation")]
 impl<M: Monoid> DequeAggregation<M> {
     pub fn new(monoid: M) -> Self {
         DequeAggregation {

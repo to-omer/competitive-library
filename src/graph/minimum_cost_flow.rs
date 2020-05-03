@@ -1,7 +1,6 @@
 use crate::data_structure::Rev;
-use cargo_snippet::snippet;
 
-#[snippet("MinimumCostFlow")]
+#[cargo_snippet::snippet("MinimumCostFlow")]
 #[derive(Debug, Clone)]
 pub struct RevEdge {
     pub to: usize,
@@ -9,7 +8,7 @@ pub struct RevEdge {
     pub cap: u64,
     pub cost: i64,
 }
-#[snippet("MinimumCostFlow")]
+#[cargo_snippet::snippet("MinimumCostFlow")]
 impl RevEdge {
     pub fn new(to: usize, rev: usize, cap: u64, cost: i64) -> RevEdge {
         RevEdge {
@@ -21,7 +20,7 @@ impl RevEdge {
     }
 }
 
-#[snippet("MinimumCostFlow")]
+#[cargo_snippet::snippet("MinimumCostFlow")]
 #[derive(Debug)]
 pub struct PrimalDual {
     n: usize,
@@ -31,7 +30,7 @@ pub struct PrimalDual {
     prev_vertex: Vec<usize>,
     prev_edge: Vec<usize>,
 }
-#[snippet("MinimumCostFlow")]
+#[cargo_snippet::snippet("MinimumCostFlow")]
 impl PrimalDual {
     pub fn new(n: usize) -> PrimalDual {
         PrimalDual {

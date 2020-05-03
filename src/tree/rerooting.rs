@@ -1,8 +1,7 @@
 use crate::algebra::base::Monoid;
 use crate::graph::*;
-use cargo_snippet::snippet;
 
-#[snippet("ReRooting")]
+#[cargo_snippet::snippet("ReRooting")]
 #[derive(Clone, Debug)]
 pub struct ReRooting<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> {
     n: usize,
@@ -11,7 +10,7 @@ pub struct ReRooting<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> {
     ep: Vec<M::T>,
     rooting: F,
 }
-#[snippet("ReRooting")]
+#[cargo_snippet::snippet("ReRooting")]
 impl<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<M, F> {
     pub fn new(n: usize, monoid: M, rooting: F) -> Self {
         let dp = vec![monoid.unit(); n];

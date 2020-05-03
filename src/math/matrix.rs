@@ -1,14 +1,12 @@
-use cargo_snippet::snippet;
-
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 use std::ops::{Add, Index, IndexMut, Mul, Sub};
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Matrix<T> {
     pub shape: (usize, usize),
     pub data: Vec<Vec<T>>,
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<T: Clone> Matrix<T> {
     pub fn new(shape: (usize, usize), z: T) -> Self {
         Matrix {
@@ -17,7 +15,7 @@ impl<T: Clone> Matrix<T> {
         }
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<T> Matrix<T> {
     pub fn from_vec(data: Vec<Vec<T>>) -> Self {
         Matrix {
@@ -26,7 +24,7 @@ impl<T> Matrix<T> {
         }
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<T: Clone + Default> Matrix<T> {
     pub fn zeros(shape: (usize, usize)) -> Self {
         Matrix {
@@ -45,20 +43,20 @@ impl<T: Clone + Default> Matrix<T> {
         }
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<T> Index<usize> for Matrix<T> {
     type Output = Vec<T>;
     fn index(&self, i: usize) -> &Self::Output {
         &self.data[i]
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<T> IndexMut<usize> for Matrix<T> {
     fn index_mut(&mut self, i: usize) -> &mut Self::Output {
         &mut self.data[i]
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<'a, T: Copy + Default + Add<Output = T>> Add for &'a Matrix<T> {
     type Output = Matrix<T>;
     fn add(self, rhs: Self) -> Self::Output {
@@ -72,7 +70,7 @@ impl<'a, T: Copy + Default + Add<Output = T>> Add for &'a Matrix<T> {
         res
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<'a, T: Copy + Default + Sub<Output = T>> Sub for &'a Matrix<T> {
     type Output = Matrix<T>;
     fn sub(self, rhs: Self) -> Self::Output {
@@ -86,7 +84,7 @@ impl<'a, T: Copy + Default + Sub<Output = T>> Sub for &'a Matrix<T> {
         res
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<'a, T: Copy + Default + Add<Output = T> + Sub<Output = T> + Mul<Output = T>> Mul
     for &'a Matrix<T>
 {
@@ -104,7 +102,7 @@ impl<'a, T: Copy + Default + Add<Output = T> + Sub<Output = T> + Mul<Output = T>
         res
     }
 }
-#[snippet("Matrix")]
+#[cargo_snippet::snippet("Matrix")]
 impl<T: Copy + Default + Add<Output = T> + Sub<Output = T> + Mul<Output = T>> Matrix<T> {
     pub fn pow(&self, n: usize, one: T) -> Self {
         assert_eq!(self.shape.0, self.shape.1);

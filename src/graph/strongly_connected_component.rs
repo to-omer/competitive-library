@@ -1,7 +1,6 @@
 // use super::*;
-use cargo_snippet::snippet;
 
-#[snippet("StronglyConnectedComponent")]
+#[cargo_snippet::snippet("StronglyConnectedComponent")]
 #[derive(Debug)]
 pub struct StronglyConnectedComponent {
     vsize: usize,
@@ -12,7 +11,7 @@ pub struct StronglyConnectedComponent {
     comp: Vec<usize>,
     csize: usize,
 }
-#[snippet("StronglyConnectedComponent")]
+#[cargo_snippet::snippet("StronglyConnectedComponent")]
 impl StronglyConnectedComponent {
     pub fn new(vsize: usize) -> Self {
         StronglyConnectedComponent {
@@ -95,7 +94,7 @@ impl StronglyConnectedComponent {
         c
     }
 }
-#[snippet("StronglyConnectedComponent")]
+#[cargo_snippet::snippet("StronglyConnectedComponent")]
 impl std::ops::Index<usize> for StronglyConnectedComponent {
     type Output = usize;
     fn index(&self, index: usize) -> &Self::Output {
@@ -103,14 +102,14 @@ impl std::ops::Index<usize> for StronglyConnectedComponent {
     }
 }
 
-#[snippet("TwoSatisfiability")]
-#[snippet(include = "StronglyConnectedComponent")]
+#[cargo_snippet::snippet("TwoSatisfiability")]
+#[cargo_snippet::snippet(include = "StronglyConnectedComponent")]
 #[derive(Debug)]
 pub struct TwoSatisfiability {
     n: usize,
     scc: StronglyConnectedComponent,
 }
-#[snippet("TwoSatisfiability")]
+#[cargo_snippet::snippet("TwoSatisfiability")]
 impl TwoSatisfiability {
     pub fn new(n: usize) -> Self {
         TwoSatisfiability {

@@ -1,14 +1,12 @@
-use cargo_snippet::snippet;
-
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 use std::ops::{Add, Div, Mul, Neg, Sub};
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub struct Complex<T> {
     pub re: T,
     pub im: T,
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T> Complex<T> {
     #[inline]
     pub fn new(re: T, im: T) -> Complex<T> {
@@ -22,35 +20,35 @@ impl<T> Complex<T> {
         }
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Neg<Output = T>> Complex<T> {
     #[inline]
     pub fn conjugate(self) -> Complex<T> {
         Self::new(self.re, -self.im)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Add<Output = T> + Mul<Output = T>> Complex<T> {
     #[inline]
     pub fn dot(self, rhs: Self) -> T {
         self.re * rhs.re + self.im * rhs.im
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Sub<Output = T> + Mul<Output = T>> Complex<T> {
     #[inline]
     pub fn cross(self, rhs: Self) -> T {
         self.re * rhs.im - self.im * rhs.re
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Copy + Add<Output = T> + Mul<Output = T>> Complex<T> {
     #[inline]
     pub fn norm(self) -> T {
         self.re * self.re + self.im * self.im
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl Complex<f64> {
     #[inline]
     pub fn from_polar(r: f64, theta: f64) -> Self {
@@ -69,35 +67,35 @@ impl Complex<f64> {
         self.im.atan2(self.re)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Add<Output = T>> Add for Complex<T> {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
         Self::new(self.re + rhs.re, self.im + rhs.im)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Copy + Add<Output = T>> Add<T> for Complex<T> {
     type Output = Self;
     fn add(self, rhs: T) -> Self::Output {
         Self::new(self.re + rhs, self.im + rhs)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Sub<Output = T>> Sub for Complex<T> {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self::Output {
         Self::new(self.re - rhs.re, self.im - rhs.im)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Copy + Sub<Output = T>> Sub<T> for Complex<T> {
     type Output = Self;
     fn sub(self, rhs: T) -> Self::Output {
         Self::new(self.re - rhs, self.im - rhs)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T>> Mul for Complex<T> {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
@@ -107,14 +105,14 @@ impl<T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T>> Mul for Comp
         )
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Copy + Mul<Output = T>> Mul<T> for Complex<T> {
     type Output = Self;
     fn mul(self, rhs: T) -> Self::Output {
         Self::new(self.re * rhs, self.im * rhs)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>> Div
     for Complex<T>
 {
@@ -127,14 +125,14 @@ impl<T: Copy + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output 
         )
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Copy + Div<Output = T>> Div<T> for Complex<T> {
     type Output = Self;
     fn div(self, rhs: T) -> Self::Output {
         Self::new(self.re / rhs, self.im / rhs)
     }
 }
-#[snippet("Complex")]
+#[cargo_snippet::snippet("Complex")]
 impl<T: Neg<Output = T>> Neg for Complex<T> {
     type Output = Self;
     fn neg(self) -> Self::Output {

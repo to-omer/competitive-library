@@ -1,7 +1,6 @@
-use cargo_snippet::snippet;
 use competitive::input;
 
-#[snippet]
+#[cargo_snippet::snippet]
 fn main() {
     input! {n};
     let mut ans = 0;

@@ -1,12 +1,10 @@
-use cargo_snippet::snippet;
-
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash)]
 pub struct AnyMod {
     x: i64,
     m: i64,
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl AnyMod {
     #[inline]
     pub fn new(x: i64, m: i64) -> Self {
@@ -49,7 +47,7 @@ impl AnyMod {
         AnyMod::new(x, self.m)
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::Add for AnyMod {
     type Output = Self;
     #[inline]
@@ -60,7 +58,7 @@ impl std::ops::Add for AnyMod {
         }
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Add<AnyMod> for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -68,7 +66,7 @@ impl<'a> std::ops::Add<AnyMod> for &'a AnyMod {
         *self + rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Add<&'a AnyMod> for AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -76,7 +74,7 @@ impl<'a> std::ops::Add<&'a AnyMod> for AnyMod {
         self + *rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Add for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -84,21 +82,21 @@ impl<'a> std::ops::Add for &'a AnyMod {
         *self + *rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::AddAssign for AnyMod {
     #[inline]
     fn add_assign(&mut self, rhs: Self) {
         *self = *self + rhs;
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::AddAssign<&'a AnyMod> for AnyMod {
     #[inline]
     fn add_assign(&mut self, rhs: &'a AnyMod) {
         *self += *rhs;
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::Sub for AnyMod {
     type Output = Self;
     #[inline]
@@ -106,7 +104,7 @@ impl std::ops::Sub for AnyMod {
         Self::new(self.x - rhs.x, self.m)
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Sub<AnyMod> for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -114,7 +112,7 @@ impl<'a> std::ops::Sub<AnyMod> for &'a AnyMod {
         *self - rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Sub<&'a AnyMod> for AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -122,7 +120,7 @@ impl<'a> std::ops::Sub<&'a AnyMod> for AnyMod {
         self - *rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Sub for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -130,21 +128,21 @@ impl<'a> std::ops::Sub for &'a AnyMod {
         *self - *rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::SubAssign for AnyMod {
     #[inline]
     fn sub_assign(&mut self, rhs: Self) {
         *self = *self - rhs;
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::SubAssign<&'a AnyMod> for AnyMod {
     #[inline]
     fn sub_assign(&mut self, rhs: &'a AnyMod) {
         *self -= *rhs;
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::Mul for AnyMod {
     type Output = Self;
     #[inline]
@@ -155,7 +153,7 @@ impl std::ops::Mul for AnyMod {
         }
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Mul<AnyMod> for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -163,7 +161,7 @@ impl<'a> std::ops::Mul<AnyMod> for &'a AnyMod {
         *self * rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Mul<&'a AnyMod> for AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -171,7 +169,7 @@ impl<'a> std::ops::Mul<&'a AnyMod> for AnyMod {
         self * *rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Mul for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -179,21 +177,21 @@ impl<'a> std::ops::Mul for &'a AnyMod {
         *self * *rhs
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::MulAssign for AnyMod {
     #[inline]
     fn mul_assign(&mut self, rhs: Self) {
         *self = *self * rhs;
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::MulAssign<&'a AnyMod> for AnyMod {
     #[inline]
     fn mul_assign(&mut self, rhs: &'a AnyMod) {
         *self *= *rhs;
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::Div for AnyMod {
     type Output = Self;
     #[inline]
@@ -201,7 +199,7 @@ impl std::ops::Div for AnyMod {
         self * rhs.inv()
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Div<AnyMod> for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -209,7 +207,7 @@ impl<'a> std::ops::Div<AnyMod> for &'a AnyMod {
         *self * rhs.inv()
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Div<&'a AnyMod> for AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -217,7 +215,7 @@ impl<'a> std::ops::Div<&'a AnyMod> for AnyMod {
         self * rhs.inv()
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Div for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -225,21 +223,21 @@ impl<'a> std::ops::Div for &'a AnyMod {
         *self * rhs.inv()
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::DivAssign for AnyMod {
     #[inline]
     fn div_assign(&mut self, rhs: Self) {
         *self = *self * rhs.inv();
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::DivAssign<&'a AnyMod> for AnyMod {
     #[inline]
     fn div_assign(&mut self, rhs: &'a AnyMod) {
         *self *= rhs.inv();
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::ops::Neg for AnyMod {
     type Output = Self;
     #[inline]
@@ -247,7 +245,7 @@ impl std::ops::Neg for AnyMod {
         Self::new(-self.x, self.m)
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl<'a> std::ops::Neg for &'a AnyMod {
     type Output = AnyMod;
     #[inline]
@@ -255,7 +253,7 @@ impl<'a> std::ops::Neg for &'a AnyMod {
         -*self
     }
 }
-#[snippet("AnyMod")]
+#[cargo_snippet::snippet("AnyMod")]
 impl std::fmt::Display for AnyMod {
     fn fmt<'a>(&self, f: &mut std::fmt::Formatter<'a>) -> Result<(), std::fmt::Error> {
         write!(f, "{}", self.x)

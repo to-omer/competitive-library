@@ -1,7 +1,5 @@
-use cargo_snippet::snippet;
-
 #[macro_export(local_inner_macros)]
-#[snippet("input")]
+#[cargo_snippet::snippet("input")]
 macro_rules! read_value {
     ($iter:expr, ( $($t:tt),* )) => {
         ( $(read_value!($iter, $t)),* )
@@ -29,7 +27,7 @@ macro_rules! read_value {
     };
 }
 #[macro_export(local_inner_macros)]
-#[snippet("input")]
+#[cargo_snippet::snippet("input")]
 macro_rules! input_inner {
     ($iter:expr) => {};
     ($iter:expr, ) => {};
@@ -48,7 +46,7 @@ macro_rules! input_inner {
         input_inner!{$iter, $var : usize $($r)*}
     };
 }
-#[snippet("input")]
+#[cargo_snippet::snippet("input")]
 #[macro_export(local_inner_macros)]
 macro_rules! input {
     (source = $s:expr, $($r:tt)*) => {

@@ -1,7 +1,6 @@
 use crate::graph::Graph;
-use cargo_snippet::snippet;
 
-#[snippet("tree_depth")]
+#[cargo_snippet::snippet("tree_depth")]
 impl Graph {
     fn depth_dfs(&self, u: usize, p: usize, d: u64, depth: &mut Vec<u64>) {
         depth[u] = d;
@@ -19,7 +18,7 @@ impl Graph {
     }
 }
 
-#[snippet("tree_size")]
+#[cargo_snippet::snippet("tree_size")]
 impl Graph {
     fn size_dfs(&self, u: usize, p: usize, size: &mut Vec<u64>) {
         size[u] = 1;

@@ -1,13 +1,11 @@
-use cargo_snippet::snippet;
-
-#[snippet("AnyModu32")]
+#[cargo_snippet::snippet("AnyModu32")]
 static mut MODULO: u32 = 1_000_000_007;
-#[snippet("AnyModu32")]
+#[cargo_snippet::snippet("AnyModu32")]
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash)]
 pub struct AnyModu32 {
     x: u32,
 }
-#[snippet("AnyModu32")]
+#[cargo_snippet::snippet("AnyModu32")]
 impl AnyModu32 {
     #[inline]
     pub fn new(x: u32) -> Self {
@@ -66,7 +64,7 @@ impl AnyModu32 {
         Self::new(x as u32)
     }
 }
-#[snippet("AnyModu32")]
+#[cargo_snippet::snippet("AnyModu32")]
 pub mod modu32_impl {
     use super::*;
     use std::{

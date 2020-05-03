@@ -1,12 +1,10 @@
-use cargo_snippet::snippet;
-
-#[snippet("ConvexHullTrick")]
+#[cargo_snippet::snippet("ConvexHullTrick")]
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct CHTLine {
     slope: i64,
     intercept: i64,
 }
-#[snippet("ConvexHullTrick")]
+#[cargo_snippet::snippet("ConvexHullTrick")]
 impl CHTLine {
     pub fn new(a: i64, b: i64) -> Self {
         CHTLine {
@@ -22,12 +20,12 @@ impl CHTLine {
             >= (l1.intercept - self.intercept) * (l2.slope - l1.slope)
     }
 }
-#[snippet("ConvexHullTrick")]
+#[cargo_snippet::snippet("ConvexHullTrick")]
 #[derive(Clone, Debug)]
 pub struct ConvexHullTrick {
     deq: std::collections::VecDeque<CHTLine>,
 }
-#[snippet("ConvexHullTrick")]
+#[cargo_snippet::snippet("ConvexHullTrick")]
 impl ConvexHullTrick {
     pub fn new() -> Self {
         ConvexHullTrick {

@@ -1,16 +1,15 @@
 use crate::algebra::base::*;
 use crate::data_structure::disjoint_sparse_table::DisjointSparseTable;
 use crate::graph::Graph;
-use cargo_snippet::snippet;
 
-#[snippet("EulerTourForEdge")]
+#[cargo_snippet::snippet("EulerTourForEdge")]
 #[derive(Clone, Debug, Default)]
 pub struct EulerTourForEdge {
     eidx: Vec<(usize, usize)>,
     par: Vec<usize>,
     epos: usize,
 }
-#[snippet("EulerTourForEdge")]
+#[cargo_snippet::snippet("EulerTourForEdge")]
 impl EulerTourForEdge {
     pub fn new(vsize: usize) -> Self {
         EulerTourForEdge {
@@ -36,13 +35,13 @@ impl EulerTourForEdge {
     }
 }
 
-#[snippet("EulerTourForVertex")]
+#[cargo_snippet::snippet("EulerTourForVertex")]
 #[derive(Clone, Debug, Default)]
 pub struct EulerTourForVertex {
     vidx: Vec<(usize, usize)>,
     vpos: usize,
 }
-#[snippet("EulerTourForVertex")]
+#[cargo_snippet::snippet("EulerTourForVertex")]
 impl EulerTourForVertex {
     pub fn new(vsize: usize) -> Self {
         EulerTourForVertex {
@@ -96,13 +95,13 @@ impl EulerTourForVertex {
     }
 }
 
-#[snippet("EulerTourForRichVertex")]
+#[cargo_snippet::snippet("EulerTourForRichVertex")]
 #[derive(Clone, Debug, Default)]
 pub struct EulerTourForRichVertex {
     vidx: Vec<(usize, usize)>,
     vtrace: Vec<usize>,
 }
-#[snippet("EulerTourForRichVertex")]
+#[cargo_snippet::snippet("EulerTourForRichVertex")]
 impl EulerTourForRichVertex {
     pub fn new(vsize: usize) -> Self {
         EulerTourForRichVertex {
@@ -133,7 +132,7 @@ impl EulerTourForRichVertex {
     }
 }
 
-#[snippet("LowestCommonAncestor")]
+#[cargo_snippet::snippet("LowestCommonAncestor")]
 impl EulerTourForRichVertex {
     pub fn gen_lca<'a>(&'a self, graph: &Graph) -> LowestCommonAncestor<'a> {
         let monoid = LCAMonoid::new(graph);
@@ -144,24 +143,24 @@ impl EulerTourForRichVertex {
         }
     }
 }
-#[snippet("LowestCommonAncestor")]
+#[cargo_snippet::snippet("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
 pub struct LowestCommonAncestor<'a> {
     euler: &'a EulerTourForRichVertex,
     dst: DisjointSparseTable<LCAMonoid>,
 }
-#[snippet("LowestCommonAncestor")]
+#[cargo_snippet::snippet("LowestCommonAncestor")]
 impl<'a> LowestCommonAncestor<'a> {
     pub fn lca(&self, u: usize, v: usize) -> usize {
         self.euler.query(u, v, |l, r| self.dst.fold(l, r))
     }
 }
-#[snippet("LowestCommonAncestor")]
+#[cargo_snippet::snippet("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
 pub struct LCAMonoid {
     depth: Vec<u64>,
 }
-#[snippet("LowestCommonAncestor")]
+#[cargo_snippet::snippet("LowestCommonAncestor")]
 pub mod impl_lcam {
     use super::*;
     impl LCAMonoid {

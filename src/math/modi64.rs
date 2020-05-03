@@ -1,11 +1,9 @@
-use cargo_snippet::snippet;
-
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 const MOD: i64 = 1_000_000_007;
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash)]
 pub struct Modi64(pub i64);
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl Modi64 {
     #[inline]
     pub fn new(i: i64) -> Self {
@@ -45,13 +43,13 @@ impl Modi64 {
         Modi64::new(x)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl From<i64> for Modi64 {
     fn from(i: i64) -> Self {
         Self::new(i)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::Add for Modi64 {
     type Output = Self;
     #[inline]
@@ -59,7 +57,7 @@ impl std::ops::Add for Modi64 {
         Modi64((self.0 + rhs.0) % MOD)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Add<Modi64> for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -67,7 +65,7 @@ impl<'a> std::ops::Add<Modi64> for &'a Modi64 {
         *self + rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Add<&'a Modi64> for Modi64 {
     type Output = Modi64;
     #[inline]
@@ -75,7 +73,7 @@ impl<'a> std::ops::Add<&'a Modi64> for Modi64 {
         self + *rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Add for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -83,21 +81,21 @@ impl<'a> std::ops::Add for &'a Modi64 {
         *self + *rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::AddAssign for Modi64 {
     #[inline]
     fn add_assign(&mut self, rhs: Self) {
         *self = *self + rhs;
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::AddAssign<&'a Modi64> for Modi64 {
     #[inline]
     fn add_assign(&mut self, rhs: &'a Modi64) {
         *self += *rhs;
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::Sub for Modi64 {
     type Output = Self;
     #[inline]
@@ -105,7 +103,7 @@ impl std::ops::Sub for Modi64 {
         Self::new(self.0 - rhs.0)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Sub<Modi64> for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -113,7 +111,7 @@ impl<'a> std::ops::Sub<Modi64> for &'a Modi64 {
         *self - rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Sub<&'a Modi64> for Modi64 {
     type Output = Modi64;
     #[inline]
@@ -121,7 +119,7 @@ impl<'a> std::ops::Sub<&'a Modi64> for Modi64 {
         self - *rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Sub for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -129,21 +127,21 @@ impl<'a> std::ops::Sub for &'a Modi64 {
         *self - *rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::SubAssign for Modi64 {
     #[inline]
     fn sub_assign(&mut self, rhs: Self) {
         *self = *self - rhs;
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::SubAssign<&'a Modi64> for Modi64 {
     #[inline]
     fn sub_assign(&mut self, rhs: &'a Modi64) {
         *self -= *rhs;
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::Mul for Modi64 {
     type Output = Self;
     #[inline]
@@ -151,7 +149,7 @@ impl std::ops::Mul for Modi64 {
         Modi64(self.0 * rhs.0 % MOD)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Mul<Modi64> for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -159,7 +157,7 @@ impl<'a> std::ops::Mul<Modi64> for &'a Modi64 {
         *self * rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Mul<&'a Modi64> for Modi64 {
     type Output = Modi64;
     #[inline]
@@ -167,7 +165,7 @@ impl<'a> std::ops::Mul<&'a Modi64> for Modi64 {
         self * *rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Mul for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -175,21 +173,21 @@ impl<'a> std::ops::Mul for &'a Modi64 {
         *self * *rhs
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::MulAssign for Modi64 {
     #[inline]
     fn mul_assign(&mut self, rhs: Self) {
         *self = *self * rhs;
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::MulAssign<&'a Modi64> for Modi64 {
     #[inline]
     fn mul_assign(&mut self, rhs: &'a Modi64) {
         *self *= *rhs;
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::Div for Modi64 {
     type Output = Self;
     #[inline]
@@ -197,7 +195,7 @@ impl std::ops::Div for Modi64 {
         self * rhs.inv()
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Div<Modi64> for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -205,7 +203,7 @@ impl<'a> std::ops::Div<Modi64> for &'a Modi64 {
         *self * rhs.inv()
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Div<&'a Modi64> for Modi64 {
     type Output = Modi64;
     #[inline]
@@ -213,7 +211,7 @@ impl<'a> std::ops::Div<&'a Modi64> for Modi64 {
         self * rhs.inv()
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Div for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -221,21 +219,21 @@ impl<'a> std::ops::Div for &'a Modi64 {
         *self * rhs.inv()
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::DivAssign for Modi64 {
     #[inline]
     fn div_assign(&mut self, rhs: Self) {
         *self = *self * rhs.inv();
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::DivAssign<&'a Modi64> for Modi64 {
     #[inline]
     fn div_assign(&mut self, rhs: &'a Modi64) {
         *self *= rhs.inv();
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::ops::Neg for Modi64 {
     type Output = Self;
     #[inline]
@@ -243,7 +241,7 @@ impl std::ops::Neg for Modi64 {
         Self::new(-self.0)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::ops::Neg for &'a Modi64 {
     type Output = Modi64;
     #[inline]
@@ -251,27 +249,27 @@ impl<'a> std::ops::Neg for &'a Modi64 {
         -*self
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::iter::Sum for Modi64 {
     #[inline]
     fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
         iter.fold(Self::new(0), std::ops::Add::add)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl<'a> std::iter::Sum<&'a Modi64> for Modi64 {
     #[inline]
     fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
         iter.fold(Self::new(0), |x, &y| x + y)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::fmt::Display for Modi64 {
     fn fmt<'a>(&self, f: &mut std::fmt::Formatter<'a>) -> Result<(), std::fmt::Error> {
         write!(f, "{}", self.0)
     }
 }
-#[snippet("Modi64")]
+#[cargo_snippet::snippet("Modi64")]
 impl std::str::FromStr for Modi64 {
     type Err = std::num::ParseIntError;
     #[inline]

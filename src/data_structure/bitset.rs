@@ -1,12 +1,10 @@
-use cargo_snippet::snippet;
-
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BitSet {
     size: usize,
     bits: Vec<u64>,
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl BitSet {
     pub fn new(size: usize) -> Self {
         BitSet {
@@ -80,7 +78,7 @@ impl BitSet {
         }
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl std::ops::ShlAssign<usize> for BitSet {
     #[inline]
     fn shl_assign(&mut self, rhs: usize) {
@@ -109,7 +107,7 @@ impl std::ops::ShlAssign<usize> for BitSet {
         }
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl std::ops::Shl<usize> for BitSet {
     type Output = Self;
     #[inline]
@@ -118,7 +116,7 @@ impl std::ops::Shl<usize> for BitSet {
         self
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl std::ops::ShrAssign<usize> for BitSet {
     #[inline]
     fn shr_assign(&mut self, rhs: usize) {
@@ -146,7 +144,7 @@ impl std::ops::ShrAssign<usize> for BitSet {
         }
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl std::ops::Shr<usize> for BitSet {
     type Output = Self;
     #[inline]
@@ -155,7 +153,7 @@ impl std::ops::Shr<usize> for BitSet {
         self
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a> std::ops::BitOrAssign<&'a BitSet> for BitSet {
     #[inline]
     fn bitor_assign(&mut self, rhs: &'a Self) {
@@ -165,7 +163,7 @@ impl<'a> std::ops::BitOrAssign<&'a BitSet> for BitSet {
         self.trim();
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a> std::ops::BitOr<&'a BitSet> for BitSet {
     type Output = Self;
     #[inline]
@@ -174,7 +172,7 @@ impl<'a> std::ops::BitOr<&'a BitSet> for BitSet {
         self
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a, 'b> std::ops::BitOr<&'b BitSet> for &'a BitSet {
     type Output = BitSet;
     #[inline]
@@ -184,7 +182,7 @@ impl<'a, 'b> std::ops::BitOr<&'b BitSet> for &'a BitSet {
         res
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a> std::ops::BitAndAssign<&'a BitSet> for BitSet {
     #[inline]
     fn bitand_assign(&mut self, rhs: &'a Self) {
@@ -193,7 +191,7 @@ impl<'a> std::ops::BitAndAssign<&'a BitSet> for BitSet {
         }
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a> std::ops::BitAnd<&'a BitSet> for BitSet {
     type Output = Self;
     #[inline]
@@ -202,7 +200,7 @@ impl<'a> std::ops::BitAnd<&'a BitSet> for BitSet {
         self
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a, 'b> std::ops::BitAnd<&'b BitSet> for &'a BitSet {
     type Output = BitSet;
     #[inline]
@@ -212,7 +210,7 @@ impl<'a, 'b> std::ops::BitAnd<&'b BitSet> for &'a BitSet {
         res
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a> std::ops::BitXorAssign<&'a BitSet> for BitSet {
     #[inline]
     fn bitxor_assign(&mut self, rhs: &'a Self) {
@@ -222,7 +220,7 @@ impl<'a> std::ops::BitXorAssign<&'a BitSet> for BitSet {
         self.trim();
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a> std::ops::BitXor<&'a BitSet> for BitSet {
     type Output = Self;
     #[inline]
@@ -231,7 +229,7 @@ impl<'a> std::ops::BitXor<&'a BitSet> for BitSet {
         self
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a, 'b> std::ops::BitXor<&'b BitSet> for &'a BitSet {
     type Output = BitSet;
     #[inline]
@@ -241,7 +239,7 @@ impl<'a, 'b> std::ops::BitXor<&'b BitSet> for &'a BitSet {
         res
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl std::ops::Not for BitSet {
     type Output = Self;
     #[inline]
@@ -253,7 +251,7 @@ impl std::ops::Not for BitSet {
         self
     }
 }
-#[snippet("BitSet")]
+#[cargo_snippet::snippet("BitSet")]
 impl<'a> std::ops::Not for &'a BitSet {
     type Output = BitSet;
     #[inline]

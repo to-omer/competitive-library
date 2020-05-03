@@ -1,7 +1,6 @@
 use super::*;
-use cargo_snippet::snippet;
 
-#[snippet("topological_sort")]
+#[cargo_snippet::snippet("topological_sort")]
 impl Graph {
     pub fn topological_sort(&self) -> Vec<usize> {
         let mut indeg = vec![0; self.vsize];

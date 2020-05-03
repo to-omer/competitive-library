@@ -1,12 +1,11 @@
 use crate::graph::Graph;
-use cargo_snippet::snippet;
 
-#[snippet("TreeRec")]
+#[cargo_snippet::snippet("TreeRec")]
 #[derive(Debug)]
 pub struct TreeRec {
     pub n: usize,
 }
-#[snippet("TreeRec")]
+#[cargo_snippet::snippet("TreeRec")]
 impl TreeRec {
     pub fn new(n: usize) -> TreeRec {
         TreeRec { n: n }

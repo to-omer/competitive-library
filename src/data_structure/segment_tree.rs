@@ -1,14 +1,13 @@
 use crate::algebra::base::Monoid;
-use cargo_snippet::snippet;
 
-#[snippet("SegmentTree")]
+#[cargo_snippet::snippet("SegmentTree")]
 #[derive(Clone, Debug)]
 pub struct SegmentTree<M: Monoid> {
     n: usize,
     seg: Vec<M::T>,
     m: M,
 }
-#[snippet("SegmentTree")]
+#[cargo_snippet::snippet("SegmentTree")]
 impl<M: Monoid> SegmentTree<M> {
     pub fn new(n: usize, m: M) -> SegmentTree<M> {
         let n = 1 << format!("{:b}", n - 1).len();
@@ -195,7 +194,7 @@ fn test_segment_tree() {
     }
 }
 
-#[snippet("LazySegmentTree")]
+#[cargo_snippet::snippet("LazySegmentTree")]
 /// M: folding Monoid
 /// E: lazy folding Monoid
 /// F: forced evaluation (Operatior Monoid)
@@ -208,7 +207,7 @@ pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     e: E,
     op: F,
 }
-#[snippet("LazySegmentTree")]
+#[cargo_snippet::snippet("LazySegmentTree")]
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F> {
     pub fn new(n: usize, m: M, e: E, op: F) -> LazySegmentTree<M, E, F> {
         let n = 1 << format!("{:b}", n - 1).len();

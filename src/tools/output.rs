@@ -1,9 +1,7 @@
-use cargo_snippet::snippet;
-
 #[allow(unused_imports)]
-#[snippet("with_bufwriter")]
+#[cargo_snippet::snippet("with_bufwriter")]
 use std::io::Write;
-#[snippet("with_bufwriter")]
+#[cargo_snippet::snippet("with_bufwriter")]
 pub fn with_bufwriter<F>(f: F) -> std::io::Result<()>
 where
     F: FnOnce(&mut std::io::BufWriter<std::io::StdoutLock>) -> std::io::Result<()>,

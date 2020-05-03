@@ -1,13 +1,12 @@
 use super::*;
-use cargo_snippet::snippet;
 
-#[snippet("Circle")]
+#[cargo_snippet::snippet("Circle")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Circle {
     c: Point,
     r: f64,
 }
-#[snippet("Circle")]
+#[cargo_snippet::snippet("Circle")]
 impl Circle {
     pub fn new(c: Point, r: f64) -> Self {
         Circle { c: c, r: r }

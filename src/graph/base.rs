@@ -1,25 +1,23 @@
-use cargo_snippet::snippet;
-
-#[snippet("Graph")]
+#[cargo_snippet::snippet("Graph")]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Adjacent {
     pub to: usize,
     pub id: usize,
 }
-#[snippet("Graph")]
+#[cargo_snippet::snippet("Graph")]
 impl Adjacent {
     pub fn new(to: usize, id: usize) -> Adjacent {
         Adjacent { to: to, id: id }
     }
 }
-#[snippet("Graph")]
+#[cargo_snippet::snippet("Graph")]
 #[derive(Clone, Debug, Default)]
 pub struct Graph {
     pub vsize: usize,
     pub esize: usize,
     pub graph: Vec<Vec<Adjacent>>,
 }
-#[snippet("Graph")]
+#[cargo_snippet::snippet("Graph")]
 impl Graph {
     pub fn new(vsize: usize) -> Graph {
         Graph {
@@ -45,14 +43,14 @@ impl Graph {
     }
 }
 
-#[snippet("GraphRec")]
+#[cargo_snippet::snippet("GraphRec")]
 #[derive(Debug)]
 pub struct GraphRec {
     pub n: usize,
     pub visited: Vec<bool>,
     pub cost: Vec<usize>,
 }
-#[snippet("GraphRec")]
+#[cargo_snippet::snippet("GraphRec")]
 impl GraphRec {
     pub fn new(n: usize) -> GraphRec {
         GraphRec {

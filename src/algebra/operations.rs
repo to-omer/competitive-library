@@ -1,16 +1,15 @@
 use super::base::*;
-use cargo_snippet::snippet;
 
-#[snippet("MaxOperation")]
+#[cargo_snippet::snippet("MaxOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MaxOperation<T: Clone + Ord + MinimumBounded> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("MaxOperation")]
+#[cargo_snippet::snippet("MaxOperation")]
 pub trait MinimumBounded {
     fn minimum() -> Self;
 }
-#[snippet("MaxOperation")]
+#[cargo_snippet::snippet("MaxOperation")]
 pub mod max_operation_impl {
     use super::*;
     macro_rules! impl_minimum_with_min {
@@ -72,16 +71,16 @@ pub mod max_operation_impl {
     impl<T: Clone + Ord + MinimumBounded> IdempotentMonoid for MaxOperation<T> {}
 }
 
-#[snippet("MinOperation")]
+#[cargo_snippet::snippet("MinOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MinOperation<T: Clone + Ord + MaximumBounded> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("MinOperation")]
+#[cargo_snippet::snippet("MinOperation")]
 pub trait MaximumBounded {
     fn maximum() -> Self;
 }
-#[snippet("MinOperation")]
+#[cargo_snippet::snippet("MinOperation")]
 pub mod min_operation_impl {
     use super::*;
     macro_rules! impl_maximum_with_max {
@@ -143,12 +142,12 @@ pub mod min_operation_impl {
     impl<T: Clone + Ord + MaximumBounded> IdempotentMonoid for MinOperation<T> {}
 }
 
-#[snippet("FirstOperation")]
+#[cargo_snippet::snippet("FirstOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct FirstOperation<T: Clone + PartialEq> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("FirstOperation")]
+#[cargo_snippet::snippet("FirstOperation")]
 pub mod first_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> FirstOperation<T> {
@@ -178,12 +177,12 @@ pub mod first_operation_impl {
     impl<T: Clone + PartialEq> IdempotentMonoid for FirstOperation<T> {}
 }
 
-#[snippet("LastOperation")]
+#[cargo_snippet::snippet("LastOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LastOperation<T: Clone + PartialEq> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("LastOperation")]
+#[cargo_snippet::snippet("LastOperation")]
 pub mod last_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> LastOperation<T> {
@@ -213,16 +212,16 @@ pub mod last_operation_impl {
     impl<T: Clone + PartialEq> IdempotentMonoid for LastOperation<T> {}
 }
 
-#[snippet("AdditiveOperation")]
+#[cargo_snippet::snippet("AdditiveOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct AdditiveOperation<T: Copy + PartialEq + AdditiveIdentity> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("AdditiveOperation")]
+#[cargo_snippet::snippet("AdditiveOperation")]
 pub trait AdditiveIdentity: Sized + std::ops::Add<Output = Self> {
     fn zero() -> Self;
 }
-#[snippet("AdditiveOperation")]
+#[cargo_snippet::snippet("AdditiveOperation")]
 #[macro_use]
 pub mod additive_operation_impl {
     use super::*;
@@ -300,16 +299,16 @@ pub mod additive_operation_impl {
     }
 }
 
-#[snippet("MultiplicativeOperation")]
+#[cargo_snippet::snippet("MultiplicativeOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MultiplicativeOperation<T: Copy + PartialEq + MultiplicativeIdentity> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("MultiplicativeOperation")]
+#[cargo_snippet::snippet("MultiplicativeOperation")]
 pub trait MultiplicativeIdentity: Sized + std::ops::Mul<Output = Self> {
     fn one() -> Self;
 }
-#[snippet("MultiplicativeOperation")]
+#[cargo_snippet::snippet("MultiplicativeOperation")]
 #[macro_use]
 pub mod multiplicative_operation_impl {
     use super::*;
@@ -387,12 +386,12 @@ pub mod multiplicative_operation_impl {
     }
 }
 
-#[snippet("LinearOperation")]
+#[cargo_snippet::snippet("LinearOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearOperation<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("LinearOperation")]
+#[cargo_snippet::snippet("LinearOperation")]
 pub mod linear_operation_impl {
     use super::*;
     impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> LinearOperation<T> {
@@ -431,16 +430,16 @@ pub mod linear_operation_impl {
     }
 }
 
-#[snippet("BitAndOperation")]
+#[cargo_snippet::snippet("BitAndOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitAndOperation<T: Copy + PartialEq + BitAndIdentity> {
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("BitAndOperation")]
+#[cargo_snippet::snippet("BitAndOperation")]
 pub trait BitAndIdentity: Sized + std::ops::BitAnd<Output = Self> {
     fn all_one() -> Self;
 }
-#[snippet("BitAndOperation")]
+#[cargo_snippet::snippet("BitAndOperation")]
 pub mod bitand_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
@@ -502,7 +501,7 @@ pub mod bitand_operation_impl {
     impl<T: Copy + PartialEq + BitAndIdentity> IdempotentMonoid for BitAndOperation<T> {}
 }
 
-#[snippet("BitOrOperation")]
+#[cargo_snippet::snippet("BitOrOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
     phantom: std::marker::PhantomData<T>,
@@ -510,7 +509,7 @@ pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
 pub trait BitOrIdentity: Sized + std::ops::BitOr<Output = Self> {
     fn all_zero() -> Self;
 }
-#[snippet("BitOrOperation")]
+#[cargo_snippet::snippet("BitOrOperation")]
 pub mod bitor_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
@@ -572,13 +571,13 @@ pub mod bitor_operation_impl {
     impl<T: Copy + PartialEq + BitOrIdentity> IdempotentMonoid for BitOrOperation<T> {}
 }
 
-#[snippet("MonoidalOperation")]
+#[cargo_snippet::snippet("MonoidalOperation")]
 #[derive(Clone, Debug)]
 pub struct MonoidalOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     e: T,
     op: F,
 }
-#[snippet("MonoidalOperation")]
+#[cargo_snippet::snippet("MonoidalOperation")]
 pub mod monoidal_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> MonoidalOperation<T, F> {
@@ -606,14 +605,14 @@ pub mod monoidal_operation_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbelianMonoid for MonoidalOperation<T, F> {}
 }
 
-#[snippet("GroupOperation")]
+#[cargo_snippet::snippet("GroupOperation")]
 #[derive(Clone, Debug)]
 pub struct GroupOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> {
     e: T,
     op: F,
     inv: G,
 }
-#[snippet("GroupOperation")]
+#[cargo_snippet::snippet("GroupOperation")]
 pub mod group_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> GroupOperation<T, F, G> {
@@ -670,13 +669,13 @@ pub mod group_operation_impl {
     }
 }
 
-#[snippet("AssocoativeOperator")]
+#[cargo_snippet::snippet("AssocoativeOperator")]
 #[derive(Clone, Debug)]
 pub struct AssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("AssocoativeOperator")]
+#[cargo_snippet::snippet("AssocoativeOperator")]
 pub mod assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Magma for AssocoativeOperator<T, F> {
@@ -690,13 +689,13 @@ pub mod assocoative_operator_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> SemiGroup for AssocoativeOperator<T, F> {}
 }
 
-#[snippet("AbsorbedAssocoativeOperator")]
+#[cargo_snippet::snippet("AbsorbedAssocoativeOperator")]
 #[derive(Clone, Debug)]
 pub struct AbsorbedAssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
     phantom: std::marker::PhantomData<T>,
 }
-#[snippet("AbsorbedAssocoativeOperator")]
+#[cargo_snippet::snippet("AbsorbedAssocoativeOperator")]
 pub mod absorbed_assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbsorbedAssocoativeOperator<T, F> {
@@ -731,13 +730,13 @@ pub mod absorbed_assocoative_operator_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbelianMonoid for AbsorbedAssocoativeOperator<T, F> {}
 }
 
-#[snippet("CartesianOperation")]
+#[cargo_snippet::snippet("CartesianOperation")]
 #[derive(Clone, Debug)]
 pub struct CartesianOperation<M1, M2> {
     m1: M1,
     m2: M2,
 }
-#[snippet("CartesianOperation")]
+#[cargo_snippet::snippet("CartesianOperation")]
 pub mod cartesian_operation_impl {
     use super::*;
     impl<M1, M2> CartesianOperation<M1, M2> {
@@ -773,12 +772,12 @@ pub mod cartesian_operation_impl {
     impl<M1: AbelianGroup, M2: AbelianGroup> AbelianGroup for CartesianOperation<M1, M2> {}
 }
 
-#[snippet("CountingOperation")]
+#[cargo_snippet::snippet("CountingOperation")]
 #[derive(Clone, Debug)]
 pub struct CountingOperation<M> {
     m: M,
 }
-#[snippet("CountingOperation")]
+#[cargo_snippet::snippet("CountingOperation")]
 pub mod counting_operation_impl {
     use super::*;
     impl<M> CountingOperation<M> {

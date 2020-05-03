@@ -1,15 +1,14 @@
 use super::anymod::*;
 use super::modi64::*;
-use cargo_snippet::snippet;
 
-#[snippet(name = "factorial")]
+#[cargo_snippet::snippet(name = "factorial")]
 #[derive(Clone, Debug)]
 pub struct MemorizedFactorial {
     n: usize,
     fact: Vec<Modi64>,
     inv_fact: Vec<Modi64>,
 }
-#[snippet(name = "factorial")]
+#[cargo_snippet::snippet(name = "factorial")]
 impl MemorizedFactorial {
     pub fn new(max_n: usize) -> MemorizedFactorial {
         let mut fact = vec![Modi64::new(1); max_n + 1];

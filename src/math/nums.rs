@@ -1,5 +1,4 @@
 use crate::math::gcd::modinv;
-use cargo_snippet::snippet;
 
 pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(mut x: T, y: usize, mut one: T) -> T {
     while y > 0 {
@@ -11,15 +10,15 @@ pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(mut x: T, y: usize,
     one
 }
 
-#[snippet("BabyStepGiantStep")]
-#[snippet(include = "modinv")]
+#[cargo_snippet::snippet("BabyStepGiantStep")]
+#[cargo_snippet::snippet(include = "modinv")]
 #[derive(Clone, Debug)]
 pub struct BabyStepGiantStep {
     p: u64,
     r: u64,
     baby: std::collections::HashMap<u64, u64>,
 }
-#[snippet("BabyStepGiantStep")]
+#[cargo_snippet::snippet("BabyStepGiantStep")]
 impl BabyStepGiantStep {
     pub fn new(x: u64, p: u64) -> Self {
         let m = (p as f32).sqrt() as u64 + 1;

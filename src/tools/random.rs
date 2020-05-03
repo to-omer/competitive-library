@@ -1,11 +1,9 @@
-use cargo_snippet::snippet;
-
-#[snippet("Xorshift")]
+#[cargo_snippet::snippet("Xorshift")]
 #[derive(Clone, Debug)]
 pub struct Xorshift {
     y: u64,
 }
-#[snippet("Xorshift")]
+#[cargo_snippet::snippet("Xorshift")]
 impl Xorshift {
     pub fn new(seed: u64) -> Self {
         Xorshift { y: seed }

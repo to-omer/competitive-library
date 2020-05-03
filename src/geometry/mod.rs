@@ -4,28 +4,27 @@ pub mod complex;
 pub mod line;
 pub mod polygon;
 
-use cargo_snippet::snippet;
 pub use complex::*;
 
-#[snippet("geometry", include = "Real")]
-#[snippet("geometry", include = "CCW")]
-#[snippet("geometry", include = "Complex")]
-#[snippet("geometry", include = "TotalOrd")]
+#[cargo_snippet::snippet("geometry", include = "Real")]
+#[cargo_snippet::snippet("geometry", include = "CCW")]
+#[cargo_snippet::snippet("geometry", include = "Complex")]
+#[cargo_snippet::snippet("geometry", include = "TotalOrd")]
 pub type Point = Complex<f64>;
 
-#[snippet("EPS")]
+#[cargo_snippet::snippet("EPS")]
 pub const EPS: f64 = 1e-8;
-#[snippet("Real")]
+#[cargo_snippet::snippet("Real")]
 #[derive(Clone, Debug)]
 pub struct Real(pub f64);
-#[snippet("Real")]
-#[snippet(include = "EPS")]
+#[cargo_snippet::snippet("Real")]
+#[cargo_snippet::snippet(include = "EPS")]
 impl PartialEq for Real {
     fn eq(&self, other: &Real) -> bool {
         (self.0 - other.0).abs() < EPS
     }
 }
-#[snippet("Real")]
+#[cargo_snippet::snippet("Real")]
 impl PartialOrd for Real {
     fn partial_cmp(&self, other: &Real) -> Option<std::cmp::Ordering> {
         if self == other {
@@ -36,7 +35,7 @@ impl PartialOrd for Real {
     }
 }
 
-#[snippet("CCW")]
+#[cargo_snippet::snippet("CCW")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CCW {
     /// a--b--c
@@ -50,7 +49,7 @@ pub enum CCW {
     /// c--a--b
     OnlineBack = 2,
 }
-#[snippet("CCW")]
+#[cargo_snippet::snippet("CCW")]
 pub fn ccw(a: Point, b: Point, c: Point) -> CCW {
     let x = b - a;
     let y = c - a;

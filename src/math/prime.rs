@@ -1,12 +1,11 @@
 use crate::tools::random::Xorshift;
-use cargo_snippet::snippet;
 
-#[snippet("prime")]
+#[cargo_snippet::snippet("prime")]
 #[derive(Clone, Debug)]
 pub struct PrimeTable {
     table: Vec<usize>,
 }
-#[snippet("prime")]
+#[cargo_snippet::snippet("prime")]
 impl PrimeTable {
     pub fn new(max_n: usize) -> Self {
         let mut table = vec![1; max_n + 1];
@@ -63,7 +62,7 @@ fn test_primes() {
     assert_eq!(factors[&7], 1);
 }
 
-#[snippet("prime_factors")]
+#[cargo_snippet::snippet("prime_factors")]
 pub fn prime_factors(n: usize) -> std::collections::HashMap<usize, usize> {
     let mut factors = std::collections::HashMap::new();
     let mut n = n;
@@ -78,7 +77,7 @@ pub fn prime_factors(n: usize) -> std::collections::HashMap<usize, usize> {
     }
     factors
 }
-#[snippet("divisors")]
+#[cargo_snippet::snippet("divisors")]
 pub fn divisors(n: usize) -> Vec<usize> {
     let mut res = vec![];
     for i in 1..(n as f32).sqrt() as usize + 1 {
@@ -93,7 +92,7 @@ pub fn divisors(n: usize) -> Vec<usize> {
     res
 }
 
-#[snippet("miller_rabin")]
+#[cargo_snippet::snippet("miller_rabin")]
 pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     let mut x = x as u128;
     let mut y = y as u128;
@@ -109,8 +108,8 @@ pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     res as u64
 }
 
-#[snippet("miller_rabin")]
-#[snippet(include = "Xorshift")]
+#[cargo_snippet::snippet("miller_rabin")]
+#[cargo_snippet::snippet(include = "Xorshift")]
 pub fn miller_rabin(p: u64, times: usize) -> bool {
     if p == 2 {
         return true;

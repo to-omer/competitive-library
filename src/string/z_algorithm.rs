@@ -1,11 +1,9 @@
-use cargo_snippet::snippet;
-
-#[snippet("ZAlgorithm")]
+#[cargo_snippet::snippet("ZAlgorithm")]
 #[derive(Clone, Debug)]
 pub struct Zarray {
     z: Vec<usize>,
 }
-#[snippet("ZAlgorithm")]
+#[cargo_snippet::snippet("ZAlgorithm")]
 impl Zarray {
     pub fn new<T: Eq>(s: &[T]) -> Zarray {
         let n = s.len();
@@ -46,7 +44,7 @@ impl Zarray {
         res
     }
 }
-#[snippet("ZAlgorithm")]
+#[cargo_snippet::snippet("ZAlgorithm")]
 impl std::ops::Index<usize> for Zarray {
     type Output = usize;
     fn index(&self, index: usize) -> &usize {

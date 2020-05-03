@@ -1,12 +1,11 @@
 use crate::data_structure::Rev;
-use cargo_snippet::snippet;
 
-#[snippet("WeightedGraph")]
+#[cargo_snippet::snippet("WeightedGraph")]
 #[derive(Clone, Debug)]
 pub struct WeightedGraph<T> {
     graph: Vec<Vec<(usize, T)>>,
 }
-#[snippet("WeightedGraph")]
+#[cargo_snippet::snippet("WeightedGraph")]
 impl<T: Clone> WeightedGraph<T> {
     pub fn new(n: usize) -> WeightedGraph<T> {
         WeightedGraph {
@@ -18,8 +17,8 @@ impl<T: Clone> WeightedGraph<T> {
     }
 }
 
-#[snippet("dijkstra")]
-#[snippet(include = "WeightedGraph")]
+#[cargo_snippet::snippet("dijkstra")]
+#[cargo_snippet::snippet(include = "WeightedGraph")]
 impl WeightedGraph<usize> {
     pub fn dijkstra(&self, s: usize) -> Vec<usize> {
         use std::collections::BinaryHeap;
@@ -41,8 +40,8 @@ impl WeightedGraph<usize> {
     }
 }
 
-#[snippet("bellman_ford")]
-#[snippet(include = "WeightedGraph")]
+#[cargo_snippet::snippet("bellman_ford")]
+#[cargo_snippet::snippet(include = "WeightedGraph")]
 impl WeightedGraph<i64> {
     pub fn bellman_ford(&self, s: usize) -> (Vec<i64>, bool) {
         const INF: i64 = std::i64::MAX;
