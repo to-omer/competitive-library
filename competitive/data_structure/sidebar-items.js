@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["binary_indexed_tree",""],["bitset",""],["disjoint_sparse_table",""],["segment_tree",""],["sliding_winsow_aggregation",""],["union_find",""]],"struct":[["Rev",""],["TotalOrd",""]]});
+initSidebarItems({"mod":[["binary_indexed_tree",""],["bitset",""],["disjoint_sparse_table",""],["lazy_segment_tree",""],["segment_tree",""],["sliding_winsow_aggregation",""],["union_find",""]],"struct":[["Rev",""],["TotalOrd",""]]});

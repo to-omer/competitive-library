@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["any_monoid_effect_impl",""]],"struct":[["AnyMonoidEffect",""]],"trait":[["MonoidEffect",""]]});

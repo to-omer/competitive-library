@@ -32,11 +32,14 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">// verify-helper: PROBLEM https://judge.yosupo.jp/problem/range_affine_range_sum</span>
 
+<span class="kw">use</span> <span class="ident">competitive</span>::<span class="ident">algebra</span>::<span class="ident">effect</span>::<span class="ident">AnyMonoidEffect</span>;
 <span class="kw">use</span> <span class="ident">competitive</span>::<span class="ident">algebra</span>::<span class="ident">operations</span>::{<span class="ident">AdditiveOperation</span>, <span class="ident">CartesianOperation</span>, <span class="ident">LinearOperation</span>};
-<span class="kw">use</span> <span class="ident">competitive</span>::<span class="ident">data_structure</span>::<span class="ident">segment_tree</span>::<span class="ident">LazySegmentTree</span>;
+<span class="kw">use</span> <span class="ident">competitive</span>::<span class="ident">data_structure</span>::<span class="ident">lazy_segment_tree</span>::<span class="ident">LazySegmentTree</span>;
 <span class="kw">use</span> <span class="ident">competitive</span>::<span class="ident">math</span>::<span class="ident">modu32</span>::{<span class="ident">modulos</span>::<span class="ident">Modulo998244353</span>, <span class="ident">Modu32</span>};
 <span class="kw">use</span> <span class="ident">competitive</span>::{<span class="ident">input</span>, <span class="ident">input_inner</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>;
@@ -51,8 +54,9 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> <span class="op">=</span> <span class="ident">LazySegmentTree</span>::<span class="ident">from_vec</span>(
         <span class="ident">a</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> (<span class="ident">x</span>, <span class="number">1u32</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>(),
         <span class="ident">CartesianOperation</span>::<span class="ident">new</span>(<span class="ident">AdditiveOperation</span>::<span class="ident">new</span>(), <span class="ident">AdditiveOperation</span>::<span class="ident">new</span>()),
-        <span class="ident">LinearOperation</span>::<span class="ident">new</span>(),
-        <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> (<span class="ident">y</span>.<span class="number">0</span> <span class="op">*</span> <span class="ident">x</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">y</span>.<span class="number">1</span> <span class="op">*</span> <span class="ident">M</span>::<span class="ident">new</span>(<span class="ident">x</span>.<span class="number">1</span>), <span class="ident">x</span>.<span class="number">1</span>),
+        <span class="ident">AnyMonoidEffect</span>::<span class="op">&lt;</span><span class="kw">_</span>, (<span class="kw">_</span>, <span class="ident">u32</span>), <span class="kw">_</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">LinearOperation</span>::<span class="ident">new</span>(), <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> {
+            (<span class="ident">y</span>.<span class="number">0</span> <span class="op">*</span> <span class="ident">x</span>.<span class="number">0</span> <span class="op">+</span> <span class="ident">y</span>.<span class="number">1</span> <span class="op">*</span> <span class="ident">M</span>::<span class="ident">new</span>(<span class="ident">x</span>.<span class="number">1</span>), <span class="ident">x</span>.<span class="number">1</span>)
+        }),
     );
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">q</span> {
         <span class="macro">input_inner</span><span class="macro">!</span> { <span class="ident">iter</span>, <span class="ident">x</span> };

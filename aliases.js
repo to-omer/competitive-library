@@ -2,6 +2,7 @@ var ALIASES = {};
 ALIASES["aplusb"] = {};
 ALIASES["bipartitematching"] = {};
 ALIASES["competitive"] = {};
+ALIASES["dsl_2_f"] = {};
 ALIASES["lca"] = {};
 ALIASES["many_aplusb"] = {};
 ALIASES["point_add_range_sum_binary_indexed_tree"] = {};

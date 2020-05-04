@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["LazySegmentTree","M: folding Monoid E: lazy folding Monoid F: forced evaluation (Operatior Monoid)"],["SegmentTree",""]]});
+initSidebarItems({"struct":[["SegmentTree",""]]});

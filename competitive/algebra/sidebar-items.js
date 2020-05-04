@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["base",""],["operations",""]]});
+initSidebarItems({"mod":[["base",""],["effect",""],["operations",""]]});
