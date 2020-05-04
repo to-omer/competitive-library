@@ -1,6 +1,7 @@
 pub mod binary_indexed_tree;
 pub mod bitset;
 pub mod disjoint_sparse_table;
+pub mod lazy_segment_tree;
 pub mod segment_tree;
 pub mod sliding_winsow_aggregation;
 pub mod union_find;
