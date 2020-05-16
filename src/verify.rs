@@ -135,7 +135,7 @@ pub(crate) struct CheckerBinary {
 impl CheckerBinary {
     pub(crate) fn from_url(url: &str) -> OjResult<Self> {
         let _guard = OJ_API_RESOURCE.lock().unwrap();
-        let output = Command::new("py")
+        let output = Command::new("python")
             .args(&[
                 "-c",
                 format!(
