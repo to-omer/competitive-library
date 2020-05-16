@@ -294,3 +294,11 @@ fn test_modu32() {
 use crate::algebra::operations::{AdditiveIdentity, MultiplicativeIdentity};
 impl_additive_identity!([M: Modulo + PartialEq], Modu32<M>, Self::zero());
 impl_multiplicative_identity!([M: Modulo + PartialEq], Modu32<M>, Self::one());
+
+use crate::tools::scanner::IterScan;
+impl<M: Modulo> IterScan for Modu32<M> {
+    #[inline]
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
+        iter.next()?.parse::<Modu32<M>>().ok()
+    }
+}
