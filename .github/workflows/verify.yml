@@ -38,8 +38,10 @@ jobs:
 
     - name: Run verify
       env:
-        RUST_MIN_STACK: 536870912
-      run: cargo test --release -- --ignored --nocapture --test-threads=1
+        RUST_MIN_STACK: 268435456
+      run: |
+        ulimit -s unlimited
+        cargo test --release -- --ignored --nocapture --test-threads=1
       continue-on-error: true
 
     - name: Commit Changes
