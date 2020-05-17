@@ -110,8 +110,7 @@ impl OjApi {
         let output = Command::new(option_env!("ONLINE_JUDGE_TOOLS_API").unwrap_or("oj-api"))
             .args(args)
             .output()?;
-        print!("stdout: {}", String::from_utf8_lossy(&output.stdout));
-        print!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        println!("{}", String::from_utf8_lossy(&output.stderr));
         if output.status.success() {
             let response: OjApiResponse<R> = serde_json::from_slice(&output.stdout)?;
             response.into_result()
@@ -154,8 +153,7 @@ except RuntimeError as e:
                 .as_str(),
             ])
             .output()?;
-        print!("stdout: {}", String::from_utf8_lossy(&output.stdout));
-        print!("stderr: {}", String::from_utf8_lossy(&output.stderr));
+        println!("{}", String::from_utf8_lossy(&output.stderr));
         if output.status.success() {
             let checker = PathBuf::from(String::from_utf8_lossy(&output.stdout).to_string());
             Ok(Self { checker })
