@@ -142,7 +142,6 @@ impl CheckerBinary {
                     r#"from onlinejudge import dispatch
 url = '{}'
 problem = dispatch.problem_from_url(url)
-checker_binary = None
 try:
     print(problem.download_checker_binary(), end='')
 except RuntimeError as e:
@@ -155,9 +154,6 @@ except RuntimeError as e:
             .output()?;
         if output.status.success() {
             let checker = PathBuf::from(String::from_utf8_lossy(&output.stdout).to_string());
-            if !checker.exists() {
-                Err(OjError::StrError("checker binary broken".to_string()))?
-            }
             Ok(Self { checker })
         } else {
             Err(OjError::CommandError(
