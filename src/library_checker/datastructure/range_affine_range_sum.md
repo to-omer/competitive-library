@@ -1,4 +1,4 @@
-✅  AC  1071ms
+✅  AC  1309ms
 
 problem [here](https://judge.yosupo.jp/problem/range_affine_range_sum)
 
@@ -7,12 +7,12 @@ problem [here](https://judge.yosupo.jp/problem/range_affine_range_sum)
 | Case Name | Status | Exec Time |
 |:---------:|:------:|---------:|
 | example_00 | AC | 0 ms |
-| max_random_00 | AC | 1071 ms |
-| max_random_01 | AC | 1018 ms |
-| max_random_02 | AC | 1064 ms |
-| random_00 | AC | 872 ms |
-| random_01 | AC | 898 ms |
-| random_02 | AC | 599 ms |
+| max_random_00 | AC | 1309 ms |
+| max_random_01 | AC | 1266 ms |
+| max_random_02 | AC | 1262 ms |
+| random_00 | AC | 1024 ms |
+| random_01 | AC | 1066 ms |
+| random_02 | AC | 581 ms |
 | small_00 | AC | 0 ms |
 | small_01 | AC | 0 ms |
 | small_02 | AC | 0 ms |

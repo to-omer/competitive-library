@@ -1,4 +1,4 @@
-✅  AC  218ms
+✅  AC  257ms
 
 problem [here](https://judge.yosupo.jp/problem/point_set_range_composite)
 
@@ -7,16 +7,16 @@ problem [here](https://judge.yosupo.jp/problem/point_set_range_composite)
 | Case Name | Status | Exec Time |
 |:---------:|:------:|---------:|
 | example_00 | AC | 0 ms |
-| max_random_00 | AC | 218 ms |
-| max_random_01 | AC | 212 ms |
-| max_random_02 | AC | 202 ms |
-| max_random_03 | AC | 201 ms |
-| max_random_04 | AC | 207 ms |
-| random_00 | AC | 158 ms |
-| random_01 | AC | 174 ms |
-| random_02 | AC | 112 ms |
-| random_03 | AC | 40 ms |
-| random_04 | AC | 50 ms |
+| max_random_00 | AC | 257 ms |
+| max_random_01 | AC | 232 ms |
+| max_random_02 | AC | 233 ms |
+| max_random_03 | AC | 236 ms |
+| max_random_04 | AC | 231 ms |
+| random_00 | AC | 183 ms |
+| random_01 | AC | 191 ms |
+| random_02 | AC | 108 ms |
+| random_03 | AC | 41 ms |
+| random_04 | AC | 58 ms |
 | small_00 | AC | 0 ms |
 | small_01 | AC | 0 ms |
 | small_02 | AC | 0 ms |

@@ -1,4 +1,4 @@
-✅  AC  219ms
+✅  AC  202ms
 
 problem [here](https://judge.yosupo.jp/problem/many_aplusb)
 
@@ -6,12 +6,12 @@ problem [here](https://judge.yosupo.jp/problem/many_aplusb)
 
 | Case Name | Status | Exec Time |
 |:---------:|:------:|---------:|
-| all_max_00 | AC | 195 ms |
-| all_zero_00 | AC | 63 ms |
+| all_max_00 | AC | 202 ms |
+| all_zero_00 | AC | 65 ms |
 | example_00 | AC | 0 ms |
-| max_random_00 | AC | 184 ms |
-| max_random_01 | AC | 219 ms |
-| random_00 | AC | 123 ms |
-| random_01 | AC | 165 ms |
+| max_random_00 | AC | 197 ms |
+| max_random_01 | AC | 188 ms |
+| random_00 | AC | 68 ms |
+| random_01 | AC | 80 ms |
 
 
