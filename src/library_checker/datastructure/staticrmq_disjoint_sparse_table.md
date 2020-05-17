@@ -1,4 +1,4 @@
-✅  AC  194ms
+✅  AC  266ms
 
 problem [here](https://judge.yosupo.jp/problem/staticrmq)
 
@@ -7,16 +7,16 @@ problem [here](https://judge.yosupo.jp/problem/staticrmq)
 | Case Name | Status | Exec Time |
 |:---------:|:------:|---------:|
 | example_00 | AC | 0 ms |
-| max_random_00 | AC | 175 ms |
-| max_random_01 | AC | 181 ms |
-| max_random_02 | AC | 192 ms |
-| max_random_03 | AC | 178 ms |
-| max_random_04 | AC | 194 ms |
-| random_00 | AC | 143 ms |
-| random_01 | AC | 139 ms |
-| random_02 | AC | 60 ms |
-| random_03 | AC | 52 ms |
-| random_04 | AC | 46 ms |
+| max_random_00 | AC | 266 ms |
+| max_random_01 | AC | 150 ms |
+| max_random_02 | AC | 166 ms |
+| max_random_03 | AC | 147 ms |
+| max_random_04 | AC | 147 ms |
+| random_00 | AC | 240 ms |
+| random_01 | AC | 169 ms |
+| random_02 | AC | 70 ms |
+| random_03 | AC | 93 ms |
+| random_04 | AC | 90 ms |
 | small_00 | AC | 0 ms |
 | small_01 | AC | 0 ms |
 | small_02 | AC | 0 ms |

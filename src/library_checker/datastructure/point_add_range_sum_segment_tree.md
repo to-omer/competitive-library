@@ -1,4 +1,4 @@
-✅  AC  136ms
+✅  AC  213ms
 
 problem [here](https://judge.yosupo.jp/problem/point_add_range_sum)
 
@@ -7,15 +7,15 @@ problem [here](https://judge.yosupo.jp/problem/point_add_range_sum)
 | Case Name | Status | Exec Time |
 |:---------:|:------:|---------:|
 | example_00 | AC | 0 ms |
-| max_random_00 | AC | 130 ms |
-| max_random_01 | AC | 130 ms |
-| max_random_02 | AC | 136 ms |
-| max_random_03 | AC | 135 ms |
-| max_random_04 | AC | 130 ms |
-| random_00 | AC | 103 ms |
-| random_01 | AC | 104 ms |
-| random_02 | AC | 66 ms |
-| random_03 | AC | 23 ms |
+| max_random_00 | AC | 213 ms |
+| max_random_01 | AC | 166 ms |
+| max_random_02 | AC | 126 ms |
+| max_random_03 | AC | 124 ms |
+| max_random_04 | AC | 128 ms |
+| random_00 | AC | 106 ms |
+| random_01 | AC | 100 ms |
+| random_02 | AC | 123 ms |
+| random_03 | AC | 18 ms |
 | random_04 | AC | 30 ms |
 | small_00 | AC | 0 ms |
 | small_01 | AC | 0 ms |
