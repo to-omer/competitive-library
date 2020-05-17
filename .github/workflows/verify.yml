@@ -24,6 +24,15 @@ jobs:
     - name: Set up Cargo
       uses: actions-rs/cargo@v1
 
+    - name: Set up git
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run:
+        git config --global user.name GitHub
+        git config --global user.email noreply@github.com
+        git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+        git pull github ${GITHUB_REF} --ff-only
+
     - name: Run test
       run: cargo test
 
@@ -34,14 +43,9 @@ jobs:
       continue-on-error: true
 
     - name: Commit Changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
       run: |
-        git config --local user.name GitHub
-        git config --local user.email noreply@github.com
         git commit -a -m "[auto-verifier] verify commit ${GITHUB_SHA}"
-        git push "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD
+        git push github HEAD:${GITHUB_REF}
 
   doc:
     runs-on: ubuntu-18.04
