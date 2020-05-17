@@ -1,4 +1,4 @@
-✅  AC  138ms
+✅  AC  90ms
 
 problem [here](https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_D)
 
@@ -16,17 +16,17 @@ problem [here](https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_D)
 | 01_rand_05.in | AC | 3 ms |
 | 02_corner_00.in | AC | 0 ms |
 | 02_corner_01.in | AC | 0 ms |
-| 03_large_00.in | AC | 6 ms |
-| 03_large_01.in | AC | 6 ms |
+| 03_large_00.in | AC | 7 ms |
+| 03_large_01.in | AC | 7 ms |
 | 03_large_02.in | AC | 6 ms |
 | 03_large_03.in | AC | 6 ms |
-| 04_maximum_00.in | AC | 64 ms |
-| 04_maximum_01.in | AC | 114 ms |
-| 04_maximum_02.in | AC | 138 ms |
-| 04_maximum_03.in | AC | 65 ms |
-| 05_critical_00.in | AC | 31 ms |
-| 05_critical_01.in | AC | 26 ms |
-| 05_critical_02.in | AC | 27 ms |
-| 05_critical_03.in | AC | 28 ms |
+| 04_maximum_00.in | AC | 69 ms |
+| 04_maximum_01.in | AC | 79 ms |
+| 04_maximum_02.in | AC | 90 ms |
+| 04_maximum_03.in | AC | 69 ms |
+| 05_critical_00.in | AC | 35 ms |
+| 05_critical_01.in | AC | 32 ms |
+| 05_critical_02.in | AC | 29 ms |
+| 05_critical_03.in | AC | 30 ms |
 
 
