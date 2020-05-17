@@ -3,7 +3,7 @@ name: verify
 on: push
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-18.04
 
     steps:
@@ -13,7 +13,7 @@ jobs:
       uses: actions/setup-python@v1
 
     - name: Install dependencies
-      run: pip3 install -U online-judge-tools online-judge-api-client
+      run: pip3 install -U online-judge-api-client
 
     - name: Install latest nightly
       uses: actions-rs/toolchain@v1
@@ -37,7 +37,28 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-      run: python auto_commit.py
+      run: |
+        git config --local user.name GitHub
+        git config --local user.email noreply@github.com
+        git commit -a -m "[auto-verifier] verify commit ${GITHUB_SHA}"
+        git push "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD
+
+  doc:
+    runs-on: ubuntu-18.04
+    needs: test
+    if: contains(github.ref, 'master')
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install latest nightly
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: nightly
+          override: true
+
+    - name: Set up Cargo
+      uses: actions-rs/cargo@v1
 
     - name: Generate Cargo Doc
       run: |
