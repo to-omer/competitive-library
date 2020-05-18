@@ -1,38 +1,42 @@
 name: verify
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
-  build:
-    runs-on: ubuntu-18.04
-
+  test:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-
     - name: Set up Python
       uses: actions/setup-python@v1
-
     - name: Install dependencies
-      run: pip3 install -U online-judge-verify-helper toml
-
-    - name: Set up Cargo
-      uses: actions-rs/cargo@v1
+      run: pip3 install -U online-judge-api-client
+    - name: Install latest stable
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
 
     - name: Run test
       run: cargo test
 
     - name: Run verify
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # YUKICODER_TOKEN: ${{ secrets.YUKICODER_TOKEN }}
-      run: oj-verify run $(python verify-paths.py)
-
-    - name: Generate Cargo Doc
+        RUST_MIN_STACK: 268435456
       run: |
-        cargo doc --no-deps
+        ulimit -s unlimited
+        cargo test --release -- --ignored
+      continue-on-error: true
+
+    - name: Install latest nightly
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: nightly
+          override: true
+
+    - name: Generate cargo doc
+      run: |
+        cargo doc --no-deps --features verify_doc
         cat <<EOT > target/doc/index.html
         <!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=competitive/index.html"><title></title>
         EOT
