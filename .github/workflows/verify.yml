@@ -5,25 +5,17 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v1
-
     - name: Set up Python
       uses: actions/setup-python@v1
-
     - name: Install dependencies
       run: pip3 install -U online-judge-api-client
-
-    - name: Install latest nightly
+    - name: Install latest stable
       uses: actions-rs/toolchain@v1
       with:
-          toolchain: nightly
+          toolchain: stable
           override: true
-
-    - name: Set up Cargo
-      uses: actions-rs/cargo@v1
-
     - name: Set up git
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,32 +33,28 @@ jobs:
         RUST_MIN_STACK: 268435456
       run: |
         ulimit -s unlimited
-        cargo test --release -- --ignored --nocapture --test-threads=1
+        cargo test --release -- --ignored
       continue-on-error: true
 
-    - name: Commit Changes
+    - name: Commit changes
       run: |
         git commit -a -m "[auto-verifier] verify commit ${GITHUB_SHA}"
         git push github HEAD:${GITHUB_REF}
 
+
   doc:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     needs: test
     if: contains(github.ref, 'master')
-
     steps:
     - uses: actions/checkout@v1
-
     - name: Install latest nightly
       uses: actions-rs/toolchain@v1
       with:
           toolchain: nightly
           override: true
 
-    - name: Set up Cargo
-      uses: actions-rs/cargo@v1
-
-    - name: Generate Cargo Doc
+    - name: Generate cargo doc
       run: |
         cargo doc --no-deps
         cat <<EOT > target/doc/index.html

@@ -1,4 +1,4 @@
-#![feature(external_doc)]
+#![cfg_attr(doc, feature(external_doc))]
 
 #[macro_use]
 pub mod algebra;
