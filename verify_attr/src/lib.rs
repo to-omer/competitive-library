@@ -89,7 +89,7 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
             let test_name = test_name.unwrap_or(format!("verify_{}", ast.sig.ident));
             let test_name = Ident::new(&test_name, Span::call_site()).to_token_stream();
             let gen = quote! {
-                #[cfg_attr(doc, doc(include = #md))]
+                #[cfg_attr(feature = "verify_doc", doc(include = #md))]
                 #ast
                 #[test]
                 #[ignore]
