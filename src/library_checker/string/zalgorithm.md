@@ -1,4 +1,4 @@
-✅  AC  36ms
+✅  AC  31ms
 
 problem [here](https://judge.yosupo.jp/problem/zalgorithm)
 
@@ -10,15 +10,15 @@ problem [here](https://judge.yosupo.jp/problem/zalgorithm)
 | example_01 | AC | 0 ms |
 | example_02 | AC | 0 ms |
 | example_03 | AC | 0 ms |
-| random_00 | AC | 27 ms |
-| random_01 | AC | 36 ms |
-| random_02 | AC | 5 ms |
-| random_03 | AC | 34 ms |
-| random_04 | AC | 22 ms |
-| random_05 | AC | 23 ms |
-| random_06 | AC | 32 ms |
-| random_07 | AC | 9 ms |
-| random_08 | AC | 18 ms |
-| random_09 | AC | 9 ms |
+| random_00 | AC | 26 ms |
+| random_01 | AC | 31 ms |
+| random_02 | AC | 3 ms |
+| random_03 | AC | 30 ms |
+| random_04 | AC | 18 ms |
+| random_05 | AC | 21 ms |
+| random_06 | AC | 29 ms |
+| random_07 | AC | 6 ms |
+| random_08 | AC | 17 ms |
+| random_09 | AC | 7 ms |
 
 
