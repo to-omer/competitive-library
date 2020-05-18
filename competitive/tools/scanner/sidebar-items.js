@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["read_all",""],["read_stdin_all",""]],"struct":[["Scanner",""]],"trait":[["IterScan",""]]});

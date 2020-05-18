@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["input",""],["iterable",""],["output",""],["random",""]]});
+initSidebarItems({"mod":[["input",""],["iterable",""],["output",""],["random",""],["scanner",""]]});
