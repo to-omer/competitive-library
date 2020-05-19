@@ -1,4 +1,5 @@
 #![cfg_attr(feature = "verify_doc", feature(external_doc))]
+#![cfg_attr(feature = "verify_doc", feature(doc_alias))]
 
 #[macro_use]
 pub mod algebra;
