@@ -1,6 +1,11 @@
+//! binary / ternary search
+
+/// binary search helper
 #[cargo_snippet::snippet("binary_search")]
 pub trait Bisect: Copy {
+    /// return between two elements
     fn halve(self, other: Self) -> Self;
+    /// the end condition of binary search
     fn section_end(self, other: Self) -> bool;
 }
 

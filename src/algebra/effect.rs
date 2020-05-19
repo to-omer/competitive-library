@@ -1,3 +1,5 @@
+//! for [LazySegmentTree](crate::data_structure::lazy_segment_tree::LazySegmentTree)
+
 use super::base::*;
 
 pub trait MonoidEffect: Monoid {

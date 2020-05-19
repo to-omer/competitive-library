@@ -1,5 +1,8 @@
+//! binary operaions
+
 use super::base::*;
 
+/// binary operation to select larger element
 #[cargo_snippet::snippet("MaxOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MaxOperation<T: Clone + Ord + MinimumBounded> {
@@ -71,6 +74,7 @@ pub mod max_operation_impl {
     impl<T: Clone + Ord + MinimumBounded> IdempotentMonoid for MaxOperation<T> {}
 }
 
+/// binary operation to select smaller element
 #[cargo_snippet::snippet("MinOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MinOperation<T: Clone + Ord + MaximumBounded> {
@@ -142,6 +146,7 @@ pub mod min_operation_impl {
     impl<T: Clone + Ord + MaximumBounded> IdempotentMonoid for MinOperation<T> {}
 }
 
+/// retain the first element
 #[cargo_snippet::snippet("FirstOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct FirstOperation<T: Clone + PartialEq> {
@@ -177,6 +182,7 @@ pub mod first_operation_impl {
     impl<T: Clone + PartialEq> IdempotentMonoid for FirstOperation<T> {}
 }
 
+/// retain the last element
 #[cargo_snippet::snippet("LastOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LastOperation<T: Clone + PartialEq> {
@@ -212,6 +218,7 @@ pub mod last_operation_impl {
     impl<T: Clone + PartialEq> IdempotentMonoid for LastOperation<T> {}
 }
 
+/// +
 #[cargo_snippet::snippet("AdditiveOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct AdditiveOperation<T: Copy + PartialEq + AdditiveIdentity> {
@@ -299,6 +306,7 @@ pub mod additive_operation_impl {
     }
 }
 
+/// ×
 #[cargo_snippet::snippet("MultiplicativeOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MultiplicativeOperation<T: Copy + PartialEq + MultiplicativeIdentity> {
@@ -386,6 +394,7 @@ pub mod multiplicative_operation_impl {
     }
 }
 
+/// (a, b) ∘ (c, d) = λx. c × (a × x + b) + d
 #[cargo_snippet::snippet("LinearOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearOperation<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> {
@@ -430,6 +439,7 @@ pub mod linear_operation_impl {
     }
 }
 
+/// &
 #[cargo_snippet::snippet("BitAndOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitAndOperation<T: Copy + PartialEq + BitAndIdentity> {
@@ -501,6 +511,7 @@ pub mod bitand_operation_impl {
     impl<T: Copy + PartialEq + BitAndIdentity> IdempotentMonoid for BitAndOperation<T> {}
 }
 
+/// |
 #[cargo_snippet::snippet("BitOrOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
@@ -730,6 +741,7 @@ pub mod absorbed_assocoative_operator_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbelianMonoid for AbsorbedAssocoativeOperator<T, F> {}
 }
 
+/// (M1, M2)
 #[cargo_snippet::snippet("CartesianOperation")]
 #[derive(Clone, Debug)]
 pub struct CartesianOperation<M1, M2> {

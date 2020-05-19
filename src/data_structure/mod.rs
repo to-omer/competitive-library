@@ -1,3 +1,5 @@
+//! data structures
+
 pub mod binary_indexed_tree;
 pub mod bitset;
 pub mod disjoint_sparse_table;
@@ -6,6 +8,7 @@ pub mod segment_tree;
 pub mod sliding_winsow_aggregation;
 pub mod union_find;
 
+/// same as [Reverse](std::cmp::Reverse)
 #[cargo_snippet::snippet("Reverse")]
 #[derive(Eq, PartialEq, Clone, Debug)]
 pub struct Rev<T>(pub T);
@@ -22,6 +25,15 @@ impl<T: Ord> Ord for Rev<T> {
     }
 }
 
+/// implement Ord by PartialOrd
+///
+/// # Example
+///
+/// ```
+/// let mut a = vec![3.1, 4.1, 5.9, 2.6];
+/// a.sort_by_key(|&x| TotalOrd(x));
+/// ```
+///
 #[cargo_snippet::snippet("TotalOrd")]
 #[derive(PartialEq, PartialOrd)]
 pub struct TotalOrd<T>(pub T);

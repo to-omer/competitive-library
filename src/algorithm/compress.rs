@@ -1,3 +1,5 @@
+//! coordinate compression
+
 use crate::algorithm::search::{lower_bound, Bisect};
 
 #[cargo_snippet::snippet("Compress")]

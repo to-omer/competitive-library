@@ -1,3 +1,5 @@
+//! mathematical datas
+
 pub mod anymod;
 pub mod anymodu32;
 pub mod factorial;

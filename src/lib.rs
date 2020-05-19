@@ -1,5 +1,10 @@
 #![cfg_attr(feature = "verify_doc", feature(external_doc))]
 #![cfg_attr(feature = "verify_doc", feature(doc_alias))]
+// #![warn(missing_docs)]
+//! [github](https://github.com/to-omer/competitive-library)
+//!
+//! You can see all verifications by searching `verify` in the search bar above.
+//!
 
 #[macro_use]
 pub mod algebra;

@@ -1,11 +1,16 @@
 use crate::math::gcd::modinv;
 
-pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(mut x: T, y: usize, mut one: T) -> T {
+pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(
+    mut x: T,
+    mut y: usize,
+    mut one: T,
+) -> T {
     while y > 0 {
         if y & 1 == 1 {
             one *= x.clone();
         }
         x *= x.clone();
+        y >>= 1;
     }
     one
 }
