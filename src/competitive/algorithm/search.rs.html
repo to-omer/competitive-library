@@ -187,24 +187,6 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;binary_search&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Bisect</span>: <span class="ident">Copy</span> {
@@ -216,8 +198,8 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">bisect_impl</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_bisect_unsigned</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">impl</span> <span class="ident">Bisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="kw">impl</span> <span class="ident">Bisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
                 <span class="kw">fn</span> <span class="ident">halve</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                     <span class="kw">if</span> <span class="self">self</span> <span class="op">&gt;</span> <span class="ident">other</span> {
                         <span class="ident">other</span> <span class="op">+</span> (<span class="self">self</span> <span class="op">-</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">2</span>
@@ -232,45 +214,36 @@
                         <span class="ident">other</span> <span class="op">-</span> <span class="self">self</span>
                     }) <span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>
                 }
-            }
+            })<span class="op">*</span>
         };
     }
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_bisect_signed</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">impl</span> <span class="ident">Bisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="kw">impl</span> <span class="ident">Bisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
                 <span class="kw">fn</span> <span class="ident">halve</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                     (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">2</span>
                 }
                 <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
                     (<span class="self">self</span> <span class="op">-</span> <span class="ident">other</span>).<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>
                 }
-            }
+            })<span class="op">*</span>
         };
     }
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_bisect_float</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">impl</span> <span class="ident">Bisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="kw">impl</span> <span class="ident">Bisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
                 <span class="kw">fn</span> <span class="ident">halve</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
                     (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">2.</span>
                 }
                 <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
                     (<span class="self">self</span> <span class="op">-</span> <span class="ident">other</span>).<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">1e-8</span>
                 }
-            }
+            })<span class="op">*</span>
         };
     }
-    <span class="macro">impl_bisect_unsigned</span><span class="macro">!</span>(<span class="ident">u8</span>);
-    <span class="macro">impl_bisect_unsigned</span><span class="macro">!</span>(<span class="ident">u16</span>);
-    <span class="macro">impl_bisect_unsigned</span><span class="macro">!</span>(<span class="ident">u32</span>);
-    <span class="macro">impl_bisect_unsigned</span><span class="macro">!</span>(<span class="ident">u64</span>);
-    <span class="macro">impl_bisect_unsigned</span><span class="macro">!</span>(<span class="ident">usize</span>);
-    <span class="macro">impl_bisect_signed</span><span class="macro">!</span>(<span class="ident">i8</span>);
-    <span class="macro">impl_bisect_signed</span><span class="macro">!</span>(<span class="ident">i16</span>);
-    <span class="macro">impl_bisect_signed</span><span class="macro">!</span>(<span class="ident">i32</span>);
-    <span class="macro">impl_bisect_signed</span><span class="macro">!</span>(<span class="ident">i64</span>);
-    <span class="macro">impl_bisect_signed</span><span class="macro">!</span>(<span class="ident">isize</span>);
-    <span class="macro">impl_bisect_float</span><span class="macro">!</span>(<span class="ident">f32</span>);
-    <span class="macro">impl_bisect_float</span><span class="macro">!</span>(<span class="ident">f64</span>);
+    <span class="macro">impl_bisect_unsigned</span><span class="macro">!</span>(<span class="ident">u8</span> <span class="ident">u16</span> <span class="ident">u32</span> <span class="ident">u64</span> <span class="ident">usize</span>);
+    <span class="macro">impl_bisect_signed</span><span class="macro">!</span>(<span class="ident">i8</span> <span class="ident">i16</span> <span class="ident">i32</span> <span class="ident">i64</span> <span class="ident">isize</span>);
+    <span class="macro">impl_bisect_float</span><span class="macro">!</span>(<span class="ident">f32</span> <span class="ident">f64</span>);
 }
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;binary_search&quot;</span>)]</span>
@@ -347,8 +320,8 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">trisect_impl</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_trisect_unsigned</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
                 <span class="kw">fn</span> <span class="ident">next</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="self">Self</span>) {
                     ((<span class="self">self</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">3</span>, (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span> <span class="op">*</span> <span class="number">2</span>) <span class="op">/</span> <span class="number">3</span>)
                 }
@@ -359,45 +332,36 @@
                         <span class="ident">other</span> <span class="op">-</span> <span class="self">self</span>
                     }) <span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>
                 }
-            }
+            })<span class="op">*</span>
         };
     }
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_trisect_signed</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
                 <span class="kw">fn</span> <span class="ident">next</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="self">Self</span>) {
                     ((<span class="self">self</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">3</span>, (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span> <span class="op">*</span> <span class="number">2</span>) <span class="op">/</span> <span class="number">3</span>)
                 }
                 <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
                     (<span class="self">self</span> <span class="op">-</span> <span class="ident">other</span>).<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>
                 }
-            }
+            })<span class="op">*</span>
         };
     }
     <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">impl_trisect_float</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            $(<span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
                 <span class="kw">fn</span> <span class="ident">next</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="self">Self</span>) {
                     ((<span class="self">self</span> <span class="op">*</span> <span class="number">2.</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">3.</span>, (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span> <span class="op">*</span> <span class="number">2.</span>) <span class="op">/</span> <span class="number">3.</span>)
                 }
                 <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
                     (<span class="self">self</span> <span class="op">-</span> <span class="ident">other</span>).<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">1e-8</span>
                 }
-            }
+            })<span class="op">*</span>
         };
     }
-    <span class="macro">impl_trisect_unsigned</span><span class="macro">!</span>(<span class="ident">u8</span>);
-    <span class="macro">impl_trisect_unsigned</span><span class="macro">!</span>(<span class="ident">u16</span>);
-    <span class="macro">impl_trisect_unsigned</span><span class="macro">!</span>(<span class="ident">u32</span>);
-    <span class="macro">impl_trisect_unsigned</span><span class="macro">!</span>(<span class="ident">u64</span>);
-    <span class="macro">impl_trisect_unsigned</span><span class="macro">!</span>(<span class="ident">usize</span>);
-    <span class="macro">impl_trisect_signed</span><span class="macro">!</span>(<span class="ident">i8</span>);
-    <span class="macro">impl_trisect_signed</span><span class="macro">!</span>(<span class="ident">i16</span>);
-    <span class="macro">impl_trisect_signed</span><span class="macro">!</span>(<span class="ident">i32</span>);
-    <span class="macro">impl_trisect_signed</span><span class="macro">!</span>(<span class="ident">i64</span>);
-    <span class="macro">impl_trisect_signed</span><span class="macro">!</span>(<span class="ident">isize</span>);
-    <span class="macro">impl_trisect_float</span><span class="macro">!</span>(<span class="ident">f32</span>);
-    <span class="macro">impl_trisect_float</span><span class="macro">!</span>(<span class="ident">f64</span>);
+    <span class="macro">impl_trisect_unsigned</span><span class="macro">!</span>(<span class="ident">u8</span> <span class="ident">u16</span> <span class="ident">u32</span> <span class="ident">u64</span> <span class="ident">usize</span>);
+    <span class="macro">impl_trisect_signed</span><span class="macro">!</span>(<span class="ident">i8</span> <span class="ident">i16</span> <span class="ident">i32</span> <span class="ident">i64</span> <span class="ident">isize</span>);
+    <span class="macro">impl_trisect_float</span><span class="macro">!</span>(<span class="ident">f32</span> <span class="ident">f64</span>);
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;ternary_search&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ternary_search</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Trisect</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">U</span>, <span class="ident">U</span>: <span class="ident">PartialOrd</span><span class="op">&gt;</span>(<span class="ident">f</span>: <span class="ident">F</span>, <span class="ident">left</span>: <span class="ident">T</span>, <span class="ident">right</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span> {
