@@ -30,6 +30,7 @@ impl<T: Ord> Ord for Rev<T> {
 /// # Example
 ///
 /// ```
+/// # use competitive::data_structure::TotalOrd;
 /// let mut a = vec![3.1, 4.1, 5.9, 2.6];
 /// a.sort_by_key(|&x| TotalOrd(x));
 /// ```
