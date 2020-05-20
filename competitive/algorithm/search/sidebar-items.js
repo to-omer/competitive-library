@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["binary_search",""],["lower_bound",""],["ternary_search",""],["upper_bound",""]],"mod":[["bisect_impl",""],["trisect_impl",""]],"trait":[["Bisect",""],["Trisect",""]]});
+initSidebarItems({"fn":[["binary_search",""],["lower_bound",""],["ternary_search",""],["upper_bound",""]],"mod":[["bisect_impl",""],["trisect_impl",""]],"trait":[["Bisect","binary search helper"],["Trisect",""]]});

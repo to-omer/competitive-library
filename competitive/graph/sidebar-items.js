@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["base",""],["maximum_flow",""],["minimum_cost_flow",""],["strongly_connected_component",""],["topological_sort",""]],"struct":[["DirectedAcyclicGraph",""]]});
+initSidebarItems({"mod":[["base",""],["maximum_flow",""],["minimum_cost_flow",""],["strongly_connected_component",""],["topological_sort",""]]});
