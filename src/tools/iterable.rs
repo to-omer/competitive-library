@@ -1,5 +1,5 @@
 #[cargo_snippet::snippet("comprehension")]
-#[allow(unused_macros)]
+#[macro_export]
 macro_rules! comprehension {
     ($it:expr; @$type:ty) => {
         $it.collect::<$type>()

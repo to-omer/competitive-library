@@ -1,6 +1,9 @@
 #[macro_use]
-pub mod input;
-pub mod iterable;
+mod input;
+#[macro_use]
+mod iterable;
+#[macro_use]
+mod minmax;
 pub mod output;
 pub mod random;
 pub mod scanner;
