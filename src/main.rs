@@ -1,9 +1,8 @@
-use competitive::input;
+macro_rules! input {
+    ($t:tt) => {};
+}
 
 #[cargo_snippet::snippet]
 fn main() {
-    input! {n};
-    let mut ans = 0;
-    ans += n;
-    println!("{}", ans);
+    input!(n);
 }
