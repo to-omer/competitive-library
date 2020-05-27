@@ -1,4 +1,4 @@
-use crate::algebra::base::Monoid;
+use crate::algebra::magma::Monoid;
 
 #[cargo_snippet::snippet("SegmentTree")]
 #[derive(Clone, Debug)]

@@ -1,4 +1,4 @@
-use crate::algebra::base::Group;
+use crate::algebra::magma::Group;
 
 #[cargo_snippet::snippet("UnionFind")]
 #[cargo_snippet::snippet("WeightedUnionFind")]

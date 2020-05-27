@@ -1,4 +1,4 @@
-use crate::algebra::base::*;
+use crate::algebra::magma::*;
 use crate::data_structure::disjoint_sparse_table::DisjointSparseTable;
 use crate::graph::Graph;
 
@@ -188,5 +188,4 @@ pub mod impl_lcam {
         }
     }
     impl Associative for LCAMonoid {}
-    impl SemiGroup for LCAMonoid {}
 }

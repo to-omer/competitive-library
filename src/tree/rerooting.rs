@@ -1,4 +1,4 @@
-use crate::algebra::base::Monoid;
+use crate::algebra::magma::Monoid;
 use crate::graph::*;
 
 #[cargo_snippet::snippet("ReRooting")]

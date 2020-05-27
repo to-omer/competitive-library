@@ -1,4 +1,4 @@
-use crate::algebra::base::SemiGroup;
+use crate::algebra::magma::SemiGroup;
 #[cargo_snippet::snippet("DisjointSparseTable")]
 #[derive(Clone, Debug)]
 pub struct DisjointSparseTable<S: SemiGroup> {

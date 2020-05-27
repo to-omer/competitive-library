@@ -1,4 +1,4 @@
-use crate::algebra::base::{Group, Monoid};
+use crate::algebra::magma::{Group, Monoid};
 
 #[cargo_snippet::snippet("BinaryIndexedTree")]
 #[derive(Clone, Debug)]

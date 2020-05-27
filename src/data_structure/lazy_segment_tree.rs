@@ -1,5 +1,5 @@
-use crate::algebra::base::Monoid;
 use crate::algebra::effect::MonoidEffect;
+use crate::algebra::magma::Monoid;
 
 #[cargo_snippet::snippet("LazySegmentTree")]
 /// M: folding Monoid

@@ -1,6 +1,6 @@
 //! for [LazySegmentTree](crate::data_structure::lazy_segment_tree::LazySegmentTree)
 
-use super::base::*;
+use super::magma::*;
 
 pub trait MonoidEffect: Monoid {
     type A;
@@ -38,12 +38,8 @@ pub mod any_monoid_effect_impl {
         }
     }
     impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> Associative for AnyMonoidEffect<M, T, F> {}
-    impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> SemiGroup for AnyMonoidEffect<M, T, F> {}
-    impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> Monoid for AnyMonoidEffect<M, T, F> {}
     impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> Commutative for AnyMonoidEffect<M, T, F> {}
-    impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> AbelianMonoid for AnyMonoidEffect<M, T, F> {}
     impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> Idempotent for AnyMonoidEffect<M, T, F> {}
-    impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> IdempotentMonoid for AnyMonoidEffect<M, T, F> {}
     impl<M: Monoid, T, F: Fn(&T, &M::T) -> T> MonoidEffect for AnyMonoidEffect<M, T, F> {
         type A = T;
         fn effect(&self, a: &Self::A, x: &Self::T) -> Self::A {

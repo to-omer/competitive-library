@@ -1,6 +1,6 @@
 //! binary operaions
 
-use super::base::*;
+use super::magma::*;
 
 /// binary operation to select larger element
 #[cargo_snippet::snippet("MaxOperation")]
@@ -66,12 +66,8 @@ pub mod max_operation_impl {
         }
     }
     impl<T: Clone + Ord + MinimumBounded> Associative for MaxOperation<T> {}
-    impl<T: Clone + Ord + MinimumBounded> SemiGroup for MaxOperation<T> {}
-    impl<T: Clone + Ord + MinimumBounded> Monoid for MaxOperation<T> {}
     impl<T: Clone + Ord + MinimumBounded> Commutative for MaxOperation<T> {}
-    impl<T: Clone + Ord + MinimumBounded> AbelianMonoid for MaxOperation<T> {}
     impl<T: Clone + Ord + MinimumBounded> Idempotent for MaxOperation<T> {}
-    impl<T: Clone + Ord + MinimumBounded> IdempotentMonoid for MaxOperation<T> {}
 }
 
 /// binary operation to select smaller element
@@ -138,12 +134,8 @@ pub mod min_operation_impl {
         }
     }
     impl<T: Clone + Ord + MaximumBounded> Associative for MinOperation<T> {}
-    impl<T: Clone + Ord + MaximumBounded> SemiGroup for MinOperation<T> {}
-    impl<T: Clone + Ord + MaximumBounded> Monoid for MinOperation<T> {}
     impl<T: Clone + Ord + MaximumBounded> Commutative for MinOperation<T> {}
-    impl<T: Clone + Ord + MaximumBounded> AbelianMonoid for MinOperation<T> {}
     impl<T: Clone + Ord + MaximumBounded> Idempotent for MinOperation<T> {}
-    impl<T: Clone + Ord + MaximumBounded> IdempotentMonoid for MinOperation<T> {}
 }
 
 /// retain the first element
@@ -176,10 +168,7 @@ pub mod first_operation_impl {
         }
     }
     impl<T: Clone + PartialEq> Associative for FirstOperation<T> {}
-    impl<T: Clone + PartialEq> SemiGroup for FirstOperation<T> {}
-    impl<T: Clone + PartialEq> Monoid for FirstOperation<T> {}
     impl<T: Clone + PartialEq> Idempotent for FirstOperation<T> {}
-    impl<T: Clone + PartialEq> IdempotentMonoid for FirstOperation<T> {}
 }
 
 /// retain the last element
@@ -212,10 +201,7 @@ pub mod last_operation_impl {
         }
     }
     impl<T: Clone + PartialEq> Associative for LastOperation<T> {}
-    impl<T: Clone + PartialEq> SemiGroup for LastOperation<T> {}
-    impl<T: Clone + PartialEq> Monoid for LastOperation<T> {}
     impl<T: Clone + PartialEq> Idempotent for LastOperation<T> {}
-    impl<T: Clone + PartialEq> IdempotentMonoid for LastOperation<T> {}
 }
 
 /// +
@@ -284,10 +270,7 @@ pub mod additive_operation_impl {
         }
     }
     impl<T: Copy + PartialEq + AdditiveIdentity> Associative for AdditiveOperation<T> {}
-    impl<T: Copy + PartialEq + AdditiveIdentity> SemiGroup for AdditiveOperation<T> {}
-    impl<T: Copy + PartialEq + AdditiveIdentity> Monoid for AdditiveOperation<T> {}
     impl<T: Copy + PartialEq + AdditiveIdentity> Commutative for AdditiveOperation<T> {}
-    impl<T: Copy + PartialEq + AdditiveIdentity> AbelianMonoid for AdditiveOperation<T> {}
     impl<T: Copy + PartialEq + AdditiveIdentity + std::ops::Neg<Output = T>> Invertible
         for AdditiveOperation<T>
     {
@@ -296,13 +279,13 @@ pub mod additive_operation_impl {
             -*x
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity + std::ops::Neg<Output = T>> Group
+    impl<T: Copy + PartialEq + AdditiveIdentity + std::ops::Sub<Output = T>> RightInvertibleMagma
         for AdditiveOperation<T>
     {
-    }
-    impl<T: Copy + PartialEq + AdditiveIdentity + std::ops::Neg<Output = T>> AbelianGroup
-        for AdditiveOperation<T>
-    {
+        #[inline]
+        fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T {
+            *x - *y
+        }
     }
 }
 
@@ -372,10 +355,7 @@ pub mod multiplicative_operation_impl {
         }
     }
     impl<T: Copy + PartialEq + MultiplicativeIdentity> Associative for MultiplicativeOperation<T> {}
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> SemiGroup for MultiplicativeOperation<T> {}
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> Monoid for MultiplicativeOperation<T> {}
     impl<T: Copy + PartialEq + MultiplicativeIdentity> Commutative for MultiplicativeOperation<T> {}
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> AbelianMonoid for MultiplicativeOperation<T> {}
     impl<T: Copy + PartialEq + MultiplicativeIdentity + std::ops::Div<Output = T>> Invertible
         for MultiplicativeOperation<T>
     {
@@ -384,13 +364,13 @@ pub mod multiplicative_operation_impl {
             self.unit().div(*x)
         }
     }
-    impl<T: Copy + PartialEq + MultiplicativeIdentity + std::ops::Div<Output = T>> Group
-        for MultiplicativeOperation<T>
+    impl<T: Copy + PartialEq + MultiplicativeIdentity + std::ops::Div<Output = T>>
+        RightInvertibleMagma for MultiplicativeOperation<T>
     {
-    }
-    impl<T: Copy + PartialEq + MultiplicativeIdentity + std::ops::Div<Output = T>> AbelianGroup
-        for MultiplicativeOperation<T>
-    {
+        #[inline]
+        fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T {
+            (*x).div(*y)
+        }
     }
 }
 
@@ -426,14 +406,6 @@ pub mod linear_operation_impl {
         }
     }
     impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> Associative
-        for LinearOperation<T>
-    {
-    }
-    impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> SemiGroup
-        for LinearOperation<T>
-    {
-    }
-    impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> Monoid
         for LinearOperation<T>
     {
     }
@@ -503,12 +475,8 @@ pub mod bitand_operation_impl {
         }
     }
     impl<T: Copy + PartialEq + BitAndIdentity> Associative for BitAndOperation<T> {}
-    impl<T: Copy + PartialEq + BitAndIdentity> SemiGroup for BitAndOperation<T> {}
-    impl<T: Copy + PartialEq + BitAndIdentity> Monoid for BitAndOperation<T> {}
     impl<T: Copy + PartialEq + BitAndIdentity> Commutative for BitAndOperation<T> {}
-    impl<T: Copy + PartialEq + BitAndIdentity> AbelianMonoid for BitAndOperation<T> {}
     impl<T: Copy + PartialEq + BitAndIdentity> Idempotent for BitAndOperation<T> {}
-    impl<T: Copy + PartialEq + BitAndIdentity> IdempotentMonoid for BitAndOperation<T> {}
 }
 
 /// |
@@ -574,12 +542,8 @@ pub mod bitor_operation_impl {
         }
     }
     impl<T: Copy + PartialEq + BitOrIdentity> Associative for BitOrOperation<T> {}
-    impl<T: Copy + PartialEq + BitOrIdentity> SemiGroup for BitOrOperation<T> {}
-    impl<T: Copy + PartialEq + BitOrIdentity> Monoid for BitOrOperation<T> {}
     impl<T: Copy + PartialEq + BitOrIdentity> Commutative for BitOrOperation<T> {}
-    impl<T: Copy + PartialEq + BitOrIdentity> AbelianMonoid for BitOrOperation<T> {}
     impl<T: Copy + PartialEq + BitOrIdentity> Idempotent for BitOrOperation<T> {}
-    impl<T: Copy + PartialEq + BitOrIdentity> IdempotentMonoid for BitOrOperation<T> {}
 }
 
 #[cargo_snippet::snippet("MonoidalOperation")]
@@ -610,10 +574,7 @@ pub mod monoidal_operation_impl {
         }
     }
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Associative for MonoidalOperation<T, F> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> SemiGroup for MonoidalOperation<T, F> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Monoid for MonoidalOperation<T, F> {}
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Commutative for MonoidalOperation<T, F> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbelianMonoid for MonoidalOperation<T, F> {}
 }
 
 #[cargo_snippet::snippet("GroupOperation")]
@@ -652,16 +613,7 @@ pub mod group_operation_impl {
         for GroupOperation<T, F, G>
     {
     }
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> SemiGroup
-        for GroupOperation<T, F, G>
-    {
-    }
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> Monoid for GroupOperation<T, F, G> {}
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> Commutative
-        for GroupOperation<T, F, G>
-    {
-    }
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> AbelianMonoid
         for GroupOperation<T, F, G>
     {
     }
@@ -672,11 +624,6 @@ pub mod group_operation_impl {
         fn inverse(&self, x: &Self::T) -> Self::T {
             (self.inv)(x)
         }
-    }
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> Group for GroupOperation<T, F, G> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> AbelianGroup
-        for GroupOperation<T, F, G>
-    {
     }
 }
 
@@ -697,7 +644,6 @@ pub mod assocoative_operator_impl {
         }
     }
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Associative for AssocoativeOperator<T, F> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> SemiGroup for AssocoativeOperator<T, F> {}
 }
 
 #[cargo_snippet::snippet("AbsorbedAssocoativeOperator")]
@@ -735,10 +681,7 @@ pub mod absorbed_assocoative_operator_impl {
         }
     }
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Associative for AbsorbedAssocoativeOperator<T, F> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> SemiGroup for AbsorbedAssocoativeOperator<T, F> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Monoid for AbsorbedAssocoativeOperator<T, F> {}
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Commutative for AbsorbedAssocoativeOperator<T, F> {}
-    impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbelianMonoid for AbsorbedAssocoativeOperator<T, F> {}
 }
 
 /// (M1, M2)
@@ -770,18 +713,13 @@ pub mod cartesian_operation_impl {
         }
     }
     impl<M1: Associative, M2: Associative> Associative for CartesianOperation<M1, M2> {}
-    impl<M1: SemiGroup, M2: SemiGroup> SemiGroup for CartesianOperation<M1, M2> {}
-    impl<M1: Monoid, M2: Monoid> Monoid for CartesianOperation<M1, M2> {}
     impl<M1: Commutative, M2: Commutative> Commutative for CartesianOperation<M1, M2> {}
-    impl<M1: AbelianMonoid, M2: AbelianMonoid> AbelianMonoid for CartesianOperation<M1, M2> {}
     impl<M1: Invertible, M2: Invertible> Invertible for CartesianOperation<M1, M2> {
         #[inline]
         fn inverse(&self, x: &Self::T) -> Self::T {
             (self.m1.inverse(&x.0), self.m2.inverse(&x.1))
         }
     }
-    impl<M1: Group, M2: Group> Group for CartesianOperation<M1, M2> {}
-    impl<M1: AbelianGroup, M2: AbelianGroup> AbelianGroup for CartesianOperation<M1, M2> {}
 }
 
 #[cargo_snippet::snippet("CountingOperation")]
@@ -822,10 +760,6 @@ pub mod counting_operation_impl {
         }
     }
     impl<M: Associative> Associative for CountingOperation<M> {}
-    impl<M: SemiGroup> SemiGroup for CountingOperation<M> {}
-    impl<M: Monoid> Monoid for CountingOperation<M> {}
     impl<M: Commutative> Commutative for CountingOperation<M> {}
-    impl<M: AbelianMonoid> AbelianMonoid for CountingOperation<M> {}
     impl<M: Idempotent> Idempotent for CountingOperation<M> {}
-    impl<M: IdempotentMonoid> IdempotentMonoid for CountingOperation<M> {}
 }
