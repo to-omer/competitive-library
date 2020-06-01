@@ -215,7 +215,7 @@ pub mod modu32_impl {
     }
     macro_rules! modu32_ref_binop {
         ($imp:ident, $method:ident, $t:ty) => {
-            impl<'a, M: Modulo> $imp<$t> for &'a $t {
+            impl<M: Modulo> $imp<$t> for &$t {
                 type Output = <$t as $imp<$t>>::Output;
                 #[inline]
                 fn $method(self, other: $t) -> <$t as $imp<$t>>::Output {
