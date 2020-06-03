@@ -35,26 +35,26 @@ impl<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<M, F> {
         }
     }
     #[inline]
-    pub fn eidx(&self, u: usize, a: &Adjacent) -> usize {
+    fn eidx(&self, u: usize, a: &Adjacent) -> usize {
         a.id + (self.n - 1) * (u > a.to) as usize
     }
     #[inline]
-    pub fn reidx(&self, u: usize, a: &Adjacent) -> usize {
+    fn reidx(&self, u: usize, a: &Adjacent) -> usize {
         a.id + (self.n - 1) * (u < a.to) as usize
     }
     #[inline]
-    pub fn merge(&self, x: &M::T, y: &M::T) -> M::T {
+    fn merge(&self, x: &M::T, y: &M::T) -> M::T {
         self.monoid.operate(x, y)
     }
     #[inline]
-    pub fn add_subroot(&self, x: &M::T, vid: usize, eid: usize) -> M::T {
+    fn add_subroot(&self, x: &M::T, vid: usize, eid: usize) -> M::T {
         (self.rooting)(x, vid, Some(eid))
     }
     #[inline]
-    pub fn add_root(&self, x: &M::T, vid: usize) -> M::T {
+    fn add_root(&self, x: &M::T, vid: usize) -> M::T {
         (self.rooting)(x, vid, None)
     }
-    pub fn dfs(&mut self, pa: &Adjacent, p: usize, graph: &Graph) {
+    fn dfs(&mut self, pa: &Adjacent, p: usize, graph: &Graph) {
         let u = pa.to;
         let pi = self.eidx(p, pa);
         for a in graph.adjacency(u) {
@@ -66,7 +66,7 @@ impl<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<M, F> {
         }
         self.ep[pi] = self.add_subroot(&self.ep[pi], u, pa.id);
     }
-    pub fn efs(&mut self, u: usize, p: usize, graph: &Graph) {
+    fn efs(&mut self, u: usize, p: usize, graph: &Graph) {
         let adjacency = graph.adjacency(u);
         let m = adjacency.len();
         let mut left = vec![self.monoid.unit(); m + 1];
