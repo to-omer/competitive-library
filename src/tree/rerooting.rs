@@ -1,14 +1,25 @@
+//! dynamic programming on all-rooted trees
+
 use crate::algebra::magma::Monoid;
 use crate::graph::*;
 
 #[cargo_snippet::snippet("ReRooting")]
+/// dynamic programming on all-rooted trees
+///
+/// caluculate all subtrees (hanging on the edge) in specific ordering,
+/// each subtree calculated in the order of merge and rooting
 #[derive(Clone, Debug)]
 pub struct ReRooting<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> {
-    n: usize,
-    monoid: M,
-    dp: Vec<M::T>,
-    ep: Vec<M::T>,
-    rooting: F,
+    /// vertex size
+    pub n: usize,
+    /// merge subtree
+    pub monoid: M,
+    /// dp\[v\]: result of v-rooted tree
+    pub dp: Vec<M::T>,
+    /// ep\[e\]: result of e-subtree, if e >= n then reversed-e-subtree
+    pub ep: Vec<M::T>,
+    /// rooting(data, vid, (Optional)eid): add root node(vid), result subtree is edge(eid)
+    pub rooting: F,
 }
 #[cargo_snippet::snippet("ReRooting")]
 impl<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<M, F> {
