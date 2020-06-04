@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ReRooting",""]]});
+initSidebarItems({"struct":[["ReRooting","dynamic programming on all-rooted trees"]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["depth",""],["euler_tour",""],["rerooting",""],["tree",""]]});
+initSidebarItems({"mod":[["depth",""],["euler_tour",""],["rerooting","dynamic programming on all-rooted trees"],["tree",""]]});
