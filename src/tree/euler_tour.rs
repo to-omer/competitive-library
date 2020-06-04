@@ -1,6 +1,6 @@
 use crate::algebra::magma::*;
 use crate::data_structure::disjoint_sparse_table::DisjointSparseTable;
-use crate::graph::Graph;
+use crate::graph::graph::Graph;
 
 #[cargo_snippet::snippet("EulerTourForEdge")]
 #[derive(Clone, Debug, Default)]

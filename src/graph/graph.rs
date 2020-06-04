@@ -1,13 +1,13 @@
 #[cargo_snippet::snippet("Graph")]
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Adjacent {
-    pub to: usize,
     pub id: usize,
+    pub to: usize,
 }
 #[cargo_snippet::snippet("Graph")]
 impl Adjacent {
-    pub fn new(to: usize, id: usize) -> Adjacent {
-        Adjacent { to: to, id: id }
+    pub fn new(id: usize, to: usize) -> Adjacent {
+        Adjacent { id, to }
     }
 }
 #[cargo_snippet::snippet("Graph")]
@@ -21,18 +21,18 @@ pub struct Graph {
 impl Graph {
     pub fn new(vsize: usize) -> Graph {
         Graph {
-            vsize: vsize,
+            vsize,
             esize: 0,
             graph: vec![vec![]; vsize],
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize) {
-        self.graph[from].push(Adjacent::new(to, self.esize));
+        self.graph[from].push(Adjacent::new(self.esize, to));
         self.esize += 1;
     }
     pub fn add_undirected_edge(&mut self, u: usize, v: usize) {
-        self.graph[u].push(Adjacent::new(v, self.esize));
-        self.graph[v].push(Adjacent::new(u, self.esize));
+        self.graph[u].push(Adjacent::new(self.esize, v));
+        self.graph[v].push(Adjacent::new(self.esize, u));
         self.esize += 1;
     }
     pub fn vertices(&self) -> std::ops::Range<usize> {

@@ -1,38 +1,31 @@
-use crate::data_structure::Rev;
-
-#[cargo_snippet::snippet("WeightedGraph")]
-#[derive(Clone, Debug)]
-pub struct WeightedGraph<T> {
-    graph: Vec<Vec<(usize, T)>>,
-}
-#[cargo_snippet::snippet("WeightedGraph")]
-impl<T: Clone> WeightedGraph<T> {
-    pub fn new(n: usize) -> WeightedGraph<T> {
-        WeightedGraph {
-            graph: vec![vec![]; n],
-        }
-    }
-    pub fn add_edge(&mut self, u: usize, v: usize, c: T) {
-        self.graph[u].push((v, c))
-    }
-}
+use super::graph::Graph;
+use crate::algebra::magma::Monoid;
 
 #[cargo_snippet::snippet("dijkstra")]
-#[cargo_snippet::snippet(include = "WeightedGraph")]
-impl WeightedGraph<usize> {
-    pub fn dijkstra(&self, s: usize) -> Vec<usize> {
-        use std::collections::BinaryHeap;
-        const INF: usize = std::usize::MAX;
-        let mut cost = vec![INF; self.graph.len()];
-        let mut heap = BinaryHeap::new();
-        cost[s] = 0;
-        heap.push((Rev(0), s));
-        while let Some((d, u)) = heap.pop() {
-            let d = d.0;
-            for &(v, c) in self.graph[u].iter() {
-                if cost[v] > d + c {
-                    cost[v] = d + c;
-                    heap.push((Rev(d + c), v));
+impl Graph {
+    pub fn dijkstra<M: Monoid, F: Fn(usize) -> M::T>(
+        &self,
+        start: usize,
+        monoid: M,
+        weight: F,
+    ) -> Vec<Option<M::T>>
+    where
+        M::T: Ord,
+    {
+        use std::cmp::Reverse;
+        let mut cost = vec![None; self.vsize];
+        let mut heap = std::collections::BinaryHeap::new();
+        cost[start] = Some(monoid.unit());
+        heap.push((Reverse(monoid.unit()), start));
+        while let Some((Reverse(d), u)) = heap.pop() {
+            if cost[u].as_ref().unwrap() < &d {
+                continue;
+            }
+            for a in self.adjacency(u) {
+                let nd = monoid.operate(&d, &weight(a.id));
+                if cost[a.to].as_ref().map_or(true, |c| c > &nd) {
+                    cost[a.to] = Some(nd.clone());
+                    heap.push((Reverse(nd), a.to));
                 }
             }
         }
@@ -41,24 +34,30 @@ impl WeightedGraph<usize> {
 }
 
 #[cargo_snippet::snippet("bellman_ford")]
-#[cargo_snippet::snippet(include = "WeightedGraph")]
-impl WeightedGraph<i64> {
-    pub fn bellman_ford(&self, s: usize) -> (Vec<i64>, bool) {
-        const INF: i64 = std::i64::MAX;
-        let n = self.graph.len();
-        let mut cost = vec![INF; n];
-        cost[s] = 0;
-        for i in 0..n {
-            for u in 0..n {
-                if cost[u] == INF {
-                    continue;
-                }
-                for &(v, c) in self.graph[u].iter() {
-                    if cost[v] > cost[u] + c {
-                        if i == n - 1 {
-                            return (cost, true);
+impl Graph {
+    pub fn bellman_ford<M: Monoid, F: Fn(usize) -> M::T>(
+        &self,
+        start: usize,
+        monoid: M,
+        weight: F,
+    ) -> (Vec<Option<M::T>>, bool)
+    where
+        M::T: Ord,
+    {
+        let mut cost = vec![None; self.vsize];
+        cost[start] = Some(monoid.unit().clone());
+        for i in 0..self.vsize {
+            for u in self.vertices() {
+                if let Some(d) = cost[u].as_ref() {
+                    let d = d.clone();
+                    for a in self.adjacency(u) {
+                        let nd = monoid.operate(&d, &weight(a.id));
+                        if cost[a.to].as_ref().map_or(true, |c| c > &nd) {
+                            if i + 1 == self.vsize {
+                                return (cost, true);
+                            }
+                            cost[a.to] = Some(nd);
                         }
-                        cost[v] = cost[u] + c;
                     }
                 }
             }
@@ -67,35 +66,39 @@ impl WeightedGraph<i64> {
     }
 }
 
-#[derive(Debug)]
-struct EdgeGraph {
-    n: usize,
-    edges: Vec<(usize, usize, i64)>,
-}
-impl EdgeGraph {
-    fn new(n: usize) -> EdgeGraph {
-        EdgeGraph {
-            n: n,
-            edges: vec![],
+#[cargo_snippet::snippet("warshall_floyd")]
+impl Graph {
+    pub fn warshall_floyd<M: Monoid, F: Fn(usize) -> M::T>(
+        &self,
+        monoid: M,
+        weight: F,
+    ) -> Vec<Vec<Option<M::T>>>
+    where
+        M::T: Ord,
+    {
+        let mut cost = vec![vec![None; self.vsize]; self.vsize];
+        for i in self.vertices() {
+            cost[i][i] = Some(monoid.unit());
         }
-    }
-    fn add_edge(&mut self, u: usize, v: usize, c: i64) {
-        self.edges.push((u, v, c))
-    }
-    fn bellman_ford(&self, s: usize) -> (Vec<i64>, bool) {
-        const INF: i64 = std::i64::MAX;
-        let mut cost = vec![INF; self.n];
-        cost[s] = 0;
-        for i in 0..self.n {
-            for &(u, v, c) in self.edges.iter() {
-                if cost[u] != INF && cost[v] > cost[u] + c {
-                    if i == self.n - 1 {
-                        return (cost, true);
+        for u in self.vertices() {
+            for a in self.adjacency(u) {
+                cost[u][a.to] = Some(weight(a.id));
+            }
+        }
+        for k in self.vertices() {
+            for i in self.vertices() {
+                for j in self.vertices() {
+                    if let Some(d1) = &cost[i][k] {
+                        if let Some(d2) = &cost[k][j] {
+                            let nd = monoid.operate(d1, d2);
+                            if cost[i][j].as_ref().map_or(true, |c| c > &nd) {
+                                cost[i][j] = Some(nd);
+                            }
+                        }
                     }
-                    cost[v] = cost[u] + c;
                 }
             }
         }
-        (cost, false)
+        cost
     }
 }

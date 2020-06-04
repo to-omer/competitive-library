@@ -1,4 +1,4 @@
-use super::*;
+use super::graph::Graph;
 
 #[cargo_snippet::snippet("topological_sort")]
 impl Graph {

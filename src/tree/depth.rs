@@ -1,4 +1,4 @@
-use crate::graph::Graph;
+use crate::graph::graph::Graph;
 
 #[cargo_snippet::snippet("tree_depth")]
 impl Graph {
