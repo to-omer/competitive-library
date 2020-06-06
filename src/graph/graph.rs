@@ -70,3 +70,90 @@ impl GraphRec {
         }
     }
 }
+
+#[cargo_snippet::snippet("GridGraph")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct GridGraph {
+    height: usize,
+    width: usize,
+}
+#[cargo_snippet::snippet("GridGraph")]
+impl GridGraph {
+    pub fn new(height: usize, width: usize) -> Self {
+        Self { height, width }
+    }
+    pub fn adjacency4(&self, x: usize, y: usize) -> Adjacent4<'_> {
+        Adjacent4 {
+            grid: self,
+            x,
+            y,
+            state: 0,
+        }
+    }
+    pub fn adjacency8(&self, x: usize, y: usize) -> Adjacent8<'_> {
+        Adjacent8 {
+            grid: self,
+            x,
+            y,
+            state: 0,
+        }
+    }
+}
+
+#[cargo_snippet::snippet("GridGraph")]
+#[derive(Debug)]
+pub struct Adjacent4<'a> {
+    grid: &'a GridGraph,
+    x: usize,
+    y: usize,
+    state: usize,
+}
+#[cargo_snippet::snippet("GridGraph")]
+impl<'a> Iterator for Adjacent4<'a> {
+    type Item = (usize, usize);
+    fn next(&mut self) -> Option<Self::Item> {
+        const D: [(usize, usize); 4] = [(1, 0), (0, 1), (!0, 0), (0, !0)];
+        for &(dx, dy) in D[self.state..].into_iter() {
+            self.state += 1;
+            let nx = self.x.wrapping_add(dx);
+            let ny = self.y.wrapping_add(dy);
+            if nx < self.grid.height && ny < self.grid.width {
+                return Some((nx, ny));
+            }
+        }
+        None
+    }
+}
+#[cargo_snippet::snippet("GridGraph")]
+#[derive(Debug)]
+pub struct Adjacent8<'a> {
+    grid: &'a GridGraph,
+    x: usize,
+    y: usize,
+    state: usize,
+}
+#[cargo_snippet::snippet("GridGraph")]
+impl<'a> Iterator for Adjacent8<'a> {
+    type Item = (usize, usize);
+    fn next(&mut self) -> Option<Self::Item> {
+        const D: [(usize, usize); 8] = [
+            (1, 0),
+            (1, 1),
+            (0, 1),
+            (!0, 1),
+            (!0, 0),
+            (!0, !0),
+            (0, !0),
+            (1, !0),
+        ];
+        for &(dx, dy) in D[self.state..].into_iter() {
+            self.state += 1;
+            let nx = self.x.wrapping_add(dx);
+            let ny = self.y.wrapping_add(dy);
+            if nx < self.grid.height && ny < self.grid.width {
+                return Some((nx, ny));
+            }
+        }
+        None
+    }
+}
