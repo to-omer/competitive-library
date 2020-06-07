@@ -11,11 +11,11 @@ fn main() {
     let mut __out = std::io::BufWriter::new(__out.lock());
     #[allow(unused_macros)]
     macro_rules! print {
-        ($($arg:tt)*) => (std::write!(__out, $($arg)*).unwrap())
+        ($($arg:tt)*) => (::std::write!(__out, $($arg)*).unwrap())
     }
     #[allow(unused_macros)]
     macro_rules! println {
-        ($($arg:tt)*) => (std::writeln!(__out, $($arg)*).unwrap())
+        ($($arg:tt)*) => (::std::writeln!(__out, $($arg)*).unwrap())
     }
     #[allow(unused_macros)]
     macro_rules! echo {
