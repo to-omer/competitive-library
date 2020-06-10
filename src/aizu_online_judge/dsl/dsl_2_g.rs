@@ -1,6 +1,7 @@
 pub use crate::algebra::effect::AnyMonoidEffect;
 pub use crate::algebra::operations::{AdditiveOperation, CartesianOperation};
 pub use crate::data_structure::lazy_segment_tree::LazySegmentTree;
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -8,8 +9,7 @@ use std::io::{self, Read, Write};
 pub fn dsl_2_g(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let n: usize = scanner.scan();
-    let q: usize = scanner.scan();
+    scan!(scanner, n, q);
     let mut seg = LazySegmentTree::from_vec(
         vec![(0, 1); n],
         CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
@@ -18,12 +18,12 @@ pub fn dsl_2_g(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
         }),
     );
     for _ in 0..q {
-        let ty: usize = scanner.scan();
+        scan!(scanner, ty);
         if ty == 0 {
-            let (s, t, x): (usize, usize, u64) = scanner.scan();
+            scan!(scanner, s, t, x: u64);
             seg.update(s - 1, t, x);
         } else {
-            let (s, t): (usize, usize) = scanner.scan();
+            scan!(scanner, s, t);
             writeln!(writer, "{}", seg.fold(s - 1, t).0)?;
         }
     }

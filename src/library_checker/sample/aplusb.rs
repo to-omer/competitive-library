@@ -1,3 +1,4 @@
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -5,7 +6,6 @@ use std::io::{self, Read, Write};
 pub fn aplusb(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let a: usize = scanner.scan();
-    let b: usize = scanner.scan();
+    scan!(scanner, a, b);
     writeln!(writer, "{}", a + b)
 }

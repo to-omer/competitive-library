@@ -2,6 +2,7 @@ pub use crate::algebra::effect::AnyMonoidEffect;
 pub use crate::algebra::operations::{AdditiveOperation, CartesianOperation, LinearOperation};
 pub use crate::data_structure::lazy_segment_tree::LazySegmentTree;
 pub use crate::math::modu32::{modulos::Modulo998244353, Modu32};
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -11,9 +12,7 @@ type M = Modu32<Modulo998244353>;
 pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let n: usize = scanner.scan();
-    let q: usize = scanner.scan();
-    let a: Vec<M> = scanner.scan_vec(n);
+    scan!(scanner, n, q, a: [M; n]);
     let mut seg = LazySegmentTree::from_vec(
         a.into_iter().map(|x| (x, 1u32)).collect::<_>(),
         CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
@@ -22,12 +21,12 @@ pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) -
         }),
     );
     for _ in 0..q {
-        let ty: usize = scanner.scan();
+        scan!(scanner, ty);
         if ty == 0 {
-            let (l, r, bc): (usize, usize, (M, M)) = scanner.scan();
+            scan!(scanner, l, r, bc: (M, M));
             seg.update(l, r, bc);
         } else {
-            let (l, r): (usize, usize) = scanner.scan();
+            scan!(scanner, l, r);
             writeln!(writer, "{}", seg.fold(l, r).0)?;
         }
     }

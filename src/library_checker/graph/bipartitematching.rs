@@ -1,4 +1,5 @@
 pub use crate::graph::maximum_flow::{Dinic, RevEdge};
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -6,8 +7,7 @@ use std::io::{self, Read, Write};
 pub fn bipartitematching(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let (l, r, m): (usize, usize, usize) = scanner.scan();
-    let ab: Vec<(usize, usize)> = scanner.scan_vec(m);
+    scan!(scanner, l, r, m, ab: [(usize, usize); m]);
     let mut dinic = Dinic::new(l + r + 2);
     for a in 0..l {
         dinic.add_edge(0, a + 1, 1);

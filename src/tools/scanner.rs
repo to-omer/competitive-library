@@ -24,10 +24,6 @@ impl<'a> Scanner<'a> {
         Self { iter }
     }
     #[inline]
-    pub fn scan_from_str<T: std::str::FromStr>(&mut self) -> T {
-        self.iter.next().unwrap().parse::<T>().ok().unwrap()
-    }
-    #[inline]
     pub fn scan<T: IterScan>(&mut self) -> T {
         T::scan(&mut self.iter).unwrap()
     }
@@ -53,7 +49,7 @@ macro_rules! iter_scan_impls {
         })*
     };
 }
-iter_scan_impls!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64);
+iter_scan_impls!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
 
 macro_rules! iter_scan_tuple_impl {
     ($($T:ident)+) => {
@@ -76,3 +72,94 @@ iter_scan_tuple_impl!(A B C D E F G H);
 iter_scan_tuple_impl!(A B C D E F G H I);
 iter_scan_tuple_impl!(A B C D E F G H I J);
 iter_scan_tuple_impl!(A B C D E F G H I J K);
+
+#[macro_export]
+macro_rules! scan_value {
+    ($scanner:expr, [$t:tt; $len:expr]) => {
+        $scanner.scan_vec::<$t>($len)
+    };
+    ($scanner:expr, chars) => {
+        $scanner.scan_chars()
+    };
+    ($scanner:expr, $t:ty) => {
+        $scanner.scan::<$t>()
+    };
+}
+
+#[macro_export]
+macro_rules! scan {
+    ($scanner:expr) => {};
+    ($scanner:expr,) => {};
+    ($scanner:expr, mut $var:ident: $t:tt => $e:expr) => {
+        let $var = $crate::scan_value!($scanner, $t);
+        let mut $var = $e;
+    };
+    ($scanner:expr, $var:ident: $t:tt => $e:expr) => {
+        let $var = $crate::scan_value!($scanner, $t);
+        let $var = $e;
+    };
+    ($scanner:expr, mut $var:ident: $t:tt) => {
+        let mut $var = $crate::scan_value!($scanner, $t);
+    };
+    ($scanner:expr, $var:ident: $t:tt) => {
+        let $var = $crate::scan_value!($scanner, $t);
+    };
+    ($scanner:expr, mut $var:ident: $t:tt => $e:expr, $($rest:tt)*) => {
+        let $var = $crate::scan_value!($scanner, $t);
+        let mut $var = $e;
+        scan!($scanner, $($rest)*)
+    };
+    ($scanner:expr, $var:ident: $t:tt => $e:expr, $($rest:tt)*) => {
+        let $var = $crate::scan_value!($scanner, $t);
+        let $var = $e;
+        scan!($scanner, $($rest)*)
+    };
+    ($scanner:expr, mut $var:ident: $t:tt, $($rest:tt)*) => {
+        let mut $var = $crate::scan_value!($scanner, $t);
+        scan!($scanner, $($rest)*)
+    };
+    ($scanner:expr, $var:ident: $t:tt, $($rest:tt)*) => {
+        let $var = $crate::scan_value!($scanner, $t);
+        scan!($scanner, $($rest)*)
+    };
+
+    ($scanner:expr, mut $var:ident => $e:expr) => {
+        let $var = $crate::scan_value!($scanner, usize);
+        let mut $var = $e;
+    };
+    ($scanner:expr, $var:ident => $e:expr) => {
+        let $var = $crate::scan_value!($scanner, usize);
+        let $var = $e;
+    };
+    ($scanner:expr, mut $var:ident) => {
+        let mut $var = $crate::scan_value!($scanner, usize);
+    };
+    ($scanner:expr, $var:ident) => {
+        let $var = $crate::scan_value!($scanner, usize);
+    };
+    ($scanner:expr, mut $var:ident => $e:expr, $($rest:tt)*) => {
+        let $var = $crate::scan_value!($scanner, usize);
+        let mut $var = $e;
+        scan!($scanner, $($rest)*)
+    };
+    ($scanner:expr, $var:ident => $e:expr, $($rest:tt)*) => {
+        let $var = $crate::scan_value!($scanner, usize);
+        let $var = $e;
+        scan!($scanner, $($rest)*)
+    };
+    ($scanner:expr, mut $var:ident, $($rest:tt)*) => {
+        let mut $var = $crate::scan_value!($scanner, usize);
+        scan!($scanner, $($rest)*)
+    };
+    ($scanner:expr, $var:ident, $($rest:tt)*) => {
+        let $var = $crate::scan_value!($scanner, usize);
+        scan!($scanner, $($rest)*)
+    };
+}
+
+#[test]
+fn test_scan() {
+    let mut s = Scanner::new("1 2 3");
+    scan!(s, x: usize, y: char, z: usize => z - 1);
+    println!("{} {} {}", x, y, z);
+}

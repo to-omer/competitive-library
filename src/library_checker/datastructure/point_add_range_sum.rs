@@ -1,6 +1,7 @@
 pub use crate::algebra::operations::AdditiveOperation;
 pub use crate::data_structure::binary_indexed_tree::BinaryIndexedTree;
 pub use crate::data_structure::segment_tree::SegmentTree;
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -11,20 +12,18 @@ pub fn point_add_range_sum_binary_indexed_tree(
 ) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let n: usize = scanner.scan();
-    let q: usize = scanner.scan();
-    let a: Vec<i64> = scanner.scan_vec(n);
+    scan!(scanner, n, q, a: [i64; n]);
     let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
     for i in 0..n {
         bit.update(i + 1, a[i]);
     }
     for _ in 0..q {
-        let ty: usize = scanner.scan();
+        scan!(scanner, ty);
         if ty == 0 {
-            let (p, x): (usize, i64) = scanner.scan();
+            scan!(scanner, p, x: i64);
             bit.update(p + 1, x);
         } else {
-            let (l, r): (usize, usize) = scanner.scan();
+            scan!(scanner, l, r);
             writeln!(writer, "{}", bit.fold(l, r))?;
         }
     }
@@ -38,17 +37,15 @@ pub fn point_add_range_sum_segment_tree(
 ) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let n: usize = scanner.scan();
-    let q: usize = scanner.scan();
-    let a: Vec<i64> = scanner.scan_vec(n);
+    scan!(scanner, n, q, a: [i64; n]);
     let mut seg = SegmentTree::from_vec(a, AdditiveOperation::new());
     for _ in 0..q {
-        let ty: usize = scanner.scan();
+        scan!(scanner, ty);
         if ty == 0 {
-            let (p, x): (usize, i64) = scanner.scan();
+            scan!(scanner, p, x: i64);
             seg.update(p, x);
         } else {
-            let (l, r): (usize, usize) = scanner.scan();
+            scan!(scanner, l, r);
             writeln!(writer, "{}", seg.fold(l, r))?;
         }
     }

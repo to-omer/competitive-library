@@ -1,4 +1,5 @@
 pub use crate::graph::strongly_connected_component::TwoSatisfiability;
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -6,10 +7,14 @@ use std::io::{self, Read, Write};
 pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scanner.scan_chars();
-    scanner.scan_chars();
-    let (n, m): (usize, usize) = scanner.scan();
-    let ab: Vec<(i64, i64, i64)> = scanner.scan_vec(m);
+    scan!(
+        scanner,
+        _p: chars,
+        _cnf: chars,
+        n,
+        m,
+        ab: [(i64, i64, i64); m]
+    );
     let mut two_sat = TwoSatisfiability::new(n);
     for (a, b, _) in ab.into_iter() {
         let u = (a.abs() as usize - 1) * 2;

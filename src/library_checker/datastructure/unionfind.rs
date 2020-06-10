@@ -1,4 +1,5 @@
 pub use crate::data_structure::union_find::UnionFind;
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -6,11 +7,10 @@ use std::io::{self, Read, Write};
 pub fn unionfind(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let n: usize = scanner.scan();
-    let q: usize = scanner.scan();
+    scan!(scanner, n, q);
     let mut uf = UnionFind::new(n);
     for _ in 0..q {
-        let (ty, u, v): (usize, usize, usize) = scanner.scan();
+        scan!(scanner, ty, u, v);
         if ty == 0 {
             uf.unite(u, v);
         } else {

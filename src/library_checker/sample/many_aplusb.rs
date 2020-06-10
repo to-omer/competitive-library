@@ -1,3 +1,4 @@
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -5,10 +6,8 @@ use std::io::{self, Read, Write};
 pub fn many_aplusb(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let t: usize = scanner.scan();
-    for _ in 0..t {
-        let a: usize = scanner.scan();
-        let b: usize = scanner.scan();
+    scan!(scanner, t, ab: [(usize, usize); t]);
+    for (a, b) in ab.into_iter() {
         writeln!(writer, "{}", a + b)?;
     }
     Ok(())

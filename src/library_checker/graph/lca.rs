@@ -1,4 +1,5 @@
 pub use crate::graph::graph::Graph;
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 pub use crate::tree::euler_tour::EulerTourForRichVertex;
 use std::io::{self, Read, Write};
@@ -7,10 +8,7 @@ use std::io::{self, Read, Write};
 pub fn lca(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let n: usize = scanner.scan();
-    let q: usize = scanner.scan();
-    let p: Vec<usize> = scanner.scan_vec(n - 1);
-    let uv: Vec<(usize, usize)> = scanner.scan_vec(q);
+    scan!(scanner, n, q, p: [usize; n - 1], uv: [(usize, usize); q]);
     let mut graph = Graph::new(n);
     for v in 0..n - 1 {
         graph.add_undirected_edge(v + 1, p[v]);

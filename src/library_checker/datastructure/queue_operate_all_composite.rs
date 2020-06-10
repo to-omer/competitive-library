@@ -1,6 +1,7 @@
 pub use crate::algebra::operations::LinearOperation;
 pub use crate::data_structure::sliding_winsow_aggregation::QueueAggregation;
 pub use crate::math::modu32::{modulos::Modulo998244353, Modu32};
+pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
@@ -13,20 +14,20 @@ pub fn queue_operate_all_composite(
 ) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    let q: usize = scanner.scan();
+    scan!(scanner, q);
     let mut que = QueueAggregation::new(LinearOperation::new());
     for _ in 0..q {
-        let ty: usize = scanner.scan();
+        scan!(scanner, ty);
         match ty {
             0 => {
-                let ab: (M, M) = scanner.scan();
+                scan!(scanner, ab: (M, M));
                 que.push(ab);
             }
             1 => {
                 que.pop();
             }
             _ => {
-                let x: M = scanner.scan();
+                scan!(scanner, x: M);
                 let (a, b) = que.fold_all();
                 writeln!(writer, "{}", a * x + b)?;
             }
