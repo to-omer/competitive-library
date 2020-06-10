@@ -160,6 +160,8 @@ macro_rules! scan {
 #[test]
 fn test_scan() {
     let mut s = Scanner::new("1 2 3");
-    scan!(s, x: usize, y: char, z: usize => z - 1);
-    println!("{} {} {}", x, y, z);
+    scan!(s, x, y: char, z: usize => z - 1);
+    assert_eq!(x, 1);
+    assert_eq!(y, '2');
+    assert_eq!(z, 2);
 }
