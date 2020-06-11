@@ -1,4 +1,3 @@
-pub use crate::algebra::effect::AnyMonoidEffect;
 pub use crate::algebra::operations::{AdditiveOperation, CartesianOperation, LastOperation};
 pub use crate::data_structure::lazy_segment_tree::LazySegmentTree;
 pub use crate::scan;
@@ -13,9 +12,8 @@ pub fn dsl_2_i(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
     let mut seg = LazySegmentTree::from_vec(
         vec![(0, 1); n],
         CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-        AnyMonoidEffect::new(LastOperation::new(), |x: &(i64, i64), y| {
-            (x.1 * y.unwrap_or(x.0), x.1)
-        }),
+        LastOperation::new(),
+        |x: &(i64, i64), y| (x.1 * y.unwrap_or(x.0), x.1),
     );
     for _ in 0..q {
         scan!(scanner, ty);

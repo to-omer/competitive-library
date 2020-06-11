@@ -1,32 +1,34 @@
-use crate::algebra::effect::MonoidEffect;
 use crate::algebra::magma::Monoid;
 
 #[cargo_snippet::snippet("LazySegmentTree")]
 /// M: folding Monoid
-/// E: lazy Monoid effect
+/// E: lazy Monoid
+/// F: lazy evaluating
 #[derive(Clone, Debug)]
-pub struct LazySegmentTree<M: Monoid, E: MonoidEffect<A = M::T>> {
+pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     n: usize,
     seg: Vec<M::T>,
     lazy: Vec<E::T>,
     m: M,
     e: E,
+    f: F,
 }
 #[cargo_snippet::snippet("LazySegmentTree")]
-impl<M: Monoid, E: MonoidEffect<A = M::T>> LazySegmentTree<M, E> {
-    pub fn new(n: usize, m: M, e: E) -> Self {
+impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F> {
+    pub fn new(n: usize, m: M, e: E, f: F) -> Self {
         let n = 1 << format!("{:b}", n - 1).len();
         let seg = vec![m.unit(); 2 * n - 1];
         let lazy = vec![e.unit(); 2 * n - 1];
         LazySegmentTree {
-            n: n,
-            seg: seg,
-            lazy: lazy,
-            m: m,
-            e: e,
+            n,
+            seg,
+            lazy,
+            m,
+            e,
+            f,
         }
     }
-    pub fn from_vec(v: Vec<M::T>, m: M, e: E) -> Self {
+    pub fn from_vec(v: Vec<M::T>, m: M, e: E, f: F) -> Self {
         let n = 1 << format!("{:b}", v.len() - 1).len();
         let mut seg = vec![m.unit(); 2 * n - 1];
         for (i, x) in v.into_iter().enumerate() {
@@ -37,11 +39,12 @@ impl<M: Monoid, E: MonoidEffect<A = M::T>> LazySegmentTree<M, E> {
         }
         let lazy = vec![e.unit(); 2 * n - 1];
         LazySegmentTree {
-            n: n,
-            seg: seg,
-            lazy: lazy,
-            m: m,
-            e: e,
+            n,
+            seg,
+            lazy,
+            m,
+            e,
+            f,
         }
     }
     pub fn eval(&mut self, k: usize) {
@@ -50,7 +53,7 @@ impl<M: Monoid, E: MonoidEffect<A = M::T>> LazySegmentTree<M, E> {
                 self.lazy[2 * k + 1] = self.e.operate(&self.lazy[2 * k + 1], &self.lazy[k]);
                 self.lazy[2 * k + 2] = self.e.operate(&self.lazy[2 * k + 2], &self.lazy[k]);
             }
-            self.seg[k] = self.e.effect(&self.seg[k], &self.lazy[k]);
+            self.seg[k] = (self.f)(&self.seg[k], &self.lazy[k]);
             self.lazy[k] = self.e.unit();
         }
     }
@@ -60,7 +63,7 @@ impl<M: Monoid, E: MonoidEffect<A = M::T>> LazySegmentTree<M, E> {
             self.seg[k].clone()
         } else if l <= a && b <= r {
             self.lazy[k] = self.e.operate(&self.lazy[k], &x);
-            self.e.effect(&self.seg[k], &self.lazy[k])
+            (self.f)(&self.seg[k], &self.lazy[k])
         } else {
             let lx = self.update_inner(l, r, x.clone(), k * 2 + 1, a, (a + b) / 2);
             let rx = self.update_inner(l, r, x, k * 2 + 2, (a + b) / 2, b);
@@ -93,7 +96,6 @@ impl<M: Monoid, E: MonoidEffect<A = M::T>> LazySegmentTree<M, E> {
 
 #[test]
 fn test_lazy_segment_tree() {
-    use crate::algebra::effect::AnyMonoidEffect;
     use crate::algebra::operations::{
         AdditiveOperation, CartesianOperation, LastOperation, MaxOperation,
     };
@@ -105,9 +107,8 @@ fn test_lazy_segment_tree() {
     let mut seg = LazySegmentTree::from_vec(
         vec![(0, 1); n],
         CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-        AnyMonoidEffect::<_, (_, usize), _>::new(AdditiveOperation::new(), |x, &y| {
-            (x.0 + y * x.1, x.1)
-        }),
+        AdditiveOperation::new(),
+        |x, &y| (x.0 + y * x.1, x.1),
     );
     let mut arr = vec![0; n];
     for _ in 0..m {
@@ -140,11 +141,9 @@ fn test_lazy_segment_tree() {
     }
 
     // Range Max Query & Range Update Query
-    let mut seg = LazySegmentTree::new(
-        n,
-        MaxOperation::new(),
-        AnyMonoidEffect::new(LastOperation::new(), |&x, y| y.unwrap_or(x)),
-    );
+    let mut seg = LazySegmentTree::new(n, MaxOperation::new(), LastOperation::new(), |&x, y| {
+        y.unwrap_or(x)
+    });
     let mut arr = vec![0; n];
     for _ in 0..m {
         let q = rand.rand(2);

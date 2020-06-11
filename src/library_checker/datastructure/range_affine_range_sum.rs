@@ -1,4 +1,3 @@
-pub use crate::algebra::effect::AnyMonoidEffect;
 pub use crate::algebra::operations::{AdditiveOperation, CartesianOperation, LinearOperation};
 pub use crate::data_structure::lazy_segment_tree::LazySegmentTree;
 pub use crate::math::modu32::{modulos::Modulo998244353, Modu32};
@@ -16,9 +15,8 @@ pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) -
     let mut seg = LazySegmentTree::from_vec(
         a.into_iter().map(|x| (x, 1u32)).collect::<_>(),
         CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-        AnyMonoidEffect::<_, (_, u32), _>::new(LinearOperation::new(), |x, y| {
-            (y.0 * x.0 + y.1 * M::new(x.1), x.1)
-        }),
+        LinearOperation::new(),
+        |x, y| (y.0 * x.0 + y.1 * M::new(x.1), x.1),
     );
     for _ in 0..q {
         scan!(scanner, ty);
