@@ -20,7 +20,7 @@ pub fn dsl_2_i(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {
-            scan!(scanner, s, t, x: i64 => Some(x));
+            scan!(scanner, s, t, x: {i64 => Some});
             seg.update(s, t + 1, x);
         } else {
             scan!(scanner, s, t);
