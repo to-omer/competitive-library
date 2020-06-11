@@ -2,22 +2,16 @@
 #[cargo_snippet::snippet("input")]
 macro_rules! read_value {
     ($iter:expr, ( $($t:tt),* )) => {
-        ( $(read_value!($iter, $t)),* )
+        ($(read_value!($iter, $t)),*)
     };
     ($iter:expr, [ $t:tt ; $len:expr ]) => {
         (0..$len).map(|_| read_value!($iter, $t)).collect::<Vec<_>>()
     };
-    ($iter:expr, { chars: $base:expr }) => {
-        read_value!($iter, String).chars().map(|c| (c as u8 - $base as u8) as usize).collect::<Vec<usize>>()
-    };
-    ($iter:expr, { char: $base:expr }) => {
-        read_value!($iter, { chars: $base })[0]
+    ($iter:expr, { $t:tt => $f:expr }) => {
+        $f(read_value!($iter, $t))
     };
     ($iter:expr, chars) => {
         read_value!($iter, String).chars().collect::<Vec<char>>()
-    };
-    ($iter:expr, char) => {
-        read_value!($iter, chars)[0]
     };
     ($iter:expr, usize1) => {
         read_value!($iter, usize) - 1
@@ -73,4 +67,18 @@ macro_rules! input {
         let mut iter = s.split_whitespace();
         input_inner!{iter, $($r)*}
     };
+}
+
+#[test]
+fn test_input() {
+    input!(source = "1 2 3", x, y: char, z: {usize => |z| z - 1});
+    assert_eq!(x, 1);
+    assert_eq!(y, '2');
+    assert_eq!(z, 2);
+
+    input!(source = r#"1 2
+2 3
+4 5
+    "#, edges: [({usize => |x| x - 1}, {usize => |x| x - 1}); 3]);
+    assert_eq!(edges, vec![(0, 1), (1, 2), (3, 4)]);
 }
