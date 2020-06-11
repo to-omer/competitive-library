@@ -24,11 +24,7 @@
 <span id="24">24</span>
 <span id="25">25</span>
 <span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">effect</span>::<span class="ident">AnyMonoidEffect</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">operations</span>::{<span class="ident">LastOperation</span>, <span class="ident">MinOperation</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">data_structure</span>::<span class="ident">lazy_segment_tree</span>::<span class="ident">LazySegmentTree</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">scan</span>;
@@ -40,15 +36,13 @@
     <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">read_all</span>(<span class="ident">reader</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scanner</span> <span class="op">=</span> <span class="ident">Scanner</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>);
     <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">n</span>, <span class="ident">q</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> <span class="op">=</span> <span class="ident">LazySegmentTree</span>::<span class="ident">new</span>(
-        <span class="ident">n</span>,
-        <span class="ident">MinOperation</span>::<span class="ident">new</span>(),
-        <span class="ident">AnyMonoidEffect</span>::<span class="ident">new</span>(<span class="ident">LastOperation</span>::<span class="ident">new</span>(), <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> <span class="ident">y</span>.<span class="ident">unwrap_or</span>(<span class="ident">x</span>)),
-    );
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> <span class="op">=</span> <span class="ident">LazySegmentTree</span>::<span class="ident">new</span>(<span class="ident">n</span>, <span class="ident">MinOperation</span>::<span class="ident">new</span>(), <span class="ident">LastOperation</span>::<span class="ident">new</span>(), <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> {
+        <span class="ident">y</span>.<span class="ident">unwrap_or</span>(<span class="ident">x</span>)
+    });
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">q</span> {
         <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">ty</span>);
         <span class="kw">if</span> <span class="ident">ty</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">x</span>: <span class="ident">i32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>));
+            <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">x</span>: {<span class="ident">i32</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>});
             <span class="ident">seg</span>.<span class="ident">update</span>(<span class="ident">s</span>, <span class="ident">t</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">x</span>);
         } <span class="kw">else</span> {
             <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">s</span>, <span class="ident">t</span>);

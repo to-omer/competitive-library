@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["effect","for LazySegmentTree"],["magma","algebraic traits"],["operations","binary operaions"]]});
+initSidebarItems({"mod":[["magma","algebraic traits"],["operations","binary operaions"]]});
