@@ -38,7 +38,7 @@ impl PrimeTable {
 }
 
 #[test]
-fn test_primes() {
+fn test_prime_table() {
     let primes = PrimeTable::new(100000);
     assert!(!primes.is_prime(100000));
     assert!(primes.is_prime(99991));
@@ -62,7 +62,7 @@ fn test_primes() {
     assert_eq!(factors[&7], 1);
 }
 
-#[cargo_snippet::snippet("prime_factors")]
+#[cargo_snippet::snippet]
 pub fn prime_factors(n: usize) -> std::collections::HashMap<usize, usize> {
     let mut factors = std::collections::HashMap::new();
     let mut n = n;
@@ -77,7 +77,7 @@ pub fn prime_factors(n: usize) -> std::collections::HashMap<usize, usize> {
     }
     factors
 }
-#[cargo_snippet::snippet("divisors")]
+#[cargo_snippet::snippet]
 pub fn divisors(n: usize) -> Vec<usize> {
     let mut res = vec![];
     for i in 1..(n as f32).sqrt() as usize + 1 {
@@ -90,6 +90,41 @@ pub fn divisors(n: usize) -> Vec<usize> {
     }
     res.sort();
     res
+}
+
+#[cargo_snippet::snippet]
+pub fn primes(n: usize) -> Vec<usize> {
+    if n < 2 {
+        return vec![];
+    }
+    let mut res = vec![2];
+    let sqrt_n = (n as f32).sqrt() as usize | 1;
+    let mut seive = vec![true; n / 2];
+    for i in (3..=sqrt_n).step_by(2) {
+        if seive[i / 2 - 1] {
+            res.push(i);
+            for j in (i * i..=n).step_by(i * 2) {
+                seive[j / 2 - 1] = false;
+            }
+        }
+    }
+    for i in (std::cmp::max(3, sqrt_n + 2)..=n).step_by(2) {
+        if seive[i / 2 - 1] {
+            res.push(i);
+        }
+    }
+    res
+}
+
+#[test]
+fn test_primes() {
+    let t = PrimeTable::new(2000);
+    for i in 0..2000 {
+        assert_eq!(
+            primes(i),
+            (2..=i).filter(|&i| t.is_prime(i)).collect::<Vec<_>>(),
+        );
+    }
 }
 
 #[cargo_snippet::snippet("miller_rabin")]
