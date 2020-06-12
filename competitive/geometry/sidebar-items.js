@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["EPS",""]],"enum":[["CCW",""]],"fn":[["ccw",""]],"mod":[["circle",""],["closest_pair",""],["complex",""],["line",""],["polygon",""]],"struct":[["Real",""]],"type":[["Point",""]]});
+initSidebarItems({"constant":[["EPS",""]],"enum":[["CCW",""]],"fn":[["ccw",""]],"mod":[["circle",""],["closest_pair",""],["line",""],["polygon",""]],"struct":[["Real",""]],"type":[["Point",""]]});

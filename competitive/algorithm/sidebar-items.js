@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["compress","coordinate compression"],["convex_hull_trick",""],["search","binary / ternary search"],["slide_minimum",""]]});
+initSidebarItems({"mod":[["compress","coordinate compression"],["convex_hull_trick",""],["search","binary / ternary search"],["slide_minimum",""],["zeta_transform","fast zeta transform and fast mobius transform"]]});
