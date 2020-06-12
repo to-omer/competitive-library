@@ -1,5 +1,4 @@
 use crate::num::complex::Complex;
-use crate::num::quad_double::QuadDouble;
 
 pub fn fft_rec(f: &mut [Complex<f64>], inv: bool) {
     let n = f.len();

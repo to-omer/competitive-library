@@ -1,11 +1,14 @@
 use lazy_static::lazy_static;
 use serde::{de::DeserializeOwned, Deserialize};
-use std::ffi::OsStr;
-use std::io::{self, Cursor, Write};
-use std::path::{Path, PathBuf};
-use std::process::Command;
-use std::sync::Mutex;
-use std::time::{Duration, Instant};
+use std::{
+    ffi::OsStr,
+    fs::File,
+    io::{self, Cursor, Write},
+    path::{Path, PathBuf},
+    process::Command,
+    sync::Mutex,
+    time::{Duration, Instant},
+};
 use tempfile::NamedTempFile;
 
 lazy_static! {
@@ -106,11 +109,13 @@ impl OjApi {
         I: IntoIterator<Item = S>,
         S: AsRef<OsStr>,
     {
-        let _guard = OJ_API_RESOURCE.lock().unwrap();
-        let output = Command::new(option_env!("ONLINE_JUDGE_TOOLS_API").unwrap_or("oj-api"))
-            .args(args)
-            .output()?;
-        // println!("{}", String::from_utf8_lossy(&output.stderr));
+        let output = {
+            let _guard = OJ_API_RESOURCE.lock().unwrap();
+            Command::new(option_env!("ONLINE_JUDGE_TOOLS_API").unwrap_or("oj-api"))
+                .args(args)
+                .output()?
+        };
+        // eprintln!("{}", String::from_utf8_lossy(&output.stderr));
         if output.status.success() {
             let response: OjApiResponse<R> = serde_json::from_slice(&output.stdout)?;
             response.into_result()
@@ -135,12 +140,13 @@ pub(crate) struct CheckerBinary {
 }
 impl CheckerBinary {
     pub(crate) fn from_url(url: &str) -> OjResult<Self> {
-        let _guard = OJ_API_RESOURCE.lock().unwrap();
-        let output = Command::new("python")
-            .args(&[
-                "-c",
-                format!(
-                    r#"from onlinejudge import dispatch
+        let output = {
+            let _guard = OJ_API_RESOURCE.lock().unwrap();
+            Command::new("python")
+                .args(&[
+                    "-c",
+                    format!(
+                        r#"from onlinejudge import dispatch
 url = '{}'
 problem = dispatch.problem_from_url(url)
 try:
@@ -148,12 +154,13 @@ try:
 except RuntimeError as e:
     assert False
 "#,
-                    url
-                )
-                .as_str(),
-            ])
-            .output()?;
-        // println!("{}", String::from_utf8_lossy(&output.stderr));
+                        url
+                    )
+                    .as_str(),
+                ])
+                .output()?
+        };
+        // eprintln!("{}", String::from_utf8_lossy(&output.stderr));
         if output.status.success() {
             let checker = PathBuf::from(String::from_utf8_lossy(&output.stdout).to_string());
             Ok(Self { checker })
@@ -230,7 +237,7 @@ impl VerifyConfig {
         let path = Path::new(self.cur_file)
             .with_file_name(self.fn_name)
             .with_extension("md");
-        std::fs::File::create(path)?.write_all(buf)
+        File::create(path)?.write_all(buf)
     }
     pub(crate) fn finalize(&self, result: OjResult<VerifyResults>) -> OjResult<()> {
         self.emit_md(self.gen_md_contents(&result).as_bytes())?;
