@@ -1,10 +1,9 @@
 pub mod circle;
 pub mod closest_pair;
-pub mod complex;
 pub mod line;
 pub mod polygon;
 
-pub use complex::*;
+pub use crate::num::complex::*;
 
 #[cargo_snippet::snippet("geometry", include = "Real")]
 #[cargo_snippet::snippet("geometry", include = "CCW")]

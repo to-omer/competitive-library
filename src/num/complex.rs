@@ -9,11 +9,11 @@ pub struct Complex<T> {
 #[cargo_snippet::snippet("Complex")]
 impl<T> Complex<T> {
     #[inline]
-    pub fn new(re: T, im: T) -> Complex<T> {
-        Complex { re: re, im: im }
+    pub fn new(re: T, im: T) -> Self {
+        Complex { re, im }
     }
     #[inline]
-    pub fn transpose(self) -> Complex<T> {
+    pub fn transpose(self) -> Self {
         Complex {
             re: self.im,
             im: self.re,
@@ -23,7 +23,7 @@ impl<T> Complex<T> {
 #[cargo_snippet::snippet("Complex")]
 impl<T: Neg<Output = T>> Complex<T> {
     #[inline]
-    pub fn conjugate(self) -> Complex<T> {
+    pub fn conjugate(self) -> Self {
         Self::new(self.re, -self.im)
     }
 }
@@ -51,8 +51,8 @@ impl<T: Copy + Add<Output = T> + Mul<Output = T>> Complex<T> {
 #[cargo_snippet::snippet("Complex")]
 impl Complex<f64> {
     #[inline]
-    pub fn from_polar(r: f64, theta: f64) -> Self {
-        Complex::new(r * theta.cos(), r * theta.sin())
+    pub fn polar(r: f64, theta: f64) -> Self {
+        Self::new(r * theta.cos(), r * theta.sin())
     }
     #[inline]
     pub fn abs(self) -> f64 {

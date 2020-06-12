@@ -12,6 +12,7 @@ pub mod data_structure;
 pub mod geometry;
 pub mod graph;
 pub mod math;
+pub mod num;
 pub mod string;
 #[macro_use]
 pub mod tools;

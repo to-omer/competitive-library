@@ -1,7 +1,7 @@
 #[cargo_snippet::snippet("QuadDouble")]
 /// ref: https://na-inet.jp/na/qd_ja.pdf
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
-pub struct QuadDouble(f64, f64, f64, f64);
+pub struct QuadDouble(pub f64, f64, f64, f64);
 #[cargo_snippet::snippet("QuadDouble")]
 pub mod quad_double_impl {
     use super::*;
@@ -211,6 +211,21 @@ pub mod quad_double_impl {
             QuadDouble::renormalize(t0, t1, t2, t3, t4)
         }
     }
+    impl std::ops::Div<QuadDouble> for QuadDouble {
+        type Output = QuadDouble;
+        fn div(self, rhs: Self) -> Self::Output {
+            let q0 = self.0 / rhs.0;
+            let r = self - rhs * q0;
+            let q1 = r.0 / rhs.0;
+            let r = r - rhs * q1;
+            let q2 = r.0 / rhs.0;
+            let r = r - rhs * q2;
+            let q3 = r.0 / rhs.0;
+            let r = r - rhs * q3;
+            let q4 = r.0 / rhs.0;
+            QuadDouble::renormalize(q0, q1, q2, q3, q4)
+        }
+    }
     impl std::ops::Index<usize> for QuadDouble {
         type Output = f64;
         fn index(&self, index: usize) -> &Self::Output {
@@ -243,6 +258,39 @@ pub mod quad_double_impl {
         #[inline]
         fn from_str(s: &str) -> Result<Self, Self::Err> {
             s.parse::<f64>().map(|i| QuadDouble::new(i))
+        }
+    }
+    impl QuadDouble {
+        #[inline]
+        pub fn is_zero(&self) -> bool {
+            self.0 == 0.
+        }
+        #[inline]
+        pub fn is_sign_negative(&self) -> bool {
+            self.0.is_sign_negative()
+        }
+        #[inline]
+        pub fn sqrt(self) -> Self {
+            if self.is_zero() {
+                return Self::new(0.);
+            }
+            let x = Self::new(1. / self.0.sqrt());
+            let x = x + x * (Self::new(1.) - self * x * x).div2(2.);
+            let x = x + x * (Self::new(1.) - self * x * x).div2(2.);
+            let x = x + x * (Self::new(1.) - self * x * x).div2(2.);
+            x * self
+        }
+        #[inline]
+        pub fn abs(self) -> Self {
+            if self.0.is_sign_negative() {
+                -self
+            } else {
+                self
+            }
+        }
+        #[inline]
+        pub fn div2(self, rhs: f64) -> Self {
+            Self(self.0 / rhs, self.1 / rhs, self.2 / rhs, self.3 / rhs)
         }
     }
 }
