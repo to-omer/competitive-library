@@ -1,11 +1,11 @@
 pub use crate::algebra::operations::LinearOperation;
 pub use crate::data_structure::segment_tree::SegmentTree;
-pub use crate::num::modu32::{modulos::Modulo998244353, Modu32};
+pub use crate::num::mint::{modulus::Modulo998244353, MInt};
 pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
-type M = Modu32<Modulo998244353>;
+type M = MInt<Modulo998244353>;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/point_set_range_composite")]
 pub fn point_set_range_composite(

@@ -1,55 +1,55 @@
-use crate::num::anymodu32::AnyModu32;
-use crate::num::modu32::{Modu32, Modulo};
+use crate::num::mint::{MInt, Modulus};
+use crate::num::rmint::RMInt;
 
 #[cargo_snippet::snippet(name = "factorial")]
 #[derive(Clone, Debug)]
-pub struct MemorizedFactorial<M: Modulo> {
-    fact: Vec<Modu32<M>>,
-    inv_fact: Vec<Modu32<M>>,
+pub struct MemorizedFactorial<M: Modulus> {
+    fact: Vec<MInt<M>>,
+    inv_fact: Vec<MInt<M>>,
 }
 #[cargo_snippet::snippet(name = "factorial")]
-impl<M: Modulo> MemorizedFactorial<M> {
+impl<M: Modulus> MemorizedFactorial<M> {
     pub fn new(max_n: usize) -> Self {
-        let mut fact = vec![Modu32::one(); max_n + 1];
-        let mut inv_fact = vec![Modu32::one(); max_n + 1];
+        let mut fact = vec![MInt::one(); max_n + 1];
+        let mut inv_fact = vec![MInt::one(); max_n + 1];
         for i in 2..=max_n {
-            fact[i] = fact[i - 1] * Modu32::new(i as u32);
+            fact[i] = fact[i - 1] * MInt::new(i as u32);
         }
         inv_fact[max_n] = fact[max_n].inv();
         for i in (3..=max_n).rev() {
-            inv_fact[i - 1] = inv_fact[i] * Modu32::new(i as u32);
+            inv_fact[i - 1] = inv_fact[i] * MInt::new(i as u32);
         }
         Self { fact, inv_fact }
     }
     #[inline]
-    pub fn combination(&self, n: usize, r: usize) -> Modu32<M> {
+    pub fn combination(&self, n: usize, r: usize) -> MInt<M> {
         debug_assert!(n < self.fact.len());
         if r <= n {
             self.fact[n] * self.inv_fact[r] * self.inv_fact[n - r]
         } else {
-            Modu32::zero()
+            MInt::zero()
         }
     }
     #[inline]
-    pub fn permutation(&self, n: usize, r: usize) -> Modu32<M> {
+    pub fn permutation(&self, n: usize, r: usize) -> MInt<M> {
         debug_assert!(n < self.fact.len());
         if r <= n {
             self.fact[n] * self.inv_fact[n - r]
         } else {
-            Modu32::zero()
+            MInt::zero()
         }
     }
     #[inline]
-    pub fn homogeneous_product(&self, n: usize, r: usize) -> Modu32<M> {
+    pub fn homogeneous_product(&self, n: usize, r: usize) -> MInt<M> {
         debug_assert!(n + r < self.fact.len() + 1);
         if n != 0 && r != 0 {
             self.combination(n + r - 1, r)
         } else {
-            Modu32::one()
+            MInt::one()
         }
     }
     #[inline]
-    pub fn inv(&self, n: usize) -> Modu32<M> {
+    pub fn inv(&self, n: usize) -> MInt<M> {
         debug_assert!(n < self.fact.len());
         debug_assert!(n > 0);
         self.inv_fact[n] * self.fact[n - 1]
@@ -58,9 +58,9 @@ impl<M: Modulo> MemorizedFactorial<M> {
 
 #[test]
 fn test_factorials() {
-    use crate::num::modu32::modulos::Modulo1000000007;
+    use crate::num::mint::modulus::Modulo1000000007;
     let fact = MemorizedFactorial::new(100);
-    type M = Modu32<Modulo1000000007>;
+    type M = MInt<Modulo1000000007>;
     for i in 0..101 {
         assert_eq!(fact.fact[i] * fact.inv_fact[i], M::new(1));
     }
@@ -96,22 +96,22 @@ fn test_factorials() {
 
 #[derive(Clone, Debug)]
 pub struct SmallModMemorizedFactorial {
-    fact: Vec<AnyModu32>,
+    fact: Vec<RMInt>,
 }
 impl SmallModMemorizedFactorial {
     pub fn new() -> Self {
-        let p = AnyModu32::get_modulo() as usize;
-        let mut fact = vec![AnyModu32::one(); p];
+        let p = RMInt::get_modulus() as usize;
+        let mut fact = vec![RMInt::one(); p];
         for i in 1..p {
-            fact[i] = fact[i - 1] * AnyModu32::new(i as u32);
+            fact[i] = fact[i - 1] * RMInt::new(i as u32);
         }
         Self { fact }
     }
     /// n! = a * p^e
-    pub fn factorial(&self, n: usize) -> (AnyModu32, usize) {
-        let p = AnyModu32::get_modulo() as usize;
+    pub fn factorial(&self, n: usize) -> (RMInt, usize) {
+        let p = RMInt::get_modulus() as usize;
         if n == 0 {
-            (AnyModu32::one(), 0)
+            (RMInt::one(), 0)
         } else {
             let e = n / p;
             let res = self.factorial(e);
@@ -122,7 +122,7 @@ impl SmallModMemorizedFactorial {
             }
         }
     }
-    pub fn combination(&self, n: usize, r: usize) -> AnyModu32 {
+    pub fn combination(&self, n: usize, r: usize) -> RMInt {
         if r <= n {
             let (a1, e1) = self.factorial(n);
             let (a2, e2) = self.factorial(r);
@@ -131,7 +131,7 @@ impl SmallModMemorizedFactorial {
                 return a1 * (a2 * a3).inv();
             }
         }
-        AnyModu32::zero()
+        RMInt::zero()
     }
 }
 
@@ -141,7 +141,7 @@ fn test_small_factorials() {
     let mut rand = Xorshift::time();
     const N: usize = 10_000;
     const Q: usize = 10_000;
-    AnyModu32::set_modulo(2);
+    RMInt::set_modulus(2);
     let fact = SmallModMemorizedFactorial::new();
     for _ in 0..Q {
         let n = rand.rand(N as u64) as usize + 1;

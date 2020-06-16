@@ -1,4 +1,4 @@
-pub mod anymodu32;
 pub mod complex;
-pub mod modu32;
+pub mod mint;
 pub mod quad_double;
+pub mod rmint;

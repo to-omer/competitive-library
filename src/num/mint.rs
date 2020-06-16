@@ -1,41 +1,54 @@
-#[cargo_snippet::snippet("Modu32")]
-pub trait Modulo: Copy {
-    const MODULO: u32;
+//! modint
+
+#[cargo_snippet::snippet("MInt")]
+pub trait Modulus: Copy {
+    const MODULUS: u32;
     #[inline]
     fn modulo(x: u32) -> u32 {
-        x % Self::MODULO
+        x % Self::MODULUS
     }
 }
-#[cargo_snippet::snippet("Modu32")]
-pub mod modulos {
+#[cargo_snippet::snippet("MInt")]
+#[allow(unused_macros)]
+macro_rules! make_modulus {
+    ($t:ident, $e:expr) => {
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        pub struct $t {}
+        impl Modulus for $t {
+            const MODULUS: u32 = $e;
+        }
+    };
+}
+#[cargo_snippet::snippet("MInt")]
+pub mod modulus {
     use super::*;
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo1000000007 {}
-    impl Modulo for Modulo1000000007 {
-        const MODULO: u32 = 1_000_000_007;
+    impl Modulus for Modulo1000000007 {
+        const MODULUS: u32 = 1_000_000_007;
     }
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo1000000009 {}
-    impl Modulo for Modulo1000000009 {
-        const MODULO: u32 = 1_000_000_009;
+    impl Modulus for Modulo1000000009 {
+        const MODULUS: u32 = 1_000_000_009;
     }
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo998244353 {}
-    impl Modulo for Modulo998244353 {
-        const MODULO: u32 = 998_244_353;
+    impl Modulus for Modulo998244353 {
+        const MODULUS: u32 = 998_244_353;
     }
 }
-#[cargo_snippet::snippet("Modu32")]
+#[cargo_snippet::snippet("MInt")]
 #[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Ord, PartialOrd, Hash)]
-pub struct Modu32<M = modulos::Modulo1000000007>
+pub struct MInt<M>
 where
-    M: Modulo,
+    M: Modulus,
 {
     x: u32,
     phantom: std::marker::PhantomData<M>,
 }
-#[cargo_snippet::snippet("Modu32")]
-impl<M: Modulo> Modu32<M> {
+#[cargo_snippet::snippet("MInt")]
+impl<M: Modulus> MInt<M> {
     #[inline]
     pub fn new(x: u32) -> Self {
         Self {
@@ -60,7 +73,7 @@ impl<M: Modulo> Modu32<M> {
     }
     #[inline]
     pub fn get_mod() -> u32 {
-        M::MODULO
+        M::MODULUS
     }
     #[inline]
     pub fn pow(mut self, mut y: usize) -> Self {
@@ -77,12 +90,12 @@ impl<M: Modulo> Modu32<M> {
     #[inline]
     pub fn inv(self) -> Self {
         let mut a = self.x;
-        let (mut b, mut u, mut s) = (M::MODULO, 1, 0);
+        let (mut b, mut u, mut s) = (M::MODULUS, 1, 0);
         let k = a.trailing_zeros();
         a >>= k;
         for _ in 0..k {
             if u & 1 == 1 {
-                u += M::MODULO;
+                u += M::MODULUS;
             }
             u /= 2;
         }
@@ -93,14 +106,14 @@ impl<M: Modulo> Modu32<M> {
             }
             b -= a;
             if s < u {
-                s += M::MODULO;
+                s += M::MODULUS;
             }
             s -= u;
             let k = b.trailing_zeros();
             b >>= k;
             for _ in 0..k {
                 if s & 1 == 1 {
-                    s += M::MODULO;
+                    s += M::MODULUS;
                 }
                 s /= 2;
             }
@@ -108,8 +121,8 @@ impl<M: Modulo> Modu32<M> {
         Self::new_unchecked(s)
     }
 }
-#[cargo_snippet::snippet("Modu32")]
-pub mod modu32_impl {
+#[cargo_snippet::snippet("MInt")]
+pub mod modu32_impls {
     use super::*;
     use std::{
         fmt,
@@ -118,95 +131,95 @@ pub mod modu32_impl {
         ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
         str::FromStr,
     };
-    impl<M: Modulo> From<u32> for Modu32<M> {
+    impl<M: Modulus> From<u32> for MInt<M> {
         #[inline]
         fn from(x: u32) -> Self {
             Self::new(x)
         }
     }
-    impl<M: Modulo> From<u64> for Modu32<M> {
+    impl<M: Modulus> From<u64> for MInt<M> {
         #[inline]
         fn from(x: u64) -> Self {
-            Self::new_unchecked((x % M::MODULO as u64) as u32)
+            Self::new_unchecked((x % M::MODULUS as u64) as u32)
         }
     }
-    impl<M: Modulo> Add for Modu32<M> {
+    impl<M: Modulus> Add for MInt<M> {
         type Output = Self;
         #[inline]
         fn add(self, rhs: Self) -> Self::Output {
             let mut x = self.x + rhs.x;
-            if x >= M::MODULO {
-                x -= M::MODULO;
+            if x >= M::MODULUS {
+                x -= M::MODULUS;
             }
             Self::new_unchecked(x)
         }
     }
-    impl<M: Modulo> Sub for Modu32<M> {
+    impl<M: Modulus> Sub for MInt<M> {
         type Output = Self;
         #[inline]
         fn sub(self, rhs: Self) -> Self::Output {
             if self.x < rhs.x {
-                Self::new_unchecked(self.x + M::MODULO - rhs.x)
+                Self::new_unchecked(self.x + M::MODULUS - rhs.x)
             } else {
                 Self::new_unchecked(self.x - rhs.x)
             }
         }
     }
-    impl<M: Modulo> Mul for Modu32<M> {
+    impl<M: Modulus> Mul for MInt<M> {
         type Output = Self;
         #[inline]
         fn mul(self, rhs: Self) -> Self::Output {
-            Self::new_unchecked((self.x as u64 * rhs.x as u64 % M::MODULO as u64) as u32)
+            Self::new_unchecked((self.x as u64 * rhs.x as u64 % M::MODULUS as u64) as u32)
         }
     }
-    impl<M: Modulo> Div for Modu32<M> {
+    impl<M: Modulus> Div for MInt<M> {
         type Output = Self;
         #[inline]
         fn div(self, rhs: Self) -> Self::Output {
             self * rhs.inv()
         }
     }
-    impl<M: Modulo> Neg for Modu32<M> {
+    impl<M: Modulus> Neg for MInt<M> {
         type Output = Self;
         #[inline]
         fn neg(self) -> Self::Output {
             if self.x == 0 {
                 Self::zero()
             } else {
-                Self::new_unchecked(M::MODULO - self.x)
+                Self::new_unchecked(M::MODULUS - self.x)
             }
         }
     }
-    impl<M: Modulo> Sum for Modu32<M> {
+    impl<M: Modulus> Sum for MInt<M> {
         #[inline]
         fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
             iter.fold(Self::zero(), Add::add)
         }
     }
-    impl<M: Modulo> Product for Modu32<M> {
+    impl<M: Modulus> Product for MInt<M> {
         #[inline]
         fn product<I: Iterator<Item = Self>>(iter: I) -> Self {
             iter.fold(Self::one(), Mul::mul)
         }
     }
-    impl<'a, M: Modulo + 'a> Sum<&'a Modu32<M>> for Modu32<M> {
+    impl<'a, M: Modulus + 'a> Sum<&'a MInt<M>> for MInt<M> {
         #[inline]
         fn sum<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
             iter.fold(Self::zero(), Add::add)
         }
     }
-    impl<'a, M: Modulo + 'a> Product<&'a Modu32<M>> for Modu32<M> {
+    impl<'a, M: Modulus + 'a> Product<&'a MInt<M>> for MInt<M> {
         #[inline]
         fn product<I: Iterator<Item = &'a Self>>(iter: I) -> Self {
             iter.fold(Self::one(), Mul::mul)
         }
     }
-    impl<M: Modulo> fmt::Display for Modu32<M> {
+    impl<M: Modulus> fmt::Display for MInt<M> {
         fn fmt<'a>(&self, f: &mut fmt::Formatter<'a>) -> Result<(), fmt::Error> {
             write!(f, "{}", self.x)
         }
     }
-    impl<M: Modulo> FromStr for Modu32<M> {
+    impl<M: Modulus> FromStr for MInt<M> {
         type Err = ParseIntError;
         #[inline]
         fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -215,21 +228,21 @@ pub mod modu32_impl {
     }
     macro_rules! modu32_ref_binop {
         ($imp:ident, $method:ident, $t:ty) => {
-            impl<M: Modulo> $imp<$t> for &$t {
+            impl<M: Modulus> $imp<$t> for &$t {
                 type Output = <$t as $imp<$t>>::Output;
                 #[inline]
                 fn $method(self, other: $t) -> <$t as $imp<$t>>::Output {
                     $imp::$method(*self, other)
                 }
             }
-            impl<M: Modulo> $imp<&$t> for $t {
+            impl<M: Modulus> $imp<&$t> for $t {
                 type Output = <$t as $imp<$t>>::Output;
                 #[inline]
                 fn $method(self, other: &$t) -> <$t as $imp<$t>>::Output {
                     $imp::$method(self, *other)
                 }
             }
-            impl<M: Modulo> $imp<&$t> for &$t {
+            impl<M: Modulus> $imp<&$t> for &$t {
                 type Output = <$t as $imp<$t>>::Output;
                 #[inline]
                 fn $method(self, other: &$t) -> <$t as $imp<$t>>::Output {
@@ -238,13 +251,13 @@ pub mod modu32_impl {
             }
         };
     }
-    modu32_ref_binop!(Add, add, Modu32<M>);
-    modu32_ref_binop!(Sub, sub, Modu32<M>);
-    modu32_ref_binop!(Mul, mul, Modu32<M>);
-    modu32_ref_binop!(Div, div, Modu32<M>);
+    modu32_ref_binop!(Add, add, MInt<M>);
+    modu32_ref_binop!(Sub, sub, MInt<M>);
+    modu32_ref_binop!(Mul, mul, MInt<M>);
+    modu32_ref_binop!(Div, div, MInt<M>);
     macro_rules! modu32_ref_unop {
         ($imp:ident, $method:ident, $t:ty) => {
-            impl<M: Modulo> $imp for &$t {
+            impl<M: Modulus> $imp for &$t {
                 type Output = <$t as $imp>::Output;
                 #[inline]
                 fn $method(self) -> <$t as $imp>::Output {
@@ -253,16 +266,16 @@ pub mod modu32_impl {
             }
         };
     }
-    modu32_ref_unop!(Neg, neg, Modu32<M>);
+    modu32_ref_unop!(Neg, neg, MInt<M>);
     macro_rules! modu32_ref_op_assign {
         ($imp:ident, $method:ident, $t:ty, $fromimp:ident, $frommethod:ident) => {
-            impl<M: Modulo> $imp<$t> for $t {
+            impl<M: Modulus> $imp<$t> for $t {
                 #[inline]
                 fn $method(&mut self, rhs: $t) {
                     *self = $fromimp::$frommethod(*self, rhs);
                 }
             }
-            impl<M: Modulo> $imp<&$t> for $t {
+            impl<M: Modulus> $imp<&$t> for $t {
                 #[inline]
                 fn $method(&mut self, other: &$t) {
                     $imp::$method(self, *other);
@@ -270,10 +283,10 @@ pub mod modu32_impl {
             }
         };
     }
-    modu32_ref_op_assign!(AddAssign, add_assign, Modu32<M>, Add, add);
-    modu32_ref_op_assign!(SubAssign, sub_assign, Modu32<M>, Sub, sub);
-    modu32_ref_op_assign!(MulAssign, mul_assign, Modu32<M>, Mul, mul);
-    modu32_ref_op_assign!(DivAssign, div_assign, Modu32<M>, Div, div);
+    modu32_ref_op_assign!(AddAssign, add_assign, MInt<M>, Add, add);
+    modu32_ref_op_assign!(SubAssign, sub_assign, MInt<M>, Sub, sub);
+    modu32_ref_op_assign!(MulAssign, mul_assign, MInt<M>, Mul, mul);
+    modu32_ref_op_assign!(DivAssign, div_assign, MInt<M>, Div, div);
 }
 
 #[test]
@@ -281,7 +294,7 @@ fn test_modu32() {
     use crate::tools::random::Xorshift;
     let mut rand = Xorshift::default();
     const Q: usize = 10_000;
-    type M = Modu32;
+    type M = MInt<modulus::Modulo1000000007>;
     for _ in 0..Q {
         let a = M::new(rand.rand(M::get_mod() as u64 - 1) as u32 + 1);
         let x = a.inv();
@@ -292,13 +305,13 @@ fn test_modu32() {
 }
 
 use crate::algebra::operations::{AdditiveIdentity, MultiplicativeIdentity};
-impl_additive_identity!([M: Modulo + PartialEq], Modu32<M>, Self::zero());
-impl_multiplicative_identity!([M: Modulo + PartialEq], Modu32<M>, Self::one());
+impl_additive_identity!([M: Modulus + PartialEq], MInt<M>, Self::zero());
+impl_multiplicative_identity!([M: Modulus + PartialEq], MInt<M>, Self::one());
 
 use crate::tools::scanner::IterScan;
-impl<M: Modulo> IterScan for Modu32<M> {
+impl<M: Modulus> IterScan for MInt<M> {
     #[inline]
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
-        iter.next()?.parse::<Modu32<M>>().ok()
+        iter.next()?.parse::<MInt<M>>().ok()
     }
 }
