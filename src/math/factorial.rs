@@ -1,5 +1,5 @@
-use super::anymodu32::AnyModu32;
-use super::modu32::{Modu32, Modulo};
+use crate::num::anymodu32::AnyModu32;
+use crate::num::modu32::{Modu32, Modulo};
 
 #[cargo_snippet::snippet(name = "factorial")]
 #[derive(Clone, Debug)]
@@ -58,7 +58,7 @@ impl<M: Modulo> MemorizedFactorial<M> {
 
 #[test]
 fn test_factorials() {
-    use crate::math::modu32::modulos::Modulo1000000007;
+    use crate::num::modu32::modulos::Modulo1000000007;
     let fact = MemorizedFactorial::new(100);
     type M = Modu32<Modulo1000000007>;
     for i in 0..101 {

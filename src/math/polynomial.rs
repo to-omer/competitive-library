@@ -119,10 +119,10 @@ impl std::ops::Rem<&Polynomial> for &Polynomial {
 }
 
 pub mod poly_mod_poly {
-    use super::super::modi64::*;
-    pub type Poly = Vec<Modi64>;
+    use crate::num::modu32::*;
+    pub type Poly = Vec<Modu32>;
     pub fn poly_mulmod(x: &Poly, y: &Poly, z: &Poly) -> Poly {
-        let mut res = vec![Modi64(0); x.len() + y.len() - 1];
+        let mut res = vec![Modu32::zero(); x.len() + y.len() - 1];
         for i in 0..x.len() {
             for j in 0..y.len() {
                 res[i + j] += x[i] * y[j];
@@ -140,7 +140,7 @@ pub mod poly_mod_poly {
     pub fn poly_pow(x: Poly, y: usize, z: Poly) -> Poly {
         let mut x = x;
         let mut y = y;
-        let mut res = vec![Modi64(1)];
+        let mut res = vec![Modu32::one()];
         while y > 0 {
             if y & 1 == 1 {
                 res = poly_mulmod(&res, &x, &z);

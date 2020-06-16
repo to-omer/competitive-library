@@ -26,7 +26,7 @@ pub mod modulos {
     }
 }
 #[cargo_snippet::snippet("Modu32")]
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub struct Modu32<M = modulos::Modulo1000000007>
 where
     M: Modulo,
@@ -210,7 +210,7 @@ pub mod modu32_impl {
         type Err = ParseIntError;
         #[inline]
         fn from_str(s: &str) -> Result<Self, Self::Err> {
-            s.parse::<u32>().map(Self::new_unchecked)
+            s.parse::<u32>().map(Self::new)
         }
     }
     macro_rules! modu32_ref_binop {

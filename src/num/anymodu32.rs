@@ -1,7 +1,7 @@
 #[cargo_snippet::snippet("AnyModu32")]
 static mut MODULO: u32 = 1_000_000_007;
 #[cargo_snippet::snippet("AnyModu32")]
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub struct AnyModu32 {
     x: u32,
 }
@@ -166,7 +166,7 @@ pub mod modu32_impl {
         type Err = ParseIntError;
         #[inline]
         fn from_str(s: &str) -> Result<Self, Self::Err> {
-            s.parse::<u32>().map(Self::new_unchecked)
+            s.parse::<u32>().map(Self::new)
         }
     }
     macro_rules! modu32_ref_binop {

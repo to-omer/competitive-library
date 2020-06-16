@@ -1,6 +1,6 @@
 pub use crate::algebra::operations::{AdditiveOperation, CartesianOperation, LinearOperation};
 pub use crate::data_structure::lazy_segment_tree::LazySegmentTree;
-pub use crate::math::modu32::{modulos::Modulo998244353, Modu32};
+pub use crate::num::modu32::{modulos::Modulo998244353, Modu32};
 pub use crate::scan;
 pub use crate::tools::scanner::{read_all, Scanner};
 use std::io::{self, Read, Write};
