@@ -3,6 +3,7 @@ macro_rules! input {
 }
 
 #[cargo_snippet::snippet]
+#[cargo_snippet::snippet(include = "input")]
 fn main() {
     #[allow(unused_imports)]
     use std::io::Write as _;
