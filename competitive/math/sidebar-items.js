@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["anymod",""],["anymodu32",""],["factorial",""],["fft",""],["gcd",""],["matrix",""],["modi64",""],["modu32",""],["nums",""],["polynomial",""],["prime",""]]});
+initSidebarItems({"mod":[["factorial",""],["fft",""],["gcd",""],["matrix",""],["nums",""],["polynomial",""],["prime",""]]});

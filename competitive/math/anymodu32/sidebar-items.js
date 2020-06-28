@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["modu32_impl",""]],"struct":[["AnyModu32",""]]});
