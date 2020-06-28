@@ -11,72 +11,100 @@ impl PrimeTable {
         let mut table = vec![1; max_n + 1];
         table[0] = 0;
         table[1] = 0;
-        for i in 2..(max_n as f32).sqrt() as usize + 1 {
+        for i in 2..=(max_n as f32).sqrt() as usize {
             if table[i] == 1 {
-                for j in ((i * i)..(max_n + 1)).step_by(i) {
+                for j in (i * i..=max_n).step_by(i) {
                     if table[j] == 1 {
                         table[j] = i;
                     }
                 }
             }
         }
-        PrimeTable { table: table }
+        PrimeTable { table }
     }
     pub fn is_prime(&self, n: usize) -> bool {
         self.table[n] == 1
     }
-    pub fn prime_factors(&self, n: usize) -> std::collections::HashMap<usize, usize> {
-        let mut factors = std::collections::HashMap::new();
-        let mut i = n;
-        while self.table[i] != 1 {
-            *factors.entry(self.table[i]).or_insert(0) += 1;
-            i /= self.table[i];
+    pub fn prime_factors(&self, mut n: usize) -> Vec<(usize, usize)> {
+        let mut factors = vec![];
+        while self.table[n] > 1 {
+            let p = self.table[n];
+            let mut cnt = 1;
+            n /= p;
+            while self.table[n] == p {
+                n /= p;
+                cnt += 1;
+            }
+            if n == p {
+                cnt += 1;
+                n /= p;
+            }
+            factors.push((p, cnt));
         }
-        *factors.entry(i).or_insert(0) += 1;
+        if n > 1 {
+            factors.push((n, 1));
+        }
         factors
     }
 }
 
 #[test]
 fn test_prime_table() {
-    let primes = PrimeTable::new(100000);
-    assert!(!primes.is_prime(100000));
+    const N: usize = 100000;
+    let primes = PrimeTable::new(N);
+    assert!(!primes.is_prime(N));
     assert!(primes.is_prime(99991));
 
     let factors = primes.prime_factors(99991);
-    assert_eq!(factors.len(), 1);
-    assert_eq!(factors[&99991], 1);
+    assert_eq!(factors, vec![(99991, 1)]);
     let factors = primes.prime_factors(2016);
-    assert_eq!(factors.keys().collect::<Vec<_>>().len(), 3);
-    assert_eq!(factors[&2], 5);
-    assert_eq!(factors[&3], 2);
-    assert_eq!(factors[&7], 1);
-
-    let factors = prime_factors(99991);
-    assert_eq!(factors.len(), 1);
-    assert_eq!(factors[&99991], 1);
-    let factors = prime_factors(2016);
-    assert_eq!(factors.keys().collect::<Vec<_>>().len(), 3);
-    assert_eq!(factors[&2], 5);
-    assert_eq!(factors[&3], 2);
-    assert_eq!(factors[&7], 1);
+    assert_eq!(factors, vec![(2, 5), (3, 2), (7, 1)]);
+    for i in 1..=N {
+        assert_eq!(
+            i,
+            primes
+                .prime_factors(i)
+                .into_iter()
+                .map(|(p, c)| p.pow(c as u32))
+                .product::<usize>()
+        );
+    }
 }
 
 #[cargo_snippet::snippet]
-pub fn prime_factors(n: usize) -> std::collections::HashMap<usize, usize> {
-    let mut factors = std::collections::HashMap::new();
-    let mut n = n;
-    for i in 2..(n as f32).sqrt() as usize + 1 {
-        while n % i == 0 {
+pub fn prime_factors(mut n: usize) -> Vec<(usize, usize)> {
+    let mut factors = vec![];
+    for i in 2..=(n as f32).sqrt() as usize {
+        if n % i == 0 {
+            let mut cnt = 1;
             n /= i;
-            *factors.entry(i).or_insert(0) += 1;
+            while n % i == 0 {
+                cnt += 1;
+                n /= i;
+            }
+            factors.push((i, cnt));
         }
     }
     if n > 1 {
-        *factors.entry(n).or_insert(0) += 1;
+        factors.push((n, 1));
     }
     factors
 }
+
+#[test]
+fn test_prime_factors() {
+    let factors = prime_factors(99991);
+    assert_eq!(factors, vec![(99991, 1)]);
+    let factors = prime_factors(2016);
+    assert_eq!(factors, vec![(2, 5), (3, 2), (7, 1)]);
+
+    const N: usize = 100000;
+    let primes = PrimeTable::new(N);
+    for i in 1..=N {
+        assert_eq!(primes.prime_factors(i), prime_factors(i));
+    }
+}
+
 #[cargo_snippet::snippet]
 pub fn divisors(n: usize) -> Vec<usize> {
     let mut res = vec![];
