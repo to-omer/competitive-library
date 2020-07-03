@@ -64,7 +64,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
     }
     #[inline]
     fn thrust(&mut self, k: usize) {
-        for i in (1..self.height).rev() {
+        for i in (1..=self.height).rev() {
             self.propagate(k >> i);
         }
     }
