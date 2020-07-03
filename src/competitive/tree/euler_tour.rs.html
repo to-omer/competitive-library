@@ -178,17 +178,6 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">magma</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">data_structure</span>::<span class="ident">disjoint_sparse_table</span>::<span class="ident">DisjointSparseTable</span>;
@@ -204,7 +193,7 @@
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;EulerTourForEdge&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">EulerTourForEdge</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">EulerTourForEdge</span> {
+        <span class="self">Self</span> {
             <span class="ident">eidx</span>: <span class="macro">vec</span><span class="macro">!</span>[(<span class="number">0</span>, <span class="number">0</span>); <span class="ident">vsize</span> <span class="op">-</span> <span class="number">1</span>],
             <span class="ident">par</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">vsize</span>; <span class="ident">vsize</span>],
             <span class="ident">epos</span>: <span class="number">0</span>,
@@ -214,15 +203,13 @@
         <span class="self">self</span>.<span class="ident">epos</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">edge_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">Graph</span>) {
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">par</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">u</span>;
-                <span class="self">self</span>.<span class="ident">eidx</span>[<span class="ident">a</span>.<span class="ident">id</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">epos</span>;
-                <span class="self">self</span>.<span class="ident">epos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="self">self</span>.<span class="ident">edge_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
-                <span class="self">self</span>.<span class="ident">eidx</span>[<span class="ident">a</span>.<span class="ident">id</span>].<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">epos</span>;
-                <span class="self">self</span>.<span class="ident">epos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-            }
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>).<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
+            <span class="self">self</span>.<span class="ident">par</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">u</span>;
+            <span class="self">self</span>.<span class="ident">eidx</span>[<span class="ident">a</span>.<span class="ident">id</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">epos</span>;
+            <span class="self">self</span>.<span class="ident">epos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="self">self</span>.<span class="ident">edge_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
+            <span class="self">self</span>.<span class="ident">eidx</span>[<span class="ident">a</span>.<span class="ident">id</span>].<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">epos</span>;
+            <span class="self">self</span>.<span class="ident">epos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         }
     }
 }
@@ -236,7 +223,7 @@
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;EulerTourForVertex&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">EulerTourForVertex</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">EulerTourForVertex</span> {
+        <span class="self">Self</span> {
             <span class="ident">vidx</span>: <span class="macro">vec</span><span class="macro">!</span>[(<span class="number">0</span>, <span class="number">0</span>); <span class="ident">vsize</span>],
             <span class="ident">vpos</span>: <span class="number">0</span>,
         }
@@ -247,20 +234,16 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subtree_vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">Graph</span>) {
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vpos</span>;
         <span class="self">self</span>.<span class="ident">vpos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">subtree_vertex_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
-            }
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>).<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
+            <span class="self">self</span>.<span class="ident">subtree_vertex_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
         }
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vpos</span>;
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">path_vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">Graph</span>) {
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vpos</span>;
         <span class="self">self</span>.<span class="ident">vpos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">path_vertex_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
-            }
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>).<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
+            <span class="self">self</span>.<span class="ident">path_vertex_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
         }
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vpos</span>;
         <span class="self">self</span>.<span class="ident">vpos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -296,7 +279,7 @@
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;EulerTourForRichVertex&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">EulerTourForRichVertex</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">EulerTourForRichVertex</span> {
+        <span class="self">Self</span> {
             <span class="ident">vidx</span>: <span class="macro">vec</span><span class="macro">!</span>[(<span class="number">0</span>, <span class="number">0</span>); <span class="ident">vsize</span>],
             <span class="ident">vtrace</span>: <span class="macro">vec</span><span class="macro">!</span>[],
         }
@@ -307,11 +290,9 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">Graph</span>) {
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">len</span>();
         <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">push</span>(<span class="ident">u</span>);
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">vertex_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
-                <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">push</span>(<span class="ident">u</span>);
-            }
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>).<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
+            <span class="self">self</span>.<span class="ident">vertex_tour</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
+            <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">push</span>(<span class="ident">u</span>);
         }
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
     }
@@ -329,10 +310,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gen_lca</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">Graph</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">LowestCommonAncestor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">monoid</span> <span class="op">=</span> <span class="ident">LCAMonoid</span>::<span class="ident">new</span>(<span class="ident">graph</span>);
         <span class="kw">let</span> <span class="ident">dst</span> <span class="op">=</span> <span class="ident">DisjointSparseTable</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">clone</span>(), <span class="ident">monoid</span>);
-        <span class="ident">LowestCommonAncestor</span> {
-            <span class="ident">euler</span>: <span class="kw-2">&amp;</span><span class="self">self</span>,
-            <span class="ident">dst</span>: <span class="ident">dst</span>,
-        }
+        <span class="ident">LowestCommonAncestor</span> { <span class="ident">euler</span>: <span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">dst</span> }
     }
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;LowestCommonAncestor&quot;</span>)]</span>

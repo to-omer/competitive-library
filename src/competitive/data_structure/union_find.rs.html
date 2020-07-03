@@ -186,10 +186,6 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">magma</span>::<span class="ident">Group</span>;
 
@@ -204,9 +200,9 @@
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;UnionFind&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">UnionFind</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">UnionFind</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">parents</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>; <span class="ident">n</span>];
-        <span class="ident">UnionFind</span> { <span class="ident">parents</span>: <span class="ident">parents</span> }
+        <span class="self">Self</span> { <span class="ident">parents</span> }
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
@@ -247,14 +243,12 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">members</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">x</span>);
         (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">parents</span>.<span class="ident">len</span>())
-            .<span class="ident">into_iter</span>()
             .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">find</span>(<span class="kw-2">*</span><span class="ident">i</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">root</span>)
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>()
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">roots</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">parents</span>.<span class="ident">len</span>())
-            .<span class="ident">into_iter</span>()
             .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">parents</span>[<span class="kw-2">*</span><span class="ident">i</span>] <span class="op">&lt;</span> <span class="number">0</span>)
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>()
     }
@@ -302,10 +296,10 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">group</span>: <span class="ident">G</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">parents</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="op">-</span><span class="number">1</span>; <span class="ident">n</span>];
         <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">group</span>.<span class="ident">unit</span>().<span class="ident">clone</span>(); <span class="ident">n</span>];
-        <span class="ident">WeightedUnionFind</span> {
-            <span class="ident">parents</span>: <span class="ident">parents</span>,
-            <span class="ident">diff</span>: <span class="ident">diff</span>,
-            <span class="ident">group</span>: <span class="ident">group</span>,
+        <span class="self">Self</span> {
+            <span class="ident">parents</span>,
+            <span class="ident">diff</span>,
+            <span class="ident">group</span>,
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
@@ -364,13 +358,11 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">members</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">root</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">x</span>);
         (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">parents</span>.<span class="ident">len</span>())
-            .<span class="ident">into_iter</span>()
             .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">find</span>(<span class="kw-2">*</span><span class="ident">i</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">root</span>)
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>()
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">roots</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">parents</span>.<span class="ident">len</span>())
-            .<span class="ident">into_iter</span>()
             .<span class="ident">filter</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">parents</span>[<span class="kw-2">*</span><span class="ident">i</span>] <span class="op">&lt;</span> <span class="number">0</span>)
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>()
     }

@@ -32,10 +32,6 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
-<span id="35">35</span>
-<span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">graph</span>::<span class="ident">graph</span>::<span class="ident">Graph</span>;
 
@@ -43,10 +39,8 @@
 <span class="kw">impl</span> <span class="ident">Graph</span> {
     <span class="kw">fn</span> <span class="ident">depth_dfs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">d</span>: <span class="ident">u64</span>, <span class="ident">depth</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>) {
         <span class="ident">depth</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="ident">d</span>;
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">depth_dfs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">d</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">depth</span>);
-            }
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>).<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
+            <span class="self">self</span>.<span class="ident">depth_dfs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">d</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">depth</span>);
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree_depth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
@@ -61,11 +55,9 @@
 <span class="kw">impl</span> <span class="ident">Graph</span> {
     <span class="kw">fn</span> <span class="ident">size_dfs</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">size</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>) {
         <span class="ident">size</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">size_dfs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">size</span>);
-                <span class="ident">size</span>[<span class="ident">u</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">size</span>[<span class="ident">a</span>.<span class="ident">to</span>];
-            }
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>).<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
+            <span class="self">self</span>.<span class="ident">size_dfs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">size</span>);
+            <span class="ident">size</span>[<span class="ident">u</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">size</span>[<span class="ident">a</span>.<span class="ident">to</span>];
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {

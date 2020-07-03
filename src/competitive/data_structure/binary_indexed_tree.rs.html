@@ -347,14 +347,6 @@
 <span id="347">347</span>
 <span id="348">348</span>
 <span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">magma</span>::{<span class="ident">Group</span>, <span class="ident">Monoid</span>};
 
@@ -367,12 +359,9 @@
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;BinaryIndexedTree&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">monoid</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">monoid</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">bit</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">monoid</span>.<span class="ident">unit</span>(); <span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>];
-        <span class="ident">BinaryIndexedTree</span> {
-            <span class="ident">bit</span>: <span class="ident">bit</span>,
-            <span class="ident">monoid</span>: <span class="ident">monoid</span>,
-        }
+        <span class="self">Self</span> { <span class="ident">bit</span>, <span class="ident">monoid</span> }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ident</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
@@ -550,14 +539,9 @@
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;BinaryIndexedTree2D&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">h</span>: <span class="ident">usize</span>, <span class="ident">w</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">h</span>: <span class="ident">usize</span>, <span class="ident">w</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">bit</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">m</span>.<span class="ident">unit</span>(); <span class="ident">w</span> <span class="op">+</span> <span class="number">1</span>]; <span class="ident">h</span> <span class="op">+</span> <span class="number">1</span>];
-        <span class="ident">BinaryIndexedTree2D</span> {
-            <span class="ident">h</span>: <span class="ident">h</span>,
-            <span class="ident">w</span>: <span class="ident">w</span>,
-            <span class="ident">bit</span>: <span class="ident">bit</span>,
-            <span class="ident">m</span>: <span class="ident">m</span>,
-        }
+        <span class="self">Self</span> { <span class="ident">h</span>, <span class="ident">w</span>, <span class="ident">bit</span>, <span class="ident">m</span> }
     }
     <span class="doccomment">/// 0-indexed [0, i) x [0, j)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
