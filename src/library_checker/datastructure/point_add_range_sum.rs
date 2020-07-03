@@ -15,13 +15,13 @@ pub fn point_add_range_sum_binary_indexed_tree(
     scan!(scanner, n, q, a: [i64; n]);
     let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
     for i in 0..n {
-        bit.update(i + 1, a[i]);
+        bit.update(i, a[i]);
     }
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {
             scan!(scanner, p, x: i64);
-            bit.update(p + 1, x);
+            bit.update(p, x);
         } else {
             scan!(scanner, l, r);
             writeln!(writer, "{}", bit.fold(l, r))?;

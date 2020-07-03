@@ -3,42 +3,39 @@ use crate::algebra::magma::{Group, Monoid};
 #[cargo_snippet::snippet("BinaryIndexedTree")]
 #[derive(Clone, Debug)]
 pub struct BinaryIndexedTree<M: Monoid> {
+    n: usize,
     bit: Vec<M::T>,
-    monoid: M,
+    m: M,
 }
 #[cargo_snippet::snippet("BinaryIndexedTree")]
 impl<M: Monoid> BinaryIndexedTree<M> {
     #[inline]
-    pub fn new(n: usize, monoid: M) -> Self {
-        let bit = vec![monoid.unit(); n + 1];
-        Self { bit, monoid }
+    pub fn new(n: usize, m: M) -> Self {
+        let bit = vec![m.unit(); n + 1];
+        Self { n, bit, m }
     }
     #[inline]
-    pub fn ident(&self) -> M::T {
-        self.monoid.unit()
-    }
-    #[inline]
-    pub fn operate(&self, x: &M::T, y: &M::T) -> M::T {
-        self.monoid.operate(x, y)
-    }
-    #[inline]
-    /// 0-indexed [1, k)
-    pub fn accumulate(&self, k: usize) -> M::T {
-        let mut res = self.ident();
-        let mut k = k;
+    /// fold [0, k)
+    pub fn accumulate0(&self, mut k: usize) -> M::T {
+        debug_assert!(k <= self.n);
+        let mut res = self.m.unit();
         while k > 0 {
-            res = self.operate(&res, &self.bit[k]);
+            res = self.m.operate(&res, &self.bit[k]);
             k -= k & !k + 1;
         }
         res
     }
     #[inline]
-    /// 1-indexed
+    /// fold [0, k]
+    pub fn accumulate(&self, k: usize) -> M::T {
+        self.accumulate0(k + 1)
+    }
+    #[inline]
     pub fn update(&mut self, k: usize, x: M::T) {
-        assert!(k > 0);
-        let mut k = k;
-        while k < self.bit.len() {
-            self.bit[k] = self.operate(&self.bit[k], &x);
+        debug_assert!(k < self.n);
+        let mut k = k + 1;
+        while k <= self.n {
+            self.bit[k] = self.m.operate(&self.bit[k], &x);
             k += k & !k + 1;
         }
     }
@@ -56,14 +53,14 @@ fn test_binary_indexed_tree() {
     for _ in 0..q {
         let k = rand.rand(n as u64) as usize;
         let v = rand.rand(1_000_000_000) as usize;
-        bit.update(k + 1, v);
+        bit.update(k, v);
         arr[k] += v;
     }
     for i in 0..n - 1 {
         arr[i + 1] += arr[i];
     }
     for i in 0..n {
-        assert_eq!(bit.accumulate(i + 1), arr[i]);
+        assert_eq!(bit.accumulate(i), arr[i]);
     }
 
     let mut bit = BinaryIndexedTree::new(n, MaxOperation::new());
@@ -71,39 +68,33 @@ fn test_binary_indexed_tree() {
     for _ in 0..q {
         let k = rand.rand(n as u64) as usize;
         let v = rand.rand(1_000_000_000) as usize;
-        bit.update(k + 1, v);
+        bit.update(k, v);
         arr[k] = std::cmp::max(arr[k], v);
     }
     for i in 0..n - 1 {
         arr[i + 1] = std::cmp::max(arr[i], arr[i + 1]);
     }
     for i in 0..n {
-        assert_eq!(bit.accumulate(i + 1), arr[i]);
+        assert_eq!(bit.accumulate(i), arr[i]);
     }
 }
 
 #[cargo_snippet::snippet("BinaryIndexedTree")]
 impl<G: Group> BinaryIndexedTree<G> {
     #[inline]
-    pub fn inverse(&self, x: &G::T) -> G::T {
-        self.monoid.inverse(x)
-    }
-    #[inline]
-    /// 0-indexed [l, r)
     pub fn fold(&self, l: usize, r: usize) -> G::T {
-        self.operate(&self.inverse(&self.accumulate(l)), &self.accumulate(r))
+        debug_assert!(l < self.n && 0 < r && r <= self.n);
+        self.m
+            .operate(&self.m.inverse(&self.accumulate0(l)), &self.accumulate0(r))
     }
     #[inline]
-    /// 1-indexed
     pub fn get(&self, k: usize) -> G::T {
-        self.fold(k - 1, k)
+        self.fold(k, k + 1)
     }
     #[inline]
-    /// 1-indexed
     pub fn set(&mut self, k: usize, x: G::T) {
-        let y = self.inverse(&self.get(k));
-        let z = self.operate(&y, &x);
-        self.update(k, z);
+        let y = self.m.inverse(&self.get(k));
+        self.update(k, self.m.operate(&y, &x));
     }
 }
 
@@ -119,7 +110,7 @@ fn test_group_binary_indexed_tree() {
     for _ in 0..q {
         let k = rand.rand(n as u64) as usize;
         let v = rand.rand(2_000_000_000) as i64 - 1_000_000_000;
-        bit.set(k + 1, v);
+        bit.set(k, v);
         arr[k + 1] = v;
     }
     for i in 0..n {
@@ -137,20 +128,20 @@ impl<M: Monoid> BinaryIndexedTree<M>
 where
     M::T: Ord,
 {
-    /// 1-indexed
+    #[inline]
     pub fn lower_bound(&self, x: M::T) -> usize {
-        let n = self.bit.len() - 1;
-        let mut acc = self.ident();
+        let n = self.n;
+        let mut acc = self.m.unit();
         let mut pos = 0;
         let mut k = 1 << format!("{:b}", n).len();
         while k > 0 {
-            if k + pos <= n && self.operate(&acc, &self.bit[k + pos]) < x {
+            if k + pos <= n && self.m.operate(&acc, &self.bit[k + pos]) < x {
                 pos += k;
-                acc = self.operate(&acc, &self.bit[pos]);
+                acc = self.m.operate(&acc, &self.bit[pos]);
             }
             k >>= 1;
         }
-        pos + 1
+        pos
     }
 }
 
@@ -167,7 +158,7 @@ fn test_binary_indexed_tree_lower_bound() {
     for _ in 0..q {
         let k = rand.rand(n as u64) as usize;
         let v = rand.rand(1_000_000_000) as i64;
-        bit.set(k + 1, v);
+        bit.set(k, v);
         arr[k] = v;
     }
     for i in 0..n - 1 {
@@ -175,7 +166,7 @@ fn test_binary_indexed_tree_lower_bound() {
     }
     for _ in 0..n {
         let x = rand.rand(5_000_000_000_000) as i64;
-        assert_eq!(bit.lower_bound(x), lower_bound(&arr, x) + 1);
+        assert_eq!(bit.lower_bound(x), lower_bound(&arr, x));
     }
 }
 
@@ -189,12 +180,14 @@ pub struct BinaryIndexedTree2D<M: Monoid> {
 }
 #[cargo_snippet::snippet("BinaryIndexedTree2D")]
 impl<M: Monoid> BinaryIndexedTree2D<M> {
+    #[inline]
     pub fn new(h: usize, w: usize, m: M) -> Self {
         let bit = vec![vec![m.unit(); w + 1]; h + 1];
         Self { h, w, bit, m }
     }
-    /// 0-indexed [0, i) x [0, j)
-    pub fn accumulate(&self, i: usize, j: usize) -> M::T {
+    #[inline]
+    /// fold [0, i) x [0, j)
+    pub fn accumulate0(&self, i: usize, j: usize) -> M::T {
         let mut res = self.m.unit();
         let mut a = i;
         while a > 0 {
@@ -207,11 +200,16 @@ impl<M: Monoid> BinaryIndexedTree2D<M> {
         }
         res
     }
-    /// 1-indexed
+    #[inline]
+    /// fold [0, i] x [0, j]
+    pub fn accumulate(&self, i: usize, j: usize) -> M::T {
+        self.accumulate0(i + 1, j + 1)
+    }
+    #[inline]
     pub fn update(&mut self, i: usize, j: usize, x: M::T) {
-        let mut a = i;
+        let mut a = i + 1;
         while a <= self.h {
-            let mut b = j;
+            let mut b = j + 1;
             while b <= self.w {
                 self.bit[a][b] = self.m.operate(&self.bit[a][b], &x);
                 b += b & !b + 1;
@@ -235,7 +233,7 @@ fn test_binary_indexed_tree_2d() {
         let i = rand.rand(h as u64) as usize;
         let j = rand.rand(w as u64) as usize;
         let v = rand.rand(1_000_000_000) as usize;
-        bit.update(i + 1, j + 1, v);
+        bit.update(i, j, v);
         arr[i][j] += v;
     }
     for i in 0..h {
@@ -250,7 +248,7 @@ fn test_binary_indexed_tree_2d() {
     }
     for i in 0..h {
         for j in 0..w {
-            assert_eq!(bit.accumulate(i + 1, j + 1), arr[i][j]);
+            assert_eq!(bit.accumulate(i, j), arr[i][j]);
         }
     }
 
@@ -260,7 +258,7 @@ fn test_binary_indexed_tree_2d() {
         let i = rand.rand(h as u64) as usize;
         let j = rand.rand(w as u64) as usize;
         let v = rand.rand(1_000_000_000) as usize;
-        bit.update(i + 1, j + 1, v);
+        bit.update(i, j, v);
         arr[i][j] = std::cmp::max(arr[i][j], v);
     }
     for i in 0..h {
@@ -275,31 +273,32 @@ fn test_binary_indexed_tree_2d() {
     }
     for i in 0..h {
         for j in 0..w {
-            assert_eq!(bit.accumulate(i + 1, j + 1), arr[i][j]);
+            assert_eq!(bit.accumulate(i, j), arr[i][j]);
         }
     }
 }
 
 #[cargo_snippet::snippet("BinaryIndexedTree2D")]
 impl<G: Group> BinaryIndexedTree2D<G> {
+    #[inline]
     /// 0-indexed [i1, i2) x [j1, j2)
     pub fn fold(&self, i1: usize, j1: usize, i2: usize, j2: usize) -> G::T {
         let mut res = self.m.unit();
-        res = self.m.operate(&res, &self.accumulate(i1, j1));
+        res = self.m.operate(&res, &self.accumulate0(i1, j1));
         res = self
             .m
-            .operate(&res, &self.m.inverse(&self.accumulate(i1, j2)));
+            .operate(&res, &self.m.inverse(&self.accumulate0(i1, j2)));
         res = self
             .m
-            .operate(&res, &self.m.inverse(&self.accumulate(i2, j1)));
-        res = self.m.operate(&res, &self.accumulate(i2, j2));
+            .operate(&res, &self.m.inverse(&self.accumulate0(i2, j1)));
+        res = self.m.operate(&res, &self.accumulate0(i2, j2));
         res
     }
-    /// 1-indexed
+    #[inline]
     pub fn get(&self, i: usize, j: usize) -> G::T {
-        self.fold(i - 1, j - 1, i, j)
+        self.fold(i, j, i + 1, j + 1)
     }
-    /// 1-indexed
+    #[inline]
     pub fn set(&mut self, i: usize, j: usize, x: G::T) {
         let y = self.m.inverse(&self.get(i, j));
         let z = self.m.operate(&y, &x);
@@ -321,7 +320,7 @@ fn test_group_binary_indexed_tree2d() {
         let i = rand.rand(h as u64) as usize;
         let j = rand.rand(w as u64) as usize;
         let v = rand.rand(2_000_000_000) as i64 - 1_000_000_000;
-        bit.set(i + 1, j + 1, v);
+        bit.set(i, j, v);
         arr[i + 1][j + 1] = v;
     }
     for i in 0..h + 1 {
