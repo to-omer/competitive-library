@@ -7,6 +7,7 @@ use crate::algebra::magma::Monoid;
 #[derive(Clone, Debug)]
 pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     n: usize,
+    height: usize,
     seg: Vec<M::T>,
     lazy: Vec<E::T>,
     m: M,
@@ -16,11 +17,13 @@ pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
 #[cargo_snippet::snippet("LazySegmentTree")]
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F> {
     pub fn new(n: usize, m: M, e: E, f: F) -> Self {
-        let n = 1 << format!("{:b}", n - 1).len();
-        let seg = vec![m.unit(); 2 * n - 1];
-        let lazy = vec![e.unit(); 2 * n - 1];
+        let height = format!("{:b}", n - 1).len();
+        let n = 1 << height;
+        let seg = vec![m.unit(); 2 * n];
+        let lazy = vec![e.unit(); 2 * n];
         Self {
             n,
+            height,
             seg,
             lazy,
             m,
@@ -29,17 +32,19 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         }
     }
     pub fn from_vec(v: Vec<M::T>, m: M, e: E, f: F) -> Self {
-        let n = 1 << format!("{:b}", v.len() - 1).len();
-        let mut seg = vec![m.unit(); 2 * n - 1];
+        let height = format!("{:b}", v.len() - 1).len();
+        let n = 1 << height;
+        let mut seg = vec![m.unit(); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
-            seg[i + n - 1] = x;
+            seg[i + n] = x;
         }
-        for i in (0..n - 1).rev() {
-            seg[i] = m.operate(&seg[2 * i + 1], &seg[2 * i + 2]);
+        for i in (1..n).rev() {
+            seg[i] = m.operate(&seg[2 * i], &seg[2 * i + 1]);
         }
-        let lazy = vec![e.unit(); 2 * n - 1];
+        let lazy = vec![e.unit(); 2 * n];
         Self {
             n,
+            height,
             seg,
             lazy,
             m,
@@ -47,50 +52,90 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
             f,
         }
     }
-    pub fn eval(&mut self, k: usize) {
+    #[inline]
+    fn propagate(&mut self, k: usize) {
+        debug_assert!(k < self.n);
         if self.lazy[k] != self.e.unit() {
-            if k * 2 + 1 < self.n * 2 - 1 {
-                self.lazy[2 * k + 1] = self.e.operate(&self.lazy[2 * k + 1], &self.lazy[k]);
-                self.lazy[2 * k + 2] = self.e.operate(&self.lazy[2 * k + 2], &self.lazy[k]);
-            }
-            self.seg[k] = (self.f)(&self.seg[k], &self.lazy[k]);
+            self.lazy[2 * k] = self.e.operate(&self.lazy[2 * k], &self.lazy[k]);
+            self.lazy[2 * k + 1] = self.e.operate(&self.lazy[2 * k + 1], &self.lazy[k]);
+            self.seg[k] = self.reflect(k);
             self.lazy[k] = self.e.unit();
         }
     }
-    fn update_inner(&mut self, l: usize, r: usize, x: E::T, k: usize, a: usize, b: usize) -> M::T {
-        self.eval(k);
-        if b <= l || r <= a {
-            self.seg[k].clone()
-        } else if l <= a && b <= r {
-            self.lazy[k] = self.e.operate(&self.lazy[k], &x);
+    #[inline]
+    fn thrust(&mut self, k: usize) {
+        for i in (1..self.height).rev() {
+            self.propagate(k >> i);
+        }
+    }
+    #[inline]
+    fn reflect(&self, k: usize) -> M::T {
+        if self.lazy[k] != self.e.unit() {
             (self.f)(&self.seg[k], &self.lazy[k])
         } else {
-            let lx = self.update_inner(l, r, x.clone(), k * 2 + 1, a, (a + b) / 2);
-            let rx = self.update_inner(l, r, x, k * 2 + 2, (a + b) / 2, b);
-            let res = self.m.operate(&lx, &rx);
-            self.seg[k] = res.clone();
-            res
-        }
-    }
-    pub fn update(&mut self, l: usize, r: usize, x: E::T) -> M::T {
-        let n = self.n;
-        self.update_inner(l, r, x, 0, 0, n)
-    }
-    fn fold_inner(&mut self, l: usize, r: usize, k: usize, a: usize, b: usize) -> M::T {
-        self.eval(k);
-        if b <= l || r <= a {
-            self.m.unit()
-        } else if l <= a && b <= r {
             self.seg[k].clone()
-        } else {
-            let lx = self.fold_inner(l, r, k * 2 + 1, a, (a + b) / 2);
-            let rx = self.fold_inner(l, r, k * 2 + 2, (a + b) / 2, b);
-            self.m.operate(&lx, &rx)
         }
+    }
+    #[inline]
+    fn recalc(&mut self, mut k: usize) {
+        k /= 2;
+        while k > 0 {
+            self.seg[k] = self
+                .m
+                .operate(&self.reflect(2 * k), &self.reflect(2 * k + 1));
+            k /= 2;
+        }
+    }
+    pub fn update(&mut self, l: usize, r: usize, x: E::T) {
+        debug_assert!(l < self.n);
+        debug_assert!(r <= self.n);
+        let mut a = l + self.n;
+        let mut b = r + self.n;
+        self.thrust(a);
+        self.thrust(b - 1);
+        while a < b {
+            if a & 1 != 0 {
+                self.lazy[a] = self.e.operate(&self.lazy[a], &x);
+                a += 1;
+            }
+            if b & 1 != 0 {
+                b -= 1;
+                self.lazy[b] = self.e.operate(&self.lazy[b], &x);
+            }
+            a /= 2;
+            b /= 2;
+        }
+        self.recalc(l + self.n);
+        self.recalc(r + self.n - 1);
     }
     pub fn fold(&mut self, l: usize, r: usize) -> M::T {
-        let n = self.n;
-        self.fold_inner(l, r, 0, 0, n)
+        debug_assert!(l < self.n);
+        debug_assert!(r <= self.n);
+        let mut l = l + self.n;
+        let mut r = r + self.n;
+        self.thrust(l);
+        self.thrust(r - 1);
+        let mut vl = self.m.unit();
+        let mut vr = self.m.unit();
+        while l < r {
+            if l & 1 != 0 {
+                vl = self.m.operate(&vl, &self.reflect(l));
+                l += 1;
+            }
+            if r & 1 != 0 {
+                r -= 1;
+                vr = self.m.operate(&self.reflect(r), &vr);
+            }
+            l /= 2;
+            r /= 2;
+        }
+        self.m.operate(&vl, &vr)
+    }
+    pub fn get(&mut self, k: usize) -> M::T {
+        self.fold(k, k + 1)
+    }
+    pub fn fold_all(&mut self) -> M::T {
+        self.fold(0, self.n)
     }
 }
 
