@@ -12,7 +12,7 @@ pub struct EulerTourForEdge {
 #[cargo_snippet::snippet("EulerTourForEdge")]
 impl EulerTourForEdge {
     pub fn new(vsize: usize) -> Self {
-        EulerTourForEdge {
+        Self {
             eidx: vec![(0, 0); vsize - 1],
             par: vec![vsize; vsize],
             epos: 0,
@@ -22,15 +22,13 @@ impl EulerTourForEdge {
         self.epos
     }
     pub fn edge_tour(&mut self, u: usize, p: usize, graph: &Graph) {
-        for a in graph.adjacency(u) {
-            if a.to != p {
-                self.par[a.to] = u;
-                self.eidx[a.id].0 = self.epos;
-                self.epos += 1;
-                self.edge_tour(a.to, u, graph);
-                self.eidx[a.id].1 = self.epos;
-                self.epos += 1;
-            }
+        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
+            self.par[a.to] = u;
+            self.eidx[a.id].0 = self.epos;
+            self.epos += 1;
+            self.edge_tour(a.to, u, graph);
+            self.eidx[a.id].1 = self.epos;
+            self.epos += 1;
         }
     }
 }
@@ -44,7 +42,7 @@ pub struct EulerTourForVertex {
 #[cargo_snippet::snippet("EulerTourForVertex")]
 impl EulerTourForVertex {
     pub fn new(vsize: usize) -> Self {
-        EulerTourForVertex {
+        Self {
             vidx: vec![(0, 0); vsize],
             vpos: 0,
         }
@@ -55,20 +53,16 @@ impl EulerTourForVertex {
     pub fn subtree_vertex_tour(&mut self, u: usize, p: usize, graph: &Graph) {
         self.vidx[u].0 = self.vpos;
         self.vpos += 1;
-        for a in graph.adjacency(u) {
-            if a.to != p {
-                self.subtree_vertex_tour(a.to, u, graph);
-            }
+        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
+            self.subtree_vertex_tour(a.to, u, graph);
         }
         self.vidx[u].1 = self.vpos;
     }
     pub fn path_vertex_tour(&mut self, u: usize, p: usize, graph: &Graph) {
         self.vidx[u].0 = self.vpos;
         self.vpos += 1;
-        for a in graph.adjacency(u) {
-            if a.to != p {
-                self.path_vertex_tour(a.to, u, graph);
-            }
+        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
+            self.path_vertex_tour(a.to, u, graph);
         }
         self.vidx[u].1 = self.vpos;
         self.vpos += 1;
@@ -104,7 +98,7 @@ pub struct EulerTourForRichVertex {
 #[cargo_snippet::snippet("EulerTourForRichVertex")]
 impl EulerTourForRichVertex {
     pub fn new(vsize: usize) -> Self {
-        EulerTourForRichVertex {
+        Self {
             vidx: vec![(0, 0); vsize],
             vtrace: vec![],
         }
@@ -115,11 +109,9 @@ impl EulerTourForRichVertex {
     pub fn vertex_tour(&mut self, u: usize, p: usize, graph: &Graph) {
         self.vidx[u].0 = self.vtrace.len();
         self.vtrace.push(u);
-        for a in graph.adjacency(u) {
-            if a.to != p {
-                self.vertex_tour(a.to, u, graph);
-                self.vtrace.push(u);
-            }
+        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
+            self.vertex_tour(a.to, u, graph);
+            self.vtrace.push(u);
         }
         self.vidx[u].1 = self.vtrace.len() - 1;
     }
@@ -137,10 +129,7 @@ impl EulerTourForRichVertex {
     pub fn gen_lca<'a>(&'a self, graph: &Graph) -> LowestCommonAncestor<'a> {
         let monoid = LCAMonoid::new(graph);
         let dst = DisjointSparseTable::new(self.vtrace.clone(), monoid);
-        LowestCommonAncestor {
-            euler: &self,
-            dst: dst,
-        }
+        LowestCommonAncestor { euler: &self, dst }
     }
 }
 #[cargo_snippet::snippet("LowestCommonAncestor")]

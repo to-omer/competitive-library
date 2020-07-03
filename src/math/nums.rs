@@ -34,9 +34,9 @@ impl BabyStepGiantStep {
             a = a * x % p;
         }
         BabyStepGiantStep {
-            p: p,
+            p,
             r: modinv(a as i64, p as i64) as u64,
-            baby: baby,
+            baby,
         }
     }
     // minimum i where x ** i = y mod p

@@ -7,7 +7,7 @@ pub mod quad_double_impl {
     use super::*;
     impl QuadDouble {
         pub fn new(a: f64) -> Self {
-            QuadDouble(a, 0., 0., 0.)
+            Self(a, 0., 0., 0.)
         }
         pub fn renormalize(a0: f64, a1: f64, a2: f64, a3: f64, a4: f64) -> Self {
             let (s, t4) = quick_two_sum(a3, a4);
@@ -25,7 +25,7 @@ pub mod quad_double_impl {
                     k += 1;
                 }
             }
-            QuadDouble(b[0], b[1], b[2], b[3])
+            Self(b[0], b[1], b[2], b[3])
         }
     }
     #[inline]
@@ -93,13 +93,13 @@ pub mod quad_double_impl {
         (r0, r1)
     }
     impl std::ops::Add<f64> for QuadDouble {
-        type Output = QuadDouble;
+        type Output = Self;
         fn add(self, rhs: f64) -> Self::Output {
             let (t0, e) = two_sum(self.0, rhs);
             let (t1, e) = two_sum(self.1, e);
             let (t2, e) = two_sum(self.2, e);
             let (t3, t4) = two_sum(self.3, e);
-            QuadDouble::renormalize(t0, t1, t2, t3, t4)
+            Self::renormalize(t0, t1, t2, t3, t4)
         }
     }
     #[inline]
@@ -118,7 +118,7 @@ pub mod quad_double_impl {
         (s, u, v)
     }
     impl std::ops::Add<QuadDouble> for QuadDouble {
-        type Output = QuadDouble;
+        type Output = Self;
         fn add(self, rhs: Self) -> Self::Output {
             let mut x = [0.; 8];
             let (mut i, mut j, mut k) = (0, 0, 0);
@@ -153,23 +153,23 @@ pub mod quad_double_impl {
             if k < 3 {
                 c[k] = u;
             }
-            QuadDouble::renormalize(c[0], c[1], c[2], c[3], 0.)
+            Self::renormalize(c[0], c[1], c[2], c[3], 0.)
         }
     }
     impl std::ops::Sub for QuadDouble {
-        type Output = QuadDouble;
+        type Output = Self;
         fn sub(self, rhs: Self) -> Self::Output {
             self + -rhs
         }
     }
     impl std::ops::Neg for QuadDouble {
-        type Output = QuadDouble;
+        type Output = Self;
         fn neg(self) -> Self::Output {
-            QuadDouble(-self.0, -self.1, -self.2, -self.3)
+            Self(-self.0, -self.1, -self.2, -self.3)
         }
     }
     impl std::ops::Mul<f64> for QuadDouble {
-        type Output = QuadDouble;
+        type Output = Self;
         fn mul(self, rhs: f64) -> Self::Output {
             let (t0, e0) = two_prod(self.0, rhs);
             let (p1, e1) = two_prod(self.1, rhs);
@@ -180,11 +180,11 @@ pub mod quad_double_impl {
             let (t2, e5, e6) = three_three_sum(p2, e1, e4);
             let (t3, e7) = three_two_sum(p3, e2, e5);
             let t4 = e7 + e6;
-            QuadDouble::renormalize(t0, t1, t2, t3, t4)
+            Self::renormalize(t0, t1, t2, t3, t4)
         }
     }
     impl std::ops::Mul<QuadDouble> for QuadDouble {
-        type Output = QuadDouble;
+        type Output = Self;
         fn mul(self, rhs: Self) -> Self::Output {
             let (t0, q00) = two_prod(self.0, rhs.0);
 
@@ -208,11 +208,11 @@ pub mod quad_double_impl {
             let (t2, e3, e4) = multiple_three_sum(&[e1, q01, q10, p02, p11, p20]);
             let (t3, e5) = multiple_two_sum(&[e2, e3, q02, q11, q20, p03, p12, p21, p30]);
             let t4 = e4 + e5 + q03 + q12 + q21 + q30 + p13 + p22 + p31;
-            QuadDouble::renormalize(t0, t1, t2, t3, t4)
+            Self::renormalize(t0, t1, t2, t3, t4)
         }
     }
     impl std::ops::Div<QuadDouble> for QuadDouble {
-        type Output = QuadDouble;
+        type Output = Self;
         fn div(self, rhs: Self) -> Self::Output {
             let q0 = self.0 / rhs.0;
             let r = self - rhs * q0;
@@ -223,7 +223,7 @@ pub mod quad_double_impl {
             let q3 = r.0 / rhs.0;
             let r = r - rhs * q3;
             let q4 = r.0 / rhs.0;
-            QuadDouble::renormalize(q0, q1, q2, q3, q4)
+            Self::renormalize(q0, q1, q2, q3, q4)
         }
     }
     impl std::ops::Index<usize> for QuadDouble {
@@ -245,7 +245,7 @@ pub mod quad_double_impl {
     }
     impl From<f64> for QuadDouble {
         fn from(x: f64) -> Self {
-            QuadDouble(x, 0., 0., 0.)
+            Self(x, 0., 0., 0.)
         }
     }
     impl std::fmt::Display for QuadDouble {
@@ -257,7 +257,7 @@ pub mod quad_double_impl {
         type Err = std::num::ParseFloatError;
         #[inline]
         fn from_str(s: &str) -> Result<Self, Self::Err> {
-            s.parse::<f64>().map(|i| QuadDouble::new(i))
+            s.parse::<f64>().map(|i| Self::new(i))
         }
     }
     impl QuadDouble {

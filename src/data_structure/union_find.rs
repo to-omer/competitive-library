@@ -11,9 +11,9 @@ pub struct UnionFind {
 }
 #[cargo_snippet::snippet("UnionFind")]
 impl UnionFind {
-    pub fn new(n: usize) -> UnionFind {
+    pub fn new(n: usize) -> Self {
         let parents = vec![-1; n];
-        UnionFind { parents: parents }
+        Self { parents }
     }
 
     pub fn find(&mut self, x: usize) -> usize {
@@ -54,14 +54,12 @@ impl UnionFind {
     pub fn members(&mut self, x: usize) -> Vec<usize> {
         let root = self.find(x);
         (0..self.parents.len())
-            .into_iter()
             .filter(|i| self.find(*i) == root)
             .collect::<Vec<usize>>()
     }
 
     pub fn roots(&mut self) -> Vec<usize> {
         (0..self.parents.len())
-            .into_iter()
             .filter(|i| self.parents[*i] < 0)
             .collect::<Vec<usize>>()
     }
@@ -109,10 +107,10 @@ impl<G: Group> WeightedUnionFind<G> {
     pub fn new(n: usize, group: G) -> Self {
         let parents = vec![-1; n];
         let diff = vec![group.unit().clone(); n];
-        WeightedUnionFind {
-            parents: parents,
-            diff: diff,
-            group: group,
+        Self {
+            parents,
+            diff,
+            group,
         }
     }
     pub fn find(&mut self, x: usize) -> usize {
@@ -171,13 +169,11 @@ impl<G: Group> WeightedUnionFind<G> {
     pub fn members(&mut self, x: usize) -> Vec<usize> {
         let root = self.find(x);
         (0..self.parents.len())
-            .into_iter()
             .filter(|i| self.find(*i) == root)
             .collect::<Vec<usize>>()
     }
     pub fn roots(&mut self) -> Vec<usize> {
         (0..self.parents.len())
-            .into_iter()
             .filter(|i| self.parents[*i] < 0)
             .collect::<Vec<usize>>()
     }

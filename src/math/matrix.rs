@@ -9,8 +9,8 @@ pub struct Matrix<T> {
 #[cargo_snippet::snippet("Matrix")]
 impl<T: Clone> Matrix<T> {
     pub fn new(shape: (usize, usize), z: T) -> Self {
-        Matrix {
-            shape: shape,
+        Self {
+            shape,
             data: vec![vec![z; shape.1]; shape.0],
         }
     }
@@ -18,17 +18,17 @@ impl<T: Clone> Matrix<T> {
 #[cargo_snippet::snippet("Matrix")]
 impl<T> Matrix<T> {
     pub fn from_vec(data: Vec<Vec<T>>) -> Self {
-        Matrix {
+        Self {
             shape: (data.len(), data.get(0).map(|v| v.len()).unwrap_or(0)),
-            data: data,
+            data,
         }
     }
 }
 #[cargo_snippet::snippet("Matrix")]
 impl<T: Clone + Default> Matrix<T> {
     pub fn zeros(shape: (usize, usize)) -> Self {
-        Matrix {
-            shape: shape,
+        Self {
+            shape,
             data: vec![vec![Default::default(); shape.1]; shape.0],
         }
     }
@@ -37,10 +37,7 @@ impl<T: Clone + Default> Matrix<T> {
         for i in 0..shape.0 {
             data[i][i] = one.clone();
         }
-        Matrix {
-            shape: shape,
-            data: data,
-        }
+        Self { shape, data }
     }
 }
 #[cargo_snippet::snippet("Matrix")]

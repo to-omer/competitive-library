@@ -4,10 +4,8 @@ use crate::graph::graph::Graph;
 impl Graph {
     fn depth_dfs(&self, u: usize, p: usize, d: u64, depth: &mut Vec<u64>) {
         depth[u] = d;
-        for a in self.adjacency(u) {
-            if a.to != p {
-                self.depth_dfs(a.to, u, d + 1, depth);
-            }
+        for a in self.adjacency(u).iter().filter(|a| a.to != p) {
+            self.depth_dfs(a.to, u, d + 1, depth);
         }
     }
     pub fn tree_depth(&self, root: usize) -> Vec<u64> {
@@ -22,11 +20,9 @@ impl Graph {
 impl Graph {
     fn size_dfs(&self, u: usize, p: usize, size: &mut Vec<u64>) {
         size[u] = 1;
-        for a in self.adjacency(u) {
-            if a.to != p {
-                self.size_dfs(a.to, u, size);
-                size[u] += size[a.to];
-            }
+        for a in self.adjacency(u).iter().filter(|a| a.to != p) {
+            self.size_dfs(a.to, u, size);
+            size[u] += size[a.to];
         }
     }
     pub fn tree_size(&self, root: usize) -> Vec<u64> {

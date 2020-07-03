@@ -239,7 +239,7 @@ impl EulerPhiTable {
                 }
             }
         }
-        EulerPhiTable { table: table }
+        EulerPhiTable { table }
     }
     pub fn get(&self, n: usize) -> usize {
         self.table[n]

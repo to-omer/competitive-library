@@ -7,7 +7,7 @@ pub struct CHTLine {
 #[cargo_snippet::snippet("ConvexHullTrick")]
 impl CHTLine {
     pub fn new(a: i64, b: i64) -> Self {
-        CHTLine {
+        Self {
             slope: a,
             intercept: b,
         }
@@ -28,7 +28,7 @@ pub struct ConvexHullTrick {
 #[cargo_snippet::snippet("ConvexHullTrick")]
 impl ConvexHullTrick {
     pub fn new() -> Self {
-        ConvexHullTrick {
+        Self {
             deq: std::collections::VecDeque::new(),
         }
     }

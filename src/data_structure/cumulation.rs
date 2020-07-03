@@ -10,10 +10,7 @@ impl<G: Group> Cumulation<G> {
             let x = group.operate(acc.last().unwrap(), &t);
             acc.push(x);
         }
-        Cumulation {
-            acc: acc,
-            group: group,
-        }
+        Self { acc, group }
     }
     pub fn fold(&self, l: usize, r: usize) -> G::T {
         self.group

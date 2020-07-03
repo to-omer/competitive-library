@@ -7,12 +7,8 @@ pub struct RevEdge {
 }
 #[cargo_snippet::snippet("MaximumFlow")]
 impl RevEdge {
-    pub fn new(to: usize, rev: usize, cap: u64) -> RevEdge {
-        RevEdge {
-            to: to,
-            rev: rev,
-            cap: cap,
-        }
+    pub fn new(to: usize, rev: usize, cap: u64) -> Self {
+        Self { to, rev, cap }
     }
 }
 
@@ -22,8 +18,8 @@ pub struct FordFulkerson {
     used: Vec<bool>,
 }
 impl FordFulkerson {
-    pub fn new(n: usize) -> FordFulkerson {
-        FordFulkerson {
+    pub fn new(n: usize) -> Self {
+        Self {
             graph: vec![vec![]; n],
             used: vec![],
         }
@@ -75,8 +71,8 @@ pub struct Dinic {
 }
 #[cargo_snippet::snippet("MaximumFlow")]
 impl Dinic {
-    pub fn new(n: usize) -> Dinic {
-        Dinic {
+    pub fn new(n: usize) -> Self {
+        Self {
             graph: vec![vec![]; n],
             iter: vec![],
             level: vec![],

@@ -10,10 +10,10 @@ pub struct QueueAggregation<M: Monoid> {
 #[cargo_snippet::snippet("QueueAggregation")]
 impl<M: Monoid> QueueAggregation<M> {
     pub fn new(monoid: M) -> Self {
-        QueueAggregation {
+        Self {
             front_stack: Vec::new(),
             back_stack: Vec::new(),
-            monoid: monoid,
+            monoid,
         }
     }
     #[inline]
@@ -93,10 +93,10 @@ pub struct DequeAggregation<M: Monoid> {
 #[cargo_snippet::snippet("DequeAggregation")]
 impl<M: Monoid> DequeAggregation<M> {
     pub fn new(monoid: M) -> Self {
-        DequeAggregation {
+        Self {
             front_stack: Vec::new(),
             back_stack: Vec::new(),
-            monoid: monoid,
+            monoid,
         }
     }
     #[inline]

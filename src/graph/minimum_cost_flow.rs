@@ -10,13 +10,8 @@ pub struct RevEdge {
 }
 #[cargo_snippet::snippet("MinimumCostFlow")]
 impl RevEdge {
-    pub fn new(to: usize, rev: usize, cap: u64, cost: i64) -> RevEdge {
-        RevEdge {
-            to: to,
-            rev: rev,
-            cap: cap,
-            cost: cost,
-        }
+    pub fn new(to: usize, rev: usize, cap: u64, cost: i64) -> Self {
+        Self { to, rev, cap, cost }
     }
 }
 
@@ -32,9 +27,9 @@ pub struct PrimalDual {
 }
 #[cargo_snippet::snippet("MinimumCostFlow")]
 impl PrimalDual {
-    pub fn new(n: usize) -> PrimalDual {
-        PrimalDual {
-            n: n,
+    pub fn new(n: usize) -> Self {
+        Self {
+            n,
             graph: vec![vec![]; n],
             potential: vec![],
             cost: vec![],

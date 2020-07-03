@@ -14,8 +14,8 @@ pub struct StronglyConnectedComponent {
 #[cargo_snippet::snippet("StronglyConnectedComponent")]
 impl StronglyConnectedComponent {
     pub fn new(vsize: usize) -> Self {
-        StronglyConnectedComponent {
-            vsize: vsize,
+        Self {
+            vsize,
             graph: vec![vec![]; vsize],
             rgraph: vec![vec![]; vsize],
             ord: vec![],
@@ -113,7 +113,7 @@ pub struct TwoSatisfiability {
 impl TwoSatisfiability {
     pub fn new(n: usize) -> Self {
         TwoSatisfiability {
-            n: n,
+            n,
             scc: StronglyConnectedComponent::new(n * 2),
         }
     }

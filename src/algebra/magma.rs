@@ -58,6 +58,7 @@ pub trait Invertible: Magma {
 }
 
 /// short cut of right inverse binary operation
+#[cargo_snippet::snippet("algebra")]
 pub trait RightInvertibleMagma: Magma {
     /// right inverse binary operation: ⋅ ∘ (⋅ ^ -1)
     fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T;

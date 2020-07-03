@@ -7,8 +7,8 @@ pub struct BitSet {
 #[cargo_snippet::snippet("BitSet")]
 impl BitSet {
     pub fn new(size: usize) -> Self {
-        BitSet {
-            size: size,
+        Self {
+            size,
             bits: vec![0; (size + 63) / 64],
         }
     }

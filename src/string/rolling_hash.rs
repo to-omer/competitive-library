@@ -44,11 +44,7 @@ impl RollingHash {
             hash[i + 1] = Self::mersenne_mod(Self::mersenne_mul(hash[i], base) + v[i]);
             pow[i + 1] = Self::mersenne_mul_mod(pow[i], base);
         }
-        RollingHash {
-            base: base,
-            hash: hash,
-            pow: pow,
-        }
+        Self { base, hash, pow }
     }
     pub fn hash_once(&self, v: &Vec<u64>) -> u64 {
         let n = v.len();
@@ -84,7 +80,7 @@ impl MultipleRollingHash {
             .iter()
             .map(|&base| RollingHash::new(v, base))
             .collect::<Vec<_>>();
-        MultipleRollingHash { rh: rh }
+        Self { rh }
     }
     pub fn new_rand(v: &Vec<u64>, n: usize) -> Self {
         let mut rand = Xorshift::time();

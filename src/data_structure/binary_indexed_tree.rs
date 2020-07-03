@@ -9,12 +9,9 @@ pub struct BinaryIndexedTree<M: Monoid> {
 #[cargo_snippet::snippet("BinaryIndexedTree")]
 impl<M: Monoid> BinaryIndexedTree<M> {
     #[inline]
-    pub fn new(n: usize, monoid: M) -> BinaryIndexedTree<M> {
+    pub fn new(n: usize, monoid: M) -> Self {
         let bit = vec![monoid.unit(); n + 1];
-        BinaryIndexedTree {
-            bit: bit,
-            monoid: monoid,
-        }
+        Self { bit, monoid }
     }
     #[inline]
     pub fn ident(&self) -> M::T {
@@ -192,14 +189,9 @@ pub struct BinaryIndexedTree2D<M: Monoid> {
 }
 #[cargo_snippet::snippet("BinaryIndexedTree2D")]
 impl<M: Monoid> BinaryIndexedTree2D<M> {
-    pub fn new(h: usize, w: usize, m: M) -> BinaryIndexedTree2D<M> {
+    pub fn new(h: usize, w: usize, m: M) -> Self {
         let bit = vec![vec![m.unit(); w + 1]; h + 1];
-        BinaryIndexedTree2D {
-            h: h,
-            w: w,
-            bit: bit,
-            m: m,
-        }
+        Self { h, w, bit, m }
     }
     /// 0-indexed [0, i) x [0, j)
     pub fn accumulate(&self, i: usize, j: usize) -> M::T {

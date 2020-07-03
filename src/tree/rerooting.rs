@@ -26,12 +26,12 @@ impl<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<M, F> {
     pub fn new(n: usize, monoid: M, rooting: F) -> Self {
         let dp = vec![monoid.unit(); n];
         let ep = vec![monoid.unit(); n * 2];
-        ReRooting {
-            n: n,
-            monoid: monoid,
-            dp: dp,
-            ep: ep,
-            rooting: rooting,
+        Self {
+            n,
+            monoid,
+            dp,
+            ep,
+            rooting,
         }
     }
     #[inline]
@@ -57,12 +57,10 @@ impl<M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<M, F> {
     fn dfs(&mut self, pa: &Adjacent, p: usize, graph: &Graph) {
         let u = pa.to;
         let pi = self.eidx(p, pa);
-        for a in graph.adjacency(u) {
+        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
             let i = self.eidx(u, a);
-            if a.to != p {
-                self.dfs(a, u, graph);
-                self.ep[pi] = self.merge(&self.ep[pi], &self.ep[i]);
-            }
+            self.dfs(a, u, graph);
+            self.ep[pi] = self.merge(&self.ep[pi], &self.ep[i]);
         }
         self.ep[pi] = self.add_subroot(&self.ep[pi], u, pa.id);
     }

@@ -5,7 +5,7 @@ pub struct Zarray {
 }
 #[cargo_snippet::snippet("ZAlgorithm")]
 impl Zarray {
-    pub fn new<T: Eq>(s: &[T]) -> Zarray {
+    pub fn new<T: Eq>(s: &[T]) -> Self {
         let n = s.len();
         let mut z = vec![0; n];
         z[0] = n;
@@ -27,7 +27,7 @@ impl Zarray {
             i += k;
             j -= k;
         }
-        Zarray { z: z }
+        Self { z }
     }
     pub fn search<T: Eq>(s: &Vec<T>, pat: &Vec<T>, sep: T) -> Vec<usize> {
         let mut res = vec![];
@@ -35,7 +35,7 @@ impl Zarray {
         t.extend(pat);
         t.push(&sep);
         t.extend(s);
-        let zarray = Zarray::new(&t);
+        let zarray = Self::new(&t);
         for i in 0..t.len() {
             if zarray[i] == pat.len() {
                 res.push(i - pat.len() - 1);

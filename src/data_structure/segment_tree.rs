@@ -9,16 +9,12 @@ pub struct SegmentTree<M: Monoid> {
 }
 #[cargo_snippet::snippet("SegmentTree")]
 impl<M: Monoid> SegmentTree<M> {
-    pub fn new(n: usize, m: M) -> SegmentTree<M> {
+    pub fn new(n: usize, m: M) -> Self {
         let n = 1 << format!("{:b}", n - 1).len();
         let seg = vec![m.unit(); 2 * n];
-        SegmentTree {
-            n: n,
-            seg: seg,
-            m: m,
-        }
+        Self { n, seg, m }
     }
-    pub fn from_vec(v: Vec<M::T>, m: M) -> SegmentTree<M> {
+    pub fn from_vec(v: Vec<M::T>, m: M) -> Self {
         let n = 1 << format!("{:b}", v.len() - 1).len();
         let mut seg = vec![m.unit(); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
@@ -27,11 +23,7 @@ impl<M: Monoid> SegmentTree<M> {
         for i in (1..n).rev() {
             seg[i] = m.operate(&seg[2 * i], &seg[2 * i + 1]);
         }
-        SegmentTree {
-            n: n,
-            seg: seg,
-            m: m,
-        }
+        Self { n, seg, m }
     }
     pub fn set(&mut self, k: usize, x: M::T) {
         debug_assert!(k < self.n);

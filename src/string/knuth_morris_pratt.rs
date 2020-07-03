@@ -6,7 +6,7 @@ pub struct KnuthMorrisPratt<T: Eq> {
 }
 #[cargo_snippet::snippet("KnuthMorrisPratt")]
 impl<T: Eq> KnuthMorrisPratt<T> {
-    pub fn new(pattern: Vec<T>) -> KnuthMorrisPratt<T> {
+    pub fn new(pattern: Vec<T>) -> Self {
         let mut table = vec![0; pattern.len() + 1];
         for i in 1..pattern.len() {
             let mut j = table[i - 1];
@@ -15,10 +15,7 @@ impl<T: Eq> KnuthMorrisPratt<T> {
             }
             table[i] = j + (pattern[i] == pattern[j]) as usize;
         }
-        KnuthMorrisPratt {
-            pattern: pattern,
-            table: table,
-        }
+        Self { pattern, table }
     }
     pub fn search_all(&self, s: &Vec<T>) -> Vec<usize> {
         let mut res = vec![];

@@ -19,7 +19,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         let n = 1 << format!("{:b}", n - 1).len();
         let seg = vec![m.unit(); 2 * n - 1];
         let lazy = vec![e.unit(); 2 * n - 1];
-        LazySegmentTree {
+        Self {
             n,
             seg,
             lazy,
@@ -38,7 +38,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
             seg[i] = m.operate(&seg[2 * i + 1], &seg[2 * i + 2]);
         }
         let lazy = vec![e.unit(); 2 * n - 1];
-        LazySegmentTree {
+        Self {
             n,
             seg,
             lazy,

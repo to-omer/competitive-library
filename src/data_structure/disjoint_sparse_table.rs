@@ -24,10 +24,7 @@ impl<S: SemiGroup> DisjointSparseTable<S> {
             table.push(v);
             k *= 2;
         }
-        DisjointSparseTable {
-            monoid: monoid,
-            table: table,
-        }
+        Self { monoid, table }
     }
     #[inline]
     pub fn len(&self) -> usize {

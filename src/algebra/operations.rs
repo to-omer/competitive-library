@@ -47,7 +47,7 @@ pub mod max_operation_impl {
     // impl_minimum_with_min!(f64, std::f64::MIN);
     impl<T: Clone + Ord + MinimumBounded> MaxOperation<T> {
         pub fn new() -> Self {
-            MaxOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -115,7 +115,7 @@ pub mod min_operation_impl {
     // impl_maximum_with_max!(f64, std::f64::MAX);
     impl<T: Clone + Ord + MaximumBounded> MinOperation<T> {
         pub fn new() -> Self {
-            MinOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -149,7 +149,7 @@ pub mod first_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> FirstOperation<T> {
         pub fn new() -> Self {
-            FirstOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -182,7 +182,7 @@ pub mod last_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> LastOperation<T> {
         pub fn new() -> Self {
-            LastOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -251,7 +251,7 @@ pub mod additive_operation_impl {
     impl_additive_identity!(f64, 0.0f64);
     impl<T: Copy + PartialEq + AdditiveIdentity> AdditiveOperation<T> {
         pub fn new() -> Self {
-            AdditiveOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -336,7 +336,7 @@ pub mod multiplicative_operation_impl {
     impl_multiplicative_identity!(f64, 1.0f64);
     impl<T: Copy + PartialEq + MultiplicativeIdentity> MultiplicativeOperation<T> {
         pub fn new() -> Self {
-            MultiplicativeOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -385,7 +385,7 @@ pub mod linear_operation_impl {
     use super::*;
     impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> LinearOperation<T> {
         pub fn new() -> Self {
-            LinearOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -456,7 +456,7 @@ pub mod bitand_operation_impl {
     impl_bitand_identity!(i64, std::i64::MIN);
     impl<T: Copy + PartialEq + BitAndIdentity> BitAndOperation<T> {
         pub fn new() -> Self {
-            BitAndOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -523,7 +523,7 @@ pub mod bitor_operation_impl {
     impl_bitor_identity!(i64, 0i64);
     impl<T: Copy + PartialEq + BitOrIdentity> BitOrOperation<T> {
         pub fn new() -> Self {
-            BitOrOperation {
+            Self {
                 phantom: std::marker::PhantomData,
             }
         }
@@ -557,7 +557,7 @@ pub mod monoidal_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> MonoidalOperation<T, F> {
         pub fn new(e: T, op: F) -> Self {
-            MonoidalOperation { e: e, op: op }
+            Self { e, op }
         }
     }
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Magma for MonoidalOperation<T, F> {
@@ -589,11 +589,7 @@ pub mod group_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> GroupOperation<T, F, G> {
         pub fn new(e: T, op: F, inv: G) -> Self {
-            GroupOperation {
-                e: e,
-                op: op,
-                inv: inv,
-            }
+            Self { e, op, inv }
         }
     }
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> Magma for GroupOperation<T, F, G> {
@@ -657,8 +653,8 @@ pub mod absorbed_assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbsorbedAssocoativeOperator<T, F> {
         pub fn new(operator: F) -> Self {
-            AbsorbedAssocoativeOperator {
-                operator: operator,
+            Self {
+                operator,
                 phantom: std::marker::PhantomData,
             }
         }
@@ -696,7 +692,7 @@ pub mod cartesian_operation_impl {
     use super::*;
     impl<M1, M2> CartesianOperation<M1, M2> {
         pub fn new(m1: M1, m2: M2) -> Self {
-            CartesianOperation { m1: m1, m2: m2 }
+            Self { m1, m2 }
         }
     }
     impl<M1: Magma, M2: Magma> Magma for CartesianOperation<M1, M2> {
@@ -732,7 +728,7 @@ pub mod counting_operation_impl {
     use super::*;
     impl<M> CountingOperation<M> {
         pub fn new(m: M) -> Self {
-            CountingOperation { m: m }
+            Self { m }
         }
     }
     impl<M: Magma> Magma for CountingOperation<M> {

@@ -52,9 +52,9 @@ pub struct GraphRec {
 }
 #[cargo_snippet::snippet("GraphRec")]
 impl GraphRec {
-    pub fn new(n: usize) -> GraphRec {
-        GraphRec {
-            n: n,
+    pub fn new(n: usize) -> Self {
+        Self {
+            n,
             visited: vec![false; n],
             cost: vec![0; n],
         }

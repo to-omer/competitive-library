@@ -35,11 +35,7 @@ impl<T: Ord> SuffixArray<T> {
             rank = tmp;
             k *= 2;
         }
-        SuffixArray {
-            pat: pat,
-            sa: sa,
-            rank: rank,
-        }
+        Self { pat, sa, rank }
     }
     pub fn len(&self) -> usize {
         self.sa.len()
