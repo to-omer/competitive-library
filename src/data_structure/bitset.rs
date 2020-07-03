@@ -12,6 +12,14 @@ impl BitSet {
             bits: vec![0; (size + 63) / 64],
         }
     }
+    pub fn ones(size: usize) -> Self {
+        let mut self_ = Self {
+            size,
+            bits: vec![u64::MAX; (size + 63) / 64],
+        };
+        self_.trim();
+        self_
+    }
     #[inline]
     pub fn get(&self, i: usize) -> bool {
         self.bits[i >> 6] & 1 << (i & 63) != 0
