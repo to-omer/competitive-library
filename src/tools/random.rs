@@ -39,7 +39,12 @@ impl Xorshift {
         let result: f64 = unsafe { std::mem::transmute(tmp) };
         result - 1.0
     }
+    #[inline]
+    pub fn gen_bool(&mut self, p: f64) -> bool {
+        self.randf() < p
+    }
 }
+#[cargo_snippet::snippet("Xorshift")]
 impl Default for Xorshift {
     fn default() -> Self {
         Xorshift::new(0x2b992ddfa23249d6)

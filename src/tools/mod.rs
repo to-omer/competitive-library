@@ -4,5 +4,6 @@ mod input;
 mod iterable;
 #[macro_use]
 mod minmax;
+pub mod heuristics;
 pub mod random;
 pub mod scanner;
