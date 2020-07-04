@@ -10,13 +10,16 @@ pub fn read_all(reader: &mut impl std::io::Read) -> String {
     s
 }
 
+#[cargo_snippet::snippet("scanner")]
 pub trait IterScan: Sized {
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self>;
 }
+#[cargo_snippet::snippet("scanner")]
 #[derive(Debug)]
 pub struct Scanner<'a> {
     iter: std::str::SplitAsciiWhitespace<'a>,
 }
+#[cargo_snippet::snippet("scanner")]
 impl<'a> Scanner<'a> {
     #[inline]
     pub fn new(s: &'a str) -> Self {
@@ -39,39 +42,43 @@ impl<'a> Scanner<'a> {
     }
 }
 
-macro_rules! iter_scan_impls {
-    ($($t:ty)*) => {$(
-        impl IterScan for $t {
-            #[inline]
-            fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
-                iter.next()?.parse::<$t>().ok()
-            }
-        })*
-    };
-}
-iter_scan_impls!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
+#[cargo_snippet::snippet("scanner")]
+mod scanner_impls {
+    use super::*;
+    macro_rules! iter_scan_impls {
+        ($($t:ty)*) => {$(
+            impl IterScan for $t {
+                #[inline]
+                fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
+                    iter.next()?.parse::<$t>().ok()
+                }
+            })*
+        };
+    }
+    iter_scan_impls!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
 
-macro_rules! iter_scan_tuple_impl {
-    ($($T:ident)+) => {
-        impl<$($T: IterScan),+> IterScan for ($($T,)+) {
-            #[inline]
-            fn scan<'a, It: Iterator<Item = &'a str>>(iter: &mut It) -> Option<Self> {
-                Some(($($T::scan(iter)?,)+))
+    macro_rules! iter_scan_tuple_impl {
+        ($($T:ident)+) => {
+            impl<$($T: IterScan),+> IterScan for ($($T,)+) {
+                #[inline]
+                fn scan<'a, It: Iterator<Item = &'a str>>(iter: &mut It) -> Option<Self> {
+                    Some(($($T::scan(iter)?,)+))
+                }
             }
-        }
-    };
+        };
+    }
+    iter_scan_tuple_impl!(A);
+    iter_scan_tuple_impl!(A B);
+    iter_scan_tuple_impl!(A B C);
+    iter_scan_tuple_impl!(A B C D);
+    iter_scan_tuple_impl!(A B C D E);
+    iter_scan_tuple_impl!(A B C D E F);
+    iter_scan_tuple_impl!(A B C D E F G);
+    iter_scan_tuple_impl!(A B C D E F G H);
+    iter_scan_tuple_impl!(A B C D E F G H I);
+    iter_scan_tuple_impl!(A B C D E F G H I J);
+    iter_scan_tuple_impl!(A B C D E F G H I J K);
 }
-iter_scan_tuple_impl!(A);
-iter_scan_tuple_impl!(A B);
-iter_scan_tuple_impl!(A B C);
-iter_scan_tuple_impl!(A B C D);
-iter_scan_tuple_impl!(A B C D E);
-iter_scan_tuple_impl!(A B C D E F);
-iter_scan_tuple_impl!(A B C D E F G);
-iter_scan_tuple_impl!(A B C D E F G H);
-iter_scan_tuple_impl!(A B C D E F G H I);
-iter_scan_tuple_impl!(A B C D E F G H I J);
-iter_scan_tuple_impl!(A B C D E F G H I J K);
 
 #[macro_export]
 macro_rules! scan_value {

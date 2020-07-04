@@ -1,14 +1,36 @@
-macro_rules! input {
-    ($t:tt) => {};
-}
+use competitive::tools::scanner::Scanner;
 
 #[cargo_snippet::snippet]
-#[cargo_snippet::snippet(include = "input")]
+#[cargo_snippet::snippet(include = "scanner")]
+#[cargo_snippet::snippet(include = "minmax")]
 fn main() {
     #[allow(unused_imports)]
-    use std::io::Write as _;
+    use std::io::{Read as _, Write as _};
     let __out = std::io::stdout();
-    #[allow(unused_mut, unused_variables)]
+    let mut __in_buf = String::new();
+    std::io::stdin().read_to_string(&mut __in_buf).unwrap();
+    let mut __scanner = Scanner::new(&__in_buf);
+    #[allow(unused_macros)]
+    macro_rules! scan {
+        () => {
+            scan!(usize)
+        };
+        (($($t:tt),*)) => {
+            ($(scan!($t)),*)
+        };
+        ([$t:tt; $len:expr]) => {
+            (0..$len).map(|_| scan!($t)).collect::<Vec<_>>()
+        };
+        ({ $t:tt => $f:expr }) => {
+            $f(scan!($t))
+        };
+        (chars) => {
+            __scanner.scan_chars()
+        };
+        ($t:ty) => {
+            __scanner.scan::<$t>()
+        };
+    }
     let mut __out = std::io::BufWriter::new(__out.lock());
     #[allow(unused_macros)]
     macro_rules! print {
@@ -34,5 +56,5 @@ fn main() {
             println!();
         };
     }
-    input!(n);
+    let _n = scan!();
 }
