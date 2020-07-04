@@ -1,3 +1,5 @@
+use crate::tools::scanner::{IterScan, MarkedIterScan};
+
 #[cargo_snippet::snippet("Graph")]
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Adjacent {
@@ -40,6 +42,44 @@ impl Graph {
     }
     pub fn adjacency(&self, from: usize) -> &Vec<Adjacent> {
         &self.graph[from]
+    }
+}
+
+#[cargo_snippet::snippet("Graph")]
+pub struct GraphScanner<U: IterScan<Output = usize>, T: IterScan> {
+    vsize: usize,
+    esize: usize,
+    directed: bool,
+    phantom: std::marker::PhantomData<fn() -> (U, T)>,
+}
+
+#[cargo_snippet::snippet("Graph")]
+impl<U: IterScan<Output = usize>, T: IterScan> GraphScanner<U, T> {
+    pub fn new(vsize: usize, esize: usize, directed: bool) -> Self {
+        Self {
+            vsize,
+            esize,
+            directed,
+            phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+#[cargo_snippet::snippet("Graph")]
+impl<U: IterScan<Output = usize>, T: IterScan> MarkedIterScan for GraphScanner<U, T> {
+    type Output = (Graph, Vec<<T as IterScan>::Output>);
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+        let mut graph = Graph::new(self.vsize);
+        let mut rest = Vec::with_capacity(self.esize);
+        for _ in 0..self.esize {
+            if self.directed {
+                graph.add_edge(U::scan(iter)?, U::scan(iter)?);
+            } else {
+                graph.add_undirected_edge(U::scan(iter)?, U::scan(iter)?);
+            }
+            rest.push(T::scan(iter)?);
+        }
+        Some((graph, rest))
     }
 }
 

@@ -309,9 +309,12 @@ impl_additive_identity!([M: Modulus + PartialEq], MInt<M>, Self::zero());
 impl_multiplicative_identity!([M: Modulus + PartialEq], MInt<M>, Self::one());
 
 use crate::tools::scanner::IterScan;
+
+#[cargo_snippet::snippet("MInt")]
 impl<M: Modulus> IterScan for MInt<M> {
+    type Output = Self;
     #[inline]
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
         iter.next()?.parse::<MInt<M>>().ok()
     }
 }

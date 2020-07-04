@@ -12,7 +12,13 @@ pub fn read_all(reader: &mut impl std::io::Read) -> String {
 
 #[cargo_snippet::snippet("scanner")]
 pub trait IterScan: Sized {
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self>;
+    type Output;
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output>;
+}
+#[cargo_snippet::snippet("scanner")]
+pub trait MarkedIterScan: Sized {
+    type Output;
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
 }
 #[cargo_snippet::snippet("scanner")]
 #[derive(Debug)]
@@ -27,11 +33,15 @@ impl<'a> Scanner<'a> {
         Self { iter }
     }
     #[inline]
-    pub fn scan<T: IterScan>(&mut self) -> T {
+    pub fn scan<T: IterScan>(&mut self) -> <T as IterScan>::Output {
         T::scan(&mut self.iter).unwrap()
     }
     #[inline]
-    pub fn scan_vec<T: IterScan>(&mut self, size: usize) -> Vec<T> {
+    pub fn mscan<T: MarkedIterScan>(&mut self, marker: T) -> <T as MarkedIterScan>::Output {
+        marker.mscan(&mut self.iter).unwrap()
+    }
+    #[inline]
+    pub fn scan_vec<T: IterScan>(&mut self, size: usize) -> Vec<<T as IterScan>::Output> {
         (0..size)
             .map(|_| T::scan(&mut self.iter).unwrap())
             .collect()
@@ -48,6 +58,7 @@ mod scanner_impls {
     macro_rules! iter_scan_impls {
         ($($t:ty)*) => {$(
             impl IterScan for $t {
+                type Output = Self;
                 #[inline]
                 fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
                     iter.next()?.parse::<$t>().ok()
@@ -60,8 +71,9 @@ mod scanner_impls {
     macro_rules! iter_scan_tuple_impl {
         ($($T:ident)+) => {
             impl<$($T: IterScan),+> IterScan for ($($T,)+) {
+                type Output = ($(<$T as IterScan>::Output,)+);
                 #[inline]
-                fn scan<'a, It: Iterator<Item = &'a str>>(iter: &mut It) -> Option<Self> {
+                fn scan<'a, It: Iterator<Item = &'a str>>(iter: &mut It) -> Option<Self::Output> {
                     Some(($($T::scan(iter)?,)+))
                 }
             }
@@ -78,6 +90,27 @@ mod scanner_impls {
     iter_scan_tuple_impl!(A B C D E F G H I);
     iter_scan_tuple_impl!(A B C D E F G H I J);
     iter_scan_tuple_impl!(A B C D E F G H I J K);
+}
+
+#[cargo_snippet::snippet("scanner")]
+mod marker {
+    use super::*;
+    struct Usize1;
+    impl IterScan for Usize1 {
+        type Output = usize;
+        #[inline]
+        fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+            usize::scan(iter).map(|x| x.wrapping_sub(1))
+        }
+    }
+    struct Isize1;
+    impl IterScan for Isize1 {
+        type Output = isize;
+        #[inline]
+        fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+            isize::scan(iter).map(|x| x.wrapping_sub(1))
+        }
+    }
 }
 
 #[macro_export]
