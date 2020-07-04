@@ -90,12 +90,32 @@ mod scanner_impls {
     iter_scan_tuple_impl!(A B C D E F G H I);
     iter_scan_tuple_impl!(A B C D E F G H I J);
     iter_scan_tuple_impl!(A B C D E F G H I J K);
+
+    pub struct ScannerIter<'a, 'b, T> {
+        inner: &'b mut Scanner<'a>,
+        phantom: std::marker::PhantomData<fn() -> T>,
+    }
+    impl<'a, 'b, T: IterScan> Iterator for ScannerIter<'a, 'b, T> {
+        type Item = <T as IterScan>::Output;
+        fn next(&mut self) -> Option<Self::Item> {
+            T::scan(&mut self.inner.iter)
+        }
+    }
+    impl<'a> Scanner<'a> {
+        #[inline]
+        pub fn iter<'b, T: IterScan>(&'b mut self) -> ScannerIter<'a, 'b, T> {
+            ScannerIter {
+                inner: self,
+                phantom: std::marker::PhantomData,
+            }
+        }
+    }
 }
 
 #[cargo_snippet::snippet("scanner")]
 mod marker {
     use super::*;
-    struct Usize1;
+    pub struct Usize1;
     impl IterScan for Usize1 {
         type Output = usize;
         #[inline]
@@ -103,7 +123,7 @@ mod marker {
             usize::scan(iter).map(|x| x.wrapping_sub(1))
         }
     }
-    struct Isize1;
+    pub struct Isize1;
     impl IterScan for Isize1 {
         type Output = isize;
         #[inline]
