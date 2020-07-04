@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Adjacent",""],["Adjacent4",""],["Adjacent8",""],["Graph",""],["GraphRec",""],["GridGraph",""]]});
+initSidebarItems({"struct":[["Adjacent",""],["Adjacent4",""],["Adjacent8",""],["Graph",""],["GraphRec",""],["GraphScanner",""],["GridGraph",""]]});
