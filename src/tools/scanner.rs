@@ -69,16 +69,17 @@ mod scanner_impls {
     iter_scan_impls!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
 
     macro_rules! iter_scan_tuple_impl {
-        ($($T:ident)+) => {
-            impl<$($T: IterScan),+> IterScan for ($($T,)+) {
-                type Output = ($(<$T as IterScan>::Output,)+);
+        ($($T:ident)*) => {
+            impl<$($T: IterScan),*> IterScan for ($($T,)*) {
+                type Output = ($(<$T as IterScan>::Output,)*);
                 #[inline]
-                fn scan<'a, It: Iterator<Item = &'a str>>(iter: &mut It) -> Option<Self::Output> {
-                    Some(($($T::scan(iter)?,)+))
+                fn scan<'a, It: Iterator<Item = &'a str>>(_iter: &mut It) -> Option<Self::Output> {
+                    Some(($($T::scan(_iter)?,)*))
                 }
             }
         };
     }
+    iter_scan_tuple_impl!();
     iter_scan_tuple_impl!(A);
     iter_scan_tuple_impl!(A B);
     iter_scan_tuple_impl!(A B C);
