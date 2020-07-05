@@ -143,6 +143,28 @@ pub mod modu32_impls {
             Self::new_unchecked((x % M::MODULUS as u64) as u32)
         }
     }
+    impl<M: Modulus> From<i32> for MInt<M> {
+        #[inline]
+        fn from(x: i32) -> Self {
+            let x = x % M::MODULUS as i32;
+            if x < 0 {
+                Self::new_unchecked((x + M::MODULUS as i32) as u32)
+            } else {
+                Self::new_unchecked(x as u32)
+            }
+        }
+    }
+    impl<M: Modulus> From<i64> for MInt<M> {
+        #[inline]
+        fn from(x: i64) -> Self {
+            let x = x % M::MODULUS as i64;
+            if x < 0 {
+                Self::new_unchecked((x + M::MODULUS as i64) as u32)
+            } else {
+                Self::new_unchecked(x as u32)
+            }
+        }
+    }
     impl<M: Modulus> Add for MInt<M> {
         type Output = Self;
         #[inline]
