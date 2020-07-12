@@ -7,3 +7,4 @@ mod minmax;
 pub mod heuristics;
 pub mod random;
 pub mod scanner;
+pub mod counter;
