@@ -2,10 +2,10 @@
 
 #[cargo_snippet::snippet("MInt")]
 pub trait Modulus: Copy {
-    const MODULUS: u32;
+    fn get_modulus() -> u32;
     #[inline]
     fn modulo(x: u32) -> u32 {
-        x % Self::MODULUS
+        x % Self::get_modulus()
     }
 }
 #[cargo_snippet::snippet("MInt")]
@@ -15,7 +15,26 @@ macro_rules! make_modulus {
         #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
         pub struct $t {}
         impl Modulus for $t {
-            const MODULUS: u32 = $e;
+            #[inline]
+            fn get_modulus() -> u32 {
+                const MODULUS: u32 = $e;
+                MODULUS
+            }
+        }
+    };
+}
+#[cargo_snippet::snippet("MInt")]
+#[allow(unused_macros)]
+macro_rules! make_dynamic_modulus {
+    ($t:ident, $m:ident, $e:expr) => {
+        #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        pub struct $t {}
+        static mut $m: u32 = $e;
+        impl Modulus for $t {
+            #[inline]
+            fn get_modulus() -> u32 {
+                unsafe { $m }
+            }
         }
     };
 }
@@ -25,17 +44,43 @@ pub mod modulus {
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo1000000007 {}
     impl Modulus for Modulo1000000007 {
-        const MODULUS: u32 = 1_000_000_007;
+        #[inline]
+        fn get_modulus() -> u32 {
+            const MODULUS: u32 = 1_000_000_007;
+            MODULUS
+        }
     }
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo1000000009 {}
     impl Modulus for Modulo1000000009 {
-        const MODULUS: u32 = 1_000_000_009;
+        #[inline]
+        fn get_modulus() -> u32 {
+            const MODULUS: u32 = 1_000_000_009;
+            MODULUS
+        }
     }
     #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo998244353 {}
     impl Modulus for Modulo998244353 {
-        const MODULUS: u32 = 998_244_353;
+        #[inline]
+        fn get_modulus() -> u32 {
+            const MODULUS: u32 = 998_244_353;
+            MODULUS
+        }
+    }
+    #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    pub struct DynModulo {}
+    static mut DYN_MODULUS: u32 = 1_000_000_007;
+    impl Modulus for DynModulo {
+        #[inline]
+        fn get_modulus() -> u32 {
+            unsafe { DYN_MODULUS }
+        }
+    }
+    pub fn set_dyn_modulus(m: u32) {
+        unsafe {
+            DYN_MODULUS = m;
+        }
     }
 }
 #[cargo_snippet::snippet("MInt")]
@@ -45,7 +90,7 @@ where
     M: Modulus,
 {
     x: u32,
-    phantom: std::marker::PhantomData<M>,
+    phantom: std::marker::PhantomData<fn() -> M>,
 }
 #[cargo_snippet::snippet("MInt")]
 impl<M: Modulus> MInt<M> {
@@ -73,7 +118,7 @@ impl<M: Modulus> MInt<M> {
     }
     #[inline]
     pub fn get_mod() -> u32 {
-        M::MODULUS
+        M::get_modulus()
     }
     #[inline]
     pub fn pow(mut self, mut y: usize) -> Self {
@@ -90,12 +135,12 @@ impl<M: Modulus> MInt<M> {
     #[inline]
     pub fn inv(self) -> Self {
         let mut a = self.x;
-        let (mut b, mut u, mut s) = (M::MODULUS, 1, 0);
+        let (mut b, mut u, mut s) = (M::get_modulus(), 1, 0);
         let k = a.trailing_zeros();
         a >>= k;
         for _ in 0..k {
             if u & 1 == 1 {
-                u += M::MODULUS;
+                u += M::get_modulus();
             }
             u /= 2;
         }
@@ -106,14 +151,14 @@ impl<M: Modulus> MInt<M> {
             }
             b -= a;
             if s < u {
-                s += M::MODULUS;
+                s += M::get_modulus();
             }
             s -= u;
             let k = b.trailing_zeros();
             b >>= k;
             for _ in 0..k {
                 if s & 1 == 1 {
-                    s += M::MODULUS;
+                    s += M::get_modulus();
                 }
                 s /= 2;
             }
@@ -140,15 +185,15 @@ pub mod modu32_impls {
     impl<M: Modulus> From<u64> for MInt<M> {
         #[inline]
         fn from(x: u64) -> Self {
-            Self::new_unchecked((x % M::MODULUS as u64) as u32)
+            Self::new_unchecked((x % M::get_modulus() as u64) as u32)
         }
     }
     impl<M: Modulus> From<i32> for MInt<M> {
         #[inline]
         fn from(x: i32) -> Self {
-            let x = x % M::MODULUS as i32;
+            let x = x % M::get_modulus() as i32;
             if x < 0 {
-                Self::new_unchecked((x + M::MODULUS as i32) as u32)
+                Self::new_unchecked((x + M::get_modulus() as i32) as u32)
             } else {
                 Self::new_unchecked(x as u32)
             }
@@ -157,9 +202,9 @@ pub mod modu32_impls {
     impl<M: Modulus> From<i64> for MInt<M> {
         #[inline]
         fn from(x: i64) -> Self {
-            let x = x % M::MODULUS as i64;
+            let x = x % M::get_modulus() as i64;
             if x < 0 {
-                Self::new_unchecked((x + M::MODULUS as i64) as u32)
+                Self::new_unchecked((x + M::get_modulus() as i64) as u32)
             } else {
                 Self::new_unchecked(x as u32)
             }
@@ -170,8 +215,8 @@ pub mod modu32_impls {
         #[inline]
         fn add(self, rhs: Self) -> Self::Output {
             let mut x = self.x + rhs.x;
-            if x >= M::MODULUS {
-                x -= M::MODULUS;
+            if x >= M::get_modulus() {
+                x -= M::get_modulus();
             }
             Self::new_unchecked(x)
         }
@@ -181,7 +226,7 @@ pub mod modu32_impls {
         #[inline]
         fn sub(self, rhs: Self) -> Self::Output {
             if self.x < rhs.x {
-                Self::new_unchecked(self.x + M::MODULUS - rhs.x)
+                Self::new_unchecked(self.x + M::get_modulus() - rhs.x)
             } else {
                 Self::new_unchecked(self.x - rhs.x)
             }
@@ -191,7 +236,7 @@ pub mod modu32_impls {
         type Output = Self;
         #[inline]
         fn mul(self, rhs: Self) -> Self::Output {
-            Self::new_unchecked((self.x as u64 * rhs.x as u64 % M::MODULUS as u64) as u32)
+            Self::new_unchecked((self.x as u64 * rhs.x as u64 % M::get_modulus() as u64) as u32)
         }
     }
     impl<M: Modulus> Div for MInt<M> {
@@ -208,7 +253,7 @@ pub mod modu32_impls {
             if self.x == 0 {
                 Self::zero()
             } else {
-                Self::new_unchecked(M::MODULUS - self.x)
+                Self::new_unchecked(M::get_modulus() - self.x)
             }
         }
     }

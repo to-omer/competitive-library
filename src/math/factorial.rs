@@ -1,5 +1,4 @@
 use crate::num::mint::{MInt, Modulus};
-use crate::num::rmint::RMInt;
 
 #[cargo_snippet::snippet(name = "factorial")]
 #[derive(Clone, Debug)]
@@ -95,23 +94,23 @@ fn test_factorials() {
 }
 
 #[derive(Clone, Debug)]
-pub struct SmallModMemorizedFactorial {
-    fact: Vec<RMInt>,
+pub struct SmallModMemorizedFactorial<M: Modulus> {
+    fact: Vec<MInt<M>>,
 }
-impl SmallModMemorizedFactorial {
+impl<M: Modulus> SmallModMemorizedFactorial<M> {
     pub fn new() -> Self {
-        let p = RMInt::get_modulus() as usize;
-        let mut fact = vec![RMInt::one(); p];
+        let p = MInt::<M>::get_mod() as usize;
+        let mut fact = vec![MInt::<M>::one(); p];
         for i in 1..p {
-            fact[i] = fact[i - 1] * RMInt::new(i as u32);
+            fact[i] = fact[i - 1] * MInt::<M>::new(i as u32);
         }
         Self { fact }
     }
     /// n! = a * p^e
-    pub fn factorial(&self, n: usize) -> (RMInt, usize) {
-        let p = RMInt::get_modulus() as usize;
+    pub fn factorial(&self, n: usize) -> (MInt<M>, usize) {
+        let p = MInt::<M>::get_mod() as usize;
         if n == 0 {
-            (RMInt::one(), 0)
+            (MInt::<M>::one(), 0)
         } else {
             let e = n / p;
             let res = self.factorial(e);
@@ -122,7 +121,7 @@ impl SmallModMemorizedFactorial {
             }
         }
     }
-    pub fn combination(&self, n: usize, r: usize) -> RMInt {
+    pub fn combination(&self, n: usize, r: usize) -> MInt<M> {
         if r <= n {
             let (a1, e1) = self.factorial(n);
             let (a2, e2) = self.factorial(r);
@@ -131,18 +130,19 @@ impl SmallModMemorizedFactorial {
                 return a1 * (a2 * a3).inv();
             }
         }
-        RMInt::zero()
+        MInt::<M>::zero()
     }
 }
 
 #[test]
 fn test_small_factorials() {
+    use crate::num::mint::modulus::{set_dyn_modulus, DynModulo};
     use crate::tools::random::Xorshift;
     let mut rand = Xorshift::time();
     const N: usize = 10_000;
     const Q: usize = 10_000;
-    RMInt::set_modulus(2);
-    let fact = SmallModMemorizedFactorial::new();
+    set_dyn_modulus(2);
+    let fact = SmallModMemorizedFactorial::<DynModulo>::new();
     for _ in 0..Q {
         let n = rand.rand(N as u64) as usize + 1;
         let k = rand.rand(N as u64) as usize % n;
