@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Modulo1000000007",""],["Modulo1000000009",""],["Modulo998244353",""]]});
+initSidebarItems({"fn":[["set_dyn_modulus",""]],"struct":[["DynModulo",""],["Modulo1000000007",""],["Modulo1000000009",""],["Modulo998244353",""]]});

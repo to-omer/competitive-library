@@ -152,7 +152,6 @@
 <span id="152">152</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::<span class="ident">mint</span>::{<span class="ident">MInt</span>, <span class="ident">Modulus</span>};
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::<span class="ident">rmint</span>::<span class="ident">RMInt</span>;
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;factorial&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
@@ -248,23 +247,23 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SmallModMemorizedFactorial</span> {
-    <span class="ident">fact</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RMInt</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Modulus</span><span class="op">&gt;</span> {
+    <span class="ident">fact</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
-<span class="kw">impl</span> <span class="ident">SmallModMemorizedFactorial</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Modulus</span><span class="op">&gt;</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">RMInt</span>::<span class="ident">get_modulus</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fact</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">RMInt</span>::<span class="ident">one</span>(); <span class="ident">p</span>];
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>::<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fact</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>::<span class="ident">one</span>(); <span class="ident">p</span>];
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">p</span> {
-            <span class="ident">fact</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">fact</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">*</span> <span class="ident">RMInt</span>::<span class="ident">new</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>);
+            <span class="ident">fact</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">fact</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">*</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>);
         }
         <span class="self">Self</span> { <span class="ident">fact</span> }
     }
     <span class="doccomment">/// n! = a * p^e</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">factorial</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">RMInt</span>, <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">RMInt</span>::<span class="ident">get_modulus</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">factorial</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">usize</span>) {
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>::<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">if</span> <span class="ident">n</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            (<span class="ident">RMInt</span>::<span class="ident">one</span>(), <span class="number">0</span>)
+            (<span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>::<span class="ident">one</span>(), <span class="number">0</span>)
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">e</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">/</span> <span class="ident">p</span>;
             <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">factorial</span>(<span class="ident">e</span>);
@@ -275,7 +274,7 @@
             }
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">combination</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">RMInt</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">combination</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">r</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">n</span> {
             <span class="kw">let</span> (<span class="ident">a1</span>, <span class="ident">e1</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">factorial</span>(<span class="ident">n</span>);
             <span class="kw">let</span> (<span class="ident">a2</span>, <span class="ident">e2</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">factorial</span>(<span class="ident">r</span>);
@@ -284,18 +283,19 @@
                 <span class="kw">return</span> <span class="ident">a1</span> <span class="op">*</span> (<span class="ident">a2</span> <span class="op">*</span> <span class="ident">a3</span>).<span class="ident">inv</span>();
             }
         }
-        <span class="ident">RMInt</span>::<span class="ident">zero</span>()
+        <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>::<span class="ident">zero</span>()
     }
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_small_factorials</span>() {
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::<span class="ident">mint</span>::<span class="ident">modulus</span>::{<span class="ident">set_dyn_modulus</span>, <span class="ident">DynModulo</span>};
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tools</span>::<span class="ident">random</span>::<span class="ident">Xorshift</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
     <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10_000</span>;
     <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10_000</span>;
-    <span class="ident">RMInt</span>::<span class="ident">set_modulus</span>(<span class="number">2</span>);
-    <span class="kw">let</span> <span class="ident">fact</span> <span class="op">=</span> <span class="ident">SmallModMemorizedFactorial</span>::<span class="ident">new</span>();
+    <span class="ident">set_dyn_modulus</span>(<span class="number">2</span>);
+    <span class="kw">let</span> <span class="ident">fact</span> <span class="op">=</span> <span class="ident">SmallModMemorizedFactorial</span>::<span class="op">&lt;</span><span class="ident">DynModulo</span><span class="op">&gt;</span>::<span class="ident">new</span>();
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">N</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>;
         <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">N</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">%</span> <span class="ident">n</span>;

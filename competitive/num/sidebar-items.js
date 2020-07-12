@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["complex",""],["mint","modint"],["quad_double",""],["rmint","runtime modint"]]});
+initSidebarItems({"mod":[["complex",""],["mint","modint"],["quad_double",""]]});
