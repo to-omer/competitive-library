@@ -3,8 +3,8 @@ use crate::num::mint::{MInt, Modulus};
 #[cargo_snippet::snippet(name = "factorial")]
 #[derive(Clone, Debug)]
 pub struct MemorizedFactorial<M: Modulus> {
-    fact: Vec<MInt<M>>,
-    inv_fact: Vec<MInt<M>>,
+    pub fact: Vec<MInt<M>>,
+    pub inv_fact: Vec<MInt<M>>,
 }
 #[cargo_snippet::snippet(name = "factorial")]
 impl<M: Modulus> MemorizedFactorial<M> {

@@ -108,6 +108,10 @@ impl<M: Modulus> MInt<M> {
         }
     }
     #[inline]
+    pub fn inner(self) -> u32 {
+        self.x
+    }
+    #[inline]
     pub fn one() -> Self {
         Self::new_unchecked(1)
     }
