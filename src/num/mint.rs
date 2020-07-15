@@ -1,7 +1,7 @@
 //! modint
 
 #[cargo_snippet::snippet("MInt")]
-pub trait Modulus: Copy {
+pub trait Modulus: Copy + std::fmt::Debug + Default + Eq + std::hash::Hash + Ord {
     fn get_modulus() -> u32;
     #[inline]
     fn modulo(x: u32) -> u32 {
@@ -84,13 +84,12 @@ pub mod modulus {
     }
 }
 #[cargo_snippet::snippet("MInt")]
-#[derive(Copy, Clone, Debug, Default, PartialEq, Eq, Ord, PartialOrd, Hash)]
 pub struct MInt<M>
 where
     M: Modulus,
 {
     x: u32,
-    phantom: std::marker::PhantomData<fn() -> M>,
+    _marker: std::marker::PhantomData<fn() -> M>,
 }
 #[cargo_snippet::snippet("MInt")]
 impl<M: Modulus> MInt<M> {
@@ -98,14 +97,14 @@ impl<M: Modulus> MInt<M> {
     pub fn new(x: u32) -> Self {
         Self {
             x: M::modulo(x),
-            phantom: std::marker::PhantomData,
+            _marker: std::marker::PhantomData,
         }
     }
     #[inline]
     pub fn new_unchecked(x: u32) -> Self {
         Self {
             x,
-            phantom: std::marker::PhantomData,
+            _marker: std::marker::PhantomData,
         }
     }
     #[inline]
@@ -167,15 +166,64 @@ impl<M: Modulus> MInt<M> {
     }
 }
 #[cargo_snippet::snippet("MInt")]
-pub mod modu32_impls {
+pub mod mint_impls {
     use super::*;
     use std::{
-        fmt,
+        cmp::Ordering,
+        fmt::{self, Debug},
+        hash::{Hash, Hasher},
         iter::{Product, Sum},
+        marker::PhantomData,
         num::ParseIntError,
         ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
         str::FromStr,
     };
+    impl<M: Modulus> Clone for MInt<M> {
+        #[inline]
+        fn clone(&self) -> Self {
+            Self {
+                x: Clone::clone(&self.x),
+                _marker: PhantomData,
+            }
+        }
+    }
+    impl<M: Modulus> Copy for MInt<M> {}
+    impl<M: Modulus> Debug for MInt<M> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            Debug::fmt(&self.x, f)
+        }
+    }
+    impl<M: Modulus> Default for MInt<M> {
+        #[inline]
+        fn default() -> Self {
+            Self::zero()
+        }
+    }
+    impl<M: Modulus> PartialEq for MInt<M> {
+        #[inline]
+        fn eq(&self, other: &Self) -> bool {
+            PartialEq::eq(&self.x, &other.x)
+        }
+    }
+    impl<M: Modulus> PartialOrd for MInt<M> {
+        #[inline]
+        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+            PartialOrd::partial_cmp(&self.x, &other.x)
+        }
+    }
+    impl<M: Modulus> Eq for MInt<M> {}
+    impl<M: Modulus> Ord for MInt<M> {
+        #[inline]
+        fn cmp(&self, other: &Self) -> Ordering {
+            Ord::cmp(&self.x, &other.x)
+        }
+    }
+    impl<M: Modulus> Hash for MInt<M> {
+        #[inline]
+        fn hash<H: Hasher>(&self, state: &mut H) {
+            Hash::hash(&self.x, state)
+        }
+    }
     impl<M: Modulus> From<u32> for MInt<M> {
         #[inline]
         fn from(x: u32) -> Self {
@@ -293,7 +341,7 @@ pub mod modu32_impls {
             s.parse::<u32>().map(Self::new)
         }
     }
-    macro_rules! modu32_ref_binop {
+    macro_rules! mint_ref_binop {
         ($imp:ident, $method:ident, $t:ty) => {
             impl<M: Modulus> $imp<$t> for &$t {
                 type Output = <$t as $imp<$t>>::Output;
@@ -318,11 +366,11 @@ pub mod modu32_impls {
             }
         };
     }
-    modu32_ref_binop!(Add, add, MInt<M>);
-    modu32_ref_binop!(Sub, sub, MInt<M>);
-    modu32_ref_binop!(Mul, mul, MInt<M>);
-    modu32_ref_binop!(Div, div, MInt<M>);
-    macro_rules! modu32_ref_unop {
+    mint_ref_binop!(Add, add, MInt<M>);
+    mint_ref_binop!(Sub, sub, MInt<M>);
+    mint_ref_binop!(Mul, mul, MInt<M>);
+    mint_ref_binop!(Div, div, MInt<M>);
+    macro_rules! mint_ref_unop {
         ($imp:ident, $method:ident, $t:ty) => {
             impl<M: Modulus> $imp for &$t {
                 type Output = <$t as $imp>::Output;
@@ -333,8 +381,8 @@ pub mod modu32_impls {
             }
         };
     }
-    modu32_ref_unop!(Neg, neg, MInt<M>);
-    macro_rules! modu32_ref_op_assign {
+    mint_ref_unop!(Neg, neg, MInt<M>);
+    macro_rules! mint_ref_op_assign {
         ($imp:ident, $method:ident, $t:ty, $fromimp:ident, $frommethod:ident) => {
             impl<M: Modulus> $imp<$t> for $t {
                 #[inline]
@@ -350,14 +398,14 @@ pub mod modu32_impls {
             }
         };
     }
-    modu32_ref_op_assign!(AddAssign, add_assign, MInt<M>, Add, add);
-    modu32_ref_op_assign!(SubAssign, sub_assign, MInt<M>, Sub, sub);
-    modu32_ref_op_assign!(MulAssign, mul_assign, MInt<M>, Mul, mul);
-    modu32_ref_op_assign!(DivAssign, div_assign, MInt<M>, Div, div);
+    mint_ref_op_assign!(AddAssign, add_assign, MInt<M>, Add, add);
+    mint_ref_op_assign!(SubAssign, sub_assign, MInt<M>, Sub, sub);
+    mint_ref_op_assign!(MulAssign, mul_assign, MInt<M>, Mul, mul);
+    mint_ref_op_assign!(DivAssign, div_assign, MInt<M>, Div, div);
 }
 
 #[test]
-fn test_modu32() {
+fn test_mint() {
     use crate::tools::random::Xorshift;
     let mut rand = Xorshift::default();
     const Q: usize = 10_000;
