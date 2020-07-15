@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["factorial",""],["fft",""],["gcd",""],["matrix",""],["nums",""],["polynomial",""],["prime",""]]});
+initSidebarItems({"mod":[["factorial",""],["fft",""],["gcd",""],["lagrange_interpolation",""],["matrix",""],["nums",""],["polynomial",""],["prime",""]]});
