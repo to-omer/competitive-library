@@ -113,7 +113,7 @@
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;MinimumCostFlow&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">RevEdge</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">to</span>: <span class="ident">usize</span>, <span class="ident">rev</span>: <span class="ident">usize</span>, <span class="ident">cap</span>: <span class="ident">u64</span>, <span class="ident">cost</span>: <span class="ident">i64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">to</span>: <span class="ident">usize</span>, <span class="ident">rev</span>: <span class="ident">usize</span>, <span class="ident">cap</span>: <span class="ident">u64</span>, <span class="ident">cost</span>: <span class="ident">i64</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">to</span>, <span class="ident">rev</span>, <span class="ident">cap</span>, <span class="ident">cost</span> }
     }
 }
@@ -122,7 +122,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimalDual</span> {
     <span class="ident">n</span>: <span class="ident">usize</span>,
-    <span class="ident">graph</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RevEdge</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">graph</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RevEdge</span><span class="op">&gt;&gt;</span>,
     <span class="ident">potential</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>,
     <span class="ident">cost</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>,
     <span class="ident">prev_vertex</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
@@ -130,7 +130,7 @@
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;MinimumCostFlow&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">PrimalDual</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">n</span>,
             <span class="ident">graph</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[]; <span class="ident">n</span>],
@@ -146,7 +146,7 @@
         <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">from</span>].<span class="ident">push</span>(<span class="ident">e1</span>);
         <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">to</span>].<span class="ident">push</span>(<span class="ident">e2</span>);
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_cost_flow</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_cost_flow</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">u64</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
         <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">f</span>;
@@ -155,28 +155,28 @@
         <span class="self">self</span>.<span class="ident">prev_vertex</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">n</span>];
         <span class="kw">while</span> <span class="ident">f</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="self">self</span>.<span class="ident">dijkstra</span>(<span class="ident">s</span>);
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">t</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">std</span>::<span class="ident">i64</span>::<span class="ident">MAX</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">t</span>] <span class="op">==</span> <span class="ident">std</span>::<span class="ident">i64</span>::<span class="ident">MAX</span> {
                 <span class="kw">return</span> <span class="prelude-val">None</span>;
             }
             <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">n</span> {
-                <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">v</span>] <span class="op">+</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">v</span>];
+                <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">v</span>] <span class="op">+=</span> <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">v</span>];
             }
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">add_f</span> <span class="op">=</span> <span class="ident">f</span>;
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">t</span>;
-            <span class="kw">while</span> <span class="ident">v</span> <span class="op">!</span><span class="op">=</span> <span class="ident">s</span> {
+            <span class="kw">while</span> <span class="ident">v</span> <span class="op">!=</span> <span class="ident">s</span> {
                 <span class="ident">add_f</span> <span class="op">=</span> <span class="ident">min</span>(
                     <span class="ident">add_f</span>,
                     <span class="self">self</span>.<span class="ident">graph</span>[<span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">v</span>]][<span class="self">self</span>.<span class="ident">prev_edge</span>[<span class="ident">v</span>]].<span class="ident">cap</span>,
                 );
                 <span class="ident">v</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">v</span>];
             }
-            <span class="ident">f</span> <span class="op">-</span><span class="op">=</span> <span class="ident">add_f</span>;
-            <span class="ident">res</span> <span class="op">+</span><span class="op">=</span> <span class="ident">add_f</span> <span class="kw">as</span> <span class="ident">i64</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">t</span>];
+            <span class="ident">f</span> <span class="op">-=</span> <span class="ident">add_f</span>;
+            <span class="ident">res</span> <span class="op">+=</span> <span class="ident">add_f</span> <span class="kw">as</span> <span class="ident">i64</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">t</span>];
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">t</span>;
-            <span class="kw">while</span> <span class="ident">v</span> <span class="op">!</span><span class="op">=</span> <span class="ident">s</span> {
-                <span class="self">self</span>.<span class="ident">graph</span>[<span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">v</span>]][<span class="self">self</span>.<span class="ident">prev_edge</span>[<span class="ident">v</span>]].<span class="ident">cap</span> <span class="op">-</span><span class="op">=</span> <span class="ident">add_f</span>;
+            <span class="kw">while</span> <span class="ident">v</span> <span class="op">!=</span> <span class="ident">s</span> {
+                <span class="self">self</span>.<span class="ident">graph</span>[<span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">v</span>]][<span class="self">self</span>.<span class="ident">prev_edge</span>[<span class="ident">v</span>]].<span class="ident">cap</span> <span class="op">-=</span> <span class="ident">add_f</span>;
                 <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">graph</span>[<span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">v</span>]][<span class="self">self</span>.<span class="ident">prev_edge</span>[<span class="ident">v</span>]].<span class="ident">rev</span>;
-                <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">v</span>][<span class="ident">r</span>].<span class="ident">cap</span> <span class="op">+</span><span class="op">=</span> <span class="ident">add_f</span>;
+                <span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">v</span>][<span class="ident">r</span>].<span class="ident">cap</span> <span class="op">+=</span> <span class="ident">add_f</span>;
                 <span class="ident">v</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">v</span>];
             }
         }
@@ -193,7 +193,7 @@
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">u</span>].<span class="ident">len</span>() {
                 <span class="kw">let</span> <span class="ident">e</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">graph</span>[<span class="ident">u</span>][<span class="ident">i</span>];
                 <span class="kw">let</span> <span class="ident">ncost</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">u</span>] <span class="op">+</span> <span class="ident">e</span>.<span class="ident">cost</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">u</span>] <span class="op">-</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">e</span>.<span class="ident">to</span>];
-                <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">cap</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="kw-2">&amp;</span><span class="op">&amp;</span> <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">e</span>.<span class="ident">to</span>] <span class="op">&gt;</span> <span class="ident">ncost</span> {
+                <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">cap</span> <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">e</span>.<span class="ident">to</span>] <span class="op">&gt;</span> <span class="ident">ncost</span> {
                     <span class="self">self</span>.<span class="ident">cost</span>[<span class="ident">e</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">ncost</span>;
                     <span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">e</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">u</span>;
                     <span class="self">self</span>.<span class="ident">prev_edge</span>[<span class="ident">e</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">i</span>;

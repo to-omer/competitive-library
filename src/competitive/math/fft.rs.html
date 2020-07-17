@@ -73,8 +73,8 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fft_rec</span>(<span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>], <span class="ident">inv</span>: <span class="ident">bool</span>) {
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">len</span>();
-    <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span>);
-    <span class="kw">if</span> <span class="ident">n</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+    <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>() <span class="op">==</span> <span class="number">1</span>);
+    <span class="kw">if</span> <span class="ident">n</span> <span class="op">==</span> <span class="number">1</span> {
         <span class="kw">return</span>;
     }
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g1</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">n</span>).<span class="ident">step_by</span>(<span class="number">2</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">f</span>[<span class="ident">i</span>]).<span class="ident">collect</span>();
@@ -101,16 +101,16 @@
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="ident">g</span>);
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fft</span>(<span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">inv</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fft</span>(<span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span>, <span class="ident">inv</span>: <span class="ident">bool</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;&gt;</span> {
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">len</span>();
-    <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span>);
+    <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>() <span class="op">==</span> <span class="number">1</span>);
     <span class="kw">let</span> <span class="ident">mask</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>;
     <span class="kw">const</span> <span class="ident">TAU</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">2.</span> <span class="op">*</span> <span class="ident">std</span>::<span class="ident">f64</span>::<span class="ident">consts</span>::<span class="ident">PI</span>;
     <span class="kw">let</span> <span class="ident">omega</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">inv</span> { <span class="op">-</span><span class="ident">TAU</span> <span class="op">/</span> <span class="ident">n</span> <span class="kw">as</span> <span class="ident">f64</span> } <span class="kw">else</span> { <span class="ident">TAU</span> <span class="op">/</span> <span class="ident">n</span> <span class="kw">as</span> <span class="ident">f64</span> };
 
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">Complex</span>::<span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>::<span class="ident">default</span>(); <span class="ident">n</span>];
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">/</span> <span class="number">2</span>;
-    <span class="kw">while</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span> {
+    <span class="kw">while</span> <span class="ident">i</span> <span class="op">&gt;=</span> <span class="number">1</span> {
         <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">Complex</span>::<span class="ident">polar</span>(<span class="number">1.</span>, <span class="ident">omega</span> <span class="op">*</span> <span class="ident">i</span> <span class="kw">as</span> <span class="ident">f64</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">w</span> <span class="op">=</span> <span class="ident">Complex</span>::<span class="ident">new</span>(<span class="number">1.</span>, <span class="number">0.</span>);
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">n</span>).<span class="ident">step_by</span>(<span class="ident">i</span>) {
@@ -119,7 +119,7 @@
             }
             <span class="ident">w</span> <span class="op">=</span> <span class="ident">w</span> <span class="op">*</span> <span class="ident">t</span>;
         }
-        <span class="ident">i</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+        <span class="ident">i</span> <span class="op">/=</span> <span class="number">2</span>;
         <span class="ident">std</span>::<span class="ident">mem</span>::<span class="ident">swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">f</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">g</span>);
     }
     <span class="kw">if</span> <span class="ident">inv</span> {

@@ -29,21 +29,21 @@
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;topological_sort&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">Graph</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">topological_sort</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">topological_sort</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">indeg</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vsize</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
         <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">u</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>)) {
-            <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">+=</span> <span class="number">1</span>;
         }
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stack</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">vertices</span>()
-            .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">u</span><span class="op">|</span> <span class="ident">indeg</span>[<span class="ident">u</span>] <span class="op">=</span><span class="op">=</span> <span class="number">0</span>)
-            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
+            .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">u</span><span class="op">|</span> <span class="ident">indeg</span>[<span class="ident">u</span>] <span class="op">==</span> <span class="number">0</span>)
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;&gt;</span>();
         <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="ident">stack</span>.<span class="ident">pop</span>() {
             <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">u</span>);
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-                <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="kw">if</span> <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+                <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">-=</span> <span class="number">1</span>;
+                <span class="kw">if</span> <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">==</span> <span class="number">0</span> {
                     <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">a</span>.<span class="ident">to</span>);
                 }
             }
