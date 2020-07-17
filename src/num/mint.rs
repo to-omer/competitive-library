@@ -1,7 +1,7 @@
 //! modint
 
 #[cargo_snippet::snippet("MInt")]
-pub trait Modulus: Copy + std::fmt::Debug + Default + Eq + std::hash::Hash + Ord {
+pub trait Modulus {
     fn get_modulus() -> u32;
     #[inline]
     fn modulo(x: u32) -> u32 {
