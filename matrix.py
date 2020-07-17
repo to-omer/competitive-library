@@ -3,20 +3,17 @@ from subprocess import Popen, PIPE, call
 from pathlib import Path
 from shutil import move
 
+SIZE = 20
+
 def cargo_verify(name: str):
     return ['cargo', 'test', '--lib', '--release', name, '--', '--ignored']
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('size', type=int, default=20)
     parser.add_argument('nth', type=int, nargs='?')
     args = parser.parse_args()
-    if args.nth is None:
-        print(f'::set-output name=matrix::{{"job-id":{list(range(args.size))}}}')
-        return
-
     with Popen(['cargo', 'test', '--lib', '--quiet', '--release', '--', '--list', '--ignored'], stdout=PIPE) as p:
-        for s in p.stdout.readlines()[args.nth::args.size]:
+        for s in p.stdout.readlines()[args.nth::SIZE]:
             call(cargo_verify(s.split()[0][:-1].decode('utf-8')))
 
     with Popen(['git', 'ls-files', '-o', '--exclude-standard', 'src'], stdout=PIPE) as p:
