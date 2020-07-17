@@ -3,8 +3,20 @@ name: verify
 on: push
 
 jobs:
-  test:
+  set-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - id: set-matrix
+      run: python matrix.py 20
+
+  verify:
+    needs: set-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ needs.set-matrix.outputs.matrix }}
+      fail-test: false
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python
@@ -17,16 +29,26 @@ jobs:
           toolchain: stable
           override: true
 
-    - name: Run test
-      run: cargo test
-
     - name: Run verify
       env:
         RUST_MIN_STACK: 268435456
       run: |
         ulimit -s unlimited
-        cargo test --release -- --ignored
+        python matrix.py 20 ${{ matrix.job-id }}
       continue-on-error: true
+
+    - name: upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifact
+        path: ${{ github.workspace }}/artifact/**/*
+
+  generate-doc:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+    - name: download artifacts
+      uses: actions/download-artifact@v2
 
     - name: Install latest nightly
       uses: actions-rs/toolchain@v1
