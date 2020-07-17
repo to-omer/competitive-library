@@ -94,7 +94,7 @@ mod scanner_impls {
 
     pub struct ScannerIter<'a, 'b, T> {
         inner: &'b mut Scanner<'a>,
-        phantom: std::marker::PhantomData<fn() -> T>,
+        _marker: std::marker::PhantomData<fn() -> fn() -> T>,
     }
     impl<'a, 'b, T: IterScan> Iterator for ScannerIter<'a, 'b, T> {
         type Item = <T as IterScan>::Output;
@@ -107,7 +107,7 @@ mod scanner_impls {
         pub fn iter<'b, T: IterScan>(&'b mut self) -> ScannerIter<'a, 'b, T> {
             ScannerIter {
                 inner: self,
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }

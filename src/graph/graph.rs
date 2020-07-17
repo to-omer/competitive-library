@@ -50,7 +50,7 @@ pub struct GraphScanner<U: IterScan<Output = usize>, T: IterScan> {
     vsize: usize,
     esize: usize,
     directed: bool,
-    phantom: std::marker::PhantomData<fn() -> (U, T)>,
+    _marker: std::marker::PhantomData<fn() -> fn() -> (U, T)>,
 }
 
 #[cargo_snippet::snippet("Graph")]
@@ -60,7 +60,7 @@ impl<U: IterScan<Output = usize>, T: IterScan> GraphScanner<U, T> {
             vsize,
             esize,
             directed,
-            phantom: std::marker::PhantomData,
+            _marker: std::marker::PhantomData,
         }
     }
 }

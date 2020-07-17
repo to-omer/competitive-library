@@ -6,7 +6,7 @@ use super::magma::*;
 #[cargo_snippet::snippet("MaxOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MaxOperation<T: Clone + Ord + MinimumBounded> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("MaxOperation")]
 pub trait MinimumBounded {
@@ -48,7 +48,7 @@ pub mod max_operation_impl {
     impl<T: Clone + Ord + MinimumBounded> MaxOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -74,7 +74,7 @@ pub mod max_operation_impl {
 #[cargo_snippet::snippet("MinOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MinOperation<T: Clone + Ord + MaximumBounded> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("MinOperation")]
 pub trait MaximumBounded {
@@ -116,7 +116,7 @@ pub mod min_operation_impl {
     impl<T: Clone + Ord + MaximumBounded> MinOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -142,7 +142,7 @@ pub mod min_operation_impl {
 #[cargo_snippet::snippet("FirstOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct FirstOperation<T: Clone + PartialEq> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("FirstOperation")]
 pub mod first_operation_impl {
@@ -150,7 +150,7 @@ pub mod first_operation_impl {
     impl<T: Clone + PartialEq> FirstOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -175,7 +175,7 @@ pub mod first_operation_impl {
 #[cargo_snippet::snippet("LastOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LastOperation<T: Clone + PartialEq> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("LastOperation")]
 pub mod last_operation_impl {
@@ -183,7 +183,7 @@ pub mod last_operation_impl {
     impl<T: Clone + PartialEq> LastOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -208,7 +208,7 @@ pub mod last_operation_impl {
 #[cargo_snippet::snippet("AdditiveOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct AdditiveOperation<T: Copy + PartialEq + AdditiveIdentity> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("AdditiveOperation")]
 pub trait AdditiveIdentity: Sized + std::ops::Add<Output = Self> {
@@ -252,7 +252,7 @@ pub mod additive_operation_impl {
     impl<T: Copy + PartialEq + AdditiveIdentity> AdditiveOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -293,7 +293,7 @@ pub mod additive_operation_impl {
 #[cargo_snippet::snippet("MultiplicativeOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MultiplicativeOperation<T: Copy + PartialEq + MultiplicativeIdentity> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("MultiplicativeOperation")]
 pub trait MultiplicativeIdentity: Sized + std::ops::Mul<Output = Self> {
@@ -337,7 +337,7 @@ pub mod multiplicative_operation_impl {
     impl<T: Copy + PartialEq + MultiplicativeIdentity> MultiplicativeOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -378,7 +378,7 @@ pub mod multiplicative_operation_impl {
 #[cargo_snippet::snippet("LinearOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearOperation<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("LinearOperation")]
 pub mod linear_operation_impl {
@@ -386,7 +386,7 @@ pub mod linear_operation_impl {
     impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> LinearOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -415,7 +415,7 @@ pub mod linear_operation_impl {
 #[cargo_snippet::snippet("BitAndOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitAndOperation<T: Copy + PartialEq + BitAndIdentity> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("BitAndOperation")]
 pub trait BitAndIdentity: Sized + std::ops::BitAnd<Output = Self> {
@@ -457,7 +457,7 @@ pub mod bitand_operation_impl {
     impl<T: Copy + PartialEq + BitAndIdentity> BitAndOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -483,7 +483,7 @@ pub mod bitand_operation_impl {
 #[cargo_snippet::snippet("BitOrOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 pub trait BitOrIdentity: Sized + std::ops::BitOr<Output = Self> {
     fn all_zero() -> Self;
@@ -524,7 +524,7 @@ pub mod bitor_operation_impl {
     impl<T: Copy + PartialEq + BitOrIdentity> BitOrOperation<T> {
         pub fn new() -> Self {
             Self {
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
@@ -627,7 +627,7 @@ pub mod group_operation_impl {
 #[derive(Clone, Debug)]
 pub struct AssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("AssocoativeOperator")]
 pub mod assocoative_operator_impl {
@@ -646,7 +646,7 @@ pub mod assocoative_operator_impl {
 #[derive(Clone, Debug)]
 pub struct AbsorbedAssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
-    phantom: std::marker::PhantomData<T>,
+    _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("AbsorbedAssocoativeOperator")]
 pub mod absorbed_assocoative_operator_impl {
@@ -655,7 +655,7 @@ pub mod absorbed_assocoative_operator_impl {
         pub fn new(operator: F) -> Self {
             Self {
                 operator,
-                phantom: std::marker::PhantomData,
+                _marker: std::marker::PhantomData,
             }
         }
     }
