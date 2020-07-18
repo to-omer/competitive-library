@@ -204,7 +204,7 @@ pub mod last_operation_impl {
     impl<T: Clone + PartialEq> Idempotent for LastOperation<T> {}
 }
 
-/// +
+/// $+$
 #[cargo_snippet::snippet("AdditiveOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct AdditiveOperation<T: Copy + PartialEq + AdditiveIdentity> {
@@ -289,7 +289,7 @@ pub mod additive_operation_impl {
     }
 }
 
-/// ×
+/// $\times$
 #[cargo_snippet::snippet("MultiplicativeOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MultiplicativeOperation<T: Copy + PartialEq + MultiplicativeIdentity> {
@@ -374,7 +374,7 @@ pub mod multiplicative_operation_impl {
     }
 }
 
-/// (a, b) ∘ (c, d) = λx. c × (a × x + b) + d
+/// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
 #[cargo_snippet::snippet("LinearOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearOperation<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> {
@@ -680,7 +680,7 @@ pub mod absorbed_assocoative_operator_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Commutative for AbsorbedAssocoativeOperator<T, F> {}
 }
 
-/// (M1, M2)
+/// $(M_1, M_2)$
 #[cargo_snippet::snippet("CartesianOperation")]
 #[derive(Clone, Debug)]
 pub struct CartesianOperation<M1, M2> {

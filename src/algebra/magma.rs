@@ -1,15 +1,15 @@
 //! algebraic traits
 
-/// binary operaion: T ∘ T → T
+/// binary operaion: $T \circ T \to T$
 #[cargo_snippet::snippet("algebra")]
 pub trait Magma {
-    /// type of operands: T
+    /// type of operands: $T$
     type T: Clone + PartialEq;
-    /// binary operaion: ∘
+    /// binary operaion: $\circ$
     fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T;
 }
 
-/// ∀a,b,c ∈ T, (a ∘ b) ∘ c = a ∘ (b ∘ c)
+/// $\forall a,\forall b,\forall c \in T, (a \circ b) \circ c = a \circ (b \circ c)$
 #[cargo_snippet::snippet("algebra")]
 pub trait Associative {}
 
@@ -20,18 +20,17 @@ pub trait SemiGroup: Magma + Associative {}
 #[cargo_snippet::snippet("algebra")]
 impl<S: Magma + Associative> SemiGroup for S {}
 
-/// ∃e ∈ T, ∀a ∈ T, e ∘ a = a ∘ e = e
+/// $\exists e \in T, \forall a \in T, e \circ a = a \circ e = e$
 #[cargo_snippet::snippet("algebra")]
 pub trait Unital: Magma {
-    /// identity element: e
+    /// identity element: $e$
     fn unit(&self) -> Self::T;
 }
 
 /// associative binary operation and an identity element
 #[cargo_snippet::snippet("algebra")]
 pub trait Monoid: SemiGroup + Unital {
-    /// x ^ n = x ∘ ... ∘ x
-    /// binary exponentiation
+    /// binary exponentiation: $x^n = x\circ\ddots\circ x$
     fn pow(&self, x: Self::T, n: usize) -> Self::T {
         let mut n = n;
         let mut res = self.unit();
@@ -50,17 +49,17 @@ pub trait Monoid: SemiGroup + Unital {
 #[cargo_snippet::snippet("algebra")]
 impl<M: SemiGroup + Unital> Monoid for M {}
 
-/// ∃e ∈ T, ∀a ∈ T, ∃b,c ∈ T, b ∘ a = a ∘ c = e
+/// $\exists e \in T, \forall a \in T, \exists b,c \in T, b \circ a = a \circ c = e$
 #[cargo_snippet::snippet("algebra")]
 pub trait Invertible: Magma {
-    /// a where a ∘ x = e
+    /// $a$ where $a \circ x = e$
     fn inverse(&self, x: &Self::T) -> Self::T;
 }
 
 /// short cut of right inverse binary operation
 #[cargo_snippet::snippet("algebra")]
 pub trait RightInvertibleMagma: Magma {
-    /// right inverse binary operation: ⋅ ∘ (⋅ ^ -1)
+    /// right inverse binary operation: $\cdot \circ (\cdot^{-1})$
     fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T;
 }
 
@@ -71,7 +70,7 @@ pub trait Group: Monoid + Invertible {}
 #[cargo_snippet::snippet("algebra")]
 impl<G: Monoid + Invertible> Group for G {}
 
-/// ∀a,b ∈ T, a ∘ b = b ∘ a
+/// $\forall a,\forall b \in T, a \circ b = b \circ a$
 #[cargo_snippet::snippet("algebra")]
 pub trait Commutative {}
 
@@ -89,7 +88,7 @@ pub trait AbelianGroup: Group + Commutative {}
 #[cargo_snippet::snippet("algebra")]
 impl<G: Group + Commutative> AbelianGroup for G {}
 
-/// ∀a ∈ T, a ∘ a = a
+/// $\forall a \in T, a \circ a = a$
 #[cargo_snippet::snippet("algebra")]
 pub trait Idempotent {}
 
