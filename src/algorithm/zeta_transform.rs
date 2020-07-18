@@ -6,7 +6,7 @@
 //! - gcd convolution: divisor
 //! - lcm convolution: multiple
 
-use crate::algebra::magma::{Group, Monoid};
+use crate::algebra::{Group, Monoid};
 
 #[cargo_snippet::snippet("zeta_transform")]
 pub fn zeta_transform_for_subset<M: Monoid>(v: &mut [M::T], monoid: M) {
@@ -24,7 +24,7 @@ pub fn zeta_transform_for_subset<M: Monoid>(v: &mut [M::T], monoid: M) {
 
 #[test]
 fn test_zeta_transform_for_subset() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let mut f: Vec<u64> = vec![
         1, // 000
         2, // 001
@@ -65,7 +65,7 @@ pub fn mobius_transform_for_subset<G: Group>(v: &mut [G::T], group: G) {
 
 #[test]
 fn test_mobius_transform_for_subset() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let f: Vec<i64> = vec![
         1, // 000
         2, // 001
@@ -106,7 +106,7 @@ pub fn zeta_transform_for_superset<M: Monoid>(v: &mut [M::T], monoid: M) {
 
 #[test]
 fn test_zeta_transform_for_superset() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let mut f: Vec<u64> = vec![
         1, // 000
         2, // 001
@@ -147,7 +147,7 @@ pub fn mobius_transform_for_superset<G: Group>(v: &mut [G::T], group: G) {
 
 #[test]
 fn test_mobius_transform_for_superset() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let f: Vec<i64> = vec![
         1, // 000
         2, // 001
@@ -187,7 +187,7 @@ pub fn zeta_transform_for_divisor<I: Iterator<Item = usize>, M: Monoid>(
 
 #[test]
 fn test_zeta_transform_for_divisor() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let mut f = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let g = vec![
         0,
@@ -225,7 +225,7 @@ pub fn mobius_transform_for_divisor<I: Iterator<Item = usize>, G: Group>(
 
 #[test]
 fn test_mobius_transform_for_divisor() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let f = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let mut g = vec![
         0,
@@ -263,7 +263,7 @@ pub fn zeta_transform_for_multiple<I: Iterator<Item = usize>, M: Monoid>(
 
 #[test]
 fn test_zeta_transform_for_multiple() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let mut f = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let g = vec![
         0,
@@ -301,7 +301,7 @@ pub fn mobius_transform_for_multiple<I: Iterator<Item = usize>, G: Group>(
 
 #[test]
 fn test_mobius_transform_for_multiple() {
-    use crate::algebra::operations::AdditiveOperation;
+    use crate::algebra::AdditiveOperation;
     let f = vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let mut g = vec![
         0,

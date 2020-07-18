@@ -1,4 +1,4 @@
-use crate::num::mint::{MInt, Modulus};
+use crate::num::{MInt, Modulus};
 
 #[cargo_snippet::snippet(name = "factorial")]
 #[derive(Clone, Debug)]
@@ -57,7 +57,7 @@ impl<M: Modulus> MemorizedFactorial<M> {
 
 #[test]
 fn test_factorials() {
-    use crate::num::mint::modulus::Modulo1000000007;
+    use crate::num::modulus::Modulo1000000007;
     let fact = MemorizedFactorial::new(100);
     type M = MInt<Modulo1000000007>;
     for i in 0..101 {
@@ -136,8 +136,8 @@ impl<M: Modulus> SmallModMemorizedFactorial<M> {
 
 #[test]
 fn test_small_factorials() {
-    use crate::num::mint::modulus::{set_dyn_modulus, DynModulo};
-    use crate::tools::random::Xorshift;
+    use crate::num::modulus::{set_dyn_modulus, DynModulo};
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     const N: usize = 10_000;
     const Q: usize = 10_000;

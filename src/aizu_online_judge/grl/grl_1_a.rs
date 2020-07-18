@@ -1,8 +1,7 @@
-pub use crate::algebra::magma::Monoid;
-pub use crate::algebra::operations::AdditiveOperation;
-pub use crate::graph::graph::{Graph, GraphScanner};
+pub use crate::algebra::{AdditiveOperation, Monoid};
+pub use crate::graph::{Graph, GraphScanner};
 pub use crate::scan;
-pub use crate::tools::scanner::{read_all, Scanner};
+pub use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/1/GRL_1_A")]

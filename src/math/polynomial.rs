@@ -119,7 +119,7 @@ impl std::ops::Rem<&Polynomial> for &Polynomial {
 }
 
 pub mod poly_mod_poly {
-    use crate::num::mint::*;
+    use crate::num::*;
     pub type Poly = Vec<MInt<modulus::Modulo1000000007>>;
     pub fn poly_mulmod(x: &Poly, y: &Poly, z: &Poly) -> Poly {
         let mut res = vec![MInt::zero(); x.len() + y.len() - 1];

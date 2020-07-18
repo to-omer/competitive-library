@@ -1,7 +1,7 @@
 //! dynamic programming on all-rooted trees
 
-use crate::algebra::magma::Monoid;
-use crate::graph::graph::{Adjacent, Graph};
+use crate::algebra::Monoid;
+use crate::graph::{Adjacent, Graph};
 
 #[cargo_snippet::snippet("ReRooting")]
 /// dynamic programming on all-rooted trees

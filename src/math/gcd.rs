@@ -32,7 +32,7 @@ pub fn gcd_binary(mut a: u64, mut b: u64) -> u64 {
 
 #[test]
 fn test_gcd() {
-    use crate::tools::random::Xorshift;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {
@@ -77,7 +77,7 @@ pub fn extgcd_loop(mut a: i64, mut b: i64) -> (i64, i64, i64) {
 
 #[test]
 fn test_extgcd() {
-    use crate::tools::random::Xorshift;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {
@@ -132,7 +132,7 @@ pub fn extgcd_binary(mut a: i64, mut b: i64) -> (i64, i64, i64) {
 
 #[test]
 fn test_extgcd_binary() {
-    use crate::tools::random::Xorshift;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {
@@ -154,7 +154,7 @@ pub fn modinv_loop(a: i64, m: i64) -> i64 {
 
 #[test]
 fn test_modinv() {
-    use crate::tools::random::Xorshift;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {
@@ -204,7 +204,7 @@ pub fn modinv_extgcd_binary(mut a: u64, p: u64) -> u64 {
 
 #[test]
 fn test_modinv_extgcd_binary() {
-    use crate::tools::random::Xorshift;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {

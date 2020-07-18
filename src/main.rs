@@ -1,4 +1,4 @@
-use competitive::tools::scanner::Scanner;
+use competitive::tools::Scanner;
 
 #[cargo_snippet::snippet]
 #[cargo_snippet::snippet(include = "scanner")]

@@ -1,4 +1,4 @@
-use crate::algebra::magma::Monoid;
+use crate::algebra::Monoid;
 
 #[cargo_snippet::snippet("SegmentTree")]
 #[derive(Clone, Debug)]
@@ -124,9 +124,9 @@ impl<M: Monoid> SegmentTree<M> {
 
 #[test]
 fn test_segment_tree() {
-    use crate::algebra::operations::{AdditiveOperation, MaxOperation};
-    use crate::algorithm::search::lower_bound;
-    use crate::tools::random::Xorshift;
+    use crate::algebra::{AdditiveOperation, MaxOperation};
+    use crate::algorithm::lower_bound;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let n = 1_024;
     let q = 10_000;

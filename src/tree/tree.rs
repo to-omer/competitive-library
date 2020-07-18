@@ -1,4 +1,4 @@
-use crate::graph::graph::Graph;
+use crate::graph::Graph;
 
 #[cargo_snippet::snippet("TreeRec")]
 #[derive(Debug, Clone)]

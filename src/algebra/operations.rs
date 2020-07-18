@@ -13,7 +13,7 @@ pub trait MinimumBounded {
     fn minimum() -> Self;
 }
 #[cargo_snippet::snippet("MaxOperation")]
-pub mod max_operation_impl {
+mod max_operation_impl {
     use super::*;
     macro_rules! impl_minimum_with_min {
         ([$($wh:tt)*], $t:ty, $min:expr) => {
@@ -81,7 +81,7 @@ pub trait MaximumBounded {
     fn maximum() -> Self;
 }
 #[cargo_snippet::snippet("MinOperation")]
-pub mod min_operation_impl {
+mod min_operation_impl {
     use super::*;
     macro_rules! impl_maximum_with_max {
         ([$($wh:tt)*], $t:ty, $max:expr) => {
@@ -145,7 +145,7 @@ pub struct FirstOperation<T: Clone + PartialEq> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("FirstOperation")]
-pub mod first_operation_impl {
+mod first_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> FirstOperation<T> {
         pub fn new() -> Self {
@@ -178,7 +178,7 @@ pub struct LastOperation<T: Clone + PartialEq> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("LastOperation")]
-pub mod last_operation_impl {
+mod last_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> LastOperation<T> {
         pub fn new() -> Self {
@@ -216,7 +216,7 @@ pub trait AdditiveIdentity: Sized + std::ops::Add<Output = Self> {
 }
 #[cargo_snippet::snippet("AdditiveOperation")]
 #[macro_use]
-pub mod additive_operation_impl {
+mod additive_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
     macro_rules! impl_additive_identity {
@@ -301,7 +301,7 @@ pub trait MultiplicativeIdentity: Sized + std::ops::Mul<Output = Self> {
 }
 #[cargo_snippet::snippet("MultiplicativeOperation")]
 #[macro_use]
-pub mod multiplicative_operation_impl {
+mod multiplicative_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
     macro_rules! impl_multiplicative_identity {
@@ -381,7 +381,7 @@ pub struct LinearOperation<T: Copy + PartialEq + AdditiveIdentity + Multiplicati
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("LinearOperation")]
-pub mod linear_operation_impl {
+mod linear_operation_impl {
     use super::*;
     impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> LinearOperation<T> {
         pub fn new() -> Self {
@@ -422,7 +422,7 @@ pub trait BitAndIdentity: Sized + std::ops::BitAnd<Output = Self> {
     fn all_one() -> Self;
 }
 #[cargo_snippet::snippet("BitAndOperation")]
-pub mod bitand_operation_impl {
+mod bitand_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
     macro_rules! impl_bitand_identity {
@@ -489,7 +489,7 @@ pub trait BitOrIdentity: Sized + std::ops::BitOr<Output = Self> {
     fn all_zero() -> Self;
 }
 #[cargo_snippet::snippet("BitOrOperation")]
-pub mod bitor_operation_impl {
+mod bitor_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
     macro_rules! impl_bitor_identity {
@@ -553,7 +553,7 @@ pub struct MonoidalOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     op: F,
 }
 #[cargo_snippet::snippet("MonoidalOperation")]
-pub mod monoidal_operation_impl {
+mod monoidal_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> MonoidalOperation<T, F> {
         pub fn new(e: T, op: F) -> Self {
@@ -585,7 +585,7 @@ pub struct GroupOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) ->
     inv: G,
 }
 #[cargo_snippet::snippet("GroupOperation")]
-pub mod group_operation_impl {
+mod group_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> GroupOperation<T, F, G> {
         pub fn new(e: T, op: F, inv: G) -> Self {
@@ -630,7 +630,7 @@ pub struct AssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("AssocoativeOperator")]
-pub mod assocoative_operator_impl {
+mod assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Magma for AssocoativeOperator<T, F> {
         type T = T;
@@ -649,7 +649,7 @@ pub struct AbsorbedAssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T>
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("AbsorbedAssocoativeOperator")]
-pub mod absorbed_assocoative_operator_impl {
+mod absorbed_assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbsorbedAssocoativeOperator<T, F> {
         pub fn new(operator: F) -> Self {
@@ -688,7 +688,7 @@ pub struct CartesianOperation<M1, M2> {
     m2: M2,
 }
 #[cargo_snippet::snippet("CartesianOperation")]
-pub mod cartesian_operation_impl {
+mod cartesian_operation_impl {
     use super::*;
     impl<M1, M2> CartesianOperation<M1, M2> {
         pub fn new(m1: M1, m2: M2) -> Self {
@@ -724,7 +724,7 @@ pub struct CountingOperation<M> {
     m: M,
 }
 #[cargo_snippet::snippet("CountingOperation")]
-pub mod counting_operation_impl {
+mod counting_operation_impl {
     use super::*;
     impl<M> CountingOperation<M> {
         pub fn new(m: M) -> Self {

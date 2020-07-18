@@ -1,7 +1,7 @@
-pub use crate::algebra::operations::{LastOperation, MinOperation};
-pub use crate::data_structure::lazy_segment_tree::LazySegmentTree;
+pub use crate::algebra::{LastOperation, MinOperation};
+pub use crate::data_structure::LazySegmentTree;
 pub use crate::scan;
-pub use crate::tools::scanner::{read_all, Scanner};
+pub use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_F")]

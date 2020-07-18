@@ -1,3 +1,7 @@
-pub mod complex;
-pub mod mint;
-pub mod quad_double;
+mod complex;
+mod mint;
+mod quad_double;
+
+pub use complex::Complex;
+pub use mint::*;
+pub use quad_double::QuadDouble;

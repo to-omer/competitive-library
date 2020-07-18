@@ -1,4 +1,4 @@
-use crate::algebra::magma::{Group, Monoid};
+use crate::algebra::{Group, Monoid};
 
 #[cargo_snippet::snippet("BinaryIndexedTree")]
 #[derive(Clone, Debug)]
@@ -43,8 +43,8 @@ impl<M: Monoid> BinaryIndexedTree<M> {
 
 #[test]
 fn test_binary_indexed_tree() {
-    use crate::algebra::operations::{AdditiveOperation, MaxOperation};
-    use crate::tools::random::Xorshift;
+    use crate::algebra::{AdditiveOperation, MaxOperation};
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let n = 10_000;
     let q = 100_000;
@@ -100,8 +100,8 @@ impl<G: Group> BinaryIndexedTree<G> {
 
 #[test]
 fn test_group_binary_indexed_tree() {
-    use crate::algebra::operations::AdditiveOperation;
-    use crate::tools::random::Xorshift;
+    use crate::algebra::AdditiveOperation;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let n = 1_000;
     let q = 10_000;
@@ -147,9 +147,9 @@ where
 
 #[test]
 fn test_binary_indexed_tree_lower_bound() {
-    use crate::algebra::operations::AdditiveOperation;
-    use crate::algorithm::search::lower_bound;
-    use crate::tools::random::Xorshift;
+    use crate::algebra::AdditiveOperation;
+    use crate::algorithm::lower_bound;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let n = 1_000;
     let q = 10_000;
@@ -221,8 +221,8 @@ impl<M: Monoid> BinaryIndexedTree2D<M> {
 
 #[test]
 fn test_binary_indexed_tree_2d() {
-    use crate::algebra::operations::{AdditiveOperation, MaxOperation};
-    use crate::tools::random::Xorshift;
+    use crate::algebra::{AdditiveOperation, MaxOperation};
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let h = 200;
     let w = 200;
@@ -308,8 +308,8 @@ impl<G: Group> BinaryIndexedTree2D<G> {
 
 #[test]
 fn test_group_binary_indexed_tree2d() {
-    use crate::algebra::operations::AdditiveOperation;
-    use crate::tools::random::Xorshift;
+    use crate::algebra::AdditiveOperation;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let h = 20;
     let w = 20;

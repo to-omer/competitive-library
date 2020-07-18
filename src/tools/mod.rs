@@ -4,7 +4,14 @@ mod input;
 mod iterable;
 #[macro_use]
 mod minmax;
-pub mod heuristics;
-pub mod random;
-pub mod scanner;
-pub mod counter;
+mod counter;
+mod heuristics;
+mod random;
+mod scanner;
+mod totalord;
+
+pub use counter::Counter;
+pub use heuristics::SimuratedAnnealing;
+pub use random::Xorshift;
+pub use scanner::*;
+pub use totalord::TotalOrd;

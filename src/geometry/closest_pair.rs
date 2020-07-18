@@ -1,5 +1,5 @@
 use super::*;
-use crate::data_structure::TotalOrd;
+use crate::tools::TotalOrd;
 
 #[cargo_snippet::snippet("closest_pair")]
 pub fn closest_pair(a: Vec<Point>) -> f64 {

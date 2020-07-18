@@ -1,6 +1,6 @@
-pub use crate::graph::strongly_connected_component::TwoSatisfiability;
+pub use crate::graph::TwoSatisfiability;
 pub use crate::scan;
-pub use crate::tools::scanner::{read_all, Scanner};
+pub use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/two_sat")]

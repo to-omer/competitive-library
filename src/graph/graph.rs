@@ -1,4 +1,4 @@
-use crate::tools::scanner::{IterScan, MarkedIterScan};
+use crate::tools::{IterScan, MarkedIterScan};
 
 #[cargo_snippet::snippet("Graph")]
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]

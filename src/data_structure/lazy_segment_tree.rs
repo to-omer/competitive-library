@@ -1,4 +1,4 @@
-use crate::algebra::magma::Monoid;
+use crate::algebra::Monoid;
 
 #[cargo_snippet::snippet("LazySegmentTree")]
 /// M: folding Monoid
@@ -141,10 +141,8 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
 
 #[test]
 fn test_lazy_segment_tree() {
-    use crate::algebra::operations::{
-        AdditiveOperation, CartesianOperation, LastOperation, MaxOperation,
-    };
-    use crate::tools::random::Xorshift;
+    use crate::algebra::{AdditiveOperation, CartesianOperation, LastOperation, MaxOperation};
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let n = 1_024;
     let m = 20_000;

@@ -1,8 +1,13 @@
 //! graph structures and algorithms
 
-pub mod graph;
-pub mod maximum_flow;
-pub mod minimum_cost_flow;
-pub mod shortest_path;
-pub mod strongly_connected_component;
-pub mod topological_sort;
+mod graph;
+mod maximum_flow;
+mod minimum_cost_flow;
+mod shortest_path;
+mod strongly_connected_component;
+mod topological_sort;
+
+pub use graph::*;
+pub use maximum_flow::*;
+pub use minimum_cost_flow::*;
+pub use strongly_connected_component::*;

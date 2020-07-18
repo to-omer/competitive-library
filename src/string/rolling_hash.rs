@@ -1,4 +1,4 @@
-use crate::tools::random::Xorshift;
+use crate::tools::Xorshift;
 
 #[cargo_snippet::snippet("RollingHash")]
 #[derive(Clone, Debug)]

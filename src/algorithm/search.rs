@@ -10,7 +10,7 @@ pub trait Bisect: Copy {
 }
 
 #[cargo_snippet::snippet("binary_search")]
-pub mod bisect_impl {
+mod bisect_impl {
     use super::*;
     macro_rules! impl_bisect_unsigned {
         ($($t:ty)*) => {
@@ -132,7 +132,7 @@ pub trait Trisect: Copy {
     fn section_end(self, other: Self) -> bool;
 }
 #[cargo_snippet::snippet("ternary_search")]
-pub mod trisect_impl {
+mod trisect_impl {
     use super::*;
     macro_rules! impl_trisect_unsigned {
         ($($t:ty)*) => {

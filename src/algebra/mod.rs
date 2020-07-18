@@ -1,5 +1,8 @@
 //! algebra
 
-pub mod magma;
+mod magma;
 #[macro_use]
-pub mod operations;
+mod operations;
+
+pub use magma::*;
+pub use operations::*;

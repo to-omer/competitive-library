@@ -130,6 +130,7 @@ impl<M: Modulus> MInt<M> {
         x
     }
     #[inline]
+    /// only prime modulus
     pub fn inv(self) -> Self {
         let mut a = self.x;
         let (mut b, mut u, mut s) = (M::get_modulus(), 1, 0);
@@ -164,7 +165,7 @@ impl<M: Modulus> MInt<M> {
     }
 }
 #[cargo_snippet::snippet("MInt")]
-pub mod mint_impls {
+mod mint_impls {
     use super::*;
     use std::{
         cmp::Ordering,
@@ -404,7 +405,7 @@ pub mod mint_impls {
 
 #[test]
 fn test_mint() {
-    use crate::tools::random::Xorshift;
+    use crate::tools::Xorshift;
     let mut rand = Xorshift::default();
     const Q: usize = 10_000;
     type M = MInt<modulus::Modulo1000000007>;
@@ -417,11 +418,11 @@ fn test_mint() {
     }
 }
 
-use crate::algebra::operations::{AdditiveIdentity, MultiplicativeIdentity};
+use crate::algebra::{AdditiveIdentity, MultiplicativeIdentity};
 impl_additive_identity!([M: Modulus], MInt<M>, Self::zero());
 impl_multiplicative_identity!([M: Modulus], MInt<M>, Self::one());
 
-use crate::tools::scanner::IterScan;
+use crate::tools::IterScan;
 
 #[cargo_snippet::snippet("MInt")]
 impl<M: Modulus> IterScan for MInt<M> {

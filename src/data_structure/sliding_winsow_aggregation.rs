@@ -1,4 +1,4 @@
-use crate::algebra::magma::Monoid;
+use crate::algebra::Monoid;
 
 #[cargo_snippet::snippet("QueueAggregation")]
 #[derive(Clone, Debug)]

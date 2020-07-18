@@ -1,6 +1,10 @@
 //! tree algorithems
 
-pub mod depth;
-pub mod euler_tour;
-pub mod rerooting;
-pub mod tree;
+mod depth;
+mod euler_tour;
+mod rerooting;
+mod tree;
+
+pub use euler_tour::*;
+pub use rerooting::ReRooting;
+pub use tree::TreeRec;

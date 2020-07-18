@@ -1,15 +1,13 @@
-use crate::data_structure::Rev;
-
 #[cargo_snippet::snippet("MinimumCostFlow")]
 #[derive(Debug, Clone)]
-pub struct RevEdge {
+pub struct RevCEdge {
     pub to: usize,
     pub rev: usize,
     pub cap: u64,
     pub cost: i64,
 }
 #[cargo_snippet::snippet("MinimumCostFlow")]
-impl RevEdge {
+impl RevCEdge {
     pub fn new(to: usize, rev: usize, cap: u64, cost: i64) -> Self {
         Self { to, rev, cap, cost }
     }
@@ -19,7 +17,7 @@ impl RevEdge {
 #[derive(Debug)]
 pub struct PrimalDual {
     n: usize,
-    graph: Vec<Vec<RevEdge>>,
+    graph: Vec<Vec<RevCEdge>>,
     potential: Vec<i64>,
     cost: Vec<i64>,
     prev_vertex: Vec<usize>,
@@ -38,8 +36,8 @@ impl PrimalDual {
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize, cap: u64, cost: i64) {
-        let e1 = RevEdge::new(to, self.graph[to].len(), cap, cost);
-        let e2 = RevEdge::new(from, self.graph[from].len(), 0, -cost);
+        let e1 = RevCEdge::new(to, self.graph[to].len(), cap, cost);
+        let e2 = RevCEdge::new(from, self.graph[from].len(), 0, -cost);
         self.graph[from].push(e1);
         self.graph[to].push(e2);
     }
@@ -84,7 +82,7 @@ impl PrimalDual {
         self.cost = vec![std::i64::MAX; self.n];
         let mut heap = BinaryHeap::new();
         self.cost[s] = 0;
-        heap.push((Rev(0), s));
+        heap.push((std::cmp::Reverse(0), s));
         while let Some((d, u)) = heap.pop() {
             let d = d.0;
             for i in 0..self.graph[u].len() {
@@ -94,7 +92,7 @@ impl PrimalDual {
                     self.cost[e.to] = ncost;
                     self.prev_vertex[e.to] = u;
                     self.prev_edge[e.to] = i;
-                    heap.push((Rev(d + e.cost), e.to));
+                    heap.push((std::cmp::Reverse(d + e.cost), e.to));
                 }
             }
         }

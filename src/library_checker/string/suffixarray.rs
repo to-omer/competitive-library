@@ -1,6 +1,6 @@
 pub use crate::scan;
-pub use crate::string::suffix_array::SuffixArray;
-pub use crate::tools::scanner::{read_all, Scanner};
+pub use crate::string::SuffixArray;
+pub use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/suffixarray")]

@@ -1,5 +1,5 @@
 use super::*;
-use crate::data_structure::TotalOrd;
+use crate::tools::TotalOrd;
 
 #[cargo_snippet::snippet("convex_hull")]
 pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {

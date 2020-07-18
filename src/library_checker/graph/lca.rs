@@ -1,7 +1,7 @@
-pub use crate::graph::graph::Graph;
+pub use crate::graph::Graph;
 pub use crate::scan;
-pub use crate::tools::scanner::{read_all, Scanner};
-pub use crate::tree::euler_tour::EulerTourForRichVertex;
+pub use crate::tools::{read_all, Scanner};
+pub use crate::tree::EulerTourForRichVertex;
 use std::io::{self, Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/lca")]

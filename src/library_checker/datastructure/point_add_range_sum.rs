@@ -1,8 +1,7 @@
-pub use crate::algebra::operations::AdditiveOperation;
-pub use crate::data_structure::binary_indexed_tree::BinaryIndexedTree;
-pub use crate::data_structure::segment_tree::SegmentTree;
+pub use crate::algebra::AdditiveOperation;
+pub use crate::data_structure::{BinaryIndexedTree, SegmentTree};
 pub use crate::scan;
-pub use crate::tools::scanner::{read_all, Scanner};
+pub use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]

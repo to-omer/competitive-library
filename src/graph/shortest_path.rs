@@ -1,5 +1,5 @@
 use super::graph::Graph;
-use crate::algebra::magma::Monoid;
+use crate::algebra::Monoid;
 
 #[cargo_snippet::snippet("dijkstra")]
 impl Graph {
