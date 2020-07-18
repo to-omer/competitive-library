@@ -100,9 +100,12 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                         file!(),
                         stringify!(#fn_name),
                     );
-                    let env = config.gen_env()?;
-                    let problem = config.get_testcases()?;
-                    config.finalize(problem.verify(env, #fn_name))
+                    let res = match (config.get_testcases(), config.gen_env()) {
+                        (Ok(problem), Ok(env)) => problem.verify(env, #fn_name),
+                        (Err(err), _)  => Err(err),
+                        (_, Err(err)) => Err(err),
+                    };
+                    config.finalize(res)
                 }
             };
             gen.into()
