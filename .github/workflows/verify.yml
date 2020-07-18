@@ -32,12 +32,14 @@ jobs:
       with:
           toolchain: stable
           override: true
-    - run: ulimit -s unlimited
 
     - name: Run verify
       env:
         RUST_MIN_STACK: 268435456
-      run: python matrix.py ${{ matrix.job-id }}
+        RUST_BACKTRACE: full
+      run: |
+        ulimit -s unlimited
+        python matrix.py ${{ matrix.job-id }}
       continue-on-error: true
 
     - name: upload artifacts
