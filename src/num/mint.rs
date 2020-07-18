@@ -12,7 +12,6 @@ pub trait Modulus {
 #[allow(unused_macros)]
 macro_rules! make_modulus {
     ($t:ident, $e:expr) => {
-        #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
         pub struct $t {}
         impl Modulus for $t {
             #[inline]
@@ -27,7 +26,6 @@ macro_rules! make_modulus {
 #[allow(unused_macros)]
 macro_rules! make_dynamic_modulus {
     ($t:ident, $m:ident, $e:expr) => {
-        #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
         pub struct $t {}
         static mut $m: u32 = $e;
         impl Modulus for $t {
@@ -41,7 +39,6 @@ macro_rules! make_dynamic_modulus {
 #[cargo_snippet::snippet("MInt")]
 pub mod modulus {
     use super::*;
-    #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo1000000007 {}
     impl Modulus for Modulo1000000007 {
         #[inline]
@@ -50,7 +47,6 @@ pub mod modulus {
             MODULUS
         }
     }
-    #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo1000000009 {}
     impl Modulus for Modulo1000000009 {
         #[inline]
@@ -59,7 +55,6 @@ pub mod modulus {
             MODULUS
         }
     }
-    #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct Modulo998244353 {}
     impl Modulus for Modulo998244353 {
         #[inline]
@@ -68,7 +63,6 @@ pub mod modulus {
             MODULUS
         }
     }
-    #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
     pub struct DynModulo {}
     static mut DYN_MODULUS: u32 = 1_000_000_007;
     impl Modulus for DynModulo {
@@ -424,8 +418,8 @@ fn test_mint() {
 }
 
 use crate::algebra::operations::{AdditiveIdentity, MultiplicativeIdentity};
-impl_additive_identity!([M: Modulus + PartialEq], MInt<M>, Self::zero());
-impl_multiplicative_identity!([M: Modulus + PartialEq], MInt<M>, Self::one());
+impl_additive_identity!([M: Modulus], MInt<M>, Self::zero());
+impl_multiplicative_identity!([M: Modulus], MInt<M>, Self::one());
 
 use crate::tools::scanner::IterScan;
 
