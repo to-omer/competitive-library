@@ -3,11 +3,23 @@ name: verify
 on: push
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install latest stable
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+    - name: Run test
+      run: cargo test --lib
+
   verify:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
       fail-fast: false
     steps:
     - uses: actions/checkout@v1
@@ -24,9 +36,7 @@ jobs:
     - name: Run verify
       env:
         RUST_MIN_STACK: 268435456
-      run: |
-        ulimit -s unlimited
-        python matrix.py 20 ${{ matrix.job-id }}
+      run: python matrix.py ${{ matrix.job-id }}
       continue-on-error: true
 
     - name: upload artifacts
@@ -51,6 +61,8 @@ jobs:
           override: true
 
     - name: Generate cargo doc
+      env:
+        RUSTDOCFLAGS: --html-in-header katex-header.html
       run: |
         cargo doc --no-deps --features verify_doc
         cat <<EOT > target/doc/index.html

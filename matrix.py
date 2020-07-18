@@ -3,7 +3,7 @@ from subprocess import Popen, PIPE, call
 from pathlib import Path
 from shutil import move
 
-SIZE = 20
+SIZE = 16
 
 def cargo_verify(name: str):
     return ['cargo', 'test', '--lib', '--release', name, '--', '--ignored']
