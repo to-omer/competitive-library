@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["read_all",""],["two_sat","❌"]],"struct":[["Scanner",""],["TwoSatisfiability",""]]});
+initSidebarItems({"fn":[["read_all",""],["two_sat","✅  AC  1088ms"]],"struct":[["Scanner",""],["TwoSatisfiability",""]]});
