@@ -40,9 +40,9 @@ jobs:
       run: |
         ulimit -s unlimited
         python matrix.py ${{ matrix.job-id }}
-      continue-on-error: true
 
     - name: upload artifacts
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: artifact
@@ -50,6 +50,7 @@ jobs:
 
   generate-doc:
     needs: verify
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
