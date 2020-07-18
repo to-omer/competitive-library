@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["point_set_range_composite","✅  AC  256ms"]]});
+initSidebarItems({"fn":[["point_set_range_composite","✅  AC  219ms"],["read_all",""]],"struct":[["LinearOperation","$(a, b) \\circ (c, d) = \\lambda x. c \\times (a \\times x + b) + d$"],["MInt",""],["Modulo998244353",""],["Scanner",""],["SegmentTree",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["graph",""],["maximum_flow",""],["minimum_cost_flow",""],["shortest_path",""],["strongly_connected_component",""],["topological_sort",""]]});
+initSidebarItems({"struct":[["Adjacent",""],["Adjacent4",""],["Adjacent8",""],["Dinic",""],["FordFulkerson",""],["Graph",""],["GraphRec",""],["GraphScanner",""],["GridGraph",""],["PrimalDual",""],["RevCEdge",""],["RevEdge",""],["StronglyConnectedComponent",""],["TwoSatisfiability",""]]});

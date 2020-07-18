@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["knuth_morris_pratt",""],["rolling_hash",""],["suffix_array",""],["z_algorithm",""]]});
+initSidebarItems({"struct":[["KnuthMorrisPratt",""],["MultipleRollingHash",""],["RollingHash",""],["SuffixArray",""],["Zarray",""]]});

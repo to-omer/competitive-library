@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["BinaryIndexedTree",""],["BinaryIndexedTree2D",""]]});

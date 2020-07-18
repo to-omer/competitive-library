@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["aplusb","✅  AC  0ms"]]});
+initSidebarItems({"fn":[["aplusb","✅  AC  0ms"],["read_all",""]],"struct":[["Scanner",""]]});

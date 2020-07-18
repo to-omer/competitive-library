@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["zalgorithm","✅  AC  25ms"]]});
+initSidebarItems({"fn":[["read_all",""],["zalgorithm","✅  AC  33ms"]],"struct":[["Scanner",""],["Zarray",""]]});

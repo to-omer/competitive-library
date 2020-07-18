@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_2_e","✅  AC  51ms"]]});
+initSidebarItems({"fn":[["dsl_2_e","✅  AC  61ms"],["read_all",""]],"struct":[["AdditiveOperation","$+$"],["CartesianOperation","$(M_1, M_2)$"],["LazySegmentTree","M: folding Monoid E: lazy Monoid F: lazy evaluating"],["Scanner",""]]});

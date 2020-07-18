@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["counter",""],["heuristics",""],["random",""],["scanner",""]]});
+initSidebarItems({"fn":[["read_all",""],["read_stdin_all",""]],"struct":[["Counter",""],["Scanner",""],["SimuratedAnnealing",""],["TotalOrd","implement Ord by PartialOrd"],["Xorshift",""]],"trait":[["IterScan",""],["MarkedIterScan",""]]});

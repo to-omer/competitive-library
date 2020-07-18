@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["depth",""],["euler_tour",""],["rerooting","dynamic programming on all-rooted trees"],["tree",""]]});
+initSidebarItems({"mod":[["impl_lcam",""]],"struct":[["EulerTourForEdge",""],["EulerTourForRichVertex",""],["EulerTourForVertex",""],["LCAMonoid",""],["LowestCommonAncestor",""],["ReRooting","dynamic programming on all-rooted trees"],["TreeRec",""]]});

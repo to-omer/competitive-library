@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["slide_minimum",""]]});

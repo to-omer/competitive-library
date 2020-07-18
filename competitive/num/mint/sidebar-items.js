@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["mint_impls",""],["modulus",""]],"struct":[["MInt",""]],"trait":[["Modulus",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["complex",""],["mint","modint"],["quad_double",""]]});
+initSidebarItems({"mod":[["modulus",""]],"struct":[["Complex",""],["MInt",""],["QuadDouble","ref: https://na-inet.jp/na/qd_ja.pdf"]],"trait":[["Modulus",""]]});

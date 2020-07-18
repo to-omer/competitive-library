@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["quad_double_impl",""]],"struct":[["QuadDouble","ref: https://na-inet.jp/na/qd_ja.pdf"]]});
