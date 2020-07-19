@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["read_all",""],["suffixarray","✅  AC  981ms"]],"struct":[["Scanner",""],["SuffixArray",""]]});
+initSidebarItems({"fn":[["read_all",""],["suffixarray","✅  AC  995ms"]],"struct":[["Scanner",""],["SuffixArray",""]]});

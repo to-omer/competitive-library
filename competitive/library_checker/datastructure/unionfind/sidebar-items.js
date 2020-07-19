@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["read_all",""],["unionfind","✅  AC  22ms"]],"struct":[["Scanner",""],["UnionFind",""]]});
+initSidebarItems({"fn":[["read_all",""],["unionfind","✅  AC  21ms"]],"struct":[["Scanner",""],["UnionFind",""]]});
