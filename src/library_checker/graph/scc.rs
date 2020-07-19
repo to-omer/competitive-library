@@ -1,4 +1,4 @@
-pub use crate::graph::StronglyConnectedComponent;
+pub use crate::graph::{RevGraphScanner, StronglyConnectedComponent};
 pub use crate::scan;
 pub use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};
@@ -7,13 +7,10 @@ use std::io::{self, Read, Write};
 pub fn scc(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, m, ab: [(usize, usize); m]);
-    let mut scc = StronglyConnectedComponent::new(n);
-    for (a, b) in ab.into_iter() {
-        scc.add_edge(a, b);
-    }
-    scc.build();
-    let comp = scc.component();
+    scan!(scanner, vs, es);
+    let (graph, _) = scanner.mscan(RevGraphScanner::<usize, ()>::new(vs, es));
+    let scc = StronglyConnectedComponent::new(&graph);
+    let comp = scc.components();
     writeln!(writer, "{}", comp.len())?;
     for vs in comp.into_iter() {
         write!(writer, "{}", vs.len())?;

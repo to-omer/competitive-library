@@ -43,6 +43,15 @@ impl Graph {
     pub fn adjacency(&self, from: usize) -> &Vec<Adjacent> {
         &self.graph[from]
     }
+    pub fn eid_cache(&self) -> GraphEidCache<'_> {
+        let mut cache = vec![(0, 0); self.esize];
+        for u in self.vertices() {
+            for a in self.adjacency(u) {
+                cache[a.id] = (u, a.to);
+            }
+        }
+        GraphEidCache { graph: self, cache }
+    }
 }
 
 #[cargo_snippet::snippet("Graph")]
@@ -108,6 +117,18 @@ impl GraphRec {
                 self.dfs(a.to, graph);
             }
         }
+    }
+}
+
+#[cargo_snippet::snippet("Graph")]
+#[derive(Debug, Clone)]
+pub struct GraphEidCache<'a> {
+    graph: &'a Graph,
+    cache: Vec<(usize, usize)>,
+}
+impl<'a> GraphEidCache<'a> {
+    pub fn edge(&self, eid: usize) -> (usize, usize) {
+        self.cache[eid]
     }
 }
 
@@ -195,5 +216,71 @@ impl<'a> Iterator for Adjacent8<'a> {
             }
         }
         None
+    }
+}
+
+#[cargo_snippet::snippet("RevGraph")]
+#[derive(Clone, Debug, Default)]
+pub struct RevGraph {
+    pub vsize: usize,
+    pub esize: usize,
+    pub graph: Vec<Vec<Adjacent>>,
+    pub rgraph: Vec<Vec<Adjacent>>,
+}
+#[cargo_snippet::snippet("RevGraph")]
+impl RevGraph {
+    pub fn new(vsize: usize) -> RevGraph {
+        RevGraph {
+            vsize,
+            esize: 0,
+            graph: vec![vec![]; vsize],
+            rgraph: vec![vec![]; vsize],
+        }
+    }
+    pub fn add_edge(&mut self, from: usize, to: usize) {
+        self.graph[from].push(Adjacent::new(self.esize, to));
+        self.rgraph[to].push(Adjacent::new(self.esize, from));
+        self.esize += 1;
+    }
+    pub fn vertices(&self) -> std::ops::Range<usize> {
+        0..self.vsize
+    }
+    pub fn adjacency(&self, from: usize) -> &Vec<Adjacent> {
+        &self.graph[from]
+    }
+    pub fn radjacency(&self, from: usize) -> &Vec<Adjacent> {
+        &self.rgraph[from]
+    }
+}
+
+#[cargo_snippet::snippet("RevGraph")]
+pub struct RevGraphScanner<U: IterScan<Output = usize>, T: IterScan> {
+    vsize: usize,
+    esize: usize,
+    _marker: std::marker::PhantomData<fn() -> fn() -> (U, T)>,
+}
+
+#[cargo_snippet::snippet("RevGraph")]
+impl<U: IterScan<Output = usize>, T: IterScan> RevGraphScanner<U, T> {
+    pub fn new(vsize: usize, esize: usize) -> Self {
+        Self {
+            vsize,
+            esize,
+            _marker: std::marker::PhantomData,
+        }
+    }
+}
+
+#[cargo_snippet::snippet("RevGraph")]
+impl<U: IterScan<Output = usize>, T: IterScan> MarkedIterScan for RevGraphScanner<U, T> {
+    type Output = (RevGraph, Vec<<T as IterScan>::Output>);
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+        let mut graph = RevGraph::new(self.vsize);
+        let mut rest = Vec::with_capacity(self.esize);
+        for _ in 0..self.esize {
+            graph.add_edge(U::scan(iter)?, U::scan(iter)?);
+            rest.push(T::scan(iter)?);
+        }
+        Some((graph, rest))
     }
 }
