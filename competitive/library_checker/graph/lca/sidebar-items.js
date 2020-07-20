@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["lca","✅  AC  570ms"],["read_all",""]],"struct":[["EulerTourForRichVertex",""],["Graph",""],["Scanner",""]]});
+initSidebarItems({"fn":[["lca","✅  AC  461ms"],["read_all",""]],"struct":[["EulerTourForRichVertex",""],["Graph",""],["Scanner",""]]});
