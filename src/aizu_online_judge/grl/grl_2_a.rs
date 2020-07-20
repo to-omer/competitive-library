@@ -1,4 +1,4 @@
-pub use crate::graph::{Graph, GraphScanner};
+pub use crate::graph::GraphScanner;
 pub use crate::scan;
 pub use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};

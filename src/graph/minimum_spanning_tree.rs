@@ -18,9 +18,9 @@ impl Graph {
     }
 }
 
-#[cargo_snippet::snippet("minimum_spanning_arborescence")]
 impl RevGraph {
-    pub fn minimum_spanning_arborescence<G: Group>(
+    /// minimum_spanning_arborescence: O(|E||V|)
+    pub fn chu_liu_edmond<G: Group>(
         &self,
         root: usize,
         group: G,
@@ -62,12 +62,97 @@ impl RevGraph {
                     }
                 }
             }
-            ngraph.minimum_spanning_arborescence(scc[root], group, &nweight, acc)
+            ngraph.chu_liu_edmond(scc[root], group, &nweight, acc)
         } else {
             for u in self.vertices().filter(|&u| u != root) {
                 acc = group.operate(&acc, &weight[from[u]]);
             }
             Some(acc)
         }
+    }
+}
+
+#[cargo_snippet::snippet("minimum_spanning_arborescence")]
+impl Graph {
+    /// tarjan
+    pub fn minimum_spanning_arborescence<G: Group, F: Fn(usize) -> G::T>(
+        &self,
+        root: usize,
+        group: G,
+        weight: F,
+    ) -> Option<G::T>
+    where
+        G::T: Ord + std::fmt::Debug,
+    {
+        use std::{cmp::Reverse, collections::BinaryHeap};
+        let mut uf = UnionFind::new(self.vsize);
+        let mut from = vec![0; self.vsize];
+        let mut cost = vec![group.unit(); self.vsize];
+        let mut state = vec![0; self.vsize]; // 0: unprocessed, 1: in process, 2: completed
+        state[root] = 2;
+        let mut sub = vec![group.unit(); self.vsize];
+        let mut out_edges: Vec<BinaryHeap<_>> =
+            self.vertices().map(|_| Default::default()).collect();
+        for u in self.vertices() {
+            for a in self.adjacency(u) {
+                out_edges[a.to].push((Reverse(weight(a.id)), u));
+            }
+        }
+        let mut acc = group.unit();
+        for mut u in self.vertices() {
+            if state[u] != 0 {
+                continue;
+            }
+            let mut path = vec![];
+            while state[u] != 2 {
+                path.push(u);
+                state[u] = 1;
+                if let Some((Reverse(w), v)) = out_edges[u].pop() {
+                    let v = uf.find(v);
+                    if u == v {
+                        continue;
+                    }
+                    from[u] = v;
+                    cost[u] = group.operate(&w, &sub[u]);
+                    acc = group.operate(&acc, &cost[u]);
+                    if state[v] == 1 {
+                        let mut t = u;
+                        loop {
+                            if !out_edges[t].is_empty() {
+                                sub[t] = group.operate(&sub[t], &group.inverse(&cost[t]));
+                            }
+                            if u != t {
+                                if out_edges[u].len() < out_edges[t].len() {
+                                    out_edges.swap(u, t);
+                                    sub.swap(u, t);
+                                }
+                                let y = group.operate(&sub[t], &group.inverse(&sub[u]));
+                                sub[t] = group.unit();
+                                unsafe {
+                                    let uedges = out_edges.as_mut_ptr().add(u);
+                                    let tedges = out_edges.as_mut_ptr().add(t);
+                                    (&mut *uedges).extend((&mut *tedges).drain().map(
+                                        |(Reverse(ref w), z)| (Reverse(group.operate(w, &y)), z),
+                                    ))
+                                }
+                                uf.unite_light(u, t);
+                            }
+                            t = uf.find(from[t]);
+                            if u == t {
+                                break;
+                            }
+                        }
+                    } else {
+                        u = v;
+                    }
+                } else {
+                    return None;
+                }
+            }
+            for u in path.into_iter() {
+                state[u] = 2;
+            }
+        }
+        Some(acc)
     }
 }

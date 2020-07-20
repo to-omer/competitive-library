@@ -59,7 +59,7 @@ pub struct GraphScanner<U: IterScan<Output = usize>, T: IterScan> {
     vsize: usize,
     esize: usize,
     directed: bool,
-    _marker: std::marker::PhantomData<fn() -> fn() -> (U, T)>,
+    _marker: std::marker::PhantomData<fn() -> (U, T)>,
 }
 
 #[cargo_snippet::snippet("Graph")]
@@ -81,10 +81,11 @@ impl<U: IterScan<Output = usize>, T: IterScan> MarkedIterScan for GraphScanner<U
         let mut graph = Graph::new(self.vsize);
         let mut rest = Vec::with_capacity(self.esize);
         for _ in 0..self.esize {
+            let (from, to) = (U::scan(iter)?, U::scan(iter)?);
             if self.directed {
-                graph.add_edge(U::scan(iter)?, U::scan(iter)?);
+                graph.add_edge(from, to);
             } else {
-                graph.add_undirected_edge(U::scan(iter)?, U::scan(iter)?);
+                graph.add_undirected_edge(from, to);
             }
             rest.push(T::scan(iter)?);
         }
@@ -257,7 +258,7 @@ impl RevGraph {
 pub struct RevGraphScanner<U: IterScan<Output = usize>, T: IterScan> {
     vsize: usize,
     esize: usize,
-    _marker: std::marker::PhantomData<fn() -> fn() -> (U, T)>,
+    _marker: std::marker::PhantomData<fn() -> (U, T)>,
 }
 
 #[cargo_snippet::snippet("RevGraph")]

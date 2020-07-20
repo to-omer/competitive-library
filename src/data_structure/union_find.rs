@@ -42,6 +42,17 @@ impl UnionFind {
         true
     }
 
+    pub fn unite_light(&mut self, x: usize, y: usize) -> bool {
+        let x = self.find(x);
+        let y = self.find(y);
+        if x == y {
+            return false;
+        }
+        self.parents[x] += self.parents[y];
+        self.parents[y] = x as isize;
+        true
+    }
+
     pub fn size(&mut self, x: usize) -> usize {
         let x = self.find(x);
         (-self.parents[x]) as usize
