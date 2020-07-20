@@ -45,6 +45,28 @@ mod max_operation_impl {
     impl_minimum_with_min!(i64, std::i64::MIN);
     // impl_minimum_with_min!(f32, std::f32::MIN);
     // impl_minimum_with_min!(f64, std::f64::MIN);
+    macro_rules! impl_minimum_tuple {
+        ($($T:ident)*) => {
+            impl<$($T: MinimumBounded),*> MinimumBounded for ($($T,)*) {
+                #[inline]
+                fn minimum() -> Self {
+                    ($(<$T as MinimumBounded>::minimum(),)*)
+                }
+            }
+        };
+    }
+    impl_minimum_tuple!();
+    impl_minimum_tuple!(A);
+    impl_minimum_tuple!(A B);
+    impl_minimum_tuple!(A B C);
+    impl_minimum_tuple!(A B C D);
+    impl_minimum_tuple!(A B C D E);
+    impl_minimum_tuple!(A B C D E F);
+    impl_minimum_tuple!(A B C D E F G);
+    impl_minimum_tuple!(A B C D E F G H);
+    impl_minimum_tuple!(A B C D E F G H I);
+    impl_minimum_tuple!(A B C D E F G H I J);
+    impl_minimum_tuple!(A B C D E F G H I J K);
     impl<T: Clone + Ord + MinimumBounded> MaxOperation<T> {
         pub fn new() -> Self {
             Self {
@@ -113,6 +135,28 @@ mod min_operation_impl {
     impl_maximum_with_max!(i64, std::i64::MAX);
     // impl_maximum_with_max!(f32, std::f32::MAX);
     // impl_maximum_with_max!(f64, std::f64::MAX);
+    macro_rules! impl_maximum_tuple {
+        ($($T:ident)*) => {
+            impl<$($T: MaximumBounded),*> MaximumBounded for ($($T,)*) {
+                #[inline]
+                fn maximum() -> Self {
+                    ($(<$T as MaximumBounded>::maximum(),)*)
+                }
+            }
+        };
+    }
+    impl_maximum_tuple!();
+    impl_maximum_tuple!(A);
+    impl_maximum_tuple!(A B);
+    impl_maximum_tuple!(A B C);
+    impl_maximum_tuple!(A B C D);
+    impl_maximum_tuple!(A B C D E);
+    impl_maximum_tuple!(A B C D E F);
+    impl_maximum_tuple!(A B C D E F G);
+    impl_maximum_tuple!(A B C D E F G H);
+    impl_maximum_tuple!(A B C D E F G H I);
+    impl_maximum_tuple!(A B C D E F G H I J);
+    impl_maximum_tuple!(A B C D E F G H I J K);
     impl<T: Clone + Ord + MaximumBounded> MinOperation<T> {
         pub fn new() -> Self {
             Self {
