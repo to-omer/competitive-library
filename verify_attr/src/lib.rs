@@ -8,11 +8,12 @@ use syn::{
     LitStr, Meta, NestedMeta, Token,
 };
 
-#[derive(Debug)]
 struct VerifyAttribute {
     url: String,
+    #[allow(dead_code)]
     eps: Option<f64>,
     test_name: Option<String>,
+    special_judge: Option<String>,
 }
 
 fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
@@ -20,6 +21,7 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
     let mut url = None;
     let mut eps = None;
     let mut test_name = None;
+    let mut special_judge = None;
     for nmeta in punc.iter() {
         match nmeta {
             NestedMeta::Meta(Meta::NameValue(nv)) => {
@@ -48,7 +50,16 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                     "test" => match &nv.lit {
                         Lit::Str(litstr) => match test_name {
                             None => test_name = Some(litstr.value()),
-                            Some(_) => Err(syn::Error::new(litstr.span(), "extra url specified"))?,
+                            Some(_) => Err(syn::Error::new(litstr.span(), "extra test specified"))?,
+                        },
+                        _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
+                    },
+                    "judge" => match &nv.lit {
+                        Lit::Str(litstr) => match special_judge {
+                            None => special_judge = Some(litstr.value()),
+                            Some(_) => {
+                                Err(syn::Error::new(litstr.span(), "extra judge specified"))?
+                            }
                         },
                         _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
                     },
@@ -70,6 +81,7 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
         url: url.ok_or_else(|| syn::Error::new(punc.span(), "url not specified"))?,
         eps,
         test_name,
+        special_judge,
     })
 }
 
@@ -80,6 +92,7 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
             url,
             eps: _,
             test_name,
+            special_judge,
         }) => {
             let ast = parse_macro_input!(item as ItemFn);
             let md =
@@ -88,6 +101,12 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
             let url = LitStr::new(&url, Span::call_site()).to_token_stream();
             let test_name = test_name.unwrap_or(format!("verify_{}", ast.sig.ident));
             let test_name = Ident::new(&test_name, Span::call_site()).to_token_stream();
+            let special_judge = special_judge
+                .map(|judge| {
+                    let judge = Ident::new(&judge, Span::call_site()).to_token_stream();
+                    quote! { Some(#judge) }
+                })
+                .unwrap_or(quote! {None});
             let gen = quote! {
                 #[cfg_attr(feature = "verify_doc", doc(include = #md))]
                 #[cfg_attr(feature = "verify_doc", doc(alias = "verify"))]
@@ -100,10 +119,9 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                         file!(),
                         stringify!(#fn_name),
                     );
-                    let res = match (config.get_testcases(), config.gen_env()) {
+                    let res = match (config.get_testcases(), config.gen_env(#special_judge)) {
                         (Ok(problem), Ok(env)) => problem.verify(env, #fn_name),
-                        (Err(err), _)  => Err(err),
-                        (_, Err(err)) => Err(err),
+                        (Err(err), _)  | (_, Err(err)) => Err(err),
                     };
                     config.finalize(res)
                 }

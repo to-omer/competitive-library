@@ -44,11 +44,12 @@ impl Problem {
         env: VerifyEnv,
         f: fn(&mut Cursor<&'a [u8]>, &mut Vec<u8>) -> io::Result<()>,
     ) -> OjResult<VerifyResults> {
-        let mut res = Vec::with_capacity(self.tests.len());
-        for case in self.tests.iter() {
-            res.push(env.run_judge(case, f));
-        }
-        Ok(VerifyResults::new(res))
+        Ok(VerifyResults::new(
+            self.tests
+                .iter()
+                .map(|case| env.run_judge(case, f))
+                .collect(),
+        ))
     }
 }
 
@@ -222,12 +223,15 @@ impl VerifyConfig {
             fn_name,
         }
     }
-    pub(crate) fn gen_env(&self) -> OjResult<VerifyEnv> {
+    pub(crate) fn gen_env(
+        &self,
+        judge: Option<fn(&mut &[u8], &mut &[u8], &mut &[u8]) -> bool>,
+    ) -> OjResult<VerifyEnv> {
         Ok(match OjApi::get_service(self.url)? {
             Service::LibraryChecker => {
                 VerifyEnv::LibraryChecker(CheckerBinary::from_url(self.url)?)
             }
-            Service::AizuOnlineJudge => VerifyEnv::AizuOnlineJudge,
+            Service::AizuOnlineJudge => VerifyEnv::AizuOnlineJudge(judge),
         })
     }
     pub(crate) fn get_testcases(&self) -> OjResult<Problem> {
@@ -300,10 +304,10 @@ problem [here]({url})
     }
 }
 
-#[derive(Debug)]
+// #[derive(Debug)]
 pub(crate) enum VerifyEnv {
     LibraryChecker(CheckerBinary),
-    AizuOnlineJudge,
+    AizuOnlineJudge(Option<fn(&mut &[u8], &mut &[u8], &mut &[u8]) -> bool>),
 }
 
 impl VerifyEnv {
@@ -322,8 +326,18 @@ impl VerifyEnv {
                     let status = checker.check(input.path(), output.path(), result.path())?;
                     Ok(VerifyResult::new(case.name.clone(), status, elapsed))
                 }
-                VerifyEnv::AizuOnlineJudge => {
+                VerifyEnv::AizuOnlineJudge(None) => {
                     let status = if buf == case.output.as_bytes() {
+                        VerifyStatus::AC
+                    } else {
+                        VerifyStatus::WA
+                    };
+                    Ok(VerifyResult::new(case.name.clone(), status, elapsed))
+                }
+                VerifyEnv::AizuOnlineJudge(Some(judge)) => {
+                    let mut bytes_in = case.input.as_bytes();
+                    let mut bytes_out = case.output.as_bytes();
+                    let status = if judge(&mut bytes_in, &mut bytes_out, &mut buf.as_ref()) {
                         VerifyStatus::AC
                     } else {
                         VerifyStatus::WA
