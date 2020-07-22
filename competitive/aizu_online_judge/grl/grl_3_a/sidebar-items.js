@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_3_a","✅  AC  7ms"],["read_all",""]],"struct":[["GraphScanner",""],["LowLink",""],["Scanner",""]]});
+initSidebarItems({"fn":[["grl_3_a","✅  AC  5ms"],["read_all",""]],"struct":[["GraphScanner",""],["LowLink",""],["Scanner",""]]});

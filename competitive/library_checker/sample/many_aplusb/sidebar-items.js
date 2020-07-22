@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["many_aplusb","✅  AC  215ms"],["read_all",""]],"struct":[["Scanner",""]]});
+initSidebarItems({"fn":[["many_aplusb","✅  AC  189ms"],["read_all",""]],"struct":[["Scanner",""]]});

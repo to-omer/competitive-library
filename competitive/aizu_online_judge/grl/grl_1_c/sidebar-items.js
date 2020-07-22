@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_1_c","✅  AC  5ms"],["read_all",""]],"struct":[["AdditiveOperation","$+$"],["GraphScanner",""],["Scanner",""]],"trait":[["Monoid","associative binary operation and an identity element"]]});
+initSidebarItems({"fn":[["grl_1_c","✅  AC  4ms"],["read_all",""]],"struct":[["AdditiveOperation","$+$"],["GraphScanner",""],["Scanner",""]],"trait":[["Monoid","associative binary operation and an identity element"]]});
