@@ -19,12 +19,11 @@ pub fn grl_4_b(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
     Ok(())
 }
 
-// pub fn judge_grl_4_b(
-//     input: &mut impl Read,
-//     _output: &mut impl Write,
-//     result: &mut impl Read,
-// ) -> bool {
-pub fn judge_grl_4_b(input: &mut &[u8], _output: &mut &[u8], result: &mut &[u8]) -> bool {
+pub fn judge_grl_4_b(
+    input: &mut impl Read,
+    _output: &mut impl Read,
+    result: &mut impl Read,
+) -> bool {
     let (s_in, s_res) = (read_all(input), read_all(result));
     let (mut scanner_in, mut scanner_res) = (Scanner::new(&s_in), Scanner::new(&s_res));
     scan!(scanner_in, vs, es, edges: [(usize, usize); es]);

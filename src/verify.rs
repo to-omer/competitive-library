@@ -2,8 +2,9 @@ use lazy_static::lazy_static;
 use serde::{de::DeserializeOwned, Deserialize};
 use std::{
     ffi::OsStr,
+    fmt::{self, Formatter},
     fs::File,
-    io::{self, Cursor, Write},
+    io::{self, Write},
     path::{Path, PathBuf},
     process::Command,
     sync::Mutex,
@@ -38,19 +39,10 @@ pub(crate) struct Problem {
     pub(crate) tests: Vec<TestCase>,
 }
 
-impl Problem {
-    pub(crate) fn verify<'a>(
-        &'a self,
-        env: VerifyEnv,
-        f: fn(&mut Cursor<&'a [u8]>, &mut Vec<u8>) -> io::Result<()>,
-    ) -> OjResult<VerifyResults> {
-        Ok(VerifyResults::new(
-            self.tests
-                .iter()
-                .map(|case| env.run_judge(case, f))
-                .collect(),
-        ))
-    }
+pub fn save_temp_file(buf: &[u8]) -> io::Result<NamedTempFile> {
+    let mut file = NamedTempFile::new()?;
+    file.write_all(buf)?;
+    Ok(file)
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -60,24 +52,75 @@ pub(crate) struct TestCase {
     pub(crate) output: String,
 }
 impl TestCase {
-    pub(crate) fn save(&self) -> io::Result<(NamedTempFile, NamedTempFile)> {
-        let mut infile = NamedTempFile::new()?;
-        let mut outfile = NamedTempFile::new()?;
-        infile.write_all(self.input.as_bytes())?;
-        outfile.write_all(self.output.as_bytes())?;
-        Ok((infile, outfile))
-    }
-    pub(crate) fn execute<'a>(
+    pub(crate) fn execute<'a, 'b>(
         &'a self,
-        f: fn(&mut Cursor<&'a [u8]>, &mut Vec<u8>) -> io::Result<()>,
-    ) -> (io::Result<Vec<u8>>, Duration) {
-        let mut buf = Vec::new();
-        let bytes = self.input.as_bytes();
-        let mut cur = Cursor::new(bytes);
+        buf: &'b mut Vec<u8>,
+        solve: fn(&mut &'a [u8], &'b mut Vec<u8>) -> io::Result<()>,
+    ) -> (io::Result<()>, Duration) {
+        let mut bytes = self.input.as_bytes();
         let start = Instant::now();
-        let res = f(&mut cur, &mut buf);
+        let res = solve(&mut bytes, buf);
         let d = start.elapsed();
-        (res.map(|_| buf), d)
+        (res, d)
+    }
+    pub(crate) fn judge_with_env(&self, result: &[u8], env: &VerifyEnv) -> VerifyStatus {
+        self.judge_with_env_inner(result, env)
+            .unwrap_or(VerifyStatus::IE)
+    }
+    pub(crate) fn judge_with_env_inner(
+        &self,
+        result: &[u8],
+        env: &VerifyEnv,
+    ) -> OjResult<VerifyStatus> {
+        match env {
+            VerifyEnv::LibraryChecker(checker) => {
+                let infile = save_temp_file(self.input.as_bytes())?;
+                let outfile = save_temp_file(self.output.as_bytes())?;
+                let resfile = save_temp_file(result)?;
+                checker.check(infile.path(), outfile.path(), resfile.path())
+            }
+            VerifyEnv::AizuOnlineJudge => Ok((self.output.as_bytes() == result).into()),
+        }
+    }
+    pub(crate) fn judge_with_judger<'a, 'b>(
+        &'a self,
+        mut result: &'b [u8],
+        judger: fn(&mut &'a [u8], &mut &'a [u8], &mut &'b [u8]) -> bool,
+    ) -> VerifyStatus {
+        judger(
+            &mut self.input.as_bytes(),
+            &mut self.output.as_bytes(),
+            &mut result,
+        )
+        .into()
+    }
+    #[allow(dead_code)]
+    pub(crate) fn judge_with_eps<'a, 'b>(&'a self, result: &'b [u8], eps: f64) -> VerifyStatus {
+        match String::from_utf8(result.to_vec()) {
+            Ok(res) => {
+                let (mut it_out, mut it_res) = (
+                    self.output.split_ascii_whitespace(),
+                    res.split_ascii_whitespace(),
+                );
+                loop {
+                    return match (it_out.next(), it_res.next()) {
+                        (Some(x1), Some(x2)) => match (x1.parse::<f64>(), x2.parse::<f64>()) {
+                            (Ok(x1), Ok(x2)) => {
+                                if (x1 - x2).abs() > eps {
+                                    VerifyStatus::WA
+                                } else {
+                                    continue;
+                                }
+                            }
+                            _ => VerifyStatus::WA,
+                        },
+                        (None, None) => VerifyStatus::AC,
+                        _ => VerifyStatus::WA,
+                    };
+                }
+            }
+            Err(_) => return VerifyStatus::WA,
+        }
     }
 }
 
@@ -223,15 +266,12 @@ impl VerifyConfig {
             fn_name,
         }
     }
-    pub(crate) fn gen_env(
-        &self,
-        judge: Option<fn(&mut &[u8], &mut &[u8], &mut &[u8]) -> bool>,
-    ) -> OjResult<VerifyEnv> {
+    pub(crate) fn gen_env(&self) -> OjResult<VerifyEnv> {
         Ok(match OjApi::get_service(self.url)? {
             Service::LibraryChecker => {
                 VerifyEnv::LibraryChecker(CheckerBinary::from_url(self.url)?)
             }
-            Service::AizuOnlineJudge => VerifyEnv::AizuOnlineJudge(judge),
+            Service::AizuOnlineJudge => VerifyEnv::AizuOnlineJudge,
         })
     }
     pub(crate) fn get_testcases(&self) -> OjResult<Problem> {
@@ -304,63 +344,10 @@ problem [here]({url})
     }
 }
 
-// #[derive(Debug)]
+#[derive(Debug)]
 pub(crate) enum VerifyEnv {
     LibraryChecker(CheckerBinary),
-    AizuOnlineJudge(Option<fn(&mut &[u8], &mut &[u8], &mut &[u8]) -> bool>),
-}
-
-impl VerifyEnv {
-    fn run_judge_innter<'a>(
-        &self,
-        case: &'a TestCase,
-        f: fn(&mut Cursor<&'a [u8]>, &mut Vec<u8>) -> io::Result<()>,
-    ) -> OjResult<VerifyResult> {
-        let (result, elapsed) = case.execute(f);
-        match result {
-            Ok(buf) => match self {
-                VerifyEnv::LibraryChecker(checker) => {
-                    let (input, output) = case.save()?;
-                    let mut result = NamedTempFile::new()?;
-                    result.write_all(&buf)?;
-                    let status = checker.check(input.path(), output.path(), result.path())?;
-                    Ok(VerifyResult::new(case.name.clone(), status, elapsed))
-                }
-                VerifyEnv::AizuOnlineJudge(None) => {
-                    let status = if buf == case.output.as_bytes() {
-                        VerifyStatus::AC
-                    } else {
-                        VerifyStatus::WA
-                    };
-                    Ok(VerifyResult::new(case.name.clone(), status, elapsed))
-                }
-                VerifyEnv::AizuOnlineJudge(Some(judge)) => {
-                    let mut bytes_in = case.input.as_bytes();
-                    let mut bytes_out = case.output.as_bytes();
-                    let status = if judge(&mut bytes_in, &mut bytes_out, &mut buf.as_ref()) {
-                        VerifyStatus::AC
-                    } else {
-                        VerifyStatus::WA
-                    };
-                    Ok(VerifyResult::new(case.name.clone(), status, elapsed))
-                }
-            },
-            Err(_err) => Ok(VerifyResult::new(
-                case.name.clone(),
-                VerifyStatus::RE,
-                elapsed,
-            )),
-        }
-    }
-    pub(crate) fn run_judge<'a>(
-        &self,
-        case: &'a TestCase,
-        f: fn(&mut Cursor<&'a [u8]>, &mut Vec<u8>) -> io::Result<()>,
-    ) -> VerifyResult {
-        self.run_judge_innter(case, f).unwrap_or_else(|_err| {
-            VerifyResult::new(case.name.clone(), VerifyStatus::IE, Duration::from_secs(0))
-        })
-    }
+    AizuOnlineJudge,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -376,13 +363,22 @@ pub(crate) enum VerifyStatus {
     /// Internal Error
     IE,
 }
-impl std::fmt::Display for VerifyStatus {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl From<bool> for VerifyStatus {
+    fn from(b: bool) -> Self {
+        if b {
+            Self::AC
+        } else {
+            Self::WA
+        }
+    }
+}
+impl fmt::Display for VerifyStatus {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            VerifyStatus::AC => write!(f, "AC"),
-            VerifyStatus::WA => write!(f, "WA"),
-            VerifyStatus::RE => write!(f, "RE"),
-            VerifyStatus::IE => write!(f, "IE"),
+            Self::AC => write!(f, "AC"),
+            Self::WA => write!(f, "WA"),
+            Self::RE => write!(f, "RE"),
+            Self::IE => write!(f, "IE"),
         }
     }
 }
@@ -429,5 +425,12 @@ impl VerifyResults {
             .map(|res| res.elapsed)
             .max()
             .unwrap_or(Duration::from_secs(0))
+    }
+}
+impl std::iter::FromIterator<VerifyResult> for VerifyResults {
+    fn from_iter<T: IntoIterator<Item = VerifyResult>>(iter: T) -> Self {
+        Self {
+            results: Vec::from_iter(iter),
+        }
     }
 }
