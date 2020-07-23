@@ -4,3 +4,6 @@ pub mod queue_operate_all_composite;
 pub mod range_affine_range_sum;
 pub mod staticrmq;
 pub mod unionfind;
+pub mod vertex_add_path_sum;
+pub mod vertex_add_subtree_sum;
+pub mod vertex_set_path_composite;

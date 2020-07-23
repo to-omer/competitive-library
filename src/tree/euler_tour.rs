@@ -36,7 +36,7 @@ impl EulerTourForEdge {
 #[cargo_snippet::snippet("EulerTourForVertex")]
 #[derive(Clone, Debug, Default)]
 pub struct EulerTourForVertex {
-    vidx: Vec<(usize, usize)>,
+    pub vidx: Vec<(usize, usize)>,
     vpos: usize,
 }
 #[cargo_snippet::snippet("EulerTourForVertex")]

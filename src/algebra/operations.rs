@@ -803,3 +803,40 @@ mod counting_operation_impl {
     impl<M: Commutative> Commutative for CountingOperation<M> {}
     impl<M: Idempotent> Idempotent for CountingOperation<M> {}
 }
+
+#[cargo_snippet::snippet("ReverseOperation")]
+#[derive(Clone, Debug)]
+pub struct ReverseOperation<M> {
+    m: M,
+}
+#[cargo_snippet::snippet("ReverseOperation")]
+mod reverse_operation_impl {
+    use super::*;
+    impl<M> ReverseOperation<M> {
+        pub fn new(m: M) -> Self {
+            Self { m }
+        }
+    }
+    impl<M: Magma> Magma for ReverseOperation<M> {
+        type T = M::T;
+        #[inline]
+        fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
+            self.m.operate(&y, &x)
+        }
+    }
+    impl<M: Unital> Unital for ReverseOperation<M> {
+        #[inline]
+        fn unit(&self) -> Self::T {
+            self.m.unit()
+        }
+    }
+    impl<M: Associative> Associative for ReverseOperation<M> {}
+    impl<M: Commutative> Commutative for ReverseOperation<M> {}
+    impl<M: Invertible> Invertible for ReverseOperation<M> {
+        #[inline]
+        fn inverse(&self, x: &Self::T) -> Self::T {
+            self.m.inverse(&x)
+        }
+    }
+    impl<M: Idempotent> Idempotent for ReverseOperation<M> {}
+}

@@ -7,6 +7,10 @@ pub trait Magma {
     type T: Clone + PartialEq;
     /// binary operaion: $\circ$
     fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T;
+    #[inline]
+    fn reverse_operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
+        self.operate(x, y)
+    }
 }
 
 /// $\forall a,\forall b,\forall c \in T, (a \circ b) \circ c = a \circ (b \circ c)$
