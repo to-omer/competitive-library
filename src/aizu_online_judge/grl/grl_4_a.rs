@@ -1,6 +1,6 @@
-pub use crate::graph::{GraphScanner, LowLink};
-pub use crate::scan;
-pub use crate::tools::{read_all, Scanner};
+pub use crate::graph::GraphScanner;
+use crate::scan;
+use crate::tools::{read_all, Scanner};
 use std::io::{self, Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/4/GRL_4_A")]

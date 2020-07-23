@@ -5,8 +5,8 @@ use crate::graph::Graph;
 #[cargo_snippet::snippet("EulerTourForEdge")]
 #[derive(Clone, Debug, Default)]
 pub struct EulerTourForEdge {
-    eidx: Vec<(usize, usize)>,
-    par: Vec<usize>,
+    pub eidx: Vec<(usize, usize)>,
+    pub par: Vec<usize>,
     epos: usize,
 }
 #[cargo_snippet::snippet("EulerTourForEdge")]
@@ -23,7 +23,7 @@ impl EulerTourForEdge {
     }
     pub fn edge_tour(&mut self, u: usize, p: usize, graph: &Graph) {
         for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
-            self.par[a.to] = u;
+            self.par[a.to] = a.id;
             self.eidx[a.id].0 = self.epos;
             self.epos += 1;
             self.edge_tour(a.to, u, graph);

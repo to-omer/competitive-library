@@ -1,3 +1,4 @@
+use crate::algebra::Monoid;
 use crate::graph::Graph;
 
 #[cargo_snippet::snippet("tree_depth")]
@@ -9,9 +10,44 @@ impl Graph {
         }
     }
     pub fn tree_depth(&self, root: usize) -> Vec<u64> {
-        let n = self.vsize;
-        let mut depth = vec![0; n];
-        self.depth_dfs(root, n, 0, &mut depth);
+        let mut depth = vec![0; self.vsize];
+        self.depth_dfs(root, self.vsize, 0, &mut depth);
+        depth
+    }
+}
+
+#[cargo_snippet::snippet("tree_depth")]
+impl Graph {
+    fn weighted_depth_dfs<M: Monoid, F: Fn(usize) -> M::T>(
+        &self,
+        u: usize,
+        p: usize,
+        d: M::T,
+        depth: &mut Vec<M::T>,
+        weight: &F,
+        monoid: &M,
+    ) {
+        for a in self.adjacency(u).iter().filter(|a| a.to != p) {
+            let nd = monoid.operate(&d, &weight(a.id));
+            self.weighted_depth_dfs(a.to, u, nd, depth, weight, monoid);
+        }
+        depth[u] = d;
+    }
+    pub fn weighted_tree_depth<M: Monoid, F: Fn(usize) -> M::T>(
+        &self,
+        root: usize,
+        weight: F,
+        monoid: M,
+    ) -> Vec<M::T> {
+        let mut depth = vec![monoid.unit(); self.vsize];
+        self.weighted_depth_dfs(
+            root,
+            self.vsize,
+            monoid.unit(),
+            &mut depth,
+            &weight,
+            &monoid,
+        );
         depth
     }
 }
@@ -26,9 +62,8 @@ impl Graph {
         }
     }
     pub fn tree_size(&self, root: usize) -> Vec<u64> {
-        let n = self.vsize;
-        let mut size = vec![0; n];
-        self.size_dfs(root, n, &mut size);
+        let mut size = vec![0; self.vsize];
+        self.size_dfs(root, self.vsize, &mut size);
         size
     }
 }

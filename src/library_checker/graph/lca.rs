@@ -1,6 +1,6 @@
 pub use crate::graph::Graph;
-pub use crate::scan;
-pub use crate::tools::{read_all, Scanner};
+use crate::scan;
+use crate::tools::{read_all, Scanner};
 pub use crate::tree::EulerTourForRichVertex;
 use std::io::{self, Read, Write};
 
