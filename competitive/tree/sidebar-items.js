@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["impl_lcam",""]],"struct":[["EulerTourForEdge",""],["EulerTourForRichVertex",""],["EulerTourForVertex",""],["LCAMonoid",""],["LowestCommonAncestor",""],["ReRooting","dynamic programming on all-rooted trees"],["TreeRec",""]]});
+initSidebarItems({"mod":[["impl_lcam",""]],"struct":[["EulerTourForEdge",""],["EulerTourForRichVertex",""],["EulerTourForVertex",""],["HeavyLightDecomposition",""],["LCAMonoid",""],["LowestCommonAncestor",""],["ReRooting","dynamic programming on all-rooted trees"],["TreeRec",""]]});

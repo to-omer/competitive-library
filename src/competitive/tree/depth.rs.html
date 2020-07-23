@@ -48,7 +48,43 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Monoid</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">graph</span>::<span class="ident">Graph</span>;
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;tree_depth&quot;</span>)]</span>
@@ -60,9 +96,44 @@
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree_depth</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vsize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">depth</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">n</span>];
-        <span class="self">self</span>.<span class="ident">depth_dfs</span>(<span class="ident">root</span>, <span class="ident">n</span>, <span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">depth</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">depth</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vsize</span>];
+        <span class="self">self</span>.<span class="ident">depth_dfs</span>(<span class="ident">root</span>, <span class="self">self</span>.<span class="ident">vsize</span>, <span class="number">0</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">depth</span>);
+        <span class="ident">depth</span>
+    }
+}
+
+<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;tree_depth&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">Graph</span> {
+    <span class="kw">fn</span> <span class="ident">weighted_depth_dfs</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">M</span>::<span class="ident">T</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">u</span>: <span class="ident">usize</span>,
+        <span class="ident">p</span>: <span class="ident">usize</span>,
+        <span class="ident">d</span>: <span class="ident">M</span>::<span class="ident">T</span>,
+        <span class="ident">depth</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M</span>::<span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>,
+        <span class="ident">monoid</span>: <span class="kw-2">&amp;</span><span class="ident">M</span>,
+    ) {
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>).<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!=</span> <span class="ident">p</span>) {
+            <span class="kw">let</span> <span class="ident">nd</span> <span class="op">=</span> <span class="ident">monoid</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">d</span>, <span class="kw-2">&amp;</span><span class="ident">weight</span>(<span class="ident">a</span>.<span class="ident">id</span>));
+            <span class="self">self</span>.<span class="ident">weighted_depth_dfs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">nd</span>, <span class="ident">depth</span>, <span class="ident">weight</span>, <span class="ident">monoid</span>);
+        }
+        <span class="ident">depth</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="ident">d</span>;
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">weighted_tree_depth</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">M</span>::<span class="ident">T</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">root</span>: <span class="ident">usize</span>,
+        <span class="ident">weight</span>: <span class="ident">F</span>,
+        <span class="ident">monoid</span>: <span class="ident">M</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M</span>::<span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">depth</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">monoid</span>.<span class="ident">unit</span>(); <span class="self">self</span>.<span class="ident">vsize</span>];
+        <span class="self">self</span>.<span class="ident">weighted_depth_dfs</span>(
+            <span class="ident">root</span>,
+            <span class="self">self</span>.<span class="ident">vsize</span>,
+            <span class="ident">monoid</span>.<span class="ident">unit</span>(),
+            <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">depth</span>,
+            <span class="kw-2">&amp;</span><span class="ident">weight</span>,
+            <span class="kw-2">&amp;</span><span class="ident">monoid</span>,
+        );
         <span class="ident">depth</span>
     }
 }
@@ -77,9 +148,8 @@
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vsize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">n</span>];
-        <span class="self">self</span>.<span class="ident">size_dfs</span>(<span class="ident">root</span>, <span class="ident">n</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">size</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vsize</span>];
+        <span class="self">self</span>.<span class="ident">size_dfs</span>(<span class="ident">root</span>, <span class="self">self</span>.<span class="ident">vsize</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">size</span>);
         <span class="ident">size</span>
     }
 }

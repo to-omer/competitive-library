@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_2_b","✅  AC  0ms"],["read_all",""]],"struct":[["AdditiveOperation","$+$"],["GraphScanner",""],["Scanner",""]]});
+initSidebarItems({"fn":[["grl_2_b","✅  AC  0ms"]],"struct":[["AdditiveOperation","$+$"],["GraphScanner",""]]});
