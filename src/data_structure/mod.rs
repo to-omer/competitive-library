@@ -1,5 +1,6 @@
 //! data structures
 
+mod automaton;
 mod binary_indexed_tree;
 mod bitset;
 mod disjoint_sparse_table;
@@ -8,6 +9,7 @@ mod segment_tree;
 mod sliding_winsow_aggregation;
 mod union_find;
 
+pub use automaton::*;
 pub use binary_indexed_tree::{BinaryIndexedTree, BinaryIndexedTree2D};
 pub use bitset::BitSet;
 pub use disjoint_sparse_table::DisjointSparseTable;
