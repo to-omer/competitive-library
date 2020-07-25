@@ -1,4 +1,4 @@
-use crate::tools::Xorshift;
+use super::gcd_binary;
 
 #[cargo_snippet::snippet("prime")]
 #[derive(Clone, Debug)]
@@ -172,38 +172,146 @@ pub fn pow(x: u64, y: u64, z: u64) -> u64 {
 }
 
 #[cargo_snippet::snippet("miller_rabin")]
-#[cargo_snippet::snippet(include = "Xorshift")]
-pub fn miller_rabin(p: u64, times: usize) -> bool {
+pub fn miller_rabin(p: u64) -> bool {
     if p == 2 {
         return true;
     }
-    if p == 1 || p & 1 == 0 {
+    if p == 1 || p % 2 == 0 {
         return false;
     }
-    let mut rand = Xorshift::time();
-    let mut d = p - 1;
-    while d & 1 == 0 {
-        d >>= 1;
-    }
-    for _ in 0..times {
-        let a = rand.next();
-        let mut t = d;
-        let mut y = pow(a, t, p);
-        while t != p - 1 && y != 1 && y != p - 1 {
-            y = y * y % p;
-            t <<= 1;
+    let d = p - 1;
+    let k = d.trailing_zeros();
+    let d = d >> k;
+    let a = if p < 4759123141 {
+        vec![2, 7, 61]
+    } else {
+        vec![2, 325, 9375, 28178, 450775, 9780504, 1795265022]
+    };
+    'outer: for &a in a.iter() {
+        if a >= p {
+            break;
         }
-        if y != p - 1 && t & 1 == 0 {
-            return false;
+        let mut y = pow(a, d, p);
+        if y == 1 || y == p - 1 {
+            continue;
         }
+        for _ in 0..k - 1 {
+            y = (y as u128 * y as u128 % p as u128) as u64;
+            if y == p - 1 {
+                continue 'outer;
+            }
+        }
+        return false;
     }
     true
 }
 
 #[test]
 fn test_miller_rabin() {
-    assert!(miller_rabin(1000000007, 100));
-    assert!(!miller_rabin(1000000011, 100));
+    const N: usize = 1_000_000;
+    let primes = PrimeTable::new(N);
+    for i in 2..=N {
+        assert_eq!(primes.is_prime(i), miller_rabin(i as u64), "{}", i);
+    }
+    assert!(miller_rabin(1000000007));
+    assert!(!miller_rabin(1000000011));
+}
+
+#[cargo_snippet::snippet("prime_factors_rho")]
+pub fn find_factor(n: u64) -> u64 {
+    let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
+    let mut c = 1;
+    loop {
+        let f = |x: u64| (x as u128 * x as u128 % n as u128 + c) as u64;
+        let (mut x, mut y) = (2, 2);
+        loop {
+            x = f(x);
+            y = f(f(y));
+            let g = gcd_binary(sub(x, y), n);
+            if g == n {
+                break;
+            } else if g != 1 {
+                return g;
+            }
+        }
+        c += 1;
+    }
+}
+
+pub fn find_factor2(n: u64) -> u64 {
+    let m = 1u64 << (64 - n.leading_zeros()) / 8;
+    let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
+    let mul = |x: u64, y: u64| (x as u128 * y as u128 % n as u128) as u64;
+    let mut c = 1;
+    loop {
+        let f = |x: u64| (x as u128 * x as u128 % n as u128 + c) as u64;
+        let (mut x, mut y, mut r, mut g, mut k, mut ys) = (0, 2, 1, 1, 0, 0);
+        while g == 1 {
+            x = y;
+            for _ in 0..r {
+                y = f(y);
+            }
+            while r > k && g == 1 {
+                ys = y;
+                let mut q = 1;
+                for _ in 0..m.min(r - k) {
+                    y = f(y);
+                    q = mul(q, sub(x, y));
+                }
+                g = gcd_binary(q, n);
+                k += m;
+            }
+            r <<= 1;
+        }
+        if g == n {
+            g = 1;
+            while g == 1 {
+                ys = f(ys);
+                g = gcd_binary(sub(x, ys), n);
+            }
+        }
+        if g < n {
+            return g;
+        }
+        c += 1;
+    }
+}
+
+#[cargo_snippet::snippet("prime_factors_rho")]
+#[cargo_snippet::snippet(include = "miller_rabin")]
+#[cargo_snippet::snippet(include = "gcd_binary")]
+pub fn prime_factors_rho(mut n: u64) -> Vec<u64> {
+    let k = n.trailing_zeros();
+    let mut res = vec![2; k as usize];
+    n >>= k;
+    if n != 1 {
+        let mut c = vec![n];
+        while let Some(n) = c.pop() {
+            if miller_rabin(n) {
+                res.push(n);
+            } else {
+                let m = find_factor(n);
+                c.push(m);
+                c.push(n / m);
+            }
+        }
+    }
+    res.sort();
+    res
+}
+
+#[test]
+fn test_prime_factors_rho() {
+    use crate::tools::Xorshift;
+    const Q: usize = 2_000;
+    let mut rand = Xorshift::time();
+    for _ in 0..Q {
+        let x = rand.next();
+        let factors = prime_factors_rho(x);
+        assert!(factors.iter().all(|&p| miller_rabin(p)));
+        let p = factors.into_iter().product::<u64>();
+        assert_eq!(x, p);
+    }
 }
 
 pub fn euler_phi(n: usize) -> usize {
