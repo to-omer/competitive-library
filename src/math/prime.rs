@@ -383,3 +383,44 @@ pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     }
     res
 }
+
+pub fn segmented_sieve_primes(n: usize) -> Vec<usize> {
+    if n < 2 {
+        return Vec::new();
+    }
+    let seg_size = (n as f32).sqrt() as usize + 2 >> 1;
+    let mut primes = vec![2];
+    let mut table = vec![true; seg_size];
+    for i in 1..seg_size {
+        if table[i] {
+            let p = i * 2 + 1;
+            primes.push(p);
+            for j in (p * p / 2..seg_size).step_by(p) {
+                table[j] = false;
+            }
+        }
+    }
+    for s in (seg_size..=n / 2).step_by(seg_size) {
+        let m = seg_size.min((n + 1) / 2 - s);
+        table.clear();
+        table.resize(m, true);
+        let plen = primes[1..]
+            .binary_search(&((((s + m) * 2 + 1) as f32).sqrt() as usize + 1))
+            .unwrap_or_else(|x| x);
+        for &p in primes[1..plen + 1].iter() {
+            for k in (((s * 2 + p * 3) / (p * 2) * p * 2 - p) / 2 - s..m).step_by(p) {
+                table[k] = false;
+            }
+        }
+        primes.extend((s..m + s).filter(|k| table[k - s]).map(|k| k * 2 + 1));
+    }
+    primes
+}
+
+#[test]
+fn test_segmented_sieve_primes() {
+    for i in 0..300 {
+        assert_eq!(primes(i), segmented_sieve_primes(i));
+    }
+    assert_eq!(primes(1_000_000), segmented_sieve_primes(1_000_000));
+}
