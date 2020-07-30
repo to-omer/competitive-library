@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["two_sat",""]]});
+initSidebarItems({"mod":[["enumerate_primes",""],["factorize",""],["two_sat",""]]});
