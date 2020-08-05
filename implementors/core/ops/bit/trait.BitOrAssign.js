@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["competitive"] = [{"text":"impl&lt;'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitOrAssign.html\" title=\"trait core::ops::bit::BitOrAssign\">BitOrAssign</a>&lt;&amp;'a <a class=\"struct\" href=\"competitive/data_structure/struct.BitSet.html\" title=\"struct competitive::data_structure::BitSet\">BitSet</a>&gt; for <a class=\"struct\" href=\"competitive/data_structure/struct.BitSet.html\" title=\"struct competitive::data_structure::BitSet\">BitSet</a>","synthetic":false,"types":["competitive::data_structure::bitset::BitSet"]}];
+implementors["competitive"] = [{"text":"impl&lt;'a&gt; BitOrAssign&lt;&amp;'a BitSet&gt; for BitSet","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
