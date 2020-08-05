@@ -3,12 +3,12 @@ pub use crate::data_structure::LazySegmentTree;
 pub use crate::num::{modulus::Modulo998244353, MInt};
 use crate::scan;
 use crate::tools::{read_all, Scanner};
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 type M = MInt<Modulo998244353>;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/range_affine_range_sum")]
-pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
+pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [M; n]);
@@ -25,8 +25,7 @@ pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) -
             seg.update(l, r, bc);
         } else {
             scan!(scanner, l, r);
-            writeln!(writer, "{}", seg.fold(l, r).0)?;
+            writeln!(writer, "{}", seg.fold(l, r).0).ok();
         }
     }
-    Ok(())
 }

@@ -4,10 +4,10 @@ pub use crate::graph::Graph;
 use crate::scan;
 use crate::tools::{read_all, Scanner};
 pub use crate::tree::HeavyLightDecomposition;
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_E")]
-pub fn grl_5_e(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
+pub fn grl_5_e(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n);
@@ -36,9 +36,7 @@ pub fn grl_5_e(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
         } else {
             scan!(scanner, u);
             let ans = hld.query(0, u, true, |l, r| seg.fold(l, r), &monoid).0;
-            writeln!(writer, "{}", ans)?;
+            writeln!(writer, "{}", ans).ok();
         }
     }
-
-    Ok(())
 }

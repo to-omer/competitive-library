@@ -1,10 +1,10 @@
 pub use crate::graph::{RevGraph, TwoSatisfiability};
 use crate::scan;
 use crate::tools::{read_all, Scanner};
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/two_sat")]
-pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
+pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(
@@ -24,18 +24,18 @@ pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
         TwoSatisfiability::add_inner(&mut graph, u ^ na ^ 1, v ^ nb);
     }
     if let Some(v) = TwoSatisfiability::build(n, &graph) {
-        writeln!(writer, "s SATISFIABLE")?;
-        write!(writer, "v")?;
+        writeln!(writer, "s SATISFIABLE").ok();
+        write!(writer, "v").ok();
         for i in 0..n {
             write!(
                 writer,
                 " {}",
                 if v[i] { i as i64 + 1 } else { -(i as i64 + 1) }
-            )?;
+            )
+            .ok();
         }
-        write!(writer, " 0")?;
+        write!(writer, " 0").ok();
     } else {
-        writeln!(writer, "s UNSATISFIABLE")?;
+        writeln!(writer, "s UNSATISFIABLE").ok();
     }
-    Ok(())
 }

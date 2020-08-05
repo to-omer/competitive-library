@@ -6,13 +6,13 @@ from shutil import move
 SIZE = 16
 
 def cargo_verify(name: str):
-    return ['cargo', 'test', '--lib', '--release', name, '--', '--ignored']
+    return ['cargo', 'test', '--lib', '--release', name, '--', '--ignored', '--exact']
 
 def main():
     parser = ArgumentParser()
     parser.add_argument('nth', type=int, nargs='?')
     args = parser.parse_args()
-    with Popen(['cargo', 'test', '--lib', '--quiet', '--release', '--', '--list', '--ignored'], stdout=PIPE) as p:
+    with Popen(['cargo', 'test', '--lib', '--quiet', '--release', 'verify', '--', '--list', '--ignored'], stdout=PIPE) as p:
         for s in p.stdout.readlines()[args.nth::SIZE]:
             call(cargo_verify(s.split()[0][:-1].decode('utf-8')))
 

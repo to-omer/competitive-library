@@ -2,10 +2,10 @@ pub use crate::algebra::AdditiveOperation;
 pub use crate::graph::Dinic;
 use crate::scan;
 use crate::tools::{read_all, Scanner};
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/7/GRL_7_A")]
-pub fn grl_7_a(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
+pub fn grl_7_a(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, xs, ys, es);
@@ -20,5 +20,5 @@ pub fn grl_7_a(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
         scan!(scanner, x, y);
         dinic.add_edge(x + 2, y + xs + 2, 1);
     }
-    writeln!(writer, "{}", dinic.maximum_flow(0, 1))
+    writeln!(writer, "{}", dinic.maximum_flow(0, 1)).ok();
 }

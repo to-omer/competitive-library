@@ -2,7 +2,7 @@ extern crate proc_macro;
 
 use crate::proc_macro::TokenStream;
 use proc_macro2::Span;
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::{
     parse::Parser, parse_macro_input, punctuated::Punctuated, spanned::Spanned, Ident, ItemFn, Lit,
     LitFloat, LitStr, Meta, NestedMeta, Token,
@@ -11,7 +11,6 @@ use syn::{
 struct VerifyAttribute {
     url: LitStr,
     eps: Option<LitFloat>,
-    test_name: Option<Ident>,
     special_judge: Option<Ident>,
 }
 
@@ -23,7 +22,6 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
     let punc = Punctuated::<NestedMeta, Token!(,)>::parse_terminated.parse(attr)?;
     let mut url = None;
     let mut eps = None;
-    let mut test_name = None;
     let mut special_judge = None;
     for nmeta in punc.iter() {
         match nmeta {
@@ -48,13 +46,6 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                                 Err(_) => Err(syn::Error::new(litstr.span(), "parse eps error"))?,
                             },
                             Some(_) => Err(syn::Error::new(litstr.span(), "extra eps specified"))?,
-                        },
-                        _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
-                    },
-                    "test" => match &nv.lit {
-                        Lit::Str(litstr) => match test_name {
-                            None => test_name = Some(litstr2ident(litstr)),
-                            Some(_) => Err(syn::Error::new(litstr.span(), "extra test specified"))?,
                         },
                         _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
                     },
@@ -86,7 +77,6 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
     Ok(VerifyAttribute {
         url: url.ok_or_else(|| syn::Error::new(punc.span(), "url not specified"))?,
         eps,
-        test_name,
         special_judge,
     })
 }
@@ -97,24 +87,16 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
         Ok(VerifyAttribute {
             url,
             eps,
-            test_name,
             special_judge,
         }) => {
             let ast = parse_macro_input!(item as ItemFn);
-            let md =
-                LitStr::new(&format!("{}.md", ast.sig.ident), Span::call_site()).to_token_stream();
-            let fn_name = ast.sig.ident.to_token_stream();
-            let url = url.to_token_stream();
-            let test_name = test_name
-                .unwrap_or_else(|| {
-                    Ident::new(&format!("verify_{}", ast.sig.ident), Span::call_site())
-                })
-                .to_token_stream();
+            let fn_name = ast.sig.ident.clone();
+            let md = LitStr::new(&format!("{}.md", fn_name), Span::call_site());
+            let verify_name = Ident::new(&format!("verify_{}", fn_name), Span::call_site());
+            let test_name = Ident::new(&format!("test_{}", fn_name), Span::call_site());
             let inner = if let Some(special_judge) = special_judge {
-                let special_judge = special_judge.to_token_stream();
                 quote! { case.judge_with_judger(buf.as_ref(), #special_judge) }
             } else if let Some(eps) = eps {
-                let eps = eps.to_token_stream();
                 quote! { case.judge_with_eps(buf.as_ref(), #eps) }
             } else {
                 quote! { case.judge_with_env(buf.as_ref(), &env) }
@@ -125,22 +107,40 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                 #ast
                 #[test]
                 #[ignore]
-                fn #test_name() -> crate::verify::OjResult<()> {
-                    let config = crate::verify::VerifyConfig::new(#url, file!(), stringify!(#fn_name));
+                fn #verify_name() {
+                    let config = crate::verify::VerifyConfig::new(#url, ::std::file!(), ::std::stringify!(#fn_name));
                     let res = match (config.get_testcases(), config.gen_env()) {
-                        (Ok(problem), Ok(env)) => {
-                            let mut res = Vec::new();
+                        (::std::result::Result::Ok(problem), ::std::result::Result::Ok(env)) => {
+                            let mut res = ::std::vec::Vec::new();
                             for case in problem.tests.iter() {
-                                let mut buf = Vec::new();
-                                let (result, elapsed) = case.execute(&mut buf, #fn_name);
-                                let status = if result.is_ok() { #inner } else { crate::verify::VerifyStatus::RE };
+                                let start = ::std::time::Instant::now();
+                                let result = ::std::panic::catch_unwind(|| {
+                                    let mut buf = ::std::vec::Vec::new();
+                                    case.execute(&mut buf, #fn_name);
+                                    buf
+                                });
+                                let elapsed = start.elapsed();
+                                let status = match result {
+                                    ::std::result::Result::Ok(buf) => #inner,
+                                    ::std::result::Result::Err(err) => crate::verify::VerifyStatus::RE,
+                                };
                                 res.push(crate::verify::VerifyResult::new(case.name.clone(), status, elapsed));
                             }
-                            Ok(crate::verify::VerifyResults::new(res))
+                            ::std::result::Result::Ok(crate::verify::VerifyResults::new(res))
                         },
-                        (Err(err), _)  | (_, Err(err)) => Err(err),
+                        (::std::result::Result::Err(err), _)  | (_, ::std::result::Result::Err(err)) => ::std::result::Result::Err(err),
                     };
-                    config.finalize(res)
+                    let res = config.finalize(res);
+                    assert!(res.is_ok(), "{}", res.unwrap_err());
+                }
+                #[cfg_attr(feature = "verify_test", test)]
+                fn #test_name() {
+                    let res = ::std::panic::catch_unwind(|| {
+                        let (stdin, stdout) = (::std::io::stdin(), ::std::io::stdout());
+                        let (mut reader, mut writer) = (::std::io::BufReader::new(stdin.lock()), ::std::io::BufWriter::new(stdout.lock()));
+                        #fn_name(&mut reader, &mut writer);
+                    });
+                    assert!(res.is_ok(), "{}", ::std::stringify!(#fn_name));
                 }
             };
             gen.into()

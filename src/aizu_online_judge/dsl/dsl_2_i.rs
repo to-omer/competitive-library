@@ -2,10 +2,10 @@ pub use crate::algebra::{AdditiveOperation, CartesianOperation, LastOperation};
 pub use crate::data_structure::LazySegmentTree;
 use crate::scan;
 use crate::tools::{read_all, Scanner};
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_I")]
-pub fn dsl_2_i(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
+pub fn dsl_2_i(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);
@@ -22,8 +22,7 @@ pub fn dsl_2_i(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()
             seg.update(s, t + 1, x);
         } else {
             scan!(scanner, s, t);
-            writeln!(writer, "{}", seg.fold(s, t + 1).0)?;
+            writeln!(writer, "{}", seg.fold(s, t + 1).0).ok();
         }
     }
-    Ok(())
 }

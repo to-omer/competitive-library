@@ -2,13 +2,10 @@ pub use crate::algebra::AdditiveOperation;
 pub use crate::data_structure::{BinaryIndexedTree, SegmentTree};
 use crate::scan;
 use crate::tools::{read_all, Scanner};
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
-pub fn point_add_range_sum_binary_indexed_tree(
-    reader: &mut impl Read,
-    writer: &mut impl Write,
-) -> io::Result<()> {
+pub fn point_add_range_sum_binary_indexed_tree(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n]);
@@ -23,17 +20,13 @@ pub fn point_add_range_sum_binary_indexed_tree(
             bit.update(p, x);
         } else {
             scan!(scanner, l, r);
-            writeln!(writer, "{}", bit.fold(l, r))?;
+            writeln!(writer, "{}", bit.fold(l, r)).ok();
         }
     }
-    Ok(())
 }
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
-pub fn point_add_range_sum_segment_tree(
-    reader: &mut impl Read,
-    writer: &mut impl Write,
-) -> io::Result<()> {
+pub fn point_add_range_sum_segment_tree(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n]);
@@ -45,8 +38,7 @@ pub fn point_add_range_sum_segment_tree(
             seg.update(p, x);
         } else {
             scan!(scanner, l, r);
-            writeln!(writer, "{}", seg.fold(l, r))?;
+            writeln!(writer, "{}", seg.fold(l, r)).ok();
         }
     }
-    Ok(())
 }

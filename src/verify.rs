@@ -8,7 +8,7 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
     sync::Mutex,
-    time::{Duration, Instant},
+    time::Duration,
 };
 use tempfile::NamedTempFile;
 
@@ -55,13 +55,10 @@ impl TestCase {
     pub(crate) fn execute<'a, 'b>(
         &'a self,
         buf: &'b mut Vec<u8>,
-        solve: fn(&mut &'a [u8], &'b mut Vec<u8>) -> io::Result<()>,
-    ) -> (io::Result<()>, Duration) {
+        solve: fn(&mut &'a [u8], &'b mut Vec<u8>),
+    ) {
         let mut bytes = self.input.as_bytes();
-        let start = Instant::now();
-        let res = solve(&mut bytes, buf);
-        let d = start.elapsed();
-        (res, d)
+        solve(&mut bytes, buf);
     }
     pub(crate) fn judge_with_env(&self, result: &[u8], env: &VerifyEnv) -> VerifyStatus {
         self.judge_with_env_inner(result, env)

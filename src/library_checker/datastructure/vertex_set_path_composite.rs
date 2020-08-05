@@ -5,15 +5,12 @@ pub use crate::num::{modulus::Modulo998244353, MInt};
 use crate::scan;
 use crate::tools::{read_all, Scanner};
 pub use crate::tree::HeavyLightDecomposition;
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 type M = MInt<Modulo998244353>;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/vertex_set_path_composite")]
-pub fn vertex_set_path_composite(
-    reader: &mut impl Read,
-    writer: &mut impl Write,
-) -> io::Result<()> {
+pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, ab: [(M, M); n]);
@@ -42,9 +39,7 @@ pub fn vertex_set_path_composite(
                 |l, r| seg2.fold(l, r),
                 &monoid,
             );
-            writeln!(writer, "{}", a * x + b)?;
+            writeln!(writer, "{}", a * x + b).ok();
         }
     }
-
-    Ok(())
 }

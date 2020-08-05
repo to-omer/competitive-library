@@ -2,31 +2,26 @@ pub use crate::algebra::MinOperation;
 pub use crate::data_structure::{DisjointSparseTable, SegmentTree};
 use crate::scan;
 use crate::tools::{read_all, Scanner};
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/staticrmq")]
-pub fn staticrmq_disjoint_sparse_table(
-    reader: &mut impl Read,
-    writer: &mut impl Write,
-) -> io::Result<()> {
+pub fn staticrmq_disjoint_sparse_table(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize); q]);
     let table = DisjointSparseTable::new(a, MinOperation::new());
     for (l, r) in lr.into_iter() {
-        writeln!(writer, "{}", table.fold(l, r))?;
+        writeln!(writer, "{}", table.fold(l, r)).ok();
     }
-    Ok(())
 }
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/staticrmq")]
-pub fn staticrmq_segment_tree(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
+pub fn staticrmq_segment_tree(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize); q]);
     let seg = SegmentTree::from_vec(a, MinOperation::new());
     for (l, r) in lr.into_iter() {
-        writeln!(writer, "{}", seg.fold(l, r))?;
+        writeln!(writer, "{}", seg.fold(l, r)).ok();
     }
-    Ok(())
 }

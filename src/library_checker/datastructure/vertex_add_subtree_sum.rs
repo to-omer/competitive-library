@@ -4,10 +4,10 @@ pub use crate::graph::Graph;
 use crate::scan;
 use crate::tools::{read_all, Scanner};
 pub use crate::tree::EulerTourForVertex;
-use std::io::{self, Read, Write};
+use std::io::{Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/vertex_add_subtree_sum")]
-pub fn vertex_add_subtree_sum(reader: &mut impl Read, writer: &mut impl Write) -> io::Result<()> {
+pub fn vertex_add_subtree_sum(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [u64; n]);
@@ -29,9 +29,7 @@ pub fn vertex_add_subtree_sum(reader: &mut impl Read, writer: &mut impl Write) -
             et.subtree_update(u, x, |k, x| seg.update(k, x));
         } else {
             scan!(scanner, u);
-            writeln!(writer, "{}", et.subtree_query(u, |l, r| seg.fold(l, r)))?;
+            writeln!(writer, "{}", et.subtree_query(u, |l, r| seg.fold(l, r))).ok();
         }
     }
-
-    Ok(())
 }
