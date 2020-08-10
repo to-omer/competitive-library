@@ -114,7 +114,7 @@ mod scanner_impls {
 }
 
 #[cargo_snippet::snippet("scanner")]
-mod marker {
+pub mod marker {
     use super::*;
     pub struct Usize1;
     impl IterScan for Usize1 {
