@@ -50,6 +50,15 @@ impl<'a> Scanner<'a> {
     pub fn scan_chars(&mut self) -> Vec<char> {
         self.iter.next().unwrap().chars().collect::<Vec<char>>()
     }
+    #[inline]
+    pub fn scan_chars_with(&mut self, base: char) -> Vec<usize> {
+        self.iter
+            .next()
+            .unwrap()
+            .chars()
+            .map(|c| (c as u8 - base as u8) as usize)
+            .collect::<Vec<usize>>()
+    }
 }
 
 #[cargo_snippet::snippet("scanner")]

@@ -9,7 +9,7 @@ fn main() {
     let __out = std::io::stdout();
     let mut __in_buf = String::new();
     std::io::stdin().read_to_string(&mut __in_buf).unwrap();
-    let mut __scanner = Scanner::new(&__in_buf);
+    let mut scanner = Scanner::new(&__in_buf);
     #[allow(unused_macros)]
     macro_rules! scan {
         () => {
@@ -21,14 +21,17 @@ fn main() {
         ([$t:tt; $len:expr]) => {
             (0..$len).map(|_| scan!($t)).collect::<Vec<_>>()
         };
+        ({ chars: $b:expr }) => {
+            scanner.scan_chars_with($b)
+        };
         ({ $t:tt => $f:expr }) => {
             $f(scan!($t))
         };
         (chars) => {
-            __scanner.scan_chars()
+            scanner.scan_chars()
         };
         ($t:ty) => {
-            __scanner.scan::<$t>()
+            scanner.scan::<$t>()
         };
     }
     let mut __out = std::io::BufWriter::new(__out.lock());
