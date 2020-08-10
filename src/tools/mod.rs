@@ -4,6 +4,8 @@ mod input;
 mod iterable;
 #[macro_use]
 mod minmax;
+#[macro_use]
+mod output;
 mod counter;
 mod heuristics;
 mod random;

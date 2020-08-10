@@ -1,6 +1,6 @@
-use crate::scan;
 pub use crate::string::Zarray;
 use crate::tools::{read_all, Scanner};
+use crate::{echo, scan};
 use std::io::{Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/zalgorithm")]
@@ -9,8 +9,5 @@ pub fn zalgorithm(reader: &mut impl Read, writer: &mut impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, s: chars);
     let z = Zarray::new(&s);
-    for i in 0..s.len() {
-        write!(writer, "{}{}", if i == 0 { "" } else { " " }, z[i]).ok();
-    }
-    writeln!(writer).ok();
+    echo!(writer, (0..s.len()).map(|i| z[i]), " ");
 }
