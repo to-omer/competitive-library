@@ -14,7 +14,8 @@
     });
   });
 </script>
-<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../competitive/index.html'><div class='logo-container'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../competitive/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+                <a id="settings-menu" href="../../../settings.html"><img src="../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -301,6 +302,8 @@
 <span id="285">285</span>
 <span id="286">286</span>
 <span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tools</span>::{<span class="ident">IterScan</span>, <span class="ident">MarkedIterScan</span>};
 
@@ -431,9 +434,11 @@
     <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Graph</span>,
     <span class="ident">cache</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>,
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">GraphEidCache</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">edge</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">eid</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> (<span class="ident">usize</span>, <span class="ident">usize</span>) {
-        <span class="self">self</span>.<span class="ident">cache</span>[<span class="ident">eid</span>]
+<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;Graph&quot;</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">ops</span>::<span class="ident">Index</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GraphEidCache</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> (<span class="ident">usize</span>, <span class="ident">usize</span>);
+    <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">Output</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">cache</span>[<span class="ident">index</span>]
     }
 }
 

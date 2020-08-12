@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["bipartitematching",""],["lca",""],["scc",""]]});
+initSidebarItems({"mod":[["bipartitematching",""],["directedmst",""],["lca",""],["scc",""]]});

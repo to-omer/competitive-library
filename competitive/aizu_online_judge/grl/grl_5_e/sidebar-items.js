@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_5_e","✅  AC  246ms"]],"struct":[["AdditiveOperation","$+$"],["CartesianOperation","$(M_1, M_2)$"],["Graph",""],["HeavyLightDecomposition",""],["LazySegmentTree","M: folding Monoid E: lazy Monoid F: lazy evaluating"]]});
+initSidebarItems({"fn":[["grl_5_e","✅  AC  190ms"]],"struct":[["AdditiveOperation","$+$"],["CartesianOperation","$(M_1, M_2)$"],["Graph",""],["HeavyLightDecomposition",""],["LazySegmentTree","M: folding Monoid E: lazy Monoid F: lazy evaluating"]]});

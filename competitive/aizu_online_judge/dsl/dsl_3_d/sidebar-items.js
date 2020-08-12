@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_3_d","✅  AC  122ms"]],"struct":[["MinOperation","binary operation to select smaller element"],["QueueAggregation",""]]});
+initSidebarItems({"fn":[["dsl_3_d","✅  AC  117ms"]],"struct":[["MinOperation","binary operation to select smaller element"],["QueueAggregation",""]]});
