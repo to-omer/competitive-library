@@ -11,7 +11,7 @@ impl Graph {
         let cache = self.eid_cache();
         let mut res = vec![false; self.esize];
         for eid in idx.into_iter() {
-            let (u, v) = cache.edge(eid);
+            let (u, v) = cache[eid];
             res[eid] = uf.unite(u, v);
         }
         res
@@ -85,15 +85,18 @@ impl Graph {
         G::T: Ord,
     {
         use std::{cmp::Reverse, collections::BinaryHeap};
-        let mut uf =
-            MergingUnionFind::new(self.vsize, (BinaryHeap::new(), group.unit()), |x, y| {
+        let mut uf = MergingUnionFind::new(
+            self.vsize,
+            |_| (BinaryHeap::new(), group.unit()),
+            |x, y| {
                 let ny = group.operate(&y.1, &group.inverse(&x.1));
                 x.0.extend(
                     (y.0)
                         .drain()
                         .map(|(Reverse(ref w), i)| (Reverse(group.operate(w, &ny)), i)),
                 )
-            });
+            },
+        );
         let mut state = vec![0; self.vsize]; // 0: unprocessed, 1: in process, 2: completed
         state[root] = 2;
         for u in self.vertices() {
@@ -132,7 +135,7 @@ impl Graph {
                 }
                 acc = group.operate(&acc, &w);
                 ord.push(eid);
-                let (u, v) = cache.edge(eid);
+                let (u, v) = cache[eid];
                 if leaf[v] >= self.esize {
                     leaf[v] = eid;
                 }
@@ -161,7 +164,7 @@ impl Graph {
         let mut used = vec![false; self.esize];
         for eid in ord.into_iter().rev() {
             if !used[eid] {
-                let (u, v) = cache.edge(eid);
+                let (u, v) = cache[eid];
                 tree[v] = u;
                 let mut x = leaf[v];
                 while x != eid {

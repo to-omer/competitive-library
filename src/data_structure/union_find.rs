@@ -188,6 +188,7 @@ pub struct MergingUnionFind<T, F: Fn(&mut T, &mut T)> {
     cells: Vec<merging_union_find_impls::UFCell<T>>,
     merge: F,
 }
+#[cargo_snippet::snippet("MergingUnionFind")]
 mod merging_union_find_impls {
     use super::*;
     use std::cell::{Ref, RefCell, RefMut};
@@ -215,13 +216,13 @@ mod merging_union_find_impls {
             }
         }
     }
-    impl<T: Clone, F: Fn(&mut T, &mut T)> MergingUnionFind<T, F> {
-        pub fn new(n: usize, init: T, merge: F) -> Self {
-            let cells = vec![Root(RefCell::new(RootData::new(init, 1))); n];
+    impl<T, F: Fn(&mut T, &mut T)> MergingUnionFind<T, F> {
+        pub fn new<I: Fn(usize) -> T>(n: usize, init: I, merge: F) -> Self {
+            let cells: Vec<_> = (0..n)
+                .map(|i| Root(RefCell::new(RootData::new(init(i), 1))))
+                .collect();
             Self { cells, merge }
         }
-    }
-    impl<T, F: Fn(&mut T, &mut T)> MergingUnionFind<T, F> {
         pub fn find(&mut self, x: usize) -> usize {
             let p = match &self.cells[x] {
                 Child(p) => *p,
@@ -247,8 +248,10 @@ mod merging_union_find_impls {
                 }
             }
         }
-        pub fn unite(&mut self, mut x: usize, mut y: usize) -> bool {
-            if self.same(x, y) {
+        pub fn unite(&mut self, x: usize, y: usize) -> bool {
+            let mut x = self.find(x);
+            let mut y = self.find(y);
+            if x == y {
                 return false;
             }
             if self.size(x) < self.size(y) {

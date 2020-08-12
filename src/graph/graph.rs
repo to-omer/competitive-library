@@ -127,9 +127,11 @@ pub struct GraphEidCache<'a> {
     graph: &'a Graph,
     cache: Vec<(usize, usize)>,
 }
-impl<'a> GraphEidCache<'a> {
-    pub fn edge(&self, eid: usize) -> (usize, usize) {
-        self.cache[eid]
+#[cargo_snippet::snippet("Graph")]
+impl<'a> std::ops::Index<usize> for GraphEidCache<'a> {
+    type Output = (usize, usize);
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.cache[index]
     }
 }
 
