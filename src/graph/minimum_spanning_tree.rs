@@ -1,6 +1,6 @@
 use super::{Graph, RevGraph, StronglyConnectedComponent};
 use crate::algebra::Group;
-use crate::data_structure::UnionFind;
+use crate::data_structure::{MergingUnionFind, UnionFind};
 
 #[cargo_snippet::snippet("minimum_spanning_tree")]
 impl Graph {
@@ -80,79 +80,96 @@ impl Graph {
         root: usize,
         group: G,
         weight: F,
-    ) -> Option<G::T>
+    ) -> Option<(G::T, Vec<usize>)>
     where
-        G::T: Ord + std::fmt::Debug,
+        G::T: Ord,
     {
         use std::{cmp::Reverse, collections::BinaryHeap};
-        let mut uf = UnionFind::new(self.vsize);
-        let mut from = vec![0; self.vsize];
-        let mut cost = vec![group.unit(); self.vsize];
+        let mut uf =
+            MergingUnionFind::new(self.vsize, (BinaryHeap::new(), group.unit()), |x, y| {
+                let ny = group.operate(&y.1, &group.inverse(&x.1));
+                x.0.extend(
+                    (y.0)
+                        .drain()
+                        .map(|(Reverse(ref w), i)| (Reverse(group.operate(w, &ny)), i)),
+                )
+            });
         let mut state = vec![0; self.vsize]; // 0: unprocessed, 1: in process, 2: completed
         state[root] = 2;
-        let mut sub = vec![group.unit(); self.vsize];
-        let mut out_edges: Vec<BinaryHeap<_>> =
-            self.vertices().map(|_| Default::default()).collect();
         for u in self.vertices() {
             for a in self.adjacency(u) {
-                out_edges[a.to].push((Reverse(weight(a.id)), u));
+                uf.find_root_mut(a.to)
+                    .data
+                    .0
+                    .push((Reverse(weight(a.id)), a.id));
             }
         }
+        let mut paredge = vec![0; self.esize];
+        let mut ord = vec![];
+        let mut leaf = vec![self.esize; self.vsize];
+        let mut cycle = 0usize;
         let mut acc = group.unit();
-        for mut u in self.vertices() {
-            if state[u] != 0 {
+        let cache = self.eid_cache();
+        for mut cur in self.vertices() {
+            if state[cur] != 0 {
                 continue;
             }
             let mut path = vec![];
-            while state[u] != 2 {
-                path.push(u);
-                state[u] = 1;
-                if let Some((Reverse(w), v)) = out_edges[u].pop() {
-                    let v = uf.find(v);
-                    if u == v {
-                        continue;
+            let mut ch = vec![];
+            while state[cur] != 2 {
+                path.push(cur);
+                state[cur] = 1;
+                let (w, eid) = {
+                    let (heap, lazy) = &mut uf.find_root_mut(cur).data;
+                    match heap.pop() {
+                        Some((Reverse(w), eid)) => (group.operate(&w, &lazy), eid),
+                        None => return None,
                     }
-                    from[u] = v;
-                    cost[u] = group.operate(&w, &sub[u]);
-                    acc = group.operate(&acc, &cost[u]);
-                    if state[v] == 1 {
-                        let mut t = u;
-                        loop {
-                            if !out_edges[t].is_empty() {
-                                sub[t] = group.operate(&sub[t], &group.inverse(&cost[t]));
-                            }
-                            if u != t {
-                                if out_edges[u].len() < out_edges[t].len() {
-                                    out_edges.swap(u, t);
-                                    sub.swap(u, t);
-                                }
-                                let y = group.operate(&sub[t], &group.inverse(&sub[u]));
-                                sub[t] = group.unit();
-                                unsafe {
-                                    let uedges = out_edges.as_mut_ptr().add(u);
-                                    let tedges = out_edges.as_mut_ptr().add(t);
-                                    (&mut *uedges).extend((&mut *tedges).drain().map(
-                                        |(Reverse(ref w), z)| (Reverse(group.operate(w, &y)), z),
-                                    ))
-                                }
-                                uf.unite_light(u, t);
-                            }
-                            t = uf.find(from[t]);
-                            if u == t {
-                                break;
-                            }
-                        }
-                    } else {
-                        u = v;
-                    }
-                } else {
-                    return None;
+                };
+                {
+                    let curw = &mut uf.find_root_mut(cur).data.1;
+                    *curw = group.operate(curw, &group.inverse(&w));
                 }
+                acc = group.operate(&acc, &w);
+                ord.push(eid);
+                let (u, v) = cache.edge(eid);
+                if leaf[v] >= self.esize {
+                    leaf[v] = eid;
+                }
+                while cycle > 0 {
+                    paredge[ch.pop().unwrap()] = eid;
+                    cycle -= 1;
+                }
+                ch.push(eid);
+                if state[uf.find(u)] == 1 {
+                    while let Some(t) = path.pop() {
+                        state[t] = 2;
+                        cycle += 1;
+                        if !uf.unite(u, t) {
+                            break;
+                        }
+                    }
+                    state[uf.find(u)] = 1;
+                }
+                cur = uf.find(u);
             }
             for u in path.into_iter() {
                 state[u] = 2;
             }
         }
-        Some(acc)
+        let mut tree = vec![root; self.vsize];
+        let mut used = vec![false; self.esize];
+        for eid in ord.into_iter().rev() {
+            if !used[eid] {
+                let (u, v) = cache.edge(eid);
+                tree[v] = u;
+                let mut x = leaf[v];
+                while x != eid {
+                    used[x] = true;
+                    x = paredge[x];
+                }
+            }
+        }
+        Some((acc, tree))
     }
 }

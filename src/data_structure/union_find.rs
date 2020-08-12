@@ -1,10 +1,6 @@
 use crate::algebra::Group;
 
 #[cargo_snippet::snippet("UnionFind")]
-#[cargo_snippet::snippet("WeightedUnionFind")]
-use std::collections::HashMap;
-
-#[cargo_snippet::snippet("UnionFind")]
 #[derive(Clone, Debug)]
 pub struct UnionFind {
     parents: Vec<isize>,
@@ -42,17 +38,6 @@ impl UnionFind {
         true
     }
 
-    pub fn unite_light(&mut self, x: usize, y: usize) -> bool {
-        let x = self.find(x);
-        let y = self.find(y);
-        if x == y {
-            return false;
-        }
-        self.parents[x] += self.parents[y];
-        self.parents[y] = x as isize;
-        true
-    }
-
     pub fn size(&mut self, x: usize) -> usize {
         let x = self.find(x);
         (-self.parents[x]) as usize
@@ -75,8 +60,8 @@ impl UnionFind {
             .collect::<Vec<usize>>()
     }
 
-    pub fn all_group_members(&mut self) -> HashMap<usize, Vec<usize>> {
-        let mut groups_map = HashMap::new();
+    pub fn all_group_members(&mut self) -> std::collections::HashMap<usize, Vec<usize>> {
+        let mut groups_map = std::collections::HashMap::new();
         for x in 0..self.parents.len() {
             let r = self.find(x);
             groups_map.entry(r).or_insert(vec![]).push(x);
@@ -195,5 +180,113 @@ impl<G: Group> WeightedUnionFind<G> {
             groups_map.entry(r).or_insert(vec![]).push(x);
         }
         groups_map
+    }
+}
+
+#[cargo_snippet::snippet("MergingUnionFind")]
+pub struct MergingUnionFind<T, F: Fn(&mut T, &mut T)> {
+    cells: Vec<merging_union_find_impls::UFCell<T>>,
+    merge: F,
+}
+mod merging_union_find_impls {
+    use super::*;
+    use std::cell::{Ref, RefCell, RefMut};
+    use UFCell::*;
+    #[derive(Clone, Debug)]
+    pub enum UFCell<T> {
+        Child(usize),
+        Root(RefCell<RootData<T>>),
+    }
+    #[derive(Clone, Debug)]
+    pub struct RootData<T> {
+        pub data: T,
+        pub size: usize,
+    }
+    impl<T> RootData<T> {
+        pub fn new(data: T, size: usize) -> Self {
+            Self { data, size }
+        }
+    }
+    impl<T> UFCell<T> {
+        pub fn is_root(&self) -> bool {
+            match self {
+                Self::Child(_) => false,
+                Self::Root(_) => true,
+            }
+        }
+    }
+    impl<T: Clone, F: Fn(&mut T, &mut T)> MergingUnionFind<T, F> {
+        pub fn new(n: usize, init: T, merge: F) -> Self {
+            let cells = vec![Root(RefCell::new(RootData::new(init, 1))); n];
+            Self { cells, merge }
+        }
+    }
+    impl<T, F: Fn(&mut T, &mut T)> MergingUnionFind<T, F> {
+        pub fn find(&mut self, x: usize) -> usize {
+            let p = match &self.cells[x] {
+                Child(p) => *p,
+                Root(_) => return x,
+            };
+            let y = self.find(p);
+            self.cells[x] = Child(y);
+            y
+        }
+        pub fn find_root(&self, mut x: usize) -> Ref<RootData<T>> {
+            loop {
+                match &self.cells[x] {
+                    Child(p) => x = *p,
+                    Root(cell) => return cell.borrow(),
+                }
+            }
+        }
+        pub fn find_root_mut(&self, mut x: usize) -> RefMut<RootData<T>> {
+            loop {
+                match &self.cells[x] {
+                    Child(p) => x = *p,
+                    Root(cell) => return cell.borrow_mut(),
+                }
+            }
+        }
+        pub fn unite(&mut self, mut x: usize, mut y: usize) -> bool {
+            if self.same(x, y) {
+                return false;
+            }
+            if self.size(x) < self.size(y) {
+                std::mem::swap(&mut x, &mut y);
+            }
+            {
+                let mut cx = self.find_root_mut(x);
+                let mut cy = self.find_root_mut(y);
+                (self.merge)(&mut cx.data, &mut cy.data);
+                cx.size += cy.size;
+            }
+            self.cells[y] = Child(x);
+            true
+        }
+        pub fn size(&mut self, x: usize) -> usize {
+            self.find_root(x).size
+        }
+        pub fn same(&mut self, x: usize, y: usize) -> bool {
+            self.find(x) == self.find(y)
+        }
+        pub fn members(&mut self, x: usize) -> Vec<usize> {
+            let root = self.find(x);
+            (0..self.cells.len())
+                .filter(|i| self.find(*i) == root)
+                .collect::<Vec<usize>>()
+        }
+        pub fn roots(&mut self) -> Vec<usize> {
+            (0..self.cells.len())
+                .filter(|&i| self.cells[i].is_root())
+                .collect::<Vec<usize>>()
+        }
+        pub fn all_group_members(&mut self) -> std::collections::HashMap<usize, Vec<usize>> {
+            let mut groups_map = std::collections::HashMap::new();
+            for x in 0..self.cells.len() {
+                let r = self.find(x);
+                groups_map.entry(r).or_insert(vec![]).push(x);
+            }
+            groups_map
+        }
     }
 }

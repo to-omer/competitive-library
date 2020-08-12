@@ -21,5 +21,5 @@ pub use lazy_segment_tree::LazySegmentTree;
 pub use segment_tree::SegmentTree;
 pub use sliding_winsow_aggregation::{DequeAggregation, QueueAggregation};
 pub use trie::*;
-pub use union_find::{UnionFind, WeightedUnionFind};
+pub use union_find::*;
 pub use wavelet_matrix::*;
