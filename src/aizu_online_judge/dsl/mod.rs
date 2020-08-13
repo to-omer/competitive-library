@@ -2,6 +2,7 @@ pub mod dsl_1_a;
 pub mod dsl_1_b;
 pub mod dsl_2_a;
 pub mod dsl_2_b;
+pub mod dsl_2_c;
 pub mod dsl_2_d;
 pub mod dsl_2_e;
 pub mod dsl_2_f;
