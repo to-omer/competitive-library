@@ -17,3 +17,53 @@ pub fn slide_minimum<T: Clone + Ord>(v: &Vec<T>, k: usize) -> Vec<usize> {
     }
     res
 }
+
+#[cargo_snippet::snippet("SlideMinimum")]
+pub struct SlideMinimum<'a> {
+    deq: std::collections::VecDeque<usize>,
+    width: usize,
+    left: usize,
+    right: usize,
+    seq: &'a [i64],
+}
+#[cargo_snippet::snippet("SlideMinimum")]
+impl<'a> SlideMinimum<'a> {
+    pub fn new(width: usize, seq: &'a [i64]) -> Self {
+        let mut self_ = Self {
+            deq: std::collections::VecDeque::new(),
+            width,
+            left: 0,
+            right: 0,
+            seq,
+        };
+        self_.build();
+        self_
+    }
+    fn build(&mut self) {
+        while self.right + 1 < self.width {
+            self.rsucc();
+        }
+    }
+    fn rsucc(&mut self) {
+        while self
+            .deq
+            .back()
+            .map_or(false, |&v| self.seq[v] >= self.seq[self.right])
+        {
+            self.deq.pop_back();
+        }
+        self.deq.push_back(self.right);
+        self.right += 1;
+    }
+    fn lsucc(&mut self) {
+        if *self.deq.front().unwrap() < self.left {
+            self.deq.pop_front();
+        }
+        self.left += 1;
+    }
+    pub fn next(&mut self) -> i64 {
+        self.rsucc();
+        self.lsucc();
+        self.seq[*self.deq.front().unwrap()]
+    }
+}
