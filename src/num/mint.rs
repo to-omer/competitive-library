@@ -235,6 +235,12 @@ mod mint_impls {
             Self::new_unchecked((x % M::get_modulus() as u64) as u32)
         }
     }
+    impl<M: Modulus> From<usize> for MInt<M> {
+        #[inline]
+        fn from(x: usize) -> Self {
+            Self::new_unchecked((x % M::get_modulus() as usize) as u32)
+        }
+    }
     impl<M: Modulus> From<i32> for MInt<M> {
         #[inline]
         fn from(x: i32) -> Self {
@@ -252,6 +258,17 @@ mod mint_impls {
             let x = x % M::get_modulus() as i64;
             if x < 0 {
                 Self::new_unchecked((x + M::get_modulus() as i64) as u32)
+            } else {
+                Self::new_unchecked(x as u32)
+            }
+        }
+    }
+    impl<M: Modulus> From<isize> for MInt<M> {
+        #[inline]
+        fn from(x: isize) -> Self {
+            let x = x % M::get_modulus() as isize;
+            if x < 0 {
+                Self::new_unchecked((x + M::get_modulus() as isize) as u32)
             } else {
                 Self::new_unchecked(x as u32)
             }
