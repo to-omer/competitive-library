@@ -4,7 +4,7 @@ macro_rules! echo {
         echo!($writer, $iter, "\n")
     };
     ($writer:expr, $iter:expr, $sep:expr) => {
-        let mut iter = $iter;
+        let mut iter = $iter.into_iter();
         if let Some(item) = iter.next() {
             write!($writer, "{}", item).ok();
         }

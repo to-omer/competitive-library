@@ -18,5 +18,5 @@ pub fn dsl_3_d(reader: &mut impl Read, writer: &mut impl Write) {
             que.pop();
         }
     }
-    echo!(writer, ans.iter(), " ");
+    echo!(writer, ans, " ");
 }

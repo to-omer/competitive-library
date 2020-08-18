@@ -49,7 +49,7 @@ fn main() {
             echo!($iter, "\n")
         };
         ($iter:expr, $sep:expr) => {
-            let mut iter = $iter;
+            let mut iter = $iter.into_iter();
             if let Some(item) = iter.next() {
                 print!("{}", item);
             }

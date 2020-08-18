@@ -1,6 +1,6 @@
 pub use crate::data_structure::Static2DTree;
+use crate::scan;
 use crate::tools::{read_all, Scanner};
-use crate::{echo, scan};
 use std::io::{Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_C")]
@@ -12,9 +12,9 @@ pub fn dsl_2_c(reader: &mut impl Read, writer: &mut impl Write) {
     for (sx, tx, sy, ty) in scanner.iter::<(i64, i64, i64, i64)>().take(q) {
         let mut v = tree.range(sx..tx + 1, sy..ty + 1);
         v.sort();
-        echo!(writer, v.iter());
-        if v.len() > 0 {
-            writeln!(writer).ok();
+        for v in v {
+            writeln!(writer, "{}", v).ok();
         }
+        writeln!(writer).ok();
     }
 }
