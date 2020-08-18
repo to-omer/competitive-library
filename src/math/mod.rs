@@ -1,7 +1,7 @@
 //! mathematical datas
 
 mod factorial;
-mod fft;
+mod fast_fourier_transform;
 mod gcd;
 mod lagrange_interpolation;
 mod matrix;
@@ -11,7 +11,7 @@ mod polynomial;
 mod prime;
 
 pub use factorial::*;
-pub use fft::*;
+pub use fast_fourier_transform::*;
 pub use gcd::*;
 pub use lagrange_interpolation::lagrange_interpolation;
 pub use matrix::Matrix;
