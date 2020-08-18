@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_2_a","✅  AC  30ms"]],"struct":[["GraphScanner",""]]});
+initSidebarItems({"fn":[["grl_2_a","✅  AC  24ms"]],"struct":[["GraphScanner",""]]});
