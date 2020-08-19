@@ -91,9 +91,7 @@ mod matrix_impls {
             res
         }
     }
-    impl<'a, T: Copy + Zero + Add<Output = T> + Sub<Output = T> + Mul<Output = T>> Mul
-        for &'a Matrix<T>
-    {
+    impl<'a, T: Copy + Zero + Add<Output = T> + Mul<Output = T>> Mul for &'a Matrix<T> {
         type Output = Matrix<T>;
         fn mul(self, rhs: Self) -> Self::Output {
             assert_eq!(self.shape.1, rhs.shape.0);
@@ -108,11 +106,10 @@ mod matrix_impls {
             res
         }
     }
-    impl<T: Copy + Zero + One + Add<Output = T> + Sub<Output = T> + Mul<Output = T>> Matrix<T> {
-        pub fn pow(&self, n: usize) -> Self {
+    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Matrix<T> {
+        pub fn pow(&self, mut n: usize) -> Self {
             assert_eq!(self.shape.0, self.shape.1);
             let mut x = self.clone();
-            let mut n = n;
             let mut res = Matrix::eye(self.shape);
             while n > 0 {
                 if n & 1 == 1 {

@@ -1,153 +1,140 @@
+use crate::num::{One, Zero};
+
 #[cargo_snippet::snippet("Polynomial")]
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct Polynomial(pub Vec<i64>, pub i64);
-#[cargo_snippet::snippet("Polynomial")]
-impl Polynomial {
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
+pub struct Polynomial<T> {
+    pub data: Vec<T>,
 }
 #[cargo_snippet::snippet("Polynomial")]
-pub fn poly_add(x: &Polynomial, y: &Polynomial, p: i64) -> Polynomial {
-    let (x, y) = if x.len() < y.len() { (y, x) } else { (x, y) };
-    let mut x = x.clone();
-    for j in 0..y.len() {
-        x[j] = (x[j] + y[j]) % p;
-    }
-    x
-}
-#[cargo_snippet::snippet("Polynomial")]
-pub fn poly_sub(x: &Polynomial, y: &Polynomial, p: i64) -> Polynomial {
-    let (x, y) = if x.len() < y.len() { (y, x) } else { (x, y) };
-    let mut x = x.clone();
-    for j in 0..y.len() {
-        x[j] = ((x[j] - y[j]) % p + p) % p;
-    }
-    x
-}
-#[cargo_snippet::snippet("Polynomial")]
-pub fn poly_mul(x: &Polynomial, y: &Polynomial, p: i64) -> Polynomial {
-    let mut res = Polynomial(vec![0; x.len() + y.len() - 1], p);
-    for i in 0..x.len() {
-        for j in 0..y.len() {
-            res[i + j] = (res[i + j] + x[i] * y[j] % p) % p;
+mod polynomial_impls {
+    use super::*;
+    use std::ops::{Add, Div, Index, IndexMut, Mul, Rem, Sub};
+    impl<T> Polynomial<T> {
+        pub fn from_vec(data: Vec<T>) -> Self {
+            Self { data }
+        }
+        pub fn len(&self) -> usize {
+            self.data.len()
         }
     }
-    res
-}
-#[cargo_snippet::snippet("Polynomial")]
-pub fn poly_div(x: &Polynomial, y: &Polynomial, p: i64) -> Polynomial {
-    let mut x = x.clone();
-    let mut res = Polynomial(vec![], p);
-    for i in (y.len() - 1..x.len()).rev() {
-        let t = x[i] / y[y.len() - 1];
-        res.0.push(t);
-        for j in 0..y.len() {
-            x[i - j] = ((x[i - j] - t * y[y.len() - 1 - j] % p) % p + p) % p;
+    impl<T: PartialEq> Zero for Polynomial<T> {
+        fn zero() -> Self {
+            Self::from_vec(Vec::new())
         }
     }
-    res.0.reverse();
-    res
-}
-#[cargo_snippet::snippet("Polynomial")]
-pub fn poly_mod(x: &Polynomial, y: &Polynomial, p: i64) -> Polynomial {
-    let mut x = x.clone();
-    for i in (y.len() - 1..x.len()).rev() {
-        let t = x[i] / y[y.len() - 1];
-        for j in 0..y.len() {
-            x[i - j] = ((x[i - j] - t * y[y.len() - 1 - j] % p) % p + p) % p;
+    impl<T: PartialEq + Zero + One> One for Polynomial<T> {
+        fn one() -> Self {
+            Self::from_vec(vec![Zero::zero(), One::one()])
         }
     }
-    x.0.truncate(y.len() - 1);
-    x
-}
-#[cargo_snippet::snippet("Polynomial")]
-pub fn poly_assign(x: &Polynomial, a: i64, p: i64) -> i64 {
-    let mut res = 0;
-    for &c in x.0.iter().rev() {
-        res = (res * a % p + c) % p;
+    impl<T: Clone + Zero + Add<Output = T> + Mul<Output = T>> Polynomial<T> {
+        pub fn assign(&self, x: T) -> T {
+            let mut res = Zero::zero();
+            for c in self.data.iter().rev().cloned() {
+                res = res * x.clone() + c;
+            }
+            res
+        }
     }
-    res
-}
-#[cargo_snippet::snippet("Polynomial")]
-impl std::ops::Index<usize> for Polynomial {
-    type Output = i64;
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.0[index]
+    impl<T> Index<usize> for Polynomial<T> {
+        type Output = T;
+        fn index(&self, index: usize) -> &Self::Output {
+            &self.data[index]
+        }
     }
-}
-#[cargo_snippet::snippet("Polynomial")]
-impl std::ops::IndexMut<usize> for Polynomial {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        &mut self.0[index]
+    impl<T> IndexMut<usize> for Polynomial<T> {
+        fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+            &mut self.data[index]
+        }
     }
-}
-#[cargo_snippet::snippet("Polynomial")]
-impl std::ops::Add<&Polynomial> for &Polynomial {
-    type Output = Polynomial;
-    fn add(self, rhs: &Polynomial) -> Self::Output {
-        poly_add(self, rhs, self.1)
-    }
-}
-#[cargo_snippet::snippet("Polynomial")]
-impl std::ops::Sub<&Polynomial> for &Polynomial {
-    type Output = Polynomial;
-    fn sub(self, rhs: &Polynomial) -> Self::Output {
-        poly_sub(self, rhs, self.1)
-    }
-}
-#[cargo_snippet::snippet("Polynomial")]
-impl std::ops::Mul<&Polynomial> for &Polynomial {
-    type Output = Polynomial;
-    fn mul(self, rhs: &Polynomial) -> Self::Output {
-        poly_mul(self, rhs, self.1)
-    }
-}
-#[cargo_snippet::snippet("Polynomial")]
-impl std::ops::Div<&Polynomial> for &Polynomial {
-    type Output = Polynomial;
-    fn div(self, rhs: &Polynomial) -> Self::Output {
-        poly_div(self, rhs, self.1)
-    }
-}
-#[cargo_snippet::snippet("Polynomial")]
-impl std::ops::Rem<&Polynomial> for &Polynomial {
-    type Output = Polynomial;
-    fn rem(self, rhs: &Polynomial) -> Self::Output {
-        poly_mod(self, rhs, self.1)
-    }
-}
-
-pub mod poly_mod_poly {
-    use crate::num::*;
-    pub type Poly = Vec<MInt<modulus::Modulo1000000007>>;
-    pub fn poly_mulmod(x: &Poly, y: &Poly, z: &Poly) -> Poly {
-        let mut res = vec![MInt::zero(); x.len() + y.len() - 1];
-        for i in 0..x.len() {
+    impl<T: Copy + Add<Output = T>> Add<&Polynomial<T>> for &Polynomial<T> {
+        type Output = Polynomial<T>;
+        fn add(self, rhs: &Polynomial<T>) -> Self::Output {
+            let (x, y) = if self.len() < rhs.len() {
+                (rhs, self)
+            } else {
+                (self, rhs)
+            };
+            let mut x = x.clone();
             for j in 0..y.len() {
-                res[i + j] += x[i] * y[j];
+                x[j] = x[j] + y[j];
             }
+            x
         }
-        for i in (z.len() - 1..x.len() + y.len() - 1).rev() {
-            let t = res[i] / z[z.len() - 1];
-            for j in 0..z.len() {
-                res[i - j] -= t * z[z.len() - 1 - j];
-            }
-        }
-        res.truncate(z.len() - 1);
-        res
     }
-    pub fn poly_pow(x: Poly, y: usize, z: Poly) -> Poly {
-        let mut x = x;
-        let mut y = y;
-        let mut res = vec![MInt::one()];
-        while y > 0 {
-            if y & 1 == 1 {
-                res = poly_mulmod(&res, &x, &z);
+    impl<T: Copy + Sub<Output = T>> Sub<&Polynomial<T>> for &Polynomial<T> {
+        type Output = Polynomial<T>;
+        fn sub(self, rhs: &Polynomial<T>) -> Self::Output {
+            let (x, y) = if self.len() < rhs.len() {
+                (rhs, self)
+            } else {
+                (self, rhs)
+            };
+            let mut x = x.clone();
+            for j in 0..y.len() {
+                x[j] = x[j] - y[j];
             }
-            x = poly_mulmod(&x, &x, &z);
-            y >>= 1;
+            x
         }
-        res
+    }
+    impl<T: Copy + Zero + Add<Output = T> + Mul<Output = T>> Mul<&Polynomial<T>> for &Polynomial<T> {
+        type Output = Polynomial<T>;
+        fn mul(self, rhs: &Polynomial<T>) -> Self::Output {
+            let mut res = Polynomial::from_vec(vec![Zero::zero(); self.len() + rhs.len() - 1]);
+            for i in 0..self.len() {
+                for j in 0..rhs.len() {
+                    res[i + j] = res[i + j] + self[i] * rhs[j];
+                }
+            }
+            res
+        }
+    }
+    impl<T: Copy + Zero + Sub<Output = T> + Mul<Output = T> + Div<Output = T>> Div<&Polynomial<T>>
+        for &Polynomial<T>
+    {
+        type Output = Polynomial<T>;
+        fn div(self, rhs: &Polynomial<T>) -> Self::Output {
+            let mut x = self.clone();
+            let mut res = Polynomial::from_vec(vec![]);
+            for i in (rhs.len() - 1..x.len()).rev() {
+                let t = x[i] / rhs[rhs.len() - 1];
+                res.data.push(t);
+                for j in 0..rhs.len() {
+                    x[i - j] = x[i - j] - t * rhs[rhs.len() - 1 - j];
+                }
+            }
+            res.data.reverse();
+            res
+        }
+    }
+    impl<T: Copy + Zero + Sub<Output = T> + Mul<Output = T> + Div<Output = T>> Rem<&Polynomial<T>>
+        for &Polynomial<T>
+    {
+        type Output = Polynomial<T>;
+        fn rem(self, rhs: &Polynomial<T>) -> Self::Output {
+            let mut x = self.clone();
+            for i in (rhs.len() - 1..x.len()).rev() {
+                let t = x[i] / rhs[rhs.len() - 1];
+                for j in 0..rhs.len() {
+                    x[i - j] = x[i - j] - t * rhs[rhs.len() - 1 - j];
+                }
+            }
+            x.data.truncate(rhs.len() - 1);
+            x
+        }
+    }
+    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Polynomial<T> {
+        pub fn pow(&self, mut n: usize) -> Self {
+            let mut x = self.clone();
+            let mut res = Self::one();
+            while n > 0 {
+                if n & 1 == 1 {
+                    res = &res * &x;
+                }
+                x = &x * &x;
+                n >>= 1;
+            }
+            res
+        }
     }
 }
