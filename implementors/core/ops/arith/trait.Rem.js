@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["competitive"] = [{"text":"impl&lt;'_, '_&gt; Rem&lt;&amp;'_ Polynomial&gt; for &amp;'_ Polynomial","synthetic":false,"types":[]}];
+implementors["competitive"] = [{"text":"impl&lt;T:&nbsp;Copy + Zero + Sub&lt;Output = T&gt; + Mul&lt;Output = T&gt; + Div&lt;Output = T&gt;, '_, '_&gt; Rem&lt;&amp;'_ Polynomial&lt;T&gt;&gt; for &amp;'_ Polynomial&lt;T&gt;","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

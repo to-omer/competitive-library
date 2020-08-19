@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["poly_mulmod",""],["poly_pow",""]],"type":[["Poly",""]]});
