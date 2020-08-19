@@ -88,77 +88,6 @@ where
     _marker: std::marker::PhantomData<fn() -> M>,
 }
 #[cargo_snippet::snippet("MInt")]
-impl<M: Modulus> MInt<M> {
-    #[inline]
-    pub fn new(x: u32) -> Self {
-        Self {
-            x: M::modulo(x),
-            _marker: std::marker::PhantomData,
-        }
-    }
-    #[inline]
-    pub fn new_unchecked(x: u32) -> Self {
-        Self {
-            x,
-            _marker: std::marker::PhantomData,
-        }
-    }
-    #[inline]
-    pub fn inner(self) -> u32 {
-        self.x
-    }
-    #[inline]
-    pub fn get_mod() -> u32 {
-        M::get_modulus()
-    }
-    #[inline]
-    pub fn pow(mut self, mut y: usize) -> Self {
-        let mut x = Self::one();
-        while y > 0 {
-            if y & 1 == 1 {
-                x *= self;
-            }
-            self *= self;
-            y >>= 1;
-        }
-        x
-    }
-    #[inline]
-    /// only prime modulus
-    pub fn inv(self) -> Self {
-        let mut a = self.x;
-        let (mut b, mut u, mut s) = (M::get_modulus(), 1, 0);
-        let k = a.trailing_zeros();
-        a >>= k;
-        for _ in 0..k {
-            if u & 1 == 1 {
-                u += M::get_modulus();
-            }
-            u /= 2;
-        }
-        while a != b {
-            if b < a {
-                std::mem::swap(&mut a, &mut b);
-                std::mem::swap(&mut u, &mut s);
-            }
-            b -= a;
-            if s < u {
-                s += M::get_modulus();
-            }
-            s -= u;
-            let k = b.trailing_zeros();
-            b >>= k;
-            for _ in 0..k {
-                if s & 1 == 1 {
-                    s += M::get_modulus();
-                }
-                s /= 2;
-            }
-        }
-        Self::new_unchecked(s)
-    }
-}
-#[cargo_snippet::snippet("MInt")]
 mod mint_impls {
     use super::*;
     use std::{
@@ -167,10 +96,81 @@ mod mint_impls {
         hash::{Hash, Hasher},
         iter::{Product, Sum},
         marker::PhantomData,
+        mem::swap,
         num::ParseIntError,
         ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
         str::FromStr,
     };
+    impl<M: Modulus> MInt<M> {
+        #[inline]
+        pub fn new(x: u32) -> Self {
+            Self {
+                x: M::modulo(x),
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn new_unchecked(x: u32) -> Self {
+            Self {
+                x,
+                _marker: PhantomData,
+            }
+        }
+        #[inline]
+        pub fn inner(self) -> u32 {
+            self.x
+        }
+        #[inline]
+        pub fn get_mod() -> u32 {
+            M::get_modulus()
+        }
+        #[inline]
+        pub fn pow(mut self, mut y: usize) -> Self {
+            let mut x = Self::one();
+            while y > 0 {
+                if y & 1 == 1 {
+                    x *= self;
+                }
+                self *= self;
+                y >>= 1;
+            }
+            x
+        }
+        #[inline]
+        /// only prime modulus
+        pub fn inv(self) -> Self {
+            let mut a = self.x;
+            let (mut b, mut u, mut s) = (M::get_modulus(), 1, 0);
+            let k = a.trailing_zeros();
+            a >>= k;
+            for _ in 0..k {
+                if u & 1 == 1 {
+                    u += M::get_modulus();
+                }
+                u /= 2;
+            }
+            while a != b {
+                if b < a {
+                    swap(&mut a, &mut b);
+                    swap(&mut u, &mut s);
+                }
+                b -= a;
+                if s < u {
+                    s += M::get_modulus();
+                }
+                s -= u;
+                let k = b.trailing_zeros();
+                b >>= k;
+                for _ in 0..k {
+                    if s & 1 == 1 {
+                        s += M::get_modulus();
+                    }
+                    s /= 2;
+                }
+            }
+            Self::new_unchecked(s)
+        }
+    }
     impl<M: Modulus> Clone for MInt<M> {
         #[inline]
         fn clone(&self) -> Self {
@@ -447,7 +447,3 @@ fn test_mint() {
         assert_eq!(x, a.pow(M::get_mod() as usize - 2));
     }
 }
-
-// use crate::algebra::{AdditiveIdentity, MultiplicativeIdentity};
-// impl_additive_identity!([M: Modulus], MInt<M>, Self::zero());
-// impl_multiplicative_identity!([M: Modulus], MInt<M>, Self::one());
