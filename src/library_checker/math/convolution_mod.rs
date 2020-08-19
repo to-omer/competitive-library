@@ -1,8 +1,6 @@
 pub use crate::math::NumberTheoreticTransform;
 pub use crate::num::{modulus::Modulo998244353, MInt};
-use crate::tools::{read_all, Scanner};
-use crate::{echo, scan};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 type M = MInt<Modulo998244353>;
 type NTT = NumberTheoreticTransform<Modulo998244353>;

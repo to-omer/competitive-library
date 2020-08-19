@@ -1,7 +1,5 @@
 pub use crate::data_structure::Static2DTree;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_C")]
 pub fn dsl_2_c(reader: &mut impl Read, writer: &mut impl Write) {

@@ -1,8 +1,6 @@
 pub use crate::algebra::MinOperation;
 pub use crate::data_structure::{DisjointSparseTable, SegmentTree};
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/staticrmq")]
 pub fn staticrmq_disjoint_sparse_table(reader: &mut impl Read, writer: &mut impl Write) {

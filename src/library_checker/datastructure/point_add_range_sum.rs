@@ -1,8 +1,6 @@
 pub use crate::algebra::AdditiveOperation;
 pub use crate::data_structure::{BinaryIndexedTree, SegmentTree};
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
 pub fn point_add_range_sum_binary_indexed_tree(reader: &mut impl Read, writer: &mut impl Write) {

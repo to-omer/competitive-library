@@ -1,4 +1,4 @@
-use crate::num::{modulus, MInt, Modulus};
+use crate::num::{modulus, MInt, Modulus, One, Zero};
 
 #[cargo_snippet::snippet("NumberTheoreticTransform")]
 pub struct NumberTheoreticTransform<M: Modulus>(std::marker::PhantomData<fn() -> M>);

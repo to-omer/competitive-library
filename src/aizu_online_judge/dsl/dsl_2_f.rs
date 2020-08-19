@@ -1,8 +1,6 @@
 pub use crate::algebra::{LastOperation, MinOperation};
 pub use crate::data_structure::LazySegmentTree;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_F")]
 pub fn dsl_2_f(reader: &mut impl Read, writer: &mut impl Write) {

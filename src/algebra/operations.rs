@@ -1,6 +1,7 @@
 //! binary operaions
 
 use super::magma::*;
+use crate::num::{One, Zero};
 
 /// binary operation to select larger element
 #[cargo_snippet::snippet("MaxOperation")]
@@ -251,79 +252,42 @@ mod last_operation_impl {
 /// $+$
 #[cargo_snippet::snippet("AdditiveOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct AdditiveOperation<T: Copy + PartialEq + AdditiveIdentity> {
+pub struct AdditiveOperation<T: Copy + Zero + std::ops::Add<Output = T>> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("AdditiveOperation")]
-pub trait AdditiveIdentity: Sized + std::ops::Add<Output = Self> {
-    fn zero() -> Self;
-}
-#[cargo_snippet::snippet("AdditiveOperation")]
-#[macro_use]
 mod additive_operation_impl {
     use super::*;
-    #[macro_export(local_inner_macros)]
-    macro_rules! impl_additive_identity {
-        ([$($wh:tt)*], $t:ty, $zero:expr) => {
-            impl<$($wh)*> AdditiveIdentity for $t {
-                #[inline]
-                fn zero() -> Self {
-                    $zero
-                }
-            }
-        };
-        ($t:ty, $zero:expr) => {
-            impl AdditiveIdentity for $t {
-                #[inline]
-                fn zero() -> Self {
-                    $zero
-                }
-            }
-        };
-    }
-    impl_additive_identity!(usize, 0usize);
-    impl_additive_identity!(u8, 0u8);
-    impl_additive_identity!(u16, 0u16);
-    impl_additive_identity!(u32, 0u32);
-    impl_additive_identity!(u64, 0u64);
-    impl_additive_identity!(isize, 0isize);
-    impl_additive_identity!(i8, 0i8);
-    impl_additive_identity!(i16, 0i16);
-    impl_additive_identity!(i32, 0i32);
-    impl_additive_identity!(i64, 0i64);
-    impl_additive_identity!(f32, 0.0f32);
-    impl_additive_identity!(f64, 0.0f64);
-    impl<T: Copy + PartialEq + AdditiveIdentity> AdditiveOperation<T> {
+    use std::ops::{Add, Neg, Sub};
+    impl<T: Copy + Zero + Add<Output = T>> AdditiveOperation<T> {
         pub fn new() -> Self {
             Self {
                 _marker: std::marker::PhantomData,
             }
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity> Magma for AdditiveOperation<T> {
+    impl<T: Copy + Zero + Add<Output = T>> Magma for AdditiveOperation<T> {
         type T = T;
         #[inline]
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             *x + *y
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity> Unital for AdditiveOperation<T> {
+    impl<T: Copy + Zero + Add<Output = T>> Unital for AdditiveOperation<T> {
         #[inline]
         fn unit(&self) -> Self::T {
-            AdditiveIdentity::zero()
+            Zero::zero()
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity> Associative for AdditiveOperation<T> {}
-    impl<T: Copy + PartialEq + AdditiveIdentity> Commutative for AdditiveOperation<T> {}
-    impl<T: Copy + PartialEq + AdditiveIdentity + std::ops::Neg<Output = T>> Invertible
-        for AdditiveOperation<T>
-    {
+    impl<T: Copy + Zero + Add<Output = T>> Associative for AdditiveOperation<T> {}
+    impl<T: Copy + Zero + Add<Output = T>> Commutative for AdditiveOperation<T> {}
+    impl<T: Copy + Zero + Add<Output = T> + Neg<Output = T>> Invertible for AdditiveOperation<T> {
         #[inline]
         fn inverse(&self, x: &Self::T) -> Self::T {
             -*x
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity + std::ops::Sub<Output = T>> RightInvertibleMagma
+    impl<T: Copy + Zero + Add<Output = T> + Sub<Output = T>> RightInvertibleMagma
         for AdditiveOperation<T>
     {
         #[inline]
@@ -336,80 +300,43 @@ mod additive_operation_impl {
 /// $\times$
 #[cargo_snippet::snippet("MultiplicativeOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct MultiplicativeOperation<T: Copy + PartialEq + MultiplicativeIdentity> {
+pub struct MultiplicativeOperation<T: Copy + One + std::ops::Mul<Output = T>> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("MultiplicativeOperation")]
-pub trait MultiplicativeIdentity: Sized + std::ops::Mul<Output = Self> {
-    fn one() -> Self;
-}
-#[cargo_snippet::snippet("MultiplicativeOperation")]
-#[macro_use]
 mod multiplicative_operation_impl {
     use super::*;
-    #[macro_export(local_inner_macros)]
-    macro_rules! impl_multiplicative_identity {
-        ([$($wh:tt)*], $t:ty, $one:expr) => {
-            impl<$($wh)*> MultiplicativeIdentity for $t {
-                #[inline]
-                fn one() -> Self {
-                    $one
-                }
-            }
-        };
-        ($t:ty, $one:expr) => {
-            impl MultiplicativeIdentity for $t {
-                #[inline]
-                fn one() -> Self {
-                    $one
-                }
-            }
-        };
-    }
-    impl_multiplicative_identity!(usize, 1usize);
-    impl_multiplicative_identity!(u8, 1u8);
-    impl_multiplicative_identity!(u16, 1u16);
-    impl_multiplicative_identity!(u32, 1u32);
-    impl_multiplicative_identity!(u64, 1u64);
-    impl_multiplicative_identity!(isize, 1isize);
-    impl_multiplicative_identity!(i8, 1i8);
-    impl_multiplicative_identity!(i16, 1i16);
-    impl_multiplicative_identity!(i32, 1i32);
-    impl_multiplicative_identity!(i64, 1i64);
-    impl_multiplicative_identity!(f32, 1.0f32);
-    impl_multiplicative_identity!(f64, 1.0f64);
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> MultiplicativeOperation<T> {
+    use std::ops::{Div, Mul};
+    impl<T: Copy + One + Mul<Output = T>> MultiplicativeOperation<T> {
         pub fn new() -> Self {
             Self {
                 _marker: std::marker::PhantomData,
             }
         }
     }
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> Magma for MultiplicativeOperation<T> {
+    impl<T: Copy + One + Mul<Output = T>> Magma for MultiplicativeOperation<T> {
         type T = T;
         #[inline]
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             *x * *y
         }
     }
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> Unital for MultiplicativeOperation<T> {
+    impl<T: Copy + One + Mul<Output = T>> Unital for MultiplicativeOperation<T> {
         #[inline]
         fn unit(&self) -> Self::T {
-            MultiplicativeIdentity::one()
+            One::one()
         }
     }
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> Associative for MultiplicativeOperation<T> {}
-    impl<T: Copy + PartialEq + MultiplicativeIdentity> Commutative for MultiplicativeOperation<T> {}
-    impl<T: Copy + PartialEq + MultiplicativeIdentity + std::ops::Div<Output = T>> Invertible
-        for MultiplicativeOperation<T>
-    {
+    impl<T: Copy + One + Mul<Output = T>> Associative for MultiplicativeOperation<T> {}
+    impl<T: Copy + One + Mul<Output = T>> Commutative for MultiplicativeOperation<T> {}
+    impl<T: Copy + One + Mul<Output = T> + Div<Output = T>> Invertible for MultiplicativeOperation<T> {
         #[inline]
         fn inverse(&self, x: &Self::T) -> Self::T {
             self.unit().div(*x)
         }
     }
-    impl<T: Copy + PartialEq + MultiplicativeIdentity + std::ops::Div<Output = T>>
-        RightInvertibleMagma for MultiplicativeOperation<T>
+    impl<T: Copy + One + Mul<Output = T> + Div<Output = T>> RightInvertibleMagma
+        for MultiplicativeOperation<T>
     {
         #[inline]
         fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T {
@@ -421,38 +348,36 @@ mod multiplicative_operation_impl {
 /// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
 #[cargo_snippet::snippet("LinearOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct LinearOperation<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> {
+pub struct LinearOperation<
+    T: Copy + PartialEq + Zero + std::ops::Add<Output = T> + One + std::ops::Mul<Output = T>,
+> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[cargo_snippet::snippet("LinearOperation")]
 mod linear_operation_impl {
     use super::*;
-    impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> LinearOperation<T> {
+    use std::ops::{Add, Mul};
+    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> LinearOperation<T> {
         pub fn new() -> Self {
             Self {
                 _marker: std::marker::PhantomData,
             }
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> Magma for LinearOperation<T> {
+    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Magma for LinearOperation<T> {
         type T = (T, T);
         #[inline]
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             (y.0 * x.0, y.0 * x.1 + y.1)
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> Unital
-        for LinearOperation<T>
-    {
+    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Unital for LinearOperation<T> {
         #[inline]
         fn unit(&self) -> Self::T {
-            (MultiplicativeIdentity::one(), AdditiveIdentity::zero())
+            (One::one(), Zero::zero())
         }
     }
-    impl<T: Copy + PartialEq + AdditiveIdentity + MultiplicativeIdentity> Associative
-        for LinearOperation<T>
-    {
-    }
+    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Associative for LinearOperation<T> {}
 }
 
 /// &

@@ -1,10 +1,8 @@
 pub use crate::algebra::AdditiveOperation;
 pub use crate::data_structure::SegmentTree;
 pub use crate::graph::Graph;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
+use crate::prelude::*;
 pub use crate::tree::EulerTourForVertex;
-use std::io::{Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/vertex_add_subtree_sum")]
 pub fn vertex_add_subtree_sum(reader: &mut impl Read, writer: &mut impl Write) {

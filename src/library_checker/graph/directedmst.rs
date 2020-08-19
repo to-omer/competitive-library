@@ -1,8 +1,6 @@
 pub use crate::algebra::AdditiveOperation;
 pub use crate::graph::GraphScanner;
-use crate::tools::{read_all, Scanner};
-use crate::{echo, scan};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/directedmst")]
 pub fn directedmst(reader: &mut impl Read, writer: &mut impl Write) {

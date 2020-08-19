@@ -1,7 +1,5 @@
 pub use crate::math::prime_factors_rho;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/factorize")]
 pub fn factorize(reader: &mut impl Read, writer: &mut impl Write) {

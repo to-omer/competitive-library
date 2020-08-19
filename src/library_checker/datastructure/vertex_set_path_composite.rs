@@ -2,10 +2,8 @@ pub use crate::algebra::{LinearOperation, ReverseOperation};
 pub use crate::data_structure::SegmentTree;
 pub use crate::graph::GraphScanner;
 pub use crate::num::{modulus::Modulo998244353, MInt};
-use crate::scan;
-use crate::tools::{read_all, Scanner};
+use crate::prelude::*;
 pub use crate::tree::HeavyLightDecomposition;
-use std::io::{Read, Write};
 
 type M = MInt<Modulo998244353>;
 

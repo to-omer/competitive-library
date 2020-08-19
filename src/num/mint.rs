@@ -1,4 +1,6 @@
 //! modint
+use crate::num::{One, Zero};
+use crate::tools::IterScan;
 
 #[cargo_snippet::snippet("MInt")]
 pub trait Modulus {
@@ -104,14 +106,6 @@ impl<M: Modulus> MInt<M> {
     #[inline]
     pub fn inner(self) -> u32 {
         self.x
-    }
-    #[inline]
-    pub fn one() -> Self {
-        Self::new_unchecked(1)
-    }
-    #[inline]
-    pub fn zero() -> Self {
-        Self::new_unchecked(0)
     }
     #[inline]
     pub fn get_mod() -> u32 {
@@ -357,6 +351,25 @@ mod mint_impls {
             s.parse::<u32>().map(Self::new)
         }
     }
+    impl<M: Modulus> IterScan for MInt<M> {
+        type Output = Self;
+        #[inline]
+        fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+            iter.next()?.parse::<MInt<M>>().ok()
+        }
+    }
+    impl<M: Modulus> Zero for MInt<M> {
+        #[inline]
+        fn zero() -> Self {
+            Self::new_unchecked(0)
+        }
+    }
+    impl<M: Modulus> One for MInt<M> {
+        #[inline]
+        fn one() -> Self {
+            Self::new_unchecked(1)
+        }
+    }
     macro_rules! mint_ref_binop {
         ($imp:ident, $method:ident, $t:ty) => {
             impl<M: Modulus> $imp<$t> for &$t {
@@ -435,17 +448,6 @@ fn test_mint() {
     }
 }
 
-use crate::algebra::{AdditiveIdentity, MultiplicativeIdentity};
-impl_additive_identity!([M: Modulus], MInt<M>, Self::zero());
-impl_multiplicative_identity!([M: Modulus], MInt<M>, Self::one());
-
-use crate::tools::IterScan;
-
-#[cargo_snippet::snippet("MInt")]
-impl<M: Modulus> IterScan for MInt<M> {
-    type Output = Self;
-    #[inline]
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-        iter.next()?.parse::<MInt<M>>().ok()
-    }
-}
+// use crate::algebra::{AdditiveIdentity, MultiplicativeIdentity};
+// impl_additive_identity!([M: Modulus], MInt<M>, Self::zero());
+// impl_multiplicative_identity!([M: Modulus], MInt<M>, Self::one());

@@ -1,7 +1,5 @@
 pub use crate::graph::{RevGraph, TwoSatisfiability};
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/two_sat")]
 pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {

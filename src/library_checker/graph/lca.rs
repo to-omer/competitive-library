@@ -1,8 +1,6 @@
 pub use crate::graph::Graph;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
+use crate::prelude::*;
 pub use crate::tree::{EulerTourForRichVertex, HeavyLightDecomposition};
-use std::io::{Read, Write};
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/lca")]
 pub fn lca_euler_tour(reader: &mut impl Read, writer: &mut impl Write) {

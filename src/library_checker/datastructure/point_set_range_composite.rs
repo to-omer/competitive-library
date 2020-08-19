@@ -1,9 +1,7 @@
 pub use crate::algebra::LinearOperation;
 pub use crate::data_structure::SegmentTree;
 pub use crate::num::{modulus::Modulo998244353, MInt};
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 type M = MInt<Modulo998244353>;
 

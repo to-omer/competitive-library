@@ -1,6 +1,4 @@
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/3/DSL_3_C")]
 pub fn dsl_3_c(reader: &mut impl Read, writer: &mut impl Write) {

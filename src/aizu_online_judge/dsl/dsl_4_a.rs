@@ -1,7 +1,5 @@
 pub use crate::algorithm::Compress;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/4/DSL_4_A")]
 pub fn dsl_4_a(reader: &mut impl Read, writer: &mut impl Write) {

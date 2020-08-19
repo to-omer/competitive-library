@@ -1,4 +1,4 @@
-use crate::num::{MInt, Modulus};
+use crate::num::{MInt, Modulus, One, Zero};
 
 #[cargo_snippet::snippet(name = "factorial")]
 #[derive(Clone, Debug)]

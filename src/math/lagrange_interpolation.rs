@@ -1,5 +1,5 @@
 use crate::math::factorial::MemorizedFactorial;
-use crate::num::{MInt, Modulus};
+use crate::num::{MInt, Modulus, One, Zero};
 
 pub fn lagrange_interpolation<M: Modulus>(x: &[MInt<M>], y: &[MInt<M>], t: MInt<M>) -> MInt<M> {
     let n = x.len();

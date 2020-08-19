@@ -16,6 +16,7 @@ pub mod num;
 pub mod string;
 #[macro_use]
 pub mod tools;
+pub(crate) mod prelude;
 pub mod tree;
 
 pub mod aizu_online_judge;

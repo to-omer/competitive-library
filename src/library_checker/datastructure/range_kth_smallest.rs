@@ -1,7 +1,5 @@
 pub use crate::data_structure::WaveletMatrix;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/range_kth_smallest")]
 pub fn range_kth_smallest(reader: &mut impl Read, writer: &mut impl Write) {

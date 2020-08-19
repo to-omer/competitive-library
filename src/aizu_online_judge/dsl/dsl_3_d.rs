@@ -1,8 +1,6 @@
 pub use crate::algebra::MinOperation;
 pub use crate::data_structure::QueueAggregation;
-use crate::tools::{read_all, Scanner};
-use crate::{echo, scan};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/3/DSL_3_D")]
 pub fn dsl_3_d(reader: &mut impl Read, writer: &mut impl Write) {

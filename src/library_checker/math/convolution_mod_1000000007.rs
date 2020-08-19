@@ -1,8 +1,6 @@
 pub use crate::math::convolve3;
 pub use crate::num::modulus::Modulo1000000007;
-use crate::tools::{read_all, Scanner};
-use crate::{echo, scan};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/convolution_mod_1000000007")]
 pub fn convolution_mod_1000000007(reader: &mut impl Read, writer: &mut impl Write) {

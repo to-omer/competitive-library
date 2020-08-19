@@ -1,9 +1,7 @@
 pub use crate::algebra::MaxOperation;
 pub use crate::graph::GraphScanner;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
+use crate::prelude::*;
 pub use crate::tree::ReRooting;
-use std::io::{Read, Write};
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_B")]
 pub fn grl_5_b(reader: &mut impl Read, writer: &mut impl Write) {

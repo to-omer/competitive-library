@@ -1,7 +1,5 @@
 pub use crate::math::segmented_sieve_primes;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/enumerate_primes")]
 pub fn enumerate_primes(reader: &mut impl Read, writer: &mut impl Write) {

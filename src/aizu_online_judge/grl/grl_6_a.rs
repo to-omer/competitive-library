@@ -1,8 +1,6 @@
 pub use crate::algebra::AdditiveOperation;
 pub use crate::graph::Dinic;
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/6/GRL_6_A")]
 pub fn grl_6_a(reader: &mut impl Read, writer: &mut impl Write) {

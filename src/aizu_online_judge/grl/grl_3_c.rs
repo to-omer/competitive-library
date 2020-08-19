@@ -1,7 +1,5 @@
 pub use crate::graph::{RevGraphScanner, StronglyConnectedComponent};
-use crate::scan;
-use crate::tools::{read_all, Scanner};
-use std::io::{Read, Write};
+use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/3/GRL_3_C")]
 pub fn grl_3_c(reader: &mut impl Read, writer: &mut impl Write) {

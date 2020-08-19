@@ -2,6 +2,7 @@ use competitive::tools::Scanner;
 
 #[cargo_snippet::snippet]
 #[cargo_snippet::snippet(include = "scanner")]
+#[cargo_snippet::snippet(include = "zero_one")]
 #[cargo_snippet::snippet(include = "minmax")]
 fn main() {
     #[allow(unused_imports)]
