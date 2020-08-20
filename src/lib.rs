@@ -8,6 +8,7 @@
 #[macro_use]
 pub mod algebra;
 pub mod algorithm;
+pub mod combinatorial_optimization;
 pub mod data_structure;
 pub mod geometry;
 pub mod graph;
