@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["directedmst","✅  AC  221ms"]],"struct":[["AdditiveOperation","$+$"],["GraphScanner",""]]});
+initSidebarItems({"fn":[["directedmst","✅  AC  119ms"]],"struct":[["AdditiveOperation","$+$"],["GraphScanner",""]]});
