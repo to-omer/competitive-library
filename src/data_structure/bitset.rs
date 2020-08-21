@@ -15,7 +15,7 @@ impl BitSet {
     pub fn ones(size: usize) -> Self {
         let mut self_ = Self {
             size,
-            bits: vec![u64::MAX; (size + 63) / 64],
+            bits: vec![std::u64::MAX; (size + 63) / 64],
         };
         self_.trim();
         self_
