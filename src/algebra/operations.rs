@@ -454,6 +454,7 @@ mod bitand_operation_impl {
 pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
+#[cargo_snippet::snippet("BitOrOperation")]
 pub trait BitOrIdentity: Sized + std::ops::BitOr<Output = Self> {
     fn all_zero() -> Self;
 }
