@@ -2,7 +2,7 @@ use lazy_static::lazy_static;
 use serde::{de::DeserializeOwned, Deserialize};
 use std::{
     ffi::OsStr,
-    fmt::{self, Formatter},
+    fmt::{self, Display, Formatter},
     fs::File,
     io::{self, Write},
     path::{Path, PathBuf},
@@ -142,6 +142,14 @@ pub(crate) enum Service {
     LibraryChecker,
     AizuOnlineJudge,
 }
+impl Display for Service {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            Service::LibraryChecker => write!(f, "Library Checker"),
+            Service::AizuOnlineJudge => write!(f, "Aizu Online Judge"),
+        }
+    }
+}
 
 pub(crate) struct OjApi {}
 impl OjApi {
@@ -156,14 +164,13 @@ impl OjApi {
                 .args(args)
                 .output()?
         };
-        // eprintln!("{}", String::from_utf8_lossy(&output.stderr));
         if output.status.success() {
             let response: OjApiResponse<R> = serde_json::from_slice(&output.stdout)?;
             response.into_result()
         } else {
-            Err(OjError::CommandError(
-                String::from_utf8_lossy(&output.stderr).to_string(),
-            ))
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            log::info!("{}", stderr);
+            Err(OjError::CommandError(stderr.to_string()))
         }
     }
     pub(crate) fn get_testcases(url: &str) -> OjResult<Problem> {
@@ -201,14 +208,13 @@ except RuntimeError as e:
                 ])
                 .output()?
         };
-        // eprintln!("{}", String::from_utf8_lossy(&output.stderr));
         if output.status.success() {
             let checker = PathBuf::from(String::from_utf8_lossy(&output.stdout).to_string());
             Ok(Self { checker })
         } else {
-            Err(OjError::CommandError(
-                String::from_utf8_lossy(&output.stderr).to_string(),
-            ))
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            log::info!("{}", stderr);
+            Err(OjError::CommandError(stderr.to_string()))
         }
     }
     pub(crate) fn check(
@@ -264,15 +270,25 @@ impl VerifyConfig {
         }
     }
     pub(crate) fn gen_env(&self) -> OjResult<VerifyEnv> {
-        Ok(match OjApi::get_service(self.url)? {
+        let service = OjApi::get_service(self.url)?;
+        log::info!("identify the service as `{}`", service);
+        let env = match service {
             Service::LibraryChecker => {
+                log::info!("download checker binary");
                 VerifyEnv::LibraryChecker(CheckerBinary::from_url(self.url)?)
             }
             Service::AizuOnlineJudge => VerifyEnv::AizuOnlineJudge,
-        })
+        };
+        Ok(env)
     }
     pub(crate) fn get_testcases(&self) -> OjResult<Problem> {
-        OjApi::get_testcases(self.url)
+        log::info!("download testcases: {}", self.url);
+        let res = OjApi::get_testcases(self.url);
+        match &res {
+            Ok(problem) => log::info!("success to download {} testcases", problem.tests.len()),
+            Err(_) => log::info!("failed to download testcases"),
+        }
+        res
     }
     pub(crate) fn emit_md(&self, buf: &[u8]) -> io::Result<()> {
         let path = Path::new(self.cur_file)
@@ -281,6 +297,18 @@ impl VerifyConfig {
         File::create(path)?.write_all(buf)
     }
     pub(crate) fn finalize(&self, result: OjResult<VerifyResults>) -> OjResult<()> {
+        if let Ok(results) = &result {
+            let mut map = std::collections::BTreeMap::<_, usize>::new();
+            for result in results.results.iter() {
+                *map.entry(result.status).or_default() += 1;
+            }
+            let res = map
+                .iter()
+                .map(|(k, v)| format!("{} × {};", k, v))
+                .collect::<Vec<_>>()
+                .join(" ");
+            log::info!("{}", res);
+        };
         self.emit_md(self.gen_md_contents(&result).as_bytes())?;
         result.and_then(|r| {
             if r.is_ac() {
@@ -369,7 +397,7 @@ impl From<bool> for VerifyStatus {
         }
     }
 }
-impl fmt::Display for VerifyStatus {
+impl Display for VerifyStatus {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
             Self::AC => write!(f, "AC"),
@@ -403,8 +431,15 @@ pub(crate) struct VerifyResults {
 }
 
 impl VerifyResults {
-    pub(crate) fn new(results: Vec<VerifyResult>) -> Self {
-        Self { results }
+    pub(crate) fn new() -> Self {
+        log::info!("verify start");
+        Self {
+            results: Vec::new(),
+        }
+    }
+    pub(crate) fn push(&mut self, name: String, status: VerifyStatus, elapsed: Duration) {
+        log::info!(" - {} {} {}ms", name, status, elapsed.as_millis());
+        self.results.push(VerifyResult::new(name, status, elapsed))
     }
     pub(crate) fn status(&self) -> VerifyStatus {
         self.results
@@ -424,10 +459,12 @@ impl VerifyResults {
             .unwrap_or(Duration::from_secs(0))
     }
 }
-impl std::iter::FromIterator<VerifyResult> for VerifyResults {
-    fn from_iter<T: IntoIterator<Item = VerifyResult>>(iter: T) -> Self {
-        Self {
-            results: Vec::from_iter(iter),
-        }
-    }
+
+pub(crate) fn log_formatter(
+    buf: &mut env_logger::fmt::Formatter,
+    record: &log::Record,
+    target: String,
+) -> io::Result<()> {
+    let target = &target[target.find("::").map(|i| i + 2).unwrap_or_default()..];
+    writeln!(buf, "test {} ... {}", target, record.args())
 }

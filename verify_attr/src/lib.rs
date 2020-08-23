@@ -108,10 +108,11 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                 #[test]
                 #[ignore]
                 fn #verify_name() {
+                    let _ = ::env_logger::builder().format(|buf, record| crate::verify::log_formatter(buf, record, ::std::module_path!().to_string() + "::" + &::std::stringify!(#verify_name))).is_test(true).try_init();
                     let config = crate::verify::VerifyConfig::new(#url, ::std::file!(), ::std::stringify!(#fn_name));
                     let res = match (config.get_testcases(), config.gen_env()) {
                         (::std::result::Result::Ok(problem), ::std::result::Result::Ok(env)) => {
-                            let mut res = ::std::vec::Vec::new();
+                            let mut res = crate::verify::VerifyResults::new();
                             for case in problem.tests.iter() {
                                 let start = ::std::time::Instant::now();
                                 let result = ::std::panic::catch_unwind(|| {
@@ -124,9 +125,9 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                                     ::std::result::Result::Ok(buf) => #inner,
                                     ::std::result::Result::Err(err) => crate::verify::VerifyStatus::RE,
                                 };
-                                res.push(crate::verify::VerifyResult::new(case.name.clone(), status, elapsed));
+                                res.push(case.name.clone(), status, elapsed);
                             }
-                            ::std::result::Result::Ok(crate::verify::VerifyResults::new(res))
+                            ::std::result::Result::Ok(res)
                         },
                         (::std::result::Result::Err(err), _)  | (_, ::std::result::Result::Err(err)) => ::std::result::Result::Err(err),
                     };
