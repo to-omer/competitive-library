@@ -4,9 +4,14 @@ use crate::algebra::Monoid;
 pub trait Automaton {
     type Alphabet;
     type State;
+    type Effect;
 
     fn initial(&self) -> Self::State;
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State>;
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)>;
     fn accept(&self, state: &Self::State) -> bool;
 }
 
@@ -16,7 +21,7 @@ pub fn automaton_dp<A, M>(
     sigma: impl Iterator<Item = A::Alphabet> + Clone,
     len: usize,
     monoid: M,
-    mul: impl Fn(&M::T, &A::Alphabet) -> M::T,
+    mul: impl Fn(&M::T, &A::Effect) -> M::T,
     init: M::T,
 ) -> M::T
 where
@@ -30,10 +35,10 @@ where
     for _ in 0..len {
         for (state, value) in dp.drain() {
             for alph in sigma.clone() {
-                if let Some(nstate) = dfa.next(&state, &alph) {
-                    let nvalue = mul(&value, &alph);
+                if let Some((nstate, eff)) = dfa.next(&state, &alph) {
+                    let nvalue = mul(&value, &eff);
                     ndp.entry(nstate)
-                        .and_modify(|acc| *acc = monoid.operate(acc, &value))
+                        .and_modify(|acc| *acc = monoid.operate(acc, &nvalue))
                         .or_insert(nvalue);
                 }
             }
@@ -60,12 +65,17 @@ where
 {
     type Alphabet = A;
     type State = (X::State, Y::State);
+    type Effect = (X::Effect, Y::Effect);
     fn initial(&self) -> Self::State {
         (self.0.initial(), self.1.initial())
     }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
         match (self.0.next(&state.0, alph), self.1.next(&state.1, alph)) {
-            (Some(s0), Some(s1)) => Some((s0, s1)),
+            (Some((s0, e0)), Some((s1, e1))) => Some(((s0, s1), (e0, e1))),
             _ => None,
         }
     }
@@ -84,12 +94,17 @@ where
 {
     type Alphabet = A;
     type State = (X::State, Y::State);
+    type Effect = (X::Effect, Y::Effect);
     fn initial(&self) -> Self::State {
         (self.0.initial(), self.1.initial())
     }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
         match (self.0.next(&state.0, alph), self.1.next(&state.1, alph)) {
-            (Some(s0), Some(s1)) => Some((s0, s1)),
+            (Some((s0, e0)), Some((s1, e1))) => Some(((s0, s1), (e0, e1))),
             _ => None,
         }
     }
@@ -104,15 +119,20 @@ pub struct ProductAutomaton<X: Automaton, Y: Automaton>(X, Y);
 impl<X: Automaton, Y: Automaton> Automaton for ProductAutomaton<X, Y> {
     type Alphabet = (X::Alphabet, Y::Alphabet);
     type State = (X::State, Y::State);
+    type Effect = (X::Effect, Y::Effect);
     fn initial(&self) -> Self::State {
         (self.0.initial(), self.1.initial())
     }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
         match (
             self.0.next(&state.0, &alph.0),
             self.1.next(&state.1, &alph.1),
         ) {
-            (Some(s0), Some(s1)) => Some((s0, s1)),
+            (Some((s0, e0)), Some((s1, e1))) => Some(((s0, s1), (e0, e1))),
             _ => None,
         }
     }
@@ -136,16 +156,21 @@ impl<'a, T: Ord> LessThanAutomaton<'a, T> {
 impl<T: Ord> Automaton for LessThanAutomaton<'_, T> {
     type Alphabet = T;
     type State = (usize, bool);
+    type Effect = ();
     fn initial(&self) -> Self::State {
         (0, true)
     }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
         self.buf
             .get(state.0)
             .and_then(|c| match (state.1, c.cmp(alph)) {
-                (true, std::cmp::Ordering::Equal) => Some((state.0 + 1, true)),
+                (true, std::cmp::Ordering::Equal) => Some(((state.0 + 1, true), ())),
                 (true, std::cmp::Ordering::Less) => None,
-                _ => Some((state.0 + 1, false)),
+                _ => Some(((state.0 + 1, false), ())),
             })
     }
     fn accept(&self, state: &Self::State) -> bool {
@@ -168,16 +193,21 @@ impl<'a, T: Ord> GreaterThanAutomaton<'a, T> {
 impl<T: Ord> Automaton for GreaterThanAutomaton<'_, T> {
     type Alphabet = T;
     type State = (usize, bool);
+    type Effect = ();
     fn initial(&self) -> Self::State {
         (0, true)
     }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
         self.buf
             .get(state.0)
             .and_then(|c| match (state.1, c.cmp(alph)) {
-                (true, std::cmp::Ordering::Equal) => Some((state.0 + 1, true)),
+                (true, std::cmp::Ordering::Equal) => Some(((state.0 + 1, true), ())),
                 (true, std::cmp::Ordering::Greater) => None,
-                _ => Some((state.0 + 1, false)),
+                _ => Some(((state.0 + 1, false), ())),
             })
     }
     fn accept(&self, state: &Self::State) -> bool {
@@ -191,11 +221,16 @@ pub struct ContainAutomaton<'a, T: Eq>(&'a T);
 impl<'a, T: Eq> Automaton for ContainAutomaton<'a, T> {
     type Alphabet = T;
     type State = bool;
+    type Effect = bool;
     fn initial(&self) -> Self::State {
         false
     }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
-        Some(*state || self.0 == alph)
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
+        Some((*state || self.0 == alph, *state ^ (self.0 == alph)))
     }
     fn accept(&self, state: &Self::State) -> bool {
         *state
@@ -208,11 +243,17 @@ pub struct ContainCounterAutomaton<'a, T: Eq>(&'a T);
 impl<'a, T: Eq> Automaton for ContainCounterAutomaton<'a, T> {
     type Alphabet = T;
     type State = usize;
+    type Effect = usize;
     fn initial(&self) -> Self::State {
         0
     }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
-        Some(*state + (self.0 == alph) as usize)
+    fn next(
+        &self,
+        state: &Self::State,
+        alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
+        let nstate = *state + (self.0 == alph) as usize;
+        Some((nstate, nstate))
     }
     fn accept(&self, state: &Self::State) -> bool {
         *state > 0
@@ -231,11 +272,16 @@ impl<A> AlwaysAcceptingAutomaton<A> {
 impl<A> Automaton for AlwaysAcceptingAutomaton<A> {
     type Alphabet = A;
     type State = ();
+    type Effect = ();
     fn initial(&self) -> Self::State {
         ()
     }
-    fn next(&self, _state: &Self::State, _alph: &Self::Alphabet) -> Option<Self::State> {
-        Some(())
+    fn next(
+        &self,
+        _state: &Self::State,
+        _alph: &Self::Alphabet,
+    ) -> Option<(Self::State, Self::Effect)> {
+        Some(((), ()))
     }
     fn accept(&self, _state: &Self::State) -> bool {
         true
