@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_2_c","✅  AC  556ms"]],"struct":[["Static2DTree",""]]});
+initSidebarItems({"fn":[["dsl_2_c","✅  AC  441ms"]],"struct":[["Static2DTree",""]]});

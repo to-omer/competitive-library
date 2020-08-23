@@ -116,9 +116,6 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! algebraic traits</span>
 
@@ -131,7 +128,7 @@
     <span class="kw">fn</span> <span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">T</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">reverse_operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">T</span> {
-        <span class="self">self</span>.<span class="ident">operate</span>(<span class="ident">x</span>, <span class="ident">y</span>)
+        <span class="self">self</span>.<span class="ident">operate</span>(<span class="ident">y</span>, <span class="ident">x</span>)
     }
 }
 
@@ -180,13 +177,10 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Invertible</span>: <span class="ident">Magma</span> {
     <span class="doccomment">/// $a$ where $a \circ x = e$</span>
     <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">T</span>;
-}
-
-<span class="doccomment">/// short cut of right inverse binary operation</span>
-<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;algebra&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RightInvertibleMagma</span>: <span class="ident">Magma</span> {
-    <span class="doccomment">/// right inverse binary operation: $\cdot \circ (\cdot^{-1})$</span>
-    <span class="kw">fn</span> <span class="ident">rinv_operation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">T</span>;
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">rinv_operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="self">Self</span>::<span class="ident">T</span> {
+        <span class="self">self</span>.<span class="ident">operate</span>(<span class="ident">x</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inverse</span>(<span class="ident">y</span>))
+    }
 }
 
 <span class="doccomment">/// associative binary operation and an identity element and inverse elements</span>
