@@ -40,7 +40,7 @@ impl<G: Group> SubsetTransform<G> {
         while i < n {
             for j in 0..n {
                 if j & i != 0 {
-                    f[j] = self.monoid.operate(&f[j], &self.monoid.inverse(&f[j ^ i]));
+                    f[j] = self.monoid.rinv_operate(&f[j], &f[j ^ i]);
                 }
             }
             i <<= 1;
@@ -131,7 +131,7 @@ impl<G: Group> SupersetTransform<G> {
         while i < n {
             for j in 0..n {
                 if j & i == 0 {
-                    f[j] = self.monoid.operate(&f[j], &self.monoid.inverse(&f[j | i]));
+                    f[j] = self.monoid.rinv_operate(&f[j], &f[j | i]);
                 }
             }
             i <<= 1;
@@ -215,7 +215,7 @@ impl<G: Group> DivisorTransform<G> {
     pub fn mobius_transform(&self, f: &mut [G::T]) {
         for &p in self.primes.iter() {
             for (i, j) in (0..f.len()).step_by(p).enumerate().rev() {
-                f[j] = self.monoid.operate(&f[j], &self.monoid.inverse(&f[i]));
+                f[j] = self.monoid.rinv_operate(&f[j], &f[i]);
             }
         }
     }
@@ -304,7 +304,7 @@ impl<G: Group> MultipleTransform<G> {
     pub fn mobius_transform(&self, f: &mut [G::T]) {
         for &p in self.primes.iter() {
             for (i, j) in (0..f.len()).step_by(p).enumerate() {
-                f[i] = self.monoid.operate(&f[i], &self.monoid.inverse(&f[j]));
+                f[i] = self.monoid.rinv_operate(&f[i], &f[j]);
             }
         }
     }

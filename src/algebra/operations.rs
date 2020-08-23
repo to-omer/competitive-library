@@ -17,14 +17,6 @@ pub trait MinimumBounded {
 mod max_operation_impl {
     use super::*;
     macro_rules! impl_minimum_with_min {
-        ([$($wh:tt)*], $t:ty, $min:expr) => {
-            impl<$($wh)*> MinimumBounded for $t {
-                #[inline]
-                fn minimum() -> Self {
-                    $min
-                }
-            }
-        };
         ($t:ty, $min:expr) => {
             impl MinimumBounded for $t {
                 #[inline]
@@ -79,7 +71,7 @@ mod max_operation_impl {
         type T = T;
         #[inline]
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
-            std::cmp::max(x, y).clone()
+            x.max(y).clone()
         }
     }
     impl<T: Clone + Ord + MinimumBounded> Unital for MaxOperation<T> {
@@ -107,14 +99,6 @@ pub trait MaximumBounded {
 mod min_operation_impl {
     use super::*;
     macro_rules! impl_maximum_with_max {
-        ([$($wh:tt)*], $t:ty, $max:expr) => {
-            impl<$($wh)*> MaximumBounded for $t {
-                #[inline]
-                fn maximum() -> Self {
-                    $max
-                }
-            }
-        };
         ($t:ty, $max:expr) => {
             impl MaximumBounded for $t {
                 #[inline]
@@ -169,7 +153,7 @@ mod min_operation_impl {
         type T = T;
         #[inline]
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
-            std::cmp::min(x, y).clone()
+            x.min(y).clone()
         }
     }
     impl<T: Clone + Ord + MaximumBounded> Unital for MinOperation<T> {
@@ -281,17 +265,15 @@ mod additive_operation_impl {
     }
     impl<T: Copy + Zero + Add<Output = T>> Associative for AdditiveOperation<T> {}
     impl<T: Copy + Zero + Add<Output = T>> Commutative for AdditiveOperation<T> {}
-    impl<T: Copy + Zero + Add<Output = T> + Neg<Output = T>> Invertible for AdditiveOperation<T> {
+    impl<T: Copy + Zero + Add<Output = T> + Sub<Output = T> + Neg<Output = T>> Invertible
+        for AdditiveOperation<T>
+    {
         #[inline]
         fn inverse(&self, x: &Self::T) -> Self::T {
             -*x
         }
-    }
-    impl<T: Copy + Zero + Add<Output = T> + Sub<Output = T>> RightInvertibleMagma
-        for AdditiveOperation<T>
-    {
         #[inline]
-        fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T {
+        fn rinv_operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             *x - *y
         }
     }
@@ -334,12 +316,8 @@ mod multiplicative_operation_impl {
         fn inverse(&self, x: &Self::T) -> Self::T {
             self.unit().div(*x)
         }
-    }
-    impl<T: Copy + One + Mul<Output = T> + Div<Output = T>> RightInvertibleMagma
-        for MultiplicativeOperation<T>
-    {
         #[inline]
-        fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T {
+        fn rinv_operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             (*x).div(*y)
         }
     }

@@ -129,7 +129,7 @@ impl<G: Group> WeightedUnionFind<G> {
         let wx = self.get_weight(x);
         let wy = self.get_weight(y);
         let mut w = self.group.operate(&w, &wx);
-        w = self.group.operate(&w, &self.group.inverse(&wy));
+        w = self.group.rinv_operate(&w, &wy);
         use std::mem::swap;
         let mut x = self.find(x);
         let mut y = self.find(y);
@@ -154,10 +154,7 @@ impl<G: Group> WeightedUnionFind<G> {
     }
     pub fn get_difference(&mut self, x: usize, y: usize) -> Option<G::T> {
         if self.is_same(x, y) {
-            Some(
-                self.group
-                    .operate(&self.diff[y], &self.group.inverse(&self.diff[x])),
-            )
+            Some(self.group.rinv_operate(&self.diff[y], &self.diff[x]))
         } else {
             None
         }

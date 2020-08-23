@@ -9,7 +9,7 @@ pub trait Magma {
     fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T;
     #[inline]
     fn reverse_operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
-        self.operate(x, y)
+        self.operate(y, x)
     }
 }
 
@@ -58,13 +58,10 @@ impl<M: SemiGroup + Unital> Monoid for M {}
 pub trait Invertible: Magma {
     /// $a$ where $a \circ x = e$
     fn inverse(&self, x: &Self::T) -> Self::T;
-}
-
-/// short cut of right inverse binary operation
-#[cargo_snippet::snippet("algebra")]
-pub trait RightInvertibleMagma: Magma {
-    /// right inverse binary operation: $\cdot \circ (\cdot^{-1})$
-    fn rinv_operation(&self, x: &Self::T, y: &Self::T) -> Self::T;
+    #[inline]
+    fn rinv_operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
+        self.operate(x, &self.inverse(y))
+    }
 }
 
 /// associative binary operation and an identity element and inverse elements

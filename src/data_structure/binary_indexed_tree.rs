@@ -93,8 +93,7 @@ impl<G: Group> BinaryIndexedTree<G> {
     }
     #[inline]
     pub fn set(&mut self, k: usize, x: G::T) {
-        let y = self.m.inverse(&self.get(k));
-        self.update(k, self.m.operate(&y, &x));
+        self.update(k, self.m.operate(&self.m.inverse(&self.get(k)), &x));
     }
 }
 
@@ -285,12 +284,8 @@ impl<G: Group> BinaryIndexedTree2D<G> {
     pub fn fold(&self, i1: usize, j1: usize, i2: usize, j2: usize) -> G::T {
         let mut res = self.m.unit();
         res = self.m.operate(&res, &self.accumulate0(i1, j1));
-        res = self
-            .m
-            .operate(&res, &self.m.inverse(&self.accumulate0(i1, j2)));
-        res = self
-            .m
-            .operate(&res, &self.m.inverse(&self.accumulate0(i2, j1)));
+        res = self.m.rinv_operate(&res, &self.accumulate0(i1, j2));
+        res = self.m.rinv_operate(&res, &self.accumulate0(i2, j1));
         res = self.m.operate(&res, &self.accumulate0(i2, j2));
         res
     }

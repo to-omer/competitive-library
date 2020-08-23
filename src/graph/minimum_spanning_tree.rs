@@ -52,7 +52,7 @@ impl RevGraph {
                     let c = &weight[from[u]];
                     acc = group.operate(&acc, c);
                     for a in self.radjacency(u).iter().filter(|a| scc[u] != scc[a.to]) {
-                        nweight.push(group.operate(&weight[a.id], &group.inverse(&c)));
+                        nweight.push(group.rinv_operate(&weight[a.id], &c));
                         ngraph.add_edge(scc[a.to], scc[u]);
                     }
                 } else {
@@ -89,7 +89,7 @@ impl Graph {
             self.vsize,
             |_| (BinaryHeap::new(), group.unit()),
             |x, y| {
-                let ny = group.operate(&y.1, &group.inverse(&x.1));
+                let ny = group.rinv_operate(&y.1, &x.1);
                 x.0.extend(
                     (y.0)
                         .drain()
@@ -131,7 +131,7 @@ impl Graph {
                 };
                 {
                     let curw = &mut uf.find_root_mut(cur).data.1;
-                    *curw = group.operate(curw, &group.inverse(&w));
+                    *curw = group.rinv_operate(curw, &w);
                 }
                 acc = group.operate(&acc, &w);
                 ord.push(eid);
