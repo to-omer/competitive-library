@@ -6,7 +6,7 @@ from shutil import move
 SIZE = 16
 
 def cargo_verify(name: str):
-    return ['cargo', 'test', '--lib', '--release', name, '--', '--ignored', '--exact']
+    return ['cargo', 'test', '--lib', '--release', name, '--', '--ignored', '--exact', '--nocapture']
 
 def main():
     parser = ArgumentParser()
