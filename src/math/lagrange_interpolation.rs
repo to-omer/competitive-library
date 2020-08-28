@@ -47,3 +47,44 @@ impl<M: Modulus> MemorizedFactorial<M> {
         res
     }
 }
+
+#[cargo_snippet::snippet]
+pub fn lagrange_interpolation_polynomial<M: Modulus>(
+    x: &Vec<MInt<M>>,
+    y: &Vec<MInt<M>>,
+) -> Vec<MInt<M>> {
+    let n = x.len() - 1;
+    let mut dp = vec![MInt::zero(); n + 2];
+    let mut ndp = vec![MInt::zero(); n + 2];
+    dp[0] = -x[0];
+    dp[1] = MInt::one();
+    for i in 1..=n {
+        for j in 0..=n + 1 {
+            ndp[j] = -dp[j] * x[i] + if j >= 1 { dp[j - 1] } else { MInt::zero() };
+        }
+        std::mem::swap(&mut dp, &mut ndp);
+    }
+    let mut res = vec![MInt::zero(); n + 1];
+    for i in 0..=n {
+        let t = y[i]
+            / (0..=n)
+                .map(|j| if i != j { x[i] - x[j] } else { MInt::one() })
+                .product::<MInt<M>>();
+        if t.is_zero() {
+            continue;
+        } else if x[i].is_zero() {
+            for j in 0..=n {
+                res[j] += dp[j + 1] * t;
+            }
+        } else {
+            let xinv = x[i].inv();
+            let mut pre = MInt::zero();
+            for j in 0..=n {
+                let d = -(dp[j] - pre) * xinv;
+                res[j] += d * t;
+                pre = d;
+            }
+        }
+    }
+    res
+}

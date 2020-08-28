@@ -13,7 +13,7 @@ mod prime;
 pub use factorial::*;
 pub use fast_fourier_transform::*;
 pub use gcd::*;
-pub use lagrange_interpolation::lagrange_interpolation;
+pub use lagrange_interpolation::*;
 pub use matrix::Matrix;
 pub use number_theoretic_transform::*;
 pub use nums::*;
