@@ -254,11 +254,18 @@ fn test_convolve3_128() {
     assert_eq!(c, d);
 }
 
-#[test]
+// #[test]
 #[allow(dead_code)]
 fn find_proth() {
     use crate::math::{divisors, prime_factors_rho};
-    use crate::num::modulus::{set_dyn_modulus, DynModulo};
+    struct DM {}
+    static mut MOD: u32 = 2;
+    impl Modulus for DM {
+        #[inline]
+        fn get_modulus() -> u32 {
+            unsafe { MOD }
+        }
+    }
     // p = a * 2^b + 1 (b >= 1, a < 2^b)
     for b in 22..32 {
         for a in (1..1u64 << b).step_by(2) {
@@ -271,13 +278,13 @@ fn find_proth() {
             }
             let f = prime_factors_rho(p);
             if f.len() == 1 && f[0] == p {
-                set_dyn_modulus(p as u32);
+                unsafe { MOD = p as u32 };
                 for g in (3..).step_by(2) {
-                    let g = MInt::<DynModulo>::new(g);
+                    let g = MInt::<DM>::new(g);
                     if divisors(p as usize - 1)
                         .into_iter()
                         .filter(|&d| d != p as usize - 1)
-                        .all(|d| g.pow(d) != MInt::<DynModulo>::one())
+                        .all(|d| g.pow(d) != MInt::<DM>::one())
                     {
                         println!("(p,a,b,g) = {:?}", (p, a, b, g));
                         break;

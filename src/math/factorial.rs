@@ -136,13 +136,20 @@ impl<M: Modulus> SmallModMemorizedFactorial<M> {
 
 #[test]
 fn test_small_factorials() {
-    use crate::num::modulus::{set_dyn_modulus, DynModulo};
+    use crate::num::Modulus;
     use crate::tools::Xorshift;
+    struct DM {}
+    static mut MOD: u32 = 2;
+    impl Modulus for DM {
+        #[inline]
+        fn get_modulus() -> u32 {
+            unsafe { MOD }
+        }
+    }
     let mut rand = Xorshift::time();
     const N: usize = 10_000;
     const Q: usize = 10_000;
-    set_dyn_modulus(2);
-    let fact = SmallModMemorizedFactorial::<DynModulo>::new();
+    let fact = SmallModMemorizedFactorial::<DM>::new();
     for _ in 0..Q {
         let n = rand.rand(N as u64) as usize + 1;
         let k = rand.rand(N as u64) as usize % n;
