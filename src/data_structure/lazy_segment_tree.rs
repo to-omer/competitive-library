@@ -137,6 +137,12 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
     pub fn fold_all(&mut self) -> M::T {
         self.fold(0, self.n)
     }
+    pub fn as_slice(&self) -> &[M::T] {
+        &self.seg[self.n..]
+    }
+    pub fn as_slice_lazy(&self) -> &[E::T] {
+        &self.lazy[self.n..]
+    }
 }
 
 #[test]

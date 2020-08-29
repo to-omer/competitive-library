@@ -120,6 +120,9 @@ impl<M: Monoid> SegmentTree<M> {
             }
         }
     }
+    pub fn as_slice(&self) -> &[M::T] {
+        &self.seg[self.n..]
+    }
 }
 
 #[test]
