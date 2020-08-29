@@ -131,6 +131,13 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         }
         self.m.operate(&vl, &vr)
     }
+    pub fn set(&mut self, k: usize, x: M::T) {
+        let k = k + self.n;
+        self.thrust(k);
+        self.seg[k] = x;
+        self.lazy[k] = self.e.unit();
+        self.recalc(k);
+    }
     pub fn get(&mut self, k: usize) -> M::T {
         self.fold(k, k + 1)
     }
