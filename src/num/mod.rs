@@ -1,4 +1,5 @@
 mod complex;
+mod float;
 mod mint;
 mod quad_double;
 mod zero_one;
