@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Isize1",""],["Usize1",""]]});
+initSidebarItems({"struct":[["Chars",""],["CharsWithBase",""],["Collect",""],["Usize1",""]]});

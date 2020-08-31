@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_5_c","✅  AC  72ms"]],"struct":[["EulerTourForRichVertex",""],["Graph",""]]});
+initSidebarItems({"fn":[["grl_5_c","✅  AC  79ms"]],"struct":[["EulerTourForRichVertex",""],["Graph",""]]});

@@ -33,7 +33,6 @@
 <span id="16">16</span>
 <span id="17">17</span>
 <span id="18">18</span>
-<span id="19">19</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">AdditiveOperation</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">graph</span>::<span class="ident">GraphScanner</span>;
@@ -43,8 +42,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">grl_5_a</span>(<span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">Read</span>, <span class="ident">writer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">Write</span>) {
     <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">read_all</span>(<span class="ident">reader</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scanner</span> <span class="op">=</span> <span class="ident">Scanner</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>);
-    <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">n</span>);
-    <span class="kw">let</span> (<span class="ident">graph</span>, <span class="ident">w</span>) <span class="op">=</span> <span class="ident">scanner</span>.<span class="ident">mscan</span>(<span class="ident">GraphScanner</span>::<span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">u64</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">n</span>, <span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>, <span class="bool-val">false</span>));
+    <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">n</span>, (<span class="ident">graph</span>, <span class="ident">w</span>): {<span class="ident">GraphScanner</span>::<span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">u64</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">n</span>, <span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>, <span class="bool-val">false</span>)});
     <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">graph</span>.<span class="ident">weighted_tree_depth</span>(<span class="number">0</span>, <span class="op">|</span><span class="ident">eid</span><span class="op">|</span> <span class="ident">w</span>[<span class="ident">eid</span>], <span class="ident">AdditiveOperation</span>::<span class="ident">new</span>());
     <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">n</span>).<span class="ident">max_by_key</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">u</span><span class="op">|</span> <span class="ident">d</span>[<span class="ident">u</span>]).<span class="ident">unwrap</span>();
     <span class="kw">let</span> <span class="ident">ans</span> <span class="op">=</span> <span class="ident">graph</span>

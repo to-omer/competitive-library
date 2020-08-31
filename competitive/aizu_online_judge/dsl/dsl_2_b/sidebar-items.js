@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_2_b","✅  AC  15ms"]],"struct":[["AdditiveOperation","$+$"],["SegmentTree",""]]});
+initSidebarItems({"fn":[["dsl_2_b","✅  AC  17ms"]],"struct":[["AdditiveOperation","$+$"],["SegmentTree",""]]});
