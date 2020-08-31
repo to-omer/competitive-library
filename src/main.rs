@@ -5,49 +5,31 @@ use competitive::tools::Scanner;
 #[cargo_snippet::snippet(include = "zero_one")]
 #[cargo_snippet::snippet(include = "minmax")]
 fn main() {
-    #[allow(unused_imports)]
-    use std::io::{Read as _, Write as _};
-    let __out = std::io::stdout();
-    let mut __in_buf = String::new();
-    std::io::stdin().read_to_string(&mut __in_buf).unwrap();
+    #![allow(unused_imports, unused_macros)]
+    use std::io::{stdin, stdout, BufWriter, Read as _, Write as _};
+    let mut __in_buf = Vec::new();
+    stdin().read_to_end(&mut __in_buf).expect("io error");
+    let __in_buf = unsafe { String::from_utf8_unchecked(__in_buf) };
     let mut scanner = Scanner::new(&__in_buf);
-    #[allow(unused_macros)]
     macro_rules! scan {
-        () => {
-            scan!(usize)
-        };
-        (($($t:tt),*)) => {
-            ($(scan!($t)),*)
-        };
-        ([$t:tt; $len:expr]) => {
-            (0..$len).map(|_| scan!($t)).collect::<Vec<_>>()
-        };
-        ({ chars: $b:expr }) => {
-            scanner.scan_chars_with($b)
-        };
-        ({ $t:tt => $f:expr }) => {
-            $f(scan!($t))
-        };
-        (chars) => {
-            scanner.scan_chars()
-        };
-        ($t:ty) => {
-            scanner.scan::<$t>()
-        };
+        () => { scan!(usize) };
+        (($($t:tt),*)) => { ($(scan!($t)),*) };
+        ([$t:ty; $len:expr]) => { scanner.scan_vec::<$t>($len) };
+        ([$t:tt; $len:expr]) => { (0..$len).map(|_| scan!($t)).collect::<Vec<_>>() };
+        ({ $e:expr }) => { scanner.mscan($e) };
+        ($t:ty) => { scanner.scan::<$t>() };
     }
-    let mut __out = std::io::BufWriter::new(__out.lock());
-    #[allow(unused_macros)]
+    let __out = stdout();
+    let mut __out = BufWriter::new(__out.lock());
     macro_rules! print {
-        ($($arg:tt)*) => (::std::write!(__out, $($arg)*).unwrap())
+        ($($arg:tt)*) => (::std::write!(__out, $($arg)*).expect("io error"))
     }
-    #[allow(unused_macros)]
     macro_rules! println {
-        ($($arg:tt)*) => (::std::writeln!(__out, $($arg)*).unwrap())
+        ($($arg:tt)*) => (::std::writeln!(__out, $($arg)*).expect("io error"))
     }
-    #[allow(unused_macros)]
     macro_rules! echo {
         ($iter:expr) => {
-            echo!($iter, "\n")
+            echo!($iter, '\n')
         };
         ($iter:expr, $sep:expr) => {
             let mut iter = $iter.into_iter();

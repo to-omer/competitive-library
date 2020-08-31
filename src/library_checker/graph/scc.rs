@@ -5,8 +5,7 @@ use crate::prelude::*;
 pub fn scc(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es);
-    let (graph, _) = scanner.mscan(RevGraphScanner::<usize, ()>::new(vs, es));
+    scan!(scanner, vs, es, (graph, _): {RevGraphScanner::<usize, ()>::new(vs, es)});
     let scc = StronglyConnectedComponent::new(&graph);
     let comp = scc.components();
     writeln!(writer, "{}", comp.len()).ok();

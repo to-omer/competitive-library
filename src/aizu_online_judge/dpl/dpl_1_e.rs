@@ -5,6 +5,6 @@ use crate::prelude::*;
 pub fn dpl_1_e(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, s1: chars, s2: chars);
+    scan!(scanner, s1: Chars, s2: Chars);
     writeln!(writer, "{}", levenshtein_distance(&s1, &s2)).ok();
 }

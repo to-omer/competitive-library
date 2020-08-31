@@ -5,7 +5,7 @@ pub use crate::string::SuffixArray;
 pub fn suffixarray(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, s: chars);
+    scan!(scanner, s: Chars);
     let sa = SuffixArray::new(s);
     echo!(writer, (1..sa.len()).map(|i| sa[i]), " ");
 }

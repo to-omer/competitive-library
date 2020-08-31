@@ -8,8 +8,7 @@ use crate::prelude::*;
 pub fn grl_4_b(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es);
-    let (graph, _) = scanner.mscan(GraphScanner::<usize, ()>::new(vs, es, true));
+    scan!(scanner, vs, es, (graph, _): {GraphScanner::<usize, ()>::new(vs, es, true)});
     for u in graph.topological_sort().into_iter() {
         writeln!(writer, "{}", u).ok();
     }

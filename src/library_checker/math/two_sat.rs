@@ -7,8 +7,8 @@ pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(
         scanner,
-        _p: chars,
-        _cnf: chars,
+        _p: String,
+        _cnf: String,
         n,
         m,
         ab: [(i64, i64, i64); m]

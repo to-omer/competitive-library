@@ -1,13 +1,18 @@
 pub fn read_stdin_all() -> String {
     use std::io::Read as _;
     let mut s = String::new();
-    std::io::stdin().read_to_string(&mut s).unwrap();
+    std::io::stdin().read_to_string(&mut s).expect("io error");
     s
 }
 pub fn read_all(reader: &mut impl std::io::Read) -> String {
     let mut s = String::new();
-    reader.read_to_string(&mut s).unwrap();
+    reader.read_to_string(&mut s).expect("io error");
     s
+}
+pub fn read_all_unchecked(reader: &mut impl std::io::Read) -> String {
+    let mut buf = Vec::new();
+    reader.read_to_end(&mut buf).expect("io error");
+    unsafe { String::from_utf8_unchecked(buf) }
 }
 
 #[cargo_snippet::snippet("scanner")]
@@ -21,49 +26,43 @@ pub trait MarkedIterScan: Sized {
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
 }
 #[cargo_snippet::snippet("scanner")]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Scanner<'a> {
     iter: std::str::SplitAsciiWhitespace<'a>,
-}
-#[cargo_snippet::snippet("scanner")]
-impl<'a> Scanner<'a> {
-    #[inline]
-    pub fn new(s: &'a str) -> Self {
-        let iter = s.split_ascii_whitespace();
-        Self { iter }
-    }
-    #[inline]
-    pub fn scan<T: IterScan>(&mut self) -> <T as IterScan>::Output {
-        T::scan(&mut self.iter).unwrap()
-    }
-    #[inline]
-    pub fn mscan<T: MarkedIterScan>(&mut self, marker: T) -> <T as MarkedIterScan>::Output {
-        marker.mscan(&mut self.iter).unwrap()
-    }
-    #[inline]
-    pub fn scan_vec<T: IterScan>(&mut self, size: usize) -> Vec<<T as IterScan>::Output> {
-        (0..size)
-            .map(|_| T::scan(&mut self.iter).unwrap())
-            .collect()
-    }
-    #[inline]
-    pub fn scan_chars(&mut self) -> Vec<char> {
-        self.iter.next().unwrap().chars().collect::<Vec<char>>()
-    }
-    #[inline]
-    pub fn scan_chars_with(&mut self, base: char) -> Vec<usize> {
-        self.iter
-            .next()
-            .unwrap()
-            .chars()
-            .map(|c| (c as u8 - base as u8) as usize)
-            .collect::<Vec<usize>>()
-    }
 }
 
 #[cargo_snippet::snippet("scanner")]
 mod scanner_impls {
     use super::*;
+    impl<'a> Scanner<'a> {
+        #[inline]
+        pub fn new(s: &'a str) -> Self {
+            let iter = s.split_ascii_whitespace();
+            Self { iter }
+        }
+        #[inline]
+        pub fn scan<T: IterScan>(&mut self) -> <T as IterScan>::Output {
+            <T as IterScan>::scan(&mut self.iter).expect("scan error")
+        }
+        #[inline]
+        pub fn mscan<T: MarkedIterScan>(&mut self, marker: T) -> <T as MarkedIterScan>::Output {
+            marker.mscan(&mut self.iter).expect("scan error")
+        }
+        #[inline]
+        pub fn scan_vec<T: IterScan>(&mut self, size: usize) -> Vec<<T as IterScan>::Output> {
+            (0..size)
+                .map(|_| <T as IterScan>::scan(&mut self.iter).expect("scan error"))
+                .collect()
+        }
+        #[inline]
+        pub fn iter<'b, T: IterScan>(&'b mut self) -> ScannerIter<'a, 'b, T> {
+            ScannerIter {
+                inner: self,
+                _marker: std::marker::PhantomData,
+            }
+        }
+    }
+
     macro_rules! iter_scan_impls {
         ($($t:ty)*) => {$(
             impl IterScan for $t {
@@ -83,7 +82,7 @@ mod scanner_impls {
                 type Output = ($(<$T as IterScan>::Output,)*);
                 #[inline]
                 fn scan<'a, It: Iterator<Item = &'a str>>(_iter: &mut It) -> Option<Self::Output> {
-                    Some(($($T::scan(_iter)?,)*))
+                    Some(($(<$T as IterScan>::scan(_iter)?,)*))
                 }
             }
         };
@@ -107,17 +106,9 @@ mod scanner_impls {
     }
     impl<'a, 'b, T: IterScan> Iterator for ScannerIter<'a, 'b, T> {
         type Item = <T as IterScan>::Output;
-        fn next(&mut self) -> Option<Self::Item> {
-            T::scan(&mut self.inner.iter)
-        }
-    }
-    impl<'a> Scanner<'a> {
         #[inline]
-        pub fn iter<'b, T: IterScan>(&'b mut self) -> ScannerIter<'a, 'b, T> {
-            ScannerIter {
-                inner: self,
-                _marker: std::marker::PhantomData,
-            }
+        fn next(&mut self) -> Option<Self::Item> {
+            <T as IterScan>::scan(&mut self.inner.iter)
         }
     }
 }
@@ -125,20 +116,61 @@ mod scanner_impls {
 #[cargo_snippet::snippet("scanner")]
 pub mod marker {
     use super::*;
+    use std::{iter::FromIterator, marker::PhantomData};
+    #[derive(Debug, Copy, Clone)]
     pub struct Usize1;
     impl IterScan for Usize1 {
         type Output = usize;
         #[inline]
         fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-            usize::scan(iter).map(|x| x.wrapping_sub(1))
+            Some(<usize as IterScan>::scan(iter)?.checked_sub(1)?)
         }
     }
-    pub struct Isize1;
-    impl IterScan for Isize1 {
-        type Output = isize;
+    #[derive(Debug, Copy, Clone)]
+    pub struct Chars;
+    impl IterScan for Chars {
+        type Output = Vec<char>;
         #[inline]
         fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-            isize::scan(iter).map(|x| x.wrapping_sub(1))
+            Some(iter.next()?.chars().collect())
+        }
+    }
+    #[derive(Debug, Copy, Clone)]
+    pub struct CharsWithBase(char);
+    impl MarkedIterScan for CharsWithBase {
+        type Output = Vec<usize>;
+        #[inline]
+        fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+            Some(
+                iter.next()?
+                    .chars()
+                    .map(|c| (c as u8 - self.0 as u8) as usize)
+                    .collect(),
+            )
+        }
+    }
+    #[derive(Debug, Copy, Clone)]
+    pub struct Collect<T: IterScan, B: FromIterator<<T as IterScan>::Output>> {
+        size: usize,
+        _marker: PhantomData<fn() -> (T, B)>,
+    }
+    impl<T: IterScan, B: FromIterator<<T as IterScan>::Output>> Collect<T, B> {
+        pub fn new(size: usize) -> Self {
+            Self {
+                size,
+                _marker: PhantomData,
+            }
+        }
+    }
+    impl<T: IterScan, B: FromIterator<<T as IterScan>::Output>> MarkedIterScan for Collect<T, B> {
+        type Output = B;
+        #[inline]
+        fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+            Some(
+                (0..self.size)
+                    .map(|_| <T as IterScan>::scan(iter).expect("scan error"))
+                    .collect::<B>(),
+            )
         }
     }
 }
@@ -148,14 +180,14 @@ macro_rules! scan_value {
     ($scanner:expr, ($($t:tt),*)) => {
         ($($crate::scan_value!($scanner, $t)),*)
     };
+    ($scanner:expr, [$t:ty; $len:expr]) => {
+        $scanner.scan_vec::<$t>($len)
+    };
     ($scanner:expr, [$t:tt; $len:expr]) => {
         (0..$len).map(|_| $crate::scan_value!($scanner, $t)).collect::<Vec<_>>()
     };
-    ($scanner:expr, { $t:tt => $f:expr }) => {
-        $f($crate::scan_value!($scanner, $t))
-    };
-    ($scanner:expr, chars) => {
-        $scanner.scan_chars()
+    ($scanner:expr, {$e:expr}) => {
+        $scanner.mscan($e)
     };
     ($scanner:expr, $t:ty) => {
         $scanner.scan::<$t>()
@@ -166,32 +198,32 @@ macro_rules! scan_value {
 macro_rules! scan {
     ($scanner:expr) => {};
     ($scanner:expr,) => {};
-    ($scanner:expr, mut $var:ident: $t:tt) => {
+    ($scanner:expr, mut $var:tt: $t:tt) => {
         let mut $var = $crate::scan_value!($scanner, $t);
     };
-    ($scanner:expr, $var:ident: $t:tt) => {
+    ($scanner:expr, $var:tt: $t:tt) => {
         let $var = $crate::scan_value!($scanner, $t);
     };
-    ($scanner:expr, mut $var:ident: $t:tt, $($rest:tt)*) => {
+    ($scanner:expr, mut $var:tt: $t:tt, $($rest:tt)*) => {
         let mut $var = $crate::scan_value!($scanner, $t);
         scan!($scanner, $($rest)*)
     };
-    ($scanner:expr, $var:ident: $t:tt, $($rest:tt)*) => {
+    ($scanner:expr, $var:tt: $t:tt, $($rest:tt)*) => {
         let $var = $crate::scan_value!($scanner, $t);
         scan!($scanner, $($rest)*)
     };
 
-    ($scanner:expr, mut $var:ident) => {
+    ($scanner:expr, mut $var:tt) => {
         let mut $var = $crate::scan_value!($scanner, usize);
     };
-    ($scanner:expr, $var:ident) => {
+    ($scanner:expr, $var:tt) => {
         let $var = $crate::scan_value!($scanner, usize);
     };
-    ($scanner:expr, mut $var:ident, $($rest:tt)*) => {
+    ($scanner:expr, mut $var:tt, $($rest:tt)*) => {
         let mut $var = $crate::scan_value!($scanner, usize);
         scan!($scanner, $($rest)*)
     };
-    ($scanner:expr, $var:ident, $($rest:tt)*) => {
+    ($scanner:expr, $var:tt, $($rest:tt)*) => {
         let $var = $crate::scan_value!($scanner, usize);
         scan!($scanner, $($rest)*)
     };
@@ -200,16 +232,9 @@ macro_rules! scan {
 #[test]
 fn test_scan() {
     let mut s = Scanner::new("1 2 3");
-    scan!(s, x, y: char, z: {usize => |z| z - 1});
+    use marker::Usize1;
+    scan!(s, x, y: char, z: Usize1);
     assert_eq!(x, 1);
     assert_eq!(y, '2');
     assert_eq!(z, 2);
-
-    let mut s = Scanner::new(
-        r#"1 2
-2 3
-4 5"#,
-    );
-    scan!(s, edges: [({usize => |x| x - 1}, {usize => |x| x - 1}); 3]);
-    assert_eq!(edges, vec![(0, 1), (1, 2), (3, 4)]);
 }

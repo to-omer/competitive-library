@@ -16,8 +16,8 @@ pub fn dsl_2_i(reader: &mut impl Read, writer: &mut impl Write) {
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {
-            scan!(scanner, s, t, x: {i64 => Some});
-            seg.update(s, t + 1, x);
+            scan!(scanner, s, t, x: i64);
+            seg.update(s, t + 1, Some(x));
         } else {
             scan!(scanner, s, t);
             writeln!(writer, "{}", seg.fold(s, t + 1).0).ok();

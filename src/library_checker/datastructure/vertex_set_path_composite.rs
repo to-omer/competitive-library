@@ -11,8 +11,7 @@ type M = MInt<Modulo998244353>;
 pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, ab: [(M, M); n]);
-    let (mut graph, _) = scanner.mscan(GraphScanner::<usize, ()>::new(n, n - 1, false));
+    scan!(scanner, n, q, ab: [(M, M); n], (mut graph, _): {GraphScanner::<usize, ()>::new(n, n - 1, false)});
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = LinearOperation::new();
     let mut nab = vec![(M::zero(), M::zero()); n];

@@ -13,8 +13,8 @@ pub fn dsl_2_d(reader: &mut impl Read, writer: &mut impl Write) {
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {
-            scan!(scanner, s, t, x: {i32 => Some});
-            seg.update(s, t + 1, x);
+            scan!(scanner, s, t, x: i32);
+            seg.update(s, t + 1, Some(x));
         } else {
             scan!(scanner, i);
             writeln!(writer, "{}", seg.fold(i, i + 1)).ok();

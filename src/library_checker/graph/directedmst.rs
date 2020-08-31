@@ -6,8 +6,7 @@ use crate::prelude::*;
 pub fn directedmst(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, m, s);
-    let (graph, w) = scanner.mscan(GraphScanner::<usize, i64>::new(n, m, true));
+    scan!(scanner, n, m, s, (graph, w): {GraphScanner::<usize, i64>::new(n, m, true)});
     let res = graph
         .minimum_spanning_arborescence(s, AdditiveOperation::new(), |u| w[u])
         .unwrap();
