@@ -11,5 +11,5 @@ pub fn directedmst(reader: &mut impl Read, writer: &mut impl Write) {
         .minimum_spanning_arborescence(s, AdditiveOperation::new(), |u| w[u])
         .unwrap();
     writeln!(writer, "{}", res.0).ok();
-    echo!(writer, res.1, " ");
+    echo(writer, res.1, ' ').ok();
 }

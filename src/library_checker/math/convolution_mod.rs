@@ -11,5 +11,5 @@ pub fn convolution_mod(reader: &mut impl Read, writer: &mut impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, m, a: [M; n], b: [M; m]);
     let c = NTT::convolve(a, b);
-    echo!(writer, c, " ");
+    echo(writer, c, ' ').ok();
 }

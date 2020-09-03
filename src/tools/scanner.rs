@@ -180,11 +180,11 @@ macro_rules! scan_value {
     ($scanner:expr, ($($t:tt),*)) => {
         ($($crate::scan_value!($scanner, $t)),*)
     };
-    ($scanner:expr, [$t:ty; $len:expr]) => {
-        $scanner.scan_vec::<$t>($len)
-    };
     ($scanner:expr, [$t:tt; $len:expr]) => {
         (0..$len).map(|_| $crate::scan_value!($scanner, $t)).collect::<Vec<_>>()
+    };
+    ($scanner:expr, [$t:ty]) => {
+        $scanner.iter::<$t>()
     };
     ($scanner:expr, {$e:expr}) => {
         $scanner.mscan($e)

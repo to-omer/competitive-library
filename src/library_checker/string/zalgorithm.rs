@@ -7,5 +7,5 @@ pub fn zalgorithm(reader: &mut impl Read, writer: &mut impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, s: Chars);
     let z = Zarray::new(&s);
-    echo!(writer, (0..s.len()).map(|i| z[i]), " ");
+    echo(writer, (0..s.len()).map(|i| z[i]), ' ').ok();
 }

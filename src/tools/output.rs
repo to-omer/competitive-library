@@ -1,16 +1,15 @@
-#[macro_export]
-macro_rules! echo {
-    ($writer:expr, $iter:expr) => {
-        echo!($writer, $iter, "\n")
-    };
-    ($writer:expr, $iter:expr, $sep:expr) => {
-        let mut iter = $iter.into_iter();
-        if let Some(item) = iter.next() {
-            write!($writer, "{}", item).ok();
-        }
-        for item in iter {
-            write!($writer, "{}{}", $sep, item).ok();
-        }
-        writeln!($writer).ok();
-    };
+#[cargo_snippet::snippet]
+pub fn echo<T: std::fmt::Display>(
+    mut writer: impl std::io::Write,
+    iter: impl IntoIterator<Item = T>,
+    sep: impl std::fmt::Display,
+) -> std::io::Result<()> {
+    let mut iter = iter.into_iter();
+    if let Some(item) = iter.next() {
+        write!(writer, "{}", item)?;
+    }
+    for item in iter {
+        write!(writer, "{}{}", sep, item)?;
+    }
+    writeln!(writer)
 }
