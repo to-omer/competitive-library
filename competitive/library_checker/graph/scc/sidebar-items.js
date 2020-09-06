@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["scc","✅  AC  599ms"]],"struct":[["RevGraphScanner",""],["StronglyConnectedComponent",""]]});
+initSidebarItems({"fn":[["scc","✅  AC  474ms"]],"struct":[["RevGraphScanner",""],["StronglyConnectedComponent",""]]});

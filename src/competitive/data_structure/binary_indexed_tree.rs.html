@@ -371,33 +371,33 @@
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;BinaryIndexedTree&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">M</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">bit</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">m</span>.<span class="ident">unit</span>(); <span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>];
         <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">bit</span>, <span class="ident">m</span> }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="doccomment">/// fold [0, k)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">k</span> <span class="op">&lt;=</span> <span class="self">self</span>.<span class="ident">n</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
+        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">k</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">n</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">unit</span>();
         <span class="kw">while</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">k</span>]);
-            <span class="ident">k</span> <span class="op">-=</span> <span class="ident">k</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>;
+            <span class="ident">k</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>;
         }
         <span class="ident">res</span>
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="doccomment">/// fold [0, k]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
         <span class="self">self</span>.<span class="ident">accumulate0</span>(<span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">M</span>::<span class="ident">T</span>) {
         <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">k</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>;
-        <span class="kw">while</span> <span class="ident">k</span> <span class="op">&lt;=</span> <span class="self">self</span>.<span class="ident">n</span> {
+        <span class="kw">while</span> <span class="ident">k</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">n</span> {
             <span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="ident">x</span>);
-            <span class="ident">k</span> <span class="op">+=</span> <span class="ident">k</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>;
+            <span class="ident">k</span> <span class="op">+</span><span class="op">=</span> <span class="ident">k</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>;
         }
     }
 }
@@ -415,10 +415,10 @@
         <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="number">1_000_000_000</span>) <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="ident">bit</span>.<span class="ident">update</span>(<span class="ident">k</span>, <span class="ident">v</span>);
-        <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">+=</span> <span class="ident">v</span>;
+        <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">v</span>;
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span> {
-        <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
+        <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">bit</span>.<span class="ident">accumulate</span>(<span class="ident">i</span>), <span class="ident">arr</span>[<span class="ident">i</span>]);
@@ -443,13 +443,13 @@
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;BinaryIndexedTree&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">G</span>: <span class="ident">Group</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree</span><span class="op">&lt;</span><span class="ident">G</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
-        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">l</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span> <span class="op">&amp;&amp;</span> <span class="number">0</span> <span class="op">&lt;</span> <span class="ident">r</span> <span class="op">&amp;&amp;</span> <span class="ident">r</span> <span class="op">&lt;=</span> <span class="self">self</span>.<span class="ident">n</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
+        <span class="macro">debug_assert</span><span class="macro">!</span>(<span class="ident">l</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span> <span class="op">&amp;&amp;</span> <span class="number">0</span> <span class="op">&lt;</span> <span class="ident">r</span> <span class="op">&amp;&amp;</span> <span class="ident">r</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">n</span>);
         <span class="self">self</span>.<span class="ident">m</span>
             .<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">m</span>.<span class="ident">inverse</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">accumulate0</span>(<span class="ident">l</span>)), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">accumulate0</span>(<span class="ident">r</span>))
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
         <span class="self">self</span>.<span class="ident">fold</span>(<span class="ident">k</span>, <span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -474,7 +474,7 @@
         <span class="ident">arr</span>[<span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">v</span>;
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
-        <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
+        <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>..<span class="ident">n</span> <span class="op">+</span> <span class="number">1</span> {
@@ -489,17 +489,17 @@
     <span class="ident">M</span>::<span class="ident">T</span>: <span class="ident">Ord</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lower_bound</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">M</span>::<span class="ident">T</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lower_bound</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">M</span>::<span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">n</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">unit</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pos</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;&lt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:b}&quot;</span>, <span class="ident">n</span>).<span class="ident">len</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;{:b}&quot;</span>, <span class="ident">n</span>).<span class="ident">len</span>();
         <span class="kw">while</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="kw">if</span> <span class="ident">k</span> <span class="op">+</span> <span class="ident">pos</span> <span class="op">&lt;=</span> <span class="ident">n</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">k</span> <span class="op">+</span> <span class="ident">pos</span>]) <span class="op">&lt;</span> <span class="ident">x</span> {
-                <span class="ident">pos</span> <span class="op">+=</span> <span class="ident">k</span>;
+            <span class="kw">if</span> <span class="ident">k</span> <span class="op">+</span> <span class="ident">pos</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">n</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">k</span> <span class="op">+</span> <span class="ident">pos</span>]) <span class="op">&lt;</span> <span class="ident">x</span> {
+                <span class="ident">pos</span> <span class="op">+</span><span class="op">=</span> <span class="ident">k</span>;
                 <span class="ident">acc</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">pos</span>]);
             }
-            <span class="ident">k</span> <span class="op">&gt;&gt;</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">k</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
         }
         <span class="ident">pos</span>
     }
@@ -522,7 +522,7 @@
         <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">v</span>;
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span> {
-        <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
+        <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
     }
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
         <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="number">5_000_000_000_000</span>) <span class="kw">as</span> <span class="ident">i64</span>;
@@ -535,46 +535,46 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&gt;</span> {
     <span class="ident">h</span>: <span class="ident">usize</span>,
     <span class="ident">w</span>: <span class="ident">usize</span>,
-    <span class="ident">bit</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M</span>::<span class="ident">T</span><span class="op">&gt;&gt;</span>,
+    <span class="ident">bit</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M</span>::<span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">m</span>: <span class="ident">M</span>,
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;BinaryIndexedTree2D&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">h</span>: <span class="ident">usize</span>, <span class="ident">w</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">M</span>) <span class="op">-&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">h</span>: <span class="ident">usize</span>, <span class="ident">w</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">M</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">bit</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="macro">vec</span><span class="macro">!</span>[<span class="ident">m</span>.<span class="ident">unit</span>(); <span class="ident">w</span> <span class="op">+</span> <span class="number">1</span>]; <span class="ident">h</span> <span class="op">+</span> <span class="number">1</span>];
         <span class="self">Self</span> { <span class="ident">h</span>, <span class="ident">w</span>, <span class="ident">bit</span>, <span class="ident">m</span> }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="doccomment">/// fold [0, i) x [0, j)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">unit</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">i</span>;
         <span class="kw">while</span> <span class="ident">a</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">j</span>;
             <span class="kw">while</span> <span class="ident">b</span> <span class="op">&gt;</span> <span class="number">0</span> {
                 <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">a</span>][<span class="ident">b</span>]);
-                <span class="ident">b</span> <span class="op">-=</span> <span class="ident">b</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">b</span> <span class="op">+</span> <span class="number">1</span>;
+                <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">b</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">b</span> <span class="op">+</span> <span class="number">1</span>;
             }
-            <span class="ident">a</span> <span class="op">-=</span> <span class="ident">a</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">a</span> <span class="op">+</span> <span class="number">1</span>;
+            <span class="ident">a</span> <span class="op">-</span><span class="op">=</span> <span class="ident">a</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">a</span> <span class="op">+</span> <span class="number">1</span>;
         }
         <span class="ident">res</span>
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="doccomment">/// fold [0, i] x [0, j]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">accumulate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span>::<span class="ident">T</span> {
         <span class="self">self</span>.<span class="ident">accumulate0</span>(<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">j</span> <span class="op">+</span> <span class="number">1</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">M</span>::<span class="ident">T</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>;
-        <span class="kw">while</span> <span class="ident">a</span> <span class="op">&lt;=</span> <span class="self">self</span>.<span class="ident">h</span> {
+        <span class="kw">while</span> <span class="ident">a</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">h</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">j</span> <span class="op">+</span> <span class="number">1</span>;
-            <span class="kw">while</span> <span class="ident">b</span> <span class="op">&lt;=</span> <span class="self">self</span>.<span class="ident">w</span> {
+            <span class="kw">while</span> <span class="ident">b</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">w</span> {
                 <span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">a</span>][<span class="ident">b</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>[<span class="ident">a</span>][<span class="ident">b</span>], <span class="kw-2">&amp;</span><span class="ident">x</span>);
-                <span class="ident">b</span> <span class="op">+=</span> <span class="ident">b</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">b</span> <span class="op">+</span> <span class="number">1</span>;
+                <span class="ident">b</span> <span class="op">+</span><span class="op">=</span> <span class="ident">b</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">b</span> <span class="op">+</span> <span class="number">1</span>;
             }
-            <span class="ident">a</span> <span class="op">+=</span> <span class="ident">a</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">a</span> <span class="op">+</span> <span class="number">1</span>;
+            <span class="ident">a</span> <span class="op">+</span><span class="op">=</span> <span class="ident">a</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">a</span> <span class="op">+</span> <span class="number">1</span>;
         }
     }
 }
@@ -594,16 +594,16 @@
         <span class="kw">let</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">w</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="number">1_000_000_000</span>) <span class="kw">as</span> <span class="ident">usize</span>;
         <span class="ident">bit</span>.<span class="ident">update</span>(<span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">v</span>);
-        <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>] <span class="op">+=</span> <span class="ident">v</span>;
+        <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">v</span>;
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">h</span> {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">w</span> <span class="op">-</span> <span class="number">1</span> {
-            <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
+            <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
         }
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">h</span> <span class="op">-</span> <span class="number">1</span> {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">w</span> {
-            <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">j</span>] <span class="op">+=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
+            <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
         }
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">h</span> {
@@ -642,7 +642,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">G</span>: <span class="ident">Group</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">G</span><span class="op">&gt;</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="doccomment">/// 0-indexed [i1, i2) x [j1, j2)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i1</span>: <span class="ident">usize</span>, <span class="ident">j1</span>: <span class="ident">usize</span>, <span class="ident">i2</span>: <span class="ident">usize</span>, <span class="ident">j2</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i1</span>: <span class="ident">usize</span>, <span class="ident">j1</span>: <span class="ident">usize</span>, <span class="ident">i2</span>: <span class="ident">usize</span>, <span class="ident">j2</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">unit</span>();
         <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">accumulate0</span>(<span class="ident">i1</span>, <span class="ident">j1</span>));
         <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m</span>.<span class="ident">rinv_operate</span>(<span class="kw-2">&amp;</span><span class="ident">res</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">accumulate0</span>(<span class="ident">i1</span>, <span class="ident">j2</span>));
@@ -651,7 +651,7 @@
         <span class="ident">res</span>
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">G</span>::<span class="ident">T</span> {
         <span class="self">self</span>.<span class="ident">fold</span>(<span class="ident">i</span>, <span class="ident">j</span>, <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>, <span class="ident">j</span> <span class="op">+</span> <span class="number">1</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -681,12 +681,12 @@
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">h</span> <span class="op">+</span> <span class="number">1</span> {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">w</span> {
-            <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
+            <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
         }
     }
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">h</span> {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">w</span> <span class="op">+</span> <span class="number">1</span> {
-            <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">j</span>] <span class="op">+=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
+            <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>][<span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>][<span class="ident">j</span>];
         }
     }
     <span class="kw">for</span> <span class="ident">i1</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">h</span> {

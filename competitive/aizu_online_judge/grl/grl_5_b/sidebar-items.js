@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_5_b","✅  AC  4ms"]],"struct":[["GraphScanner",""],["MaxOperation","binary operation to select larger element"],["ReRooting","dynamic programming on all-rooted trees"]]});
+initSidebarItems({"fn":[["grl_5_b","✅  AC  5ms"]],"struct":[["GraphScanner",""],["MaxOperation","binary operation to select larger element"],["ReRooting","dynamic programming on all-rooted trees"]]});
