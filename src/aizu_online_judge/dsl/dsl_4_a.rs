@@ -1,4 +1,3 @@
-pub use crate::algorithm::Compress;
 use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/4/DSL_4_A")]
@@ -6,30 +5,21 @@ pub fn dsl_4_a(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, xyxy: [(i64, i64, i64, i64); n]);
-    let xs: Compress<_> = (0..2 * n)
-        .map(|i| {
-            if i % 2 == 0 {
-                xyxy[i / 2].0
-            } else {
-                xyxy[i / 2].2
-            }
-        })
-        .collect();
-    let ys: Compress<_> = (0..2 * n)
-        .map(|i| {
-            if i % 2 == 0 {
-                xyxy[i / 2].1
-            } else {
-                xyxy[i / 2].3
-            }
-        })
-        .collect();
+    let (mut xs, mut ys) = (Vec::with_capacity(2 * n), Vec::with_capacity(2 * n));
+    xs.extend(xyxy.iter().map(|t| t.0));
+    ys.extend(xyxy.iter().map(|t| t.1));
+    xs.extend(xyxy.iter().map(|t| t.2));
+    ys.extend(xyxy.iter().map(|t| t.3));
+    xs.sort();
+    ys.sort();
+    xs.dedup();
+    ys.dedup();
     let mut qs = vec![vec![]; xs.len()];
     for (x1, y1, x2, y2) in xyxy {
-        let x1 = xs.get(&x1);
-        let x2 = xs.get(&x2);
-        let y1 = ys.get(&y1);
-        let y2 = ys.get(&y2);
+        let x1 = xs.binary_search(&x1).unwrap_or_else(|x| x);
+        let x2 = xs.binary_search(&x2).unwrap_or_else(|x| x);
+        let y1 = ys.binary_search(&y1).unwrap_or_else(|x| x);
+        let y2 = ys.binary_search(&y2).unwrap_or_else(|x| x);
         qs[x1].push((y1, 1));
         qs[x1].push((y2, -1));
         qs[x2].push((y1, -1));
