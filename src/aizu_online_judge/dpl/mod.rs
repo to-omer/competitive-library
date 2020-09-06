@@ -7,3 +7,6 @@ pub mod dpl_1_f;
 pub mod dpl_1_g;
 pub mod dpl_1_h;
 pub mod dpl_1_i;
+pub mod dpl_3_a;
+pub mod dpl_3_b;
+pub mod dpl_3_c;
