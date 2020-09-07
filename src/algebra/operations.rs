@@ -494,6 +494,61 @@ mod bitor_operation_impl {
     impl<T: Copy + PartialEq + BitOrIdentity> Idempotent for BitOrOperation<T> {}
 }
 
+/// ^
+#[cargo_snippet::snippet("BitXorOperation")]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct BitXorOperation<T: Copy + PartialEq + BitXorIdentity> {
+    _marker: std::marker::PhantomData<fn() -> T>,
+}
+#[cargo_snippet::snippet("BitXorOperation")]
+pub trait BitXorIdentity: Sized + std::ops::BitXor<Output = Self> {
+    fn xor_zero() -> Self;
+}
+#[cargo_snippet::snippet("BitXorOperation")]
+mod bitxor_operation_impl {
+    use super::*;
+    #[macro_export(local_inner_macros)]
+    macro_rules !impl_bitxor_identity {([$($wh :tt ) *] ,$t :ty ,$xor_zero :expr ) =>{impl <$($wh ) *>BitXorIdentity for $t {#[inline ] fn xor_zero () ->Self {$xor_zero } } } ;($t :ty ,$xor_zero :expr ) =>{impl BitXorIdentity for $t {#[inline ] fn xor_zero () ->Self {$xor_zero } } } ;}
+    impl_bitxor_identity!(bool, false);
+    impl_bitxor_identity!(usize, 0usize);
+    impl_bitxor_identity!(u8, 0u8);
+    impl_bitxor_identity!(u16, 0u16);
+    impl_bitxor_identity!(u32, 0u32);
+    impl_bitxor_identity!(u64, 0u64);
+    impl_bitxor_identity!(isize, 0isize);
+    impl_bitxor_identity!(i8, 0i8);
+    impl_bitxor_identity!(i16, 0i16);
+    impl_bitxor_identity!(i32, 0i32);
+    impl_bitxor_identity!(i64, 0i64);
+    impl<T: Copy + PartialEq + BitXorIdentity> BitXorOperation<T> {
+        pub fn new() -> Self {
+            Self {
+                _marker: std::marker::PhantomData,
+            }
+        }
+    }
+    impl<T: Copy + PartialEq + BitXorIdentity> Magma for BitXorOperation<T> {
+        type T = T;
+        #[inline]
+        fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
+            *x ^ *y
+        }
+    }
+    impl<T: Copy + PartialEq + BitXorIdentity> Unital for BitXorOperation<T> {
+        #[inline]
+        fn unit(&self) -> Self::T {
+            BitXorIdentity::xor_zero()
+        }
+    }
+    impl<T: Copy + PartialEq + BitXorIdentity> Associative for BitXorOperation<T> {}
+    impl<T: Copy + PartialEq + BitXorIdentity> Commutative for BitXorOperation<T> {}
+    impl<T: Copy + PartialEq + BitXorIdentity> Invertible for BitXorOperation<T> {
+        fn inverse(&self, x: &Self::T) -> Self::T {
+            *x
+        }
+    }
+}
+
 #[cargo_snippet::snippet("MonoidalOperation")]
 #[derive(Clone, Debug)]
 pub struct MonoidalOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
