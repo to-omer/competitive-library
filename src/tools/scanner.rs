@@ -136,7 +136,7 @@ pub mod marker {
         }
     }
     #[derive(Debug, Copy, Clone)]
-    pub struct CharsWithBase(char);
+    pub struct CharsWithBase(pub char);
     impl MarkedIterScan for CharsWithBase {
         type Output = Vec<usize>;
         #[inline]
