@@ -56,6 +56,7 @@ impl BabyStepGiantStep {
 /// Sum of Floor of Linear
 ///
 /// $$\sum_{i=0}^{n-1}\left\lfloor\frac{a\times i+b}{m}\right\rfloor$$
+#[cargo_snippet::snippet]
 pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
     let mut ans = 0u64;
     if a >= m {
