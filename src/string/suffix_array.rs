@@ -57,6 +57,7 @@ impl<T: Ord> SuffixArray<T> {
         lcp
     }
 }
+#[cargo_snippet::snippet("SuffixArray")]
 impl<T> std::ops::Index<usize> for SuffixArray<T> {
     type Output = usize;
     fn index(&self, index: usize) -> &Self::Output {
