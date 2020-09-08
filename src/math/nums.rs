@@ -94,7 +94,11 @@ pub fn linear_congruence(abm: impl IntoIterator<Item = (i64, i64, i64)>) -> Opti
         x += b / g * modinv(a / g, m / g) % (m / g) * m0;
         m0 *= m / g;
     }
-    return Some(((x % m0 + m0) % m0, m0));
+    x %= m0;
+    if x < 0 {
+        x += m0;
+    }
+    return Some((x, m0));
 }
 
 #[test]
