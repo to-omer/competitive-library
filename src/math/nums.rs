@@ -1,4 +1,4 @@
-use crate::math::gcd::modinv;
+use crate::math::gcd::{gcd, modinv};
 
 pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(
     mut x: T,
@@ -75,4 +75,53 @@ pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
     ans += (n - (x_max + a - 1) / a) * y_max;
     ans += floor_sum(y_max, a, m, (a - x_max % a) % a);
     return ans;
+}
+
+/// return: (y,z)
+///
+/// forall (a,b,m), ax = b mod m, where x = y mod z
+#[cargo_snippet::snippet]
+pub fn linear_congruence(abm: impl IntoIterator<Item = (i64, i64, i64)>) -> Option<(i64, i64)> {
+    let mut x = 0i64;
+    let mut m0 = 1i64;
+    for (a, b, m) in abm {
+        let b = b - a * x;
+        let a = a * m0;
+        let g = gcd(a as u64, m as u64) as i64;
+        if b % g != 0 {
+            return None;
+        }
+        x += b / g * modinv(a / g, m / g) % (m / g) * m0;
+        m0 *= m / g;
+    }
+    return Some(((x % m0 + m0) % m0, m0));
+}
+
+#[test]
+fn test_linear_congruence() {
+    use crate::math::lcm;
+    use crate::tools::Xorshift;
+    const N: usize = 5;
+    const Q: usize = 1_000;
+    let mut rand = Xorshift::time();
+    for _ in 0..Q {
+        let abm: Vec<_> = (0..N)
+            .map(|_| {
+                let m = rand.rand(21) + 1;
+                (rand.rand(m) as i64, rand.rand(m) as i64, m as i64)
+            })
+            .collect();
+        if let Some((x, m0)) = linear_congruence(abm.iter().cloned()) {
+            assert!(x < m0);
+            for (a, b, m) in abm.iter().cloned() {
+                assert!(a * x % m == b);
+            }
+        } else {
+            let m0 = abm[1..]
+                .iter()
+                .fold(abm[0].2, |x, y| lcm(x as u64, y.2 as u64) as i64);
+            let x = (0..m0).find(|&x| abm.iter().cloned().all(|(a, b, m)| a * x % m == b));
+            assert_eq!(x, None);
+        }
+    }
 }
