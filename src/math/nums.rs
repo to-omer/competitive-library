@@ -68,10 +68,10 @@ pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
         b %= m;
     }
     let y_max = (a * n + b) / m;
-    let x_max = y_max * m - b;
     if y_max == 0 {
         return ans;
     }
+    let x_max = y_max * m - b;
     ans += (n - (x_max + a - 1) / a) * y_max;
     ans += floor_sum(y_max, a, m, (a - x_max % a) % a);
     return ans;
