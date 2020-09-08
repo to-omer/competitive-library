@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["factorize","✅  AC  5582ms"],["prime_factors_rho",""]]});
+initSidebarItems({"fn":[["factorize","✅  AC  6488ms"],["prime_factors_rho",""]]});

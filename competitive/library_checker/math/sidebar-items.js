@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["convolution_mod",""],["convolution_mod_1000000007",""],["enumerate_primes",""],["factorize",""],["two_sat",""]]});
+initSidebarItems({"mod":[["convolution_mod",""],["convolution_mod_1000000007",""],["enumerate_primes",""],["factorize",""],["sum_of_floor_of_linear",""],["two_sat",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["suffixarray",""],["zalgorithm",""]]});
+initSidebarItems({"mod":[["number_of_substrings",""],["suffixarray",""],["zalgorithm",""]]});
