@@ -1,6 +1,6 @@
 #[cargo_snippet::snippet]
 pub fn echo<T: std::fmt::Display>(
-    mut writer: impl std::io::Write,
+    writer: &mut impl std::io::Write,
     iter: impl IntoIterator<Item = T>,
     sep: impl std::fmt::Display,
 ) -> std::io::Result<()> {
