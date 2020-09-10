@@ -1,9 +1,9 @@
-use super::Graph;
+use super::SparseGraph;
 
 #[cargo_snippet::snippet("StronglyConnectedComponent")]
 #[derive(Debug, Clone)]
 pub struct StronglyConnectedComponent<'a> {
-    graph: &'a Graph,
+    graph: &'a SparseGraph,
     visited: Vec<usize>,
     csize: usize,
     low: Vec<usize>,
@@ -19,7 +19,7 @@ impl std::ops::Index<usize> for StronglyConnectedComponent<'_> {
 }
 #[cargo_snippet::snippet("StronglyConnectedComponent")]
 impl<'a> StronglyConnectedComponent<'a> {
-    pub fn new(graph: &'a Graph) -> Self {
+    pub fn new(graph: &'a SparseGraph) -> Self {
         let mut now_ord = 0;
         let mut self_ = Self {
             graph,
@@ -47,12 +47,12 @@ impl StronglyConnectedComponent<'_> {
         self.ord[u] = *now_ord;
         *now_ord += 1;
         self.visited.push(u);
-        for a in self.graph.adjacency(u) {
-            if self.ord[a.to] == std::usize::MAX {
-                self.dfs(a.to, now_ord);
-                self.low[u] = self.low[u].min(self.low[a.to]);
+        for &to in self.graph.adjacency(u) {
+            if self.ord[to] == std::usize::MAX {
+                self.dfs(to, now_ord);
+                self.low[u] = self.low[u].min(self.low[to]);
             } else {
-                self.low[u] = self.low[u].min(self.ord[a.to]);
+                self.low[u] = self.low[u].min(self.ord[to]);
             }
         }
         if self.low[u] == self.ord[u] {
@@ -66,21 +66,21 @@ impl StronglyConnectedComponent<'_> {
             self.csize += 1;
         }
     }
-    pub fn gen_cgraph(&self) -> Graph {
-        let mut g = Graph::new(self.csize);
+    pub fn gen_cgraph(&self) -> SparseGraph {
         let mut used = std::collections::HashSet::new();
+        let mut edges = vec![];
         for u in self.graph.vertices() {
-            for a in self.graph.adjacency(u) {
-                if self.comp[u] != self.comp[a.to] {
-                    let (x, y) = (self.comp[u], self.comp[a.to]);
+            for &to in self.graph.adjacency(u) {
+                if self.comp[u] != self.comp[to] {
+                    let (x, y) = (self.comp[u], self.comp[to]);
                     if !used.contains(&(x, y)) {
                         used.insert((x, y));
-                        g.add_edge(x, y);
+                        edges.push((x, y));
                     }
                 }
             }
         }
-        g
+        SparseGraph::from_edges(self.size(), edges.iter().cloned())
     }
     pub fn components(&self) -> Vec<Vec<usize>> {
         let mut counts = vec![0; self.size()];
@@ -105,11 +105,22 @@ impl StronglyConnectedComponent<'_> {
 }
 
 #[cargo_snippet::snippet("TwoSatisfiability")]
-#[cargo_snippet::snippet(include = "StronglyConnectedComponent")]
-impl Graph {
+#[derive(Debug, Clone)]
+pub struct TwoSatisfiability {
+    vsize: usize,
+    edges: Vec<(usize, usize)>,
+}
+#[cargo_snippet::snippet("TwoSatisfiability")]
+impl TwoSatisfiability {
+    pub fn new(vsize: usize) -> Self {
+        Self {
+            vsize,
+            edges: Vec::new(),
+        }
+    }
     pub fn add_inner(&mut self, u: usize, v: usize) {
-        self.add_edge(u, v);
-        self.add_edge(v ^ 1, u ^ 1);
+        self.edges.push((u, v));
+        self.edges.push((v ^ 1, u ^ 1));
     }
     pub fn add_or(&mut self, x: usize, y: usize) {
         self.add_inner(x * 2 + 1, y * 2);
@@ -123,8 +134,9 @@ impl Graph {
     pub fn set_false(&mut self, x: usize) {
         self.add_inner(x * 2, x * 2 + 1);
     }
-    pub fn two_satisfiability(&self) -> Option<Vec<bool>> {
-        let scc = StronglyConnectedComponent::new(self);
+    pub fn two_satisfiability(self) -> Option<Vec<bool>> {
+        let graph = SparseGraph::from_edges(self.vsize, self.edges.iter().cloned());
+        let scc = StronglyConnectedComponent::new(&graph);
         let mut res = vec![false; self.vsize / 2];
         for i in 0..self.vsize / 2 {
             if scc[i * 2] == scc[i * 2 + 1] {

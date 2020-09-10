@@ -1,4 +1,4 @@
-pub use crate::graph::Graph;
+pub use crate::graph::TwoSatisfiability;
 use crate::prelude::*;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/two_sat")]
@@ -13,15 +13,15 @@ pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {
         m,
         ab: [(i64, i64, i64); m]
     );
-    let mut graph = Graph::new(n * 2);
+    let mut two_sat = TwoSatisfiability::new(n * 2);
     for (a, b, _) in ab.into_iter() {
         let u = (a.abs() as usize - 1) * 2;
         let v = (b.abs() as usize - 1) * 2;
         let na = (a < 0) as usize;
         let nb = (b < 0) as usize;
-        graph.add_inner(u ^ na ^ 1, v ^ nb);
+        two_sat.add_inner(u ^ na ^ 1, v ^ nb);
     }
-    if let Some(v) = graph.two_satisfiability() {
+    if let Some(v) = two_sat.two_satisfiability() {
         writeln!(writer, "s SATISFIABLE").ok();
         write!(writer, "v").ok();
         for i in 0..n {
