@@ -222,6 +222,7 @@ impl<'a> Iterator for Adjacent8<'a> {
     }
 }
 
+#[cargo_snippet::snippet("SparseGraph")]
 /// Sparse Graph represented as Compressed Sparse Row.
 #[derive(Debug, Clone)]
 pub struct SparseGraph {
@@ -229,6 +230,7 @@ pub struct SparseGraph {
     pub start: Vec<usize>,
     pub elist: Vec<usize>,
 }
+#[cargo_snippet::snippet("SparseGraph")]
 impl SparseGraph {
     /// Construct graph from directed edges.
     ///
