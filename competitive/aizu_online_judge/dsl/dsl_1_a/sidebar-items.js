@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_1_a","✅  AC  7ms"]],"struct":[["UnionFind",""]]});
+initSidebarItems({"fn":[["dsl_1_a","✅  AC  10ms"]],"struct":[["UnionFind",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["two_sat","✅  AC  1090ms"]],"struct":[["RevGraph",""],["TwoSatisfiability",""]]});
+initSidebarItems({"fn":[["two_sat","✅  AC  254ms"]],"struct":[["TwoSatisfiability",""]]});
