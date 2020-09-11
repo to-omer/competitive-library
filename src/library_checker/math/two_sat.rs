@@ -13,7 +13,7 @@ pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {
         m,
         ab: [(i64, i64, i64); m]
     );
-    let mut two_sat = TwoSatisfiability::new(n * 2);
+    let mut two_sat = TwoSatisfiability::new(n);
     for (a, b, _) in ab.into_iter() {
         let u = (a.abs() as usize - 1) * 2;
         let v = (b.abs() as usize - 1) * 2;

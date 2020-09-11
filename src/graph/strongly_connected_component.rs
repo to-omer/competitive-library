@@ -135,10 +135,10 @@ impl TwoSatisfiability {
         self.add_inner(x * 2, x * 2 + 1);
     }
     pub fn two_satisfiability(self) -> Option<Vec<bool>> {
-        let graph = SparseGraph::from_edges(self.vsize, self.edges.iter().cloned());
+        let graph = SparseGraph::from_edges(self.vsize * 2, self.edges.iter().cloned());
         let scc = StronglyConnectedComponent::new(&graph);
-        let mut res = vec![false; self.vsize / 2];
-        for i in 0..self.vsize / 2 {
+        let mut res = vec![false; self.vsize];
+        for i in 0..self.vsize {
             if scc[i * 2] == scc[i * 2 + 1] {
                 return None;
             }
