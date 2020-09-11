@@ -1,9 +1,9 @@
-use super::SparseGraph;
+use super::{AdjacencyGraphAbstraction, DirectedSparseGraph};
 
 #[cargo_snippet::snippet("StronglyConnectedComponent")]
 #[derive(Debug, Clone)]
 pub struct StronglyConnectedComponent<'a> {
-    graph: &'a SparseGraph,
+    graph: &'a DirectedSparseGraph,
     visited: Vec<usize>,
     csize: usize,
     low: Vec<usize>,
@@ -19,15 +19,15 @@ impl std::ops::Index<usize> for StronglyConnectedComponent<'_> {
 }
 #[cargo_snippet::snippet("StronglyConnectedComponent")]
 impl<'a> StronglyConnectedComponent<'a> {
-    pub fn new(graph: &'a SparseGraph) -> Self {
+    pub fn new(graph: &'a DirectedSparseGraph) -> Self {
         let mut now_ord = 0;
         let mut self_ = Self {
             graph,
             csize: 0,
-            visited: Vec::with_capacity(graph.vsize),
-            low: vec![0; graph.vsize],
-            ord: vec![std::usize::MAX; graph.vsize],
-            comp: vec![0; graph.vsize],
+            visited: Vec::with_capacity(graph.vertices_size()),
+            low: vec![0; graph.vertices_size()],
+            ord: vec![std::usize::MAX; graph.vertices_size()],
+            comp: vec![0; graph.vertices_size()],
         };
         for u in graph.vertices() {
             if self_.ord[u] == std::usize::MAX {
@@ -47,17 +47,17 @@ impl StronglyConnectedComponent<'_> {
         self.ord[u] = *now_ord;
         *now_ord += 1;
         self.visited.push(u);
-        for &to in self.graph.adjacency(u) {
-            if self.ord[to] == std::usize::MAX {
-                self.dfs(to, now_ord);
-                self.low[u] = self.low[u].min(self.low[to]);
+        for a in self.graph.adjacencies(u) {
+            if self.ord[a.to] == std::usize::MAX {
+                self.dfs(a.to, now_ord);
+                self.low[u] = self.low[u].min(self.low[a.to]);
             } else {
-                self.low[u] = self.low[u].min(self.ord[to]);
+                self.low[u] = self.low[u].min(self.ord[a.to]);
             }
         }
         if self.low[u] == self.ord[u] {
             while let Some(v) = self.visited.pop() {
-                self.ord[v] = self.graph.vsize;
+                self.ord[v] = self.graph.vertices_size();
                 self.comp[v] = self.csize;
                 if v == u {
                     break;
@@ -66,13 +66,13 @@ impl StronglyConnectedComponent<'_> {
             self.csize += 1;
         }
     }
-    pub fn gen_cgraph(&self) -> SparseGraph {
+    pub fn gen_cgraph(&self) -> DirectedSparseGraph {
         let mut used = std::collections::HashSet::new();
         let mut edges = vec![];
         for u in self.graph.vertices() {
-            for &to in self.graph.adjacency(u) {
-                if self.comp[u] != self.comp[to] {
-                    let (x, y) = (self.comp[u], self.comp[to]);
+            for a in self.graph.adjacencies(u) {
+                if self.comp[u] != self.comp[a.to] {
+                    let (x, y) = (self.comp[u], self.comp[a.to]);
                     if !used.contains(&(x, y)) {
                         used.insert((x, y));
                         edges.push((x, y));
@@ -80,7 +80,7 @@ impl StronglyConnectedComponent<'_> {
                 }
             }
         }
-        SparseGraph::from_edges(self.size(), edges.iter().cloned())
+        DirectedSparseGraph::from_edges(self.size(), edges.iter().cloned())
     }
     pub fn components(&self) -> Vec<Vec<usize>> {
         let mut counts = vec![0; self.size()];
@@ -97,7 +97,7 @@ impl StronglyConnectedComponent<'_> {
         groups
     }
     pub fn has_loop(&self) -> bool {
-        self.graph.vsize != self.csize
+        self.graph.vertices_size() != self.csize
     }
     pub fn size(&self) -> usize {
         self.csize
@@ -135,7 +135,7 @@ impl TwoSatisfiability {
         self.add_inner(x * 2, x * 2 + 1);
     }
     pub fn two_satisfiability(self) -> Option<Vec<bool>> {
-        let graph = SparseGraph::from_edges(self.vsize * 2, self.edges.iter().cloned());
+        let graph = DirectedSparseGraph::from_edges(self.vsize * 2, self.edges.iter().cloned());
         let scc = StronglyConnectedComponent::new(&graph);
         let mut res = vec![false; self.vsize];
         for i in 0..self.vsize {
