@@ -1,9 +1,7 @@
 pub use crate::algebra::LinearOperation;
 pub use crate::data_structure::QueueAggregation;
-pub use crate::num::{modulus::Modulo998244353, MInt};
+pub use crate::num::{modulus::MInt998244353, MInt};
 use crate::prelude::*;
-
-type M = MInt<Modulo998244353>;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/queue_operate_all_composite")]
 pub fn queue_operate_all_composite(reader: &mut impl Read, writer: &mut impl Write) {
@@ -15,14 +13,14 @@ pub fn queue_operate_all_composite(reader: &mut impl Read, writer: &mut impl Wri
         scan!(scanner, ty);
         match ty {
             0 => {
-                scan!(scanner, ab: (M, M));
+                scan!(scanner, ab: (MInt998244353, MInt998244353));
                 que.push(ab);
             }
             1 => {
                 que.pop();
             }
             _ => {
-                scan!(scanner, x: M);
+                scan!(scanner, x: MInt998244353);
                 let (a, b) = que.fold_all();
                 writeln!(writer, "{}", a * x + b).ok();
             }

@@ -39,6 +39,8 @@ mod number_theoretic_transform_impls {
     make_ntt_modulus!(Modulo2013265921, 2_013_265_921, 31); // 27
 }
 #[cargo_snippet::snippet("NumberTheoreticTransform")]
+pub type NTT998244353 = NumberTheoreticTransform<modulus::Modulo998244353>;
+#[cargo_snippet::snippet("NumberTheoreticTransform")]
 impl<M: NTTModulus> NumberTheoreticTransform<M> {
     pub fn convert<T: Into<MInt<M>>, I: IntoIterator<Item = T>>(iter: I) -> Vec<MInt<M>> {
         iter.into_iter().map(|x| x.into()).collect()
@@ -99,14 +101,14 @@ impl<M: NTTModulus> NumberTheoreticTransform<M> {
 
 #[test]
 fn test_ntt998244353() {
+    use crate::num::modulus::MInt998244353;
     use crate::tools::Xorshift;
     const N: usize = 3_000;
     let mut rand = Xorshift::time();
-    type M = MInt<modulus::Modulo998244353>;
     pub type NTT = NumberTheoreticTransform<modulus::Modulo998244353>;
-    let a: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(M::get_mod() as u64)));
-    let b: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(M::get_mod() as u64)));
-    let mut c = vec![M::zero(); N * 2 - 1];
+    let a: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
+    let b: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
+    let mut c = vec![MInt998244353::zero(); N * 2 - 1];
     for i in 0..N {
         for j in 0..N {
             c[i + j] += a[i] * b[j];

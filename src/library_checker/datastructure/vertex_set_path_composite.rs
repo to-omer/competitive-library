@@ -1,20 +1,18 @@
 pub use crate::algebra::{LinearOperation, ReverseOperation};
 pub use crate::data_structure::SegmentTree;
 pub use crate::graph::GraphScanner;
-pub use crate::num::{modulus::Modulo998244353, MInt};
+pub use crate::num::{modulus::MInt998244353, MInt};
 use crate::prelude::*;
 pub use crate::tree::HeavyLightDecomposition;
-
-type M = MInt<Modulo998244353>;
 
 #[verify_attr::verify("https://judge.yosupo.jp/problem/vertex_set_path_composite")]
 pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, ab: [(M, M); n], (mut graph, _): {GraphScanner::<usize, ()>::new(n, n - 1, false)});
+    scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n], (mut graph, _): {GraphScanner::<usize, ()>::new(n, n - 1, false)});
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = LinearOperation::new();
-    let mut nab = vec![(M::zero(), M::zero()); n];
+    let mut nab = vec![(MInt998244353::zero(), MInt998244353::zero()); n];
     for i in 0..n {
         nab[hld.vidx[i]] = ab[i];
     }
@@ -23,11 +21,11 @@ pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {
-            scan!(scanner, p, cd: (M, M));
+            scan!(scanner, p, cd: (MInt998244353, MInt998244353));
             seg1.set(hld.vidx[p], cd);
             seg2.set(hld.vidx[p], cd);
         } else {
-            scan!(scanner, u, v, x: M);
+            scan!(scanner, u, v, x: MInt998244353);
             let (a, b) = hld.query_noncom(
                 u,
                 v,

@@ -49,6 +49,7 @@ pub mod modulus {
             MODULUS
         }
     }
+    pub type MInt1000000007 = MInt<Modulo1000000007>;
     pub struct Modulo1000000009 {}
     impl Modulus for Modulo1000000009 {
         #[inline]
@@ -57,6 +58,7 @@ pub mod modulus {
             MODULUS
         }
     }
+    pub type MInt1000000009 = MInt<Modulo1000000009>;
     pub struct Modulo998244353 {}
     impl Modulus for Modulo998244353 {
         #[inline]
@@ -65,6 +67,7 @@ pub mod modulus {
             MODULUS
         }
     }
+    pub type MInt998244353 = MInt<Modulo998244353>;
     pub struct DynModulo {}
     static mut DYN_MODULUS: u32 = 1_000_000_007;
     impl Modulus for DynModulo {
@@ -78,6 +81,7 @@ pub mod modulus {
             DYN_MODULUS = m;
         }
     }
+    pub type DynMInt = MInt<DynModulo>;
 }
 #[cargo_snippet::snippet("MInt")]
 pub struct MInt<M>
@@ -435,15 +439,15 @@ mod mint_impls {
 
 #[test]
 fn test_mint() {
+    use super::modulus::MInt998244353;
     use crate::tools::Xorshift;
     let mut rand = Xorshift::default();
     const Q: usize = 10_000;
-    type M = MInt<modulus::Modulo1000000007>;
     for _ in 0..Q {
-        let a = M::new(rand.rand(M::get_mod() as u64 - 1) as u32 + 1);
+        let a = MInt998244353::new(rand.rand(MInt998244353::get_mod() as u64 - 1) as u32 + 1);
         let x = a.inv();
-        assert!(x.x < M::get_mod());
-        assert_eq!(a * x, M::one());
-        assert_eq!(x, a.pow(M::get_mod() as usize - 2));
+        assert!(x.x < MInt998244353::get_mod());
+        assert_eq!(a * x, MInt998244353::one());
+        assert_eq!(x, a.pow(MInt998244353::get_mod() as usize - 2));
     }
 }
