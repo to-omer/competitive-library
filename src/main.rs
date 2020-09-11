@@ -14,8 +14,8 @@ fn main() {
     macro_rules! scan {
         () => { scan!(usize) };
         (($($t:tt),*)) => { ($(scan!($t)),*) };
-        ([$t:ty; $len:expr]) => { scanner.scan_vec::<$t>($len) };
         ([$t:tt; $len:expr]) => { (0..$len).map(|_| scan!($t)).collect::<Vec<_>>() };
+        ([$t:ty; $len:expr]) => { scanner.scan_vec::<$t>($len) };
         ([$t:ty]) => { scanner.iter::<$t>() };
         ({ $e:expr }) => { scanner.mscan($e) };
         ($t:ty) => { scanner.scan::<$t>() };
