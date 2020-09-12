@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["lca_euler_tour","✅  AC  755ms"],["lca_hld","✅  AC  564ms"]],"struct":[["EulerTourForRichVertex",""],["Graph",""],["HeavyLightDecomposition",""]]});
+initSidebarItems({"fn":[["lca_euler_tour","✅  AC  585ms"],["lca_hld","✅  AC  368ms"]],"struct":[["EulerTourForRichVertex",""],["HeavyLightDecomposition",""]],"trait":[["AdjacencyGraphAbstraction","Adjacency Graph Abstraction."]],"type":[["UndirectedSparseGraph",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_4_b","✅  AC  7ms"],["judge_grl_4_b",""]],"struct":[["GraphScanner",""]]});
+initSidebarItems({"fn":[["grl_4_b","✅  AC  3ms"],["judge_grl_4_b",""]],"trait":[["AdjacencyGraphTopologicalSortExt",""]],"type":[["DirectedGraphScanner",""]]});

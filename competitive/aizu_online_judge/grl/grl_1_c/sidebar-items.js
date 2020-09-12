@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_1_c","✅  AC  4ms"]],"struct":[["AdditiveOperation","$+$"],["GraphScanner",""]]});
+initSidebarItems({"fn":[["grl_1_c","✅  AC  5ms"]],"struct":[["AdditiveOperation","$+$"]],"trait":[["AdjacencyGraphAbstraction","Adjacency Graph Abstraction."],["AdjacencyGraphWarshallFloydExt",""]],"type":[["DirectedGraphScanner",""]]});

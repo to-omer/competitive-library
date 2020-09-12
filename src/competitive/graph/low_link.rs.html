@@ -68,11 +68,11 @@
 <span id="51">51</span>
 <span id="52">52</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Graph</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">AdjacencyGraphAbstraction</span>, <span class="ident">UndirectedSparseGraph</span>};
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;LowLink&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LowLink</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Graph</span>,
+    <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">UndirectedSparseGraph</span>,
     <span class="kw">pub</span> <span class="ident">low</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">ord</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">articulation</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
@@ -80,17 +80,17 @@
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;LowLink&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">LowLink</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Graph</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">UndirectedSparseGraph</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span> <span class="op">=</span> <span class="self">Self</span> {
             <span class="ident">graph</span>,
-            <span class="ident">low</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">graph</span>.<span class="ident">vsize</span>],
-            <span class="ident">ord</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">std</span>::<span class="ident">usize</span>::<span class="ident">MAX</span>; <span class="ident">graph</span>.<span class="ident">vsize</span>],
+            <span class="ident">low</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
+            <span class="ident">ord</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">std</span>::<span class="ident">usize</span>::<span class="ident">MAX</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
             <span class="ident">articulation</span>: <span class="macro">vec</span><span class="macro">!</span>[],
             <span class="ident">bridge</span>: <span class="macro">vec</span><span class="macro">!</span>[],
         };
         <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">vertices</span>() {
             <span class="kw">if</span> <span class="ident">self_</span>.<span class="ident">ord</span>[<span class="ident">u</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">std</span>::<span class="ident">usize</span>::<span class="ident">MAX</span> {
-                <span class="ident">self_</span>.<span class="ident">dfs</span>(<span class="ident">u</span>, <span class="ident">graph</span>.<span class="ident">vsize</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="number">0</span>);
+                <span class="ident">self_</span>.<span class="ident">dfs</span>(<span class="ident">u</span>, <span class="ident">graph</span>.<span class="ident">vertices_size</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="number">0</span>);
             }
         }
         <span class="ident">self_</span>
@@ -101,12 +101,12 @@
         <span class="kw-2">*</span><span class="ident">now_ord</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is_articulation</span> <span class="op">=</span> <span class="bool-val">false</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">std</span>::<span class="ident">usize</span>::<span class="ident">MAX</span> {
                 <span class="ident">cnt</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
                 <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">now_ord</span>);
                 <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>].<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">low</span>[<span class="ident">a</span>.<span class="ident">to</span>]);
-                <span class="ident">is_articulation</span> <span class="op">|</span><span class="op">=</span> <span class="ident">p</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vsize</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">u</span>] <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">a</span>.<span class="ident">to</span>];
+                <span class="ident">is_articulation</span> <span class="op">|</span><span class="op">=</span> <span class="ident">p</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">u</span>] <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">a</span>.<span class="ident">to</span>];
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">u</span>] <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
                     <span class="self">self</span>.<span class="ident">bridge</span>.<span class="ident">push</span>((<span class="ident">u</span>.<span class="ident">min</span>(<span class="ident">a</span>.<span class="ident">to</span>), <span class="ident">u</span>.<span class="ident">max</span>(<span class="ident">a</span>.<span class="ident">to</span>)));
                 }
@@ -114,7 +114,7 @@
                 <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>].<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">a</span>.<span class="ident">to</span>]);
             }
         }
-        <span class="ident">is_articulation</span> <span class="op">|</span><span class="op">=</span> <span class="ident">p</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vsize</span> <span class="op">&amp;&amp;</span> <span class="ident">cnt</span> <span class="op">&gt;</span> <span class="number">1</span>;
+        <span class="ident">is_articulation</span> <span class="op">|</span><span class="op">=</span> <span class="ident">p</span> <span class="op">=</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>() <span class="op">&amp;&amp;</span> <span class="ident">cnt</span> <span class="op">&gt;</span> <span class="number">1</span>;
         <span class="kw">if</span> <span class="ident">is_articulation</span> {
             <span class="self">self</span>.<span class="ident">articulation</span>.<span class="ident">push</span>(<span class="ident">u</span>);
         }

@@ -163,9 +163,11 @@
 <span id="146">146</span>
 <span id="147">147</span>
 <span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Monoid</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">graph</span>::<span class="ident">Graph</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">graph</span>::{<span class="ident">AdjacencyGraphAbstraction</span>, <span class="ident">UndirectedSparseGraph</span>};
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;HeavyLightDecomposition&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HeavyLightDecomposition</span> {
@@ -176,50 +178,52 @@
 }
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;HeavyLightDecomposition&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">HeavyLightDecomposition</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">root</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Graph</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">vsize</span> <span class="op">=</span> <span class="ident">graph</span>.<span class="ident">vsize</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">root</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">UndirectedSparseGraph</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span> <span class="op">=</span> <span class="self">Self</span> {
-            <span class="ident">par</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">vsize</span>],
-            <span class="ident">size</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">vsize</span>],
-            <span class="ident">head</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">vsize</span>],
-            <span class="ident">vidx</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">vsize</span>],
+            <span class="ident">par</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
+            <span class="ident">size</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
+            <span class="ident">head</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
+            <span class="ident">vidx</span>: <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
         };
         <span class="ident">self_</span>.<span class="ident">build</span>(<span class="ident">root</span>, <span class="ident">graph</span>);
         <span class="ident">self_</span>
     }
-    <span class="kw">fn</span> <span class="ident">dfs_size</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Graph</span>) {
+    <span class="kw">fn</span> <span class="ident">dfs_size</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">UndirectedSparseGraph</span>) {
         <span class="self">self</span>.<span class="ident">par</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="ident">p</span>;
         <span class="self">self</span>.<span class="ident">size</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">if</span> <span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>].<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>][<span class="number">0</span>].<span class="ident">to</span> <span class="op">=</span><span class="op">=</span> <span class="ident">p</span> {
-            <span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>].<span class="ident">swap</span>(<span class="number">0</span>, <span class="number">1</span>);
+        <span class="kw">let</span> <span class="ident">base</span> <span class="op">=</span> <span class="ident">graph</span>.<span class="ident">start</span>[<span class="ident">u</span>];
+        <span class="kw">if</span> <span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">next</span>().<span class="ident">unwrap</span>().<span class="ident">to</span> <span class="op">=</span><span class="op">=</span> <span class="ident">p</span> {
+            <span class="ident">graph</span>.<span class="ident">elist</span>.<span class="ident">swap</span>(<span class="ident">base</span>, <span class="ident">base</span> <span class="op">+</span> <span class="number">1</span>);
         }
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>].<span class="ident">len</span>() {
-            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>][<span class="ident">i</span>];
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">base</span>..<span class="ident">graph</span>.<span class="ident">start</span>[<span class="ident">u</span> <span class="op">+</span> <span class="number">1</span>] {
+            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">graph</span>.<span class="ident">elist</span>[<span class="ident">i</span>];
             <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
                 <span class="self">self</span>.<span class="ident">dfs_size</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">graph</span>);
                 <span class="self">self</span>.<span class="ident">size</span>[<span class="ident">u</span>] <span class="op">+</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">size</span>[<span class="ident">a</span>.<span class="ident">to</span>];
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">size</span>[<span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>][<span class="number">0</span>].<span class="ident">to</span>] <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">size</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
-                    <span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>].<span class="ident">swap</span>(<span class="number">0</span>, <span class="ident">i</span>);
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">size</span>[<span class="ident">graph</span>.<span class="ident">elist</span>[<span class="ident">base</span>].<span class="ident">to</span>] <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">size</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
+                    <span class="ident">graph</span>.<span class="ident">elist</span>.<span class="ident">swap</span>(<span class="ident">base</span>, <span class="ident">i</span>);
                 }
             }
         }
     }
-    <span class="kw">fn</span> <span class="ident">dfs_hld</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">Graph</span>) {
+    <span class="kw">fn</span> <span class="ident">dfs_hld</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">UndirectedSparseGraph</span>) {
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="kw-2">*</span><span class="ident">t</span>;
         <span class="kw-2">*</span><span class="ident">t</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>].<span class="ident">len</span>() {
-            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">graph</span>.<span class="ident">graph</span>[<span class="ident">u</span>][<span class="ident">i</span>];
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">head</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="self">self</span>.<span class="ident">head</span>[<span class="ident">u</span>] } <span class="kw">else</span> { <span class="ident">a</span>.<span class="ident">to</span> };
-                <span class="self">self</span>.<span class="ident">dfs_hld</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">t</span>, <span class="ident">graph</span>);
-            }
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">adjacencies</span> <span class="op">=</span> <span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">a</span>) <span class="op">=</span> <span class="ident">adjacencies</span>.<span class="ident">next</span>() {
+            <span class="self">self</span>.<span class="ident">head</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">head</span>[<span class="ident">u</span>];
+            <span class="self">self</span>.<span class="ident">dfs_hld</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">t</span>, <span class="ident">graph</span>);
+        }
+        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">adjacencies</span> {
+            <span class="self">self</span>.<span class="ident">head</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">a</span>.<span class="ident">to</span>;
+            <span class="self">self</span>.<span class="ident">dfs_hld</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">t</span>, <span class="ident">graph</span>);
         }
     }
-    <span class="kw">fn</span> <span class="ident">build</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Graph</span>) {
+    <span class="kw">fn</span> <span class="ident">build</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">UndirectedSparseGraph</span>) {
         <span class="self">self</span>.<span class="ident">head</span>[<span class="ident">root</span>] <span class="op">=</span> <span class="ident">root</span>;
-        <span class="self">self</span>.<span class="ident">dfs_size</span>(<span class="ident">root</span>, <span class="ident">graph</span>.<span class="ident">vsize</span>, <span class="ident">graph</span>);
+        <span class="self">self</span>.<span class="ident">dfs_size</span>(<span class="ident">root</span>, <span class="ident">graph</span>.<span class="ident">vertices_size</span>(), <span class="ident">graph</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="self">self</span>.<span class="ident">dfs_hld</span>(<span class="ident">root</span>, <span class="ident">graph</span>.<span class="ident">vsize</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>, <span class="ident">graph</span>);
+        <span class="self">self</span>.<span class="ident">dfs_hld</span>(<span class="ident">root</span>, <span class="ident">graph</span>.<span class="ident">vertices_size</span>(), <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">t</span>, <span class="ident">graph</span>);
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lca</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">u</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">v</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="kw">loop</span> {

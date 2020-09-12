@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dpl_3_a","✅  AC  35ms"],["largest_square",""]]});
+initSidebarItems({"fn":[["dpl_3_a","✅  AC  26ms"],["largest_square",""]]});

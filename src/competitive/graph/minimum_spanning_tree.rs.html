@@ -136,24 +136,23 @@
 <span id="119">119</span>
 <span id="120">120</span>
 <span id="121">121</span>
-<span id="122">122</span>
-<span id="123">123</span>
-<span id="124">124</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">Graph</span>;
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">EdgeListGraph</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::<span class="ident">Group</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">data_structure</span>::{<span class="ident">MergingUnionFind</span>, <span class="ident">UnionFind</span>};
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;minimum_spanning_tree&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">Graph</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_spanning_tree</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Ord</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">weight</span>: <span class="ident">F</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">idx</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">esize</span>).<span class="ident">collect</span>();
+<span class="kw">impl</span> <span class="ident">EdgeListGraph</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_spanning_tree</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">weight</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">Ord</span>,
+    {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">idx</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">edges_size</span>()).<span class="ident">collect</span>();
         <span class="ident">idx</span>.<span class="ident">sort_by_key</span>(<span class="ident">weight</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">uf</span> <span class="op">=</span> <span class="ident">UnionFind</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">vsize</span>);
-        <span class="kw">let</span> <span class="ident">cache</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eid_cache</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">esize</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">uf</span> <span class="op">=</span> <span class="ident">UnionFind</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
         <span class="kw">for</span> <span class="ident">eid</span> <span class="kw">in</span> <span class="ident">idx</span>.<span class="ident">into_iter</span>() {
-            <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="ident">cache</span>[<span class="ident">eid</span>];
+            <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="self">self</span>[<span class="ident">eid</span>];
             <span class="ident">res</span>[<span class="ident">eid</span>] <span class="op">=</span> <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="ident">u</span>, <span class="ident">v</span>);
         }
         <span class="ident">res</span>
@@ -161,20 +160,21 @@
 }
 
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;minimum_spanning_arborescence&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">Graph</span> {
+<span class="kw">impl</span> <span class="ident">EdgeListGraph</span> {
     <span class="doccomment">/// tarjan</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_spanning_arborescence</span><span class="op">&lt;</span><span class="ident">G</span>: <span class="ident">Group</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">G</span>::<span class="ident">T</span><span class="op">&gt;</span>(
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_spanning_arborescence</span><span class="op">&lt;</span><span class="ident">G</span><span class="op">&gt;</span>(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         <span class="ident">root</span>: <span class="ident">usize</span>,
         <span class="ident">group</span>: <span class="ident">G</span>,
-        <span class="ident">weight</span>: <span class="ident">F</span>,
+        <span class="ident">weight</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">G</span>::<span class="ident">T</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">G</span>::<span class="ident">T</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>)<span class="op">&gt;</span>
     <span class="kw">where</span>
+        <span class="ident">G</span>: <span class="ident">Group</span>,
         <span class="ident">G</span>::<span class="ident">T</span>: <span class="ident">Ord</span>,
     {
         <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cmp</span>::<span class="ident">Reverse</span>, <span class="ident">collections</span>::<span class="ident">BinaryHeap</span>};
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">uf</span> <span class="op">=</span> <span class="ident">MergingUnionFind</span>::<span class="ident">new</span>(
-            <span class="self">self</span>.<span class="ident">vsize</span>,
+            <span class="self">self</span>.<span class="ident">vertices_size</span>(),
             <span class="op">|</span><span class="kw">_</span><span class="op">|</span> (<span class="ident">BinaryHeap</span>::<span class="ident">new</span>(), <span class="ident">group</span>.<span class="ident">unit</span>()),
             <span class="op">|</span><span class="ident">x</span>, <span class="ident">y</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">ny</span> <span class="op">=</span> <span class="ident">group</span>.<span class="ident">rinv_operate</span>(<span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">1</span>);
@@ -185,22 +185,16 @@
                 )
             },
         );
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vsize</span>]; <span class="comment">// 0: unprocessed, 1: in process, 2: completed</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()]; <span class="comment">// 0: unprocessed, 1: in process, 2: completed</span>
         <span class="ident">state</span>[<span class="ident">root</span>] <span class="op">=</span> <span class="number">2</span>;
-        <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
-            <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacency</span>(<span class="ident">u</span>) {
-                <span class="ident">uf</span>.<span class="ident">find_root_mut</span>(<span class="ident">a</span>.<span class="ident">to</span>)
-                    .<span class="ident">data</span>
-                    .<span class="number">0</span>
-                    .<span class="ident">push</span>((<span class="ident">Reverse</span>(<span class="ident">weight</span>(<span class="ident">a</span>.<span class="ident">id</span>)), <span class="ident">a</span>.<span class="ident">id</span>));
-            }
+        <span class="kw">for</span> (<span class="ident">id</span>, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">to</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">edges</span>().<span class="ident">enumerate</span>() {
+            <span class="ident">uf</span>.<span class="ident">find_root_mut</span>(<span class="ident">to</span>).<span class="ident">data</span>.<span class="number">0</span>.<span class="ident">push</span>((<span class="ident">Reverse</span>(<span class="ident">weight</span>(<span class="ident">id</span>)), <span class="ident">id</span>));
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">paredge</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">esize</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">paredge</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">leaf</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="self">self</span>.<span class="ident">esize</span>; <span class="self">self</span>.<span class="ident">vsize</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">leaf</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="self">self</span>.<span class="ident">edges_size</span>(); <span class="self">self</span>.<span class="ident">vertices_size</span>()];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle</span> <span class="op">=</span> <span class="number">0usize</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">group</span>.<span class="ident">unit</span>();
-        <span class="kw">let</span> <span class="ident">cache</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">eid_cache</span>();
         <span class="kw">for</span> <span class="kw-2">mut</span> <span class="ident">cur</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
             <span class="kw">if</span> <span class="ident">state</span>[<span class="ident">cur</span>] <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="kw">continue</span>;
@@ -223,8 +217,8 @@
                 }
                 <span class="ident">acc</span> <span class="op">=</span> <span class="ident">group</span>.<span class="ident">operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="ident">w</span>);
                 <span class="ident">ord</span>.<span class="ident">push</span>(<span class="ident">eid</span>);
-                <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="ident">cache</span>[<span class="ident">eid</span>];
-                <span class="kw">if</span> <span class="ident">leaf</span>[<span class="ident">v</span>] <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">esize</span> {
+                <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="self">self</span>[<span class="ident">eid</span>];
+                <span class="kw">if</span> <span class="ident">leaf</span>[<span class="ident">v</span>] <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">edges_size</span>() {
                     <span class="ident">leaf</span>[<span class="ident">v</span>] <span class="op">=</span> <span class="ident">eid</span>;
                 }
                 <span class="kw">while</span> <span class="ident">cycle</span> <span class="op">&gt;</span> <span class="number">0</span> {
@@ -248,11 +242,11 @@
                 <span class="ident">state</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="number">2</span>;
             }
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tree</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">root</span>; <span class="self">self</span>.<span class="ident">vsize</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">esize</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tree</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">root</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
         <span class="kw">for</span> <span class="ident">eid</span> <span class="kw">in</span> <span class="ident">ord</span>.<span class="ident">into_iter</span>().<span class="ident">rev</span>() {
             <span class="kw">if</span> <span class="op">!</span><span class="ident">used</span>[<span class="ident">eid</span>] {
-                <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="ident">cache</span>[<span class="ident">eid</span>];
+                <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="self">self</span>[<span class="ident">eid</span>];
                 <span class="ident">tree</span>[<span class="ident">v</span>] <span class="op">=</span> <span class="ident">u</span>;
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">leaf</span>[<span class="ident">v</span>];
                 <span class="kw">while</span> <span class="ident">x</span> <span class="op">!</span><span class="op">=</span> <span class="ident">eid</span> {

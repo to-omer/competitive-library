@@ -40,7 +40,7 @@
 <span id="23">23</span>
 <span id="24">24</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">graph</span>::<span class="ident">Graph</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">graph</span>::{<span class="ident">AdjacencyGraphAbstraction</span>, <span class="ident">UndirectedSparseGraph</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tree</span>::<span class="ident">EulerTourForRichVertex</span>;
 
@@ -49,16 +49,16 @@
     <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">read_all</span>(<span class="ident">reader</span>);
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scanner</span> <span class="op">=</span> <span class="ident">Scanner</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>);
     <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">n</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">graph</span> <span class="op">=</span> <span class="ident">Graph</span>::<span class="ident">new</span>(<span class="ident">n</span>);
-    <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">vertices</span>() {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">edges</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">with_capacity</span>(<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>);
+    <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
         <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">k</span>);
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">scanner</span>.<span class="ident">iter</span>::<span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>().<span class="ident">take</span>(<span class="ident">k</span>) {
-            <span class="ident">graph</span>.<span class="ident">add_undirected_edge</span>(<span class="ident">u</span>, <span class="ident">v</span>);
+            <span class="ident">edges</span>.<span class="ident">push</span>((<span class="ident">u</span>, <span class="ident">v</span>));
         }
     }
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">et</span> <span class="op">=</span> <span class="ident">EulerTourForRichVertex</span>::<span class="ident">new</span>(<span class="ident">n</span>);
-    <span class="ident">et</span>.<span class="ident">vertex_tour</span>(<span class="number">0</span>, <span class="ident">n</span>, <span class="kw-2">&amp;</span><span class="ident">graph</span>);
-    <span class="kw">let</span> <span class="ident">lca</span> <span class="op">=</span> <span class="ident">et</span>.<span class="ident">gen_lca</span>(<span class="kw-2">&amp;</span><span class="ident">graph</span>);
+    <span class="kw">let</span> <span class="ident">graph</span> <span class="op">=</span> <span class="ident">UndirectedSparseGraph</span>::<span class="ident">from_edges</span>(<span class="ident">n</span>, <span class="ident">edges</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>());
+    <span class="kw">let</span> <span class="ident">et</span> <span class="op">=</span> <span class="ident">EulerTourForRichVertex</span>::<span class="ident">new</span>(<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">graph</span>);
+    <span class="kw">let</span> <span class="ident">lca</span> <span class="op">=</span> <span class="ident">et</span>.<span class="ident">gen_lca</span>();
     <span class="macro">scan</span><span class="macro">!</span>(<span class="ident">scanner</span>, <span class="ident">q</span>);
     <span class="kw">for</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">scanner</span>.<span class="ident">iter</span>::<span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>().<span class="ident">take</span>(<span class="ident">q</span>) {
         <span class="macro">writeln</span><span class="macro">!</span>(<span class="ident">writer</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">lca</span>.<span class="ident">lca</span>(<span class="ident">u</span>, <span class="ident">v</span>)).<span class="ident">ok</span>();

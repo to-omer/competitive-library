@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dpl_3_b","✅  AC  16ms"],["largest_rectangle_in_grid",""]]});
+initSidebarItems({"fn":[["dpl_3_b","✅  AC  20ms"],["largest_rectangle_in_grid",""]]});
