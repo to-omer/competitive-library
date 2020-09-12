@@ -1,4 +1,4 @@
-use crate::graph::Graph;
+use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
 
 #[cargo_snippet::snippet("TreeRec")]
 #[derive(Debug, Clone)]
@@ -10,8 +10,8 @@ impl TreeRec {
     pub fn new(n: usize) -> Self {
         Self { n }
     }
-    pub fn dfs(&mut self, u: usize, p: usize, graph: &Graph) {
-        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
+    pub fn dfs(&mut self, u: usize, p: usize, graph: &UndirectedSparseGraph) {
+        for a in graph.adjacencies(u).filter(|a| a.to != p) {
             self.dfs(a.to, u, graph);
         }
     }

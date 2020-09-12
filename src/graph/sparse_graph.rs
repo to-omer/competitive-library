@@ -46,8 +46,8 @@ pub trait AdjacencyGraphAbstraction<'a> {
 #[derive(Debug, Clone)]
 pub struct SparseGraph<D> {
     vsize: usize,
-    start: Vec<usize>,
-    elist: Vec<Adjacency>,
+    pub(crate) start: Vec<usize>,
+    pub(crate) elist: Vec<Adjacency>,
     _marker: std::marker::PhantomData<fn() -> D>,
 }
 #[cargo_snippet::snippet("SparseGraph")]
@@ -178,3 +178,14 @@ where
 pub type DirectedGraphScanner<U, T> = AdjacencyGraphScanner<U, T, DirectedEdge>;
 #[cargo_snippet::snippet("SparseGraph")]
 pub type UndirectedGraphScanner<U, T> = AdjacencyGraphScanner<U, T, UndirectedEdge>;
+
+#[cargo_snippet::snippet("SparseGraph")]
+pub struct TreeGraphScanner<U: IterScan<Output = usize>, T: IterScan>(
+    std::marker::PhantomData<fn() -> (U, T)>,
+);
+#[cargo_snippet::snippet("SparseGraph")]
+impl<U: IterScan<Output = usize>, T: IterScan> TreeGraphScanner<U, T> {
+    pub fn new(vsize: usize) -> AdjacencyGraphScanner<U, T, UndirectedEdge> {
+        AdjacencyGraphScanner::new(vsize, vsize - 1)
+    }
+}

@@ -1,28 +1,28 @@
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Adjacent {
     pub id: usize,
     pub to: usize,
 }
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 impl Adjacent {
     pub fn new(id: usize, to: usize) -> Adjacent {
         Adjacent { id, to }
     }
 }
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 #[derive(Clone, Debug, Default)]
-pub struct Graph {
+pub struct AdjacencyListGraph {
     pub vsize: usize,
     pub esize: usize,
     pub graph: Vec<Vec<Adjacent>>,
 }
-#[cargo_snippet::snippet("Graph")]
-impl Graph {
-    pub fn new(vsize: usize) -> Graph {
-        Graph {
+#[cargo_snippet::snippet("AdjacencyListGraph")]
+impl AdjacencyListGraph {
+    pub fn new(vsize: usize) -> AdjacencyListGraph {
+        AdjacencyListGraph {
             vsize,
             esize: 0,
             graph: vec![vec![]; vsize],
@@ -54,7 +54,7 @@ impl Graph {
     }
 }
 
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 pub struct GraphScanner<U: IterScan<Output = usize>, T: IterScan> {
     vsize: usize,
     esize: usize,
@@ -62,7 +62,7 @@ pub struct GraphScanner<U: IterScan<Output = usize>, T: IterScan> {
     _marker: std::marker::PhantomData<fn() -> (U, T)>,
 }
 
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 impl<U: IterScan<Output = usize>, T: IterScan> GraphScanner<U, T> {
     pub fn new(vsize: usize, esize: usize, directed: bool) -> Self {
         Self {
@@ -74,11 +74,11 @@ impl<U: IterScan<Output = usize>, T: IterScan> GraphScanner<U, T> {
     }
 }
 
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 impl<U: IterScan<Output = usize>, T: IterScan> MarkedIterScan for GraphScanner<U, T> {
-    type Output = (Graph, Vec<<T as IterScan>::Output>);
+    type Output = (AdjacencyListGraph, Vec<<T as IterScan>::Output>);
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        let mut graph = Graph::new(self.vsize);
+        let mut graph = AdjacencyListGraph::new(self.vsize);
         let mut rest = Vec::with_capacity(self.esize);
         for _ in 0..self.esize {
             let (from, to) = (U::scan(iter)?, U::scan(iter)?);
@@ -109,7 +109,7 @@ impl GraphRec {
             cost: vec![0; n],
         }
     }
-    pub fn dfs(&mut self, u: usize, graph: &Graph) {
+    pub fn dfs(&mut self, u: usize, graph: &AdjacencyListGraph) {
         let d = self.cost[u];
         for a in graph.adjacency(u) {
             if !self.visited[a.to] {
@@ -121,13 +121,13 @@ impl GraphRec {
     }
 }
 
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 #[derive(Debug, Clone)]
 pub struct GraphEidCache<'a> {
-    graph: &'a Graph,
+    graph: &'a AdjacencyListGraph,
     cache: Vec<(usize, usize)>,
 }
-#[cargo_snippet::snippet("Graph")]
+#[cargo_snippet::snippet("AdjacencyListGraph")]
 impl<'a> std::ops::Index<usize> for GraphEidCache<'a> {
     type Output = (usize, usize);
     fn index(&self, index: usize) -> &Self::Output {

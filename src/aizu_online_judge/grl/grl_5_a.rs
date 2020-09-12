@@ -1,12 +1,12 @@
 pub use crate::algebra::AdditiveOperation;
-pub use crate::graph::GraphScanner;
+pub use crate::graph::{AdjacencyGraphAbstraction, TreeGraphScanner};
 use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_A")]
 pub fn grl_5_a(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, (graph, w): {GraphScanner::<usize, u64>::new(n, n - 1, false)});
+    scan!(scanner, n, (graph, _, w): { TreeGraphScanner::<usize, u64>::new(n) });
     let d = graph.weighted_tree_depth(0, |eid| w[eid], AdditiveOperation::new());
     let r = (0..n).max_by_key(|&u| d[u]).unwrap();
     let ans = graph

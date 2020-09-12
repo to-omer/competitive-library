@@ -1,32 +1,36 @@
 use crate::algebra::{Associative, Magma};
 use crate::data_structure::DisjointSparseTable;
-use crate::graph::Graph;
+use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
 
 #[cargo_snippet::snippet("EulerTourForEdge")]
-#[derive(Clone, Debug, Default)]
-pub struct EulerTourForEdge {
+#[derive(Clone, Debug)]
+pub struct EulerTourForEdge<'a> {
+    graph: &'a UndirectedSparseGraph,
     pub eidx: Vec<(usize, usize)>,
     pub par: Vec<usize>,
     epos: usize,
 }
 #[cargo_snippet::snippet("EulerTourForEdge")]
-impl EulerTourForEdge {
-    pub fn new(vsize: usize) -> Self {
-        Self {
-            eidx: vec![(0, 0); vsize - 1],
-            par: vec![vsize; vsize],
+impl<'a> EulerTourForEdge<'a> {
+    pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
+        let mut self_ = Self {
+            graph,
+            eidx: vec![(0, 0); graph.vertices_size() - 1],
+            par: vec![std::usize::MAX; graph.vertices_size()],
             epos: 0,
-        }
+        };
+        self_.edge_tour(root, std::usize::MAX);
+        self_
     }
     pub fn len(&self) -> usize {
         self.epos
     }
-    pub fn edge_tour(&mut self, u: usize, p: usize, graph: &Graph) {
-        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
+    fn edge_tour(&mut self, u: usize, p: usize) {
+        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
             self.par[a.to] = a.id;
             self.eidx[a.id].0 = self.epos;
             self.epos += 1;
-            self.edge_tour(a.to, u, graph);
+            self.edge_tour(a.to, u);
             self.eidx[a.id].1 = self.epos;
             self.epos += 1;
         }
@@ -34,35 +38,37 @@ impl EulerTourForEdge {
 }
 
 #[cargo_snippet::snippet("EulerTourForVertex")]
-#[derive(Clone, Debug, Default)]
-pub struct EulerTourForVertex {
+#[derive(Clone, Debug)]
+pub struct EulerTourForVertex<'a> {
+    graph: &'a UndirectedSparseGraph,
     pub vidx: Vec<(usize, usize)>,
     vpos: usize,
 }
 #[cargo_snippet::snippet("EulerTourForVertex")]
-impl EulerTourForVertex {
-    pub fn new(vsize: usize) -> Self {
+impl<'a> EulerTourForVertex<'a> {
+    pub fn new(graph: &'a UndirectedSparseGraph) -> Self {
         Self {
-            vidx: vec![(0, 0); vsize],
+            graph,
+            vidx: vec![(0, 0); graph.vertices_size()],
             vpos: 0,
         }
     }
     pub fn len(&self) -> usize {
         self.vpos
     }
-    pub fn subtree_vertex_tour(&mut self, u: usize, p: usize, graph: &Graph) {
+    pub fn subtree_vertex_tour(&mut self, u: usize, p: usize) {
         self.vidx[u].0 = self.vpos;
         self.vpos += 1;
-        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
-            self.subtree_vertex_tour(a.to, u, graph);
+        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
+            self.subtree_vertex_tour(a.to, u);
         }
         self.vidx[u].1 = self.vpos;
     }
-    pub fn path_vertex_tour(&mut self, u: usize, p: usize, graph: &Graph) {
+    pub fn path_vertex_tour(&mut self, u: usize, p: usize) {
         self.vidx[u].0 = self.vpos;
         self.vpos += 1;
-        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
-            self.path_vertex_tour(a.to, u, graph);
+        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
+            self.path_vertex_tour(a.to, u);
         }
         self.vidx[u].1 = self.vpos;
         self.vpos += 1;
@@ -90,27 +96,33 @@ impl EulerTourForVertex {
 }
 
 #[cargo_snippet::snippet("EulerTourForRichVertex")]
-#[derive(Clone, Debug, Default)]
-pub struct EulerTourForRichVertex {
+#[derive(Clone, Debug)]
+pub struct EulerTourForRichVertex<'a> {
+    graph: &'a UndirectedSparseGraph,
+    root: usize,
     vidx: Vec<(usize, usize)>,
     vtrace: Vec<usize>,
 }
 #[cargo_snippet::snippet("EulerTourForRichVertex")]
-impl EulerTourForRichVertex {
-    pub fn new(vsize: usize) -> Self {
-        Self {
-            vidx: vec![(0, 0); vsize],
+impl<'a> EulerTourForRichVertex<'a> {
+    pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
+        let mut self_ = Self {
+            graph,
+            root,
+            vidx: vec![(0, 0); graph.vertices_size()],
             vtrace: vec![],
-        }
+        };
+        self_.vertex_tour(root, std::usize::MAX);
+        self_
     }
     pub fn len(&self) -> usize {
         self.vtrace.len()
     }
-    pub fn vertex_tour(&mut self, u: usize, p: usize, graph: &Graph) {
+    fn vertex_tour(&mut self, u: usize, p: usize) {
         self.vidx[u].0 = self.vtrace.len();
         self.vtrace.push(u);
-        for a in graph.adjacency(u).iter().filter(|a| a.to != p) {
-            self.vertex_tour(a.to, u, graph);
+        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
+            self.vertex_tour(a.to, u);
             self.vtrace.push(u);
         }
         self.vidx[u].1 = self.vtrace.len() - 1;
@@ -125,17 +137,17 @@ impl EulerTourForRichVertex {
 }
 
 #[cargo_snippet::snippet("LowestCommonAncestor")]
-impl EulerTourForRichVertex {
-    pub fn gen_lca<'a>(&'a self, graph: &Graph) -> LowestCommonAncestor<'a> {
-        let monoid = LCAMonoid::new(graph);
+impl<'a> EulerTourForRichVertex<'a> {
+    pub fn gen_lca(&'a self) -> LowestCommonAncestor<'a> {
+        let monoid = LCAMonoid::new(self.root, self.graph);
         let dst = DisjointSparseTable::new(self.vtrace.clone(), monoid);
-        LowestCommonAncestor { euler: &self, dst }
+        LowestCommonAncestor { euler: self, dst }
     }
 }
 #[cargo_snippet::snippet("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
 pub struct LowestCommonAncestor<'a> {
-    euler: &'a EulerTourForRichVertex,
+    euler: &'a EulerTourForRichVertex<'a>,
     dst: DisjointSparseTable<LCAMonoid>,
 }
 #[cargo_snippet::snippet("LowestCommonAncestor")]
@@ -153,9 +165,9 @@ pub struct LCAMonoid {
 pub mod impl_lcam {
     use super::*;
     impl LCAMonoid {
-        pub fn new(graph: &Graph) -> Self {
+        pub fn new(root: usize, graph: &UndirectedSparseGraph) -> Self {
             LCAMonoid {
-                depth: graph.tree_depth(0),
+                depth: graph.tree_depth(root),
             }
         }
         pub fn ancestor(&self, u: usize, v: usize) -> usize {

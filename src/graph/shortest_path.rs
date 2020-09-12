@@ -1,19 +1,20 @@
-use super::graph::Graph;
+use super::AdjacencyGraphAbstraction;
 use crate::algebra::Monoid;
 
 #[cargo_snippet::snippet("dijkstra")]
-impl Graph {
-    pub fn dijkstra<M: Monoid, F: Fn(usize) -> M::T>(
-        &self,
+pub trait AdjacencyGraphDijkstraExt<'a>: AdjacencyGraphAbstraction<'a> {
+    fn dijkstra<M>(
+        &'a self,
         start: usize,
         monoid: M,
-        weight: F,
+        weight: impl Fn(usize) -> M::T,
     ) -> Vec<Option<M::T>>
     where
+        M: Monoid,
         M::T: Ord,
     {
         use std::cmp::Reverse;
-        let mut cost = vec![None; self.vsize];
+        let mut cost = vec![None; self.vertices_size()];
         let mut heap = std::collections::BinaryHeap::new();
         cost[start] = Some(monoid.unit());
         heap.push((Reverse(monoid.unit()), start));
@@ -21,7 +22,7 @@ impl Graph {
             if cost[u].as_ref().unwrap() < &d {
                 continue;
             }
-            for a in self.adjacency(u) {
+            for a in self.adjacencies(u) {
                 let nd = monoid.operate(&d, &weight(a.id));
                 if cost[a.to].as_ref().map_or(true, |c| c > &nd) {
                     cost[a.to] = Some(nd.clone());
@@ -32,28 +33,31 @@ impl Graph {
         cost
     }
 }
+#[cargo_snippet::snippet("dijkstra")]
+impl<'a, G: AdjacencyGraphAbstraction<'a>> AdjacencyGraphDijkstraExt<'a> for G {}
 
 #[cargo_snippet::snippet("bellman_ford")]
-impl Graph {
-    pub fn bellman_ford<M: Monoid, F: Fn(usize) -> M::T>(
-        &self,
+pub trait AdjacencyGraphBellmanFordExt<'a>: AdjacencyGraphAbstraction<'a> {
+    fn bellman_ford<M>(
+        &'a self,
         start: usize,
         monoid: M,
-        weight: F,
+        weight: impl Fn(usize) -> M::T,
     ) -> (Vec<Option<M::T>>, bool)
     where
+        M: Monoid,
         M::T: Ord,
     {
-        let mut cost = vec![None; self.vsize];
+        let mut cost = vec![None; self.vertices_size()];
         cost[start] = Some(monoid.unit().clone());
-        for i in 0..self.vsize {
+        for i in 0..self.vertices_size() {
             for u in self.vertices() {
                 if let Some(d) = cost[u].as_ref() {
                     let d = d.clone();
-                    for a in self.adjacency(u) {
+                    for a in self.adjacencies(u) {
                         let nd = monoid.operate(&d, &weight(a.id));
                         if cost[a.to].as_ref().map_or(true, |c| c > &nd) {
-                            if i + 1 == self.vsize {
+                            if i + 1 == self.vertices_size() {
                                 return (cost, true);
                             }
                             cost[a.to] = Some(nd);
@@ -65,23 +69,26 @@ impl Graph {
         (cost, false)
     }
 }
+#[cargo_snippet::snippet("bellman_ford")]
+impl<'a, G: AdjacencyGraphAbstraction<'a>> AdjacencyGraphBellmanFordExt<'a> for G {}
 
 #[cargo_snippet::snippet("warshall_floyd")]
-impl Graph {
-    pub fn warshall_floyd<M: Monoid, F: Fn(usize) -> M::T>(
-        &self,
+pub trait AdjacencyGraphWarshallFloydExt<'a>: AdjacencyGraphAbstraction<'a> {
+    fn warshall_floyd<M>(
+        &'a self,
         monoid: M,
-        weight: F,
+        weight: impl Fn(usize) -> M::T,
     ) -> Vec<Vec<Option<M::T>>>
     where
+        M: Monoid,
         M::T: Ord,
     {
-        let mut cost = vec![vec![None; self.vsize]; self.vsize];
+        let mut cost = vec![vec![None; self.vertices_size()]; self.vertices_size()];
         for i in self.vertices() {
             cost[i][i] = Some(monoid.unit());
         }
         for u in self.vertices() {
-            for a in self.adjacency(u) {
+            for a in self.adjacencies(u) {
                 cost[u][a.to] = Some(weight(a.id));
             }
         }
@@ -102,3 +109,5 @@ impl Graph {
         cost
     }
 }
+#[cargo_snippet::snippet("warshall_floyd")]
+impl<'a, G: AdjacencyGraphAbstraction<'a>> AdjacencyGraphWarshallFloydExt<'a> for G {}

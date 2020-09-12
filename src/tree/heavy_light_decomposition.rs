@@ -1,5 +1,5 @@
 use crate::algebra::Monoid;
-use crate::graph::Graph;
+use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
 
 #[cargo_snippet::snippet("HeavyLightDecomposition")]
 pub struct HeavyLightDecomposition {
@@ -10,50 +10,52 @@ pub struct HeavyLightDecomposition {
 }
 #[cargo_snippet::snippet("HeavyLightDecomposition")]
 impl HeavyLightDecomposition {
-    pub fn new(root: usize, graph: &mut Graph) -> Self {
-        let vsize = graph.vsize;
+    pub fn new(root: usize, graph: &mut UndirectedSparseGraph) -> Self {
         let mut self_ = Self {
-            par: vec![0; vsize],
-            size: vec![0; vsize],
-            head: vec![0; vsize],
-            vidx: vec![0; vsize],
+            par: vec![0; graph.vertices_size()],
+            size: vec![0; graph.vertices_size()],
+            head: vec![0; graph.vertices_size()],
+            vidx: vec![0; graph.vertices_size()],
         };
         self_.build(root, graph);
         self_
     }
-    fn dfs_size(&mut self, u: usize, p: usize, graph: &mut Graph) {
+    fn dfs_size(&mut self, u: usize, p: usize, graph: &mut UndirectedSparseGraph) {
         self.par[u] = p;
         self.size[u] = 1;
-        if graph.graph[u].len() > 1 && graph.graph[u][0].to == p {
-            graph.graph[u].swap(0, 1);
+        let base = graph.start[u];
+        if graph.adjacencies(u).len() > 1 && graph.adjacencies(u).next().unwrap().to == p {
+            graph.elist.swap(base, base + 1);
         }
-        for i in 0..graph.graph[u].len() {
-            let a = graph.graph[u][i];
+        for i in base..graph.start[u + 1] {
+            let a = graph.elist[i];
             if a.to != p {
                 self.dfs_size(a.to, u, graph);
                 self.size[u] += self.size[a.to];
-                if self.size[graph.graph[u][0].to] < self.size[a.to] {
-                    graph.graph[u].swap(0, i);
+                if self.size[graph.elist[base].to] < self.size[a.to] {
+                    graph.elist.swap(base, i);
                 }
             }
         }
     }
-    fn dfs_hld(&mut self, u: usize, p: usize, t: &mut usize, graph: &Graph) {
+    fn dfs_hld(&mut self, u: usize, p: usize, t: &mut usize, graph: &UndirectedSparseGraph) {
         self.vidx[u] = *t;
         *t += 1;
-        for i in 0..graph.graph[u].len() {
-            let a = graph.graph[u][i];
-            if a.to != p {
-                self.head[a.to] = if i == 0 { self.head[u] } else { a.to };
-                self.dfs_hld(a.to, u, t, graph);
-            }
+        let mut adjacencies = graph.adjacencies(u).filter(|a| a.to != p);
+        if let Some(a) = adjacencies.next() {
+            self.head[a.to] = self.head[u];
+            self.dfs_hld(a.to, u, t, graph);
+        }
+        for a in adjacencies {
+            self.head[a.to] = a.to;
+            self.dfs_hld(a.to, u, t, graph);
         }
     }
-    fn build(&mut self, root: usize, graph: &mut Graph) {
+    fn build(&mut self, root: usize, graph: &mut UndirectedSparseGraph) {
         self.head[root] = root;
-        self.dfs_size(root, graph.vsize, graph);
+        self.dfs_size(root, graph.vertices_size(), graph);
         let mut t = 0;
-        self.dfs_hld(root, graph.vsize, &mut t, graph);
+        self.dfs_hld(root, graph.vertices_size(), &mut t, graph);
     }
     pub fn lca(&self, mut u: usize, mut v: usize) -> usize {
         loop {

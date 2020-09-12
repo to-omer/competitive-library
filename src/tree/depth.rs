@@ -1,23 +1,23 @@
 use crate::algebra::Monoid;
-use crate::graph::Graph;
+use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
 
 #[cargo_snippet::snippet("tree_depth")]
-impl Graph {
+impl UndirectedSparseGraph {
     fn depth_dfs(&self, u: usize, p: usize, d: u64, depth: &mut Vec<u64>) {
         depth[u] = d;
-        for a in self.adjacency(u).iter().filter(|a| a.to != p) {
+        for a in self.adjacencies(u).filter(|a| a.to != p) {
             self.depth_dfs(a.to, u, d + 1, depth);
         }
     }
     pub fn tree_depth(&self, root: usize) -> Vec<u64> {
-        let mut depth = vec![0; self.vsize];
-        self.depth_dfs(root, self.vsize, 0, &mut depth);
+        let mut depth = vec![0; self.vertices_size()];
+        self.depth_dfs(root, self.vertices_size(), 0, &mut depth);
         depth
     }
 }
 
 #[cargo_snippet::snippet("tree_depth")]
-impl Graph {
+impl UndirectedSparseGraph {
     fn weighted_depth_dfs<M: Monoid, F: Fn(usize) -> M::T>(
         &self,
         u: usize,
@@ -27,7 +27,7 @@ impl Graph {
         weight: &F,
         monoid: &M,
     ) {
-        for a in self.adjacency(u).iter().filter(|a| a.to != p) {
+        for a in self.adjacencies(u).filter(|a| a.to != p) {
             let nd = monoid.operate(&d, &weight(a.id));
             self.weighted_depth_dfs(a.to, u, nd, depth, weight, monoid);
         }
@@ -39,10 +39,10 @@ impl Graph {
         weight: F,
         monoid: M,
     ) -> Vec<M::T> {
-        let mut depth = vec![monoid.unit(); self.vsize];
+        let mut depth = vec![monoid.unit(); self.vertices_size()];
         self.weighted_depth_dfs(
             root,
-            self.vsize,
+            std::usize::MAX,
             monoid.unit(),
             &mut depth,
             &weight,
@@ -53,17 +53,17 @@ impl Graph {
 }
 
 #[cargo_snippet::snippet("tree_size")]
-impl Graph {
+impl UndirectedSparseGraph {
     fn size_dfs(&self, u: usize, p: usize, size: &mut Vec<u64>) {
         size[u] = 1;
-        for a in self.adjacency(u).iter().filter(|a| a.to != p) {
+        for a in self.adjacencies(u).filter(|a| a.to != p) {
             self.size_dfs(a.to, u, size);
             size[u] += size[a.to];
         }
     }
     pub fn tree_size(&self, root: usize) -> Vec<u64> {
-        let mut size = vec![0; self.vsize];
-        self.size_dfs(root, self.vsize, &mut size);
+        let mut size = vec![0; self.vertices_size()];
+        self.size_dfs(root, std::usize::MAX, &mut size);
         size
     }
 }

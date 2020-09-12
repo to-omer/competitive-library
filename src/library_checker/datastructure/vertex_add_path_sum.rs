@@ -1,6 +1,6 @@
 pub use crate::algebra::AdditiveOperation;
 pub use crate::data_structure::BinaryIndexedTree;
-pub use crate::graph::GraphScanner;
+pub use crate::graph::TreeGraphScanner;
 use crate::prelude::*;
 pub use crate::tree::HeavyLightDecomposition;
 
@@ -8,7 +8,7 @@ pub use crate::tree::HeavyLightDecomposition;
 pub fn vertex_add_path_sum(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n], (mut graph, _): {GraphScanner::<usize, ()>::new(n, n - 1, false)});
+    scan!(scanner, n, q, a: [i64; n], (mut graph, _, _): { TreeGraphScanner::<usize, ()>::new(n) });
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = AdditiveOperation::new();
     let mut bit = BinaryIndexedTree::new(n, monoid.clone());

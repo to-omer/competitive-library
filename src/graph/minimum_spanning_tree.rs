@@ -1,17 +1,19 @@
-use super::Graph;
+use super::EdgeListGraph;
 use crate::algebra::Group;
 use crate::data_structure::{MergingUnionFind, UnionFind};
 
 #[cargo_snippet::snippet("minimum_spanning_tree")]
-impl Graph {
-    pub fn minimum_spanning_tree<T: Ord, F: Fn(&usize) -> T>(&self, weight: F) -> Vec<bool> {
-        let mut idx: Vec<_> = (0..self.esize).collect();
+impl EdgeListGraph {
+    pub fn minimum_spanning_tree<T>(&self, weight: impl Fn(&usize) -> T) -> Vec<bool>
+    where
+        T: Ord,
+    {
+        let mut idx: Vec<_> = (0..self.edges_size()).collect();
         idx.sort_by_key(weight);
-        let mut uf = UnionFind::new(self.vsize);
-        let cache = self.eid_cache();
-        let mut res = vec![false; self.esize];
+        let mut uf = UnionFind::new(self.vertices_size());
+        let mut res = vec![false; self.edges_size()];
         for eid in idx.into_iter() {
-            let (u, v) = cache[eid];
+            let (u, v) = self[eid];
             res[eid] = uf.unite(u, v);
         }
         res
@@ -19,20 +21,21 @@ impl Graph {
 }
 
 #[cargo_snippet::snippet("minimum_spanning_arborescence")]
-impl Graph {
+impl EdgeListGraph {
     /// tarjan
-    pub fn minimum_spanning_arborescence<G: Group, F: Fn(usize) -> G::T>(
+    pub fn minimum_spanning_arborescence<G>(
         &self,
         root: usize,
         group: G,
-        weight: F,
+        weight: impl Fn(usize) -> G::T,
     ) -> Option<(G::T, Vec<usize>)>
     where
+        G: Group,
         G::T: Ord,
     {
         use std::{cmp::Reverse, collections::BinaryHeap};
         let mut uf = MergingUnionFind::new(
-            self.vsize,
+            self.vertices_size(),
             |_| (BinaryHeap::new(), group.unit()),
             |x, y| {
                 let ny = group.rinv_operate(&y.1, &x.1);
@@ -43,22 +46,16 @@ impl Graph {
                 )
             },
         );
-        let mut state = vec![0; self.vsize]; // 0: unprocessed, 1: in process, 2: completed
+        let mut state = vec![0; self.vertices_size()]; // 0: unprocessed, 1: in process, 2: completed
         state[root] = 2;
-        for u in self.vertices() {
-            for a in self.adjacency(u) {
-                uf.find_root_mut(a.to)
-                    .data
-                    .0
-                    .push((Reverse(weight(a.id)), a.id));
-            }
+        for (id, &(_, to)) in self.edges().enumerate() {
+            uf.find_root_mut(to).data.0.push((Reverse(weight(id)), id));
         }
-        let mut paredge = vec![0; self.esize];
+        let mut paredge = vec![0; self.edges_size()];
         let mut ord = vec![];
-        let mut leaf = vec![self.esize; self.vsize];
+        let mut leaf = vec![self.edges_size(); self.vertices_size()];
         let mut cycle = 0usize;
         let mut acc = group.unit();
-        let cache = self.eid_cache();
         for mut cur in self.vertices() {
             if state[cur] != 0 {
                 continue;
@@ -81,8 +78,8 @@ impl Graph {
                 }
                 acc = group.operate(&acc, &w);
                 ord.push(eid);
-                let (u, v) = cache[eid];
-                if leaf[v] >= self.esize {
+                let (u, v) = self[eid];
+                if leaf[v] >= self.edges_size() {
                     leaf[v] = eid;
                 }
                 while cycle > 0 {
@@ -106,11 +103,11 @@ impl Graph {
                 state[u] = 2;
             }
         }
-        let mut tree = vec![root; self.vsize];
-        let mut used = vec![false; self.esize];
+        let mut tree = vec![root; self.vertices_size()];
+        let mut used = vec![false; self.edges_size()];
         for eid in ord.into_iter().rev() {
             if !used[eid] {
-                let (u, v) = cache[eid];
+                let (u, v) = self[eid];
                 tree[v] = u;
                 let mut x = leaf[v];
                 while x != eid {

@@ -1,6 +1,6 @@
 pub use crate::algebra::AdditiveOperation;
 pub use crate::data_structure::SegmentTree;
-pub use crate::graph::Graph;
+pub use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
 use crate::prelude::*;
 pub use crate::tree::EulerTourForVertex;
 
@@ -8,13 +8,11 @@ pub use crate::tree::EulerTourForVertex;
 pub fn vertex_add_subtree_sum(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n]);
-    let mut graph = Graph::new(n);
-    for i in 1..n {
-        graph.add_undirected_edge(i, scanner.scan::<usize>());
-    }
-    let mut et = EulerTourForVertex::new(n);
-    et.subtree_vertex_tour(0, n, &graph);
+    scan!(scanner, n, q, a: [u64; n], p: [usize; n - 1]);
+    let graph =
+        UndirectedSparseGraph::from_edges(n, p.iter().enumerate().map(|(i, &p)| (i + 1, p)));
+    let mut et = EulerTourForVertex::new(&graph);
+    et.subtree_vertex_tour(0, n);
     let mut b = vec![0; n];
     for i in 0..n {
         b[et.vidx[i].0] = a[i];

@@ -1,5 +1,5 @@
 pub use crate::algebra::MaxOperation;
-pub use crate::graph::GraphScanner;
+pub use crate::graph::{AdjacencyGraphAbstraction, TreeGraphScanner};
 use crate::prelude::*;
 pub use crate::tree::ReRooting;
 
@@ -7,12 +7,9 @@ pub use crate::tree::ReRooting;
 pub fn grl_5_b(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, (graph, w): {GraphScanner::<usize, u64>::new(n, n - 1, false)});
-    let mut re = ReRooting::new(n, MaxOperation::new(), |d, _vid, eid_opt| {
+    scan!(scanner, n, (graph, _, w): { TreeGraphScanner::<usize, u64>::new(n) });
+    let re = ReRooting::new(&graph, MaxOperation::new(), |d, _vid, eid_opt| {
         d + eid_opt.map_or(0, |eid| w[eid])
     });
-    re.rerooting(&graph);
-    for u in graph.vertices() {
-        writeln!(writer, "{}", re.dp[u]).ok();
-    }
+    echo(writer, re.dp, '\n').ok();
 }
