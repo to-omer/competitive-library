@@ -1,6 +1,6 @@
 pub use crate::algebra::{AdditiveOperation, CartesianOperation};
 pub use crate::data_structure::LazySegmentTree;
-pub use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
+pub use crate::graph::UndirectedSparseGraph;
 use crate::prelude::*;
 pub use crate::tree::HeavyLightDecomposition;
 
@@ -16,7 +16,7 @@ pub fn grl_5_e(reader: &mut impl Read, writer: &mut impl Write) {
             edges.push((u, v));
         }
     }
-    let mut graph = UndirectedSparseGraph::from_edges(n, edges.iter().cloned());
+    let mut graph = UndirectedSparseGraph::from_edges(n, edges);
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new());
     let mut seg = LazySegmentTree::from_vec(

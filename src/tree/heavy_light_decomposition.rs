@@ -1,5 +1,5 @@
 use crate::algebra::Monoid;
-use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
+use crate::graph::UndirectedSparseGraph;
 
 #[cargo_snippet::snippet("HeavyLightDecomposition")]
 pub struct HeavyLightDecomposition {

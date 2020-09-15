@@ -9,7 +9,7 @@ pub use crate::tree::HeavyLightDecomposition;
 pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n], (mut graph, _, _): { TreeGraphScanner::<usize, ()>::new(n) });
+    scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n], (mut graph, _): { TreeGraphScanner::<usize, ()>::new(n) });
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = LinearOperation::new();
     let mut nab = vec![(MInt998244353::zero(), MInt998244353::zero()); n];

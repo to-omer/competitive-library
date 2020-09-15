@@ -1,4 +1,4 @@
-pub use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
+pub use crate::graph::UndirectedSparseGraph;
 use crate::prelude::*;
 pub use crate::tree::EulerTourForRichVertex;
 
@@ -14,7 +14,7 @@ pub fn grl_5_c(reader: &mut impl Read, writer: &mut impl Write) {
             edges.push((u, v));
         }
     }
-    let graph = UndirectedSparseGraph::from_edges(n, edges.iter().cloned());
+    let graph = UndirectedSparseGraph::from_edges(n, edges);
     let et = EulerTourForRichVertex::new(0, &graph);
     let lca = et.gen_lca();
     scan!(scanner, q);

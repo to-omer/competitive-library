@@ -1,6 +1,6 @@
 pub use crate::algebra::AdditiveOperation;
 pub use crate::data_structure::BinaryIndexedTree;
-pub use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
+pub use crate::graph::UndirectedSparseGraph;
 use crate::prelude::*;
 pub use crate::tree::EulerTourForEdge;
 
@@ -16,7 +16,7 @@ pub fn grl_5_d(reader: &mut impl Read, writer: &mut impl Write) {
             edges.push((u, v));
         }
     }
-    let graph = UndirectedSparseGraph::from_edges(n, edges.iter().cloned());
+    let graph = UndirectedSparseGraph::from_edges(n, edges);
     let et = EulerTourForEdge::new(0, &graph);
     let mut bit = BinaryIndexedTree::new(et.len(), AdditiveOperation::new());
 

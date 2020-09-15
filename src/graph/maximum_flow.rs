@@ -1,4 +1,4 @@
-use super::{AdjacencyGraphAbstraction, BidirectionalSparseGraph};
+use super::BidirectionalSparseGraph;
 
 #[cargo_snippet::snippet("Dinic")]
 #[derive(Debug, Clone)]
@@ -21,8 +21,9 @@ impl DinicBuilder {
         self.capacities.push(cap);
         self.capacities.push(0);
     }
-    pub fn gen_graph(&self) -> BidirectionalSparseGraph {
-        BidirectionalSparseGraph::from_edges(self.vsize, self.edges.iter().cloned())
+    pub fn gen_graph(&mut self) -> BidirectionalSparseGraph {
+        let edges = std::mem::take(&mut self.edges);
+        BidirectionalSparseGraph::from_edges(self.vsize, edges)
     }
     pub fn build(self, graph: &BidirectionalSparseGraph) -> Dinic<'_> {
         let DinicBuilder {

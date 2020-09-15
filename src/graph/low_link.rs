@@ -1,4 +1,4 @@
-use super::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
+use super::UndirectedSparseGraph;
 
 #[cargo_snippet::snippet("LowLink")]
 pub struct LowLink<'a> {

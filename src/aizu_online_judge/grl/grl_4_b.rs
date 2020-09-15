@@ -1,4 +1,4 @@
-pub use crate::graph::{AdjacencyGraphTopologicalSortExt, DirectedGraphScanner};
+pub use crate::graph::DirectedGraphScanner;
 use crate::prelude::*;
 
 #[verify_attr::verify(
@@ -8,7 +8,7 @@ use crate::prelude::*;
 pub fn grl_4_b(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es, (graph, _, _): { DirectedGraphScanner::<usize, ()>::new(vs, es) });
+    scan!(scanner, vs, es, (graph, _): { DirectedGraphScanner::<usize, ()>::new(vs, es) });
     for u in graph.topological_sort().into_iter() {
         writeln!(writer, "{}", u).ok();
     }

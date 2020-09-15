@@ -1,4 +1,4 @@
-use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
+use crate::graph::UndirectedSparseGraph;
 
 #[cargo_snippet::snippet("TreeRec")]
 #[derive(Debug, Clone)]

@@ -1,6 +1,6 @@
 use crate::algebra::{Associative, Magma};
 use crate::data_structure::DisjointSparseTable;
-use crate::graph::{AdjacencyGraphAbstraction, UndirectedSparseGraph};
+use crate::graph::UndirectedSparseGraph;
 
 #[cargo_snippet::snippet("EulerTourForEdge")]
 #[derive(Clone, Debug)]

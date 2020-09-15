@@ -1,7 +1,7 @@
 //! dynamic programming on all-rooted trees
 
 use crate::algebra::Monoid;
-use crate::graph::{Adjacency, AdjacencyGraphAbstraction, UndirectedSparseGraph};
+use crate::graph::{Adjacency, UndirectedSparseGraph};
 
 #[cargo_snippet::snippet("ReRooting")]
 /// dynamic programming on all-rooted trees

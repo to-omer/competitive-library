@@ -1,10 +1,10 @@
-use super::AdjacencyGraphAbstraction;
+use super::SparseGraph;
 use crate::algebra::Monoid;
 
 #[cargo_snippet::snippet("dijkstra")]
-pub trait AdjacencyGraphDijkstraExt<'a>: AdjacencyGraphAbstraction<'a> {
-    fn dijkstra<M>(
-        &'a self,
+impl<D> SparseGraph<D> {
+    pub fn dijkstra<M>(
+        &self,
         start: usize,
         monoid: M,
         weight: impl Fn(usize) -> M::T,
@@ -33,13 +33,11 @@ pub trait AdjacencyGraphDijkstraExt<'a>: AdjacencyGraphAbstraction<'a> {
         cost
     }
 }
-#[cargo_snippet::snippet("dijkstra")]
-impl<'a, G: AdjacencyGraphAbstraction<'a>> AdjacencyGraphDijkstraExt<'a> for G {}
 
 #[cargo_snippet::snippet("bellman_ford")]
-pub trait AdjacencyGraphBellmanFordExt<'a>: AdjacencyGraphAbstraction<'a> {
-    fn bellman_ford<M>(
-        &'a self,
+impl<D> SparseGraph<D> {
+    pub fn bellman_ford<M>(
+        &self,
         start: usize,
         monoid: M,
         weight: impl Fn(usize) -> M::T,
@@ -69,13 +67,11 @@ pub trait AdjacencyGraphBellmanFordExt<'a>: AdjacencyGraphAbstraction<'a> {
         (cost, false)
     }
 }
-#[cargo_snippet::snippet("bellman_ford")]
-impl<'a, G: AdjacencyGraphAbstraction<'a>> AdjacencyGraphBellmanFordExt<'a> for G {}
 
 #[cargo_snippet::snippet("warshall_floyd")]
-pub trait AdjacencyGraphWarshallFloydExt<'a>: AdjacencyGraphAbstraction<'a> {
-    fn warshall_floyd<M>(
-        &'a self,
+impl<D> SparseGraph<D> {
+    pub fn warshall_floyd<M>(
+        &self,
         monoid: M,
         weight: impl Fn(usize) -> M::T,
     ) -> Vec<Vec<Option<M::T>>>
@@ -109,5 +105,3 @@ pub trait AdjacencyGraphWarshallFloydExt<'a>: AdjacencyGraphAbstraction<'a> {
         cost
     }
 }
-#[cargo_snippet::snippet("warshall_floyd")]
-impl<'a, G: AdjacencyGraphAbstraction<'a>> AdjacencyGraphWarshallFloydExt<'a> for G {}

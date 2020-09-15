@@ -1,4 +1,4 @@
-use super::{AdjacencyGraphAbstraction, DirectedSparseGraph};
+use super::DirectedSparseGraph;
 
 #[cargo_snippet::snippet("StronglyConnectedComponent")]
 #[derive(Debug, Clone)]
@@ -80,7 +80,7 @@ impl StronglyConnectedComponent<'_> {
                 }
             }
         }
-        DirectedSparseGraph::from_edges(self.size(), edges.iter().cloned())
+        DirectedSparseGraph::from_edges(self.size(), edges)
     }
     pub fn components(&self) -> Vec<Vec<usize>> {
         let mut counts = vec![0; self.size()];
@@ -135,7 +135,7 @@ impl TwoSatisfiability {
         self.add_inner(x * 2, x * 2 + 1);
     }
     pub fn two_satisfiability(self) -> Option<Vec<bool>> {
-        let graph = DirectedSparseGraph::from_edges(self.vsize * 2, self.edges.iter().cloned());
+        let graph = DirectedSparseGraph::from_edges(self.vsize * 2, self.edges);
         let scc = StronglyConnectedComponent::new(&graph);
         let mut res = vec![false; self.vsize];
         for i in 0..self.vsize {

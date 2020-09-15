@@ -1,8 +1,8 @@
-use super::AdjacencyGraphAbstraction;
+use super::SparseGraph;
 
 #[cargo_snippet::snippet("topological_sort")]
-pub trait AdjacencyGraphTopologicalSortExt<'a>: AdjacencyGraphAbstraction<'a> {
-    fn topological_sort(&'a self) -> Vec<usize> {
+impl<D> SparseGraph<D> {
+    pub fn topological_sort(&self) -> Vec<usize> {
         let mut indeg = vec![0; self.vertices_size()];
         let mut res = vec![];
         for a in self.vertices().flat_map(|u| self.adjacencies(u)) {
@@ -24,5 +24,3 @@ pub trait AdjacencyGraphTopologicalSortExt<'a>: AdjacencyGraphAbstraction<'a> {
         res
     }
 }
-#[cargo_snippet::snippet("topological_sort")]
-impl<'a, G: AdjacencyGraphAbstraction<'a>> AdjacencyGraphTopologicalSortExt<'a> for G {}

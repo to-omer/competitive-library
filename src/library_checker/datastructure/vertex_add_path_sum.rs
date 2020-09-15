@@ -8,7 +8,7 @@ pub use crate::tree::HeavyLightDecomposition;
 pub fn vertex_add_path_sum(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n], (mut graph, _, _): { TreeGraphScanner::<usize, ()>::new(n) });
+    scan!(scanner, n, q, a: [i64; n], (mut graph, _): { TreeGraphScanner::<usize, ()>::new(n) });
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = AdditiveOperation::new();
     let mut bit = BinaryIndexedTree::new(n, monoid.clone());
