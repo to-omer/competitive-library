@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["vertex_add_path_sum","✅  AC  542ms"]],"struct":[["AdditiveOperation","$+$"],["BinaryIndexedTree",""],["HeavyLightDecomposition",""],["TreeGraphScanner",""]]});
+initSidebarItems({"fn":[["vertex_add_path_sum","✅  AC  707ms"]],"struct":[["AdditiveOperation","$+$"],["BinaryIndexedTree",""],["HeavyLightDecomposition",""],["TreeGraphScanner",""]]});

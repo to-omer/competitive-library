@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dpl_1_d","✅  AC  9ms"]],"struct":[["LongestIncreasingSubsequence",""]]});
+initSidebarItems({"fn":[["dpl_1_d","✅  AC  6ms"]],"struct":[["LongestIncreasingSubsequence",""]]});

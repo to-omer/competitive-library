@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Adjacency",""],["SparseGraph","Static Sparse Graph represented as Compressed Sparse Row."],["TreeGraphScanner",""]],"type":[["BidirectionalGraphScanner",""],["BidirectionalSparseGraph",""],["DirectedGraphScanner",""],["DirectedSparseGraph",""],["UndirectedGraphScanner",""],["UndirectedSparseGraph",""]]});

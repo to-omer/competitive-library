@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["convolution_mod","✅  AC  362ms"]],"struct":[["MInt",""]],"type":[["MInt998244353",""],["NTT998244353",""]]});
+initSidebarItems({"fn":[["convolution_mod","✅  AC  327ms"]],"struct":[["MInt",""]],"type":[["MInt998244353",""],["NTT998244353",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_6_a","✅  AC  0ms"]],"struct":[["AdditiveOperation","$+$"],["Dinic",""]]});
+initSidebarItems({"fn":[["grl_6_a","✅  AC  0ms"]],"struct":[["AdditiveOperation","$+$"],["DinicBuilder",""]]});

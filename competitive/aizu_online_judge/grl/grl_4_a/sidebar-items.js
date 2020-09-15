@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_4_a","✅  AC  0ms"]],"trait":[["AdjacencyGraphTopologicalSortExt",""]],"type":[["DirectedGraphScanner",""]]});
+initSidebarItems({"fn":[["grl_4_a","✅  AC  0ms"]],"type":[["DirectedGraphScanner",""]]});

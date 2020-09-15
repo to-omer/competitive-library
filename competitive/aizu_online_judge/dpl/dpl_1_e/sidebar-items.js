@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dpl_1_e","✅  AC  11ms"],["levenshtein_distance",""]]});
+initSidebarItems({"fn":[["dpl_1_e","✅  AC  10ms"],["levenshtein_distance",""]]});

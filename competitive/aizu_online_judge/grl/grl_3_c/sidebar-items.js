@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_3_c","✅  AC  8ms"]],"struct":[["StronglyConnectedComponent",""]],"trait":[["AdjacencyGraphAbstraction","Adjacency Graph Abstraction."]],"type":[["DirectedGraphScanner",""]]});
+initSidebarItems({"fn":[["grl_3_c","✅  AC  9ms"]],"struct":[["StronglyConnectedComponent",""]],"type":[["DirectedGraphScanner",""]]});
