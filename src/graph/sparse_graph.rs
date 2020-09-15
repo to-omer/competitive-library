@@ -31,8 +31,8 @@ pub mod sparse_graph {
     #[derive(Debug, Clone)]
     pub struct SparseGraph<D> {
         vsize: usize,
-        pub(crate) start: Vec<usize>,
-        pub(crate) elist: Vec<Adjacency>,
+        pub start: Vec<usize>,
+        pub elist: Vec<Adjacency>,
         pub edges: Vec<(usize, usize)>,
         _marker: std::marker::PhantomData<fn() -> D>,
     }

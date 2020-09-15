@@ -2,6 +2,7 @@
 
 mod adjacency_list_graph;
 mod edge_list_graph;
+mod grid_graph;
 mod low_link;
 mod maximum_flow;
 mod minimum_cost_flow;
@@ -13,6 +14,7 @@ mod topological_sort;
 
 pub use adjacency_list_graph::*;
 pub use edge_list_graph::*;
+pub use grid_graph::*;
 pub use low_link::*;
 pub use maximum_flow::*;
 pub use minimum_cost_flow::*;
