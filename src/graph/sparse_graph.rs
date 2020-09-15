@@ -6,6 +6,9 @@ pub struct DirectedEdge;
 #[cargo_snippet::snippet("SparseGraph")]
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct UndirectedEdge;
+#[cargo_snippet::snippet("SparseGraph")]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct BidirectionalEdge;
 
 #[cargo_snippet::snippet("SparseGraph")]
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -130,9 +133,52 @@ impl<'a> AdjacencyGraphAbstraction<'a> for SparseGraph<UndirectedEdge> {
 }
 
 #[cargo_snippet::snippet("SparseGraph")]
+impl<'a> AdjacencyGraphAbstraction<'a> for SparseGraph<BidirectionalEdge> {
+    type AdjIter = std::slice::Iter<'a, Adjacency>;
+    fn vertices_size(&self) -> usize {
+        self.vsize
+    }
+    fn edges_size(&self) -> usize {
+        self.elist.len()
+    }
+    fn adjacencies(&'a self, v: usize) -> Self::AdjIter {
+        self.elist[self.start[v]..self.start[v + 1]].iter()
+    }
+    fn from_edges(
+        vsize: usize,
+        edges: impl Iterator<Item = (usize, usize)> + ExactSizeIterator + Clone,
+    ) -> Self {
+        let mut start = vec![0; vsize + 1];
+        let mut elist = Vec::with_capacity(edges.len() * 2);
+        unsafe { elist.set_len(edges.len() * 2) }
+        for (from, to) in edges.clone() {
+            start[to] += 1;
+            start[from] += 1;
+        }
+        for i in 1..=vsize {
+            start[i] += start[i - 1];
+        }
+        for (id, (from, to)) in edges.enumerate() {
+            start[from] -= 1;
+            elist[start[from]] = Adjacency::new(id * 2, to);
+            start[to] -= 1;
+            elist[start[to]] = Adjacency::new(id * 2 + 1, from);
+        }
+        Self {
+            vsize,
+            start,
+            elist,
+            _marker: std::marker::PhantomData,
+        }
+    }
+}
+
+#[cargo_snippet::snippet("SparseGraph")]
 pub type DirectedSparseGraph = SparseGraph<DirectedEdge>;
 #[cargo_snippet::snippet("SparseGraph")]
 pub type UndirectedSparseGraph = SparseGraph<UndirectedEdge>;
+#[cargo_snippet::snippet("SparseGraph")]
+pub type BidirectionalSparseGraph = SparseGraph<BidirectionalEdge>;
 
 #[cargo_snippet::snippet("SparseGraph")]
 pub struct AdjacencyGraphScanner<U: IterScan<Output = usize>, T: IterScan, D> {
@@ -178,6 +224,8 @@ where
 pub type DirectedGraphScanner<U, T> = AdjacencyGraphScanner<U, T, DirectedEdge>;
 #[cargo_snippet::snippet("SparseGraph")]
 pub type UndirectedGraphScanner<U, T> = AdjacencyGraphScanner<U, T, UndirectedEdge>;
+#[cargo_snippet::snippet("SparseGraph")]
+pub type BidirectionalGraphScanner<U, T> = AdjacencyGraphScanner<U, T, BidirectionalEdge>;
 
 #[cargo_snippet::snippet("SparseGraph")]
 pub struct TreeGraphScanner<U: IterScan<Output = usize>, T: IterScan>(

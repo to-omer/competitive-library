@@ -1,16 +1,17 @@
 pub use crate::algebra::AdditiveOperation;
-pub use crate::graph::Dinic;
+pub use crate::graph::DinicBuilder;
 use crate::prelude::*;
 
 #[verify_attr::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/6/GRL_6_A")]
 pub fn grl_6_a(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es);
-    let mut dinic = Dinic::new(vs);
-    for _ in 0..es {
-        scan!(scanner, u, v, c: u64);
-        dinic.add_edge(u, v, c);
+    scan!(scanner, vs, es, edges: [(usize, usize, u64)]);
+    let mut builder = DinicBuilder::new(vs, es);
+    for (u, v, c) in edges.take(es) {
+        builder.add_edge(u, v, c);
     }
+    let graph = builder.gen_graph();
+    let mut dinic = builder.build(&graph);
     writeln!(writer, "{}", dinic.maximum_flow(0, vs - 1)).ok();
 }

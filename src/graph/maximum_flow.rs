@@ -1,136 +1,123 @@
-#[cargo_snippet::snippet("MaximumFlow")]
-#[derive(Debug, Clone)]
-pub struct RevEdge {
-    pub to: usize,
-    pub rev: usize,
-    pub cap: u64,
-}
-#[cargo_snippet::snippet("MaximumFlow")]
-impl RevEdge {
-    pub fn new(to: usize, rev: usize, cap: u64) -> Self {
-        Self { to, rev, cap }
-    }
-}
+use super::{AdjacencyGraphAbstraction, BidirectionalSparseGraph};
 
-#[derive(Debug)]
-pub struct FordFulkerson {
-    graph: Vec<Vec<RevEdge>>,
-    used: Vec<bool>,
+#[cargo_snippet::snippet("Dinic")]
+#[derive(Debug, Clone)]
+pub struct DinicBuilder {
+    vsize: usize,
+    edges: Vec<(usize, usize)>,
+    capacities: Vec<u64>,
 }
-impl FordFulkerson {
-    pub fn new(n: usize) -> Self {
+#[cargo_snippet::snippet("Dinic")]
+impl DinicBuilder {
+    pub fn new(vsize: usize, esize_expect: usize) -> Self {
         Self {
-            graph: vec![vec![]; n],
-            used: vec![],
+            vsize,
+            edges: Vec::with_capacity(esize_expect),
+            capacities: Vec::with_capacity(esize_expect * 2),
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize, cap: u64) {
-        let e1 = RevEdge::new(to, self.graph[to].len(), cap);
-        let e2 = RevEdge::new(from, self.graph[from].len(), 0);
-        self.graph[from].push(e1);
-        self.graph[to].push(e2);
+        self.edges.push((from, to));
+        self.capacities.push(cap);
+        self.capacities.push(0);
     }
-    pub fn dfs(&mut self, u: usize, t: usize, f: u64) -> u64 {
-        if u == t {
-            return f;
-        }
-        self.used[u] = true;
-        for i in 0..self.graph[u].len() {
-            let RevEdge { to, rev, cap } = self.graph[u][i];
-            if !self.used[to] && cap > 0 {
-                let d = self.dfs(to, t, std::cmp::min(f, cap));
-                if d > 0 {
-                    self.graph[u][i].cap -= d;
-                    self.graph[to][rev].cap += d;
-                    return d;
-                }
-            }
-        }
-        0
+    pub fn gen_graph(&self) -> BidirectionalSparseGraph {
+        BidirectionalSparseGraph::from_edges(self.vsize, self.edges.iter().cloned())
     }
-    pub fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
-        let mut flow = 0;
-        loop {
-            self.used = vec![false; self.graph.len()];
-            let f = self.dfs(s, t, std::u64::MAX);
-            if f == 0 {
-                break;
-            }
-            flow += f;
-        }
-        flow
+    pub fn build(self, graph: &BidirectionalSparseGraph) -> Dinic<'_> {
+        let DinicBuilder {
+            vsize, capacities, ..
+        } = self;
+        let dinic = Dinic {
+            graph,
+            capacities,
+            iter: Vec::with_capacity(vsize),
+            level: Vec::with_capacity(vsize),
+            deq: std::collections::VecDeque::with_capacity(vsize),
+        };
+        dinic
     }
 }
 
-#[cargo_snippet::snippet("MaximumFlow")]
-#[derive(Debug)]
-pub struct Dinic {
-    pub graph: Vec<Vec<RevEdge>>,
+#[cargo_snippet::snippet("Dinic")]
+#[derive(Debug, Clone)]
+pub struct Dinic<'a> {
+    graph: &'a BidirectionalSparseGraph,
+    capacities: Vec<u64>,
     iter: Vec<usize>,
     level: Vec<usize>,
+    deq: std::collections::VecDeque<usize>,
 }
-#[cargo_snippet::snippet("MaximumFlow")]
-impl Dinic {
-    pub fn new(n: usize) -> Self {
-        Self {
-            graph: vec![vec![]; n],
-            iter: vec![],
-            level: vec![],
-        }
-    }
-    pub fn add_edge(&mut self, from: usize, to: usize, cap: u64) {
-        let e1 = RevEdge::new(to, self.graph[to].len(), cap);
-        let e2 = RevEdge::new(from, self.graph[from].len(), 0);
-        self.graph[from].push(e1);
-        self.graph[to].push(e2);
-    }
-    fn bfs(&mut self, s: usize) {
-        self.level = vec![std::usize::MAX; self.graph.len()];
-        let mut deq = std::collections::VecDeque::new();
+#[cargo_snippet::snippet("Dinic")]
+impl<'a> Dinic<'a> {
+    fn bfs(&mut self, s: usize, t: usize) -> bool {
+        use std::usize::MAX;
+        self.level.clear();
+        self.level.resize(self.graph.vertices_size(), MAX);
         self.level[s] = 0;
-        deq.push_back(s);
-        while let Some(u) = deq.pop_front() {
-            for e in &self.graph[u] {
-                if e.cap > 0 && self.level[e.to] == std::usize::MAX {
-                    self.level[e.to] = self.level[u] + 1;
-                    deq.push_back(e.to);
+        self.deq.clear();
+        self.deq.push_back(s);
+        while let Some(u) = self.deq.pop_front() {
+            for a in self.graph.adjacencies(u) {
+                if self.capacities[a.id] > 0 && self.level[a.to] == MAX {
+                    self.level[a.to] = self.level[u] + 1;
+                    if a.to == t {
+                        return false;
+                    }
+                    self.deq.push_back(a.to);
                 }
             }
         }
+        self.level[t] == MAX
     }
-    fn dfs(&mut self, u: usize, t: usize, f: u64) -> u64 {
-        if u == t {
-            return f;
+    fn dfs(&mut self, s: usize, u: usize, upper: u64) -> u64 {
+        if u == s {
+            return upper;
         }
-        for i in self.iter[u]..self.graph[u].len() {
-            self.iter[u] = i;
-            let RevEdge { to, rev, cap } = self.graph[u][i];
-            if cap > 0 && self.level[u] < self.level[to] {
-                let d = self.dfs(to, t, std::cmp::min(f, cap));
+        let mut res = 0;
+        for a in self.graph.adjacencies(u).skip(self.iter[u]) {
+            if self.level[u] > self.level[a.to] && self.capacities[a.id ^ 1] > 0 {
+                let d = self.dfs(s, a.to, (upper - res).min(self.capacities[a.id ^ 1]));
                 if d > 0 {
-                    self.graph[u][i].cap -= d;
-                    self.graph[to][rev].cap += d;
-                    return d;
+                    self.capacities[a.id ^ 1] -= d;
+                    self.capacities[a.id] += d;
+                    res += d;
+                    if upper == res {
+                        break;
+                    }
                 }
             }
+            self.iter[u] += 1;
         }
-        0
+        res
     }
-    pub fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
+    pub fn maximum_flow_limited(&mut self, s: usize, t: usize, limit: u64) -> u64 {
         let mut flow = 0;
-        loop {
-            self.bfs(s);
-            if self.level[t] == std::usize::MAX {
-                return flow;
+        while flow < limit {
+            if self.bfs(s, t) {
+                break;
             }
-            self.iter = vec![0; self.graph.len()];
-            loop {
-                let f = self.dfs(s, t, std::u64::MAX);
+            self.iter.clear();
+            self.iter.resize(self.graph.vertices_size(), 0);
+            while flow < limit {
+                let f = self.dfs(s, t, limit - flow);
                 if f == 0 {
                     break;
                 }
                 flow += f;
             }
         }
+        flow
+    }
+    pub fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
+        self.maximum_flow_limited(s, t, std::u64::MAX)
+    }
+    pub fn get_flow(&self, eid: usize) -> u64 {
+        self.capacities[eid * 2 + 1]
+    }
+    pub fn change_edge(&mut self, eid: usize, cap: u64, flow: u64) {
+        assert!(flow <= cap);
+        self.capacities[eid * 2] = cap - flow;
+        self.capacities[eid * 2 + 1] = flow;
     }
 }
