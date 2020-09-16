@@ -6,10 +6,10 @@ use crate::prelude::*;
 pub fn dsl_3_a(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, s: u64, a: [u64; n]);
+    scan!(scanner, n, s: u64, a: [u64]);
     let mut que = QueueAggregation::new(AdditiveOperation::new());
     let mut ans = std::usize::MAX;
-    for a in a {
+    for a in a.take(n) {
         que.push(a);
         while que.fold_all() >= s {
             ans = ans.min(que.len());

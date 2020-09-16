@@ -36,8 +36,8 @@ fn test_gcd() {
     let mut rand = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {
-        let a = rand.next();
-        let b = rand.next();
+        let a = rand.rand64();
+        let b = rand.rand64();
         assert_eq!(gcd(a, b), gcd_binary(a, b));
     }
     assert_eq!(gcd(0, 0), gcd_binary(0, 0));
@@ -127,7 +127,7 @@ pub fn extgcd_binary(mut a: i64, mut b: i64) -> (i64, i64, i64) {
             t -= v;
         }
     }
-    return (a << k, s, t);
+    (a << k, s, t)
 }
 
 #[test]
@@ -158,7 +158,7 @@ fn test_modinv() {
     let mut rand = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {
-        let m = rand.rand(1_000_000_09) + 1;
+        let m = rand.rand(1_000_000_009) + 1;
         let a = rand.rand(m - 1) + 1;
         let g = gcd(a, m);
         let m = m / g;

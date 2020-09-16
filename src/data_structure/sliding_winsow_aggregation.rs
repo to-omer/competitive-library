@@ -41,7 +41,7 @@ impl<M: Monoid> QueueAggregation<M> {
     pub fn last(&self) -> Option<&M::T> {
         self.back_stack
             .last()
-            .or(self.front_stack.first())
+            .or_else(|| self.front_stack.first())
             .map(|t| &t.1)
     }
     #[inline]
@@ -69,14 +69,9 @@ impl<M: Monoid> QueueAggregation<M> {
     #[inline]
     pub fn pop(&mut self) -> Option<M::T> {
         if self.front_stack.is_empty() {
-            let v = self
-                .back_stack
-                .drain(..)
-                .map(|t| t.1)
-                .rev()
-                .collect::<Vec<_>>();
-            for x in v.into_iter() {
-                self.push_front(x)
+            let mut back_stack = std::mem::take(&mut self.back_stack);
+            for x in back_stack.drain(..).map(|t| t.1).rev() {
+                self.push_front(x);
             }
         }
         self.front_stack.pop().map(|t| t.1)
@@ -124,14 +119,14 @@ impl<M: Monoid> DequeAggregation<M> {
     pub fn front(&self) -> Option<&M::T> {
         self.front_stack
             .last()
-            .or(self.back_stack.first())
+            .or_else(|| self.back_stack.first())
             .map(|t| &t.1)
     }
     #[inline]
     pub fn back(&self) -> Option<&M::T> {
         self.back_stack
             .last()
-            .or(self.front_stack.first())
+            .or_else(|| self.front_stack.first())
             .map(|t| &t.1)
     }
     #[inline]
@@ -159,17 +154,11 @@ impl<M: Monoid> DequeAggregation<M> {
     pub fn pop_front(&mut self) -> Option<M::T> {
         if self.front_stack.is_empty() {
             let n = self.back_stack.len();
-            let v = self
-                .back_stack
-                .drain(..(n + 1) / 2)
-                .map(|t| t.1)
-                .rev()
-                .collect::<Vec<_>>();
-            for x in v.into_iter() {
+            let mut back_stack = std::mem::take(&mut self.back_stack);
+            for x in back_stack.drain(..(n + 1) / 2).map(|t| t.1).rev() {
                 self.push_front(x);
             }
-            let v = self.back_stack.drain(..).map(|t| t.1).collect::<Vec<_>>();
-            for x in v.into_iter() {
+            for x in back_stack.drain(..).map(|t| t.1) {
                 self.push_back(x);
             }
         }
@@ -178,17 +167,11 @@ impl<M: Monoid> DequeAggregation<M> {
     pub fn pop_back(&mut self) -> Option<M::T> {
         if self.back_stack.is_empty() {
             let n = self.front_stack.len();
-            let v = self
-                .front_stack
-                .drain(..(n + 1) / 2)
-                .map(|t| t.1)
-                .rev()
-                .collect::<Vec<_>>();
-            for x in v.into_iter() {
+            let mut front_stack = std::mem::take(&mut self.front_stack);
+            for x in front_stack.drain(..(n + 1) / 2).map(|t| t.1).rev() {
                 self.push_back(x);
             }
-            let v = self.front_stack.drain(..).map(|t| t.1).collect::<Vec<_>>();
-            for x in v.into_iter() {
+            for x in front_stack.drain(..).map(|t| t.1) {
                 self.push_front(x);
             }
         }

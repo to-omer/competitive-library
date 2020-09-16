@@ -261,10 +261,11 @@ impl<'a, T: Eq> Automaton for ContainCounterAutomaton<'a, T> {
 }
 
 #[cargo_snippet::snippet("automaton")]
+#[derive(Debug, Clone)]
 pub struct AlwaysAcceptingAutomaton<A>(std::marker::PhantomData<fn() -> A>);
 #[cargo_snippet::snippet("automaton")]
-impl<A> AlwaysAcceptingAutomaton<A> {
-    pub fn new() -> Self {
+impl<A> Default for AlwaysAcceptingAutomaton<A> {
+    fn default() -> Self {
         Self(std::marker::PhantomData)
     }
 }
@@ -273,9 +274,7 @@ impl<A> Automaton for AlwaysAcceptingAutomaton<A> {
     type Alphabet = A;
     type State = ();
     type Effect = ();
-    fn initial(&self) -> Self::State {
-        ()
-    }
+    fn initial(&self) -> Self::State {}
     fn next(
         &self,
         _state: &Self::State,

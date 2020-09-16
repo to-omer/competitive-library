@@ -74,7 +74,7 @@ pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
     let x_max = y_max * m - b;
     ans += (n - (x_max + a - 1) / a) * y_max;
     ans += floor_sum(y_max, a, m, (a - x_max % a) % a);
-    return ans;
+    ans
 }
 
 /// return: (y,z)
@@ -98,7 +98,7 @@ pub fn linear_congruence(abm: impl IntoIterator<Item = (i64, i64, i64)>) -> Opti
     if x < 0 {
         x += m0;
     }
-    return Some((x, m0));
+    Some((x, m0))
 }
 
 #[test]

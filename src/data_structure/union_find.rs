@@ -102,7 +102,7 @@ pub struct WeightedUnionFind<G: Group> {
 impl<G: Group> WeightedUnionFind<G> {
     pub fn new(n: usize, group: G) -> Self {
         let parents = vec![-1; n];
-        let diff = vec![group.unit().clone(); n];
+        let diff = vec![group.unit(); n];
         Self {
             parents,
             diff,

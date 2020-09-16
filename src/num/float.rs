@@ -206,7 +206,7 @@ primitive_float_impls!({f32 i32 u32 31} {f64 i64 u64 63});
 #[cargo_snippet::snippet("float")]
 macro_rules! ord_float_impls {
     ($({$t:ident $n:ident})*) => {$(
-        #[derive(Debug, Copy, Clone, PartialEq, PartialOrd, Default)]
+        #[derive(Debug, Copy, Clone, PartialEq, Default)]
         pub struct $n(pub $t);
         impl std::fmt::Display for $n {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -271,9 +271,14 @@ macro_rules! ord_float_impls {
             }
         }
         impl Eq for $n {}
+        impl PartialOrd for $n {
+            fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+                Some(self.total_cmp(other))
+            }
+        }
         impl Ord for $n {
             fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-                self.total_cmp(other)
+                self.partial_cmp(other).unwrap()
             }
         }
         impl Float for $n {

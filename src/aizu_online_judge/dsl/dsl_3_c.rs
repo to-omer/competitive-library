@@ -4,8 +4,8 @@ use crate::prelude::*;
 pub fn dsl_3_c(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], x: [u64; q]);
-    for x in x {
+    scan!(scanner, n, q, a: [u64; n], x: [u64]);
+    for x in x.take(q) {
         let mut ans = 0;
         let mut sum = 0;
         let mut p = 0;

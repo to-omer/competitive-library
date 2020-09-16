@@ -21,17 +21,12 @@ impl CHTLine {
     }
 }
 #[cargo_snippet::snippet("ConvexHullTrick")]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct ConvexHullTrick {
     deq: std::collections::VecDeque<CHTLine>,
 }
 #[cargo_snippet::snippet("ConvexHullTrick")]
 impl ConvexHullTrick {
-    pub fn new() -> Self {
-        Self {
-            deq: std::collections::VecDeque::new(),
-        }
-    }
     /// k-th add_line(a_k, b_k): a_k >= a_{k+1}
     pub fn add_line(&mut self, a: i64, b: i64) {
         let line = CHTLine::new(a, b);

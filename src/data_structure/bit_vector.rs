@@ -93,11 +93,11 @@ impl RankSelectDictionaries for BitVector {
         self.data.len() * Self::WORD_SIZE
     }
     fn access(&self, k: usize) -> bool {
-        self.data[k / Self::WORD_SIZE].0 & (1 << k % Self::WORD_SIZE) != 0
+        self.data[k / Self::WORD_SIZE].0 & (1 << (k % Self::WORD_SIZE)) != 0
     }
     fn rank1(&self, k: usize) -> usize {
         let (bit, sum) = self.data[k / Self::WORD_SIZE];
-        sum + (bit & !(std::usize::MAX << k % Self::WORD_SIZE)).count_ones() as usize
+        sum + (bit & !(std::usize::MAX << (k % Self::WORD_SIZE))).count_ones() as usize
     }
     fn select1(&self, mut k: usize) -> Option<usize> {
         let (mut l, mut r) = (0, self.data.len());
@@ -169,7 +169,7 @@ fn test_rank_select_usize() {
     const WORD_SIZE: usize = 0usize.count_zeros() as usize;
     let mut rand = Xorshift::time();
     for _ in 0..Q {
-        let x = rand.next() as usize;
+        let x = rand.rand64() as usize;
         {
             for k in 0..=WORD_SIZE {
                 assert_eq!(x.rank1(k), (0..k).filter(|&i| x.access(i)).count());

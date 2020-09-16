@@ -47,7 +47,7 @@ impl<D> SparseGraph<D> {
         M::T: Ord,
     {
         let mut cost = vec![None; self.vertices_size()];
-        cost[start] = Some(monoid.unit().clone());
+        cost[start] = Some(monoid.unit());
         for i in 0..self.vertices_size() {
             for u in self.vertices() {
                 if let Some(d) = cost[u].as_ref() {

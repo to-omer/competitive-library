@@ -40,7 +40,7 @@ pub mod grid_graph {
         type Item = (usize, usize);
         fn next(&mut self) -> Option<Self::Item> {
             const D: [(usize, usize); 4] = [(1, 0), (0, 1), (!0, 0), (0, !0)];
-            for &(dx, dy) in D[self.state..].into_iter() {
+            for &(dx, dy) in D[self.state..].iter() {
                 self.state += 1;
                 let nx = self.x.wrapping_add(dx);
                 let ny = self.y.wrapping_add(dy);
@@ -71,7 +71,7 @@ pub mod grid_graph {
                 (0, !0),
                 (1, !0),
             ];
-            for &(dx, dy) in D[self.state..].into_iter() {
+            for &(dx, dy) in D[self.state..].iter() {
                 self.state += 1;
                 let nx = self.x.wrapping_add(dx);
                 let ny = self.y.wrapping_add(dy);

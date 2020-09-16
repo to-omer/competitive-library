@@ -16,8 +16,8 @@ pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write
     for i in 0..n {
         nab[hld.vidx[i]] = ab[i];
     }
-    let mut seg1 = SegmentTree::from_vec(nab.clone(), monoid.clone());
-    let mut seg2 = SegmentTree::from_vec(nab, ReverseOperation::new(monoid.clone()));
+    let mut seg1 = SegmentTree::from_vec(nab.clone(), monoid);
+    let mut seg2 = SegmentTree::from_vec(nab, ReverseOperation::new(monoid));
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {

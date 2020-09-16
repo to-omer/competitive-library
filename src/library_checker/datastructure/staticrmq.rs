@@ -6,9 +6,9 @@ use crate::prelude::*;
 pub fn staticrmq_disjoint_sparse_table(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize); q]);
+    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize)]);
     let table = DisjointSparseTable::new(a, MinOperation::new());
-    for (l, r) in lr.into_iter() {
+    for (l, r) in lr.take(q) {
         writeln!(writer, "{}", table.fold(l, r)).ok();
     }
 }
@@ -17,9 +17,9 @@ pub fn staticrmq_disjoint_sparse_table(reader: &mut impl Read, writer: &mut impl
 pub fn staticrmq_segment_tree(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize); q]);
+    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize)]);
     let seg = SegmentTree::from_vec(a, MinOperation::new());
-    for (l, r) in lr.into_iter() {
+    for (l, r) in lr.take(q) {
         writeln!(writer, "{}", seg.fold(l, r)).ok();
     }
 }

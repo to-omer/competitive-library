@@ -10,7 +10,7 @@ pub struct Line {
 #[cargo_snippet::snippet("Line")]
 impl Line {
     pub fn new(p1: Point, p2: Point) -> Self {
-        Line { p1: p1, p2: p2 }
+        Line { p1, p2 }
     }
     pub fn dir(&self) -> Point {
         self.p2 - self.p1
@@ -45,7 +45,7 @@ pub struct LineSegment {
 #[cargo_snippet::snippet("LineSegment")]
 impl LineSegment {
     pub fn new(p1: Point, p2: Point) -> Self {
-        LineSegment { p1: p1, p2: p2 }
+        LineSegment { p1, p2 }
     }
     pub fn dir(&self) -> Point {
         self.p2 - self.p1

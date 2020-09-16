@@ -35,44 +35,50 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                     "url" => match &nv.lit {
                         Lit::Str(litstr) => match url {
                             None => url = Some(litstr.clone()),
-                            Some(_) => Err(syn::Error::new(litstr.span(), "extra url specified"))?,
+                            Some(_) => {
+                                return Err(syn::Error::new(litstr.span(), "extra url specified"))
+                            }
                         },
-                        _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
+                        _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
                     },
                     "eps" => match &nv.lit {
                         Lit::Str(litstr) => match eps {
                             None => match litstr.value().parse::<f64>() {
                                 Ok(_) => eps = Some(LitFloat::new(&litstr.value(), litstr.span())),
-                                Err(_) => Err(syn::Error::new(litstr.span(), "parse eps error"))?,
+                                Err(_) => {
+                                    return Err(syn::Error::new(litstr.span(), "parse eps error"))
+                                }
                             },
-                            Some(_) => Err(syn::Error::new(litstr.span(), "extra eps specified"))?,
+                            Some(_) => {
+                                return Err(syn::Error::new(litstr.span(), "extra eps specified"))
+                            }
                         },
-                        _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
+                        _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
                     },
                     "judge" => match &nv.lit {
                         Lit::Str(litstr) => match special_judge {
                             None => special_judge = Some(litstr2ident(litstr)),
                             Some(_) => {
-                                Err(syn::Error::new(litstr.span(), "extra judge specified"))?
+                                return Err(syn::Error::new(litstr.span(), "extra judge specified"))
                             }
                         },
-                        _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
+                        _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
                     },
                     _ => (),
                 }
             }
             NestedMeta::Lit(Lit::Str(litstr)) => match url {
                 None => url = Some(litstr.clone()),
-                Some(_) => Err(syn::Error::new(litstr.span(), "extra url specified"))?,
+                Some(_) => return Err(syn::Error::new(litstr.span(), "extra url specified")),
             },
-            _ => Err(syn::Error::new(nmeta.span(), "unknown meta value"))?,
+            _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
         }
     }
     if eps.is_some() && special_judge.is_some() {
-        Err(syn::Error::new(
+        return Err(syn::Error::new(
             punc.span(),
             "only speciy one of `eps` or `judge`",
-        ))?
+        ));
     }
     Ok(VerifyAttribute {
         url: url.ok_or_else(|| syn::Error::new(punc.span(), "url not specified"))?,

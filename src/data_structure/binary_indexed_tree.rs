@@ -21,7 +21,7 @@ impl<M: Monoid> BinaryIndexedTree<M> {
         let mut res = self.m.unit();
         while k > 0 {
             res = self.m.operate(&res, &self.bit[k]);
-            k -= k & !k + 1;
+            k -= k & (!k + 1);
         }
         res
     }
@@ -36,7 +36,7 @@ impl<M: Monoid> BinaryIndexedTree<M> {
         let mut k = k + 1;
         while k <= self.n {
             self.bit[k] = self.m.operate(&self.bit[k], &x);
-            k += k & !k + 1;
+            k += k & (!k + 1);
         }
     }
 }
@@ -59,8 +59,8 @@ fn test_binary_indexed_tree() {
     for i in 0..n - 1 {
         arr[i + 1] += arr[i];
     }
-    for i in 0..n {
-        assert_eq!(bit.accumulate(i), arr[i]);
+    for (i, a) in arr.iter().cloned().enumerate() {
+        assert_eq!(bit.accumulate(i), a);
     }
 
     let mut bit = BinaryIndexedTree::new(n, MaxOperation::new());
@@ -74,8 +74,8 @@ fn test_binary_indexed_tree() {
     for i in 0..n - 1 {
         arr[i + 1] = std::cmp::max(arr[i], arr[i + 1]);
     }
-    for i in 0..n {
-        assert_eq!(bit.accumulate(i), arr[i]);
+    for (i, a) in arr.iter().cloned().enumerate() {
+        assert_eq!(bit.accumulate(i), a);
     }
 }
 
@@ -193,9 +193,9 @@ impl<M: Monoid> BinaryIndexedTree2D<M> {
             let mut b = j;
             while b > 0 {
                 res = self.m.operate(&res, &self.bit[a][b]);
-                b -= b & !b + 1;
+                b -= b & (!b + 1);
             }
-            a -= a & !a + 1;
+            a -= a & (!a + 1);
         }
         res
     }
@@ -211,9 +211,9 @@ impl<M: Monoid> BinaryIndexedTree2D<M> {
             let mut b = j + 1;
             while b <= self.w {
                 self.bit[a][b] = self.m.operate(&self.bit[a][b], &x);
-                b += b & !b + 1;
+                b += b & (!b + 1);
             }
-            a += a & !a + 1;
+            a += a & (!a + 1);
         }
     }
 }
@@ -235,9 +235,9 @@ fn test_binary_indexed_tree_2d() {
         bit.update(i, j, v);
         arr[i][j] += v;
     }
-    for i in 0..h {
+    for arr in arr.iter_mut() {
         for j in 0..w - 1 {
-            arr[i][j + 1] += arr[i][j];
+            arr[j + 1] += arr[j];
         }
     }
     for i in 0..h - 1 {
@@ -245,9 +245,9 @@ fn test_binary_indexed_tree_2d() {
             arr[i + 1][j] += arr[i][j];
         }
     }
-    for i in 0..h {
-        for j in 0..w {
-            assert_eq!(bit.accumulate(i, j), arr[i][j]);
+    for (i, arr) in arr.iter().enumerate() {
+        for (j, a) in arr.iter().cloned().enumerate() {
+            assert_eq!(bit.accumulate(i, j), a);
         }
     }
 
@@ -260,9 +260,9 @@ fn test_binary_indexed_tree_2d() {
         bit.update(i, j, v);
         arr[i][j] = std::cmp::max(arr[i][j], v);
     }
-    for i in 0..h {
+    for arr in arr.iter_mut() {
         for j in 0..w - 1 {
-            arr[i][j + 1] = std::cmp::max(arr[i][j + 1], arr[i][j]);
+            arr[j + 1] = std::cmp::max(arr[j + 1], arr[j]);
         }
     }
     for i in 0..h - 1 {
@@ -270,9 +270,9 @@ fn test_binary_indexed_tree_2d() {
             arr[i + 1][j] = std::cmp::max(arr[i + 1][j], arr[i][j]);
         }
     }
-    for i in 0..h {
-        for j in 0..w {
-            assert_eq!(bit.accumulate(i, j), arr[i][j]);
+    for (i, arr) in arr.iter().enumerate() {
+        for (j, a) in arr.iter().cloned().enumerate() {
+            assert_eq!(bit.accumulate(i, j), a);
         }
     }
 }
@@ -318,9 +318,9 @@ fn test_group_binary_indexed_tree2d() {
         bit.set(i, j, v);
         arr[i + 1][j + 1] = v;
     }
-    for i in 0..h + 1 {
+    for arr in arr.iter_mut() {
         for j in 0..w {
-            arr[i][j + 1] += arr[i][j];
+            arr[j + 1] += arr[j];
         }
     }
     for i in 0..h {

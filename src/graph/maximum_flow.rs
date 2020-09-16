@@ -29,14 +29,13 @@ impl DinicBuilder {
         let DinicBuilder {
             vsize, capacities, ..
         } = self;
-        let dinic = Dinic {
+        Dinic {
             graph,
             capacities,
             iter: Vec::with_capacity(vsize),
             level: Vec::with_capacity(vsize),
             deq: std::collections::VecDeque::with_capacity(vsize),
-        };
-        dinic
+        }
     }
 }
 #[cargo_snippet::snippet("Dinic")]

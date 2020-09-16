@@ -97,8 +97,8 @@ fn test_factorials() {
 pub struct SmallModMemorizedFactorial<M: Modulus> {
     fact: Vec<MInt<M>>,
 }
-impl<M: Modulus> SmallModMemorizedFactorial<M> {
-    pub fn new() -> Self {
+impl<M: Modulus> Default for SmallModMemorizedFactorial<M> {
+    fn default() -> Self {
         let p = MInt::<M>::get_mod() as usize;
         let mut fact = vec![MInt::<M>::one(); p];
         for i in 1..p {
@@ -106,6 +106,8 @@ impl<M: Modulus> SmallModMemorizedFactorial<M> {
         }
         Self { fact }
     }
+}
+impl<M: Modulus> SmallModMemorizedFactorial<M> {
     /// n! = a * p^e
     pub fn factorial(&self, n: usize) -> (MInt<M>, usize) {
         let p = MInt::<M>::get_mod() as usize;
@@ -149,7 +151,7 @@ fn test_small_factorials() {
     let mut rand = Xorshift::time();
     const N: usize = 10_000;
     const Q: usize = 10_000;
-    let fact = SmallModMemorizedFactorial::<DM>::new();
+    let fact = SmallModMemorizedFactorial::<DM>::default();
     for _ in 0..Q {
         let n = rand.rand(N as u64) as usize + 1;
         let k = rand.rand(N as u64) as usize % n;

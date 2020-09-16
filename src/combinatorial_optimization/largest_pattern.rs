@@ -41,8 +41,8 @@ pub fn largest_rectangle_in_grid(h: usize, w: usize, ok: impl Fn(usize, usize) -
     let mut hist = vec![0; w];
     let mut res = 0;
     for i in 0..h {
-        for j in 0..w {
-            hist[j] = if ok(i, j) { hist[j] + 1 } else { 0 };
+        for (j, hist) in hist.iter_mut().enumerate() {
+            *hist = if ok(i, j) { *hist + 1 } else { 0 };
         }
         res = res.max(largest_rectangle(&hist));
     }

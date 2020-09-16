@@ -7,9 +7,9 @@ use crate::prelude::*;
 pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [MInt998244353; n]);
+    scan!(scanner, n, q, a: [MInt998244353]);
     let mut seg = LazySegmentTree::from_vec(
-        a.into_iter().map(|x| (x, 1u32)).collect::<_>(),
+        a.take(n).map(|x| (x, 1u32)).collect::<_>(),
         CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
         LinearOperation::new(),
         |x, y| (y.0 * x.0 + y.1 * MInt998244353::new(x.1), x.1),

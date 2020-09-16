@@ -8,7 +8,9 @@ fn bench_gcd(b: &mut test::Bencher) {
     use competitive::tools::Xorshift;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
-    let v = (0..Q).map(|_| (xor.next(), xor.next())).collect::<Vec<_>>();
+    let v = (0..Q)
+        .map(|_| (xor.rand64(), xor.rand64()))
+        .collect::<Vec<_>>();
     b.iter(|| {
         let mut x = 0;
         for &(a, b) in &v {
@@ -23,7 +25,9 @@ fn bench_gcd_binary(b: &mut test::Bencher) {
     use competitive::tools::Xorshift;
     let mut xor = Xorshift::default();
     const Q: usize = 10_000;
-    let v = (0..Q).map(|_| (xor.next(), xor.next())).collect::<Vec<_>>();
+    let v = (0..Q)
+        .map(|_| (xor.rand64(), xor.rand64()))
+        .collect::<Vec<_>>();
     b.iter(|| {
         let mut x = 0;
         for &(a, b) in &v {

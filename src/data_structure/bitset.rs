@@ -44,7 +44,7 @@ impl BitSet {
     fn trim(&mut self) {
         if self.size & 63 != 0 {
             if let Some(x) = self.bits.last_mut() {
-                *x &= 0xffffffffffffffff >> 64 - (self.size & 63);
+                *x &= 0xffffffffffffffff >> (64 - (self.size & 63));
             }
         }
     }
@@ -60,7 +60,7 @@ impl BitSet {
                 }
             } else {
                 for i in (1..n - k).rev() {
-                    self.bits[i + k] |= self.bits[i] << d | self.bits[i - 1] >> 64 - d;
+                    self.bits[i + k] |= self.bits[i] << d | self.bits[i - 1] >> (64 - d);
                 }
                 self.bits[k] |= self.bits[0] << d;
             }
@@ -79,7 +79,7 @@ impl BitSet {
                 }
             } else {
                 for i in k..n - 1 {
-                    self.bits[i - k] |= self.bits[i] >> d | self.bits[i + 1] << 64 - d;
+                    self.bits[i - k] |= self.bits[i] >> d | self.bits[i + 1] << (64 - d);
                 }
                 self.bits[n - k - 1] |= self.bits[n - 1] >> d;
             }
@@ -104,7 +104,7 @@ impl std::ops::ShlAssign<usize> for BitSet {
                 }
             } else {
                 for i in (1..n - k).rev() {
-                    self.bits[i + k] = self.bits[i] << d | self.bits[i - 1] >> 64 - d;
+                    self.bits[i + k] = self.bits[i] << d | self.bits[i - 1] >> (64 - d);
                 }
                 self.bits[k] = self.bits[0] << d;
             }
@@ -142,7 +142,7 @@ impl std::ops::ShrAssign<usize> for BitSet {
                 }
             } else {
                 for i in k..n - 1 {
-                    self.bits[i - k] = self.bits[i] >> d | self.bits[i + 1] << 64 - d;
+                    self.bits[i - k] = self.bits[i] >> d | self.bits[i + 1] << (64 - d);
                 }
                 self.bits[n - k - 1] = self.bits[n - 1] >> d;
             }

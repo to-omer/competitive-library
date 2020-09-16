@@ -44,7 +44,7 @@ pub trait Monoid: SemiGroup + Unital {
                 res = self.operate(&res, &base);
             }
             base = self.operate(&base, &base);
-            n = n >> 1;
+            n >>= 1;
         }
         res
     }

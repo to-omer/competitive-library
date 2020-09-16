@@ -23,19 +23,19 @@ fn closest_pair_inner(a: &mut [Point]) -> f64 {
     .0;
     a.sort_by_key(|&p| TotalOrd(p.im));
     let mut b: Vec<Point> = vec![];
-    for i in 0..n {
-        if (a[i].re - x).abs() >= d {
+    for a in a.iter() {
+        if (a.re - x).abs() >= d {
             continue;
         }
         let k = b.len();
         for j in 0..k {
-            let p = a[i] - b[k - j - 1];
+            let p = *a - b[k - j - 1];
             if p.im >= d {
                 break;
             }
             d = min(TotalOrd(d), TotalOrd(p.abs())).0;
         }
-        b.push(a[i]);
+        b.push(*a);
     }
     d
 }

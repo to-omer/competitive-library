@@ -22,7 +22,7 @@ impl<'a> EulerTourForEdge<'a> {
         self_.edge_tour(root, std::usize::MAX);
         self_
     }
-    pub fn len(&self) -> usize {
+    pub fn length(&self) -> usize {
         self.epos
     }
     fn edge_tour(&mut self, u: usize, p: usize) {
@@ -53,7 +53,7 @@ impl<'a> EulerTourForVertex<'a> {
             vpos: 0,
         }
     }
-    pub fn len(&self) -> usize {
+    pub fn length(&self) -> usize {
         self.vpos
     }
     pub fn subtree_vertex_tour(&mut self, u: usize, p: usize) {
@@ -115,7 +115,7 @@ impl<'a> EulerTourForRichVertex<'a> {
         self_.vertex_tour(root, std::usize::MAX);
         self_
     }
-    pub fn len(&self) -> usize {
+    pub fn length(&self) -> usize {
         self.vtrace.len()
     }
     fn vertex_tour(&mut self, u: usize, p: usize) {
@@ -173,9 +173,7 @@ pub mod impl_lcam {
         pub fn ancestor(&self, u: usize, v: usize) -> usize {
             if u >= self.depth.len() {
                 v
-            } else if v >= self.depth.len() {
-                u
-            } else if self.depth[u] < self.depth[v] {
+            } else if v >= self.depth.len() || self.depth[u] < self.depth[v] {
                 u
             } else {
                 v

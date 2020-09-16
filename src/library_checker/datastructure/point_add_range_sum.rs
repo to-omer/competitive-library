@@ -6,10 +6,10 @@ use crate::prelude::*;
 pub fn point_add_range_sum_binary_indexed_tree(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n]);
+    scan!(scanner, n, q, a: [i64]);
     let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
-    for i in 0..n {
-        bit.update(i, a[i]);
+    for (i, a) in a.take(n).enumerate() {
+        bit.update(i, a);
     }
     for _ in 0..q {
         scan!(scanner, ty);

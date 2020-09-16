@@ -13,7 +13,7 @@ mod polynomial_impls {
         pub fn from_vec(data: Vec<T>) -> Self {
             Self { data }
         }
-        pub fn len(&self) -> usize {
+        pub fn length(&self) -> usize {
             self.data.len()
         }
     }
@@ -50,13 +50,13 @@ mod polynomial_impls {
     impl<T: Copy + Add<Output = T>> Add<&Polynomial<T>> for &Polynomial<T> {
         type Output = Polynomial<T>;
         fn add(self, rhs: &Polynomial<T>) -> Self::Output {
-            let (x, y) = if self.len() < rhs.len() {
+            let (x, y) = if self.length() < rhs.length() {
                 (rhs, self)
             } else {
                 (self, rhs)
             };
             let mut x = x.clone();
-            for j in 0..y.len() {
+            for j in 0..y.length() {
                 x[j] = x[j] + y[j];
             }
             x
@@ -65,13 +65,13 @@ mod polynomial_impls {
     impl<T: Copy + Sub<Output = T>> Sub<&Polynomial<T>> for &Polynomial<T> {
         type Output = Polynomial<T>;
         fn sub(self, rhs: &Polynomial<T>) -> Self::Output {
-            let (x, y) = if self.len() < rhs.len() {
+            let (x, y) = if self.length() < rhs.length() {
                 (rhs, self)
             } else {
                 (self, rhs)
             };
             let mut x = x.clone();
-            for j in 0..y.len() {
+            for j in 0..y.length() {
                 x[j] = x[j] - y[j];
             }
             x
@@ -80,9 +80,10 @@ mod polynomial_impls {
     impl<T: Copy + Zero + Add<Output = T> + Mul<Output = T>> Mul<&Polynomial<T>> for &Polynomial<T> {
         type Output = Polynomial<T>;
         fn mul(self, rhs: &Polynomial<T>) -> Self::Output {
-            let mut res = Polynomial::from_vec(vec![Zero::zero(); self.len() + rhs.len() - 1]);
-            for i in 0..self.len() {
-                for j in 0..rhs.len() {
+            let mut res =
+                Polynomial::from_vec(vec![Zero::zero(); self.length() + rhs.length() - 1]);
+            for i in 0..self.length() {
+                for j in 0..rhs.length() {
                     res[i + j] = res[i + j] + self[i] * rhs[j];
                 }
             }
@@ -96,11 +97,11 @@ mod polynomial_impls {
         fn div(self, rhs: &Polynomial<T>) -> Self::Output {
             let mut x = self.clone();
             let mut res = Polynomial::from_vec(vec![]);
-            for i in (rhs.len() - 1..x.len()).rev() {
-                let t = x[i] / rhs[rhs.len() - 1];
+            for i in (rhs.length() - 1..x.length()).rev() {
+                let t = x[i] / rhs[rhs.length() - 1];
                 res.data.push(t);
-                for j in 0..rhs.len() {
-                    x[i - j] = x[i - j] - t * rhs[rhs.len() - 1 - j];
+                for j in 0..rhs.length() {
+                    x[i - j] = x[i - j] - t * rhs[rhs.length() - 1 - j];
                 }
             }
             res.data.reverse();
@@ -113,13 +114,13 @@ mod polynomial_impls {
         type Output = Polynomial<T>;
         fn rem(self, rhs: &Polynomial<T>) -> Self::Output {
             let mut x = self.clone();
-            for i in (rhs.len() - 1..x.len()).rev() {
-                let t = x[i] / rhs[rhs.len() - 1];
-                for j in 0..rhs.len() {
-                    x[i - j] = x[i - j] - t * rhs[rhs.len() - 1 - j];
+            for i in (rhs.length() - 1..x.length()).rev() {
+                let t = x[i] / rhs[rhs.length() - 1];
+                for j in 0..rhs.length() {
+                    x[i - j] = x[i - j] - t * rhs[rhs.length() - 1 - j];
                 }
             }
-            x.data.truncate(rhs.len() - 1);
+            x.data.truncate(rhs.length() - 1);
             x
         }
     }

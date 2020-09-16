@@ -116,7 +116,7 @@ pub fn divisors(n: usize) -> Vec<usize> {
             }
         }
     }
-    res.sort();
+    res.sort_unstable();
     res
 }
 
@@ -239,7 +239,7 @@ pub fn find_factor(n: u64) -> u64 {
 }
 
 pub fn find_factor2(n: u64) -> u64 {
-    let m = 1u64 << (64 - n.leading_zeros()) / 8;
+    let m = 1u64 << ((64 - n.leading_zeros()) / 8);
     let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
     let mul = |x: u64, y: u64| (x as u128 * y as u128 % n as u128) as u64;
     let mut c = 1;
@@ -296,7 +296,7 @@ pub fn prime_factors_rho(mut n: u64) -> Vec<u64> {
             }
         }
     }
-    res.sort();
+    res.sort_unstable();
     res
 }
 
@@ -306,7 +306,7 @@ fn test_prime_factors_rho() {
     const Q: usize = 2_000;
     let mut rand = Xorshift::time();
     for _ in 0..Q {
-        let x = rand.next();
+        let x = rand.rand64();
         let factors = prime_factors_rho(x);
         assert!(factors.iter().all(|&p| miller_rabin(p)));
         let p = factors.into_iter().product::<u64>();
@@ -373,10 +373,10 @@ pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     let m = primes.len();
     for i in 0..1 << m {
         let (mut mu, mut d) = (1, 1);
-        for j in 0..m {
+        for (j, p) in primes.iter().enumerate() {
             if i & 1 << j != 0 {
                 mu *= -1;
-                d *= primes[j];
+                d *= p;
             }
         }
         res.insert(d, mu);
@@ -388,7 +388,7 @@ pub fn segmented_sieve_primes(n: usize) -> Vec<usize> {
     if n < 2 {
         return Vec::new();
     }
-    let seg_size = (n as f32).sqrt() as usize + 2 >> 1;
+    let seg_size = ((n as f32).sqrt() as usize + 2) >> 1;
     let mut primes = vec![2];
     let mut table = vec![true; seg_size];
     for i in 1..seg_size {

@@ -171,26 +171,20 @@ fn test_lazy_segment_tree() {
         let q = rand.rand(2);
         if q == 0 {
             // Range Add Query
-            let mut l = rand.rand(n as u64) as usize;
-            let mut r = rand.rand(n as u64) as usize + 1;
-            if r < l {
-                std::mem::swap(&mut l, &mut r);
-            }
+            let l = rand.rand(n as u64) as usize;
+            let r = rand.rand((n - l + 1) as u64) as usize + l;
             let x = rand.rand(1_000_000_000) as usize;
             seg.update(l, r, x);
-            for i in l..r {
-                arr[i] += x;
+            for a in arr[l..r].iter_mut() {
+                *a += x;
             }
         } else {
             // Range Sum Query
-            let mut l = rand.rand(n as u64) as usize;
-            let mut r = rand.rand(n as u64) as usize + 1;
-            if r < l {
-                std::mem::swap(&mut l, &mut r);
-            }
+            let l = rand.rand(n as u64) as usize;
+            let r = rand.rand((n - l + 1) as u64) as usize + l;
             let mut res = 0;
-            for i in l..r {
-                res += arr[i];
+            for a in arr[l..r].iter() {
+                res += a;
             }
             assert_eq!(seg.fold(l, r).0, res);
         }
@@ -206,19 +200,19 @@ fn test_lazy_segment_tree() {
         if q == 0 {
             // Range Update Query
             let l = rand.rand(n as u64) as usize;
-            let r = rand.rand(n as u64) as usize + 1;
+            let r = rand.rand((n - l + 1) as u64) as usize + l;
             let x = rand.rand(1_000_000_000) as usize;
             seg.update(l, r, Some(x));
-            for i in l..r {
-                arr[i] = x;
+            for a in arr[l..r].iter_mut() {
+                *a = x;
             }
         } else {
             // Range Max Query
             let l = rand.rand(n as u64) as usize;
-            let r = rand.rand(n as u64) as usize + 1;
+            let r = rand.rand((n - l + 1) as u64) as usize + l;
             let mut res = 0;
-            for i in l..r {
-                res = std::cmp::max(res, arr[i]);
+            for a in arr[l..r].iter() {
+                res = std::cmp::max(res, *a);
             }
             assert_eq!(seg.fold(l, r), res);
         }

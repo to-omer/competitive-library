@@ -37,8 +37,8 @@ mod matrix_impls {
     impl<T: Clone + Zero + One> Matrix<T> {
         pub fn eye(shape: (usize, usize)) -> Self {
             let mut data = vec![vec![Zero::zero(); shape.1]; shape.0];
-            for i in 0..shape.0 {
-                data[i][i] = One::one();
+            for (i, d) in data.iter_mut().enumerate() {
+                d[i] = One::one();
             }
             Self { shape, data }
         }
@@ -154,7 +154,7 @@ mod matrix_impls {
             self.row_reduction();
             (0..n).filter(|&i| !self[i][i].is_zero()).count()
         }
-        pub fn solve_system_of_linear_equations(&self, b: &Vec<T>) -> Option<Vec<T>> {
+        pub fn solve_system_of_linear_equations(&self, b: &[T]) -> Option<Vec<T>> {
             assert_eq!(self.shape.0, self.shape.1);
             assert_eq!(self.shape.0, b.len());
             let n = self.shape.0;

@@ -10,8 +10,8 @@ pub fn dsl_4_a(reader: &mut impl Read, writer: &mut impl Write) {
     ys.extend(xyxy.iter().map(|t| t.1));
     xs.extend(xyxy.iter().map(|t| t.2));
     ys.extend(xyxy.iter().map(|t| t.3));
-    xs.sort();
-    ys.sort();
+    xs.sort_unstable();
+    ys.sort_unstable();
     xs.dedup();
     ys.dedup();
     let mut qs = vec![vec![]; xs.len()];

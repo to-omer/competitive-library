@@ -36,7 +36,7 @@ impl RollingHash {
     pub fn mersenne_mul_mod(a: u64, b: u64) -> u64 {
         Self::mersenne_mod(Self::mersenne_mul(a, b))
     }
-    pub fn new(v: &Vec<u64>, base: u64) -> Self {
+    pub fn new(v: &[u64], base: u64) -> Self {
         let n = v.len();
         let mut hash = vec![0; n + 1];
         let mut pow = vec![1; n + 1];
@@ -46,12 +46,11 @@ impl RollingHash {
         }
         Self { base, hash, pow }
     }
-    pub fn hash_once(&self, v: &Vec<u64>) -> u64 {
-        let n = v.len();
+    pub fn hash_once(&self, v: &[u64]) -> u64 {
         let mut hash = 0;
         let mut pow = 1;
-        for i in 0..n {
-            hash = Self::mersenne_mod(Self::mersenne_mul(hash, self.base) + v[i]);
+        for v in v.iter() {
+            hash = Self::mersenne_mod(Self::mersenne_mul(hash, self.base) + v);
             pow = Self::mersenne_mul_mod(pow, self.base);
         }
         hash
@@ -75,14 +74,14 @@ pub struct MultipleRollingHash {
 #[cargo_snippet::snippet("RollingHash")]
 #[cargo_snippet::snippet(include = "Xorshift")]
 impl MultipleRollingHash {
-    pub fn new(v: &Vec<u64>, bases: &Vec<u64>) -> Self {
+    pub fn new(v: &[u64], bases: &[u64]) -> Self {
         let rh = bases
             .iter()
             .map(|&base| RollingHash::new(v, base))
             .collect::<Vec<_>>();
         Self { rh }
     }
-    pub fn new_rand(v: &Vec<u64>, n: usize) -> Self {
+    pub fn new_rand(v: &[u64], n: usize) -> Self {
         let mut rand = Xorshift::time();
         let bases = rand
             .rands(RollingHash::MASK61 - 2, n)
@@ -94,7 +93,7 @@ impl MultipleRollingHash {
     pub fn find(&self, l: usize, r: usize) -> Vec<u64> {
         self.rh.iter().map(|h| h.find(l, r)).collect::<Vec<_>>()
     }
-    pub fn concat(&self, h1: &Vec<u64>, h2: &Vec<u64>, l2: usize) -> Vec<u64> {
+    pub fn concat(&self, h1: &[u64], h2: &[u64], l2: usize) -> Vec<u64> {
         self.rh
             .iter()
             .zip(h1.iter().zip(h2.iter()))

@@ -27,7 +27,7 @@ impl<S: SemiGroup> DisjointSparseTable<S> {
         Self { monoid, table }
     }
     #[inline]
-    pub fn len(&self) -> usize {
+    pub fn height(&self) -> usize {
         self.table[0].len()
     }
     #[inline]
@@ -37,8 +37,8 @@ impl<S: SemiGroup> DisjointSparseTable<S> {
     }
     #[inline]
     pub fn fold_close(&self, l: usize, r: usize) -> S::T {
-        debug_assert!(l < self.len());
-        debug_assert!(r < self.len());
+        debug_assert!(l < self.height());
+        debug_assert!(r < self.height());
         debug_assert!(l <= r);
         if let Some(x) = Self::most_significant_bit_place(l ^ r) {
             self.monoid.operate(&self.table[x][l], &self.table[x][r])

@@ -1,13 +1,17 @@
 #[cargo_snippet::snippet("LongestIncreasingSubsequence")]
+#[derive(Debug, Clone)]
 pub struct LongestIncreasingSubsequence<T: Ord> {
     pub dp: Vec<T>,
 }
 #[cargo_snippet::snippet("LongestIncreasingSubsequence")]
-impl<T: Ord> LongestIncreasingSubsequence<T> {
-    pub fn new() -> Self {
+impl<T: Ord> Default for LongestIncreasingSubsequence<T> {
+    fn default() -> Self {
         Self { dp: Vec::new() }
     }
-    pub fn len(&self) -> usize {
+}
+#[cargo_snippet::snippet("LongestIncreasingSubsequence")]
+impl<T: Ord> LongestIncreasingSubsequence<T> {
+    pub fn longest_length(&self) -> usize {
         self.dp.len()
     }
     pub fn insert(&mut self, x: T) {

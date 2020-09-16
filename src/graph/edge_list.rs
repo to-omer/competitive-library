@@ -31,7 +31,7 @@ pub mod edge_list_graph {
         pub fn vertices(&self) -> std::ops::Range<usize> {
             0..self.vertices_size()
         }
-        pub fn edges<'a>(&'a self) -> std::slice::Iter<'a, (usize, usize)> {
+        pub fn edges(&self) -> std::slice::Iter<'_, (usize, usize)> {
             self.edges.iter()
         }
         /// Construct graph from edges.

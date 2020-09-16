@@ -17,14 +17,14 @@ impl<T: Eq> KnuthMorrisPratt<T> {
         }
         Self { pattern, table }
     }
-    pub fn search_all(&self, s: &Vec<T>) -> Vec<usize> {
+    pub fn search_all(&self, s: &[T]) -> Vec<usize> {
         let mut res = vec![];
         let mut j = 0;
-        for i in 0..s.len() {
-            while j > 0 && s[i] != self.pattern[j] {
+        for (i, s) in s.iter().enumerate() {
+            while j > 0 && s != &self.pattern[j] {
                 j = self.table[j - 1];
             }
-            if s[i] == self.pattern[j] {
+            if s == &self.pattern[j] {
                 j += 1;
             }
             if j == self.pattern.len() {

@@ -1,5 +1,5 @@
 #[cargo_snippet::snippet]
-pub fn slide_minimum<T: Clone + Ord>(v: &Vec<T>, k: usize) -> Vec<usize> {
+pub fn slide_minimum<T: Clone + Ord>(v: &[T], k: usize) -> Vec<usize> {
     let mut deq = std::collections::VecDeque::new();
     let mut res = vec![];
     for i in 0..v.len() {
@@ -61,7 +61,7 @@ impl<'a> SlideMinimum<'a> {
         }
         self.left += 1;
     }
-    pub fn next(&mut self) -> i64 {
+    pub fn next_minimum(&mut self) -> i64 {
         self.rsucc();
         self.lsucc();
         self.seq[*self.deq.front().unwrap()]

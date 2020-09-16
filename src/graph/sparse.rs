@@ -9,6 +9,9 @@ pub use sparse_graph::{
 #[cargo_snippet::snippet("SparseGraph")]
 pub mod sparse_graph {
     use super::*;
+    use std::{iter, marker::PhantomData, ops, slice};
+
+    type Marker<T> = PhantomData<fn() -> T>;
     #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
     pub struct DirectedEdge;
     #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -34,7 +37,7 @@ pub mod sparse_graph {
         pub start: Vec<usize>,
         pub elist: Vec<Adjacency>,
         pub edges: Vec<(usize, usize)>,
-        _marker: std::marker::PhantomData<fn() -> D>,
+        _marker: Marker<D>,
     }
 
     impl<D> SparseGraph<D> {
@@ -47,11 +50,11 @@ pub mod sparse_graph {
             self.edges.len()
         }
         /// Return an iterator over graph vertices.
-        pub fn vertices(&self) -> std::ops::Range<usize> {
+        pub fn vertices(&self) -> ops::Range<usize> {
             0..self.vertices_size()
         }
         /// Return a slice of adjacency vertices.
-        pub fn adjacencies(&self, v: usize) -> std::slice::Iter<'_, Adjacency> {
+        pub fn adjacencies(&self, v: usize) -> slice::Iter<'_, Adjacency> {
             self.elist[self.start[v]..self.start[v + 1]].iter()
         }
     }
@@ -69,7 +72,7 @@ pub mod sparse_graph {
 
     impl SparseGraphConstruction for DirectedEdge {
         fn construct_graph(vsize: usize, edges: Vec<(usize, usize)>) -> SparseGraph<Self> {
-            let mut start = vec![0; vsize + 1];
+            let mut start: Vec<_> = iter::repeat(0).take(vsize + 1).collect();
             let mut elist = Vec::with_capacity(edges.len());
             unsafe { elist.set_len(edges.len()) }
             for (from, _) in edges.iter().cloned() {
@@ -87,14 +90,14 @@ pub mod sparse_graph {
                 start,
                 elist,
                 edges,
-                _marker: std::marker::PhantomData,
+                _marker: PhantomData,
             }
         }
     }
 
     impl SparseGraphConstruction for UndirectedEdge {
         fn construct_graph(vsize: usize, edges: Vec<(usize, usize)>) -> SparseGraph<Self> {
-            let mut start = vec![0; vsize + 1];
+            let mut start: Vec<_> = iter::repeat(0).take(vsize + 1).collect();
             let mut elist = Vec::with_capacity(edges.len() * 2);
             unsafe { elist.set_len(edges.len() * 2) }
             for (from, to) in edges.iter().cloned() {
@@ -115,14 +118,14 @@ pub mod sparse_graph {
                 start,
                 elist,
                 edges,
-                _marker: std::marker::PhantomData,
+                _marker: PhantomData,
             }
         }
     }
 
     impl SparseGraphConstruction for BidirectionalEdge {
         fn construct_graph(vsize: usize, edges: Vec<(usize, usize)>) -> SparseGraph<Self> {
-            let mut start = vec![0; vsize + 1];
+            let mut start: Vec<_> = iter::repeat(0).take(vsize + 1).collect();
             let mut elist = Vec::with_capacity(edges.len() * 2);
             unsafe { elist.set_len(edges.len() * 2) }
             for (from, to) in edges.iter().cloned() {
@@ -143,7 +146,7 @@ pub mod sparse_graph {
                 start,
                 elist,
                 edges,
-                _marker: std::marker::PhantomData,
+                _marker: PhantomData,
             }
         }
     }
@@ -155,7 +158,7 @@ pub mod sparse_graph {
     pub struct SparseGraphScanner<U: IterScan<Output = usize>, T: IterScan, D> {
         vsize: usize,
         esize: usize,
-        _marker: std::marker::PhantomData<fn() -> (U, T, D)>,
+        _marker: Marker<(U, T, D)>,
     }
 
     impl<U: IterScan<Output = usize>, T: IterScan, D> SparseGraphScanner<U, T, D> {
@@ -163,7 +166,7 @@ pub mod sparse_graph {
             Self {
                 vsize,
                 esize,
-                _marker: std::marker::PhantomData,
+                _marker: PhantomData,
             }
         }
     }
@@ -188,12 +191,22 @@ pub mod sparse_graph {
     pub type UndirectedGraphScanner<U, T> = SparseGraphScanner<U, T, UndirectedEdge>;
     pub type BidirectionalGraphScanner<U, T> = SparseGraphScanner<U, T, BidirectionalEdge>;
 
-    pub struct TreeGraphScanner<U: IterScan<Output = usize>, T: IterScan>(
-        std::marker::PhantomData<fn() -> (U, T)>,
-    );
+    pub struct TreeGraphScanner<U: IterScan<Output = usize>, T: IterScan> {
+        vsize: usize,
+        _marker: Marker<(U, T)>,
+    }
     impl<U: IterScan<Output = usize>, T: IterScan> TreeGraphScanner<U, T> {
-        pub fn new(vsize: usize) -> SparseGraphScanner<U, T, UndirectedEdge> {
-            SparseGraphScanner::new(vsize, vsize - 1)
+        pub fn new(vsize: usize) -> Self {
+            Self {
+                vsize,
+                _marker: PhantomData,
+            }
+        }
+    }
+    impl<U: IterScan<Output = usize>, T: IterScan> MarkedIterScan for TreeGraphScanner<U, T> {
+        type Output = (UndirectedSparseGraph, Vec<<T as IterScan>::Output>);
+        fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+            UndirectedGraphScanner::<U, T>::new(self.vsize, self.vsize - 1).mscan(iter)
         }
     }
 }

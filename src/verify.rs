@@ -92,7 +92,7 @@ impl TestCase {
         .into()
     }
     #[allow(dead_code)]
-    pub(crate) fn judge_with_eps<'a, 'b>(&'a self, result: &'b [u8], eps: f64) -> VerifyStatus {
+    pub(crate) fn judge_with_eps(&self, result: &[u8], eps: f64) -> VerifyStatus {
         match String::from_utf8(result.to_vec()) {
             Ok(res) => {
                 let (mut it_out, mut it_res) = (
@@ -116,7 +116,7 @@ impl TestCase {
                     };
                 }
             }
-            Err(_) => return VerifyStatus::WA,
+            Err(_) => VerifyStatus::WA,
         }
     }
 }
@@ -329,7 +329,7 @@ impl VerifyConfig {
                 };
                 format!("{}  {}  {}ms", badge, r.status(), r.elapsed().as_millis())
             })
-            .unwrap_or("❌".to_string());
+            .unwrap_or_else(|_| "❌".to_string());
         let detail = result
             .as_ref()
             .map(|res| {
@@ -456,7 +456,7 @@ impl VerifyResults {
             .iter()
             .map(|res| res.elapsed)
             .max()
-            .unwrap_or(Duration::from_secs(0))
+            .unwrap_or_else(|| Duration::from_secs(0))
     }
 }
 

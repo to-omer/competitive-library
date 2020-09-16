@@ -1,6 +1,7 @@
 #![cfg_attr(feature = "verify_doc", feature(external_doc))]
 #![cfg_attr(feature = "verify_doc", feature(doc_alias))]
 // #![warn(missing_docs)]
+#![allow(clippy::many_single_char_names)]
 //! [github](https://github.com/to-omer/competitive-library)
 //!
 //! [verification summary](index.html?search=verify)

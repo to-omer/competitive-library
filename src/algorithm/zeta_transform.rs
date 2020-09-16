@@ -75,10 +75,10 @@ fn test_subset_transform() {
     let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
     let mut g = vec![0i64; N];
     let h = f.clone();
-    for s in 0..N {
-        for t in 0..N {
+    for (s, f) in f.iter().enumerate() {
+        for (t, g) in g.iter_mut().enumerate() {
             if s | t == t {
-                g[t] += f[s];
+                *g += f;
             }
         }
     }
@@ -166,10 +166,10 @@ fn test_superset_transform() {
     let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
     let mut g = vec![0i64; N];
     let h = f.clone();
-    for s in 0..N {
-        for t in 0..N {
+    for (s, f) in f.iter().enumerate() {
+        for (t, g) in g.iter_mut().enumerate() {
             if s | t == s {
-                g[t] += f[s];
+                *g += f;
             }
         }
     }
@@ -250,10 +250,10 @@ fn test_divisor_transform() {
     f[0] = 0;
     let mut g = vec![0i64; N];
     let h = f.clone();
-    for s in 1..N {
-        for t in 1..N {
+    for (s, f) in f.iter().enumerate().skip(1) {
+        for (t, g) in g.iter_mut().enumerate().skip(1) {
             if t % s == 0 {
-                g[t] += f[s];
+                *g += f;
             }
         }
     }
@@ -267,11 +267,11 @@ fn test_divisor_transform() {
     f[0] = 0;
     g[0] = 0;
     let mut h = vec![0i64; N];
-    for i in 1..N {
-        for j in 1..N {
+    for (i, f) in f.iter().enumerate().skip(1) {
+        for (j, g) in g.iter().enumerate().skip(1) {
             let k = lcm(i as _, j as _) as usize;
             if k < N {
-                h[k] += f[i] * g[j];
+                h[k] += f * g;
             }
         }
     }
@@ -339,10 +339,10 @@ fn test_multiple_transform() {
     f[0] = 0;
     let mut g = vec![0i64; N];
     let h = f.clone();
-    for s in 1..N {
-        for t in 1..N {
+    for (s, f) in f.iter().enumerate().skip(1) {
+        for (t, g) in g.iter_mut().enumerate().skip(1) {
             if s % t == 0 {
-                g[t] += f[s];
+                *g += f;
             }
         }
     }

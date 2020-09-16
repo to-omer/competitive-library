@@ -123,8 +123,8 @@ fn test_wavelet_matrix() {
     let mut rand = Xorshift::time();
     let v: Vec<_> = (0..N).map(|_| rand.rand(A as u64) as usize).collect();
     let wm = WaveletMatrix::new(v.clone(), 8);
-    for i in 0..N {
-        assert_eq!(wm.access(i), v[i]);
+    for (i, v) in v.iter().cloned().enumerate() {
+        assert_eq!(wm.access(i), v);
     }
     for _ in 0..Q {
         let l = rand.rand(N as u64) as usize;
@@ -151,8 +151,8 @@ fn test_wavelet_matrix() {
         assert_eq!(
             (0..r - l).map(|k| wm.quantile(l..r, k)).collect::<Vec<_>>(),
             {
-                let mut v: Vec<_> = v[l..r].iter().cloned().collect();
-                v.sort();
+                let mut v: Vec<_> = v[l..r].to_vec();
+                v.sort_unstable();
                 v
             }
         );

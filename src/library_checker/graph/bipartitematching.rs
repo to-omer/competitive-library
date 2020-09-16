@@ -22,9 +22,9 @@ pub fn bipartitematching(reader: &mut impl Read, writer: &mut impl Write) {
     let mut dinic = builder.build(&graph);
     let f = dinic.maximum_flow(s, t);
     writeln!(writer, "{}", f).ok();
-    for i in 0..m {
+    for (i, (a, b)) in ab.iter().enumerate() {
         if dinic.get_flow(i) > 0 {
-            writeln!(writer, "{} {}", ab[i].0, ab[i].1).ok();
+            writeln!(writer, "{} {}", a, b).ok();
         }
     }
 }

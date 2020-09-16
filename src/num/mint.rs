@@ -305,7 +305,7 @@ mod mint_impls {
         type Output = Self;
         #[inline]
         fn div(self, rhs: Self) -> Self::Output {
-            self * rhs.inv()
+            self.mul(rhs.inv())
         }
     }
     impl<M: Modulus> Neg for MInt<M> {

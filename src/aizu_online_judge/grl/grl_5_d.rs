@@ -11,14 +11,12 @@ pub fn grl_5_d(reader: &mut impl Read, writer: &mut impl Write) {
     scan!(scanner, n);
     let mut edges = Vec::with_capacity(n - 1);
     for u in 0..n {
-        scan!(scanner, k);
-        for v in scanner.iter::<usize>().take(k) {
-            edges.push((u, v));
-        }
+        scan!(scanner, k, c: [usize]);
+        edges.extend(c.take(k).map(|v| (u, v)));
     }
     let graph = UndirectedSparseGraph::from_edges(n, edges);
     let et = EulerTourForEdge::new(0, &graph);
-    let mut bit = BinaryIndexedTree::new(et.len(), AdditiveOperation::new());
+    let mut bit = BinaryIndexedTree::new(et.length(), AdditiveOperation::new());
 
     scan!(scanner, q);
     for _ in 0..q {

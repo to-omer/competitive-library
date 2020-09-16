@@ -180,10 +180,10 @@ fn test_segment_tree() {
     }
     for _ in 0..n {
         let l = rand.rand(n as u64) as usize;
-        let r = rand.rand(n as u64) as usize + 1;
+        let r = rand.rand((n - l + 1) as u64) as usize + l;
         let mut res = 0;
-        for j in l..r {
-            res = std::cmp::max(res, arr[j]);
+        for a in arr[l..r].iter().cloned() {
+            res = std::cmp::max(res, a);
         }
         assert_eq!(seg.fold(l, r), res);
     }

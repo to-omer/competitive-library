@@ -29,7 +29,7 @@ impl Zarray {
         }
         Self { z }
     }
-    pub fn search<T: Eq>(s: &Vec<T>, pat: &Vec<T>, sep: T) -> Vec<usize> {
+    pub fn search<T: Eq>(s: &[T], pat: &[T], sep: T) -> Vec<usize> {
         let mut res = vec![];
         let mut t = vec![];
         t.extend(pat);

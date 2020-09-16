@@ -37,9 +37,6 @@ impl<T: Ord> SuffixArray<T> {
         }
         Self { pat, sa, rank }
     }
-    pub fn len(&self) -> usize {
-        self.sa.len()
-    }
     pub fn longest_common_prefix_array(&self) -> Vec<usize> {
         let n = self.pat.len();
         let mut h = 0;

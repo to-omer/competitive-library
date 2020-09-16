@@ -16,7 +16,7 @@ pub fn fast_fourier_transform(mut f: Vec<Complex<f64>>, inv: bool) -> Vec<Comple
         let mut w = Complex::new(1., 0.);
         for j in (0..n).step_by(i) {
             for k in 0..i {
-                g[j + k] = f[(j * 2 & mask) + k] + w * f[(j * 2 + i & mask) + k];
+                g[j + k] = f[((j * 2) & mask) + k] + w * f[((j * 2 + i) & mask) + k];
             }
             w = w * t;
         }

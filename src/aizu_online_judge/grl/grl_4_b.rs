@@ -21,14 +21,14 @@ pub fn judge_grl_4_b(
 ) -> bool {
     let (s_in, s_res) = (read_all(input), read_all(result));
     let (mut scanner_in, mut scanner_res) = (Scanner::new(&s_in), Scanner::new(&s_res));
-    scan!(scanner_in, vs, es, edges: [(usize, usize); es]);
+    scan!(scanner_in, vs, es, edges: [(usize, usize)]);
     let mut ord = vec![!0usize; vs];
     let mut is_ac = true;
     for (i, u) in scanner_res.iter::<usize>().take(vs).enumerate() {
         is_ac &= ord[u] == !0usize;
         ord[u] = i;
     }
-    for (u, v) in edges.into_iter() {
+    for (u, v) in edges.take(es) {
         is_ac &= ord[u] < ord[v];
     }
     is_ac

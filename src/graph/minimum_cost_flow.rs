@@ -40,7 +40,7 @@ impl PrimalDualBuilder {
             costs,
             ..
         } = self;
-        let pd = PrimalDual {
+        PrimalDual {
             graph,
             capacities,
             costs,
@@ -48,8 +48,7 @@ impl PrimalDualBuilder {
             dist: Vec::with_capacity(vsize),
             prev_vertex: std::iter::repeat(0).take(vsize).collect(),
             prev_edge: std::iter::repeat(0).take(vsize).collect(),
-        };
-        pd
+        }
     }
 }
 #[cargo_snippet::snippet("PrimalDual")]

@@ -11,9 +11,9 @@ pub fn vertex_add_path_sum(reader: &mut impl Read, writer: &mut impl Write) {
     scan!(scanner, n, q, a: [i64; n], (mut graph, _): { TreeGraphScanner::<usize, ()>::new(n) });
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = AdditiveOperation::new();
-    let mut bit = BinaryIndexedTree::new(n, monoid.clone());
-    for i in 0..n {
-        bit.update(hld.vidx[i], a[i]);
+    let mut bit = BinaryIndexedTree::new(n, monoid);
+    for (i, a) in a.iter().cloned().enumerate() {
+        bit.update(hld.vidx[i], a);
     }
     for _ in 0..q {
         scan!(scanner, ty);

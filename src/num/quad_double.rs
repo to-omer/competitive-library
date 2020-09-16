@@ -78,7 +78,7 @@ pub mod quad_double_impl {
             r0 = s;
             let (s, e) = two_sum(r1, e);
             r1 = s;
-            r2 = r2 + e;
+            r2 += e;
         }
         (r0, r1, r2)
     }
@@ -88,7 +88,7 @@ pub mod quad_double_impl {
         for &x in xs.iter() {
             let (s, e) = two_sum(r0, x);
             r0 = s;
-            r1 = r1 + e;
+            r1 += e;
         }
         (r0, r1)
     }
@@ -257,7 +257,7 @@ pub mod quad_double_impl {
         type Err = std::num::ParseFloatError;
         #[inline]
         fn from_str(s: &str) -> Result<Self, Self::Err> {
-            s.parse::<f64>().map(|i| Self::new(i))
+            s.parse::<f64>().map(Self::new)
         }
     }
     impl QuadDouble {

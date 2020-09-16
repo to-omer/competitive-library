@@ -9,7 +9,7 @@ pub struct Circle {
 #[cargo_snippet::snippet("Circle")]
 impl Circle {
     pub fn new(c: Point, r: f64) -> Self {
-        Circle { c: c, r: r }
+        Circle { c, r }
     }
     pub fn cross_circle(&self, other: &Self) -> Option<(Point, Point)> {
         let d = (self.c - other.c).abs();

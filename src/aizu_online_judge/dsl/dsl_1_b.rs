@@ -13,12 +13,10 @@ pub fn dsl_1_b(reader: &mut impl Read, writer: &mut impl Write) {
         if ty == 0 {
             scan!(scanner, w: i64);
             uf.unite(x, y, w);
+        } else if let Some(w) = uf.get_difference(x, y) {
+            writeln!(writer, "{}", w).ok();
         } else {
-            if let Some(w) = uf.get_difference(x, y) {
-                writeln!(writer, "{}", w).ok();
-            } else {
-                writeln!(writer, "?").ok();
-            }
+            writeln!(writer, "?").ok();
         }
     }
 }

@@ -4,9 +4,9 @@ use crate::prelude::*;
 pub fn dsl_5_a(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, t, lr: [(usize, usize); n]);
+    scan!(scanner, n, t, lr: [(usize, usize)]);
     let mut acc = vec![0; t + 1];
-    for (l, r) in lr {
+    for (l, r) in lr.take(n) {
         acc[l] += 1;
         acc[r] -= 1;
     }

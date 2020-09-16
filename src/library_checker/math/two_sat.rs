@@ -11,10 +11,10 @@ pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {
         _cnf: String,
         n,
         m,
-        ab: [(i64, i64, i64); m]
+        ab: [(i64, i64, i64)]
     );
     let mut two_sat = TwoSatisfiability::new(n);
-    for (a, b, _) in ab.into_iter() {
+    for (a, b, _) in ab.take(m) {
         let u = (a.abs() as usize - 1) * 2;
         let v = (b.abs() as usize - 1) * 2;
         let na = (a < 0) as usize;
@@ -24,11 +24,11 @@ pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {
     if let Some(v) = two_sat.two_satisfiability() {
         writeln!(writer, "s SATISFIABLE").ok();
         write!(writer, "v").ok();
-        for i in 0..n {
+        for (i, v) in v.into_iter().enumerate() {
             write!(
                 writer,
                 " {}",
-                if v[i] { i as i64 + 1 } else { -(i as i64 + 1) }
+                if v { i as i64 + 1 } else { -(i as i64 + 1) }
             )
             .ok();
         }

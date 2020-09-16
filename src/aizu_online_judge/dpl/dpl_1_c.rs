@@ -5,8 +5,8 @@ use crate::prelude::*;
 pub fn dpl_1_c(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, w, vw: [(usize, usize); n]);
+    scan!(scanner, n, w, vw: [(usize, usize)]);
     let mut knapsack = KnapsackPloblemSmallWeight::new(w);
-    knapsack.extend(vw);
+    knapsack.extend(vw.take(n));
     writeln!(writer, "{}", knapsack.solve()).ok();
 }
