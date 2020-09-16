@@ -1,100 +1,136 @@
-#[cargo_snippet::snippet("MinimumCostFlow")]
-#[derive(Debug, Clone)]
-pub struct RevCEdge {
-    pub to: usize,
-    pub rev: usize,
-    pub cap: u64,
-    pub cost: i64,
-}
-#[cargo_snippet::snippet("MinimumCostFlow")]
-impl RevCEdge {
-    pub fn new(to: usize, rev: usize, cap: u64, cost: i64) -> Self {
-        Self { to, rev, cap, cost }
-    }
-}
+use super::BidirectionalSparseGraph;
 
-#[cargo_snippet::snippet("MinimumCostFlow")]
-#[derive(Debug)]
-pub struct PrimalDual {
-    n: usize,
-    graph: Vec<Vec<RevCEdge>>,
-    potential: Vec<i64>,
-    cost: Vec<i64>,
-    prev_vertex: Vec<usize>,
-    prev_edge: Vec<usize>,
+#[cargo_snippet::snippet("PrimalDual")]
+#[derive(Debug, Clone)]
+pub struct PrimalDualBuilder {
+    vsize: usize,
+    edges: Vec<(usize, usize)>,
+    capacities: Vec<u64>,
+    costs: Vec<i64>,
 }
-#[cargo_snippet::snippet("MinimumCostFlow")]
-impl PrimalDual {
-    pub fn new(n: usize) -> Self {
+#[cargo_snippet::snippet("PrimalDual")]
+impl PrimalDualBuilder {
+    pub fn new(vsize: usize, esize_expect: usize) -> Self {
         Self {
-            n,
-            graph: vec![vec![]; n],
-            potential: vec![],
-            cost: vec![],
-            prev_vertex: vec![],
-            prev_edge: vec![],
+            vsize,
+            edges: Vec::with_capacity(esize_expect),
+            capacities: Vec::with_capacity(esize_expect * 2),
+            costs: Vec::with_capacity(esize_expect * 2),
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize, cap: u64, cost: i64) {
-        let e1 = RevCEdge::new(to, self.graph[to].len(), cap, cost);
-        let e2 = RevCEdge::new(from, self.graph[from].len(), 0, -cost);
-        self.graph[from].push(e1);
-        self.graph[to].push(e2);
+        self.edges.push((from, to));
+        self.capacities.push(cap);
+        self.capacities.push(0);
+        debug_assert!(
+            cost >= 0,
+            "To use negative edge, comment out the early break of PrimalDual::dijkstra."
+        );
+        self.costs.push(cost);
+        self.costs.push(-cost);
     }
-    pub fn minimum_cost_flow(&mut self, s: usize, t: usize, f: u64) -> Option<i64> {
-        use std::cmp::min;
-        let mut res = 0;
-        let mut f = f;
-        self.potential = vec![0; self.n];
-        self.prev_edge = vec![0; self.n];
-        self.prev_vertex = vec![0; self.n];
-        while f > 0 {
-            self.dijkstra(s);
-            if self.cost[t] == std::i64::MAX {
-                return None;
-            }
-            for v in 0..self.n {
-                self.potential[v] += self.cost[v];
-            }
-            let mut add_f = f;
-            let mut v = t;
-            while v != s {
-                add_f = min(
-                    add_f,
-                    self.graph[self.prev_vertex[v]][self.prev_edge[v]].cap,
-                );
-                v = self.prev_vertex[v];
-            }
-            f -= add_f;
-            res += add_f as i64 * self.potential[t];
-            let mut v = t;
-            while v != s {
-                self.graph[self.prev_vertex[v]][self.prev_edge[v]].cap -= add_f;
-                let r = self.graph[self.prev_vertex[v]][self.prev_edge[v]].rev;
-                self.graph[v][r].cap += add_f;
-                v = self.prev_vertex[v];
-            }
+    pub fn gen_graph(&mut self) -> BidirectionalSparseGraph {
+        let edges = std::mem::take(&mut self.edges);
+        BidirectionalSparseGraph::from_edges(self.vsize, edges)
+    }
+    pub fn build(self, graph: &BidirectionalSparseGraph) -> PrimalDual<'_> {
+        let PrimalDualBuilder {
+            vsize,
+            capacities,
+            costs,
+            ..
+        } = self;
+        let pd = PrimalDual {
+            graph,
+            capacities,
+            costs,
+            potential: std::iter::repeat(0).take(vsize).collect(),
+            dist: Vec::with_capacity(vsize),
+            prev_vertex: std::iter::repeat(0).take(vsize).collect(),
+            prev_edge: std::iter::repeat(0).take(vsize).collect(),
+        };
+        pd
+    }
+}
+#[cargo_snippet::snippet("PrimalDual")]
+impl Extend<(usize, usize, u64, i64)> for PrimalDualBuilder {
+    fn extend<T: IntoIterator<Item = (usize, usize, u64, i64)>>(&mut self, iter: T) {
+        for (from, to, cap, cost) in iter {
+            self.add_edge(from, to, cap, cost)
         }
-        Some(res)
     }
-    fn dijkstra(&mut self, s: usize) {
-        use std::collections::BinaryHeap;
-        self.cost = vec![std::i64::MAX; self.n];
+}
+
+#[cargo_snippet::snippet("PrimalDual")]
+#[derive(Debug)]
+pub struct PrimalDual<'a> {
+    graph: &'a BidirectionalSparseGraph,
+    capacities: Vec<u64>,
+    costs: Vec<i64>,
+    potential: Vec<i64>,
+    dist: Vec<i64>,
+    prev_vertex: Vec<usize>,
+    prev_edge: Vec<usize>,
+}
+#[cargo_snippet::snippet("PrimalDual")]
+impl<'a> PrimalDual<'a> {
+    fn dijkstra(&mut self, s: usize, t: usize) -> bool {
+        use std::{cmp::Reverse, collections::BinaryHeap};
+        self.dist.clear();
+        self.dist.resize(self.graph.vertices_size(), std::i64::MAX);
+        self.dist[s] = 0;
         let mut heap = BinaryHeap::new();
-        self.cost[s] = 0;
-        heap.push((std::cmp::Reverse(0), s));
-        while let Some((d, u)) = heap.pop() {
-            let d = d.0;
-            for i in 0..self.graph[u].len() {
-                let e = &self.graph[u][i];
-                let ncost = self.cost[u] + e.cost + self.potential[u] - self.potential[e.to];
-                if e.cap > 0 && self.cost[e.to] > ncost {
-                    self.cost[e.to] = ncost;
-                    self.prev_vertex[e.to] = u;
-                    self.prev_edge[e.to] = i;
-                    heap.push((std::cmp::Reverse(d + e.cost), e.to));
+        heap.push((Reverse(0), s));
+        while let Some((Reverse(d), u)) = heap.pop() {
+            if self.dist[u] + self.potential[u] < d {
+                continue;
+            }
+            if u == t {
+                break; // early break
+            }
+            for a in self.graph.adjacencies(u) {
+                let ncost =
+                    self.dist[u] + self.costs[a.id] + self.potential[u] - self.potential[a.to];
+                if self.capacities[a.id] > 0 && self.dist[a.to] > ncost {
+                    self.dist[a.to] = ncost;
+                    self.prev_vertex[a.to] = u;
+                    self.prev_edge[a.to] = a.id;
+                    heap.push((Reverse(d + self.costs[a.id]), a.to));
                 }
             }
         }
+        self.dist[t] != std::i64::MAX
+    }
+    /// Return (flow, cost).
+    pub fn minimum_cost_flow_limited(&mut self, s: usize, t: usize, limit: u64) -> (u64, i64) {
+        let mut flow = 0;
+        let mut cost = 0;
+        while flow < limit && self.dijkstra(s, t) {
+            for (p, d) in self.potential.iter_mut().zip(self.dist.iter()) {
+                *p += *d;
+            }
+            let mut f = limit - flow;
+            let mut v = t;
+            while v != s {
+                f = f.min(self.capacities[self.prev_edge[v]]);
+                v = self.prev_vertex[v];
+            }
+            flow += f;
+            cost += f as i64 * self.potential[t];
+            let mut v = t;
+            while v != s {
+                self.capacities[self.prev_edge[v]] -= f;
+                self.capacities[self.prev_edge[v] ^ 1] += f;
+                v = self.prev_vertex[v];
+            }
+        }
+        (flow, cost)
+    }
+    /// Return (flow, cost).
+    pub fn minimum_cost_flow(&mut self, s: usize, t: usize) -> (u64, i64) {
+        self.minimum_cost_flow_limited(s, t, std::u64::MAX)
+    }
+    pub fn get_flow(&self, eid: usize) -> u64 {
+        self.capacities[eid * 2 + 1]
     }
 }

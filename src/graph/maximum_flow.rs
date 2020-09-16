@@ -39,6 +39,14 @@ impl DinicBuilder {
         dinic
     }
 }
+#[cargo_snippet::snippet("Dinic")]
+impl Extend<(usize, usize, u64)> for DinicBuilder {
+    fn extend<T: IntoIterator<Item = (usize, usize, u64)>>(&mut self, iter: T) {
+        for (from, to, cap) in iter {
+            self.add_edge(from, to, cap)
+        }
+    }
+}
 
 #[cargo_snippet::snippet("Dinic")]
 #[derive(Debug, Clone)]
