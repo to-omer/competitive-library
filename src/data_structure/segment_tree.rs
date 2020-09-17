@@ -128,7 +128,7 @@ impl<M: Monoid> SegmentTree<M> {
 #[test]
 fn test_segment_tree() {
     use crate::algebra::{AdditiveOperation, MaxOperation};
-    use crate::algorithm::lower_bound;
+    use crate::algorithm::SliceBisectExt;
     use crate::tools::Xorshift;
     let mut rand = Xorshift::time();
     let n = 1_024;
@@ -151,10 +151,7 @@ fn test_segment_tree() {
     }
     for _ in 0..q {
         let v = rand.rand(1_000_000_000 * n as u64) as usize;
-        assert_eq!(
-            seg.lower_bound_all(|&x| v <= x, n),
-            lower_bound(&arr[1..], v)
-        );
+        assert_eq!(seg.lower_bound_all(|&x| v <= x, n), arr[1..].lower_bound(v));
     }
     for _ in 0..q {
         let v = rand.rand(1_000_000_000 * n as u64) as usize;
@@ -165,7 +162,7 @@ fn test_segment_tree() {
         }
         assert_eq!(
             seg.lower_bound(|&x| v <= x, l, r),
-            lower_bound(&arr[l + 1..r + 1], v + arr[l]) + l
+            arr[l + 1..r + 1].lower_bound(v + arr[l]) + l
         );
     }
 
