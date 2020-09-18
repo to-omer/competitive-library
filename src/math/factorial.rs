@@ -85,11 +85,11 @@ fn test_factorials() {
     assert_eq!(fact.permutation(10, 3), M::new(720));
     assert_eq!(fact.permutation(10, 4), M::new(5040));
     assert_eq!(fact.permutation(10, 5), M::new(30240));
-    assert_eq!(fact.permutation(10, 6), M::new(151200));
-    assert_eq!(fact.permutation(10, 7), M::new(604800));
-    assert_eq!(fact.permutation(10, 8), M::new(1814400));
-    assert_eq!(fact.permutation(10, 9), M::new(3628800));
-    assert_eq!(fact.permutation(10, 10), M::new(3628800));
+    assert_eq!(fact.permutation(10, 6), M::new(151_200));
+    assert_eq!(fact.permutation(10, 7), M::new(604_800));
+    assert_eq!(fact.permutation(10, 8), M::new(1_814_400));
+    assert_eq!(fact.permutation(10, 9), M::new(3_628_800));
+    assert_eq!(fact.permutation(10, 10), M::new(3_628_800));
     assert_eq!(fact.permutation(10, 11), M::new(0));
 }
 

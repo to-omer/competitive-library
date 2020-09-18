@@ -50,7 +50,7 @@ impl PrimeTable {
 
 #[test]
 fn test_prime_table() {
-    const N: usize = 100000;
+    const N: usize = 100_000;
     let primes = PrimeTable::new(N);
     assert!(!primes.is_prime(N));
     assert!(primes.is_prime(99991));
@@ -98,7 +98,7 @@ fn test_prime_factors() {
     let factors = prime_factors(2016);
     assert_eq!(factors, vec![(2, 5), (3, 2), (7, 1)]);
 
-    const N: usize = 100000;
+    const N: usize = 100_000;
     let primes = PrimeTable::new(N);
     for i in 1..=N {
         assert_eq!(primes.prime_factors(i), prime_factors(i));
@@ -213,8 +213,8 @@ fn test_miller_rabin() {
     for i in 2..=N {
         assert_eq!(primes.is_prime(i), miller_rabin(i as u64), "{}", i);
     }
-    assert!(miller_rabin(1000000007));
-    assert!(!miller_rabin(1000000011));
+    assert!(miller_rabin(1_000_000_007));
+    assert!(!miller_rabin(1_000_000_011));
 }
 
 #[cargo_snippet::snippet("prime_factors_rho")]
