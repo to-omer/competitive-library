@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_1_a","✅  AC  65ms"]],"struct":[["AdditiveOperation","$+$"]],"type":[["DirectedGraphScanner",""]]});
+initSidebarItems({"fn":[["grl_1_a","✅  AC  110ms"]],"struct":[["AdditiveOperation","$+$"]],"type":[["DirectedGraphScanner",""]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_2_a","✅  AC  16ms"]],"struct":[["MinOperation","binary operation to select smaller element"],["SegmentTree",""]]});
+initSidebarItems({"fn":[["dsl_2_a","✅  AC  25ms"]],"struct":[["MinOperation","binary operation to select smaller element"],["SegmentTree",""]]});
