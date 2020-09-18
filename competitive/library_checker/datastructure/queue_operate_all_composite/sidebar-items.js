@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["queue_operate_all_composite","✅  AC  64ms"]],"struct":[["LinearOperation","$(a, b) \\circ (c, d) = \\lambda x. c \\times (a \\times x + b) + d$"],["MInt",""],["QueueAggregation",""]],"type":[["MInt998244353",""]]});
+initSidebarItems({"fn":[["queue_operate_all_composite","✅  AC  62ms"]],"struct":[["LinearOperation","$(a, b) \\circ (c, d) = \\lambda x. c \\times (a \\times x + b) + d$"],["MInt",""],["QueueAggregation",""]],"type":[["MInt998244353",""]]});
