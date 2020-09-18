@@ -205,8 +205,6 @@
 <span id="188">188</span>
 <span id="189">189</span>
 <span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">algebra</span>::{<span class="ident">Associative</span>, <span class="ident">Magma</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">data_structure</span>::<span class="ident">DisjointSparseTable</span>;
@@ -232,7 +230,7 @@
         <span class="ident">self_</span>.<span class="ident">edge_tour</span>(<span class="ident">root</span>, <span class="ident">std</span>::<span class="ident">usize</span>::<span class="ident">MAX</span>);
         <span class="ident">self_</span>
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">epos</span>
     }
     <span class="kw">fn</span> <span class="ident">edge_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
@@ -263,7 +261,7 @@
             <span class="ident">vpos</span>: <span class="number">0</span>,
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">vpos</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subtree_vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
@@ -325,7 +323,7 @@
         <span class="ident">self_</span>.<span class="ident">vertex_tour</span>(<span class="ident">root</span>, <span class="ident">std</span>::<span class="ident">usize</span>::<span class="ident">MAX</span>);
         <span class="ident">self_</span>
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">len</span>()
     }
     <span class="kw">fn</span> <span class="ident">vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
@@ -383,9 +381,7 @@
         <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ancestor</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">v</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
             <span class="kw">if</span> <span class="ident">u</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">depth</span>.<span class="ident">len</span>() {
                 <span class="ident">v</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">v</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">depth</span>.<span class="ident">len</span>() {
-                <span class="ident">u</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">depth</span>[<span class="ident">u</span>] <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">depth</span>[<span class="ident">v</span>] {
+            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">v</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">depth</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">depth</span>[<span class="ident">u</span>] <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">depth</span>[<span class="ident">v</span>] {
                 <span class="ident">u</span>
             } <span class="kw">else</span> {
                 <span class="ident">v</span>

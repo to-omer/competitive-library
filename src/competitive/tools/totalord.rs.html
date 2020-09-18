@@ -36,6 +36,12 @@
 <span id="19">19</span>
 <span id="20">20</span>
 <span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// implement Ord by PartialOrd</span>
 <span class="doccomment">///</span>
@@ -48,14 +54,20 @@
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;TotalOrd&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TotalOrd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw">pub</span> <span class="ident">T</span>);
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;TotalOrd&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PartialEq</span><span class="op">&gt;</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">TotalOrd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {}
 <span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;TotalOrd&quot;</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PartialOrd</span><span class="op">&gt;</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">TotalOrd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">TotalOrd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="number">0</span>)
+    }
+}
+<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;TotalOrd&quot;</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PartialOrd</span><span class="op">&gt;</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">TotalOrd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">TotalOrd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">Ordering</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="number">0</span>).<span class="ident">unwrap</span>()
+        <span class="self">self</span>.<span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>).<span class="ident">unwrap</span>()
     }
 }
 </pre></div>

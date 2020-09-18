@@ -459,10 +459,10 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">M</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="number">2</span>) <span class="kw">as</span> <span class="ident">i64</span> <span class="op">-</span> <span class="ident">M</span>).<span class="ident">collect</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0i64</span>; <span class="ident">N</span>];
     <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">clone</span>();
-    <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+    <span class="kw">for</span> (<span class="ident">s</span>, <span class="ident">f</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+        <span class="kw">for</span> (<span class="ident">t</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">g</span>.<span class="ident">iter_mut</span>().<span class="ident">enumerate</span>() {
             <span class="kw">if</span> <span class="ident">s</span> <span class="op">|</span> <span class="ident">t</span> <span class="op">=</span><span class="op">=</span> <span class="ident">t</span> {
-                <span class="ident">g</span>[<span class="ident">t</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>[<span class="ident">s</span>];
+                <span class="kw-2">*</span><span class="ident">g</span> <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>;
             }
         }
     }
@@ -550,10 +550,10 @@
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">M</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="number">2</span>) <span class="kw">as</span> <span class="ident">i64</span> <span class="op">-</span> <span class="ident">M</span>).<span class="ident">collect</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0i64</span>; <span class="ident">N</span>];
     <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">clone</span>();
-    <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+    <span class="kw">for</span> (<span class="ident">s</span>, <span class="ident">f</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+        <span class="kw">for</span> (<span class="ident">t</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">g</span>.<span class="ident">iter_mut</span>().<span class="ident">enumerate</span>() {
             <span class="kw">if</span> <span class="ident">s</span> <span class="op">|</span> <span class="ident">t</span> <span class="op">=</span><span class="op">=</span> <span class="ident">s</span> {
-                <span class="ident">g</span>[<span class="ident">t</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>[<span class="ident">s</span>];
+                <span class="kw-2">*</span><span class="ident">g</span> <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>;
             }
         }
     }
@@ -634,10 +634,10 @@
     <span class="ident">f</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0i64</span>; <span class="ident">N</span>];
     <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">clone</span>();
-    <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">N</span> {
+    <span class="kw">for</span> (<span class="ident">s</span>, <span class="ident">f</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
+        <span class="kw">for</span> (<span class="ident">t</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">g</span>.<span class="ident">iter_mut</span>().<span class="ident">enumerate</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
             <span class="kw">if</span> <span class="ident">t</span> <span class="op">%</span> <span class="ident">s</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">g</span>[<span class="ident">t</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>[<span class="ident">s</span>];
+                <span class="kw-2">*</span><span class="ident">g</span> <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>;
             }
         }
     }
@@ -651,11 +651,11 @@
     <span class="ident">f</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">0</span>;
     <span class="ident">g</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0i64</span>; <span class="ident">N</span>];
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">N</span> {
+    <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">f</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
+        <span class="kw">for</span> (<span class="ident">j</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">g</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
             <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">lcm</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">j</span> <span class="kw">as</span> <span class="kw">_</span>) <span class="kw">as</span> <span class="ident">usize</span>;
             <span class="kw">if</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="ident">N</span> {
-                <span class="ident">h</span>[<span class="ident">k</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">g</span>[<span class="ident">j</span>];
+                <span class="ident">h</span>[<span class="ident">k</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">f</span> <span class="op">*</span> <span class="ident">g</span>;
             }
         }
     }
@@ -723,10 +723,10 @@
     <span class="ident">f</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">0</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0i64</span>; <span class="ident">N</span>];
     <span class="kw">let</span> <span class="ident">h</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">clone</span>();
-    <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">N</span> {
+    <span class="kw">for</span> (<span class="ident">s</span>, <span class="ident">f</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
+        <span class="kw">for</span> (<span class="ident">t</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">g</span>.<span class="ident">iter_mut</span>().<span class="ident">enumerate</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
             <span class="kw">if</span> <span class="ident">s</span> <span class="op">%</span> <span class="ident">t</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">g</span>[<span class="ident">t</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>[<span class="ident">s</span>];
+                <span class="kw-2">*</span><span class="ident">g</span> <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>;
             }
         }
     }

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dpl_1_h","✅  AC  72ms"]],"struct":[["ZeroOneKnapsackProblemSmallItems",""]]});
+initSidebarItems({"fn":[["dpl_1_h","✅  AC  57ms"]],"struct":[["ZeroOneKnapsackProblemSmallItems",""]]});

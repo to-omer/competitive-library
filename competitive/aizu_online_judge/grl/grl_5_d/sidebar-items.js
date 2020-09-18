@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_5_d","✅  AC  91ms"]],"struct":[["AdditiveOperation","$+$"],["BinaryIndexedTree",""],["EulerTourForEdge",""]],"type":[["UndirectedSparseGraph",""]]});
+initSidebarItems({"fn":[["grl_5_d","✅  AC  58ms"]],"struct":[["AdditiveOperation","$+$"],["BinaryIndexedTree",""],["EulerTourForEdge",""]],"type":[["UndirectedSparseGraph",""]]});
