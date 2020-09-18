@@ -1,3 +1,5 @@
+#![allow(clippy::suspicious_arithmetic_impl)]
+
 use crate::num::{One, Zero};
 
 #[cargo_snippet::snippet("Polynomial")]

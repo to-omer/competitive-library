@@ -1,3 +1,5 @@
+#![allow(clippy::suspicious_op_assign_impl)]
+
 #[cargo_snippet::snippet("BitSet")]
 #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BitSet {
@@ -44,7 +46,7 @@ impl BitSet {
     fn trim(&mut self) {
         if self.size & 63 != 0 {
             if let Some(x) = self.bits.last_mut() {
-                *x &= 0xffffffffffffffff >> (64 - (self.size & 63));
+                *x &= 0xffff_ffff_ffff_ffff >> (64 - (self.size & 63));
             }
         }
     }

@@ -36,7 +36,7 @@ impl SimuratedAnnealing {
     pub const TIME_LIMIT: f64 = 1.99;
     pub const LOG_TABLE_SIZE: usize = 0x10000;
     pub const UPDATE_INTERVAL: usize = 0xff;
-    pub const SEED: u64 = 0xbeefcafe;
+    pub const SEED: u64 = 0xbeef_cafe;
 
     pub fn new() -> Self {
         Default::default()

@@ -33,8 +33,8 @@ impl Xorshift {
     }
     #[inline]
     pub fn randf(&mut self) -> f64 {
-        const UPPER_MASK: u64 = 0x3FF0000000000000;
-        const LOWER_MASK: u64 = 0xFFFFFFFFFFFFF;
+        const UPPER_MASK: u64 = 0x3FF0_0000_0000_0000;
+        const LOWER_MASK: u64 = 0x000F_FFFF_FFFF_FFFF;
         let tmp = UPPER_MASK | (self.rand64() & LOWER_MASK);
         let result: f64 = f64::from_bits(tmp);
         result - 1.0
@@ -47,6 +47,6 @@ impl Xorshift {
 #[cargo_snippet::snippet("Xorshift")]
 impl Default for Xorshift {
     fn default() -> Self {
-        Xorshift::new(0x2b992ddfa23249d6)
+        Xorshift::new(0x2b99_2ddf_a232_49d6)
     }
 }

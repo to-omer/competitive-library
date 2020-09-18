@@ -64,7 +64,10 @@ impl UnionFind {
         let mut groups_map = std::collections::HashMap::new();
         for x in 0..self.parents.len() {
             let r = self.find(x);
-            groups_map.entry(r).or_insert(vec![]).push(x);
+            groups_map
+                .entry(r)
+                .or_insert_with(|| Vec::with_capacity(self.size(r)))
+                .push(x);
         }
         groups_map
     }
@@ -174,7 +177,10 @@ impl<G: Group> WeightedUnionFind<G> {
         let mut groups_map = std::collections::HashMap::new();
         for x in 0..self.parents.len() {
             let r = self.find(x);
-            groups_map.entry(r).or_insert(vec![]).push(x);
+            groups_map
+                .entry(r)
+                .or_insert_with(|| Vec::with_capacity(self.size(r)))
+                .push(x);
         }
         groups_map
     }
@@ -284,7 +290,10 @@ mod merging_union_find_impls {
             let mut groups_map = std::collections::HashMap::new();
             for x in 0..self.cells.len() {
                 let r = self.find(x);
-                groups_map.entry(r).or_insert(vec![]).push(x);
+                groups_map
+                    .entry(r)
+                    .or_insert_with(|| Vec::with_capacity(self.size(r)))
+                    .push(x);
             }
             groups_map
         }

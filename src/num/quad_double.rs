@@ -1,3 +1,5 @@
+#![allow(clippy::suspicious_arithmetic_impl)]
+
 #[cargo_snippet::snippet("QuadDouble")]
 /// ref: https://na-inet.jp/na/qd_ja.pdf
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
@@ -43,7 +45,7 @@ pub mod quad_double_impl {
     }
     #[inline]
     pub fn split(a: f64) -> (f64, f64) {
-        let t = 134217729. * a; // 134217729 = 2 ** 27 + 1
+        let t = 134_217_729. * a; // 134217729 = 2 ** 27 + 1
         let ahi = t - (t - a);
         let alo = a - ahi;
         (ahi, alo)

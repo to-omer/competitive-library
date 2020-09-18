@@ -182,10 +182,10 @@ pub fn miller_rabin(p: u64) -> bool {
     let d = p - 1;
     let k = d.trailing_zeros();
     let d = d >> k;
-    let a = if p < 4759123141 {
+    let a = if p < 4_759_123_141 {
         vec![2, 7, 61]
     } else {
-        vec![2, 325, 9375, 28178, 450775, 9780504, 1795265022]
+        vec![2, 325, 9375, 28178, 450_775, 9_780_504, 1_795_265_022]
     };
     'outer: for &a in a.iter() {
         if a >= p {

@@ -1,3 +1,5 @@
+#![allow(clippy::suspicious_arithmetic_impl)]
+
 //! modint
 use crate::num::{One, Zero};
 use crate::tools::IterScan;
