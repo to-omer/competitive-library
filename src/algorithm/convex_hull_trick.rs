@@ -27,6 +27,9 @@ pub struct ConvexHullTrick {
 }
 #[cargo_snippet::snippet("ConvexHullTrick")]
 impl ConvexHullTrick {
+    pub fn new() -> Self {
+        Default::default()
+    }
     /// k-th add_line(a_k, b_k): a_k >= a_{k+1}
     pub fn add_line(&mut self, a: i64, b: i64) {
         let line = CHTLine::new(a, b);

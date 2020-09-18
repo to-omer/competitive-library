@@ -264,6 +264,12 @@ impl<'a, T: Eq> Automaton for ContainCounterAutomaton<'a, T> {
 #[derive(Debug, Clone)]
 pub struct AlwaysAcceptingAutomaton<A>(std::marker::PhantomData<fn() -> A>);
 #[cargo_snippet::snippet("automaton")]
+impl<A> AlwaysAcceptingAutomaton<A> {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+#[cargo_snippet::snippet("automaton")]
 impl<A> Default for AlwaysAcceptingAutomaton<A> {
     fn default() -> Self {
         Self(std::marker::PhantomData)

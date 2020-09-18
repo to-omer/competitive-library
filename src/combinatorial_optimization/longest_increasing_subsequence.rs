@@ -11,6 +11,9 @@ impl<T: Ord> Default for LongestIncreasingSubsequence<T> {
 }
 #[cargo_snippet::snippet("LongestIncreasingSubsequence")]
 impl<T: Ord> LongestIncreasingSubsequence<T> {
+    pub fn new() -> Self {
+        Default::default()
+    }
     pub fn longest_length(&self) -> usize {
         self.dp.len()
     }

@@ -38,6 +38,9 @@ impl SimuratedAnnealing {
     pub const UPDATE_INTERVAL: usize = 0xff;
     pub const SEED: u64 = 0xbeefcafe;
 
+    pub fn new() -> Self {
+        Default::default()
+    }
     pub fn is_accepted(&mut self, current_score: f64, next_score: f64) -> bool {
         let diff = if Self::IS_MAXIMIZE {
             next_score - current_score

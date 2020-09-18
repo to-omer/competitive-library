@@ -135,13 +135,25 @@ impl KnapsackPloblemSmallValue {
 }
 
 #[cargo_snippet::snippet("ZeroOneKnapsackProblemSmallItems")]
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct ZeroOneKnapsackProblemSmallItems {
     a: Vec<(u64, u64)>,
     b: Vec<(u64, u64)>,
 }
 #[cargo_snippet::snippet("ZeroOneKnapsackProblemSmallItems")]
+impl Default for ZeroOneKnapsackProblemSmallItems {
+    fn default() -> Self {
+        Self {
+            a: vec![(0, 0)],
+            b: vec![(0, 0)],
+        }
+    }
+}
+#[cargo_snippet::snippet("ZeroOneKnapsackProblemSmallItems")]
 impl ZeroOneKnapsackProblemSmallItems {
+    pub fn new() -> Self {
+        Default::default()
+    }
     pub fn insert(&mut self, value: u64, weight: u64) {
         let mut a_iter = self.a.iter().cloned();
         let mut b_iter = self.a.iter().map(|&(v, w)| (v + value, w + weight));

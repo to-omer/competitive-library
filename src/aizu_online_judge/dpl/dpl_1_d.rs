@@ -6,7 +6,7 @@ pub fn dpl_1_d(reader: &mut impl Read, writer: &mut impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, a: [u64]);
-    let mut lis = LongestIncreasingSubsequence::default();
+    let mut lis = LongestIncreasingSubsequence::new();
     lis.extend(a.take(n));
     writeln!(writer, "{}", lis.longest_length()).ok();
 }
