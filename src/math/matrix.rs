@@ -160,9 +160,7 @@ mod matrix_impls {
             let n = self.shape.0;
             let mut c = Matrix::<T>::zeros((n, n + 1));
             for i in 0..n {
-                for j in 0..n {
-                    c[i][j] = self[i][j];
-                }
+                c[i][..n].clone_from_slice(&self[i]);
                 c[i][n] = b[i];
             }
             c.row_reduction();
@@ -177,9 +175,7 @@ mod matrix_impls {
             let n = self.shape.0;
             let mut c = Matrix::<T>::zeros((n, n * 2));
             for i in 0..n {
-                for j in 0..n {
-                    c[i][j] = self[i][j];
-                }
+                c[i][..n].clone_from_slice(&self[i]);
                 c[i][n + i] = T::one();
             }
             c.row_reduction();
