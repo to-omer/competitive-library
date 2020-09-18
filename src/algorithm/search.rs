@@ -150,7 +150,7 @@ mod tests {
         );
 
         let sq2 = binary_search(&|x| x * x <= 2., 1., 4.);
-        let expect = 1.41421356273;
+        let expect = 1.414_213_562_73;
         assert!(expect - 1e-8 <= sq2 && sq2 <= expect + 1e-8);
     }
 
