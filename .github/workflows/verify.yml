@@ -1,39 +1,87 @@
-name: verify
+name: CI
 
 on: push
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - 1.42.0-x86_64-unknown-linux-gnu
+          - stable-x86_64-unknown-linux-gnu
+
+    name: Build (${{ matrix.toolchain }})
+    runs-on: ubuntu-18.04
+
     steps:
-    - uses: actions/checkout@v1
-    - name: Install rust toolchain 1.42.0
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup `${{ matrix.toolchain }}`
       uses: actions-rs/toolchain@v1
       with:
-          toolchain: 1.42.0
-          override: true
-    - name: Run test
-      run: cargo test
+        toolchain: ${{ matrix.toolchain }}
+        override: true
+        profile: minimal
+        components: rustfmt clippy
+
+    - name: cargo-fmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
+
+    - name: cargo-clippy
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: --workspace --all-targets -- -D warnings
+
+    - name: cargo-build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --workspace --all-targets
+
+    - name: cargo-test
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --workspace --no-fail-fast
+      env:
+        RUST_BACKTRACE: full
+
 
   verify:
-    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-      fail-fast: false
+
+    name: Verify
+    runs-on: ubuntu-18.04
+
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python
-      uses: actions/setup-python@v1
-    - name: Install dependencies
-      run: pip3 install -U online-judge-api-client
-    - name: Install rust toolchain 1.42.0
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+
+    - name: Install Python dependencies
+      run: |
+      python -m pip install --upgrade pip
+      pip install online-judge-api-client
+
+    - name: Setup `1.42.0-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
       with:
-          toolchain: 1.42.0
-          override: true
+        toolchain: 1.42.0-x86_64-unknown-linux-gnu
+        override: true
+        profile: minimal
 
-    - name: Run verify
+    - name: Verify
       env:
         RUST_MIN_STACK: 268435456
         RUST_BACKTRACE: full
@@ -49,27 +97,40 @@ jobs:
         name: artifact
         path: artifact/**/*
 
+
   generate-doc:
     needs: verify
     if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: download artifacts
-      uses: actions/download-artifact@v2
-    - run: cp -r artifact/* .
 
-    - name: Install latest nightly
+    name: Generate Doc
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+
+    - name: Arrange artifacts
+      run: cp -r artifact/* .
+
+    - name: Setup `nightly-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
       with:
-          toolchain: nightly
-          override: true
+        toolchain: nightly-x86_64-unknown-linux-gnu
+        override: true
 
-    - name: Generate cargo doc
+    - name: cargo-doc
+      uses: actions-rs/cargo@v1
+      with:
+        command: doc
+        args: --no-deps --features verify_doc
       env:
         RUSTDOCFLAGS: --html-in-header katex-header.html
+
+    - name: Generate root index.html
       run: |
-        cargo doc --no-deps --features verify_doc
         cat <<EOT > target/doc/index.html
         <!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=competitive/index.html"><title></title>
         EOT
