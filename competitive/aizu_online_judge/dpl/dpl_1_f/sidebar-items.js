@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dpl_1_f","✅  AC  1ms"]],"struct":[["KnapsackPloblemSmallValue",""]]});
+initSidebarItems({"fn":[["dpl_1_f","✅  AC  2ms"]],"struct":[["KnapsackPloblemSmallValue",""]]});
