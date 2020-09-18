@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["vertex_add_subtree_sum","✅  AC  195ms"]],"struct":[["AdditiveOperation","$+$"],["EulerTourForVertex",""],["SegmentTree",""]],"type":[["UndirectedSparseGraph",""]]});
+initSidebarItems({"fn":[["vertex_add_subtree_sum","✅  AC  153ms"]],"struct":[["AdditiveOperation","$+$"],["EulerTourForVertex",""],["SegmentTree",""]],"type":[["UndirectedSparseGraph",""]]});
