@@ -219,31 +219,10 @@ fn test_miller_rabin() {
 
 #[cargo_snippet::snippet("prime_factors_rho")]
 pub fn find_factor(n: u64) -> u64 {
-    let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
-    let mut c = 1;
-    loop {
-        let f = |x: u64| (x as u128 * x as u128 % n as u128 + c) as u64;
-        let (mut x, mut y) = (2, 2);
-        loop {
-            x = f(x);
-            y = f(f(y));
-            let g = gcd_binary(sub(x, y), n);
-            if g == n {
-                break;
-            } else if g != 1 {
-                return g;
-            }
-        }
-        c += 1;
-    }
-}
-
-pub fn find_factor2(n: u64) -> u64 {
-    let m = 1u64 << ((64 - n.leading_zeros()) / 8);
+    const M: usize = 128;
     let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
     let mul = |x: u64, y: u64| (x as u128 * y as u128 % n as u128) as u64;
-    let mut c = 1;
-    loop {
+    for c in 12.. {
         let f = |x: u64| (x as u128 * x as u128 % n as u128 + c) as u64;
         let (mut x, mut y, mut r, mut g, mut k, mut ys) = (0, 2, 1, 1, 0, 0);
         while g == 1 {
@@ -254,12 +233,12 @@ pub fn find_factor2(n: u64) -> u64 {
             while r > k && g == 1 {
                 ys = y;
                 let mut q = 1;
-                for _ in 0..m.min(r - k) {
+                for _ in 0..M.min(r - k) {
                     y = f(y);
                     q = mul(q, sub(x, y));
                 }
                 g = gcd_binary(q, n);
-                k += m;
+                k += M;
             }
             r <<= 1;
         }
@@ -273,8 +252,8 @@ pub fn find_factor2(n: u64) -> u64 {
         if g < n {
             return g;
         }
-        c += 1;
     }
+    unreachable!();
 }
 
 #[cargo_snippet::snippet("prime_factors_rho")]
