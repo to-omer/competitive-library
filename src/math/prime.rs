@@ -46,6 +46,27 @@ impl PrimeTable {
         }
         factors
     }
+    pub fn count_divisors(&self, mut n: usize) -> usize {
+        let mut divisor_cnt = 1;
+        while self.table[n] > 1 {
+            let p = self.table[n];
+            let mut cnt = 1;
+            n /= p;
+            while self.table[n] == p {
+                n /= p;
+                cnt += 1;
+            }
+            if n == p {
+                cnt += 1;
+                n /= p;
+            }
+            divisor_cnt *= cnt + 1;
+        }
+        if n > 1 {
+            divisor_cnt *= 2;
+        }
+        divisor_cnt
+    }
 }
 
 #[test]
@@ -67,6 +88,14 @@ fn test_prime_table() {
                 .into_iter()
                 .map(|(p, c)| p.pow(c as u32))
                 .product::<usize>()
+        );
+        assert_eq!(
+            primes
+                .prime_factors(i)
+                .into_iter()
+                .map(|(_, c)| c + 1)
+                .product::<usize>(),
+            primes.count_divisors(i)
         );
     }
 }
