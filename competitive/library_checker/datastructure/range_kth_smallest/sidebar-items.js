@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["range_kth_smallest","✅  AC  406ms"]],"struct":[["WaveletMatrix",""]]});
+initSidebarItems({"fn":[["range_kth_smallest","✅  AC  377ms"]],"struct":[["WaveletMatrix",""]]});

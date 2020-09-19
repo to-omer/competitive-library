@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_4_b","✅  AC  4ms"],["judge_grl_4_b",""]],"type":[["DirectedGraphScanner",""]]});
+initSidebarItems({"fn":[["grl_4_b","✅  AC  5ms"],["judge_grl_4_b",""]],"type":[["DirectedGraphScanner",""]]});

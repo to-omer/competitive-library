@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["two_sat","✅  AC  239ms"]],"struct":[["TwoSatisfiability",""]]});
+initSidebarItems({"fn":[["two_sat","✅  AC  204ms"]],"struct":[["TwoSatisfiability",""]]});
