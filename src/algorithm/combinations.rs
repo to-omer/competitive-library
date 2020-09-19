@@ -20,18 +20,18 @@ pub fn product<T: Clone, F>(n: &[T], r: usize, mut f: F)
 where
     F: FnMut(&[T]),
 {
-    fn product_inner<T: Clone, F>(n: &[T], mut r: usize, v: &mut Vec<T>, f: &mut F)
+    fn product_inner<T: Clone, F>(n: &[T], mut r: usize, buf: &mut Vec<T>, f: &mut F)
     where
         F: FnMut(&[T]),
     {
         if r == 0 {
-            f(v.as_slice());
+            f(buf.as_slice());
         } else {
             r -= 1;
             for a in n.iter().cloned() {
-                v.push(a);
-                product_inner(n, r, v, f);
-                v.pop();
+                buf.push(a);
+                product_inner(n, r, buf, f);
+                buf.pop();
             }
         }
     }
@@ -71,21 +71,21 @@ where
         n: &[T],
         mut r: usize,
         rem: &mut BTreeSet<usize>,
-        v: &mut Vec<T>,
+        buf: &mut Vec<T>,
         f: &mut F,
     ) where
         F: FnMut(&[T]),
     {
         if r == 0 {
-            f(v.as_slice());
+            f(buf.as_slice());
         } else {
             r -= 1;
             for i in rem.iter().cloned().collect::<Vec<_>>() {
-                v.push(n[i].clone());
+                buf.push(n[i].clone());
                 rem.remove(&i);
-                permutations_inner(n, r, rem, v, f);
+                permutations_inner(n, r, rem, buf, f);
                 rem.insert(i);
-                v.pop();
+                buf.pop();
             }
         }
     }
@@ -119,18 +119,23 @@ pub fn combinations<T: Clone, F>(n: &[T], r: usize, mut f: F)
 where
     F: FnMut(&[T]),
 {
-    fn combinations_inner<T: Clone, F>(n: &[T], mut r: usize, p: usize, v: &mut Vec<T>, f: &mut F)
-    where
+    fn combinations_inner<T: Clone, F>(
+        n: &[T],
+        mut r: usize,
+        start: usize,
+        buf: &mut Vec<T>,
+        f: &mut F,
+    ) where
         F: FnMut(&[T]),
     {
         if r == 0 {
-            f(v.as_slice());
+            f(buf.as_slice());
         } else {
             r -= 1;
-            for i in p..n.len() - r {
-                v.push(n[i].clone());
-                combinations_inner(n, r, i + 1, v, f);
-                v.pop();
+            for i in start..n.len() - r {
+                buf.push(n[i].clone());
+                combinations_inner(n, r, i + 1, buf, f);
+                buf.pop();
             }
         }
     }
@@ -166,20 +171,20 @@ where
     fn combinations_with_replacement_inner<T: Clone, F>(
         n: &[T],
         mut r: usize,
-        p: usize,
-        v: &mut Vec<T>,
+        start: usize,
+        buf: &mut Vec<T>,
         f: &mut F,
     ) where
         F: FnMut(&[T]),
     {
         if r == 0 {
-            f(v.as_slice());
+            f(buf.as_slice());
         } else {
             r -= 1;
-            for i in p..n.len() {
-                v.push(n[i].clone());
-                combinations_with_replacement_inner(n, r, i, v, f);
-                v.pop();
+            for i in start..n.len() {
+                buf.push(n[i].clone());
+                combinations_with_replacement_inner(n, r, i, buf, f);
+                buf.pop();
             }
         }
     }
