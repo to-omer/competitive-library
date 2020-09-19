@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["scc","✅  AC  190ms"]],"struct":[["StronglyConnectedComponent",""]],"type":[["DirectedSparseGraph",""]]});
+initSidebarItems({"fn":[["scc","✅  AC  228ms"]],"struct":[["StronglyConnectedComponent",""]],"type":[["DirectedSparseGraph",""]]});
