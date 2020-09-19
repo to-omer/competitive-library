@@ -86,6 +86,7 @@ pub mod modulus {
     pub type DynMInt = MInt<DynModulo>;
 }
 #[cargo_snippet::snippet("MInt")]
+#[repr(transparent)]
 pub struct MInt<M>
 where
     M: Modulus,

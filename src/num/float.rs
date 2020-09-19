@@ -207,6 +207,7 @@ primitive_float_impls!({f32 i32 u32 31} {f64 i64 u64 63});
 macro_rules! ord_float_impls {
     ($({$t:ident $n:ident})*) => {$(
         #[derive(Debug, Copy, Clone, PartialEq, Default)]
+        #[repr(transparent)]
         pub struct $n(pub $t);
         impl std::fmt::Display for $n {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
