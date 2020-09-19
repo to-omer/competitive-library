@@ -1,12 +1,12 @@
 use crate::num::{MInt, Modulus, One, Zero};
 
-#[cargo_snippet::snippet(name = "factorial")]
+#[cargo_snippet::snippet("factorial")]
 #[derive(Clone, Debug)]
 pub struct MemorizedFactorial<M: Modulus> {
     pub fact: Vec<MInt<M>>,
     pub inv_fact: Vec<MInt<M>>,
 }
-#[cargo_snippet::snippet(name = "factorial")]
+#[cargo_snippet::snippet("factorial")]
 impl<M: Modulus> MemorizedFactorial<M> {
     pub fn new(max_n: usize) -> Self {
         let mut fact = vec![MInt::one(); max_n + 1];
@@ -55,44 +55,6 @@ impl<M: Modulus> MemorizedFactorial<M> {
     }
 }
 
-#[test]
-fn test_factorials() {
-    use crate::num::modulus::Modulo1000000007;
-    let fact = MemorizedFactorial::new(100);
-    type M = MInt<Modulo1000000007>;
-    for i in 0..101 {
-        assert_eq!(fact.fact[i] * fact.inv_fact[i], M::new(1));
-    }
-    for i in 1..101 {
-        assert_eq!(fact.inv(i), M::new(i as u32).inv());
-    }
-    assert_eq!(fact.combination(10, 0), M::new(1));
-    assert_eq!(fact.combination(10, 1), M::new(10));
-    assert_eq!(fact.combination(10, 2), M::new(45));
-    assert_eq!(fact.combination(10, 3), M::new(120));
-    assert_eq!(fact.combination(10, 4), M::new(210));
-    assert_eq!(fact.combination(10, 5), M::new(252));
-    assert_eq!(fact.combination(10, 6), M::new(210));
-    assert_eq!(fact.combination(10, 7), M::new(120));
-    assert_eq!(fact.combination(10, 8), M::new(45));
-    assert_eq!(fact.combination(10, 9), M::new(10));
-    assert_eq!(fact.combination(10, 10), M::new(1));
-    assert_eq!(fact.combination(10, 11), M::new(0));
-
-    assert_eq!(fact.permutation(10, 0), M::new(1));
-    assert_eq!(fact.permutation(10, 1), M::new(10));
-    assert_eq!(fact.permutation(10, 2), M::new(90));
-    assert_eq!(fact.permutation(10, 3), M::new(720));
-    assert_eq!(fact.permutation(10, 4), M::new(5040));
-    assert_eq!(fact.permutation(10, 5), M::new(30240));
-    assert_eq!(fact.permutation(10, 6), M::new(151_200));
-    assert_eq!(fact.permutation(10, 7), M::new(604_800));
-    assert_eq!(fact.permutation(10, 8), M::new(1_814_400));
-    assert_eq!(fact.permutation(10, 9), M::new(3_628_800));
-    assert_eq!(fact.permutation(10, 10), M::new(3_628_800));
-    assert_eq!(fact.permutation(10, 11), M::new(0));
-}
-
 #[derive(Clone, Debug)]
 pub struct SmallModMemorizedFactorial<M: Modulus> {
     fact: Vec<MInt<M>>,
@@ -139,26 +101,57 @@ impl<M: Modulus> SmallModMemorizedFactorial<M> {
     }
 }
 
-#[test]
-fn test_small_factorials() {
-    use crate::num::Modulus;
-    use crate::tools::Xorshift;
-    struct DM {}
-    static mut MOD: u32 = 2;
-    impl Modulus for DM {
-        #[inline]
-        fn get_modulus() -> u32 {
-            unsafe { MOD }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_factorials() {
+        use crate::num::modulus::Modulo1000000007;
+        let fact = MemorizedFactorial::new(100);
+        type M = MInt<Modulo1000000007>;
+        for i in 0..101 {
+            assert_eq!(fact.fact[i] * fact.inv_fact[i], M::new(1));
         }
+        for i in 1..101 {
+            assert_eq!(fact.inv(i), M::new(i as u32).inv());
+        }
+        assert_eq!(fact.combination(10, 0), M::new(1));
+        assert_eq!(fact.combination(10, 1), M::new(10));
+        assert_eq!(fact.combination(10, 5), M::new(252));
+        assert_eq!(fact.combination(10, 6), M::new(210));
+        assert_eq!(fact.combination(10, 10), M::new(1));
+        assert_eq!(fact.combination(10, 11), M::new(0));
+
+        assert_eq!(fact.permutation(10, 0), M::new(1));
+        assert_eq!(fact.permutation(10, 1), M::new(10));
+        assert_eq!(fact.permutation(10, 5), M::new(30240));
+        assert_eq!(fact.permutation(10, 6), M::new(151_200));
+        assert_eq!(fact.permutation(10, 10), M::new(3_628_800));
+        assert_eq!(fact.permutation(10, 11), M::new(0));
     }
-    let mut rand = Xorshift::time();
-    const N: usize = 10_000;
-    const Q: usize = 10_000;
-    let fact = SmallModMemorizedFactorial::<DM>::new();
-    for _ in 0..Q {
-        let n = rand.rand(N as u64) as usize + 1;
-        let k = rand.rand(N as u64) as usize % n;
-        let x = fact.factorial(n).1 - fact.factorial(k).1 - fact.factorial(n - k).1;
-        assert_eq!(x == 0, (n & k) == k);
+
+    #[test]
+    fn test_small_factorials() {
+        use crate::num::Modulus;
+        use crate::tools::Xorshift;
+        struct DM {}
+        static mut MOD: u32 = 2;
+        impl Modulus for DM {
+            #[inline]
+            fn get_modulus() -> u32 {
+                unsafe { MOD }
+            }
+        }
+        let mut rand = Xorshift::time();
+        const N: usize = 10_000;
+        const Q: usize = 10_000;
+        let fact = SmallModMemorizedFactorial::<DM>::new();
+        for _ in 0..Q {
+            let n = rand.rand(N as u64) as usize + 1;
+            let k = rand.rand(N as u64) as usize % n;
+            let x = fact.factorial(n).1 - fact.factorial(k).1 - fact.factorial(n - k).1;
+            assert_eq!(x == 0, (n & k) == k);
+        }
     }
 }
