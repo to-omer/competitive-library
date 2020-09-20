@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_5_a","✅  AC  12ms"]],"struct":[["AdditiveOperation","$+$"],["TreeGraphScanner",""]]});
+initSidebarItems({"fn":[["grl_5_a","✅  AC  9ms"]],"struct":[["AdditiveOperation","$+$"],["TreeGraphScanner",""]]});

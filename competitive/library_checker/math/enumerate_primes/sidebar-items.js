@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["enumerate_primes","✅  AC  2008ms"],["segmented_sieve_primes",""]]});
+initSidebarItems({"fn":[["enumerate_primes","✅  AC  1819ms"],["segmented_sieve_primes",""]]});

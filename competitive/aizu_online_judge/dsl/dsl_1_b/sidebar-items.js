@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_1_b","✅  AC  26ms"]],"struct":[["AdditiveOperation","$+$"],["WeightedUnionFind",""]]});
+initSidebarItems({"fn":[["dsl_1_b","✅  AC  28ms"]],"struct":[["AdditiveOperation","$+$"],["WeightedUnionFind",""]]});

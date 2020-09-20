@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["staticrmq_disjoint_sparse_table","✅  AC  173ms"],["staticrmq_segment_tree","✅  AC  142ms"]],"struct":[["DisjointSparseTable",""],["MinOperation","binary operation to select smaller element"],["SegmentTree",""]]});
+initSidebarItems({"fn":[["staticrmq_disjoint_sparse_table","✅  AC  189ms"],["staticrmq_segment_tree","✅  AC  126ms"]],"struct":[["DisjointSparseTable",""],["MinOperation","binary operation to select smaller element"],["SegmentTree",""]]});
