@@ -195,12 +195,9 @@ impl CheckerBinary {
                     "-c",
                     format!(
                         r#"from onlinejudge import dispatch
-url = '{}'
-problem = dispatch.problem_from_url(url)
-try:
-    print(problem.download_checker_binary(), end='')
-except RuntimeError as e:
-    assert False
+problem = dispatch.problem_from_url('{}')
+try: print(problem._get_problem_directory_path() / 'checker', end='')
+except Exception as e: assert False
 "#,
                         url
                     )
