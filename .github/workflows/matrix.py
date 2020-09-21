@@ -2,30 +2,30 @@ from argparse import ArgumentParser
 from itertools import islice
 from pathlib import Path
 from shutil import move
-from subprocess import Popen, PIPE, call
+from subprocess import run
 
 SIZE = 16
 
 verify_packages = ['aizu_online_judge', 'library_checker']
 
 def cargo_verify(package: str, name: str):
-    return call(['cargo', 'test', '--package', package, '--release', name, '--', '--ignored', '--exact', '--nocapture'])
+    run(['cargo', 'test', '--package', package, '--release', name, '--', '--ignored', '--exact', '--nocapture'])
 
 def verify_list():
     for package in verify_packages:
         command = ['cargo', 'test', '--package', package, '--quiet', '--release', '--', '--list', '--ignored']
-        with Popen(command, stdout=PIPE) as p:
-            for s in p.stdout.readlines():
-                yield (package, s.split()[0][:-1].decode('utf-8'))
+        res = run(command, capture_output=True)
+        for s in res.stdout.splitlines():
+            yield (package, s.split()[0][:-1].decode('utf-8'))
 
 def arrange_artifacts():
-    with Popen(['git', 'ls-files', '-o', '--exclude-standard', 'crates'], stdout=PIPE) as p:
-        artifact = Path('artifact')
-        artifact.mkdir(exist_ok=True)
-        for s in p.stdout.read().split():
-            target = artifact / Path(s.decode('utf-8'))
-            target.parent.mkdir(parents=True, exist_ok=True)
-            move(s.decode('utf-8'), target)
+    res = run(['git', 'ls-files', '-o', '--exclude-standard', 'crates'], capture_output=True)
+    artifact = Path('artifact')
+    artifact.mkdir(exist_ok=True)
+    for s in res.stdout.split():
+        target = artifact / Path(s.decode('utf-8'))
+        target.parent.mkdir(parents=True, exist_ok=True)
+        move(s.decode('utf-8'), target)
 
 
 def main():
