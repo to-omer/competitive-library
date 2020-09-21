@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["dpl_1_c","✅  AC  4ms"]],"struct":[["KnapsackPloblemSmallWeight",""]]});

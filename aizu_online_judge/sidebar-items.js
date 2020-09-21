@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["dpl","Discrete Optimization Problems"],["dsl","Data Sets and Queries"],["grl","Graph Algorithms"],["itp1","Introduction to Programming I"]]});

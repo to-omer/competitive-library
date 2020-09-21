@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["two_sat","✅  AC  307ms"]],"struct":[["TwoSatisfiability",""]]});
