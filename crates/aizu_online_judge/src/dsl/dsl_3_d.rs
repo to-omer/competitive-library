@@ -1,6 +1,6 @@
-pub use competitive::algebra::MinOperation;
-pub use competitive::data_structure::QueueAggregation;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{algebra::MinOperation, data_structure::QueueAggregation};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/3/DSL_3_D")]
 pub fn dsl_3_d(reader: &mut impl Read, writer: &mut impl Write) {

@@ -1,6 +1,9 @@
-pub use competitive::algebra::{LastOperation, MinOperation};
-pub use competitive::data_structure::LazySegmentTree;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::{LastOperation, MinOperation},
+    data_structure::LazySegmentTree,
+};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_F")]
 pub fn dsl_2_f(reader: &mut impl Read, writer: &mut impl Write) {

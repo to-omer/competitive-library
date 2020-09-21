@@ -1,6 +1,6 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::data_structure::WeightedUnionFind;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{algebra::AdditiveOperation, data_structure::WeightedUnionFind};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_B")]
 pub fn dsl_1_b(reader: &mut impl Read, writer: &mut impl Write) {

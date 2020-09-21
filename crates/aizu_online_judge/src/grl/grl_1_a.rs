@@ -1,6 +1,6 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::graph::DirectedGraphScanner;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{algebra::AdditiveOperation, graph::DirectedGraphScanner};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/1/GRL_1_A")]
 pub fn grl_1_a(reader: &mut impl Read, writer: &mut impl Write) {

@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::graph::TwoSatisfiability;
 use competitive::prelude::*;
 

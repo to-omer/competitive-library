@@ -1,6 +1,6 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::data_structure::SegmentTree;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{algebra::AdditiveOperation, data_structure::SegmentTree};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_B")]
 pub fn dsl_2_b(reader: &mut impl Read, writer: &mut impl Write) {

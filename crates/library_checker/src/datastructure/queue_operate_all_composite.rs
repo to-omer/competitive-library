@@ -1,7 +1,10 @@
-pub use competitive::algebra::LinearOperation;
-pub use competitive::data_structure::QueueAggregation;
-pub use competitive::num::{modulus::MInt998244353, MInt};
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::LinearOperation,
+    data_structure::QueueAggregation,
+    num::{modulus::MInt998244353, MInt},
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/queue_operate_all_composite")]
 pub fn queue_operate_all_composite(reader: &mut impl Read, writer: &mut impl Write) {

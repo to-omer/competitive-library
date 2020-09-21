@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::math::segmented_sieve_primes;
 use competitive::prelude::*;
 

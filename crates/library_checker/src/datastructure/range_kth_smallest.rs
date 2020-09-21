@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::data_structure::WaveletMatrix;
 use competitive::prelude::*;
 

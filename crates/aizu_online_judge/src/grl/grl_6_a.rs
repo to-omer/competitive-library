@@ -1,6 +1,6 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::graph::DinicBuilder;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{algebra::AdditiveOperation, graph::DinicBuilder};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/6/GRL_6_A")]
 pub fn grl_6_a(reader: &mut impl Read, writer: &mut impl Write) {

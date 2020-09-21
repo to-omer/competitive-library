@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::data_structure::Static2DTree;
 use competitive::prelude::*;
 

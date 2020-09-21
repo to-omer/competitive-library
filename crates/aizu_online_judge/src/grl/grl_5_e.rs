@@ -1,8 +1,11 @@
-pub use competitive::algebra::{AdditiveOperation, CartesianOperation};
-pub use competitive::data_structure::LazySegmentTree;
-pub use competitive::graph::UndirectedSparseGraph;
 use competitive::prelude::*;
-pub use competitive::tree::HeavyLightDecomposition;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::{AdditiveOperation, CartesianOperation},
+    data_structure::LazySegmentTree,
+    graph::UndirectedSparseGraph,
+    tree::HeavyLightDecomposition,
+};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_E")]
 pub fn grl_5_e(reader: &mut impl Read, writer: &mut impl Write) {

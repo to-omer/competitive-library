@@ -1,8 +1,9 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::data_structure::BinaryIndexedTree;
-pub use competitive::graph::UndirectedSparseGraph;
 use competitive::prelude::*;
-pub use competitive::tree::EulerTourForEdge;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::AdditiveOperation, data_structure::BinaryIndexedTree, graph::UndirectedSparseGraph,
+    tree::EulerTourForEdge,
+};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_D")]
 pub fn grl_5_d(reader: &mut impl Read, writer: &mut impl Write) {

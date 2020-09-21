@@ -1,7 +1,10 @@
-pub use competitive::algebra::{AdditiveOperation, CartesianOperation, LinearOperation};
-pub use competitive::data_structure::LazySegmentTree;
-pub use competitive::num::{modulus::MInt998244353, MInt};
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::{AdditiveOperation, CartesianOperation, LinearOperation},
+    data_structure::LazySegmentTree,
+    num::{modulus::MInt998244353, MInt},
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/range_affine_range_sum")]
 pub fn range_affine_range_sum(reader: &mut impl Read, writer: &mut impl Write) {

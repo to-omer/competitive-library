@@ -1,7 +1,6 @@
-pub use competitive::algebra::MaxOperation;
-pub use competitive::graph::TreeGraphScanner;
 use competitive::prelude::*;
-pub use competitive::tree::ReRooting;
+#[doc(no_inline)]
+pub use competitive::{algebra::MaxOperation, graph::TreeGraphScanner, tree::ReRooting};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_B")]
 pub fn grl_5_b(reader: &mut impl Read, writer: &mut impl Write) {

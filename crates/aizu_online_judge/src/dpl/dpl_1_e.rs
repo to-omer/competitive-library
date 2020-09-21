@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::combinatorial_optimization::levenshtein_distance;
 use competitive::prelude::*;
 

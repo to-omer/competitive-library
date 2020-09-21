@@ -1,6 +1,6 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::graph::EdgeListGraphScanner;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{algebra::AdditiveOperation, graph::EdgeListGraphScanner};
 
 #[verify::verify("https://judge.yosupo.jp/problem/directedmst")]
 pub fn directedmst(reader: &mut impl Read, writer: &mut impl Write) {

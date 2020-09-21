@@ -1,6 +1,9 @@
-pub use competitive::math::NTT998244353;
-pub use competitive::num::{modulus::MInt998244353, MInt};
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    math::NTT998244353,
+    num::{modulus::MInt998244353, MInt},
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/convolution_mod")]
 pub fn convolution_mod(reader: &mut impl Read, writer: &mut impl Write) {

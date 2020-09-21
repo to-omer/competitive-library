@@ -1,6 +1,9 @@
-pub use competitive::algebra::{AdditiveOperation, CartesianOperation, LastOperation};
-pub use competitive::data_structure::LazySegmentTree;
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::{AdditiveOperation, CartesianOperation, LastOperation},
+    data_structure::LazySegmentTree,
+};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_I")]
 pub fn dsl_2_i(reader: &mut impl Read, writer: &mut impl Write) {

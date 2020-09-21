@@ -1,9 +1,12 @@
 // #![warn(missing_docs)]
 #![allow(clippy::many_single_char_names)]
 
-//! [github](https://github.com/to-omer/competitive-library)
+//! [github]
 //!
-//! [verification summary](index.html?search=verify)
+//! [verification summary]
+//!
+//! [github]: https://github.com/to-omer/competitive-library
+//! [verification summary]: ?search=verify
 
 #[macro_use]
 pub mod algebra;

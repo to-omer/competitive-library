@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::math::prime_factors_rho;
 use competitive::prelude::*;
 

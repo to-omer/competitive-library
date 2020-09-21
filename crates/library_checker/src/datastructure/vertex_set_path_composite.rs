@@ -1,9 +1,12 @@
-pub use competitive::algebra::{LinearOperation, ReverseOperation};
-pub use competitive::data_structure::SegmentTree;
-pub use competitive::graph::TreeGraphScanner;
-pub use competitive::num::{modulus::MInt998244353, MInt};
 use competitive::prelude::*;
-pub use competitive::tree::HeavyLightDecomposition;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::{LinearOperation, ReverseOperation},
+    data_structure::SegmentTree,
+    graph::TreeGraphScanner,
+    num::{modulus::MInt998244353, MInt},
+    tree::HeavyLightDecomposition,
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/vertex_set_path_composite")]
 pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write) {

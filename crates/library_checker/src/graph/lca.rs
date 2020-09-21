@@ -1,6 +1,9 @@
-pub use competitive::graph::UndirectedSparseGraph;
 use competitive::prelude::*;
-pub use competitive::tree::{EulerTourForRichVertex, HeavyLightDecomposition};
+#[doc(no_inline)]
+pub use competitive::{
+    graph::UndirectedSparseGraph,
+    tree::{EulerTourForRichVertex, HeavyLightDecomposition},
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/lca")]
 pub fn lca_euler_tour(reader: &mut impl Read, writer: &mut impl Write) {

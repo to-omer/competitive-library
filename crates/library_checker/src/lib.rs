@@ -2,11 +2,13 @@
 #![cfg_attr(feature = "verify_doc", feature(doc_alias))]
 #![allow(clippy::many_single_char_names)]
 
-//! Library-Checker
+//! Verification of [`competitive` crate] by [Library-Checker]
 //!
-//! [link](https://judge.yosupo.jp/)
+//! [verification summary]
 //!
-//! [verification summary](index.html?search=verify)
+//! [`competitive` crate]: ../competitive/index.html
+//! [Library-Checker]: https://judge.yosupo.jp
+//! [verification summary]: ?search=verify
 
 pub mod datastructure;
 pub mod graph;

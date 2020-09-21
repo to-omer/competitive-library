@@ -1,8 +1,9 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::data_structure::SegmentTree;
-pub use competitive::graph::UndirectedSparseGraph;
 use competitive::prelude::*;
-pub use competitive::tree::EulerTourForVertex;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::AdditiveOperation, data_structure::SegmentTree, graph::UndirectedSparseGraph,
+    tree::EulerTourForVertex,
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/vertex_add_subtree_sum")]
 pub fn vertex_add_subtree_sum(reader: &mut impl Read, writer: &mut impl Write) {

@@ -1,4 +1,5 @@
 use competitive::prelude::*;
+#[doc(no_inline)]
 pub use competitive::string::SuffixArray;
 
 #[verify::verify("https://judge.yosupo.jp/problem/suffixarray")]

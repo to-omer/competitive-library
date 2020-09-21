@@ -1,6 +1,9 @@
-pub use competitive::algebra::MinOperation;
-pub use competitive::data_structure::{DisjointSparseTable, SegmentTree};
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::MinOperation,
+    data_structure::{DisjointSparseTable, SegmentTree},
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/staticrmq")]
 pub fn staticrmq_disjoint_sparse_table(reader: &mut impl Read, writer: &mut impl Write) {

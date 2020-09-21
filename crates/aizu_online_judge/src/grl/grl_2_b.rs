@@ -1,6 +1,9 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::graph::{EdgeListGraph, EdgeListGraphScanner};
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::AdditiveOperation,
+    graph::{EdgeListGraph, EdgeListGraphScanner},
+};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/2/GRL_2_B")]
 pub fn grl_2_b(reader: &mut impl Read, writer: &mut impl Write) {

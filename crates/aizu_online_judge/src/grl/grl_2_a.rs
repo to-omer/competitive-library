@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::graph::EdgeListGraphScanner;
 use competitive::prelude::*;
 

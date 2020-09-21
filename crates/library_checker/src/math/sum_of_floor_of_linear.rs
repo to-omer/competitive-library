@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::math::floor_sum;
 use competitive::prelude::*;
 

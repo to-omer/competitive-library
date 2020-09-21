@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::combinatorial_optimization::largest_rectangle;
 use competitive::prelude::*;
 

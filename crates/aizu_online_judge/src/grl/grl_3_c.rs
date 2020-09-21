@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::graph::{DirectedGraphScanner, StronglyConnectedComponent};
 use competitive::prelude::*;
 

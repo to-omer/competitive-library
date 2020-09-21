@@ -1,3 +1,4 @@
+#[doc(no_inline)]
 pub use competitive::graph::{LowLink, UndirectedGraphScanner};
 use competitive::prelude::*;
 

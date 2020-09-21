@@ -1,6 +1,9 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::data_structure::{BinaryIndexedTree, SegmentTree};
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::AdditiveOperation,
+    data_structure::{BinaryIndexedTree, SegmentTree},
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
 pub fn point_add_range_sum_binary_indexed_tree(reader: &mut impl Read, writer: &mut impl Write) {

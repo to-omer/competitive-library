@@ -1,6 +1,6 @@
-pub use competitive::graph::UndirectedSparseGraph;
 use competitive::prelude::*;
-pub use competitive::tree::EulerTourForRichVertex;
+#[doc(no_inline)]
+pub use competitive::{graph::UndirectedSparseGraph, tree::EulerTourForRichVertex};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_C")]
 pub fn grl_5_c(reader: &mut impl Read, writer: &mut impl Write) {

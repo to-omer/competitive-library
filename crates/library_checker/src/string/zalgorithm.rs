@@ -1,4 +1,5 @@
 use competitive::prelude::*;
+#[doc(no_inline)]
 pub use competitive::string::Zarray;
 
 #[verify::verify("https://judge.yosupo.jp/problem/zalgorithm")]

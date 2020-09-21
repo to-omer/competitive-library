@@ -1,8 +1,9 @@
-pub use competitive::algebra::AdditiveOperation;
-pub use competitive::data_structure::BinaryIndexedTree;
-pub use competitive::graph::TreeGraphScanner;
 use competitive::prelude::*;
-pub use competitive::tree::HeavyLightDecomposition;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::AdditiveOperation, data_structure::BinaryIndexedTree, graph::TreeGraphScanner,
+    tree::HeavyLightDecomposition,
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/vertex_add_path_sum")]
 pub fn vertex_add_path_sum(reader: &mut impl Read, writer: &mut impl Write) {

@@ -1,7 +1,10 @@
-pub use competitive::algebra::LinearOperation;
-pub use competitive::data_structure::SegmentTree;
-pub use competitive::num::{modulus::MInt998244353, MInt};
 use competitive::prelude::*;
+#[doc(no_inline)]
+pub use competitive::{
+    algebra::LinearOperation,
+    data_structure::SegmentTree,
+    num::{modulus::MInt998244353, MInt},
+};
 
 #[verify::verify("https://judge.yosupo.jp/problem/point_set_range_composite")]
 pub fn point_set_range_composite(reader: &mut impl Read, writer: &mut impl Write) {
