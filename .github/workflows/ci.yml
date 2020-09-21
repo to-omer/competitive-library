@@ -85,10 +85,10 @@ jobs:
       env:
         RUST_MIN_STACK: 268435456
         RUST_BACKTRACE: full
-        RUST_LOG: competitive::verify=info
+        RUST_LOG: verify=info
       run: |
         ulimit -s unlimited
-        python matrix.py ${{ matrix.job-id }}
+        python ./.github/workflows/matrix.py ${{ matrix.job-id }}
 
     - name: upload artifacts
       if: ${{ always() }}
@@ -100,7 +100,7 @@ jobs:
 
   generate-doc:
     needs: verify
-    if: ${{ always() }}
+    if: github.ref == 'refs/heads/master'
 
     name: Generate Doc
     runs-on: ubuntu-18.04
@@ -125,7 +125,7 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: doc
-        args: --no-deps --features verify_doc
+        args: --no-deps --all-features
       env:
         RUSTDOCFLAGS: --html-in-header katex-header.html
 

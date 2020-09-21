@@ -1,0 +1,15 @@
+pub use competitive::algebra::MaxOperation;
+pub use competitive::graph::TreeGraphScanner;
+use competitive::prelude::*;
+pub use competitive::tree::ReRooting;
+
+#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_B")]
+pub fn grl_5_b(reader: &mut impl Read, writer: &mut impl Write) {
+    let s = read_all(reader);
+    let mut scanner = Scanner::new(&s);
+    scan!(scanner, n, (graph, w): { TreeGraphScanner::<usize, u64>::new(n) });
+    let re = ReRooting::new(&graph, MaxOperation::new(), |d, _vid, eid_opt| {
+        d + eid_opt.map_or(0, |eid| w[eid])
+    });
+    echo(writer, re.dp, '\n').ok();
+}
