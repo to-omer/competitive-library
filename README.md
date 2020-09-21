@@ -6,9 +6,9 @@
 competitive programming library
 
 ## Verify
-use `verify_attr::verify` attribute like `test` attribute
+use `verify::verify` attribute like `test` attribute
 ```rust
-#[verify_attr::verify("problem-url")]
+#[verify::verify("problem-url")]
 fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
     writeln!(writer, "solved!").ok();
 }
@@ -16,7 +16,7 @@ fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
 
 set `eps` option and judge as floating point number
 ```rust
-#[verify_attr::verify("problem-url", eps = "1e-6")]
+#[verify::verify("problem-url", eps = "1e-6")]
 fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
     writeln!(writer, "12.34").ok();
 }
@@ -24,7 +24,7 @@ fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
 
 set `judge` option and judge with specified function
 ```rust
-#[verify_attr::verify("problem-url", judge = "judge_problem_name")]
+#[verify::verify("problem-url", judge = "judge_problem_name")]
 fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
     writeln!(writer, "12.34").ok();
 }
@@ -41,7 +41,7 @@ verify problem and generate verify result markdown
 cargo test --release verify_problem_name -- --ignored --nocapture
 ```
 
-set `RUST_LOG` environmental variable as `competitive::verify=info` to output progress information
+set `RUST_LOG` environmental variable as `verify=info` to output progress information
 
 test problem on stdin and stdout
 ```sh
@@ -50,5 +50,5 @@ cargo test --features=verify_test test_problem_name
 
 generate documentation with verify results
 ```sh
-cargo doc --no-deps --features verify_doc
+cargo doc --no-deps --all-features
 ```

@@ -1,6 +1,6 @@
 name: CI
 
-on: push
+on: [push, pull_request]
 
 jobs:
   build:
@@ -52,6 +52,18 @@ jobs:
       env:
         RUST_BACKTRACE: full
 
+    - name: Setup cargo-snippet
+      uses: actions-rs/cargo@v1
+      with:
+        command: install
+        args: cargo-snippet --features=binaries
+
+    - name: cargo-snippet
+      uses: actions-rs/cargo@v1
+      with:
+        command: snippet
+        args: -t vscode crates/competitive
+
 
   verify:
     strategy:
@@ -85,10 +97,10 @@ jobs:
       env:
         RUST_MIN_STACK: 268435456
         RUST_BACKTRACE: full
-        RUST_LOG: competitive::verify=info
+        RUST_LOG: verify=info
       run: |
         ulimit -s unlimited
-        python matrix.py ${{ matrix.job-id }}
+        python ./.github/workflows/matrix.py ${{ matrix.job-id }}
 
     - name: upload artifacts
       if: ${{ always() }}
@@ -100,7 +112,7 @@ jobs:
 
   generate-doc:
     needs: verify
-    if: ${{ always() }}
+    if: github.ref == 'refs/heads/master'
 
     name: Generate Doc
     runs-on: ubuntu-18.04
@@ -125,7 +137,7 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: doc
-        args: --no-deps --features verify_doc
+        args: --workspace --no-deps --all-features
       env:
         RUSTDOCFLAGS: --html-in-header katex-header.html
 
