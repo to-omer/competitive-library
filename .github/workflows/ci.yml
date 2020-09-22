@@ -139,13 +139,10 @@ jobs:
         command: doc
         args: --workspace --no-deps --all-features
       env:
-        RUSTDOCFLAGS: --html-in-header katex-header.html
+        RUSTDOCFLAGS: --html-in-header util/header.html
 
-    - name: Generate root index.html
-      run: |
-        cat <<EOT > target/doc/index.html
-        <!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=competitive/index.html"><title></title>
-        EOT
+    - name: Arrange doc resources
+      run: cp -r util/gh-pages/* target/doc
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3

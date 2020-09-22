@@ -51,4 +51,5 @@ cargo test --features=verify_test test_problem_name
 generate documentation with verify results
 ```sh
 cargo doc --no-deps --all-features
+cp -r util/gh-pages/* target/doc
 ```
