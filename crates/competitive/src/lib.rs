@@ -1,3 +1,4 @@
+#![cfg_attr(feature = "snippet_nightly", feature(proc_macro_hygiene))]
 // #![warn(missing_docs)]
 #![allow(clippy::many_single_char_names)]
 
