@@ -1,12 +1,11 @@
-use std::collections::{BTreeMap, HashMap};
-
 use crate::{
     ast_helper::{get_attributes_of_item, get_attributes_of_item_mut},
     attribute::{is_snippet, SnippetAttributes},
     config::Opt,
-    output::VSCode,
+    output::{format_with_rustfmt, VSCode},
 };
 use quote::ToTokens as _;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use syn::{
     visit::{self, Visit},
     Attribute, Item,
@@ -14,9 +13,17 @@ use syn::{
 
 #[derive(Debug)]
 pub struct SnippetMap<'c> {
-    pub map: HashMap<String, String>,
+    map: HashMap<String, LinkedSnippet>,
     config: &'c Opt,
 }
+
+#[derive(Debug, Default)]
+struct LinkedSnippet {
+    pub contents: String,
+    includes: BTreeSet<String>,
+    cnt: std::cell::RefCell<usize>,
+}
+
 impl<'c> SnippetMap<'c> {
     pub fn new(config: &'c Opt) -> Self {
         Self {
@@ -29,18 +36,64 @@ impl<'c> SnippetMap<'c> {
             self.visit_item(item);
         }
     }
-    pub fn add_snippet(&mut self, name: &str, item: &Item) {
+    fn entry(&mut self, name: &str) -> &mut LinkedSnippet {
+        if !self.map.contains_key(name) {
+            self.map.insert(name.to_string(), Default::default());
+        }
+        self.map
+            .get_mut(name)
+            .expect("HashMap is not working properly.")
+    }
+    fn add_snippet(&mut self, name: &str, item: &Item) {
         if let Some(item) = modify(item.clone(), self.config) {
-            self.map
-                .entry(name.to_string())
-                .or_default()
+            self.entry(name)
+                .contents
                 .push_str(&item.to_token_stream().to_string());
         }
     }
-    pub fn into_vscode(self) -> BTreeMap<String, VSCode> {
-        self.map
-            .into_iter()
-            .map(|kv| (kv.0.to_owned(), From::from(kv)))
+    fn add_include(&mut self, name: &str, include: String) {
+        self.entry(name).includes.insert(include);
+    }
+    pub fn format_all(&mut self) {
+        for link in self.map.values_mut() {
+            if let Some(formatted) = format_with_rustfmt(&link.contents) {
+                link.contents = formatted;
+            }
+        }
+    }
+    fn resolve_include(&self) -> BTreeMap<&str, String> {
+        let mut res: BTreeMap<_, String> = BTreeMap::new();
+        for (name, link) in self.map.iter() {
+            let mut used = BTreeSet::new();
+            used.insert(name.as_str());
+            let mut stack: Vec<_> = link.includes.iter().map(|s| s.as_str()).collect();
+            used.extend(&stack);
+            while let Some(include) = stack.pop() {
+                if let Some(nlink) = self.map.get(include) {
+                    for ninclude in nlink.includes.iter().map(|s| s.as_str()) {
+                        if !used.contains(ninclude) {
+                            used.insert(ninclude);
+                            stack.push(ninclude);
+                        }
+                    }
+                }
+            }
+            let entry = res.entry(name.as_str()).or_default();
+            used.remove(name.as_str());
+            for include in used {
+                if let Some(nlink) = self.map.get(include) {
+                    entry.push_str(nlink.contents.as_str());
+                }
+            }
+            entry.push_str(link.contents.as_str());
+        }
+        res
+    }
+    pub fn to_vscode(&self) -> BTreeMap<String, VSCode> {
+        let res = self.resolve_include();
+        res.into_iter()
+            .filter(|(k, _)| !k.starts_with('_'))
+            .map(|(k, v)| (k.to_owned(), From::from((k.to_owned(), v))))
             .collect::<BTreeMap<_, _>>()
     }
 }
@@ -67,6 +120,9 @@ impl Visit<'_> for SnippetMap<'_> {
                     }
                 } else {
                     self.add_snippet(&name, item);
+                }
+                for include in sa.include {
+                    self.add_include(&name, include);
                 }
             }
         }
