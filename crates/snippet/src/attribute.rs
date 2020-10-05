@@ -1,7 +1,4 @@
-use crate::{
-    ast_helper::{get_attributes_of_item, get_default_name_of_item},
-    config::Opt,
-};
+use crate::{ast_helper::ItemExt as _, config::Opt};
 use quote::ToTokens as _;
 use syn::{Attribute, Lit, Meta, NestedMeta, Path};
 
@@ -71,11 +68,11 @@ impl From<&syn::Item> for SnippetAttributes {
             inline: false,
             contains_entry: false,
         };
-        if let Some(attrs) = get_attributes_of_item(item) {
+        if let Some(attrs) = item.get_attributes() {
             self_.extend_kvs(collect_kvs(attrs));
         }
         if self_.name.is_none() {
-            self_.name = get_default_name_of_item(item);
+            self_.name = item.get_default_name();
         }
         self_
     }

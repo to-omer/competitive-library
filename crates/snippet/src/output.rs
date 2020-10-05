@@ -37,12 +37,21 @@ impl From<(String, String)> for VSCode {
     }
 }
 
+pub fn rustfmt_exits() -> bool {
+    let rustfmt = Path::new(env!("CARGO_HOME")).join("bin").join("rustfmt");
+    let output = Command::new(rustfmt).arg("--version").output();
+    output
+        .map(|output| output.status.success())
+        .unwrap_or_default()
+}
+
 pub fn format_with_rustfmt(s: &str) -> Option<String> {
     let rustfmt = Path::new(env!("CARGO_HOME")).join("bin").join("rustfmt");
     let mut command = Command::new(rustfmt)
         .args(&[
+            "--quiet",
             "--config",
-            "unstable_features=true,normalize_doc_attributes=true",
+            "unstable_features=true,normalize_doc_attributes=true,newline_style=Unix",
         ])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -61,7 +70,7 @@ pub fn format_with_rustfmt(s: &str) -> Option<String> {
 #[test]
 fn test_format_contents() {
     assert_eq!(
-        format_with_rustfmt("fn main( ) {}"),
+        format_with_rustfmt("fn  main ( ) { }"),
         Some("fn main() {}\n".to_string())
     )
 }

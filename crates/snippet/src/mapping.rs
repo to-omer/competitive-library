@@ -1,8 +1,8 @@
 use crate::{
-    ast_helper::{get_attributes_of_item, get_attributes_of_item_mut},
+    ast_helper::ItemExt as _,
     attribute::{is_snippet, SnippetAttributes},
     config::Opt,
-    output::{format_with_rustfmt, VSCode},
+    output::{format_with_rustfmt, rustfmt_exits, VSCode},
 };
 use quote::ToTokens as _;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
@@ -21,7 +21,6 @@ pub struct SnippetMap<'c> {
 struct LinkedSnippet {
     pub contents: String,
     includes: BTreeSet<String>,
-    cnt: std::cell::RefCell<usize>,
 }
 
 impl<'c> SnippetMap<'c> {
@@ -31,12 +30,15 @@ impl<'c> SnippetMap<'c> {
             map: HashMap::new(),
         }
     }
+}
+
+impl SnippetMap<'_> {
     pub fn collect_entries(&mut self, items: &[Item]) {
         for item in items {
             self.visit_item(item);
         }
     }
-    fn entry(&mut self, name: &str) -> &mut LinkedSnippet {
+    fn get_mut(&mut self, name: &str) -> &mut LinkedSnippet {
         if !self.map.contains_key(name) {
             self.map.insert(name.to_string(), Default::default());
         }
@@ -46,18 +48,24 @@ impl<'c> SnippetMap<'c> {
     }
     fn add_snippet(&mut self, name: &str, item: &Item) {
         if let Some(item) = modify(item.clone(), self.config) {
-            self.entry(name)
+            self.get_mut(name)
                 .contents
                 .push_str(&item.to_token_stream().to_string());
         }
     }
     fn add_include(&mut self, name: &str, include: String) {
-        self.entry(name).includes.insert(include);
+        self.get_mut(name).includes.insert(include);
     }
     pub fn format_all(&mut self) {
-        for link in self.map.values_mut() {
+        if !rustfmt_exits() {
+            log::warn!("rustfmt not found.");
+            return;
+        }
+        for (name, link) in self.map.iter_mut() {
             if let Some(formatted) = format_with_rustfmt(&link.contents) {
                 link.contents = formatted;
+            } else {
+                log::warn!("Failed to format `{}`.", name);
             }
         }
     }
@@ -141,13 +149,13 @@ fn is_skip(attrs: &[Attribute], config: &Opt) -> bool {
 }
 
 fn modify(mut item: Item, config: &Opt) -> Option<Item> {
-    if let Some(attrs) = get_attributes_of_item(&item) {
+    if let Some(attrs) = item.get_attributes() {
         if is_skip(attrs, config) {
             return None;
         }
     }
 
-    if let Some(attrs) = get_attributes_of_item_mut(&mut item) {
+    if let Some(attrs) = item.get_attributes_mut() {
         attrs.retain(|attr| {
             !attr
                 .parse_meta()

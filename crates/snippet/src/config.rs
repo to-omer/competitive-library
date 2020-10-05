@@ -15,7 +15,7 @@ pub struct Opt {
     #[structopt(short, long)]
     pub output: Option<PathBuf>,
 
-    /// Configure the environment: e.g. --cfg="feature=\"snippet_nightly\""
+    /// Configure the environment: e.g. --cfg=nightly
     #[structopt(long, name = "SPEC", parse(try_from_str = parse_str::<syn::Meta>))]
     pub cfg: Vec<syn::Meta>,
 
