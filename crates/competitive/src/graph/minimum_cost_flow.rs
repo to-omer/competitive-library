@@ -1,6 +1,6 @@
 use super::BidirectionalSparseGraph;
 
-#[cargo_snippet::snippet("PrimalDual")]
+#[snippet::entry("PrimalDual")]
 #[derive(Debug, Clone)]
 pub struct PrimalDualBuilder {
     vsize: usize,
@@ -8,7 +8,7 @@ pub struct PrimalDualBuilder {
     capacities: Vec<u64>,
     costs: Vec<i64>,
 }
-#[cargo_snippet::snippet("PrimalDual")]
+#[snippet::entry("PrimalDual")]
 impl PrimalDualBuilder {
     pub fn new(vsize: usize, esize_expect: usize) -> Self {
         Self {
@@ -51,7 +51,7 @@ impl PrimalDualBuilder {
         }
     }
 }
-#[cargo_snippet::snippet("PrimalDual")]
+#[snippet::entry("PrimalDual")]
 impl Extend<(usize, usize, u64, i64)> for PrimalDualBuilder {
     fn extend<T: IntoIterator<Item = (usize, usize, u64, i64)>>(&mut self, iter: T) {
         for (from, to, cap, cost) in iter {
@@ -60,7 +60,7 @@ impl Extend<(usize, usize, u64, i64)> for PrimalDualBuilder {
     }
 }
 
-#[cargo_snippet::snippet("PrimalDual")]
+#[snippet::entry("PrimalDual")]
 #[derive(Debug)]
 pub struct PrimalDual<'a> {
     graph: &'a BidirectionalSparseGraph,
@@ -71,7 +71,7 @@ pub struct PrimalDual<'a> {
     prev_vertex: Vec<usize>,
     prev_edge: Vec<usize>,
 }
-#[cargo_snippet::snippet("PrimalDual")]
+#[snippet::entry("PrimalDual")]
 impl<'a> PrimalDual<'a> {
     fn dijkstra(&mut self, s: usize, t: usize) -> bool {
         use std::{cmp::Reverse, collections::BinaryHeap};

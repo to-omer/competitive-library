@@ -1,11 +1,11 @@
 use super::gcd_binary;
 
-#[cargo_snippet::snippet("prime")]
+#[snippet::entry("prime")]
 #[derive(Clone, Debug)]
 pub struct PrimeTable {
     table: Vec<usize>,
 }
-#[cargo_snippet::snippet("prime")]
+#[snippet::entry("prime")]
 impl PrimeTable {
     pub fn new(max_n: usize) -> Self {
         let mut table = vec![1; max_n + 1];
@@ -100,7 +100,7 @@ fn test_prime_table() {
     }
 }
 
-#[cargo_snippet::snippet]
+#[snippet::entry]
 pub fn prime_factors(mut n: usize) -> Vec<(usize, usize)> {
     let mut factors = vec![];
     for i in 2..=(n as f32).sqrt() as usize {
@@ -134,7 +134,7 @@ fn test_prime_factors() {
     }
 }
 
-#[cargo_snippet::snippet]
+#[snippet::entry]
 pub fn divisors(n: usize) -> Vec<usize> {
     let mut res = vec![];
     for i in 1..(n as f32).sqrt() as usize + 1 {
@@ -149,7 +149,7 @@ pub fn divisors(n: usize) -> Vec<usize> {
     res
 }
 
-#[cargo_snippet::snippet]
+#[snippet::entry]
 pub fn primes(n: usize) -> Vec<usize> {
     if n < 2 {
         return vec![];
@@ -184,7 +184,7 @@ fn test_primes() {
     }
 }
 
-#[cargo_snippet::snippet("miller_rabin")]
+#[snippet::entry("miller_rabin")]
 pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     let mut x = x as u128;
     let mut y = y as u128;
@@ -200,7 +200,7 @@ pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     res as u64
 }
 
-#[cargo_snippet::snippet("miller_rabin")]
+#[snippet::entry("miller_rabin")]
 pub fn miller_rabin(p: u64) -> bool {
     if p == 2 {
         return true;
@@ -246,7 +246,7 @@ fn test_miller_rabin() {
     assert!(!miller_rabin(1_000_000_011));
 }
 
-#[cargo_snippet::snippet("prime_factors_rho")]
+#[snippet::entry("prime_factors_rho")]
 pub fn find_factor(n: u64) -> u64 {
     const M: usize = 128;
     let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
@@ -285,9 +285,7 @@ pub fn find_factor(n: u64) -> u64 {
     unreachable!();
 }
 
-#[cargo_snippet::snippet("prime_factors_rho")]
-#[cargo_snippet::snippet(include = "miller_rabin")]
-#[cargo_snippet::snippet(include = "gcd_binary")]
+#[snippet::entry("prime_factors_rho", include("miller_rabin", "gcd_binary"))]
 pub fn prime_factors_rho(mut n: u64) -> Vec<u64> {
     let k = n.trailing_zeros();
     let mut res = vec![2; k as usize];

@@ -1,14 +1,31 @@
-use crate::error::{ParseError, ParseResult};
+use crate::{
+    ast_helper::get_attributes_of_item_mut,
+    attribute::{check_cfg, flatten_cfg_attr},
+    config::Opt,
+    error::{ParseError, ParseResult},
+};
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens as _};
 use std::path::{Path, PathBuf};
 use syn::{
     visit_mut::{self, VisitMut},
-    Attribute, File, ItemMod,
+    Attribute, File, Item, ItemMod,
 };
 
-pub fn parse_file_recursive(path: PathBuf) -> ParseResult<File> {
-    let mut ext = ExtractAst { path, error: None };
+pub fn parse_files(config: &Opt) -> ParseResult<Vec<Item>> {
+    let mut items = Vec::new();
+    for target in config.targets.iter() {
+        items.extend(parse_file_recursive(config, target.clone())?.items);
+    }
+    Ok(items)
+}
+
+fn parse_file_recursive(config: &Opt, path: PathBuf) -> ParseResult<File> {
+    let mut ext = ExtractAst {
+        path,
+        error: None,
+        config,
+    };
     let mut ast = parse_file_from_path(&ext.path)?;
     ext.visit_file_mut(&mut ast);
     match ext.error {
@@ -18,12 +35,13 @@ pub fn parse_file_recursive(path: PathBuf) -> ParseResult<File> {
 }
 
 #[derive(Debug)]
-struct ExtractAst {
+struct ExtractAst<'c> {
     path: PathBuf,
     error: Option<ParseError>,
+    config: &'c Opt,
 }
 
-impl ExtractAst {
+impl ExtractAst<'_> {
     fn find_mod_file(&self, node: &ItemMod) -> ParseResult<PathBuf> {
         let mod_name = node.ident.to_string();
         let mod_path = self.path.with_file_name(&mod_name);
@@ -77,7 +95,7 @@ impl ExtractAst {
     }
 }
 
-impl VisitMut for ExtractAst {
+impl VisitMut for ExtractAst<'_> {
     fn visit_item_mod_mut(&mut self, node: &mut ItemMod) {
         let cur = self.path.clone();
         if node.content.is_none() {
@@ -100,6 +118,21 @@ impl VisitMut for ExtractAst {
         }
         visit_mut::visit_item_mod_mut(self, node);
         self.path = cur;
+    }
+    fn visit_item_mut(&mut self, node: &mut Item) {
+        let mut is_skip = false;
+        if let Some(attrs) = get_attributes_of_item_mut(node) {
+            if !check_cfg(attrs, self.config) {
+                is_skip = true;
+            } else {
+                flatten_cfg_attr(attrs, self.config);
+            }
+        }
+        if is_skip {
+            *node = syn::Item::Verbatim(TokenStream::new());
+        } else {
+            visit_mut::visit_item_mut(self, node);
+        }
     }
 }
 

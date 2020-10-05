@@ -1,4 +1,4 @@
-#[cargo_snippet::snippet("comprehension")]
+#[snippet::entry("comprehension")]
 #[macro_export]
 macro_rules! comprehension {
     ($it:expr; @$type:ty) => {

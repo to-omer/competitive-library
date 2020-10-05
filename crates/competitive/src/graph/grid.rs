@@ -1,6 +1,6 @@
-#[cargo_snippet::snippet("GridGraph")]
+#[snippet::entry("GridGraph")]
 pub use grid_graph::GridGraph;
-#[cargo_snippet::snippet("GridGraph")]
+#[snippet::entry("GridGraph")]
 pub mod grid_graph {
     #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
     pub struct GridGraph {

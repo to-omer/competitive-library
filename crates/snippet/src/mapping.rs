@@ -2,14 +2,14 @@ use std::collections::{BTreeMap, HashMap};
 
 use crate::{
     ast_helper::{get_attributes_of_item, get_attributes_of_item_mut},
-    attribute::SnippetAttributes,
+    attribute::{is_snippet, SnippetAttributes},
     config::Opt,
     output::VSCode,
 };
 use quote::ToTokens as _;
 use syn::{
     visit::{self, Visit},
-    Attribute, File, Item,
+    Attribute, Item,
 };
 
 #[derive(Debug)]
@@ -24,8 +24,10 @@ impl<'c> SnippetMap<'c> {
             map: HashMap::new(),
         }
     }
-    pub fn collect_entries(&mut self, i: &File) {
-        self.visit_file(i);
+    pub fn collect_entries(&mut self, items: &[Item]) {
+        for item in items {
+            self.visit_item(item);
+        }
     }
     pub fn add_snippet(&mut self, name: &str, item: &Item) {
         if let Some(item) = modify(item.clone(), self.config) {
@@ -90,7 +92,10 @@ fn modify(mut item: Item, config: &Opt) -> Option<Item> {
         attrs.retain(|attr| {
             !attr
                 .parse_meta()
-                .map(|meta| config.filter_attr.iter().any(|pat| pat == meta.path()))
+                .map(|meta| {
+                    is_snippet(meta.path())
+                        || config.filter_attr.iter().any(|pat| pat == meta.path())
+                })
                 .unwrap_or_default()
         })
     }

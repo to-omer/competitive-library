@@ -1,11 +1,11 @@
-#[cargo_snippet::snippet("minmax")]
+#[snippet::entry("minmax")]
 #[macro_export]
 macro_rules! min {
     ($e:expr) => { $e };
     ($e:expr, $($es:expr),+) => { std::cmp::min($e, min!($($es),+)) };
 }
 
-#[cargo_snippet::snippet("minmax")]
+#[snippet::entry("minmax")]
 #[macro_export]
 macro_rules! chmin {
     ($dst:expr, $($src:expr),+) => {{
@@ -14,14 +14,14 @@ macro_rules! chmin {
     }};
 }
 
-#[cargo_snippet::snippet("minmax")]
+#[snippet::entry("minmax")]
 #[macro_export]
 macro_rules! max {
     ($e:expr) => { $e };
     ($e:expr, $($es:expr),+) => { std::cmp::max($e, max!($($es),+)) };
 }
 
-#[cargo_snippet::snippet("minmax")]
+#[snippet::entry("minmax")]
 #[macro_export]
 macro_rules! chmax {
     ($dst:expr, $($src:expr),+) => {{

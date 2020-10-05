@@ -1,12 +1,11 @@
 use super::{BitVector, RankSelectDictionaries};
 
-#[cargo_snippet::snippet("WaveletMatrix")]
-#[cargo_snippet::snippet(include = "RankSelectDictionaries")]
+#[snippet::entry(include = "RankSelectDictionaries")]
 pub struct WaveletMatrix {
     len: usize,
     table: Vec<(usize, BitVector)>,
 }
-#[cargo_snippet::snippet("WaveletMatrix")]
+#[snippet::entry("WaveletMatrix")]
 impl WaveletMatrix {
     pub fn new<T: Clone + RankSelectDictionaries>(mut v: Vec<T>, bit_length: usize) -> Self {
         let len = v.len();

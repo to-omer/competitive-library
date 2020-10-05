@@ -1,8 +1,8 @@
-#[cargo_snippet::snippet("KnapsackPloblemSmallWeight")]
+#[snippet::entry("KnapsackPloblemSmallWeight")]
 pub struct KnapsackPloblemSmallWeight {
     pub dp: Vec<usize>,
 }
-#[cargo_snippet::snippet("KnapsackPloblemSmallWeight")]
+#[snippet::entry("KnapsackPloblemSmallWeight")]
 impl KnapsackPloblemSmallWeight {
     pub fn new(max_weight: usize) -> Self {
         Self {
@@ -79,11 +79,11 @@ impl KnapsackPloblemSmallWeight {
     }
 }
 
-#[cargo_snippet::snippet("KnapsackPloblemSmallValue")]
+#[snippet::entry("KnapsackPloblemSmallValue")]
 pub struct KnapsackPloblemSmallValue {
     pub dp: Vec<usize>,
 }
-#[cargo_snippet::snippet("KnapsackPloblemSmallValue")]
+#[snippet::entry("KnapsackPloblemSmallValue")]
 impl KnapsackPloblemSmallValue {
     pub fn new(max_value: usize) -> Self {
         let mut dp = vec![std::usize::MAX; max_value + 1];
@@ -134,13 +134,13 @@ impl KnapsackPloblemSmallValue {
     }
 }
 
-#[cargo_snippet::snippet("ZeroOneKnapsackProblemSmallItems")]
+#[snippet::entry("ZeroOneKnapsackProblemSmallItems")]
 #[derive(Debug, Clone)]
 pub struct ZeroOneKnapsackProblemSmallItems {
     a: Vec<(u64, u64)>,
     b: Vec<(u64, u64)>,
 }
-#[cargo_snippet::snippet("ZeroOneKnapsackProblemSmallItems")]
+#[snippet::entry("ZeroOneKnapsackProblemSmallItems")]
 impl Default for ZeroOneKnapsackProblemSmallItems {
     fn default() -> Self {
         Self {
@@ -149,7 +149,7 @@ impl Default for ZeroOneKnapsackProblemSmallItems {
         }
     }
 }
-#[cargo_snippet::snippet("ZeroOneKnapsackProblemSmallItems")]
+#[snippet::entry("ZeroOneKnapsackProblemSmallItems")]
 impl ZeroOneKnapsackProblemSmallItems {
     pub fn new() -> Self {
         Default::default()
@@ -214,11 +214,11 @@ impl ZeroOneKnapsackProblemSmallItems {
     }
 }
 
-#[cargo_snippet::snippet("ZeroOneKnapsackPloblemBranchAndBound")]
+#[snippet::entry("ZeroOneKnapsackPloblemBranchAndBound")]
 pub struct ZeroOneKnapsackPloblemBranchAndBound {
     items: Vec<zero_one_knapsack_problem_branch_and_bound_impls::Item>,
 }
-#[cargo_snippet::snippet("ZeroOneKnapsackPloblemBranchAndBound")]
+#[snippet::entry("ZeroOneKnapsackPloblemBranchAndBound")]
 mod zero_one_knapsack_problem_branch_and_bound_impls {
     use super::*;
     #[derive(Copy, Clone, Default, Debug)]

@@ -3,17 +3,21 @@ use structopt::{clap, StructOpt};
 use syn::parse_str;
 
 #[derive(Debug, StructOpt)]
-#[structopt(bin_name = "snippet-extract", about = "snippet")]
+#[structopt(bin_name = "snippet-extract", about = "snippet extraction")]
 #[structopt(rename_all = "kebab-case")]
 #[structopt(setting(clap::AppSettings::ColoredHelp))]
 pub struct Opt {
-    /// Target file path
+    /// Target file paths.
     #[structopt(name = "PATH")]
-    pub target: PathBuf,
+    pub targets: Vec<PathBuf>,
 
-    /// Output file, default stdout
+    /// Output file, default stdout.
     #[structopt(short, long)]
     pub output: Option<PathBuf>,
+
+    /// Configure the environment: e.g. --cfg="feature=\"snippet_nightly\""
+    #[structopt(long, name = "SPEC", parse(try_from_str = parse_str::<syn::Meta>))]
+    pub cfg: Vec<syn::Meta>,
 
     /// Filter items by attributes path: e.g. --filter-item=test
     #[structopt(long, parse(try_from_str = parse_str::<syn::Path>))]

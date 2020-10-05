@@ -1,12 +1,12 @@
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[cargo_snippet::snippet("SparseGraph")]
+#[snippet::entry("SparseGraph")]
 pub use sparse_graph::{
     Adjacency, BidirectionalGraphScanner, BidirectionalSparseGraph, DirectedGraphScanner,
     DirectedSparseGraph, SparseGraph, TreeGraphScanner, UndirectedGraphScanner,
     UndirectedSparseGraph,
 };
-#[cargo_snippet::snippet("SparseGraph")]
+#[snippet::entry("SparseGraph")]
 pub mod sparse_graph {
     use super::*;
     use std::{iter, marker::PhantomData, ops, slice};

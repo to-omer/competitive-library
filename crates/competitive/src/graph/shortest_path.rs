@@ -1,7 +1,7 @@
 use super::SparseGraph;
 use crate::algebra::Monoid;
 
-#[cargo_snippet::snippet("dijkstra")]
+#[snippet::entry("dijkstra")]
 impl<D> SparseGraph<D> {
     pub fn dijkstra<M>(
         &self,
@@ -34,7 +34,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[cargo_snippet::snippet("bellman_ford")]
+#[snippet::entry("bellman_ford")]
 impl<D> SparseGraph<D> {
     pub fn bellman_ford<M>(
         &self,
@@ -68,7 +68,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[cargo_snippet::snippet("warshall_floyd")]
+#[snippet::entry("warshall_floyd")]
 impl<D> SparseGraph<D> {
     pub fn warshall_floyd<M>(
         &self,

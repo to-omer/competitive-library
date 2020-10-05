@@ -1,10 +1,10 @@
 #![allow(clippy::suspicious_arithmetic_impl)]
 
-#[cargo_snippet::snippet("QuadDouble")]
+#[snippet::entry("QuadDouble")]
 /// ref: https://na-inet.jp/na/qd_ja.pdf
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
 pub struct QuadDouble(pub f64, f64, f64, f64);
-#[cargo_snippet::snippet("QuadDouble")]
+#[snippet::entry("QuadDouble")]
 pub mod quad_double_impl {
     use super::*;
     impl QuadDouble {

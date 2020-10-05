@@ -1,6 +1,6 @@
 use super::SparseGraph;
 
-#[cargo_snippet::snippet("topological_sort")]
+#[snippet::entry("topological_sort")]
 impl<D> SparseGraph<D> {
     pub fn topological_sort(&self) -> Vec<usize> {
         let mut indeg = vec![0; self.vertices_size()];

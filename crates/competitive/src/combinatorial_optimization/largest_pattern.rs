@@ -1,4 +1,4 @@
-#[cargo_snippet::snippet]
+#[snippet::entry]
 pub fn largest_square(h: usize, w: usize, ok: impl Fn(usize, usize) -> bool) -> usize {
     let mut dp = vec![vec![0usize; w + 1]; h + 1];
     for i in 0..h {
@@ -15,7 +15,7 @@ pub fn largest_square(h: usize, w: usize, ok: impl Fn(usize, usize) -> bool) -> 
         .pow(2)
 }
 
-#[cargo_snippet::snippet("largest_rectangle")]
+#[snippet::entry("largest_rectangle")]
 pub fn largest_rectangle(hist: &[usize]) -> usize {
     let mut stack = Vec::<(_, _)>::new();
     let mut res = 0;
@@ -36,7 +36,7 @@ pub fn largest_rectangle(hist: &[usize]) -> usize {
     res
 }
 
-#[cargo_snippet::snippet("largest_rectangle")]
+#[snippet::entry("largest_rectangle")]
 pub fn largest_rectangle_in_grid(h: usize, w: usize, ok: impl Fn(usize, usize) -> bool) -> usize {
     let mut hist = vec![0; w];
     let mut res = 0;

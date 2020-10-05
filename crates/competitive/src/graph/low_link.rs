@@ -1,6 +1,6 @@
 use super::UndirectedSparseGraph;
 
-#[cargo_snippet::snippet("LowLink")]
+#[snippet::entry("LowLink")]
 pub struct LowLink<'a> {
     graph: &'a UndirectedSparseGraph,
     pub low: Vec<usize>,
@@ -8,7 +8,7 @@ pub struct LowLink<'a> {
     pub articulation: Vec<usize>,
     pub bridge: Vec<(usize, usize)>,
 }
-#[cargo_snippet::snippet("LowLink")]
+#[snippet::entry("LowLink")]
 impl<'a> LowLink<'a> {
     pub fn new(graph: &'a UndirectedSparseGraph) -> Self {
         let mut self_ = Self {

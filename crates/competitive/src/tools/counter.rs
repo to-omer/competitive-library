@@ -1,9 +1,9 @@
-#[cargo_snippet::snippet("Counter")]
+#[snippet::entry("Counter")]
 #[derive(Clone, Debug)]
 pub struct Counter<T: Eq + std::hash::Hash> {
     map: std::collections::HashMap<T, usize>,
 }
-#[cargo_snippet::snippet("Counter")]
+#[snippet::entry("Counter")]
 impl<T: Eq + std::hash::Hash> Default for Counter<T> {
     #[inline]
     fn default() -> Self {
@@ -12,7 +12,7 @@ impl<T: Eq + std::hash::Hash> Default for Counter<T> {
         }
     }
 }
-#[cargo_snippet::snippet("Counter")]
+#[snippet::entry("Counter")]
 impl<T: Eq + std::hash::Hash> Counter<T> {
     #[inline]
     pub fn new() -> Self {
@@ -54,7 +54,7 @@ impl<T: Eq + std::hash::Hash> Counter<T> {
         self.map.iter()
     }
 }
-#[cargo_snippet::snippet("Counter")]
+#[snippet::entry("Counter")]
 impl<T: Eq + std::hash::Hash> std::iter::Extend<T> for Counter<T> {
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
         for item in iter {
@@ -62,7 +62,7 @@ impl<T: Eq + std::hash::Hash> std::iter::Extend<T> for Counter<T> {
         }
     }
 }
-#[cargo_snippet::snippet("Counter")]
+#[snippet::entry("Counter")]
 impl<T: Eq + std::hash::Hash> std::iter::FromIterator<T> for Counter<T> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let mut map = Self::default();

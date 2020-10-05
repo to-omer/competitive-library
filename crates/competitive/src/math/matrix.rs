@@ -1,12 +1,12 @@
 use crate::num::{One, Zero};
 
-#[cargo_snippet::snippet("Matrix")]
+#[snippet::entry("Matrix")]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Matrix<T> {
     pub shape: (usize, usize),
     pub data: Vec<Vec<T>>,
 }
-#[cargo_snippet::snippet("Matrix")]
+#[snippet::entry("Matrix")]
 mod matrix_impls {
     use super::*;
     use std::ops::{Add, Div, Index, IndexMut, Mul, Sub};

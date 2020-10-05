@@ -1,12 +1,12 @@
 use crate::num::{MInt, Modulus, One, Zero};
 
-#[cargo_snippet::snippet("factorial")]
+#[snippet::entry("factorial")]
 #[derive(Clone, Debug)]
 pub struct MemorizedFactorial<M: Modulus> {
     pub fact: Vec<MInt<M>>,
     pub inv_fact: Vec<MInt<M>>,
 }
-#[cargo_snippet::snippet("factorial")]
+#[snippet::entry("factorial")]
 impl<M: Modulus> MemorizedFactorial<M> {
     pub fn new(max_n: usize) -> Self {
         let mut fact = vec![MInt::one(); max_n + 1];

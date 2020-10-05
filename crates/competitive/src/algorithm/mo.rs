@@ -1,4 +1,4 @@
-#[cargo_snippet::snippet]
+#[snippet::entry]
 pub trait MoSolver {
     type Answer;
     fn insert(&mut self, i: usize);
