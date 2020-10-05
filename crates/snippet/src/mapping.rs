@@ -134,7 +134,10 @@ fn is_skip(attrs: &[Attribute], config: &Opt) -> bool {
     attrs
         .iter()
         .filter_map(|attr| attr.parse_meta().ok())
-        .any(|meta| config.filter_item.iter().any(|pat| pat == meta.path()))
+        .any(|meta| {
+            meta.path().to_token_stream().to_string() == "snippet :: skip"
+                || config.filter_item.iter().any(|pat| pat == meta.path())
+        })
 }
 
 fn modify(mut item: Item, config: &Opt) -> Option<Item> {

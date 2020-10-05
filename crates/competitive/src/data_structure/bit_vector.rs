@@ -1,4 +1,3 @@
-#[snippet::entry("RankSelectDictionaries")]
 /// rank_i(select_i(k)) = k
 /// rank_i(select_i(k) + 1) = k + 1
 pub trait RankSelectDictionaries {
@@ -48,7 +47,6 @@ pub trait RankSelectDictionaries {
         Some(l)
     }
 }
-#[snippet::entry("RankSelectDictionaries")]
 macro_rules! impl_rank_select_for_bits {
     ($($t:ty)*) => {$(
         impl RankSelectDictionaries for $t {
@@ -75,19 +73,15 @@ macro_rules! impl_rank_select_for_bits {
         })*
     };
 }
-#[snippet::entry("RankSelectDictionaries")]
 impl_rank_select_for_bits!(u8 u16 u32 u64 usize i8 i16 i32 i64 isize u128 i128);
-#[snippet::entry("RankSelectDictionaries")]
 pub struct BitVector {
     /// [(bit, sum)]
     data: Vec<(usize, usize)>,
     sum: usize,
 }
-#[snippet::entry("RankSelectDictionaries")]
 impl BitVector {
     const WORD_SIZE: usize = 0usize.count_zeros() as usize;
 }
-#[snippet::entry("RankSelectDictionaries")]
 impl RankSelectDictionaries for BitVector {
     fn bit_length(&self) -> usize {
         self.data.len() * Self::WORD_SIZE
@@ -134,7 +128,6 @@ impl RankSelectDictionaries for BitVector {
         Some(l * Self::WORD_SIZE + bit.select0(k).unwrap())
     }
 }
-#[snippet::entry("RankSelectDictionaries")]
 impl std::iter::FromIterator<bool> for BitVector {
     fn from_iter<T: IntoIterator<Item = bool>>(iter: T) -> Self {
         let mut iter = iter.into_iter();

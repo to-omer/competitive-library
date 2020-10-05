@@ -645,19 +645,13 @@ mod assocoative_operator_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Associative for AssocoativeOperator<T, F> {}
 }
 
-#[cfg_attr(
-    feature = "snippet_nightly",
-    snippet::entry("AbsorbedAssocoativeOperator")
-)]
+#[snippet::entry("AbsorbedAssocoativeOperator")]
 #[derive(Clone, Debug)]
 pub struct AbsorbedAssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cfg_attr(
-    feature = "snippet_nightly",
-    snippet::entry("AbsorbedAssocoativeOperator")
-)]
+#[snippet::entry("AbsorbedAssocoativeOperator")]
 mod absorbed_assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbsorbedAssocoativeOperator<T, F> {

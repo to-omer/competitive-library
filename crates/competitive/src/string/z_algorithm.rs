@@ -1,9 +1,7 @@
-#[snippet::entry("ZAlgorithm")]
 #[derive(Clone, Debug)]
 pub struct Zarray {
     z: Vec<usize>,
 }
-#[snippet::entry("ZAlgorithm")]
 impl Zarray {
     pub fn new<T: Eq>(s: &[T]) -> Self {
         let n = s.len();
@@ -44,7 +42,6 @@ impl Zarray {
         res
     }
 }
-#[snippet::entry("ZAlgorithm")]
 impl std::ops::Index<usize> for Zarray {
     type Output = usize;
     fn index(&self, index: usize) -> &usize {

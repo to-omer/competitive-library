@@ -29,6 +29,5 @@ fn main() {
     }
 }
 
-// $ cargo run --bin snippet-extract -- crates\competitive\src\lib.rs crates\competitive\src\main.rs --output=.vscode\rust.code-snippets --cfg="feature=\"snippet_nightly\""
+// $ cargo run --bin snippet-extract -- crates\competitive\src\lib.rs crates\competitive\src\main.rs --output=.vscode\rust.code-snippets --filter-item=test --cfg=nightly
 // TODO: logging
-// TODO: add attribute `snippet::skip`

@@ -1,13 +1,12 @@
+#[snippet::skip]
 use super::BidirectionalSparseGraph;
 
-#[snippet::entry("Dinic")]
 #[derive(Debug, Clone)]
 pub struct DinicBuilder {
     vsize: usize,
     edges: Vec<(usize, usize)>,
     capacities: Vec<u64>,
 }
-#[snippet::entry("Dinic")]
 impl DinicBuilder {
     pub fn new(vsize: usize, esize_expect: usize) -> Self {
         Self {
@@ -38,7 +37,6 @@ impl DinicBuilder {
         }
     }
 }
-#[snippet::entry("Dinic")]
 impl Extend<(usize, usize, u64)> for DinicBuilder {
     fn extend<T: IntoIterator<Item = (usize, usize, u64)>>(&mut self, iter: T) {
         for (from, to, cap) in iter {
@@ -47,7 +45,6 @@ impl Extend<(usize, usize, u64)> for DinicBuilder {
     }
 }
 
-#[snippet::entry("Dinic")]
 #[derive(Debug, Clone)]
 pub struct Dinic<'a> {
     graph: &'a BidirectionalSparseGraph,
@@ -56,7 +53,6 @@ pub struct Dinic<'a> {
     level: Vec<usize>,
     deq: std::collections::VecDeque<usize>,
 }
-#[snippet::entry("Dinic")]
 impl<'a> Dinic<'a> {
     fn bfs(&mut self, s: usize, t: usize) -> bool {
         use std::usize::MAX;

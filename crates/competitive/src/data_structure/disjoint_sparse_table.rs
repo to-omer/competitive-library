@@ -1,11 +1,11 @@
+#[snippet::skip]
 use crate::algebra::SemiGroup;
-#[snippet::entry("DisjointSparseTable")]
+
 #[derive(Clone, Debug)]
 pub struct DisjointSparseTable<S: SemiGroup> {
     table: Vec<Vec<S::T>>,
     monoid: S,
 }
-#[snippet::entry("DisjointSparseTable")]
 impl<S: SemiGroup> DisjointSparseTable<S> {
     pub fn new(v: Vec<S::T>, monoid: S) -> Self {
         let n = v.len();
@@ -52,7 +52,6 @@ impl<S: SemiGroup> DisjointSparseTable<S> {
         self.fold_close(l, r - 1)
     }
 }
-#[snippet::entry("DisjointSparseTable")]
 impl<S: SemiGroup> std::ops::Index<usize> for DisjointSparseTable<S> {
     type Output = S::T;
     #[inline]

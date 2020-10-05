@@ -1,6 +1,6 @@
 //! algebra
 
-#[cfg_attr(feature = "snippet_nightly", snippet::entry("algebra", inline))]
+#[cfg_attr(nightly, snippet::entry("algebra", inline))]
 mod magma;
 #[macro_use]
 mod operations;

@@ -1,10 +1,12 @@
 #![allow(clippy::suspicious_arithmetic_impl)]
-
 //! modint
-use crate::num::{One, Zero};
-use crate::tools::IterScan;
 
-#[snippet::entry("MInt")]
+#[snippet::skip]
+use crate::{
+    num::{One, Zero},
+    tools::IterScan,
+};
+
 pub trait Modulus {
     fn get_modulus() -> u32;
     #[inline]
@@ -12,7 +14,6 @@ pub trait Modulus {
         x % Self::get_modulus()
     }
 }
-#[snippet::entry("MInt")]
 #[allow(unused_macros)]
 macro_rules! make_modulus {
     ($t:ident, $e:expr) => {
@@ -26,7 +27,6 @@ macro_rules! make_modulus {
         }
     };
 }
-#[snippet::entry("MInt")]
 #[allow(unused_macros)]
 macro_rules! make_dynamic_modulus {
     ($t:ident, $m:ident, $e:expr) => {
@@ -40,7 +40,6 @@ macro_rules! make_dynamic_modulus {
         }
     };
 }
-#[snippet::entry("MInt")]
 pub mod modulus {
     use super::*;
     pub struct Modulo1000000007 {}
@@ -85,7 +84,6 @@ pub mod modulus {
     }
     pub type DynMInt = MInt<DynModulo>;
 }
-#[snippet::entry("MInt")]
 #[repr(transparent)]
 pub struct MInt<M>
 where
@@ -94,7 +92,6 @@ where
     x: u32,
     _marker: std::marker::PhantomData<fn() -> M>,
 }
-#[snippet::entry("MInt")]
 mod mint_impls {
     use super::*;
     use std::{

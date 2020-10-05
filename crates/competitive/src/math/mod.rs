@@ -5,6 +5,7 @@ mod fast_fourier_transform;
 mod gcd;
 mod lagrange_interpolation;
 mod matrix;
+#[cfg_attr(nightly, snippet::entry("NumberTheoreticTransform", inline))]
 mod number_theoretic_transform;
 mod nums;
 mod polynomial;
