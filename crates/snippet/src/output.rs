@@ -1,4 +1,4 @@
-use crate::config::Opt;
+use crate::config::Config;
 use serde::Serialize;
 use serde_json::to_writer;
 use std::{
@@ -8,7 +8,7 @@ use std::{
     process::{Command, Stdio},
 };
 
-pub fn emit<T: Serialize>(value: &T, config: &Opt) -> io::Result<()> {
+pub fn emit<T: Serialize>(value: &T, config: &Config) -> io::Result<()> {
     match &config.output {
         Some(file) => {
             let f = fs::File::create(file)?;

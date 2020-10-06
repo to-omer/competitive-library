@@ -1,7 +1,7 @@
 use crate::{
     ast_helper::ItemExt as _,
     attribute::{is_snippet, SnippetAttributes},
-    config::Opt,
+    config::Config,
     output::{format_with_rustfmt, rustfmt_exits, VSCode},
 };
 use quote::ToTokens as _;
@@ -14,7 +14,7 @@ use syn::{
 #[derive(Debug)]
 pub struct SnippetMap<'c> {
     map: HashMap<String, LinkedSnippet>,
-    config: &'c Opt,
+    config: &'c Config,
 }
 
 #[derive(Debug, Default)]
@@ -24,7 +24,7 @@ struct LinkedSnippet {
 }
 
 impl<'c> SnippetMap<'c> {
-    pub fn new(config: &'c Opt) -> Self {
+    pub fn new(config: &'c Config) -> Self {
         Self {
             config,
             map: HashMap::new(),
@@ -138,7 +138,7 @@ impl Visit<'_> for SnippetMap<'_> {
     }
 }
 
-fn is_skip(attrs: &[Attribute], config: &Opt) -> bool {
+fn is_skip(attrs: &[Attribute], config: &Config) -> bool {
     attrs
         .iter()
         .filter_map(|attr| attr.parse_meta().ok())
@@ -148,7 +148,7 @@ fn is_skip(attrs: &[Attribute], config: &Opt) -> bool {
         })
 }
 
-fn modify(mut item: Item, config: &Opt) -> Option<Item> {
+fn modify(mut item: Item, config: &Config) -> Option<Item> {
     if let Some(attrs) = item.get_attributes() {
         if is_skip(attrs, config) {
             return None;

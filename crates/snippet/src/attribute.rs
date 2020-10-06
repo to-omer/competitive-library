@@ -1,4 +1,4 @@
-use crate::{ast_helper::ItemExt as _, config::Opt};
+use crate::{ast_helper::ItemExt as _, config::Config};
 use quote::ToTokens as _;
 use syn::{Attribute, Lit, Meta, NestedMeta, Path};
 
@@ -96,7 +96,7 @@ fn test_is_snippet() {
     assert!(!is_snippet(&syn::parse_str::<Path>("::entry").unwrap()));
 }
 
-pub fn check_cfg(attrs: &mut Vec<Attribute>, config: &Opt) -> bool {
+pub fn check_cfg(attrs: &mut Vec<Attribute>, config: &Config) -> bool {
     let mut next = Vec::new();
     let mut cond = true;
     for attr in attrs.drain(..) {
@@ -116,7 +116,7 @@ pub fn check_cfg(attrs: &mut Vec<Attribute>, config: &Opt) -> bool {
     cond
 }
 
-pub fn flatten_cfg_attr(attrs: &mut Vec<Attribute>, config: &Opt) {
+pub fn flatten_cfg_attr(attrs: &mut Vec<Attribute>, config: &Config) {
     let mut next = Vec::new();
     for attr in attrs.drain(..) {
         if let Ok(meta) = attr.parse_meta() {
@@ -152,7 +152,7 @@ fn test_to_attribute() {
     assert_eq!(attr.as_str(), r##"# [snippet :: entry ("name" , inline)]"##);
 }
 
-fn cfg_condition(pred: &Meta, config: &Opt) -> bool {
+fn cfg_condition(pred: &Meta, config: &Config) -> bool {
     if let Some(id) = pred.path().get_ident() {
         match id.to_string().as_str() {
             "all" => {

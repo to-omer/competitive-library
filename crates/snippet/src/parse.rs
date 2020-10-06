@@ -1,7 +1,7 @@
 use crate::{
     ast_helper::ItemExt,
     attribute::{check_cfg, flatten_cfg_attr},
-    config::Opt,
+    config::Config,
     error::{
         self,
         Error::{self, FileNotFound, ModuleNotFound, ParseFile},
@@ -16,7 +16,7 @@ use syn::{
     AttrStyle, Attribute, File, Item, ItemMod, Lit, Meta,
 };
 
-pub fn parse_files(config: &Opt) -> error::Result<Vec<Item>> {
+pub fn parse_files(config: &Config) -> error::Result<Vec<Item>> {
     let mut items = Vec::new();
     for target in config.targets.iter() {
         log::info!("parse {}", target.display());
@@ -25,7 +25,7 @@ pub fn parse_files(config: &Opt) -> error::Result<Vec<Item>> {
     Ok(items)
 }
 
-fn parse_file_recursive(config: &Opt, path: PathBuf) -> error::Result<File> {
+fn parse_file_recursive(config: &Config, path: PathBuf) -> error::Result<File> {
     let mut ext = ExtractAst {
         path,
         error: None,
@@ -46,7 +46,7 @@ fn parse_file_recursive(config: &Opt, path: PathBuf) -> error::Result<File> {
 struct ExtractAst<'c> {
     path: PathBuf,
     error: Option<Error>,
-    config: &'c Opt,
+    config: &'c Config,
 }
 
 impl ExtractAst<'_> {
