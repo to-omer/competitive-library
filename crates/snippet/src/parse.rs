@@ -22,10 +22,11 @@ pub fn parse_files(config: &Config) -> error::Result<Vec<Item>> {
     let pb = ProgressBar::new(config.targets.len() as u64);
     pb.set_style(
         ProgressStyle::default_bar()
-            .template("     Parsing [{bar:57.cyan/blue}] {pos}/{len}")
+            .template("     Parsing [{bar:57.cyan/blue}] {pos}/{len}: {msg}")
             .progress_chars("=> "),
     );
     for target in config.targets.iter() {
+        pb.set_message(&target.display().to_string());
         items.extend(parse_file_recursive(config, target.clone())?.items);
         pb.inc(1);
     }

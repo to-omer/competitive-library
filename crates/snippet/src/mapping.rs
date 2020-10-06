@@ -6,6 +6,7 @@ use crate::{
 };
 use indicatif::{ProgressBar, ProgressStyle};
 use quote::ToTokens as _;
+use rayon::prelude::*;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use syn::{
     visit::{self, Visit},
@@ -73,17 +74,18 @@ impl SnippetMap<'_> {
         let pb = ProgressBar::new(self.map.len() as u64);
         pb.set_style(
             ProgressStyle::default_bar()
-                .template("  Formatting [{bar:57.cyan/blue}] {pos}/{len}")
+                .template("  Formatting [{bar:57.cyan/blue}] {pos}/{len}: {msg}")
                 .progress_chars("=> "),
         );
-        for (name, link) in self.map.iter_mut() {
+        self.map.par_iter_mut().for_each(|(name, link)| {
+            pb.set_message(name);
             if let Some(formatted) = format_with_rustfmt(&link.contents) {
                 link.contents = formatted;
             } else {
                 pb.println(format!("warning: Failed to format `{}`.", name));
             }
             pb.inc(1);
-        }
+        });
         pb.finish_and_clear();
     }
     fn resolve_include(&self) -> BTreeMap<&str, String> {
