@@ -28,5 +28,3 @@ fn main() {
         exit(EXIT_FAILURE);
     }
 }
-
-// $ cargo run --bin snippet-extract -- crates\competitive\src\lib.rs crates\competitive\src\main.rs --output=.vscode\rust.code-snippets --filter-item=test --cfg=nightly
