@@ -1,4 +1,3 @@
-#![cfg_attr(nightly, feature(proc_macro_hygiene))]
 // #![warn(missing_docs)]
 #![allow(clippy::many_single_char_names)]
 

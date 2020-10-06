@@ -23,9 +23,8 @@ fn execute() -> error::Result<()> {
 const EXIT_FAILURE: i32 = 1;
 
 fn main() {
-    env_logger::init();
     if let Err(err) = execute() {
-        log::error!("{}", err);
+        eprintln!("error: {}", err);
         exit(EXIT_FAILURE);
     }
 }

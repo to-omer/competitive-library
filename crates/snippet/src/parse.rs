@@ -7,6 +7,7 @@ use crate::{
         Error::{self, FileNotFound, ModuleNotFound, ParseFile},
     },
 };
+use indicatif::{ProgressBar, ProgressStyle};
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens as _};
 use std::path::{Path, PathBuf};
@@ -18,10 +19,17 @@ use syn::{
 
 pub fn parse_files(config: &Config) -> error::Result<Vec<Item>> {
     let mut items = Vec::new();
+    let pb = ProgressBar::new(config.targets.len() as u64);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("     Parsing [{bar:57.cyan/blue}] {pos}/{len}")
+            .progress_chars("=> "),
+    );
     for target in config.targets.iter() {
-        log::info!("parse {}", target.display());
         items.extend(parse_file_recursive(config, target.clone())?.items);
+        pb.inc(1);
     }
+    pb.finish_and_clear();
     Ok(items)
 }
 
@@ -34,10 +42,7 @@ fn parse_file_recursive(config: &Config, path: PathBuf) -> error::Result<File> {
     let mut ast = parse_file_from_path(&ext.path)?;
     ext.visit_file_mut(&mut ast);
     match ext.error {
-        Some(err) => {
-            log::warn!("{}", err);
-            Err(err)
-        }
+        Some(err) => Err(err),
         _ => Ok(ast),
     }
 }

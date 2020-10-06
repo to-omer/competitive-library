@@ -4,6 +4,7 @@ use crate::{
     config::Config,
     output::{format_with_rustfmt, rustfmt_exits, VSCode},
 };
+use indicatif::{ProgressBar, ProgressStyle};
 use quote::ToTokens as _;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use syn::{
@@ -34,9 +35,17 @@ impl<'c> SnippetMap<'c> {
 
 impl SnippetMap<'_> {
     pub fn collect_entries(&mut self, items: &[Item]) {
+        let pb = ProgressBar::new(items.len() as u64);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template("  Collecting [{bar:57.cyan/blue}] {pos}/{len}")
+                .progress_chars("=> "),
+        );
         for item in items {
             self.visit_item(item);
+            pb.inc(1);
         }
+        pb.finish_and_clear();
     }
     fn get_mut(&mut self, name: &str) -> &mut LinkedSnippet {
         if !self.map.contains_key(name) {
@@ -58,16 +67,24 @@ impl SnippetMap<'_> {
     }
     pub fn format_all(&mut self) {
         if !rustfmt_exits() {
-            log::warn!("rustfmt not found.");
+            eprintln!("warning: rustfmt not found.");
             return;
         }
+        let pb = ProgressBar::new(self.map.len() as u64);
+        pb.set_style(
+            ProgressStyle::default_bar()
+                .template("  Formatting [{bar:57.cyan/blue}] {pos}/{len}")
+                .progress_chars("=> "),
+        );
         for (name, link) in self.map.iter_mut() {
             if let Some(formatted) = format_with_rustfmt(&link.contents) {
                 link.contents = formatted;
             } else {
-                log::warn!("Failed to format `{}`.", name);
+                pb.println(format!("warning: Failed to format `{}`.", name));
             }
+            pb.inc(1);
         }
+        pb.finish_and_clear();
     }
     fn resolve_include(&self) -> BTreeMap<&str, String> {
         let mut res: BTreeMap<_, String> = BTreeMap::new();
