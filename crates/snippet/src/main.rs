@@ -8,10 +8,9 @@ mod parse;
 
 use crate::{config::Opt, mapping::SnippetMap, output::emit, parse::parse_files};
 use std::process::exit;
-use structopt::StructOpt;
 
 fn execute() -> error::Result<()> {
-    let Opt::SnippetExtract(config) = Opt::from_args();
+    let config = Opt::config();
     let items = parse_files(&config)?;
     let mut map = SnippetMap::new(&config);
     map.collect_entries(&items);

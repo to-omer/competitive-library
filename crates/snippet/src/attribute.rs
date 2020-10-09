@@ -1,6 +1,6 @@
 use crate::{ast_helper::ItemExt as _, config::Config};
 use quote::ToTokens as _;
-use syn::{Attribute, Lit, Meta, NestedMeta, Path};
+use syn::{parse_str, Attribute, Lit, Meta, NestedMeta, Path};
 
 pub struct SnippetAttributes {
     pub name: Option<String>,
@@ -78,22 +78,22 @@ impl From<&syn::Item> for SnippetAttributes {
     }
 }
 
+thread_local! {
+    static SNIPPET_ENTRY: Path = parse_str::<Path>("snippet::entry").unwrap();
+}
+
 pub fn is_snippet(path: &Path) -> bool {
-    let path = path.into_token_stream().to_string();
-    &path == ":: snippet :: entry" || &path == "snippet :: entry" || &path == "entry"
+    SNIPPET_ENTRY.with(|entry| entry == path)
 }
 
 #[test]
 fn test_is_snippet() {
-    assert!(is_snippet(
-        &syn::parse_str::<Path>("snippet::entry").unwrap()
-    ));
-    assert!(is_snippet(&syn::parse_str::<Path>("entry").unwrap()));
-    assert!(is_snippet(
-        &syn::parse_str::<Path>("::snippet::entry").unwrap()
-    ));
-    assert!(!is_snippet(&syn::parse_str::<Path>("snippet").unwrap()));
-    assert!(!is_snippet(&syn::parse_str::<Path>("::entry").unwrap()));
+    assert!(is_snippet(&parse_str::<Path>("snippet::entry").unwrap()));
+    assert!(!is_snippet(&parse_str::<Path>("entry").unwrap()));
+    assert!(!is_snippet(&parse_str::<Path>("::snippet::entry").unwrap()));
+    assert!(!is_snippet(&parse_str::<Path>("snippet").unwrap()));
+    assert!(!is_snippet(&parse_str::<Path>("::entry").unwrap()));
+    assert!(!is_snippet(&parse_str::<Path>("rustfmt::entry").unwrap()));
 }
 
 pub fn check_cfg(attrs: &mut Vec<Attribute>, config: &Config) -> bool {

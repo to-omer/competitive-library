@@ -32,3 +32,13 @@ pub struct Config {
     #[structopt(value_name = "FILE", parse(from_os_str))]
     pub targets: Vec<PathBuf>,
 }
+
+impl Opt {
+    pub fn config() -> Config {
+        let Self::SnippetExtract(mut config) = Self::from_args();
+        if let Ok(skip) = parse_str::<syn::Path>("snippet::skip") {
+            config.filter_item.push(skip);
+        }
+        config
+    }
+}
