@@ -1,6 +1,6 @@
 use super::{BitVector, RankSelectDictionaries};
 
-#[snippet::entry(include = "RankSelectDictionaries")]
+#[snippet::entry(include("RankSelectDictionaries"))]
 pub struct WaveletMatrix {
     len: usize,
     table: Vec<(usize, BitVector)>,

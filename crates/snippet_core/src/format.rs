@@ -1,41 +1,8 @@
-use crate::config::Config;
-use serde::Serialize;
-use serde_json::to_writer;
 use std::{
-    fs,
-    io::{self, Write as _},
+    io::Write as _,
     path::Path,
     process::{Command, Stdio},
 };
-
-pub fn emit<T: Serialize>(value: &T, config: &Config) -> io::Result<()> {
-    match &config.output {
-        Some(file) => {
-            let f = fs::File::create(file)?;
-            to_writer(f, value)?;
-        }
-        _ => {
-            to_writer(io::stdout().lock(), value)?;
-        }
-    }
-    Ok(())
-}
-
-#[derive(Serialize)]
-pub struct VSCode {
-    prefix: String,
-    body: String,
-    scope: String,
-}
-impl From<(String, String)> for VSCode {
-    fn from((prefix, contents): (String, String)) -> Self {
-        Self {
-            prefix,
-            body: contents.replace("$", "\\$"),
-            scope: "rust".to_string(),
-        }
-    }
-}
 
 pub fn rustfmt_exits() -> bool {
     let rustfmt = Path::new(env!("CARGO_HOME")).join("bin").join("rustfmt");

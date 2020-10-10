@@ -1,9 +1,29 @@
-use syn::{Attribute, Item};
+use syn::{parse::Parser, parse_str, Attribute, Item, Path};
+
+pub trait AttributeExt {
+    fn parse_args_empty_with<F: Parser>(&self, parser: F) -> syn::Result<F::Output>;
+}
 
 pub trait ItemExt {
     fn get_attributes(&self) -> Option<&[Attribute]>;
     fn get_attributes_mut(&mut self) -> Option<&mut Vec<Attribute>>;
     fn get_default_name(&self) -> Option<String>;
+    fn is_mod(&self) -> bool;
+}
+
+pub trait PathExt {
+    fn is_snippet_entry(&self) -> bool;
+    fn is_snippet_skip(&self) -> bool;
+}
+
+impl AttributeExt for Attribute {
+    fn parse_args_empty_with<F: Parser>(&self, parser: F) -> syn::Result<F::Output> {
+        if self.tokens.is_empty() {
+            parser.parse2(self.tokens.clone())
+        } else {
+            self.parse_args_with(parser)
+        }
+    }
 }
 
 impl ItemExt for Item {
@@ -75,4 +95,39 @@ impl ItemExt for Item {
             .to_string(),
         )
     }
+
+    fn is_mod(&self) -> bool {
+        matches!(self, Item::Mod(_))
+    }
+}
+
+thread_local! {
+    static SNIPPET_ENTRY: Path = parse_str::<Path>("snippet::entry").unwrap();
+    static SNIPPET_SKIP: Path = parse_str::<Path>("snippet::skip").unwrap();
+}
+
+impl PathExt for Path {
+    fn is_snippet_entry(&self) -> bool {
+        SNIPPET_ENTRY.with(|path| self == path)
+    }
+
+    fn is_snippet_skip(&self) -> bool {
+        SNIPPET_SKIP.with(|path| self == path)
+    }
+}
+
+#[test]
+fn test_is_snippet() {
+    assert!(&parse_str::<Path>("snippet::entry")
+        .unwrap()
+        .is_snippet_entry());
+    assert!(!&parse_str::<Path>("entry").unwrap().is_snippet_entry());
+    assert!(!&parse_str::<Path>("::snippet::entry")
+        .unwrap()
+        .is_snippet_entry());
+    assert!(!&parse_str::<Path>("snippet").unwrap().is_snippet_entry());
+    assert!(!&parse_str::<Path>("::entry").unwrap().is_snippet_entry());
+    assert!(!&parse_str::<Path>("rustfmt::entry")
+        .unwrap()
+        .is_snippet_entry());
 }

@@ -15,7 +15,7 @@ pub type Point = Complex<f64>;
 
 #[snippet::entry("EPS")]
 pub const EPS: f64 = 1e-8;
-#[snippet::entry("Real", include = "EPS")]
+#[snippet::entry("Real", include("EPS"))]
 #[derive(Clone, Debug)]
 pub struct Real(pub f64);
 #[snippet::entry("Real")]
