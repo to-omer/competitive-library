@@ -3,9 +3,17 @@ mod parse;
 
 use crate::{mapping::SnippetMapExt as _, parse::parse_files};
 use serde::Serialize;
-use serde_json::to_writer;
-use snippet_core::{map::Filter, map::SnippetMap, parse::Error};
-use std::{fs, io, path::Path, path::PathBuf, process::exit};
+use serde_json::{from_reader, to_writer};
+use snippet_core::{
+    map::{Filter, SnippetMap},
+    parse::Error::FileNotFound,
+};
+use std::{
+    fs::{self, File},
+    io,
+    path::{Path, PathBuf},
+    process::exit,
+};
 use structopt::StructOpt;
 use syn::parse_str;
 
@@ -35,9 +43,22 @@ pub struct Config {
     #[structopt(short, long, value_name = "FILE", parse(from_os_str))]
     pub output: Option<PathBuf>,
 
+    /// Save analyzed data in to file.
+    #[structopt(
+        long,
+        value_name = "FILE",
+        parse(from_os_str),
+        conflicts_with("use_cache")
+    )]
+    pub save_cache: Option<PathBuf>,
+
     /// Target file paths.
-    #[structopt(value_name = "FILE", parse(from_os_str))]
+    #[structopt(value_name = "FILE", parse(from_os_str), conflicts_with("use_cache"))]
     pub targets: Vec<PathBuf>,
+
+    /// Use cached data.
+    #[structopt(long, value_name = "FILE", parse(from_os_str))]
+    pub use_cache: Option<PathBuf>,
 }
 
 impl Config {
@@ -46,12 +67,20 @@ impl Config {
     }
 }
 
-fn execute() -> Result<(), Error> {
+fn execute() -> anyhow::Result<()> {
     let Opt::SnippetExtract(config) = Opt::from_args();
-    let items = parse_files(&config.targets, &config.cfg)?;
-    let mut map = SnippetMap::new();
-    map.collect_entries(&items, config.filter());
-    map.format_all();
+    let map = if let Some(cache) = config.use_cache {
+        from_reader(File::open(&cache).map_err(|err| FileNotFound(cache.clone(), err))?)?
+    } else {
+        let items = parse_files(&config.targets, &config.cfg)?;
+        let mut map = SnippetMap::new();
+        map.collect_entries(&items, config.filter());
+        map.format_all();
+        map
+    };
+    if config.save_cache.is_some() {
+        emit(&map, config.save_cache.as_ref())?;
+    }
     emit(&map.to_vscode(), config.output.as_ref())?;
     Ok(())
 }

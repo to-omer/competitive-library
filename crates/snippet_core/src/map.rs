@@ -4,6 +4,7 @@ use crate::{
     format::format_with_rustfmt,
 };
 use quote::ToTokens as _;
+use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashMap};
 use syn::{
     parse::Parse as _,
@@ -11,12 +12,12 @@ use syn::{
     Attribute, Item,
 };
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct SnippetMap {
     pub map: HashMap<String, LinkedSnippet>,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LinkedSnippet {
     pub contents: String,
     pub includes: BTreeSet<String>,
