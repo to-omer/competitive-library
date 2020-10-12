@@ -32,9 +32,10 @@ impl SnippetMapExt for SnippetMap {
         let pb = ProgressBar::new(items.len() as u64);
         pb.set_style(
             ProgressStyle::default_bar()
-                .template("  Collecting [{bar:57.cyan/blue}] {pos}/{len}")
+                .template("{prefix:>12.green} [{bar:57}] {pos}/{len}")
                 .progress_chars("=> "),
         );
+        pb.set_prefix("Collecting");
         for item in items {
             self.extend_with_filter(item, filter);
             pb.inc(1);
@@ -49,9 +50,10 @@ impl SnippetMapExt for SnippetMap {
         let pb = ProgressBar::new(self.map.len() as u64);
         pb.set_style(
             ProgressStyle::default_bar()
-                .template("  Formatting [{bar:57.cyan/blue}] {pos}/{len}: {msg}")
+                .template("{prefix:>12.green} [{bar:57}] {pos}/{len}: {msg}")
                 .progress_chars("=> "),
         );
+        pb.set_prefix("Formatting");
         self.map.par_iter_mut().for_each(|(name, link)| {
             pb.set_message(name);
             if !link.format() {
