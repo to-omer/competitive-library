@@ -1,4 +1,4 @@
-use crate::ext::ItemExt as _;
+use crate::ItemExt as _;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens as _};
 use std::path::{Path, PathBuf};

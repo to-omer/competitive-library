@@ -1,4 +1,4 @@
-use codesnip_core::parse::{parse_file_recursive, Error};
+use codesnip_core::{parse_file_recursive, Error};
 use indicatif::{ProgressBar, ProgressStyle};
 use std::path::Path;
 use syn::{Item, Meta};

@@ -1,4 +1,4 @@
-use codesnip_core::{format::rustfmt_exits, map::Filter, map::SnippetMap};
+use codesnip_core::{rustfmt_exits, Filter, SnippetMap};
 use indicatif::{ProgressBar, ProgressStyle};
 use rayon::prelude::*;
 use serde::Serialize;

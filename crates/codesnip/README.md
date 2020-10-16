@@ -58,7 +58,7 @@ Lit:
 ### Usage
 ```
 USAGE:
-    cargo codesnip [OPTIONS] [--] [FILE]...
+    cargo codesnip build [OPTIONS] [--] [FILE]...
 
 FLAGS:
     -h, --help       Prints help information

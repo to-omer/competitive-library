@@ -1,8 +1,4 @@
-use crate::{
-    entry::EntryArgs,
-    ext::{AttributeExt as _, ItemExt as _, PathExt as _},
-    format::format_with_rustfmt,
-};
+use crate::{entry::EntryArgs, format_with_rustfmt, AttributeExt as _, ItemExt as _, PathExt as _};
 use quote::ToTokens as _;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeSet, HashMap};
