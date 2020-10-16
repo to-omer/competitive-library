@@ -220,11 +220,14 @@ fn to_attribute(meta: &NestedMeta) -> Attribute {
 
 #[test]
 fn test_to_attribute() {
-    let attr: Attribute = syn::parse_quote!(#[snippet::entry("name", inline)]);
+    let attr: Attribute = syn::parse_quote!(#[codesnip::entry("name", inline)]);
     let attr = to_attribute(&NestedMeta::Meta(attr.parse_meta().unwrap()))
         .to_token_stream()
         .to_string();
-    assert_eq!(attr.as_str(), r##"# [snippet :: entry ("name" , inline)]"##);
+    assert_eq!(
+        attr.as_str(),
+        r##"# [codesnip :: entry ("name" , inline)]"##
+    );
 }
 
 fn cfg_condition(pred: &Meta, cfg: &[Meta]) -> bool {

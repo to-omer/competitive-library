@@ -1,4 +1,4 @@
-#[snippet::entry]
+#[codesnip::entry]
 pub trait MoSolver {
     type Answer;
     fn insert(&mut self, i: usize);

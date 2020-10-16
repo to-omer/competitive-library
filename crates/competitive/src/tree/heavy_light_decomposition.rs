@@ -1,14 +1,14 @@
 use crate::algebra::Monoid;
 use crate::graph::UndirectedSparseGraph;
 
-#[snippet::entry("HeavyLightDecomposition")]
+#[codesnip::entry("HeavyLightDecomposition")]
 pub struct HeavyLightDecomposition {
     pub par: Vec<usize>,
     size: Vec<usize>,
     head: Vec<usize>,
     pub vidx: Vec<usize>,
 }
-#[snippet::entry("HeavyLightDecomposition")]
+#[codesnip::entry("HeavyLightDecomposition")]
 impl HeavyLightDecomposition {
     pub fn new(root: usize, graph: &mut UndirectedSparseGraph) -> Self {
         let mut self_ = Self {

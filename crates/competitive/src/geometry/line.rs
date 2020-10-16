@@ -1,13 +1,13 @@
 use super::*;
 use crate::tools::TotalOrd;
 
-#[snippet::entry("Line")]
+#[codesnip::entry("Line")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Line {
     p1: Point,
     p2: Point,
 }
-#[snippet::entry("Line")]
+#[codesnip::entry("Line")]
 impl Line {
     pub fn new(p1: Point, p2: Point) -> Self {
         Line { p1, p2 }
@@ -36,13 +36,13 @@ impl Line {
     }
 }
 
-#[snippet::entry("LineSegment")]
+#[codesnip::entry("LineSegment")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct LineSegment {
     p1: Point,
     p2: Point,
 }
-#[snippet::entry("LineSegment")]
+#[codesnip::entry("LineSegment")]
 impl LineSegment {
     pub fn new(p1: Point, p2: Point) -> Self {
         LineSegment { p1, p2 }

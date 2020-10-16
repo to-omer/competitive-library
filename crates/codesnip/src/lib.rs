@@ -1,6 +1,6 @@
+use codesnip_core::entry::EntryArgs;
 use proc_macro::TokenStream;
 use quote::ToTokens;
-use snippet_core::entry::EntryArgs;
 use syn::{parse, parse_macro_input, Error, Item};
 
 #[proc_macro_attribute]

@@ -2,12 +2,12 @@
 
 use crate::num::{One, Zero};
 
-#[snippet::entry("Polynomial")]
+#[codesnip::entry("Polynomial")]
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Polynomial<T> {
     pub data: Vec<T>,
 }
-#[snippet::entry("Polynomial")]
+#[codesnip::entry("Polynomial")]
 mod polynomial_impls {
     use super::*;
     use std::ops::{Add, Div, Index, IndexMut, Mul, Rem, Sub};

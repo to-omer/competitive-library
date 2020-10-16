@@ -1,4 +1,4 @@
-#[snippet::entry]
+#[codesnip::entry]
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     while b != 0 {
         a %= b;
@@ -7,7 +7,7 @@ pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     a
 }
 
-#[snippet::entry]
+#[codesnip::entry]
 pub fn gcd_binary(mut a: u64, mut b: u64) -> u64 {
     if a == 0 {
         return b;
@@ -44,14 +44,14 @@ fn test_gcd() {
     assert_eq!(gcd(0, 100), gcd_binary(0, 100));
 }
 
-#[snippet::entry(include("gcd"))]
+#[codesnip::entry(include("gcd"))]
 pub fn lcm(a: u64, b: u64) -> u64 {
     a / gcd(a, b) * b
 }
 
 // ax + by = gcd(a, b)
 // a, b -> gcd(a, b), x, y
-#[snippet::entry]
+#[codesnip::entry]
 pub fn extgcd(a: i64, b: i64) -> (i64, i64, i64) {
     if b == 0 {
         (a, 1, 0)
@@ -143,7 +143,7 @@ fn test_extgcd_binary() {
     }
 }
 
-#[snippet::entry(include("extgcd"))]
+#[codesnip::entry(include("extgcd"))]
 pub fn modinv(a: i64, m: i64) -> i64 {
     (extgcd(a, m).1 % m + m) % m
 }

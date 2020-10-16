@@ -8,11 +8,11 @@
 
 use crate::algebra::{Group, Monoid};
 
-#[snippet::entry("SubsetTransform")]
+#[codesnip::entry("SubsetTransform")]
 pub struct SubsetTransform<M: Monoid> {
     monoid: M,
 }
-#[snippet::entry("SubsetTransform")]
+#[codesnip::entry("SubsetTransform")]
 impl<M: Monoid> SubsetTransform<M> {
     pub fn new(monoid: M) -> Self {
         Self { monoid }
@@ -31,7 +31,7 @@ impl<M: Monoid> SubsetTransform<M> {
         }
     }
 }
-#[snippet::entry("SubsetTransform")]
+#[codesnip::entry("SubsetTransform")]
 impl<G: Group> SubsetTransform<G> {
     /// $$f(T) = \sum_{S\subset T}h(S)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {
@@ -99,11 +99,11 @@ fn test_subset_transform() {
     assert_eq!(h, i);
 }
 
-#[snippet::entry("SupersetTransform")]
+#[codesnip::entry("SupersetTransform")]
 pub struct SupersetTransform<M: Monoid> {
     monoid: M,
 }
-#[snippet::entry("SupersetTransform")]
+#[codesnip::entry("SupersetTransform")]
 impl<M: Monoid> SupersetTransform<M> {
     pub fn new(monoid: M) -> Self {
         Self { monoid }
@@ -122,7 +122,7 @@ impl<M: Monoid> SupersetTransform<M> {
         }
     }
 }
-#[snippet::entry("SupersetTransform")]
+#[codesnip::entry("SupersetTransform")]
 impl<G: Group> SupersetTransform<G> {
     /// $$f(T) = \sum_{S\supset T}h(S)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {
@@ -190,12 +190,12 @@ fn test_superset_transform() {
     assert_eq!(h, i);
 }
 
-#[snippet::entry("DivisorTransform")]
+#[codesnip::entry("DivisorTransform")]
 pub struct DivisorTransform<M: Monoid> {
     monoid: M,
     primes: Vec<usize>,
 }
-#[snippet::entry("DivisorTransform")]
+#[codesnip::entry("DivisorTransform")]
 impl<M: Monoid> DivisorTransform<M> {
     pub fn new(monoid: M, primes: Vec<usize>) -> Self {
         Self { monoid, primes }
@@ -209,7 +209,7 @@ impl<M: Monoid> DivisorTransform<M> {
         }
     }
 }
-#[snippet::entry("DivisorTransform")]
+#[codesnip::entry("DivisorTransform")]
 impl<G: Group> DivisorTransform<G> {
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {
@@ -279,12 +279,12 @@ fn test_divisor_transform() {
     assert_eq!(&h[1..], &i[1..]);
 }
 
-#[snippet::entry("MultipleTransform")]
+#[codesnip::entry("MultipleTransform")]
 pub struct MultipleTransform<M: Monoid> {
     monoid: M,
     primes: Vec<usize>,
 }
-#[snippet::entry("MultipleTransform")]
+#[codesnip::entry("MultipleTransform")]
 impl<M: Monoid> MultipleTransform<M> {
     pub fn new(monoid: M, primes: Vec<usize>) -> Self {
         Self { monoid, primes }
@@ -298,7 +298,7 @@ impl<M: Monoid> MultipleTransform<M> {
         }
     }
 }
-#[snippet::entry("MultipleTransform")]
+#[codesnip::entry("MultipleTransform")]
 impl<G: Group> MultipleTransform<G> {
     /// $$f(m) = \sum_{m \mid n}h(n)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {

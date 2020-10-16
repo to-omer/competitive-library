@@ -2,7 +2,7 @@ use crate::algebra::{Associative, Magma};
 use crate::data_structure::DisjointSparseTable;
 use crate::graph::UndirectedSparseGraph;
 
-#[snippet::entry("EulerTourForEdge")]
+#[codesnip::entry("EulerTourForEdge")]
 #[derive(Clone, Debug)]
 pub struct EulerTourForEdge<'a> {
     graph: &'a UndirectedSparseGraph,
@@ -10,7 +10,7 @@ pub struct EulerTourForEdge<'a> {
     pub par: Vec<usize>,
     epos: usize,
 }
-#[snippet::entry("EulerTourForEdge")]
+#[codesnip::entry("EulerTourForEdge")]
 impl<'a> EulerTourForEdge<'a> {
     pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
         let mut self_ = Self {
@@ -37,14 +37,14 @@ impl<'a> EulerTourForEdge<'a> {
     }
 }
 
-#[snippet::entry("EulerTourForVertex")]
+#[codesnip::entry("EulerTourForVertex")]
 #[derive(Clone, Debug)]
 pub struct EulerTourForVertex<'a> {
     graph: &'a UndirectedSparseGraph,
     pub vidx: Vec<(usize, usize)>,
     vpos: usize,
 }
-#[snippet::entry("EulerTourForVertex")]
+#[codesnip::entry("EulerTourForVertex")]
 impl<'a> EulerTourForVertex<'a> {
     pub fn new(graph: &'a UndirectedSparseGraph) -> Self {
         Self {
@@ -95,7 +95,7 @@ impl<'a> EulerTourForVertex<'a> {
     }
 }
 
-#[snippet::entry("EulerTourForRichVertex")]
+#[codesnip::entry("EulerTourForRichVertex")]
 #[derive(Clone, Debug)]
 pub struct EulerTourForRichVertex<'a> {
     graph: &'a UndirectedSparseGraph,
@@ -103,7 +103,7 @@ pub struct EulerTourForRichVertex<'a> {
     vidx: Vec<(usize, usize)>,
     vtrace: Vec<usize>,
 }
-#[snippet::entry("EulerTourForRichVertex")]
+#[codesnip::entry("EulerTourForRichVertex")]
 impl<'a> EulerTourForRichVertex<'a> {
     pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
         let mut self_ = Self {
@@ -136,7 +136,7 @@ impl<'a> EulerTourForRichVertex<'a> {
     }
 }
 
-#[snippet::entry("LowestCommonAncestor")]
+#[codesnip::entry("LowestCommonAncestor")]
 impl<'a> EulerTourForRichVertex<'a> {
     pub fn gen_lca(&'a self) -> LowestCommonAncestor<'a> {
         let monoid = LCAMonoid::new(self.root, self.graph);
@@ -144,24 +144,24 @@ impl<'a> EulerTourForRichVertex<'a> {
         LowestCommonAncestor { euler: self, dst }
     }
 }
-#[snippet::entry("LowestCommonAncestor")]
+#[codesnip::entry("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
 pub struct LowestCommonAncestor<'a> {
     euler: &'a EulerTourForRichVertex<'a>,
     dst: DisjointSparseTable<LCAMonoid>,
 }
-#[snippet::entry("LowestCommonAncestor")]
+#[codesnip::entry("LowestCommonAncestor")]
 impl<'a> LowestCommonAncestor<'a> {
     pub fn lca(&self, u: usize, v: usize) -> usize {
         self.euler.query(u, v, |l, r| self.dst.fold(l, r))
     }
 }
-#[snippet::entry("LowestCommonAncestor")]
+#[codesnip::entry("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
 pub struct LCAMonoid {
     depth: Vec<u64>,
 }
-#[snippet::entry("LowestCommonAncestor")]
+#[codesnip::entry("LowestCommonAncestor")]
 pub mod impl_lcam {
     use super::*;
     impl LCAMonoid {

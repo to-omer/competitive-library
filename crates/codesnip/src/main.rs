@@ -2,12 +2,12 @@ mod mapping;
 mod parse;
 
 use crate::{mapping::SnippetMapExt as _, parse::parse_files};
-use serde::Serialize;
-use serde_json::{from_reader, to_writer};
-use snippet_core::{
+use codesnip_core::{
     map::{Filter, SnippetMap},
     parse::Error::FileNotFound,
 };
+use serde::Serialize;
+use serde_json::{from_reader, to_writer};
 use std::{
     fs::{self, File},
     io,
@@ -21,7 +21,7 @@ use syn::parse_str;
 #[structopt(bin_name = "cargo", rename_all = "kebab-case")]
 pub enum Opt {
     /// snippet extraction
-    SnippetExtract(Config),
+    Codesnip(Config),
 }
 
 #[derive(Debug, StructOpt)]
@@ -68,7 +68,7 @@ impl Config {
 }
 
 fn execute() -> anyhow::Result<()> {
-    let Opt::SnippetExtract(config) = Opt::from_args();
+    let Opt::Codesnip(config) = Opt::from_args();
     let map = if let Some(cache) = config.use_cache {
         from_reader(File::open(&cache).map_err(|err| FileNotFound(cache.clone(), err))?)?
     } else {

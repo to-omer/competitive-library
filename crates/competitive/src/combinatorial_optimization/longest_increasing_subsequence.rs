@@ -1,15 +1,15 @@
-#[snippet::entry("LongestIncreasingSubsequence")]
+#[codesnip::entry("LongestIncreasingSubsequence")]
 #[derive(Debug, Clone)]
 pub struct LongestIncreasingSubsequence<T: Ord> {
     pub dp: Vec<T>,
 }
-#[snippet::entry("LongestIncreasingSubsequence")]
+#[codesnip::entry("LongestIncreasingSubsequence")]
 impl<T: Ord> Default for LongestIncreasingSubsequence<T> {
     fn default() -> Self {
         Self { dp: Vec::new() }
     }
 }
-#[snippet::entry("LongestIncreasingSubsequence")]
+#[codesnip::entry("LongestIncreasingSubsequence")]
 impl<T: Ord> LongestIncreasingSubsequence<T> {
     pub fn new() -> Self {
         Default::default()

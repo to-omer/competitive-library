@@ -1,4 +1,4 @@
-#[snippet::entry]
+#[codesnip::entry]
 #[macro_export]
 macro_rules! comprehension {
     ($it:expr; @$type:ty) => {

@@ -1,12 +1,12 @@
-#[cfg_attr(nightly, snippet::entry("Complex", inline))]
+#[cfg_attr(nightly, codesnip::entry("Complex", inline))]
 mod complex;
-#[cfg_attr(nightly, snippet::entry(inline))]
+#[cfg_attr(nightly, codesnip::entry(inline))]
 mod float;
-#[cfg_attr(nightly, snippet::entry("MInt", inline))]
+#[cfg_attr(nightly, codesnip::entry("MInt", inline))]
 mod mint;
-#[cfg_attr(nightly, snippet::entry("QuadDouble", inline))]
+#[cfg_attr(nightly, codesnip::entry("QuadDouble", inline))]
 mod quad_double;
-#[cfg_attr(nightly, snippet::entry("_zero_one", inline))]
+#[cfg_attr(nightly, codesnip::entry("_zero_one", inline))]
 mod zero_one;
 
 pub use complex::Complex;

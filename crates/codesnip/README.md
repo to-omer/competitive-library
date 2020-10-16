@@ -1,17 +1,17 @@
-# snippet
+# codesnip
 
-## cargo-snippet-extract
+## cargo-codesnip
 
 ### Example
 ```rust
-#[snippet::entry(inline)]
+#[codesnip::entry(inline)]
 /// doc of `abc`
 pub mod abc {
     /// doc of `a`
     pub fn a() {}
     /// doc of `b`
     pub fn b() {}
-    #[snippet::skip]
+    #[codesnip::skip]
     /// doc of `c`
     pub fn c() {}
     #[cfg(test)]
@@ -34,7 +34,7 @@ pub fn b() {}
 
 ### Format
 ```
-#[snippet::entry (AttrList,*)?]
+#[codesnip::entry (AttrList,*)?]
 
 AttrList:
     NAME | INCLUDE | INLINE
@@ -58,7 +58,7 @@ Lit:
 ### Usage
 ```
 USAGE:
-    cargo snippet-extract [OPTIONS] [--] [FILE]...
+    cargo codesnip [OPTIONS] [--] [FILE]...
 
 FLAGS:
     -h, --help       Prints help information

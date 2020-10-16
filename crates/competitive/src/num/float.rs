@@ -1,4 +1,4 @@
-#[snippet::skip]
+#[codesnip::skip]
 use crate::num::{One, Zero};
 
 pub trait Float:

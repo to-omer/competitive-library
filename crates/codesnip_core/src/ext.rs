@@ -12,8 +12,8 @@ pub trait ItemExt {
 }
 
 pub trait PathExt {
-    fn is_snippet_entry(&self) -> bool;
-    fn is_snippet_skip(&self) -> bool;
+    fn is_codesnip_entry(&self) -> bool;
+    fn is_codesnip_skip(&self) -> bool;
 }
 
 impl AttributeExt for Attribute {
@@ -102,32 +102,32 @@ impl ItemExt for Item {
 }
 
 thread_local! {
-    static SNIPPET_ENTRY: Path = parse_str::<Path>("snippet::entry").unwrap();
-    static SNIPPET_SKIP: Path = parse_str::<Path>("snippet::skip").unwrap();
+    static SNIPPET_ENTRY: Path = parse_str::<Path>("codesnip::entry").unwrap();
+    static SNIPPET_SKIP: Path = parse_str::<Path>("codesnip::skip").unwrap();
 }
 
 impl PathExt for Path {
-    fn is_snippet_entry(&self) -> bool {
+    fn is_codesnip_entry(&self) -> bool {
         SNIPPET_ENTRY.with(|path| self == path)
     }
 
-    fn is_snippet_skip(&self) -> bool {
+    fn is_codesnip_skip(&self) -> bool {
         SNIPPET_SKIP.with(|path| self == path)
     }
 }
 
 #[test]
-fn test_is_snippet() {
-    assert!(&parse_str::<Path>("snippet::entry")
+fn test_is_codesnip() {
+    assert!(&parse_str::<Path>("codesnip::entry")
         .unwrap()
-        .is_snippet_entry());
-    assert!(!&parse_str::<Path>("entry").unwrap().is_snippet_entry());
-    assert!(!&parse_str::<Path>("::snippet::entry")
+        .is_codesnip_entry());
+    assert!(!&parse_str::<Path>("entry").unwrap().is_codesnip_entry());
+    assert!(!&parse_str::<Path>("::codesnip::entry")
         .unwrap()
-        .is_snippet_entry());
-    assert!(!&parse_str::<Path>("snippet").unwrap().is_snippet_entry());
-    assert!(!&parse_str::<Path>("::entry").unwrap().is_snippet_entry());
+        .is_codesnip_entry());
+    assert!(!&parse_str::<Path>("codesnip").unwrap().is_codesnip_entry());
+    assert!(!&parse_str::<Path>("::entry").unwrap().is_codesnip_entry());
     assert!(!&parse_str::<Path>("rustfmt::entry")
         .unwrap()
-        .is_snippet_entry());
+        .is_codesnip_entry());
 }

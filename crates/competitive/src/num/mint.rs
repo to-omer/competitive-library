@@ -1,7 +1,7 @@
 #![allow(clippy::suspicious_arithmetic_impl)]
 //! modint
 
-#[snippet::skip]
+#[codesnip::skip]
 use crate::{
     num::{One, Zero},
     tools::IterScan,

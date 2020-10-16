@@ -1,4 +1,4 @@
-#[snippet::skip]
+#[codesnip::skip]
 use crate::algebra::SemiGroup;
 
 #[derive(Clone, Debug)]

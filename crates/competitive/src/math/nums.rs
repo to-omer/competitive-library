@@ -15,14 +15,14 @@ pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(
     one
 }
 
-#[snippet::entry("BabyStepGiantStep", include("modinv"))]
+#[codesnip::entry("BabyStepGiantStep", include("modinv"))]
 #[derive(Clone, Debug)]
 pub struct BabyStepGiantStep {
     p: u64,
     r: u64,
     baby: std::collections::HashMap<u64, u64>,
 }
-#[snippet::entry("BabyStepGiantStep")]
+#[codesnip::entry("BabyStepGiantStep")]
 impl BabyStepGiantStep {
     pub fn new(x: u64, p: u64) -> Self {
         let m = (p as f32).sqrt() as u64 + 1;
@@ -55,7 +55,7 @@ impl BabyStepGiantStep {
 /// Sum of Floor of Linear
 ///
 /// $$\sum_{i=0}^{n-1}\left\lfloor\frac{a\times i+b}{m}\right\rfloor$$
-#[snippet::entry]
+#[codesnip::entry]
 pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
     let mut ans = 0u64;
     if a >= m {
@@ -79,7 +79,7 @@ pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
 /// return: (y,z)
 ///
 /// forall (a,b,m), ax = b mod m, where x = y mod z
-#[snippet::entry]
+#[codesnip::entry]
 pub fn linear_congruence(abm: impl IntoIterator<Item = (i64, i64, i64)>) -> Option<(i64, i64)> {
     let mut x = 0i64;
     let mut m0 = 1i64;

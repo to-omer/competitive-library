@@ -1,7 +1,7 @@
+use codesnip_core::{format::rustfmt_exits, map::Filter, map::SnippetMap};
 use indicatif::{ProgressBar, ProgressStyle};
 use rayon::prelude::*;
 use serde::Serialize;
-use snippet_core::{format::rustfmt_exits, map::Filter, map::SnippetMap};
 use std::collections::{BTreeMap, BTreeSet};
 use syn::Item;
 

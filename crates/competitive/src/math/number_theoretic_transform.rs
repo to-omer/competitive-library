@@ -1,4 +1,4 @@
-#[snippet::skip]
+#[codesnip::skip]
 use crate::num::{modulus, MInt, Modulus, One, Zero};
 
 pub struct NumberTheoreticTransform<M: Modulus>(std::marker::PhantomData<fn() -> M>);
@@ -250,7 +250,7 @@ fn test_convolve3_128() {
 }
 
 // #[test]
-#[snippet::skip]
+#[codesnip::skip]
 #[allow(dead_code)]
 fn find_proth() {
     use crate::math::{divisors, prime_factors_rho};

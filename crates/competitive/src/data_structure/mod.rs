@@ -1,13 +1,13 @@
 //! data structures
 
-#[cfg_attr(nightly, snippet::entry(inline))]
+#[cfg_attr(nightly, codesnip::entry(inline))]
 mod automaton;
 mod binary_indexed_tree;
-#[cfg_attr(nightly, snippet::entry("RankSelectDictionaries", inline))]
+#[cfg_attr(nightly, codesnip::entry("RankSelectDictionaries", inline))]
 mod bit_vector;
-#[cfg_attr(nightly, snippet::entry("BitSet", inline))]
+#[cfg_attr(nightly, codesnip::entry("BitSet", inline))]
 mod bitset;
-#[cfg_attr(nightly, snippet::entry("DisjointSparseTable", inline))]
+#[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", inline))]
 mod disjoint_sparse_table;
 mod kdtree;
 mod lazy_segment_tree;

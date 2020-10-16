@@ -1,6 +1,6 @@
 use crate::algebra::Monoid;
 
-#[snippet::entry("LazySegmentTree")]
+#[codesnip::entry("LazySegmentTree")]
 /// M: folding Monoid
 /// E: lazy Monoid
 /// F: lazy evaluating
@@ -14,7 +14,7 @@ pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     e: E,
     f: F,
 }
-#[snippet::entry("LazySegmentTree")]
+#[codesnip::entry("LazySegmentTree")]
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F> {
     pub fn new(n: usize, m: M, e: E, f: F) -> Self {
         let height = format!("{:b}", n - 1).len();

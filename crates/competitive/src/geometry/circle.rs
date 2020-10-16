@@ -1,12 +1,12 @@
 use super::*;
 
-#[snippet::entry("Circle")]
+#[codesnip::entry("Circle")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Circle {
     c: Point,
     r: f64,
 }
-#[snippet::entry("Circle")]
+#[codesnip::entry("Circle")]
 impl Circle {
     pub fn new(c: Point, r: f64) -> Self {
         Circle { c, r }

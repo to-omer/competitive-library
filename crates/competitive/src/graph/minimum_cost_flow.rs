@@ -1,4 +1,4 @@
-#[snippet::skip]
+#[codesnip::skip]
 use super::BidirectionalSparseGraph;
 
 #[derive(Debug, Clone)]

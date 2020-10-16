@@ -1,11 +1,11 @@
 use crate::algebra::Group;
 
-#[snippet::entry("UnionFind")]
+#[codesnip::entry("UnionFind")]
 #[derive(Clone, Debug)]
 pub struct UnionFind {
     parents: Vec<isize>,
 }
-#[snippet::entry("UnionFind")]
+#[codesnip::entry("UnionFind")]
 impl UnionFind {
     pub fn new(n: usize) -> Self {
         let parents = vec![-1; n];
@@ -94,14 +94,14 @@ fn test_union_find() {
     // println!("{:?}", uf.all_group_members())
 }
 
-#[snippet::entry("WeightedUnionFind")]
+#[codesnip::entry("WeightedUnionFind")]
 #[derive(Clone, Debug)]
 pub struct WeightedUnionFind<G: Group> {
     group: G,
     parents: Vec<isize>,
     diff: Vec<G::T>,
 }
-#[snippet::entry("WeightedUnionFind")]
+#[codesnip::entry("WeightedUnionFind")]
 impl<G: Group> WeightedUnionFind<G> {
     pub fn new(n: usize, group: G) -> Self {
         let parents = vec![-1; n];
@@ -186,12 +186,12 @@ impl<G: Group> WeightedUnionFind<G> {
     }
 }
 
-#[snippet::entry("MergingUnionFind")]
+#[codesnip::entry("MergingUnionFind")]
 pub struct MergingUnionFind<T, F: Fn(&mut T, &mut T)> {
     cells: Vec<merging_union_find_impls::UFCell<T>>,
     merge: F,
 }
-#[snippet::entry("MergingUnionFind")]
+#[codesnip::entry("MergingUnionFind")]
 mod merging_union_find_impls {
     use super::*;
     use std::cell::{Ref, RefCell, RefMut};

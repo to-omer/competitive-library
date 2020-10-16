@@ -4,9 +4,9 @@ mod adjacency_list;
 mod edge_list;
 mod grid;
 mod low_link;
-#[cfg_attr(nightly, snippet::entry("Dinic", inline))]
+#[cfg_attr(nightly, codesnip::entry("Dinic", inline))]
 mod maximum_flow;
-#[cfg_attr(nightly, snippet::entry("PrimalDual", inline))]
+#[cfg_attr(nightly, codesnip::entry("PrimalDual", inline))]
 mod minimum_cost_flow;
 mod minimum_spanning_tree;
 mod shortest_path;

@@ -1,8 +1,8 @@
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[snippet::entry("EdgeListGraph")]
+#[codesnip::entry("EdgeListGraph")]
 pub use edge_list_graph::{EdgeListGraph, EdgeListGraphScanner};
-#[snippet::entry("EdgeListGraph")]
+#[codesnip::entry("EdgeListGraph")]
 pub mod edge_list_graph {
     use super::*;
     #[derive(Clone, Debug)]

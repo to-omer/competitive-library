@@ -1,11 +1,11 @@
 use super::gcd_binary;
 
-#[snippet::entry("prime")]
+#[codesnip::entry("prime")]
 #[derive(Clone, Debug)]
 pub struct PrimeTable {
     table: Vec<usize>,
 }
-#[snippet::entry("prime")]
+#[codesnip::entry("prime")]
 impl PrimeTable {
     pub fn new(max_n: usize) -> Self {
         let mut table = vec![1; max_n + 1];
@@ -100,7 +100,7 @@ fn test_prime_table() {
     }
 }
 
-#[snippet::entry]
+#[codesnip::entry]
 pub fn prime_factors(mut n: usize) -> Vec<(usize, usize)> {
     let mut factors = vec![];
     for i in 2..=(n as f32).sqrt() as usize {
@@ -134,7 +134,7 @@ fn test_prime_factors() {
     }
 }
 
-#[snippet::entry]
+#[codesnip::entry]
 pub fn divisors(n: usize) -> Vec<usize> {
     let mut res = vec![];
     for i in 1..(n as f32).sqrt() as usize + 1 {
@@ -149,7 +149,7 @@ pub fn divisors(n: usize) -> Vec<usize> {
     res
 }
 
-#[snippet::entry]
+#[codesnip::entry]
 pub fn primes(n: usize) -> Vec<usize> {
     if n < 2 {
         return vec![];
@@ -184,7 +184,7 @@ fn test_primes() {
     }
 }
 
-#[snippet::entry("miller_rabin")]
+#[codesnip::entry("miller_rabin")]
 pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     let mut x = x as u128;
     let mut y = y as u128;
@@ -200,7 +200,7 @@ pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     res as u64
 }
 
-#[snippet::entry("miller_rabin")]
+#[codesnip::entry("miller_rabin")]
 pub fn miller_rabin(p: u64) -> bool {
     if p == 2 {
         return true;
@@ -246,7 +246,7 @@ fn test_miller_rabin() {
     assert!(!miller_rabin(1_000_000_011));
 }
 
-#[snippet::entry("prime_factors_rho")]
+#[codesnip::entry("prime_factors_rho")]
 pub fn find_factor(n: u64) -> u64 {
     const M: usize = 128;
     let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
@@ -285,7 +285,7 @@ pub fn find_factor(n: u64) -> u64 {
     unreachable!();
 }
 
-#[snippet::entry("prime_factors_rho", include("miller_rabin", "gcd_binary"))]
+#[codesnip::entry("prime_factors_rho", include("miller_rabin", "gcd_binary"))]
 pub fn prime_factors_rho(mut n: u64) -> Vec<u64> {
     let k = n.trailing_zeros();
     let mut res = vec![2; k as usize];

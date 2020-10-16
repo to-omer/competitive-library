@@ -1,13 +1,13 @@
 use crate::algebra::{Group, Monoid};
 
-#[snippet::entry("BinaryIndexedTree")]
+#[codesnip::entry("BinaryIndexedTree")]
 #[derive(Clone, Debug)]
 pub struct BinaryIndexedTree<M: Monoid> {
     n: usize,
     bit: Vec<M::T>,
     m: M,
 }
-#[snippet::entry("BinaryIndexedTree")]
+#[codesnip::entry("BinaryIndexedTree")]
 impl<M: Monoid> BinaryIndexedTree<M> {
     #[inline]
     pub fn new(n: usize, m: M) -> Self {
@@ -79,7 +79,7 @@ fn test_binary_indexed_tree() {
     }
 }
 
-#[snippet::entry("BinaryIndexedTree")]
+#[codesnip::entry("BinaryIndexedTree")]
 impl<G: Group> BinaryIndexedTree<G> {
     #[inline]
     pub fn fold(&self, l: usize, r: usize) -> G::T {
@@ -122,7 +122,7 @@ fn test_group_binary_indexed_tree() {
     }
 }
 
-#[snippet::entry("BinaryIndexedTree")]
+#[codesnip::entry("BinaryIndexedTree")]
 impl<M: Monoid> BinaryIndexedTree<M>
 where
     M::T: Ord,
@@ -169,7 +169,7 @@ fn test_binary_indexed_tree_lower_bound() {
     }
 }
 
-#[snippet::entry("BinaryIndexedTree2D")]
+#[codesnip::entry("BinaryIndexedTree2D")]
 #[derive(Clone, Debug)]
 pub struct BinaryIndexedTree2D<M: Monoid> {
     h: usize,
@@ -177,7 +177,7 @@ pub struct BinaryIndexedTree2D<M: Monoid> {
     bit: Vec<Vec<M::T>>,
     m: M,
 }
-#[snippet::entry("BinaryIndexedTree2D")]
+#[codesnip::entry("BinaryIndexedTree2D")]
 impl<M: Monoid> BinaryIndexedTree2D<M> {
     #[inline]
     pub fn new(h: usize, w: usize, m: M) -> Self {
@@ -277,7 +277,7 @@ fn test_binary_indexed_tree_2d() {
     }
 }
 
-#[snippet::entry("BinaryIndexedTree2D")]
+#[codesnip::entry("BinaryIndexedTree2D")]
 impl<G: Group> BinaryIndexedTree2D<G> {
     #[inline]
     /// 0-indexed [i1, i2) x [j1, j2)

@@ -1,4 +1,4 @@
-#[snippet::skip]
+#[codesnip::skip]
 use crate::tools::Xorshift;
 
 #[derive(Clone, Debug)]

@@ -1,13 +1,13 @@
 use crate::algebra::Monoid;
 
-#[snippet::entry("SegmentTree")]
+#[codesnip::entry("SegmentTree")]
 #[derive(Clone, Debug)]
 pub struct SegmentTree<M: Monoid> {
     n: usize,
     seg: Vec<M::T>,
     m: M,
 }
-#[snippet::entry("SegmentTree")]
+#[codesnip::entry("SegmentTree")]
 impl<M: Monoid> SegmentTree<M> {
     pub fn new(n: usize, m: M) -> Self {
         let n = 1 << format!("{:b}", n - 1).len();

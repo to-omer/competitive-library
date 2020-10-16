@@ -1,4 +1,4 @@
-#[snippet::skip]
+#[codesnip::skip]
 use crate::algebra::Monoid;
 
 pub trait Automaton {
