@@ -4,9 +4,10 @@ pub mod parse;
 pub use codesnip_attr::{entry, skip};
 
 use crate::{mapping::SnippetMapExt as _, parse::parse_files};
+use anyhow::Context as _;
 use codesnip_core::{Error::FileNotFound, Filter, SnippetMap};
-use serde::Serialize;
-use serde_json::{from_reader, to_writer};
+use serde_json::{from_reader, to_string};
+use std::io::Write as _;
 use std::{
     fs::File,
     io::stdout,
@@ -52,6 +53,10 @@ pub struct Config {
     /// Output file, default stdout.
     #[structopt(short, long, value_name = "FILE", parse(from_os_str))]
     pub output: Option<PathBuf>,
+
+    /// Optput queried code snippet.
+    #[structopt(long, value_name = "NAME")]
+    pub query: Option<String>,
 }
 
 impl Opt {
@@ -83,23 +88,28 @@ impl Config {
         }
 
         if self.save_cache.is_some() {
-            emit(&map, self.save_cache.as_ref())?;
+            emit(&to_string(&map)?, self.save_cache.as_ref())?;
         }
 
-        emit(&map.to_vscode(), self.output.as_ref())?;
+        let out = if let Some(name) = &self.query {
+            let link = map
+                .map
+                .get(name)
+                .with_context(|| format!("snippet `{}` not found", name))?;
+            map.query(name, link)
+        } else {
+            to_string(&map.to_vscode())?
+        };
+
+        emit(&out, self.output.as_ref())?;
         Ok(())
     }
 }
 
-fn emit<T: Serialize, P: AsRef<Path>>(value: &T, output: Option<P>) -> anyhow::Result<()> {
+fn emit<P: AsRef<Path>>(value: &str, output: Option<P>) -> anyhow::Result<()> {
     match output {
-        Some(file) => {
-            let f = File::create(file)?;
-            to_writer(f, value)?;
-        }
-        _ => {
-            to_writer(stdout().lock(), value)?;
-        }
+        Some(file) => File::create(file)?.write_all(value.as_bytes())?,
+        None => stdout().lock().write_all(value.as_bytes())?,
     }
     Ok(())
 }

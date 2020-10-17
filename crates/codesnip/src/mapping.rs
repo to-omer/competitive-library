@@ -1,4 +1,4 @@
-use codesnip_core::{rustfmt_exits, Filter, SnippetMap};
+use codesnip_core::{rustfmt_exits, Filter, LinkedSnippet, SnippetMap};
 use indicatif::{ProgressBar, ProgressStyle};
 use rayon::prelude::*;
 use serde::Serialize;
@@ -9,6 +9,7 @@ pub trait SnippetMapExt {
     fn collect_entries(&mut self, items: &[Item], filter: Filter);
     fn format_all(&mut self);
     fn to_vscode(&self) -> BTreeMap<String, VSCode>;
+    fn query(&self, name: &str, link: &LinkedSnippet) -> String;
 }
 
 #[derive(Serialize)]
@@ -66,16 +67,18 @@ impl SnippetMapExt for SnippetMap {
     fn to_vscode(&self) -> BTreeMap<String, VSCode> {
         let mut res: BTreeMap<&str, String> = BTreeMap::new();
         for (name, link) in self.map.iter() {
-            let mut used = BTreeSet::new();
-            used.insert(name.as_str());
-            let mut contents =
-                self.resolve_includes(used, link.includes.iter().map(|s| s.as_str()));
-            contents.push_str(link.contents.as_str());
-            res.insert(name.as_str(), contents);
+            res.insert(name.as_str(), self.query(name, link));
         }
         res.into_iter()
             .filter(|(k, _)| !k.starts_with('_'))
             .map(|(k, v)| (k.to_owned(), From::from((k.to_owned(), v))))
             .collect::<BTreeMap<_, _>>()
+    }
+    fn query(&self, name: &str, link: &LinkedSnippet) -> String {
+        let mut used = BTreeSet::new();
+        used.insert(name);
+        let mut contents = self.resolve_includes(used, link.includes.iter().map(|s| s.as_str()));
+        contents.push_str(link.contents.as_str());
+        contents
     }
 }
