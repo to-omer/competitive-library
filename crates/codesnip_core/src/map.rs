@@ -5,7 +5,7 @@ use std::collections::{BTreeSet, HashMap};
 use syn::{
     parse::Parse as _,
     visit::{self, Visit},
-    Attribute, Item,
+    Attribute, Item, ItemMod, Path,
 };
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -21,8 +21,8 @@ pub struct LinkedSnippet {
 
 #[derive(Debug, Copy, Clone)]
 pub struct Filter<'a, 'i> {
-    filter_attr: &'a [syn::Path],
-    filter_item: &'i [syn::Path],
+    filter_attr: &'a [Path],
+    filter_item: &'i [Path],
 }
 
 struct CollectEntries<'m, 'i, 'a> {
@@ -33,6 +33,14 @@ struct CollectEntries<'m, 'i, 'a> {
 impl SnippetMap {
     pub fn new() -> Self {
         Default::default()
+    }
+    fn get_mut(&mut self, name: &str) -> &mut LinkedSnippet {
+        if !self.map.contains_key(name) {
+            self.map.insert(name.to_string(), Default::default());
+        }
+        self.map
+            .get_mut(name)
+            .expect("HashMap is not working properly.")
     }
     pub fn extend_with_filter(&mut self, item: &Item, filter: Filter) {
         CollectEntries { map: self, filter }.visit_item(item);
@@ -65,7 +73,42 @@ impl SnippetMap {
     }
 }
 
+impl IntoIterator for SnippetMap {
+    type Item = (String, LinkedSnippet);
+    type IntoIter = <HashMap<String, LinkedSnippet> as IntoIterator>::IntoIter;
+    fn into_iter(self) -> Self::IntoIter {
+        self.map.into_iter()
+    }
+}
+
+impl Extend<(String, LinkedSnippet)> for SnippetMap {
+    fn extend<T: IntoIterator<Item = (String, LinkedSnippet)>>(&mut self, iter: T) {
+        for (name, link) in iter {
+            self.map.entry(name).or_default().append(link);
+        }
+    }
+}
+
 impl LinkedSnippet {
+    pub fn push_contents(&mut self, contents: &str) {
+        self.contents.push_str(contents);
+    }
+    pub fn push_item_with_filter(&mut self, item: &Item, filter: Filter) {
+        if let Some(item) = filter.modify_item(item.clone()) {
+            self.contents
+                .push_str(&item.into_token_stream().to_string());
+        }
+    }
+    pub fn push_include(&mut self, include: String) {
+        self.includes.insert(include);
+    }
+    pub fn push_includes(&mut self, includes: impl IntoIterator<Item = String>) {
+        self.includes.extend(includes);
+    }
+    pub fn append(&mut self, mut other: Self) {
+        self.contents.push_str(&other.contents);
+        self.includes.append(&mut other.includes);
+    }
     pub fn format(&mut self) -> bool {
         if let Some(formatted) = format_with_rustfmt(&self.contents) {
             self.contents = formatted;
@@ -77,33 +120,11 @@ impl LinkedSnippet {
 }
 
 impl<'a, 'i> Filter<'a, 'i> {
-    pub fn new(filter_attr: &'a [syn::Path], filter_item: &'i [syn::Path]) -> Self {
+    pub fn new(filter_attr: &'a [Path], filter_item: &'i [Path]) -> Self {
         Self {
             filter_attr,
             filter_item,
         }
-    }
-}
-
-impl CollectEntries<'_, '_, '_> {
-    fn get_mut(&mut self, name: &str) -> &mut LinkedSnippet {
-        if !self.map.map.contains_key(name) {
-            self.map.map.insert(name.to_string(), Default::default());
-        }
-        self.map
-            .map
-            .get_mut(name)
-            .expect("HashMap is not working properly.")
-    }
-    fn add_snippet(&mut self, name: &str, item: &Item) {
-        if let Some(item) = self.filter.modify_item(item.clone()) {
-            self.get_mut(name)
-                .contents
-                .push_str(&item.to_token_stream().to_string());
-        }
-    }
-    fn add_include(&mut self, name: &str, include: String) {
-        self.get_mut(name).includes.insert(include);
     }
 }
 
@@ -116,27 +137,21 @@ impl Visit<'_> for CollectEntries<'_, '_, '_> {
                 .filter_map(|attr| attr.parse_args_empty_with(EntryArgs::parse).ok())
                 .filter_map(|args| args.try_to_entry(item).ok())
             {
-                if entry.inline {
-                    if let Item::Mod(syn::ItemMod {
-                        attrs,
-                        content: Some((_, items)),
-                        ..
-                    }) = item
-                    {
-                        if !self.filter.is_skip_item(attrs) {
-                            for item in items {
-                                self.add_snippet(&entry.name, item);
+                let link = self.map.get_mut(&entry.name);
+                let filter = self.filter;
+                match (entry.inline, item) {
+                    (true, Item::Mod(ItemMod { attrs, content, .. })) => {
+                        if !filter.is_skip_item(attrs) {
+                            if let Some((_, items)) = content {
+                                for item in items {
+                                    link.push_item_with_filter(item, filter);
+                                }
                             }
                         }
-                    } else {
-                        self.add_snippet(&entry.name, item);
                     }
-                } else {
-                    self.add_snippet(&entry.name, item);
+                    _ => link.push_item_with_filter(item, filter),
                 }
-                for include in entry.include {
-                    self.add_include(&entry.name, include);
-                }
+                link.push_includes(entry.include);
             }
         }
         visit::visit_item(self, item);
@@ -167,7 +182,7 @@ impl Filter<'_, '_> {
             self.filter_attributes(attrs);
         }
 
-        if let Item::Mod(syn::ItemMod {
+        if let Item::Mod(ItemMod {
             content: Some((_, items)),
             ..
         }) = &mut item
