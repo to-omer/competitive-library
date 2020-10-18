@@ -1,4 +1,6 @@
-use competitive::tools::Scanner;
+#![allow(dead_code)]
+
+use crate::tools::Scanner;
 
 #[codesnip::entry(include("scanner", "_zero_one", "minmax"))]
 fn main() {

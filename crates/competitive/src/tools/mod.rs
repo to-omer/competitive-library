@@ -7,6 +7,7 @@ mod minmax;
 mod counter;
 #[cfg_attr(nightly, codesnip::entry("SimuratedAnnealing", inline))]
 mod heuristics;
+mod main;
 mod output;
 #[cfg_attr(nightly, codesnip::entry("Xorshift", inline))]
 mod random;
