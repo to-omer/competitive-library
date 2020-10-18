@@ -1,6 +1,6 @@
 use super::DirectedSparseGraph;
 
-#[cargo_snippet::snippet("StronglyConnectedComponent")]
+#[codesnip::entry("StronglyConnectedComponent")]
 #[derive(Debug, Clone)]
 pub struct StronglyConnectedComponent<'a> {
     graph: &'a DirectedSparseGraph,
@@ -10,14 +10,14 @@ pub struct StronglyConnectedComponent<'a> {
     ord: Vec<usize>,
     comp: Vec<usize>,
 }
-#[cargo_snippet::snippet("StronglyConnectedComponent")]
+#[codesnip::entry("StronglyConnectedComponent")]
 impl std::ops::Index<usize> for StronglyConnectedComponent<'_> {
     type Output = usize;
     fn index(&self, index: usize) -> &Self::Output {
         &self.comp[index]
     }
 }
-#[cargo_snippet::snippet("StronglyConnectedComponent")]
+#[codesnip::entry("StronglyConnectedComponent")]
 impl<'a> StronglyConnectedComponent<'a> {
     pub fn new(graph: &'a DirectedSparseGraph) -> Self {
         let mut now_ord = 0;
@@ -40,7 +40,7 @@ impl<'a> StronglyConnectedComponent<'a> {
         self_
     }
 }
-#[cargo_snippet::snippet("StronglyConnectedComponent")]
+#[codesnip::entry("StronglyConnectedComponent")]
 impl StronglyConnectedComponent<'_> {
     fn dfs(&mut self, u: usize, now_ord: &mut usize) {
         self.low[u] = *now_ord;
@@ -104,13 +104,13 @@ impl StronglyConnectedComponent<'_> {
     }
 }
 
-#[cargo_snippet::snippet("TwoSatisfiability")]
+#[codesnip::entry("TwoSatisfiability")]
 #[derive(Debug, Clone)]
 pub struct TwoSatisfiability {
     vsize: usize,
     edges: Vec<(usize, usize)>,
 }
-#[cargo_snippet::snippet("TwoSatisfiability")]
+#[codesnip::entry("TwoSatisfiability")]
 impl TwoSatisfiability {
     pub fn new(vsize: usize) -> Self {
         Self {

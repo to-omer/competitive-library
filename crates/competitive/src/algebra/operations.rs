@@ -4,16 +4,16 @@ use super::magma::*;
 use crate::num::{One, Zero};
 
 /// binary operation to select larger element
-#[cargo_snippet::snippet("MaxOperation")]
+#[codesnip::entry("MaxOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MaxOperation<T: Clone + Ord + MinimumBounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("MaxOperation")]
+#[codesnip::entry("MaxOperation")]
 pub trait MinimumBounded {
     fn minimum() -> Self;
 }
-#[cargo_snippet::snippet("MaxOperation")]
+#[codesnip::entry("MaxOperation")]
 mod max_operation_impl {
     use super::*;
     macro_rules! impl_minimum_with_min {
@@ -86,16 +86,16 @@ mod max_operation_impl {
 }
 
 /// binary operation to select smaller element
-#[cargo_snippet::snippet("MinOperation")]
+#[codesnip::entry("MinOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MinOperation<T: Clone + Ord + MaximumBounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("MinOperation")]
+#[codesnip::entry("MinOperation")]
 pub trait MaximumBounded {
     fn maximum() -> Self;
 }
-#[cargo_snippet::snippet("MinOperation")]
+#[codesnip::entry("MinOperation")]
 mod min_operation_impl {
     use super::*;
     macro_rules! impl_maximum_with_max {
@@ -168,12 +168,12 @@ mod min_operation_impl {
 }
 
 /// retain the first element
-#[cargo_snippet::snippet("FirstOperation")]
+#[codesnip::entry("FirstOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct FirstOperation<T: Clone + PartialEq> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("FirstOperation")]
+#[codesnip::entry("FirstOperation")]
 mod first_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> FirstOperation<T> {
@@ -201,12 +201,12 @@ mod first_operation_impl {
 }
 
 /// retain the last element
-#[cargo_snippet::snippet("LastOperation")]
+#[codesnip::entry("LastOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LastOperation<T: Clone + PartialEq> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("LastOperation")]
+#[codesnip::entry("LastOperation")]
 mod last_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq> LastOperation<T> {
@@ -234,12 +234,12 @@ mod last_operation_impl {
 }
 
 /// $+$
-#[cargo_snippet::snippet("AdditiveOperation")]
+#[codesnip::entry("AdditiveOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct AdditiveOperation<T: Copy + Zero + std::ops::Add<Output = T>> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("AdditiveOperation")]
+#[codesnip::entry("AdditiveOperation")]
 mod additive_operation_impl {
     use super::*;
     use std::ops::{Add, Neg, Sub};
@@ -280,12 +280,12 @@ mod additive_operation_impl {
 }
 
 /// $\times$
-#[cargo_snippet::snippet("MultiplicativeOperation")]
+#[codesnip::entry("MultiplicativeOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MultiplicativeOperation<T: Copy + One + std::ops::Mul<Output = T>> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("MultiplicativeOperation")]
+#[codesnip::entry("MultiplicativeOperation")]
 mod multiplicative_operation_impl {
     use super::*;
     use std::ops::{Div, Mul};
@@ -324,14 +324,14 @@ mod multiplicative_operation_impl {
 }
 
 /// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
-#[cargo_snippet::snippet("LinearOperation")]
+#[codesnip::entry("LinearOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearOperation<
     T: Copy + PartialEq + Zero + std::ops::Add<Output = T> + One + std::ops::Mul<Output = T>,
 > {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("LinearOperation")]
+#[codesnip::entry("LinearOperation")]
 mod linear_operation_impl {
     use super::*;
     use std::ops::{Add, Mul};
@@ -359,16 +359,16 @@ mod linear_operation_impl {
 }
 
 /// &
-#[cargo_snippet::snippet("BitAndOperation")]
+#[codesnip::entry("BitAndOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitAndOperation<T: Copy + PartialEq + BitAndIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("BitAndOperation")]
+#[codesnip::entry("BitAndOperation")]
 pub trait BitAndIdentity: Sized + std::ops::BitAnd<Output = Self> {
     fn all_one() -> Self;
 }
-#[cargo_snippet::snippet("BitAndOperation")]
+#[codesnip::entry("BitAndOperation")]
 mod bitand_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
@@ -427,16 +427,16 @@ mod bitand_operation_impl {
 }
 
 /// |
-#[cargo_snippet::snippet("BitOrOperation")]
+#[codesnip::entry("BitOrOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("BitOrOperation")]
+#[codesnip::entry("BitOrOperation")]
 pub trait BitOrIdentity: Sized + std::ops::BitOr<Output = Self> {
     fn all_zero() -> Self;
 }
-#[cargo_snippet::snippet("BitOrOperation")]
+#[codesnip::entry("BitOrOperation")]
 mod bitor_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
@@ -495,16 +495,16 @@ mod bitor_operation_impl {
 }
 
 /// ^
-#[cargo_snippet::snippet("BitXorOperation")]
+#[codesnip::entry("BitXorOperation")]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitXorOperation<T: Copy + PartialEq + BitXorIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("BitXorOperation")]
+#[codesnip::entry("BitXorOperation")]
 pub trait BitXorIdentity: Sized + std::ops::BitXor<Output = Self> {
     fn xor_zero() -> Self;
 }
-#[cargo_snippet::snippet("BitXorOperation")]
+#[codesnip::entry("BitXorOperation")]
 mod bitxor_operation_impl {
     use super::*;
     #[macro_export(local_inner_macros)]
@@ -549,13 +549,13 @@ mod bitxor_operation_impl {
     }
 }
 
-#[cargo_snippet::snippet("MonoidalOperation")]
+#[codesnip::entry("MonoidalOperation")]
 #[derive(Clone, Debug)]
 pub struct MonoidalOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     e: T,
     op: F,
 }
-#[cargo_snippet::snippet("MonoidalOperation")]
+#[codesnip::entry("MonoidalOperation")]
 mod monoidal_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> MonoidalOperation<T, F> {
@@ -580,14 +580,14 @@ mod monoidal_operation_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Commutative for MonoidalOperation<T, F> {}
 }
 
-#[cargo_snippet::snippet("GroupOperation")]
+#[codesnip::entry("GroupOperation")]
 #[derive(Clone, Debug)]
 pub struct GroupOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> {
     e: T,
     op: F,
     inv: G,
 }
-#[cargo_snippet::snippet("GroupOperation")]
+#[codesnip::entry("GroupOperation")]
 mod group_operation_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> GroupOperation<T, F, G> {
@@ -626,13 +626,13 @@ mod group_operation_impl {
     }
 }
 
-#[cargo_snippet::snippet("AssocoativeOperator")]
+#[codesnip::entry("AssocoativeOperator")]
 #[derive(Clone, Debug)]
 pub struct AssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("AssocoativeOperator")]
+#[codesnip::entry("AssocoativeOperator")]
 mod assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Magma for AssocoativeOperator<T, F> {
@@ -645,13 +645,13 @@ mod assocoative_operator_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Associative for AssocoativeOperator<T, F> {}
 }
 
-#[cargo_snippet::snippet("AbsorbedAssocoativeOperator")]
+#[codesnip::entry("AbsorbedAssocoativeOperator")]
 #[derive(Clone, Debug)]
 pub struct AbsorbedAssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[cargo_snippet::snippet("AbsorbedAssocoativeOperator")]
+#[codesnip::entry("AbsorbedAssocoativeOperator")]
 mod absorbed_assocoative_operator_impl {
     use super::*;
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> AbsorbedAssocoativeOperator<T, F> {
@@ -684,13 +684,13 @@ mod absorbed_assocoative_operator_impl {
 }
 
 /// $(M_1, M_2)$
-#[cargo_snippet::snippet("CartesianOperation")]
+#[codesnip::entry("CartesianOperation")]
 #[derive(Clone, Debug)]
 pub struct CartesianOperation<M1, M2> {
     m1: M1,
     m2: M2,
 }
-#[cargo_snippet::snippet("CartesianOperation")]
+#[codesnip::entry("CartesianOperation")]
 mod cartesian_operation_impl {
     use super::*;
     impl<M1, M2> CartesianOperation<M1, M2> {
@@ -721,12 +721,12 @@ mod cartesian_operation_impl {
     }
 }
 
-#[cargo_snippet::snippet("CountingOperation")]
+#[codesnip::entry("CountingOperation")]
 #[derive(Clone, Debug)]
 pub struct CountingOperation<M> {
     m: M,
 }
-#[cargo_snippet::snippet("CountingOperation")]
+#[codesnip::entry("CountingOperation")]
 mod counting_operation_impl {
     use super::*;
     impl<M> CountingOperation<M> {
@@ -763,12 +763,12 @@ mod counting_operation_impl {
     impl<M: Idempotent> Idempotent for CountingOperation<M> {}
 }
 
-#[cargo_snippet::snippet("ReverseOperation")]
+#[codesnip::entry("ReverseOperation")]
 #[derive(Clone, Debug)]
 pub struct ReverseOperation<M> {
     m: M,
 }
-#[cargo_snippet::snippet("ReverseOperation")]
+#[codesnip::entry("ReverseOperation")]
 mod reverse_operation_impl {
     use super::*;
     impl<M> ReverseOperation<M> {

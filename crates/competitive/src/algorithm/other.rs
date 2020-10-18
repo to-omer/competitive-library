@@ -1,4 +1,4 @@
-#[cargo_snippet::snippet]
+#[codesnip::entry]
 /// return: [(start, length)]
 pub fn run_length_encoding<T: PartialEq>(v: &[T]) -> Vec<(usize, usize)> {
     let mut res = Vec::new();
@@ -14,7 +14,7 @@ pub fn run_length_encoding<T: PartialEq>(v: &[T]) -> Vec<(usize, usize)> {
     res
 }
 
-#[cargo_snippet::snippet]
+#[codesnip::entry]
 /// $P_0 =$ `init`, $P_{i+1} = f(P_i)$
 ///
 /// Return (f, g) then P = f, g, g, ...

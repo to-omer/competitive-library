@@ -1,13 +1,12 @@
+#[codesnip::skip]
 use crate::tools::Xorshift;
 
-#[cargo_snippet::snippet("RollingHash")]
 #[derive(Clone, Debug)]
 pub struct RollingHash {
     base: u64,
     hash: Vec<u64>,
     pow: Vec<u64>,
 }
-#[cargo_snippet::snippet("RollingHash")]
 impl RollingHash {
     const MASK30: u64 = (1 << 30) - 1;
     const MASK31: u64 = (1 << 31) - 1;
@@ -66,13 +65,10 @@ impl RollingHash {
     }
 }
 
-#[cargo_snippet::snippet("RollingHash")]
 #[derive(Clone, Debug)]
 pub struct MultipleRollingHash {
     rh: Vec<RollingHash>,
 }
-#[cargo_snippet::snippet("RollingHash")]
-#[cargo_snippet::snippet(include = "Xorshift")]
 impl MultipleRollingHash {
     pub fn new(v: &[u64], bases: &[u64]) -> Self {
         let rh = bases

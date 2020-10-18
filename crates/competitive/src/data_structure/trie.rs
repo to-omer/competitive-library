@@ -1,10 +1,10 @@
-#[cargo_snippet::snippet("Trie")]
+#[codesnip::entry("Trie")]
 pub struct Trie {
     child: Vec<Vec<usize>>,
     accept: Vec<usize>,
     char_size: usize,
 }
-#[cargo_snippet::snippet("Trie")]
+#[codesnip::entry("Trie")]
 impl Trie {
     pub fn new(char_size: usize) -> Self {
         Self {

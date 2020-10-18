@@ -1,6 +1,6 @@
+#[codesnip::skip]
 use crate::algebra::Monoid;
 
-#[cargo_snippet::snippet("automaton")]
 pub trait Automaton {
     type Alphabet;
     type State;
@@ -15,7 +15,6 @@ pub trait Automaton {
     fn accept(&self, state: &Self::State) -> bool;
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub fn automaton_dp<A, M>(
     dfa: A,
     sigma: impl Iterator<Item = A::Alphabet> + Clone,
@@ -55,9 +54,7 @@ where
     acc
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub struct IntersectionAutomaton<X: Automaton, Y: Automaton>(X, Y);
-#[cargo_snippet::snippet("automaton")]
 impl<A, X, Y> Automaton for IntersectionAutomaton<X, Y>
 where
     X: Automaton<Alphabet = A>,
@@ -84,9 +81,7 @@ where
     }
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub struct UnionAutomaton<X: Automaton, Y: Automaton>(X, Y);
-#[cargo_snippet::snippet("automaton")]
 impl<A, X, Y> Automaton for UnionAutomaton<X, Y>
 where
     X: Automaton<Alphabet = A>,
@@ -113,9 +108,7 @@ where
     }
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub struct ProductAutomaton<X: Automaton, Y: Automaton>(X, Y);
-#[cargo_snippet::snippet("automaton")]
 impl<X: Automaton, Y: Automaton> Automaton for ProductAutomaton<X, Y> {
     type Alphabet = (X::Alphabet, Y::Alphabet);
     type State = (X::State, Y::State);
@@ -141,18 +134,15 @@ impl<X: Automaton, Y: Automaton> Automaton for ProductAutomaton<X, Y> {
     }
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub struct LessThanAutomaton<'a, T: Ord> {
     buf: &'a [T],
     eq: bool,
 }
-#[cargo_snippet::snippet("automaton")]
 impl<'a, T: Ord> LessThanAutomaton<'a, T> {
     pub fn new(buf: &'a [T], eq: bool) -> Self {
         Self { buf, eq }
     }
 }
-#[cargo_snippet::snippet("automaton")]
 impl<T: Ord> Automaton for LessThanAutomaton<'_, T> {
     type Alphabet = T;
     type State = (usize, bool);
@@ -178,18 +168,15 @@ impl<T: Ord> Automaton for LessThanAutomaton<'_, T> {
     }
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub struct GreaterThanAutomaton<'a, T: Ord> {
     buf: &'a [T],
     eq: bool,
 }
-#[cargo_snippet::snippet("automaton")]
 impl<'a, T: Ord> GreaterThanAutomaton<'a, T> {
     pub fn new(buf: &'a [T], eq: bool) -> Self {
         Self { buf, eq }
     }
 }
-#[cargo_snippet::snippet("automaton")]
 impl<T: Ord> Automaton for GreaterThanAutomaton<'_, T> {
     type Alphabet = T;
     type State = (usize, bool);
@@ -215,9 +202,7 @@ impl<T: Ord> Automaton for GreaterThanAutomaton<'_, T> {
     }
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub struct ContainAutomaton<'a, T: Eq>(&'a T);
-#[cargo_snippet::snippet("automaton")]
 impl<'a, T: Eq> Automaton for ContainAutomaton<'a, T> {
     type Alphabet = T;
     type State = bool;
@@ -237,9 +222,7 @@ impl<'a, T: Eq> Automaton for ContainAutomaton<'a, T> {
     }
 }
 
-#[cargo_snippet::snippet("automaton")]
 pub struct ContainCounterAutomaton<'a, T: Eq>(&'a T);
-#[cargo_snippet::snippet("automaton")]
 impl<'a, T: Eq> Automaton for ContainCounterAutomaton<'a, T> {
     type Alphabet = T;
     type State = usize;
@@ -260,22 +243,18 @@ impl<'a, T: Eq> Automaton for ContainCounterAutomaton<'a, T> {
     }
 }
 
-#[cargo_snippet::snippet("automaton")]
 #[derive(Debug, Clone)]
 pub struct AlwaysAcceptingAutomaton<A>(std::marker::PhantomData<fn() -> A>);
-#[cargo_snippet::snippet("automaton")]
 impl<A> AlwaysAcceptingAutomaton<A> {
     pub fn new() -> Self {
         Default::default()
     }
 }
-#[cargo_snippet::snippet("automaton")]
 impl<A> Default for AlwaysAcceptingAutomaton<A> {
     fn default() -> Self {
         Self(std::marker::PhantomData)
     }
 }
-#[cargo_snippet::snippet("automaton")]
 impl<A> Automaton for AlwaysAcceptingAutomaton<A> {
     type Alphabet = A;
     type State = ();

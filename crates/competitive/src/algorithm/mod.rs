@@ -1,6 +1,7 @@
 //! algorithm
 
 mod combinations;
+#[cfg_attr(nightly, codesnip::entry("ConvexHullTrick", inline))]
 mod convex_hull_trick;
 mod mo;
 mod other;

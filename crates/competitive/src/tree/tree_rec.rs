@@ -1,11 +1,11 @@
 use crate::graph::UndirectedSparseGraph;
 
-#[cargo_snippet::snippet("TreeRec")]
+#[codesnip::entry("TreeRec")]
 #[derive(Debug, Clone)]
 pub struct TreeRec {
     pub n: usize,
 }
-#[cargo_snippet::snippet("TreeRec")]
+#[codesnip::entry("TreeRec")]
 impl TreeRec {
     pub fn new(n: usize) -> Self {
         Self { n }

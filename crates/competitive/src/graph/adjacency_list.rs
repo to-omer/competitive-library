@@ -1,8 +1,8 @@
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[cargo_snippet::snippet("AdjacencyListGraph")]
+#[codesnip::entry("AdjacencyListGraph")]
 pub use adjacency_list_graph::{AdjacencyListGraph, AdjacencyListGraphScanner};
-#[cargo_snippet::snippet("AdjacencyListGraph")]
+#[codesnip::entry("AdjacencyListGraph")]
 pub mod adjacency_list_graph {
     use super::*;
     #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]

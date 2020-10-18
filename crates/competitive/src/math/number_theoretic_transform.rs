@@ -1,12 +1,10 @@
+#[codesnip::skip]
 use crate::num::{modulus, MInt, Modulus, One, Zero};
 
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 pub struct NumberTheoreticTransform<M: Modulus>(std::marker::PhantomData<fn() -> M>);
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 pub trait NTTModulus: Modulus {
     fn primitive_root() -> u32;
 }
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 mod number_theoretic_transform_impls {
     use super::*;
     impl NTTModulus for modulus::Modulo998244353 {
@@ -38,9 +36,7 @@ mod number_theoretic_transform_impls {
     make_ntt_modulus!(Modulo1811939329, 1_811_939_329, 13); // 26
     make_ntt_modulus!(Modulo2013265921, 2_013_265_921, 31); // 27
 }
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 pub type NTT998244353 = NumberTheoreticTransform<modulus::Modulo998244353>;
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 impl<M: NTTModulus> NumberTheoreticTransform<M> {
     pub fn convert<T: Into<MInt<M>>, I: IntoIterator<Item = T>>(iter: I) -> Vec<MInt<M>> {
         iter.into_iter().map(|x| x.into()).collect()
@@ -118,7 +114,6 @@ fn test_ntt998244353() {
     assert_eq!(c, d);
 }
 
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 /// max(a.len(), b.len()) * max(a) * max(b) < 3.64 * 10^18
 pub fn convolve2(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<u64> {
     let m = a.len() + b.len() - 1;
@@ -158,7 +153,6 @@ fn test_convolve2() {
     assert_eq!(c, d);
 }
 
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
 pub fn convolve3<M: Modulus>(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<MInt<M>> {
     let m = a.len() + b.len() - 1;
@@ -208,7 +202,6 @@ fn test_convolve3() {
     assert_eq!(c, d);
 }
 
-#[cargo_snippet::snippet("NumberTheoreticTransform")]
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
 pub fn convolve3_128(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<u128> {
     let m = a.len() + b.len() - 1;
@@ -257,6 +250,7 @@ fn test_convolve3_128() {
 }
 
 // #[test]
+#[codesnip::skip]
 #[allow(dead_code)]
 fn find_proth() {
     use crate::math::{divisors, prime_factors_rho};

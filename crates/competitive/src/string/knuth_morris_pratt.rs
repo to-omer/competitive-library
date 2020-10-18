@@ -1,10 +1,8 @@
-#[cargo_snippet::snippet("KnuthMorrisPratt")]
 #[derive(Clone, Debug)]
 pub struct KnuthMorrisPratt<T: Eq> {
     pattern: Vec<T>,
     table: Vec<usize>,
 }
-#[cargo_snippet::snippet("KnuthMorrisPratt")]
 impl<T: Eq> KnuthMorrisPratt<T> {
     pub fn new(pattern: Vec<T>) -> Self {
         let mut table = vec![0; pattern.len() + 1];

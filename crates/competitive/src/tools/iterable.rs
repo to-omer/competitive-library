@@ -1,4 +1,4 @@
-#[cargo_snippet::snippet("comprehension")]
+#[codesnip::entry]
 #[macro_export]
 macro_rules! comprehension {
     ($it:expr; @$type:ty) => {
@@ -34,7 +34,7 @@ macro_rules! comprehension {
 }
 
 #[test]
-fn test_comprehensio() {
+fn test_comprehension() {
     use std::collections::{HashMap, HashSet};
     const N: usize = 100;
     assert_eq!(

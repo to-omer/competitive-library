@@ -1,11 +1,9 @@
-#[cargo_snippet::snippet("SuffixArray")]
 #[derive(Clone, Debug)]
 pub struct SuffixArray<T> {
     pat: Vec<T>,
     sa: Vec<usize>,
     rank: Vec<usize>,
 }
-#[cargo_snippet::snippet("SuffixArray")]
 impl<T: Ord> SuffixArray<T> {
     pub fn new(pat: Vec<T>) -> Self {
         let n = pat.len();
@@ -54,7 +52,6 @@ impl<T: Ord> SuffixArray<T> {
         lcp
     }
 }
-#[cargo_snippet::snippet("SuffixArray")]
 impl<T> std::ops::Index<usize> for SuffixArray<T> {
     type Output = usize;
     fn index(&self, index: usize) -> &Self::Output {

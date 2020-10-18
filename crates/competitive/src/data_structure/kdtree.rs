@@ -1,8 +1,8 @@
-#[cargo_snippet::snippet("Static2DTree")]
+#[codesnip::entry("Static2DTree")]
 pub struct Static2DTree<T: Ord, U: Ord, V> {
     data: Vec<(T, U, V)>,
 }
-#[cargo_snippet::snippet("Static2DTree")]
+#[codesnip::entry("Static2DTree")]
 impl<T: Ord, U: Ord, V> Static2DTree<T, U, V> {
     pub fn new(data: impl IntoIterator<Item = (T, U, V)>) -> Self {
         let mut data: Vec<_> = data.into_iter().collect();

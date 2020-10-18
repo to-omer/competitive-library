@@ -1,9 +1,6 @@
 use competitive::tools::Scanner;
 
-#[cargo_snippet::snippet]
-#[cargo_snippet::snippet(include = "scanner")]
-#[cargo_snippet::snippet(include = "zero_one")]
-#[cargo_snippet::snippet(include = "minmax")]
+#[codesnip::entry(include("scanner", "_zero_one", "minmax"))]
 fn main() {
     #![allow(unused_imports, unused_macros)]
     use std::io::{stdin, stdout, BufWriter, Read as _, Write as _};

@@ -1,6 +1,6 @@
+#[codesnip::skip]
 use crate::num::{One, Zero};
 
-#[cargo_snippet::snippet("float")]
 pub trait Float:
     Copy
     + Default
@@ -103,7 +103,6 @@ pub trait Float:
     const LN_10: Self;
 }
 
-#[cargo_snippet::snippet("float")]
 macro_rules! primitive_float_impls {
     ($({$t:ident $i:ident $u:ident $e:expr})*) => {$(
         impl Float for $t {
@@ -200,10 +199,8 @@ macro_rules! primitive_float_impls {
         })*
     };
 }
-#[cargo_snippet::snippet("float")]
 primitive_float_impls!({f32 i32 u32 31} {f64 i64 u64 63});
 
-#[cargo_snippet::snippet("float")]
 macro_rules! ord_float_impls {
     ($({$t:ident $n:ident})*) => {$(
         #[derive(Debug, Copy, Clone, PartialEq, Default)]
@@ -370,5 +367,4 @@ macro_rules! ord_float_impls {
         })*
     };
 }
-#[cargo_snippet::snippet("float")]
 ord_float_impls!({f32 Float32} {f64 Float64});

@@ -15,23 +15,23 @@ pub fn read_all_unchecked(reader: &mut impl std::io::Read) -> String {
     unsafe { String::from_utf8_unchecked(buf) }
 }
 
-#[cargo_snippet::snippet("scanner")]
+#[codesnip::entry("scanner")]
 pub trait IterScan: Sized {
     type Output;
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output>;
 }
-#[cargo_snippet::snippet("scanner")]
+#[codesnip::entry("scanner")]
 pub trait MarkedIterScan: Sized {
     type Output;
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
 }
-#[cargo_snippet::snippet("scanner")]
+#[codesnip::entry("scanner")]
 #[derive(Clone, Debug)]
 pub struct Scanner<'a> {
     iter: std::str::SplitAsciiWhitespace<'a>,
 }
 
-#[cargo_snippet::snippet("scanner")]
+#[codesnip::entry("scanner")]
 mod scanner_impls {
     use super::*;
     impl<'a> Scanner<'a> {
@@ -113,7 +113,7 @@ mod scanner_impls {
     }
 }
 
-#[cargo_snippet::snippet("scanner")]
+#[codesnip::entry("scanner")]
 pub mod marker {
     use super::*;
     use std::{iter::FromIterator, marker::PhantomData};

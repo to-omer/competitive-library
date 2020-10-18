@@ -1,7 +1,12 @@
+#[cfg_attr(nightly, codesnip::entry("Complex", inline))]
 mod complex;
+#[cfg_attr(nightly, codesnip::entry(inline))]
 mod float;
+#[cfg_attr(nightly, codesnip::entry("MInt", inline))]
 mod mint;
+#[cfg_attr(nightly, codesnip::entry("QuadDouble", inline))]
 mod quad_double;
+#[cfg_attr(nightly, codesnip::entry("_zero_one", inline))]
 mod zero_one;
 
 pub use complex::Complex;

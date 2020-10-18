@@ -1,6 +1,6 @@
+#[codesnip::skip]
 use crate::tools::Xorshift;
 
-#[cargo_snippet::snippet("SimuratedAnnealing")]
 #[derive(Debug)]
 pub struct SimuratedAnnealing {
     pub iter_count: usize,
@@ -10,7 +10,6 @@ pub struct SimuratedAnnealing {
     pub log_table: Vec<f64>,
     pub rand: Xorshift,
 }
-#[cargo_snippet::snippet("SimuratedAnnealing")]
 impl Default for SimuratedAnnealing {
     fn default() -> Self {
         let now = std::time::Instant::now();
@@ -27,7 +26,6 @@ impl Default for SimuratedAnnealing {
         }
     }
 }
-#[cargo_snippet::snippet("SimuratedAnnealing")]
 impl SimuratedAnnealing {
     pub const IS_MAXIMIZE: bool = true;
     pub const START_TEMP: f64 = 3e3;

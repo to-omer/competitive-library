@@ -1,7 +1,7 @@
 //! binary / ternary search
 
 /// binary search helper
-#[cargo_snippet::snippet("binary_search")]
+#[codesnip::entry("binary_search")]
 pub trait Bisect: Copy {
     /// return between two elements
     fn halve(self, other: Self) -> Self;
@@ -9,7 +9,7 @@ pub trait Bisect: Copy {
     fn section_end(self, other: Self) -> bool;
 }
 
-#[cargo_snippet::snippet("binary_search")]
+#[codesnip::entry("binary_search")]
 mod bisect_impl {
     use super::*;
     macro_rules! impl_bisect_unsigned {
@@ -62,7 +62,7 @@ mod bisect_impl {
     impl_bisect_float!(f32 f64);
 }
 
-#[cargo_snippet::snippet("binary_search")]
+#[codesnip::entry("binary_search")]
 /// binary search for monotone segment
 ///
 /// if `ok < err` then search [ok, err) where t(`ok`), t, t, .... t, t(`ret`), f,  ... f, f, f, `err`
@@ -83,7 +83,7 @@ where
     ok
 }
 
-#[cargo_snippet::snippet("binary_search")]
+#[codesnip::entry("binary_search")]
 /// binary search for sorted slice
 pub trait SliceBisectExt<T: Bisect + Ord> {
     /// Returns the first index with elements greater than or equal to x.
@@ -93,7 +93,7 @@ pub trait SliceBisectExt<T: Bisect + Ord> {
     /// if not found, returns `len()`.
     fn upper_bound(&self, x: T) -> usize;
 }
-#[cargo_snippet::snippet("binary_search")]
+#[codesnip::entry("binary_search")]
 impl<T: Bisect + Ord> SliceBisectExt<T> for [T] {
     fn lower_bound(&self, x: T) -> usize {
         binary_search(|i| self[i as usize] >= x, self.len() as i64, -1) as usize
@@ -103,7 +103,7 @@ impl<T: Bisect + Ord> SliceBisectExt<T> for [T] {
     }
 }
 
-#[cargo_snippet::snippet("binary_search")]
+#[codesnip::entry("binary_search")]
 /// Count the number of elements that meet the condition in `range`.
 pub fn count_monotone<T, R>(mut f: impl FnMut(T) -> bool, mut range: R) -> usize
 where
@@ -193,7 +193,7 @@ mod tests {
     }
 }
 
-#[cargo_snippet::snippet("ternary_search")]
+#[codesnip::entry("ternary_search")]
 /// ternary search helper
 pub trait Trisect: Copy {
     /// Divide into 3 sections
@@ -201,7 +201,7 @@ pub trait Trisect: Copy {
     /// the end condition of ternary search
     fn section_end(self, other: Self) -> bool;
 }
-#[cargo_snippet::snippet("ternary_search")]
+#[codesnip::entry("ternary_search")]
 mod trisect_impl {
     use super::*;
     macro_rules! impl_trisect_unsigned {
@@ -248,7 +248,7 @@ mod trisect_impl {
     impl_trisect_signed!(i8 i16 i32 i64 isize);
     impl_trisect_float!(f32 f64);
 }
-#[cargo_snippet::snippet("ternary_search")]
+#[codesnip::entry("ternary_search")]
 /// like `(left..right).min_by_key(f)`
 pub fn ternary_search<T, U>(mut f: impl FnMut(T) -> U, mut left: T, mut right: T) -> T
 where

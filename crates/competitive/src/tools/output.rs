@@ -1,4 +1,4 @@
-#[cargo_snippet::snippet]
+#[codesnip::entry]
 pub fn echo<T: std::fmt::Display>(
     writer: &mut impl std::io::Write,
     iter: impl IntoIterator<Item = T>,

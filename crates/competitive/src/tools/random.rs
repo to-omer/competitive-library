@@ -1,9 +1,7 @@
-#[cargo_snippet::snippet("Xorshift")]
 #[derive(Clone, Debug)]
 pub struct Xorshift {
     y: u64,
 }
-#[cargo_snippet::snippet("Xorshift")]
 impl Xorshift {
     pub fn new(seed: u64) -> Self {
         Xorshift { y: seed }
@@ -44,7 +42,6 @@ impl Xorshift {
         self.randf() < p
     }
 }
-#[cargo_snippet::snippet("Xorshift")]
 impl Default for Xorshift {
     fn default() -> Self {
         Xorshift::new(0x2b99_2ddf_a232_49d6)

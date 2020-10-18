@@ -52,17 +52,17 @@ jobs:
       env:
         RUST_BACKTRACE: full
 
-    - name: Setup cargo-snippet
+    - name: cargo-install codesnip
       uses: actions-rs/cargo@v1
       with:
         command: install
-        args: cargo-snippet --features=binaries
+        args: --path crates/codesnip
 
-    - name: cargo-snippet
+    - name: Snippet
       uses: actions-rs/cargo@v1
       with:
-        command: snippet
-        args: -t vscode crates/competitive
+        command: codesnip
+        args: crates/competitive/src/lib.rs crates/competitive/src/main.rs --filter-item=test --cfg=nightly
 
 
   verify:
