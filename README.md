@@ -6,7 +6,7 @@
 competitive programming library
 
 ## Verify
-[here](crates/verify/README.md)
+[here](crates/tools/verify/README.md)
 
 ## Doc
 generate documentation with verify results
@@ -18,6 +18,6 @@ cp -r util/gh-pages/* target/doc
 ## Snippet
 generate snippet for vscode
 ```sh
-cargo install --path crates/snippet
+cargo install --path crates/tools/codesnip
 cargo codesnip crates/competitive/src/lib.rs crates/competitive/src/main.rs --filter-item=test --cfg=nightly --output=.vscode/rust.code-snippets
 ```
