@@ -58,19 +58,20 @@ Lit:
 ### Usage
 ```
 USAGE:
-    cargo codesnip build [OPTIONS] [--] [FILE]...
+    cargo codesnip [OPTIONS] [--] [FILE]...
 
 FLAGS:
     -h, --help       Prints help information
     -V, --version    Prints version information
 
 OPTIONS:
+        --use-cache <FILE>...      Use cached data
         --cfg <SPEC>...            Configure the environment: e.g. --cfg feature="nightly"
-        --filter-attr <PATH>...    Filter attributes by attributes path: e.g. --filter-attr path
         --filter-item <PATH>...    Filter items by attributes path: e.g. --filter-item test
-    -o, --output <FILE>            Output file, default stdout
+        --filter-attr <PATH>...    Filter attributes by attributes path: e.g. --filter-attr path
         --save-cache <FILE>        Save analyzed data in to file
-        --use-cache <FILE>         Use cached data
+    -o, --output <FILE>            Output file, default stdout
+        --query <NAME>             Optput queried code snippet
 
 ARGS:
     <FILE>...    Target file paths
