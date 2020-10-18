@@ -1,3 +1,5 @@
 (function() {var implementors = {};
+implementors["codesnip"] = [{"text":"impl From&lt;(String, String)&gt; for VSCode","synthetic":false,"types":[]}];
+implementors["codesnip_core"] = [{"text":"impl From&lt;Error&gt; for Error","synthetic":false,"types":[]}];
 implementors["competitive"] = [{"text":"impl&lt;M:&nbsp;Modulus&gt; From&lt;u32&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]},{"text":"impl&lt;M:&nbsp;Modulus&gt; From&lt;u64&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]},{"text":"impl&lt;M:&nbsp;Modulus&gt; From&lt;usize&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]},{"text":"impl&lt;M:&nbsp;Modulus&gt; From&lt;i32&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]},{"text":"impl&lt;M:&nbsp;Modulus&gt; From&lt;i64&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]},{"text":"impl&lt;M:&nbsp;Modulus&gt; From&lt;isize&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]},{"text":"impl From&lt;f64&gt; for QuadDouble","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

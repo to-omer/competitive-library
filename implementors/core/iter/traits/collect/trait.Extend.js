@@ -1,3 +1,4 @@
 (function() {var implementors = {};
+implementors["codesnip_core"] = [{"text":"impl Extend&lt;(String, LinkedSnippet)&gt; for SnippetMap","synthetic":false,"types":[]}];
 implementors["competitive"] = [{"text":"impl Extend&lt;(usize, usize, u64)&gt; for DinicBuilder","synthetic":false,"types":[]},{"text":"impl Extend&lt;(usize, usize, u64, i64)&gt; for PrimalDualBuilder","synthetic":false,"types":[]},{"text":"impl&lt;T:&nbsp;Eq + Hash&gt; Extend&lt;T&gt; for Counter&lt;T&gt;","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

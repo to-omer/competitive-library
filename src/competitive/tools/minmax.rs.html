@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `crates/competitive/src/tools/minmax.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>minmax.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../favicon.ico"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `crates/competitive/src/tools/minmax.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>minmax.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script src="../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -106,16 +108,13 @@
 <span id="74">74</span>
 <span id="75">75</span>
 <span id="76">76</span>
-<span id="77">77</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;minmax&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">min</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span> };
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">es</span>:<span class="ident">expr</span>),<span class="op">+</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">min</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>, <span class="macro">min</span><span class="macro">!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">es</span>),<span class="op">+</span>)) };
 }
 
-<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;minmax&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">chmin</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">src</span>:<span class="ident">expr</span>),<span class="op">+</span>) <span class="op">=</span><span class="op">&gt;</span> {{
@@ -124,14 +123,12 @@
     }};
 }
 
-<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;minmax&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">max</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span> };
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">es</span>:<span class="ident">expr</span>),<span class="op">+</span>) <span class="op">=</span><span class="op">&gt;</span> { <span class="ident">std</span>::<span class="ident">cmp</span>::<span class="ident">max</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>, <span class="macro">max</span><span class="macro">!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">es</span>),<span class="op">+</span>)) };
 }
 
-<span class="attribute">#[<span class="ident">cargo_snippet</span>::<span class="ident">snippet</span>(<span class="string">&quot;minmax&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules</span><span class="macro">!</span> <span class="ident">chmax</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dst</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">src</span>:<span class="ident">expr</span>),<span class="op">+</span>) <span class="op">=</span><span class="op">&gt;</span> {{
@@ -148,42 +145,45 @@
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">min</span><span class="macro">!</span>(<span class="number">4</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">3</span>), <span class="number">2</span>);
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_chmin</span>() {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="number">100</span>;
-    <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">101</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">100</span>);
-    <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">91</span>, <span class="number">78</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">78</span>);
-    <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">61</span>, <span class="number">42</span>, <span class="number">51</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">42</span>);
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_chmin</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="number">100</span>;
+        <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">101</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">100</span>);
+        <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">91</span>, <span class="number">78</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">78</span>);
+        <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">61</span>, <span class="number">42</span>, <span class="number">51</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">42</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">31</span>, <span class="number">12</span>];
-    <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>], <span class="number">14</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>]);
-}
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">31</span>, <span class="number">12</span>];
+        <span class="macro">chmin</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>], <span class="number">14</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>]);
+    }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_max</span>() {
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">1</span>), <span class="number">1</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">2</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">4</span>, <span class="number">1</span>, <span class="number">2</span>), <span class="number">4</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">4</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">3</span>), <span class="number">9</span>);
-}
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_max</span>() {
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">1</span>), <span class="number">1</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">2</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">4</span>, <span class="number">1</span>, <span class="number">2</span>), <span class="number">4</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="macro">max</span><span class="macro">!</span>(<span class="number">4</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">3</span>), <span class="number">9</span>);
+    }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_chmax</span>() {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="number">100</span>;
-    <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">91</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">100</span>);
-    <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">191</span>, <span class="number">178</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">191</span>);
-    <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">261</span>, <span class="number">242</span>, <span class="number">251</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">261</span>);
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_chmax</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> <span class="number">100</span>;
+        <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">91</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">100</span>);
+        <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">191</span>, <span class="number">178</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">191</span>);
+        <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">261</span>, <span class="number">242</span>, <span class="number">251</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="number">261</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">31</span>, <span class="number">42</span>];
-    <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>], <span class="number">14</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">31</span>, <span class="number">42</span>];
+        <span class="macro">chmax</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>], <span class="number">14</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>]);
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "competitive";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
