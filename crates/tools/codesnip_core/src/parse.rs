@@ -45,7 +45,11 @@ struct ExtractAst<'c> {
 impl ExtractAst<'_> {
     fn find_mod_file(&self, node: &ItemMod) -> Result<PathBuf, Error> {
         let mod_name = node.ident.to_string();
-        let mod_path = self.path.with_file_name(&mod_name);
+        let mod_path = if self.path.file_name().map_or(false, |s| s == "mod.rs") {
+            self.path.with_file_name(&mod_name)
+        } else {
+            todo!()
+        };
         if let Some(pathstr) = find_pathstr_from_attrs(&node.attrs) {
             let mod_path = self.path.with_file_name(pathstr);
             if mod_path.exists() {
