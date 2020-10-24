@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use syn::{
     parse2, parse_file,
     visit_mut::{self, VisitMut},
-    AttrStyle, Attribute, File, Item, ItemMod, Lit, Meta, NestedMeta,
+    AttrStyle, Attribute, File, Item, ItemMod, Lit, Meta, MetaNameValue, NestedMeta,
 };
 use Error::{FileNotFound, ModuleNotFound, ParseFile};
 
@@ -22,12 +22,16 @@ pub enum Error {
 }
 
 pub fn parse_file_recursive(path: PathBuf, cfg: &[Meta]) -> Result<File, Error> {
+    let mut mod_dir = path.clone();
+    mod_dir.pop();
+    let cwd = mod_dir.clone();
     let mut ext = ExtractAst {
-        path,
+        mod_dir,
+        cwd,
         error: None,
         cfg,
     };
-    let mut ast = parse_file_from_path(&ext.path)?;
+    let mut ast = parse_file_from_path(&path)?;
     ext.visit_file_mut(&mut ast);
     match ext.error {
         Some(err) => Err(err),
@@ -37,40 +41,38 @@ pub fn parse_file_recursive(path: PathBuf, cfg: &[Meta]) -> Result<File, Error> 
 
 #[derive(Debug)]
 struct ExtractAst<'c> {
-    path: PathBuf,
+    mod_dir: PathBuf,
+    cwd: PathBuf,
     error: Option<Error>,
     cfg: &'c [Meta],
 }
 
 impl ExtractAst<'_> {
-    fn find_mod_file(&self, node: &ItemMod) -> Result<PathBuf, Error> {
+    fn find_mod_file(&mut self, node: &ItemMod) -> Result<PathBuf, Error> {
         let mod_name = node.ident.to_string();
-        let mod_path = if self.path.file_name().map_or(false, |s| s == "mod.rs") {
-            self.path.with_file_name(&mod_name)
-        } else {
-            todo!()
-        };
         if let Some(pathstr) = find_pathstr_from_attrs(&node.attrs) {
-            let mod_path = self.path.with_file_name(pathstr);
-            if mod_path.exists() {
-                Ok(mod_path)
+            let path = self.cwd.join(pathstr);
+            if path.exists() {
+                Ok(path)
             } else {
-                Err(ModuleNotFound(mod_name, self.path.to_path_buf()))
+                Err(ModuleNotFound(mod_name, path))
             }
         } else {
-            let path1 = mod_path.with_extension("rs");
-            let path2 = mod_path.join("mod.rs");
+            self.mod_dir.push(&mod_name);
+            let path1 = self.mod_dir.with_extension("rs");
+            let path2 = self.mod_dir.join("mod.rs");
             if path1.exists() {
                 Ok(path1)
             } else if path2.exists() {
+                self.cwd.push(mod_name);
                 Ok(path2)
             } else {
-                Err(ModuleNotFound(mod_name, self.path.to_path_buf()))
+                Err(ModuleNotFound(mod_name, path1))
             }
         }
     }
 
-    fn expand_file(&self, node: &mut ItemMod) -> Result<PathBuf, Error> {
+    fn expand_file(&mut self, node: &mut ItemMod) -> Result<(), Error> {
         let path = self.find_mod_file(&node)?;
         let ast = parse_file_from_path(&path)?;
 
@@ -99,33 +101,27 @@ impl ExtractAst<'_> {
 
         let item_mod = parse2::<ItemMod>(tokens).expect("failed to parse no-inline `mod`");
         *node = item_mod;
-        Ok(path)
+        Ok(())
     }
 }
 
 impl VisitMut for ExtractAst<'_> {
     fn visit_item_mod_mut(&mut self, node: &mut ItemMod) {
-        let cur = self.path.clone();
+        let prev = (self.mod_dir.clone(), self.cwd.clone());
         if node.content.is_none() {
-            match self.expand_file(node) {
-                Ok(path) => {
-                    self.path = path;
-                }
-                Err(err) => {
-                    self.error.get_or_insert(err);
-                }
+            if let Err(err) = self.expand_file(node) {
+                self.error.get_or_insert(err);
             }
+        } else if let Some(pathstr) = find_pathstr_from_attrs(&node.attrs) {
+            self.cwd.push(pathstr);
+            self.mod_dir = self.cwd.clone();
         } else {
-            let pathstr = if let Some(pathstr) = find_pathstr_from_attrs(&node.attrs) {
-                pathstr
-            } else {
-                node.ident.to_string()
-            };
-            let path = Path::new(&pathstr);
-            self.path = self.path.with_file_name(path.join("mod.rs"));
+            self.mod_dir.push(node.ident.to_string());
+            self.cwd = self.mod_dir.clone();
         }
         visit_mut::visit_item_mod_mut(self, node);
-        self.path = cur;
+        self.mod_dir = prev.0;
+        self.cwd = prev.1;
     }
     fn visit_item_mut(&mut self, node: &mut Item) {
         let mut is_skip = false;
@@ -156,21 +152,17 @@ fn parse_file_from_path<P: AsRef<Path>>(path: P) -> Result<File, Error> {
 fn find_pathstr_from_attrs(attrs: &[Attribute]) -> Option<String> {
     attrs
         .iter()
-        .filter(|attr| attr.style == AttrStyle::Outer)
         .filter_map(|attr| attr.parse_meta().ok())
-        .filter(|meta| {
-            meta.path()
-                .get_ident()
-                .map(|id| *id == "path")
-                .unwrap_or_default()
-        })
-        .filter_map(|meta| {
-            if let Meta::NameValue(metanv) = meta {
-                if let Lit::Str(litstr) = metanv.lit {
-                    return Some(litstr.value());
-                }
-            }
-            None
+        .filter(|meta| meta.path().is_ident("path"))
+        .filter_map(|meta| match meta {
+            Meta::NameValue(
+                MetaNameValue {
+                    lit: Lit::Str(litstr),
+                    ..
+                },
+                ..,
+            ) => Some(litstr.value()),
+            _ => None,
         })
         .next()
 }
@@ -271,4 +263,14 @@ fn cfg_condition(pred: &Meta, cfg: &[Meta]) -> bool {
     }
     // If there is a parsing error, it may be skipped and succeeded.
     true
+}
+
+#[test]
+fn test_parse() {
+    let path: PathBuf = [env!("CARGO_MANIFEST_DIR"), "examples", "mod_path", "lib.rs"]
+        .iter()
+        .collect();
+    if let Err(err) = parse_file_recursive(path, &[]) {
+        assert!(false, "{}", err);
+    }
 }
