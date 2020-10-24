@@ -11,6 +11,7 @@ mod d {
     mod dc;
 }
 #[path = "e_path"]
+#[rustfmt::skip]
 mod e {
     mod ea;
     mod eb;
@@ -18,7 +19,10 @@ mod e {
     mod ec;
 }
 
+#[rustfmt::skip]
 mod x;
+#[rustfmt::skip]
 mod y;
+#[rustfmt::skip]
 #[path = "z_path.rs"]
 mod z;
