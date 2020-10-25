@@ -73,7 +73,7 @@ impl<M: NTTModulus> NumberTheoreticTransform<M> {
     }
     pub fn convolve(mut a: Vec<MInt<M>>, mut b: Vec<MInt<M>>) -> Vec<MInt<M>> {
         let m = a.len() + b.len() - 1;
-        let n = 1usize << format!("{:b}", m).len();
+        let n = m.next_power_of_two();
         a.resize_with(n, MInt::<M>::zero);
         b.resize_with(n, MInt::<M>::zero);
         let a = Self::ntt(a, false);
@@ -117,7 +117,7 @@ fn test_ntt998244353() {
 /// max(a.len(), b.len()) * max(a) * max(b) < 3.64 * 10^18
 pub fn convolve2(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<u64> {
     let m = a.len() + b.len() - 1;
-    let n = 1usize << format!("{:b}", m).len();
+    let n = m.next_power_of_two();
     a.resize_with(n, Default::default);
     b.resize_with(n, Default::default);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
@@ -156,7 +156,7 @@ fn test_convolve2() {
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
 pub fn convolve3<M: Modulus>(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<MInt<M>> {
     let m = a.len() + b.len() - 1;
-    let n = 1usize << format!("{:b}", m).len();
+    let n = m.next_power_of_two();
     a.resize_with(n, Default::default);
     b.resize_with(n, Default::default);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
@@ -205,7 +205,7 @@ fn test_convolve3() {
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
 pub fn convolve3_128(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<u128> {
     let m = a.len() + b.len() - 1;
-    let n = 1usize << format!("{:b}", m).len();
+    let n = m.next_power_of_two();
     a.resize_with(n, Default::default);
     b.resize_with(n, Default::default);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;

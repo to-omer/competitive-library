@@ -7,7 +7,7 @@ use crate::algebra::Monoid;
 #[derive(Clone, Debug)]
 pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     n: usize,
-    height: usize,
+    height: u32,
     seg: Vec<M::T>,
     lazy: Vec<E::T>,
     m: M,
@@ -17,8 +17,8 @@ pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
 #[codesnip::entry("LazySegmentTree")]
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F> {
     pub fn new(n: usize, m: M, e: E, f: F) -> Self {
-        let height = format!("{:b}", n - 1).len();
-        let n = 1 << height;
+        let n = n.next_power_of_two();
+        let height = n.trailing_zeros();
         let seg = vec![m.unit(); 2 * n];
         let lazy = vec![e.unit(); 2 * n];
         Self {
@@ -32,8 +32,8 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         }
     }
     pub fn from_vec(v: Vec<M::T>, m: M, e: E, f: F) -> Self {
-        let height = format!("{:b}", v.len() - 1).len();
-        let n = 1 << height;
+        let n = v.len().next_power_of_two();
+        let height = n.trailing_zeros();
         let mut seg = vec![m.unit(); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
             seg[i + n] = x;

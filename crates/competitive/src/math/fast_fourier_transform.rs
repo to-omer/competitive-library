@@ -33,7 +33,7 @@ pub fn fast_fourier_transform(mut f: Vec<Complex<f64>>, inv: bool) -> Vec<Comple
 #[codesnip::entry("fast_fourier_transform")]
 pub fn convolve_i64(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
     let m = a.len() + b.len() - 1;
-    let n = 1usize << format!("{:b}", m).len();
+    let n = m.next_power_of_two();
     a.resize_with(n, Default::default);
     b.resize_with(n, Default::default);
     let a: Vec<_> = a.into_iter().map(|x| Complex::new(x as f64, 0.)).collect();

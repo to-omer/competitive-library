@@ -10,12 +10,12 @@ pub struct SegmentTree<M: Monoid> {
 #[codesnip::entry("SegmentTree")]
 impl<M: Monoid> SegmentTree<M> {
     pub fn new(n: usize, m: M) -> Self {
-        let n = 1 << format!("{:b}", n - 1).len();
+        let n = n.next_power_of_two();
         let seg = vec![m.unit(); 2 * n];
         Self { n, seg, m }
     }
     pub fn from_vec(v: Vec<M::T>, m: M) -> Self {
-        let n = 1 << format!("{:b}", v.len() - 1).len();
+        let n = v.len().next_power_of_two();
         let mut seg = vec![m.unit(); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
             seg[n + i] = x;

@@ -132,7 +132,7 @@ where
         let n = self.n;
         let mut acc = self.m.unit();
         let mut pos = 0;
-        let mut k = 1 << format!("{:b}", n).len();
+        let mut k = n.next_power_of_two();
         while k > 0 {
             if k + pos <= n && self.m.operate(&acc, &self.bit[k + pos]) < x {
                 pos += k;
