@@ -1,3 +1,5 @@
+#![allow(clippy::suspicious_arithmetic_impl, clippy::suspicious_op_assign_impl)]
+
 use super::*;
 use std::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Shl, ShlAssign, Shr,
