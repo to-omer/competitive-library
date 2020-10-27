@@ -10,7 +10,7 @@ pub struct FormalPowerSeries<T, Multiplier> {
 }
 
 pub type FPS998244353 = FormalPowerSeries<modulus::MInt998244353, modulus::Modulo998244353>;
-pub type FPS<M> = FormalPowerSeries<MInt<M>, M>;
+pub type FPS<M> = FormalPowerSeries<MInt<M>, DefaultFormalPowerSeriesMultiplier<M>>;
 
 pub trait FormalPowerSeriesCoefficient:
     Sized
@@ -49,7 +49,7 @@ pub trait FormalPowerSeriesMultiplier: Sized {
     ) -> FormalPowerSeries<Self::T, Self>;
 }
 
-struct DefaultFormalPowerSeriesMultiplier<M>(std::marker::PhantomData<M>);
+pub struct DefaultFormalPowerSeriesMultiplier<M>(std::marker::PhantomData<M>);
 
 impl<M: Modulus> FormalPowerSeriesMultiplier for DefaultFormalPowerSeriesMultiplier<M> {
     type T = MInt<M>;
