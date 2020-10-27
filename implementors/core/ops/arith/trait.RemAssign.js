@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["competitive"] = [{"text":"impl&lt;T, Multiplier, '_&gt; RemAssign&lt;&amp;'_ FormalPowerSeries&lt;T, Multiplier&gt;&gt; for FormalPowerSeries&lt;T, Multiplier&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: FormalPowerSeriesCoefficient,<br>&nbsp;&nbsp;&nbsp;&nbsp;Multiplier: FormalPowerSeriesMultiplier&lt;T = T&gt;,&nbsp;</span>","synthetic":false,"types":[]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

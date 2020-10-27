@@ -354,6 +354,30 @@
 <span id="320">320</span>
 <span id="321">321</span>
 <span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">codesnip</span>::<span class="ident">skip</span>]</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::{<span class="ident">modulus</span>, <span class="ident">MInt</span>, <span class="ident">Modulus</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
@@ -472,11 +496,17 @@
 }
 
 <span class="doccomment">/// max(a.len(), b.len()) * max(a) * max(b) &lt; 3.64 * 10^18</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve2</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve2</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2013265921</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo1811939329</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Clone</span>
+        <span class="op">+</span> <span class="ident">Zero</span>,
+{
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">b</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">m</span>.<span class="ident">next_power_of_two</span>();
-    <span class="ident">a</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Default</span>::<span class="ident">default</span>);
-    <span class="ident">b</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Default</span>::<span class="ident">default</span>);
+    <span class="ident">a</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Zero</span>::<span class="ident">zero</span>);
+    <span class="ident">b</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Zero</span>::<span class="ident">zero</span>);
     <span class="kw">type</span> <span class="ident">M1</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2013265921</span>;
     <span class="kw">type</span> <span class="ident">M2</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo1811939329</span>;
     <span class="kw">let</span> <span class="ident">c1</span> <span class="op">=</span> <span class="ident">NumberTheoreticTransform</span>::<span class="op">&lt;</span><span class="ident">M1</span><span class="op">&gt;</span>::<span class="ident">convolve_it</span>(<span class="ident">a</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>(), <span class="ident">b</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>());
@@ -498,12 +528,12 @@
     <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3_000</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
     <span class="kw">let</span> <span class="ident">m</span>: <span class="ident">u64</span> <span class="op">=</span> ((<span class="ident">std</span>::<span class="ident">u64</span>::<span class="ident">MAX</span> <span class="op">/</span> <span class="ident">N</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">/</span> <span class="number">100</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">u64</span>;
-    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">m</span>)).<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">m</span>)).<span class="ident">collect</span>();
+    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">m</span>) <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">collect</span>();
+    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">m</span>) <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">collect</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0u64</span>; <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>];
+            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>] <span class="kw">as</span> <span class="ident">u64</span>;
         }
     }
     <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve2</span>(<span class="ident">a</span>, <span class="ident">b</span>);
@@ -511,11 +541,18 @@
 }
 
 <span class="doccomment">/// max(a.len(), b.len()) * max(a) * max(b) &lt; 1.81 * 10^27</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve3</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Modulus</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve3</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Modulus</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2013265921</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo1811939329</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2113929217</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Clone</span>
+        <span class="op">+</span> <span class="ident">Zero</span>,
+{
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">b</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">m</span>.<span class="ident">next_power_of_two</span>();
-    <span class="ident">a</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Default</span>::<span class="ident">default</span>);
-    <span class="ident">b</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Default</span>::<span class="ident">default</span>);
+    <span class="ident">a</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Zero</span>::<span class="ident">zero</span>);
+    <span class="ident">b</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Zero</span>::<span class="ident">zero</span>);
     <span class="kw">type</span> <span class="ident">M1</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2013265921</span>;
     <span class="kw">type</span> <span class="ident">M2</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo1811939329</span>;
     <span class="kw">type</span> <span class="ident">M3</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2113929217</span>;
@@ -547,24 +584,35 @@
     <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3_000</span>;
     <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">modulus</span>::<span class="ident">Modulo1000000009</span><span class="op">&gt;</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
-    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>)).<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>)).<span class="ident">collect</span>();
+    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>)
+        .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span>)
+        .<span class="ident">collect</span>();
+    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>)
+        .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span>)
+        .<span class="ident">collect</span>();
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">M</span>::<span class="ident">zero</span>(); <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
     <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
         <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">M</span>::<span class="ident">from</span>(<span class="ident">a</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>]);
+            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">M</span>::<span class="ident">from</span>(<span class="ident">a</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>] <span class="kw">as</span> <span class="ident">u64</span>);
         }
     }
-    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve3</span>::<span class="op">&lt;</span><span class="ident">modulus</span>::<span class="ident">Modulo1000000009</span><span class="op">&gt;</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve3</span>::<span class="op">&lt;</span><span class="ident">modulus</span>::<span class="ident">Modulo1000000009</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">a</span>, <span class="ident">b</span>);
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
 }
 
 <span class="doccomment">/// max(a.len(), b.len()) * max(a) * max(b) &lt; 1.81 * 10^27</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve3_128</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve3_128</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2013265921</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo1811939329</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2113929217</span><span class="op">&gt;</span><span class="op">&gt;</span>
+        <span class="op">+</span> <span class="ident">Clone</span>
+        <span class="op">+</span> <span class="ident">Zero</span>,
+{
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">b</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">m</span>.<span class="ident">next_power_of_two</span>();
-    <span class="ident">a</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Default</span>::<span class="ident">default</span>);
-    <span class="ident">b</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Default</span>::<span class="ident">default</span>);
+    <span class="ident">a</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Zero</span>::<span class="ident">zero</span>);
+    <span class="ident">b</span>.<span class="ident">resize_with</span>(<span class="ident">n</span>, <span class="ident">Zero</span>::<span class="ident">zero</span>);
     <span class="kw">type</span> <span class="ident">M1</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2013265921</span>;
     <span class="kw">type</span> <span class="ident">M2</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo1811939329</span>;
     <span class="kw">type</span> <span class="ident">M3</span> <span class="op">=</span> <span class="ident">number_theoretic_transform_impls</span>::<span class="ident">Modulo2113929217</span>;
