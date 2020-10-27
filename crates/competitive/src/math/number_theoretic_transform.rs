@@ -115,11 +115,17 @@ fn test_ntt998244353() {
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 3.64 * 10^18
-pub fn convolve2(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<u64> {
+pub fn convolve2<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u64>
+where
+    T: Into<MInt<number_theoretic_transform_impls::Modulo2013265921>>
+        + Into<MInt<number_theoretic_transform_impls::Modulo1811939329>>
+        + Clone
+        + Zero,
+{
     let m = a.len() + b.len() - 1;
     let n = m.next_power_of_two();
-    a.resize_with(n, Default::default);
-    b.resize_with(n, Default::default);
+    a.resize_with(n, Zero::zero);
+    b.resize_with(n, Zero::zero);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
     let c1 = NumberTheoreticTransform::<M1>::convolve_it(a.iter().cloned(), b.iter().cloned());
@@ -141,12 +147,12 @@ fn test_convolve2() {
     const N: usize = 3_000;
     let mut rand = Xorshift::time();
     let m: u64 = ((std::u64::MAX / N as u64 / 100) as f64).sqrt() as u64;
-    let a: Vec<_> = (0..N).map(|_| rand.rand(m)).collect();
-    let b: Vec<_> = (0..N).map(|_| rand.rand(m)).collect();
+    let a: Vec<_> = (0..N).map(|_| rand.rand(m) as u32).collect();
+    let b: Vec<_> = (0..N).map(|_| rand.rand(m) as u32).collect();
     let mut c = vec![0u64; N * 2 - 1];
     for i in 0..N {
         for j in 0..N {
-            c[i + j] += a[i] * b[j];
+            c[i + j] += a[i] as u64 * b[j] as u64;
         }
     }
     let d = convolve2(a, b);
@@ -154,11 +160,18 @@ fn test_convolve2() {
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
-pub fn convolve3<M: Modulus>(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<MInt<M>> {
+pub fn convolve3<M: Modulus, T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<MInt<M>>
+where
+    T: Into<MInt<number_theoretic_transform_impls::Modulo2013265921>>
+        + Into<MInt<number_theoretic_transform_impls::Modulo1811939329>>
+        + Into<MInt<number_theoretic_transform_impls::Modulo2113929217>>
+        + Clone
+        + Zero,
+{
     let m = a.len() + b.len() - 1;
     let n = m.next_power_of_two();
-    a.resize_with(n, Default::default);
-    b.resize_with(n, Default::default);
+    a.resize_with(n, Zero::zero);
+    b.resize_with(n, Zero::zero);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
     type M3 = number_theoretic_transform_impls::Modulo2113929217;
@@ -190,24 +203,35 @@ fn test_convolve3() {
     const N: usize = 3_000;
     type M = MInt<modulus::Modulo1000000009>;
     let mut rand = Xorshift::time();
-    let a: Vec<_> = (0..N).map(|_| rand.rand(std::u32::MAX as u64)).collect();
-    let b: Vec<_> = (0..N).map(|_| rand.rand(std::u32::MAX as u64)).collect();
+    let a: Vec<_> = (0..N)
+        .map(|_| rand.rand(std::u32::MAX as u64) as u32)
+        .collect();
+    let b: Vec<_> = (0..N)
+        .map(|_| rand.rand(std::u32::MAX as u64) as u32)
+        .collect();
     let mut c = vec![M::zero(); N * 2 - 1];
     for i in 0..N {
         for j in 0..N {
-            c[i + j] += M::from(a[i] * b[j]);
+            c[i + j] += M::from(a[i] as u64 * b[j] as u64);
         }
     }
-    let d = convolve3::<modulus::Modulo1000000009>(a, b);
+    let d = convolve3::<modulus::Modulo1000000009, _>(a, b);
     assert_eq!(c, d);
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
-pub fn convolve3_128(mut a: Vec<u64>, mut b: Vec<u64>) -> Vec<u128> {
+pub fn convolve3_128<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u128>
+where
+    T: Into<MInt<number_theoretic_transform_impls::Modulo2013265921>>
+        + Into<MInt<number_theoretic_transform_impls::Modulo1811939329>>
+        + Into<MInt<number_theoretic_transform_impls::Modulo2113929217>>
+        + Clone
+        + Zero,
+{
     let m = a.len() + b.len() - 1;
     let n = m.next_power_of_two();
-    a.resize_with(n, Default::default);
-    b.resize_with(n, Default::default);
+    a.resize_with(n, Zero::zero);
+    b.resize_with(n, Zero::zero);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
     type M3 = number_theoretic_transform_impls::Modulo2113929217;
