@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/tools/codesnip/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/tools/codesnip/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
 <link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
 <link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
@@ -147,6 +147,47 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mapping</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">parse</span>;
@@ -157,17 +198,22 @@
 <span class="kw">use</span> <span class="ident">anyhow</span>::<span class="ident">Context</span> <span class="kw">as</span> <span class="kw">_</span>;
 <span class="kw">use</span> <span class="ident">codesnip_core</span>::{<span class="ident">Error</span>::<span class="ident">FileNotFound</span>, <span class="ident">Filter</span>, <span class="ident">SnippetMap</span>};
 <span class="kw">use</span> <span class="ident">serde_json</span>::{<span class="ident">from_reader</span>, <span class="ident">to_string</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">fs</span>::<span class="ident">File</span>,
-    <span class="ident">io</span>::<span class="ident">stdout</span>,
+    <span class="ident">io</span>::{<span class="ident">stdout</span>, <span class="ident">BufReader</span>, <span class="ident">Write</span> <span class="kw">as</span> <span class="kw">_</span>},
     <span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>},
 };
-<span class="kw">use</span> <span class="ident">structopt</span>::{<span class="ident">clap</span>::<span class="ident">AppSettings</span>::<span class="ident">DeriveDisplayOrder</span>, <span class="ident">StructOpt</span>};
+<span class="kw">use</span> <span class="ident">structopt</span>::{
+    <span class="ident">clap</span>::<span class="ident">AppSettings</span>::{<span class="ident">DeriveDisplayOrder</span>, <span class="ident">InferSubcommands</span>},
+    <span class="ident">StructOpt</span>,
+};
 <span class="kw">use</span> <span class="ident">syn</span>::<span class="ident">parse_str</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
-<span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">bin_name</span> <span class="op">=</span> <span class="string">&quot;cargo&quot;</span>, <span class="ident">global_setting</span> <span class="op">=</span> <span class="ident">DeriveDisplayOrder</span>)]</span>
+<span class="attribute">#[<span class="ident">structopt</span>(
+    <span class="ident">bin_name</span> <span class="op">=</span> <span class="string">&quot;cargo&quot;</span>,
+    <span class="ident">global_settings</span> <span class="op">=</span> <span class="kw-2">&amp;</span>[<span class="ident">DeriveDisplayOrder</span>, <span class="ident">InferSubcommands</span>]</span>
+)]
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Opt</span> {
     <span class="doccomment">/// Extract code snippets.</span>
     <span class="ident">Codesnip</span>(<span class="ident">Config</span>),
@@ -177,36 +223,54 @@
 <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">rename_all</span> <span class="op">=</span> <span class="string">&quot;kebab-case&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
     <span class="doccomment">/// Target file paths.</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
-    <span class="kw">pub</span> <span class="ident">targets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
+    <span class="kw">pub</span> <span class="ident">target</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Use cached data.</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
     <span class="kw">pub</span> <span class="ident">use_cache</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Configure the environment: e.g. --cfg feature=&quot;nightly&quot;</span>
+    <span class="doccomment">/// Configure the environment: e.g. --cfg=nightly</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;SPEC&quot;</span>, <span class="ident">parse</span>(<span class="ident">try_from_str</span> <span class="op">=</span> <span class="ident">parse_str</span>::<span class="op">&lt;</span><span class="ident">syn</span>::<span class="ident">Meta</span><span class="op">&gt;</span>))]</span>
     <span class="kw">pub</span> <span class="ident">cfg</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">syn</span>::<span class="ident">Meta</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Filter items by attributes path: e.g. --filter-item test</span>
+    <span class="doccomment">/// Filter items by attributes path: e.g. --filter-item=test</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;PATH&quot;</span>, <span class="ident">parse</span>(<span class="ident">try_from_str</span> <span class="op">=</span> <span class="ident">parse_str</span>::<span class="op">&lt;</span><span class="ident">syn</span>::<span class="ident">Path</span><span class="op">&gt;</span>))]</span>
     <span class="kw">pub</span> <span class="ident">filter_item</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">syn</span>::<span class="ident">Path</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Filter attributes by attributes path: e.g. --filter-attr path</span>
+    <span class="doccomment">/// Filter attributes by attributes path: e.g. --filter-attr=path</span>
     <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;PATH&quot;</span>, <span class="ident">parse</span>(<span class="ident">try_from_str</span> <span class="op">=</span> <span class="ident">parse_str</span>::<span class="op">&lt;</span><span class="ident">syn</span>::<span class="ident">Path</span><span class="op">&gt;</span>))]</span>
     <span class="kw">pub</span> <span class="ident">filter_attr</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">syn</span>::<span class="ident">Path</span><span class="op">&gt;</span>,
 
-    <span class="doccomment">/// Save analyzed data in to file.</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
-    <span class="kw">pub</span> <span class="ident">save_cache</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">subcommand</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">cmd</span>: <span class="ident">Command</span>,
+}
 
-    <span class="doccomment">/// Output file, default stdout.</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
-    <span class="kw">pub</span> <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-
-    <span class="doccomment">/// Optput queried code snippet.</span>
-    <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;NAME&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">query</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">StructOpt</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Command</span> {
+    <span class="doccomment">/// Save analyzed data into file.</span>
+    <span class="ident">Cache</span> {
+        <span class="doccomment">/// Output file.</span>
+        <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
+        <span class="ident">output</span>: <span class="ident">PathBuf</span>,
+    },
+    <span class="doccomment">/// List names.</span>
+    <span class="ident">List</span>,
+    <span class="doccomment">/// Output snippet for VSCode.</span>
+    <span class="ident">Snippet</span> {
+        <span class="doccomment">/// Output file, default stdout.</span>
+        <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
+        <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+    },
+    <span class="doccomment">/// bundle</span>
+    <span class="ident">Bundle</span> {
+        <span class="doccomment">/// snippet name.</span>
+        <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;NAME&quot;</span>)]</span>
+        <span class="ident">name</span>: <span class="ident">String</span>,
+        <span class="doccomment">/// excludes</span>
+        <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;NAME&quot;</span>)]</span>
+        <span class="ident">excludes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    },
 }
 
 <span class="kw">impl</span> <span class="ident">Opt</span> {
@@ -227,38 +291,56 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">SnippetMap</span>::<span class="ident">new</span>();
-        <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">parse_files</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">targets</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">cfg</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">items</span> <span class="op">=</span> <span class="ident">parse_files</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">target</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">cfg</span>)<span class="question-mark">?</span>;
         <span class="ident">map</span>.<span class="ident">collect_entries</span>(<span class="kw-2">&amp;</span><span class="ident">items</span>, <span class="self">self</span>.<span class="ident">filter</span>());
         <span class="ident">map</span>.<span class="ident">format_all</span>();
 
         <span class="kw">for</span> <span class="ident">cache</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">use_cache</span>.<span class="ident">iter</span>() {
-            <span class="kw">let</span> <span class="ident">mapt</span>: <span class="ident">SnippetMap</span> <span class="op">=</span>
-                <span class="ident">from_reader</span>(<span class="ident">File</span>::<span class="ident">open</span>(<span class="kw-2">&amp;</span><span class="ident">cache</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">FileNotFound</span>(<span class="ident">cache</span>.<span class="ident">clone</span>(), <span class="ident">err</span>))<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File</span>::<span class="ident">open</span>(<span class="kw-2">&amp;</span><span class="ident">cache</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">FileNotFound</span>(<span class="ident">cache</span>.<span class="ident">clone</span>(), <span class="ident">err</span>))<span class="question-mark">?</span>;
+            <span class="kw">let</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader</span>::<span class="ident">new</span>(<span class="ident">file</span>);
+            <span class="kw">let</span> <span class="ident">mapt</span>: <span class="ident">SnippetMap</span> <span class="op">=</span> <span class="ident">from_reader</span>(<span class="ident">reader</span>)<span class="question-mark">?</span>;
             <span class="ident">map</span>.<span class="ident">extend</span>(<span class="ident">mapt</span>);
         }
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">save_cache</span>.<span class="ident">is_some</span>() {
-            <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>)<span class="question-mark">?</span>, <span class="self">self</span>.<span class="ident">save_cache</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="ident">cmd</span>.<span class="ident">execute</span>(<span class="ident">map</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">Command</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="ident">SnippetMap</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">Command</span>::<span class="ident">Cache</span> { <span class="ident">output</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>)<span class="question-mark">?</span>, <span class="prelude-val">Some</span>(<span class="ident">output</span>))<span class="question-mark">?</span>;
+            }
+            <span class="ident">Command</span>::<span class="ident">List</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">map</span>.<span class="ident">map</span>.<span class="ident">keys</span>() {
+                    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">name</span>);
+                }
+            }
+            <span class="ident">Command</span>::<span class="ident">Snippet</span> { <span class="ident">output</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>.<span class="ident">to_vscode</span>())<span class="question-mark">?</span>, <span class="ident">output</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>;
+            }
+            <span class="ident">Command</span>::<span class="ident">Bundle</span> { <span class="ident">name</span>, <span class="ident">excludes</span> } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">let</span> <span class="ident">link</span> <span class="op">=</span> <span class="ident">map</span>
+                    .<span class="ident">map</span>
+                    .<span class="ident">get</span>(<span class="ident">name</span>)
+                    .<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;snippet `{}` not found&quot;</span>, <span class="ident">name</span>))<span class="question-mark">?</span>;
+                <span class="kw">let</span> <span class="ident">excludes</span> <span class="op">=</span> <span class="ident">excludes</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">as_str</span>()).<span class="ident">collect</span>();
+                <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">map</span>.<span class="ident">bundle</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">link</span>, <span class="ident">excludes</span>, <span class="bool-val">true</span>));
+            }
         }
-
-        <span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">name</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">query</span> {
-            <span class="kw">let</span> <span class="ident">link</span> <span class="op">=</span> <span class="ident">map</span>
-                .<span class="ident">map</span>
-                .<span class="ident">get</span>(<span class="ident">name</span>)
-                .<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;snippet `{}` not found&quot;</span>, <span class="ident">name</span>))<span class="question-mark">?</span>;
-            <span class="ident">map</span>.<span class="ident">query</span>(<span class="ident">name</span>, <span class="ident">link</span>)
-        } <span class="kw">else</span> {
-            <span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>.<span class="ident">to_vscode</span>())<span class="question-mark">?</span>
-        };
-
-        <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="ident">out</span>, <span class="self">self</span>.<span class="ident">output</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">fn</span> <span class="ident">emit</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
     <span class="kw">match</span> <span class="ident">output</span> {
-        <span class="prelude-val">Some</span>(<span class="ident">file</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">File</span>::<span class="ident">create</span>(<span class="ident">file</span>)<span class="question-mark">?</span>.<span class="ident">write_all</span>(<span class="ident">value</span>.<span class="ident">as_bytes</span>())<span class="question-mark">?</span>,
+        <span class="prelude-val">Some</span>(<span class="ident">file</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">parent</span>) <span class="op">=</span> <span class="ident">file</span>.<span class="ident">as_ref</span>().<span class="ident">parent</span>() {
+                <span class="ident">std</span>::<span class="ident">fs</span>::<span class="ident">create_dir_all</span>(<span class="ident">parent</span>)<span class="question-mark">?</span>;
+            }
+            <span class="ident">File</span>::<span class="ident">create</span>(<span class="ident">file</span>)<span class="question-mark">?</span>.<span class="ident">write_all</span>(<span class="ident">value</span>.<span class="ident">as_bytes</span>())<span class="question-mark">?</span>
+        }
         <span class="prelude-val">None</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">stdout</span>().<span class="ident">lock</span>().<span class="ident">write_all</span>(<span class="ident">value</span>.<span class="ident">as_bytes</span>())<span class="question-mark">?</span>,
     }
     <span class="prelude-val">Ok</span>(())
