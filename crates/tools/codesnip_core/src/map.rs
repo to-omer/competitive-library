@@ -45,11 +45,11 @@ impl SnippetMap {
     pub fn extend_with_filter(&mut self, item: &Item, filter: Filter) {
         CollectEntries { map: self, filter }.visit_item(item);
     }
-    pub fn resolve_includes<'s>(
+    fn resolve_includes<'s>(
         &'s self,
-        used: BTreeSet<&'s str>,
+        used: &BTreeSet<&'s str>,
         includes: impl IntoIterator<Item = &'s str>,
-    ) -> String {
+    ) -> BTreeSet<&'s str> {
         let mut visited = used.clone();
         let mut stack: Vec<_> = includes.into_iter().collect();
         visited.extend(&stack);
@@ -63,13 +63,40 @@ impl SnippetMap {
                 }
             }
         }
-        let mut res = String::new();
-        for include in visited.difference(&used).cloned() {
+        visited
+    }
+    pub fn bundle<'s>(
+        &self,
+        name: &'s str,
+        link: &LinkedSnippet,
+        mut excludes: BTreeSet<&'s str>,
+        guard: bool,
+    ) -> String {
+        fn push_guard(contents: &mut String, name: &str) {
+            contents.push_str("// codesnip-guard: ");
+            contents.push_str(name);
+            contents.push('\n');
+        }
+
+        if excludes.contains(name) {
+            return Default::default();
+        }
+        excludes.insert(name);
+        let visited = self.resolve_includes(&excludes, link.includes.iter().map(|s| s.as_str()));
+        let mut contents = String::new();
+        for include in visited.difference(&excludes).cloned() {
+            if guard {
+                push_guard(&mut contents, include);
+            }
             if let Some(nlink) = self.map.get(include) {
-                res.push_str(nlink.contents.as_str());
+                contents.push_str(nlink.contents.as_str());
             }
         }
-        res
+        if guard {
+            push_guard(&mut contents, name);
+        }
+        contents.push_str(link.contents.as_str());
+        contents
     }
 }
 

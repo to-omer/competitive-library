@@ -19,5 +19,5 @@ cp -r util/gh-pages/* target/doc
 generate snippet for vscode
 ```sh
 cargo install --path crates/tools/codesnip
-cargo codesnip crates/competitive/src/lib.rs --filter-item=test --cfg=nightly --output=.vscode/rust.code-snippets
+cargo codesnip --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly snippet --output=.vscode/rust.code-snippets
 ```

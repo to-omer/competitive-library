@@ -58,21 +58,23 @@ Lit:
 ### Usage
 ```
 USAGE:
-    cargo codesnip [OPTIONS] [--] [FILE]...
+    cargo codesnip [OPTIONS] <SUBCOMMAND>
 
 FLAGS:
     -h, --help       Prints help information
     -V, --version    Prints version information
 
 OPTIONS:
+    -t, --target <FILE>...         Target file paths
         --use-cache <FILE>...      Use cached data
-        --cfg <SPEC>...            Configure the environment: e.g. --cfg feature="nightly"
-        --filter-item <PATH>...    Filter items by attributes path: e.g. --filter-item test
-        --filter-attr <PATH>...    Filter attributes by attributes path: e.g. --filter-attr path
-        --save-cache <FILE>        Save analyzed data in to file
-    -o, --output <FILE>            Output file, default stdout
-        --query <NAME>             Optput queried code snippet
+        --cfg <SPEC>...            Configure the environment: e.g. --cfg=nightly
+        --filter-item <PATH>...    Filter items by attributes path: e.g. --filter-item=test
+        --filter-attr <PATH>...    Filter attributes by attributes path: e.g. --filter-attr=path
 
-ARGS:
-    <FILE>...    Target file paths
+SUBCOMMANDS:
+    cache      Save analyzed data into file
+    list       List names
+    snippet    Output snippet for VSCode
+    bundle     bundle
+    help       Prints this message or the help of the given subcommand(s)
 ```
