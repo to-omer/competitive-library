@@ -1,6 +1,6 @@
 use crate::algebra::{Group, Monoid};
 
-#[codesnip::entry("BinaryIndexedTree")]
+#[codesnip::entry("BinaryIndexedTree", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct BinaryIndexedTree<M: Monoid> {
     n: usize,
@@ -169,7 +169,7 @@ fn test_binary_indexed_tree_lower_bound() {
     }
 }
 
-#[codesnip::entry("BinaryIndexedTree2D")]
+#[codesnip::entry("BinaryIndexedTree2D", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct BinaryIndexedTree2D<M: Monoid> {
     h: usize,

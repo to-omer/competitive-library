@@ -1,6 +1,6 @@
 use crate::num::{One, Zero};
 
-#[codesnip::entry("Matrix")]
+#[codesnip::entry("Matrix", include("zero_one"))]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Matrix<T> {
     pub shape: (usize, usize),

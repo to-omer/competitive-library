@@ -1,7 +1,7 @@
-use super::*;
+use super::{Point, CCW};
 use crate::tools::TotalOrd;
 
-#[codesnip::entry("convex_hull")]
+#[codesnip::entry("convex_hull", include("CCW", "Point"))]
 pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     let mut ps = ps;
     ps.sort_by(|p1, p2| ((p1.re, p1.im).partial_cmp(&(p2.re, p2.im)).unwrap()));
@@ -9,7 +9,7 @@ pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     for &p in ps.iter().chain(ps.iter().rev().skip(1)) {
         while {
             let k = qs.len();
-            k > 1 && ccw(qs[k - 2], qs[k - 1], p) == CCW::Clockwise
+            k > 1 && CCW::ccw(qs[k - 2], qs[k - 1], p) == CCW::Clockwise
         } {
             qs.pop();
         }
@@ -19,7 +19,7 @@ pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     qs
 }
 
-#[codesnip::entry("convex_diameter")]
+#[codesnip::entry("convex_diameter", include("Point"))]
 pub fn convex_diameter(ps: Vec<Point>) -> f64 {
     let n = ps.len();
     let mut i = (0..n).max_by_key(|&i| TotalOrd(ps[i].re)).unwrap_or(0);

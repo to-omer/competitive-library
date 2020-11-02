@@ -94,7 +94,7 @@ fn test_union_find() {
     // println!("{:?}", uf.all_group_members())
 }
 
-#[codesnip::entry("WeightedUnionFind")]
+#[codesnip::entry("WeightedUnionFind", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct WeightedUnionFind<G: Group> {
     group: G,

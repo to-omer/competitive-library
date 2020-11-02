@@ -1,6 +1,6 @@
 use crate::algebra::Monoid;
 
-#[codesnip::entry("QueueAggregation")]
+#[codesnip::entry("QueueAggregation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct QueueAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
@@ -78,7 +78,7 @@ impl<M: Monoid> QueueAggregation<M> {
     }
 }
 
-#[codesnip::entry("DequeAggregation")]
+#[codesnip::entry("DequeAggregation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct DequeAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,

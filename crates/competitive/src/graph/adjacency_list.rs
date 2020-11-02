@@ -1,6 +1,6 @@
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[codesnip::entry("AdjacencyListGraph")]
+#[codesnip::entry("AdjacencyListGraph", include("scanner"))]
 pub use adjacency_list_graph::{AdjacencyListGraph, AdjacencyListGraphScanner};
 #[codesnip::entry("AdjacencyListGraph")]
 pub mod adjacency_list_graph {

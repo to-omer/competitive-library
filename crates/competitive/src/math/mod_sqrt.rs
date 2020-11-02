@@ -3,7 +3,7 @@ use crate::{
     tools::Xorshift,
 };
 
-#[codesnip::entry("mod_sqrt", include("Xorshift"))]
+#[codesnip::entry("mod_sqrt", include("MInt", "Xorshift"))]
 impl<M: Modulus> MInt<M> {
     pub fn sqrt(self) -> Option<Self> {
         fn jacobi<M: Modulus>(mut x: u32) -> i8 {

@@ -4,7 +4,7 @@ use super::magma::*;
 use crate::num::{One, Zero};
 
 /// binary operation to select larger element
-#[codesnip::entry("MaxOperation")]
+#[codesnip::entry("MaxOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MaxOperation<T: Clone + Ord + MinimumBounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -86,7 +86,7 @@ mod max_operation_impl {
 }
 
 /// binary operation to select smaller element
-#[codesnip::entry("MinOperation")]
+#[codesnip::entry("MinOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MinOperation<T: Clone + Ord + MaximumBounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -168,7 +168,7 @@ mod min_operation_impl {
 }
 
 /// retain the first element
-#[codesnip::entry("FirstOperation")]
+#[codesnip::entry("FirstOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct FirstOperation<T: Clone + PartialEq> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -201,7 +201,7 @@ mod first_operation_impl {
 }
 
 /// retain the last element
-#[codesnip::entry("LastOperation")]
+#[codesnip::entry("LastOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LastOperation<T: Clone + PartialEq> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -234,7 +234,7 @@ mod last_operation_impl {
 }
 
 /// $+$
-#[codesnip::entry("AdditiveOperation")]
+#[codesnip::entry("AdditiveOperation", include("algebra", "zero_one"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct AdditiveOperation<T: Copy + Zero + std::ops::Add<Output = T>> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -280,7 +280,7 @@ mod additive_operation_impl {
 }
 
 /// $\times$
-#[codesnip::entry("MultiplicativeOperation")]
+#[codesnip::entry("MultiplicativeOperation", include("algebra", "zero_one"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct MultiplicativeOperation<T: Copy + One + std::ops::Mul<Output = T>> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -324,7 +324,7 @@ mod multiplicative_operation_impl {
 }
 
 /// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
-#[codesnip::entry("LinearOperation")]
+#[codesnip::entry("LinearOperation", include("algebra", "zero_one"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearOperation<
     T: Copy + PartialEq + Zero + std::ops::Add<Output = T> + One + std::ops::Mul<Output = T>,
@@ -359,7 +359,7 @@ mod linear_operation_impl {
 }
 
 /// &
-#[codesnip::entry("BitAndOperation")]
+#[codesnip::entry("BitAndOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitAndOperation<T: Copy + PartialEq + BitAndIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -427,7 +427,7 @@ mod bitand_operation_impl {
 }
 
 /// |
-#[codesnip::entry("BitOrOperation")]
+#[codesnip::entry("BitOrOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -495,7 +495,7 @@ mod bitor_operation_impl {
 }
 
 /// ^
-#[codesnip::entry("BitXorOperation")]
+#[codesnip::entry("BitXorOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct BitXorOperation<T: Copy + PartialEq + BitXorIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
@@ -549,7 +549,7 @@ mod bitxor_operation_impl {
     }
 }
 
-#[codesnip::entry("MonoidalOperation")]
+#[codesnip::entry("MonoidalOperation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct MonoidalOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     e: T,
@@ -580,7 +580,7 @@ mod monoidal_operation_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Commutative for MonoidalOperation<T, F> {}
 }
 
-#[codesnip::entry("GroupOperation")]
+#[codesnip::entry("GroupOperation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct GroupOperation<T: Clone + PartialEq, F: Fn(&T, &T) -> T, G: Fn(&T) -> T> {
     e: T,
@@ -626,7 +626,7 @@ mod group_operation_impl {
     }
 }
 
-#[codesnip::entry("AssocoativeOperator")]
+#[codesnip::entry("AssocoativeOperator", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct AssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
@@ -645,7 +645,7 @@ mod assocoative_operator_impl {
     impl<T: Clone + PartialEq, F: Fn(&T, &T) -> T> Associative for AssocoativeOperator<T, F> {}
 }
 
-#[codesnip::entry("AbsorbedAssocoativeOperator")]
+#[codesnip::entry("AbsorbedAssocoativeOperator", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct AbsorbedAssocoativeOperator<T: Clone + PartialEq, F: Fn(&T, &T) -> T> {
     operator: F,
@@ -684,7 +684,7 @@ mod absorbed_assocoative_operator_impl {
 }
 
 /// $(M_1, M_2)$
-#[codesnip::entry("CartesianOperation")]
+#[codesnip::entry("CartesianOperation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct CartesianOperation<M1, M2> {
     m1: M1,
@@ -721,7 +721,7 @@ mod cartesian_operation_impl {
     }
 }
 
-#[codesnip::entry("CountingOperation")]
+#[codesnip::entry("CountingOperation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct CountingOperation<M> {
     m: M,
@@ -763,7 +763,7 @@ mod counting_operation_impl {
     impl<M: Idempotent> Idempotent for CountingOperation<M> {}
 }
 
-#[codesnip::entry("ReverseOperation")]
+#[codesnip::entry("ReverseOperation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct ReverseOperation<M> {
     m: M,

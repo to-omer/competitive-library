@@ -1,6 +1,6 @@
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[codesnip::entry("EdgeListGraph")]
+#[codesnip::entry("EdgeListGraph", include("scanner"))]
 pub use edge_list_graph::{EdgeListGraph, EdgeListGraphScanner};
 #[codesnip::entry("EdgeListGraph")]
 pub mod edge_list_graph {

@@ -1,7 +1,7 @@
 use crate::algebra::Monoid;
 use crate::graph::UndirectedSparseGraph;
 
-#[codesnip::entry("HeavyLightDecomposition")]
+#[codesnip::entry("HeavyLightDecomposition", include("algebra", "SparseGraph"))]
 pub struct HeavyLightDecomposition {
     pub par: Vec<usize>,
     size: Vec<usize>,

@@ -1,6 +1,6 @@
 use crate::algebra::Monoid;
 
-#[codesnip::entry("LazySegmentTree")]
+#[codesnip::entry("LazySegmentTree", include("algebra"))]
 /// M: folding Monoid
 /// E: lazy Monoid
 /// F: lazy evaluating

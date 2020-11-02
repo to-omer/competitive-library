@@ -5,12 +5,12 @@ mod polygon;
 
 pub use circle::Circle;
 pub use closest_pair::closest_pair;
-pub use line::*;
-pub use polygon::*;
+pub use line::{Line, LineSegment};
+pub use polygon::{convex_diameter, convex_hull};
 
 use crate::num::Complex;
 
-#[codesnip::entry("geometry", include("Real", "CCW", "Complex", "TotalOrd"))]
+#[codesnip::entry("Point", include("Complex"))]
 pub type Point = Complex<f64>;
 
 #[codesnip::entry("EPS")]
@@ -35,7 +35,7 @@ impl PartialOrd for Real {
     }
 }
 
-#[codesnip::entry("CCW")]
+#[codesnip::entry("CCW", include("Point", "Real"))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CCW {
     /// a--b--c
@@ -50,18 +50,20 @@ pub enum CCW {
     OnlineBack = 2,
 }
 #[codesnip::entry("CCW")]
-pub fn ccw(a: Point, b: Point, c: Point) -> CCW {
-    let x = b - a;
-    let y = c - a;
-    if Real(x.cross(y)) > Real(0.) {
-        CCW::CounterClockwise
-    } else if Real(x.cross(y)) < Real(0.) {
-        CCW::Clockwise
-    } else if Real(x.dot(y)) < Real(0.) {
-        CCW::OnlineBack
-    } else if Real(x.abs()) < Real(y.abs()) {
-        CCW::OnlineFront
-    } else {
-        CCW::OnSegment
+impl CCW {
+    pub fn ccw(a: Point, b: Point, c: Point) -> Self {
+        let x = b - a;
+        let y = c - a;
+        if Real(x.cross(y)) > Real(0.) {
+            Self::CounterClockwise
+        } else if Real(x.cross(y)) < Real(0.) {
+            Self::Clockwise
+        } else if Real(x.dot(y)) < Real(0.) {
+            Self::OnlineBack
+        } else if Real(x.abs()) < Real(y.abs()) {
+            Self::OnlineFront
+        } else {
+            Self::OnSegment
+        }
     }
 }

@@ -1,6 +1,6 @@
-use super::*;
+use super::{Point, Real};
 
-#[codesnip::entry("Circle")]
+#[codesnip::entry("Circle", include("Point", "Real"))]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Circle {
     c: Point,

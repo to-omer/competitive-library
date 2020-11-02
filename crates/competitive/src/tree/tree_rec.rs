@@ -1,6 +1,6 @@
 use crate::graph::UndirectedSparseGraph;
 
-#[codesnip::entry("TreeRec")]
+#[codesnip::entry("TreeRec", include("SparseGraph"))]
 #[derive(Debug, Clone)]
 pub struct TreeRec {
     pub n: usize,

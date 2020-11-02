@@ -1,7 +1,7 @@
 use super::SparseGraph;
 use crate::algebra::Monoid;
 
-#[codesnip::entry("dijkstra")]
+#[codesnip::entry("dijkstra", include("algebra", "SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn dijkstra<M>(
         &self,
@@ -34,7 +34,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[codesnip::entry("bellman_ford")]
+#[codesnip::entry("bellman_ford", include("algebra", "SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn bellman_ford<M>(
         &self,
@@ -68,7 +68,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[codesnip::entry("warshall_floyd")]
+#[codesnip::entry("warshall_floyd", include("algebra", "SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn warshall_floyd<M>(
         &self,

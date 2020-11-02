@@ -19,7 +19,7 @@ pub fn lagrange_interpolation<M: Modulus>(x: &[MInt<M>], y: &[MInt<M>], t: MInt<
     )
 }
 
-#[codesnip::entry("lagrange_interpolation", include("factorial"))]
+#[codesnip::entry("lagrange_interpolation", include("factorial", "MInt"))]
 impl<M: Modulus> MemorizedFactorial<M> {
     /// Lagrange interpolation with (i, f(i)) (0 <= i <= n)
     pub fn lagrange_interpolation<F>(&self, n: usize, f: F, t: MInt<M>) -> MInt<M>
@@ -47,7 +47,7 @@ impl<M: Modulus> MemorizedFactorial<M> {
     }
 }
 
-#[codesnip::entry]
+#[codesnip::entry(include("MInt"))]
 pub fn lagrange_interpolation_polynomial<M: Modulus>(x: &[MInt<M>], y: &[MInt<M>]) -> Vec<MInt<M>> {
     let n = x.len() - 1;
     let mut dp = vec![MInt::zero(); n + 2];

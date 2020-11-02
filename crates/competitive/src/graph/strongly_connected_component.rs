@@ -1,6 +1,6 @@
 use super::DirectedSparseGraph;
 
-#[codesnip::entry("StronglyConnectedComponent")]
+#[codesnip::entry("StronglyConnectedComponent", include("SparseGraph"))]
 #[derive(Debug, Clone)]
 pub struct StronglyConnectedComponent<'a> {
     graph: &'a DirectedSparseGraph,
@@ -104,7 +104,7 @@ impl StronglyConnectedComponent<'_> {
     }
 }
 
-#[codesnip::entry("TwoSatisfiability")]
+#[codesnip::entry("TwoSatisfiability", include("StronglyConnectedComponent"))]
 #[derive(Debug, Clone)]
 pub struct TwoSatisfiability {
     vsize: usize,

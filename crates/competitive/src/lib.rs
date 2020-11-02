@@ -8,7 +8,6 @@
 //! [github]: https://github.com/to-omer/competitive-library
 //! [verification summary]: ?search=verify
 
-#[macro_use]
 pub mod algebra;
 pub mod algorithm;
 pub mod combinatorial_optimization;

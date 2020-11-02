@@ -2,7 +2,7 @@
 
 use crate::num::{One, Zero};
 
-#[codesnip::entry("Polynomial")]
+#[codesnip::entry("Polynomial", include("zero_one"))]
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Polynomial<T> {
     pub data: Vec<T>,

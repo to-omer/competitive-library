@@ -1,6 +1,6 @@
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[codesnip::entry("SparseGraph")]
+#[codesnip::entry("SparseGraph", include("scanner"))]
 pub use sparse_graph::{
     Adjacency, BidirectionalGraphScanner, BidirectionalSparseGraph, DirectedGraphScanner,
     DirectedSparseGraph, SparseGraph, TreeGraphScanner, UndirectedGraphScanner,

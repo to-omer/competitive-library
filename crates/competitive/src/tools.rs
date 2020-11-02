@@ -5,7 +5,10 @@ mod iterable;
 mod minmax;
 #[cfg_attr(nightly, codesnip::entry("Counter", inline))]
 mod counter;
-#[cfg_attr(nightly, codesnip::entry("SimuratedAnnealing", inline))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SimuratedAnnealing", inline, include("Xorshift"))
+)]
 mod heuristics;
 mod main;
 mod output;

@@ -8,7 +8,7 @@
 
 use crate::algebra::{Group, Monoid};
 
-#[codesnip::entry("SubsetTransform")]
+#[codesnip::entry("SubsetTransform", include("algebra"))]
 pub struct SubsetTransform<M: Monoid> {
     monoid: M,
 }
@@ -99,7 +99,7 @@ fn test_subset_transform() {
     assert_eq!(h, i);
 }
 
-#[codesnip::entry("SupersetTransform")]
+#[codesnip::entry("SupersetTransform", include("algebra"))]
 pub struct SupersetTransform<M: Monoid> {
     monoid: M,
 }
@@ -190,7 +190,7 @@ fn test_superset_transform() {
     assert_eq!(h, i);
 }
 
-#[codesnip::entry("DivisorTransform")]
+#[codesnip::entry("DivisorTransform", include("algebra"))]
 pub struct DivisorTransform<M: Monoid> {
     monoid: M,
     primes: Vec<usize>,
@@ -279,7 +279,7 @@ fn test_divisor_transform() {
     assert_eq!(&h[1..], &i[1..]);
 }
 
-#[codesnip::entry("MultipleTransform")]
+#[codesnip::entry("MultipleTransform", include("algebra"))]
 pub struct MultipleTransform<M: Monoid> {
     monoid: M,
     primes: Vec<usize>,

@@ -2,7 +2,7 @@ use crate::algebra::{Associative, Magma};
 use crate::data_structure::DisjointSparseTable;
 use crate::graph::UndirectedSparseGraph;
 
-#[codesnip::entry("EulerTourForEdge")]
+#[codesnip::entry("EulerTourForEdge", include("SparseGraph"))]
 #[derive(Clone, Debug)]
 pub struct EulerTourForEdge<'a> {
     graph: &'a UndirectedSparseGraph,
@@ -37,7 +37,7 @@ impl<'a> EulerTourForEdge<'a> {
     }
 }
 
-#[codesnip::entry("EulerTourForVertex")]
+#[codesnip::entry("EulerTourForVertex", include("SparseGraph"))]
 #[derive(Clone, Debug)]
 pub struct EulerTourForVertex<'a> {
     graph: &'a UndirectedSparseGraph,
@@ -95,7 +95,7 @@ impl<'a> EulerTourForVertex<'a> {
     }
 }
 
-#[codesnip::entry("EulerTourForRichVertex")]
+#[codesnip::entry("EulerTourForRichVertex", include("SparseGraph"))]
 #[derive(Clone, Debug)]
 pub struct EulerTourForRichVertex<'a> {
     graph: &'a UndirectedSparseGraph,
@@ -144,7 +144,15 @@ impl<'a> EulerTourForRichVertex<'a> {
         LowestCommonAncestor { euler: self, dst }
     }
 }
-#[codesnip::entry("LowestCommonAncestor")]
+#[codesnip::entry(
+    "LowestCommonAncestor",
+    include(
+        "algebra",
+        "DisjointSparseTable",
+        "EulerTourForRichVertex",
+        "SparseGraph"
+    )
+)]
 #[derive(Clone, Debug)]
 pub struct LowestCommonAncestor<'a> {
     euler: &'a EulerTourForRichVertex<'a>,

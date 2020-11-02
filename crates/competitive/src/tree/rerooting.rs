@@ -3,7 +3,7 @@
 use crate::algebra::Monoid;
 use crate::graph::{Adjacency, UndirectedSparseGraph};
 
-#[codesnip::entry("ReRooting")]
+#[codesnip::entry("ReRooting", include("algebra", "SparseGraph"))]
 /// dynamic programming on all-rooted trees
 ///
 /// caluculate all subtrees (hanging on the edge) in specific ordering,

@@ -1,7 +1,7 @@
 use crate::algebra::Monoid;
 use crate::graph::UndirectedSparseGraph;
 
-#[codesnip::entry("tree_depth")]
+#[codesnip::entry("tree_depth", include("SparseGraph"))]
 impl UndirectedSparseGraph {
     fn depth_dfs(&self, u: usize, p: usize, d: u64, depth: &mut Vec<u64>) {
         depth[u] = d;
@@ -16,7 +16,7 @@ impl UndirectedSparseGraph {
     }
 }
 
-#[codesnip::entry("tree_depth")]
+#[codesnip::entry("weighted_tree_depth", include("algebra", "SparseGraph"))]
 impl UndirectedSparseGraph {
     fn weighted_depth_dfs<M: Monoid, F: Fn(usize) -> M::T>(
         &self,

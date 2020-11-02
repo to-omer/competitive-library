@@ -1,7 +1,7 @@
-use super::*;
+use super::Point;
 use crate::tools::TotalOrd;
 
-#[codesnip::entry("closest_pair")]
+#[codesnip::entry("closest_pair", include("Point", "TotalOrd"))]
 pub fn closest_pair(a: Vec<Point>) -> f64 {
     let mut a = a;
     a.sort_by_key(|&p| TotalOrd(p.re));

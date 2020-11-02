@@ -2,13 +2,23 @@
 
 mod factorial;
 mod fast_fourier_transform;
-#[cfg_attr(nightly, codesnip::entry("FormalPowerSeries", inline))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "FormalPowerSeries",
+        inline,
+        include("NumberTheoreticTransform", "MInt", "mod_sqrt")
+    )
+)]
 mod formal_power_series;
 mod gcd;
 mod lagrange_interpolation;
 mod matrix;
 mod mod_sqrt;
-#[cfg_attr(nightly, codesnip::entry("NumberTheoreticTransform", inline))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("NumberTheoreticTransform", inline, include("MInt"))
+)]
 mod number_theoretic_transform;
 mod nums;
 mod polynomial;

@@ -360,6 +360,7 @@ impl EulerPhiTable {
     }
 }
 
+#[codesnip::entry]
 /// g(d) = Sigma mu(d) * f(n/d)
 pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     let mut res = std::collections::HashMap::new();
@@ -390,6 +391,7 @@ pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     res
 }
 
+#[codesnip::entry]
 pub fn segmented_sieve_primes(n: usize) -> Vec<usize> {
     if n < 2 {
         return Vec::new();

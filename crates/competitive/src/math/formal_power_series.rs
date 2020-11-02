@@ -1,3 +1,4 @@
+#[codesnip::skip]
 use crate::{
     math::{convolve3, NTTModulus, NumberTheoreticTransform},
     num::{modulus, MInt, Modulus, One, Zero},

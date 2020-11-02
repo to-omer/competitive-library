@@ -1,6 +1,6 @@
 use crate::num::{MInt, Modulus, One, Zero};
 
-#[codesnip::entry("factorial")]
+#[codesnip::entry("factorial", include("MInt"))]
 #[derive(Clone, Debug)]
 pub struct MemorizedFactorial<M: Modulus> {
     pub fact: Vec<MInt<M>>,
@@ -55,6 +55,7 @@ impl<M: Modulus> MemorizedFactorial<M> {
     }
 }
 
+#[codesnip::entry("SmallModMemorizedFactorial", include("MInt"))]
 #[derive(Clone, Debug)]
 pub struct SmallModMemorizedFactorial<M: Modulus> {
     fact: Vec<MInt<M>>,

@@ -2,7 +2,7 @@
 
 use crate::tools::Scanner;
 
-#[codesnip::entry(include("scanner", "_zero_one", "minmax"))]
+#[codesnip::entry(include("scanner", "zero_one", "minmax"))]
 fn main() {
     #![allow(unused_imports, unused_macros)]
     use std::io::{stdin, stdout, BufWriter, Read as _, Write as _};

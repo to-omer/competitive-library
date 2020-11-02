@@ -1,7 +1,6 @@
-use super::*;
-use crate::tools::TotalOrd;
+use super::{Point, Real, CCW};
 
-#[codesnip::entry("Line")]
+#[codesnip::entry("Line", include("CCW", "Point", "Real"))]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Line {
     p1: Point,
@@ -16,7 +15,7 @@ impl Line {
         self.p2 - self.p1
     }
     pub fn ccw(&self, p: Point) -> CCW {
-        ccw(self.p1, self.p2, p)
+        CCW::ccw(self.p1, self.p2, p)
     }
     pub fn projection(&self, p: Point) -> Point {
         let e = self.dir().unit();
@@ -42,7 +41,7 @@ pub struct LineSegment {
     p1: Point,
     p2: Point,
 }
-#[codesnip::entry("LineSegment")]
+#[codesnip::entry("LineSegment", include("CCW", "Point", "Real"))]
 impl LineSegment {
     pub fn new(p1: Point, p2: Point) -> Self {
         LineSegment { p1, p2 }
@@ -51,7 +50,7 @@ impl LineSegment {
         self.p2 - self.p1
     }
     pub fn ccw(&self, p: Point) -> CCW {
-        ccw(self.p1, self.p2, p)
+        CCW::ccw(self.p1, self.p2, p)
     }
     pub fn projection(&self, p: Point) -> Point {
         let e = self.dir().unit();
@@ -91,11 +90,10 @@ impl LineSegment {
         if self.intersect_point(r) {
             (r - p).abs()
         } else {
-            std::cmp::min(TotalOrd((self.p1 - p).abs()), TotalOrd((self.p2 - p).abs())).0
+            (self.p1 - p).abs().min((self.p2 - p).abs())
         }
     }
     pub fn distance(&self, other: &Self) -> f64 {
-        use std::cmp::min;
         if self.intersect(other) {
             0.
         } else {
@@ -103,11 +101,7 @@ impl LineSegment {
             let d2 = self.distance_point(other.p2);
             let d3 = other.distance_point(self.p1);
             let d4 = other.distance_point(self.p2);
-            min(
-                min(TotalOrd(d1), TotalOrd(d2)),
-                min(TotalOrd(d3), TotalOrd(d4)),
-            )
-            .0
+            d1.min(d2).min(d3).min(d4)
         }
     }
 }

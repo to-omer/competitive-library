@@ -1,6 +1,6 @@
 use super::UndirectedSparseGraph;
 
-#[codesnip::entry("LowLink")]
+#[codesnip::entry("LowLink", include("SparseGraph"))]
 pub struct LowLink<'a> {
     graph: &'a UndirectedSparseGraph,
     pub low: Vec<usize>,
