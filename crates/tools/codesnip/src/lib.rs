@@ -70,6 +70,9 @@ pub enum Command {
         /// Output file, default stdout.
         #[structopt(value_name = "FILE", parse(from_os_str))]
         output: Option<PathBuf>,
+        /// ignore includes
+        #[structopt(long)]
+        ignore_include: bool,
     },
     /// bundle
     Bundle {
@@ -118,18 +121,24 @@ impl Config {
 impl Command {
     pub fn execute(&self, map: SnippetMap) -> anyhow::Result<()> {
         match self {
-            Command::Cache { output } => {
+            Self::Cache { output } => {
                 emit(&to_string(&map)?, Some(output))?;
             }
-            Command::List => {
+            Self::List => {
                 for name in map.map.keys() {
                     println!("{}", name);
                 }
             }
-            Command::Snippet { output } => {
-                emit(&to_string(&map.to_vscode())?, output.as_ref())?;
+            Self::Snippet {
+                output,
+                ignore_include,
+            } => {
+                emit(
+                    &to_string(&map.to_vscode(*ignore_include))?,
+                    output.as_ref(),
+                )?;
             }
-            Command::Bundle { name, excludes } => {
+            Self::Bundle { name, excludes } => {
                 let link = map
                     .map
                     .get(name)
