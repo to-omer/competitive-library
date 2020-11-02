@@ -79,7 +79,7 @@ pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
 /// return: (y,z)
 ///
 /// forall (a,b,m), ax = b mod m, where x = y mod z
-#[codesnip::entry(include("gcd"))]
+#[codesnip::entry(include("gcd", "modinv"))]
 pub fn linear_congruence(abm: impl IntoIterator<Item = (i64, i64, i64)>) -> Option<(i64, i64)> {
     let mut x = 0i64;
     let mut m0 = 1i64;

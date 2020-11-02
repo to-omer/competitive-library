@@ -150,7 +150,8 @@ impl<'a> EulerTourForRichVertex<'a> {
         "algebra",
         "DisjointSparseTable",
         "EulerTourForRichVertex",
-        "SparseGraph"
+        "SparseGraph",
+        "tree_depth"
     )
 )]
 #[derive(Clone, Debug)]

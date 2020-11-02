@@ -1,6 +1,6 @@
 use crate::algebra::Monoid;
 
-#[codesnip::entry("SegmentTree")]
+#[codesnip::entry("SegmentTree", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct SegmentTree<M: Monoid> {
     n: usize,

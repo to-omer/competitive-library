@@ -52,7 +52,7 @@ impl UndirectedSparseGraph {
     }
 }
 
-#[codesnip::entry("tree_size")]
+#[codesnip::entry("tree_size", include("SparseGraph"))]
 impl UndirectedSparseGraph {
     fn size_dfs(&self, u: usize, p: usize, size: &mut Vec<u64>) {
         size[u] = 1;

@@ -19,7 +19,7 @@ pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     qs
 }
 
-#[codesnip::entry("convex_diameter", include("Point"))]
+#[codesnip::entry("convex_diameter", include("Point", "TotalOrd"))]
 pub fn convex_diameter(ps: Vec<Point>) -> f64 {
     let n = ps.len();
     let mut i = (0..n).max_by_key(|&i| TotalOrd(ps[i].re)).unwrap_or(0);
