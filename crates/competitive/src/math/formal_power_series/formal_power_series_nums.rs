@@ -130,13 +130,7 @@ where
     Multiplier: FormalPowerSeriesMultiplier<T = T>,
 {
     fn div_assign(&mut self, rhs: &Self) {
-        if self.length() < rhs.length() {
-            self.data.clear();
-        } else {
-            let n = self.length() - rhs.length() + 1;
-            *self = Mul::mul(&*self, &rhs.inv(n));
-            todo!()
-        }
+        *self = Div::div(&*self, rhs);
     }
 }
 impl<T, Multiplier> RemAssign<&Self> for FormalPowerSeries<T, Multiplier>
