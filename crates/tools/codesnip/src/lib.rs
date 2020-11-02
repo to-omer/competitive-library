@@ -1,5 +1,6 @@
 pub mod mapping;
 pub mod parse;
+pub mod verify;
 
 pub use codesnip_attr::{entry, skip};
 
@@ -74,7 +75,7 @@ pub enum Command {
         #[structopt(long)]
         ignore_include: bool,
     },
-    /// bundle
+    /// Bundle
     Bundle {
         /// snippet name.
         #[structopt(value_name = "NAME")]
@@ -83,6 +84,8 @@ pub enum Command {
         #[structopt(short, long, value_name = "NAME")]
         excludes: Vec<String>,
     },
+    /// Verify
+    Verify,
 }
 
 impl Opt {
@@ -145,6 +148,9 @@ impl Command {
                     .with_context(|| format!("snippet `{}` not found", name))?;
                 let excludes = excludes.iter().map(|s| s.as_str()).collect();
                 println!("{}", map.bundle(&name, link, excludes, true));
+            }
+            Self::Verify => {
+                verify::execute(map)?;
             }
         }
         Ok(())
