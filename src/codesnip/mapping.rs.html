@@ -111,6 +111,10 @@
 <span id="77">77</span>
 <span id="78">78</span>
 <span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="ident">codesnip_core</span>::{<span class="ident">rustfmt_exits</span>, <span class="ident">Filter</span>, <span class="ident">SnippetMap</span>};
 <span class="kw">use</span> <span class="ident">indicatif</span>::{<span class="ident">ProgressBar</span>, <span class="ident">ProgressStyle</span>};
@@ -122,7 +126,7 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">SnippetMapExt</span> {
     <span class="kw">fn</span> <span class="ident">collect_entries</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">items</span>: <span class="kw-2">&amp;</span>[<span class="ident">Item</span>], <span class="ident">filter</span>: <span class="ident">Filter</span>);
     <span class="kw">fn</span> <span class="ident">format_all</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>);
-    <span class="kw">fn</span> <span class="ident">to_vscode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">VSCode</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">to_vscode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ignore_include</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">VSCode</span><span class="op">&gt;</span>;
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>)]</span>
@@ -177,15 +181,19 @@
         });
         <span class="ident">pb</span>.<span class="ident">finish_and_clear</span>();
     }
-    <span class="kw">fn</span> <span class="ident">to_vscode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">VSCode</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span>: <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">String</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">BTreeMap</span>::<span class="ident">new</span>();
-        <span class="kw">for</span> (<span class="ident">name</span>, <span class="ident">link</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">map</span>.<span class="ident">iter</span>() {
-            <span class="ident">res</span>.<span class="ident">insert</span>(
-                <span class="ident">name</span>.<span class="ident">as_str</span>(),
-                <span class="self">self</span>.<span class="ident">bundle</span>(<span class="ident">name</span>, <span class="ident">link</span>, <span class="ident">Default</span>::<span class="ident">default</span>(), <span class="bool-val">false</span>),
-            );
-        }
-        <span class="ident">res</span>.<span class="ident">into_iter</span>()
+    <span class="kw">fn</span> <span class="ident">to_vscode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ignore_include</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">VSCode</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">map</span>
+            .<span class="ident">iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">name</span>, <span class="ident">link</span>)<span class="op">|</span> {
+                (
+                    <span class="ident">name</span>.<span class="ident">as_str</span>(),
+                    <span class="kw">if</span> <span class="ident">ignore_include</span> {
+                        <span class="ident">link</span>.<span class="ident">contents</span>.<span class="ident">to_string</span>()
+                    } <span class="kw">else</span> {
+                        <span class="self">self</span>.<span class="ident">bundle</span>(<span class="ident">name</span>, <span class="ident">link</span>, <span class="ident">Default</span>::<span class="ident">default</span>(), <span class="bool-val">false</span>)
+                    },
+                )
+            })
             .<span class="ident">filter</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="op">!</span><span class="ident">k</span>.<span class="ident">starts_with</span>(<span class="string">&#39;_&#39;</span>))
             .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="op">|</span> (<span class="ident">k</span>.<span class="ident">to_owned</span>(), <span class="ident">From</span>::<span class="ident">from</span>((<span class="ident">k</span>.<span class="ident">to_owned</span>(), <span class="ident">v</span>))))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">BTreeMap</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()

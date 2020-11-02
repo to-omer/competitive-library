@@ -188,9 +188,25 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mapping</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">parse</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">verify</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">codesnip_attr</span>::{<span class="ident">entry</span>, <span class="ident">skip</span>};
 
@@ -261,8 +277,11 @@
         <span class="doccomment">/// Output file, default stdout.</span>
         <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;FILE&quot;</span>, <span class="ident">parse</span>(<span class="ident">from_os_str</span>))]</span>
         <span class="ident">output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+        <span class="doccomment">/// ignore includes</span>
+        <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">long</span>)]</span>
+        <span class="ident">ignore_include</span>: <span class="ident">bool</span>,
     },
-    <span class="doccomment">/// bundle</span>
+    <span class="doccomment">/// Bundle</span>
     <span class="ident">Bundle</span> {
         <span class="doccomment">/// snippet name.</span>
         <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;NAME&quot;</span>)]</span>
@@ -271,6 +290,8 @@
         <span class="attribute">#[<span class="ident">structopt</span>(<span class="ident">short</span>, <span class="ident">long</span>, <span class="ident">value_name</span> <span class="op">=</span> <span class="string">&quot;NAME&quot;</span>)]</span>
         <span class="ident">excludes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     },
+    <span class="doccomment">/// Verify</span>
+    <span class="ident">Verify</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Opt</span> {
@@ -309,24 +330,33 @@
 <span class="kw">impl</span> <span class="ident">Command</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="ident">SnippetMap</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">anyhow</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Command</span>::<span class="ident">Cache</span> { <span class="ident">output</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="self">Self</span>::<span class="ident">Cache</span> { <span class="ident">output</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>)<span class="question-mark">?</span>, <span class="prelude-val">Some</span>(<span class="ident">output</span>))<span class="question-mark">?</span>;
             }
-            <span class="ident">Command</span>::<span class="ident">List</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="self">Self</span>::<span class="ident">List</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">for</span> <span class="ident">name</span> <span class="kw">in</span> <span class="ident">map</span>.<span class="ident">map</span>.<span class="ident">keys</span>() {
                     <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">name</span>);
                 }
             }
-            <span class="ident">Command</span>::<span class="ident">Snippet</span> { <span class="ident">output</span> } <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">emit</span>(<span class="kw-2">&amp;</span><span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>.<span class="ident">to_vscode</span>())<span class="question-mark">?</span>, <span class="ident">output</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>;
+            <span class="self">Self</span>::<span class="ident">Snippet</span> {
+                <span class="ident">output</span>,
+                <span class="ident">ignore_include</span>,
+            } <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">emit</span>(
+                    <span class="kw-2">&amp;</span><span class="ident">to_string</span>(<span class="kw-2">&amp;</span><span class="ident">map</span>.<span class="ident">to_vscode</span>(<span class="kw-2">*</span><span class="ident">ignore_include</span>))<span class="question-mark">?</span>,
+                    <span class="ident">output</span>.<span class="ident">as_ref</span>(),
+                )<span class="question-mark">?</span>;
             }
-            <span class="ident">Command</span>::<span class="ident">Bundle</span> { <span class="ident">name</span>, <span class="ident">excludes</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="self">Self</span>::<span class="ident">Bundle</span> { <span class="ident">name</span>, <span class="ident">excludes</span> } <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">link</span> <span class="op">=</span> <span class="ident">map</span>
                     .<span class="ident">map</span>
                     .<span class="ident">get</span>(<span class="ident">name</span>)
                     .<span class="ident">with_context</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">format</span><span class="macro">!</span>(<span class="string">&quot;snippet `{}` not found&quot;</span>, <span class="ident">name</span>))<span class="question-mark">?</span>;
                 <span class="kw">let</span> <span class="ident">excludes</span> <span class="op">=</span> <span class="ident">excludes</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">as_str</span>()).<span class="ident">collect</span>();
                 <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">map</span>.<span class="ident">bundle</span>(<span class="kw-2">&amp;</span><span class="ident">name</span>, <span class="ident">link</span>, <span class="ident">excludes</span>, <span class="bool-val">true</span>));
+            }
+            <span class="self">Self</span>::<span class="ident">Verify</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">verify</span>::<span class="ident">execute</span>(<span class="ident">map</span>)<span class="question-mark">?</span>;
             }
         }
         <span class="prelude-val">Ok</span>(())
