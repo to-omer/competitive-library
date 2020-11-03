@@ -14,34 +14,17 @@ pub trait Modulus {
         x % Self::get_modulus()
     }
 }
-#[allow(unused_macros)]
-macro_rules! make_modulus {
-    ($t:ident, $e:expr) => {
-        pub struct $t {}
-        impl Modulus for $t {
-            #[inline]
-            fn get_modulus() -> u32 {
-                const MODULUS: u32 = $e;
-                MODULUS
-            }
-        }
-    };
-}
-#[allow(unused_macros)]
-macro_rules! make_dynamic_modulus {
-    ($t:ident, $m:ident, $e:expr) => {
-        pub struct $t {}
-        static mut $m: u32 = $e;
-        impl Modulus for $t {
-            #[inline]
-            fn get_modulus() -> u32 {
-                unsafe { $m }
-            }
-        }
-    };
-}
 pub mod modulus {
     use super::*;
+    pub struct Modulo2 {}
+    impl Modulus for Modulo2 {
+        #[inline]
+        fn get_modulus() -> u32 {
+            const MODULUS: u32 = 2;
+            MODULUS
+        }
+    }
+    pub type MInt2 = MInt<Modulo2>;
     pub struct Modulo1000000007 {}
     impl Modulus for Modulo1000000007 {
         #[inline]
