@@ -152,7 +152,9 @@ mod matrix_impls {
         pub fn rank(&mut self) -> usize {
             let n = self.shape.0;
             self.row_reduction();
-            (0..n).filter(|&i| !self[i][i].is_zero()).count()
+            (0..n)
+                .filter(|&i| !self.data[i].iter().all(|x| x.is_zero()))
+                .count()
         }
         pub fn solve_system_of_linear_equations(&self, b: &[T]) -> Option<Vec<T>> {
             assert_eq!(self.shape.0, self.shape.1);
