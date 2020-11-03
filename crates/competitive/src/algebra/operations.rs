@@ -799,3 +799,37 @@ mod reverse_operation_impl {
     }
     impl<M: Idempotent> Idempotent for ReverseOperation<M> {}
 }
+
+#[codesnip::entry("Top2Operation", include("algebra", "MaxOperation"))]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct Top2Operation<T: Clone + Ord + MinimumBounded> {
+    _marker: std::marker::PhantomData<fn() -> T>,
+}
+#[codesnip::entry("Top2Operation", include("algebra", "MaxOperation"))]
+mod top2_operation_impl {
+    use super::*;
+    impl<T: Clone + Ord + MinimumBounded> Top2Operation<T> {
+        pub fn new() -> Self {
+            Self {
+                _marker: std::marker::PhantomData,
+            }
+        }
+    }
+    impl<T: Clone + Ord + MinimumBounded> Magma for Top2Operation<T> {
+        type T = (T, T);
+        fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
+            if x.0 < y.0 {
+                (y.0.clone(), if x.0 < y.1 { &y.1 } else { &x.0 }.clone())
+            } else {
+                (x.0.clone(), if x.1 < y.0 { &y.0 } else { &x.1 }.clone())
+            }
+        }
+    }
+    impl<T: Clone + Ord + MinimumBounded> Unital for Top2Operation<T> {
+        fn unit(&self) -> Self::T {
+            (T::minimum(), T::minimum())
+        }
+    }
+    impl<T: Clone + Ord + MinimumBounded> Associative for Top2Operation<T> {}
+    impl<T: Clone + Ord + MinimumBounded> Commutative for Top2Operation<T> {}
+}
