@@ -805,7 +805,7 @@ mod reverse_operation_impl {
 pub struct Top2Operation<T: Clone + Ord + MinimumBounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-#[codesnip::entry("Top2Operation", include("algebra", "MaxOperation"))]
+#[codesnip::entry("Top2Operation")]
 mod top2_operation_impl {
     use super::*;
     impl<T: Clone + Ord + MinimumBounded> Top2Operation<T> {
@@ -832,4 +832,43 @@ mod top2_operation_impl {
     }
     impl<T: Clone + Ord + MinimumBounded> Associative for Top2Operation<T> {}
     impl<T: Clone + Ord + MinimumBounded> Commutative for Top2Operation<T> {}
+}
+
+#[codesnip::entry("PermutationOperation", include("algebra"))]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct PermutationOperation {
+    size: usize,
+}
+#[codesnip::entry("PermutationOperation")]
+mod permutation_operation_impl {
+    use super::*;
+    impl PermutationOperation {
+        pub fn new(size: usize) -> Self {
+            Self { size }
+        }
+    }
+    impl Magma for PermutationOperation {
+        type T = Vec<usize>;
+        fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
+            assert!(x.len() == self.size);
+            assert!(y.len() == self.size);
+            y.iter().map(|y| x[*y]).collect()
+        }
+    }
+    impl Associative for PermutationOperation {}
+    impl Unital for PermutationOperation {
+        fn unit(&self) -> Self::T {
+            (0..self.size).collect()
+        }
+    }
+    impl Invertible for PermutationOperation {
+        fn inverse(&self, x: &Self::T) -> Self::T {
+            assert!(x.len() == self.size);
+            let mut y = vec![0; self.size];
+            for (i, x) in x.iter().enumerate() {
+                y[*x] = i;
+            }
+            y
+        }
+    }
 }

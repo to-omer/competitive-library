@@ -81,3 +81,10 @@ pub trait Idempotent {}
 pub trait IdempotentMonoid: Monoid + Idempotent {}
 
 impl<M: Monoid + Idempotent> IdempotentMonoid for M {}
+
+#[macro_export]
+macro_rules! monoid_fold {
+    ($m:expr) => { ($m).unit() };
+    ($m:expr, $f:expr) => { ($f).clone() };
+    ($m:expr, $f:expr, $($ff:expr),*) => { ($m).operate(&($f), &monoid_fold!($m, $($ff),*)) };
+}
