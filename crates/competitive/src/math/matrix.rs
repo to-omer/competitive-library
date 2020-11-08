@@ -195,16 +195,17 @@ mod matrix_impls {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::num::{MInt, Modulus};
+    use crate::num::{MInt, MIntBase, MIntConvert};
     use crate::tools::Xorshift;
-    struct DM {}
     static mut MOD: u32 = 2;
-    impl Modulus for DM {
-        #[inline]
-        fn get_modulus() -> u32 {
-            unsafe { MOD }
-        }
-    }
+    crate::define_basic_mintbase!(
+        DM,
+        unsafe { MOD },
+        u32,
+        u64,
+        [u32, u64, u128, usize],
+        [i32, i64, i128, isize]
+    );
 
     #[test]
     fn test_row_reduction() {

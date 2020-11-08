@@ -1,7 +1,7 @@
 #[codesnip::skip]
 use crate::{
     math::{convolve3, NTTModulus, NumberTheoreticTransform},
-    num::{modulus, MInt, Modulus, One, Zero},
+    num::{mint_base, MInt, MIntConvert, One, Zero},
 };
 
 #[derive(Debug, Default)]
@@ -10,7 +10,7 @@ pub struct FormalPowerSeries<T, Multiplier> {
     _marker: std::marker::PhantomData<Multiplier>,
 }
 
-pub type FPS998244353 = FormalPowerSeries<modulus::MInt998244353, modulus::Modulo998244353>;
+pub type FPS998244353 = FormalPowerSeries<mint_base::MInt998244353, mint_base::Modulo998244353>;
 pub type FPS<M> = FormalPowerSeries<MInt<M>, DefaultFormalPowerSeriesMultiplier<M>>;
 
 pub trait FormalPowerSeriesCoefficient:
@@ -40,7 +40,7 @@ pub trait FormalPowerSeriesCoefficient:
 {
 }
 
-impl<M: Modulus> FormalPowerSeriesCoefficient for MInt<M> {}
+impl<M: MIntConvert<usize>> FormalPowerSeriesCoefficient for MInt<M> {}
 
 pub trait FormalPowerSeriesMultiplier: Sized {
     type T;
@@ -52,21 +52,21 @@ pub trait FormalPowerSeriesMultiplier: Sized {
 
 pub struct DefaultFormalPowerSeriesMultiplier<M>(std::marker::PhantomData<M>);
 
-impl<M: Modulus> FormalPowerSeriesMultiplier for DefaultFormalPowerSeriesMultiplier<M> {
+impl<M: MIntConvert<u32>> FormalPowerSeriesMultiplier for DefaultFormalPowerSeriesMultiplier<M> {
     type T = MInt<M>;
     fn convolve(
         x: &FormalPowerSeries<Self::T, Self>,
         y: &FormalPowerSeries<Self::T, Self>,
     ) -> FormalPowerSeries<Self::T, Self> {
-        let z = convolve3(
-            x.data.iter().map(|x| x.inner()).collect(),
-            y.data.iter().map(|x| x.inner()).collect(),
+        let z = convolve3::<_, u32>(
+            x.data.iter().cloned().map(|x| x.into()).collect(),
+            y.data.iter().cloned().map(|x| x.into()).collect(),
         );
         FormalPowerSeries::from_vec(z)
     }
 }
 
-impl<M: NTTModulus> FormalPowerSeriesMultiplier for M {
+impl<M: NTTModulus + MIntConvert<usize>> FormalPowerSeriesMultiplier for M {
     type T = MInt<M>;
     fn convolve(
         x: &FormalPowerSeries<Self::T, Self>,
@@ -78,11 +78,11 @@ impl<M: NTTModulus> FormalPowerSeriesMultiplier for M {
 }
 
 pub trait FormalPowerSeriesCoefficientSqrt: FormalPowerSeriesCoefficient {
-    fn sqrt(&self) -> Option<Self>;
+    fn sqrt_coefficient(&self) -> Option<Self>;
 }
 
-impl<M: Modulus> FormalPowerSeriesCoefficientSqrt for MInt<M> {
-    fn sqrt(&self) -> Option<Self> {
+impl<M: MIntConvert<u32> + MIntConvert<usize>> FormalPowerSeriesCoefficientSqrt for MInt<M> {
+    fn sqrt_coefficient(&self) -> Option<Self> {
         self.clone().sqrt()
     }
 }

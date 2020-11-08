@@ -1,14 +1,11 @@
-use crate::{
-    num::{MInt, Modulus, One, Zero},
-    tools::Xorshift,
-};
+use crate::num::{MInt, MIntConvert, One, Zero};
 
-#[codesnip::entry("mod_sqrt", include("MInt", "Xorshift"))]
-impl<M: Modulus> MInt<M> {
+#[codesnip::entry("mod_sqrt", include("MInt"))]
+impl<M: MIntConvert<u32>> MInt<M> {
     pub fn sqrt(self) -> Option<Self> {
-        fn jacobi<M: Modulus>(mut x: u32) -> i8 {
+        fn jacobi<M: MIntConvert<u32>>(mut x: u32) -> i8 {
             let mut s = 1i8;
-            let mut m = M::get_modulus();
+            let mut m = M::mod_into();
             while m > 1 {
                 x %= m;
                 if x == 0 {
@@ -26,10 +23,10 @@ impl<M: Modulus> MInt<M> {
             }
             s
         }
-        if M::get_modulus() == 2 {
+        if M::mod_into() == 2 {
             return Some(self);
         }
-        let j = jacobi::<M>(self.inner());
+        let j = jacobi::<M>(u32::from(self));
         match j.cmp(&0) {
             std::cmp::Ordering::Less => {
                 return None;
@@ -39,11 +36,14 @@ impl<M: Modulus> MInt<M> {
             }
             std::cmp::Ordering::Greater => {}
         }
-        let mut rand = Xorshift::default();
+        let mut r = 1;
         let (mut f0, d) = loop {
-            let b = Self::new_unchecked(rand.rand(M::get_modulus() as u64) as u32);
+            r ^= r << 5;
+            r ^= r >> 17;
+            r ^= r << 11;
+            let b = Self::from(r);
             let d = b * b - self;
-            if jacobi::<M>(d.inner()) == -1 {
+            if jacobi::<M>(u32::from(d)) == -1 {
                 break (b, d);
             }
         };
@@ -51,7 +51,7 @@ impl<M: Modulus> MInt<M> {
             Self::one(),
             Self::one(),
             Self::zero(),
-            (M::get_modulus() + 1) / 2,
+            (M::mod_into() + 1) / 2,
         );
         while e > 0 {
             if e % 2 == 1 {
@@ -60,11 +60,11 @@ impl<M: Modulus> MInt<M> {
                 g0 = t;
             }
             let t = f0 * f0 + d * f1 * f1;
-            f1 = Self::new_unchecked(2) * f0 * f1;
+            f1 = Self::from(2) * f0 * f1;
             f0 = t;
             e /= 2;
         }
-        if g0.inner() > M::get_modulus() - g0.inner() {
+        if u32::from(g0) > M::mod_into() - u32::from(g0) {
             g0 = -g0;
         }
         Some(g0)

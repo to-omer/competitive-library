@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     math::NTT998244353,
-    num::{modulus::MInt998244353, MInt},
+    num::{mint_base::MInt998244353, MInt},
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/convolution_mod")]

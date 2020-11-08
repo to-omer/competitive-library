@@ -1,7 +1,7 @@
 use crate::math::factorial::MemorizedFactorial;
-use crate::num::{MInt, Modulus, One, Zero};
+use crate::num::{MInt, MIntBase, MIntConvert, One, Zero};
 
-pub fn lagrange_interpolation<M: Modulus>(x: &[MInt<M>], y: &[MInt<M>], t: MInt<M>) -> MInt<M> {
+pub fn lagrange_interpolation<M: MIntBase>(x: &[MInt<M>], y: &[MInt<M>], t: MInt<M>) -> MInt<M> {
     let n = x.len();
     debug_assert!(n == y.len());
     x.iter().position(|&x| x == t).map_or_else(
@@ -20,35 +20,34 @@ pub fn lagrange_interpolation<M: Modulus>(x: &[MInt<M>], y: &[MInt<M>], t: MInt<
 }
 
 #[codesnip::entry("lagrange_interpolation", include("factorial", "MInt"))]
-impl<M: Modulus> MemorizedFactorial<M> {
+impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     /// Lagrange interpolation with (i, f(i)) (0 <= i <= n)
     pub fn lagrange_interpolation<F>(&self, n: usize, f: F, t: MInt<M>) -> MInt<M>
     where
         F: Fn(MInt<M>) -> MInt<M>,
     {
-        debug_assert!(0 < n && n < M::get_modulus() as usize + 1);
-        if t.inner() <= n as u32 {
+        debug_assert!(0 < n && n < M::mod_into() + 1);
+        if usize::from(t) <= n {
             return f(t);
         }
         let mut left = vec![MInt::one(); n + 1];
         for i in 0..n {
-            left[i + 1] = left[i] * (t - MInt::new_unchecked(i as u32));
+            left[i + 1] = left[i] * (t - MInt::from(i));
         }
         let (mut res, mut right) = (MInt::zero(), MInt::one());
         for i in (0..=n).rev() {
-            res += f(MInt::new_unchecked(i as u32))
-                * left[i]
-                * right
-                * self.inv_fact[i]
-                * self.inv_fact[n - i];
-            right *= MInt::new_unchecked(i as u32) - t;
+            res += f(MInt::from(i)) * left[i] * right * self.inv_fact[i] * self.inv_fact[n - i];
+            right *= MInt::from(i) - t;
         }
         res
     }
 }
 
 #[codesnip::entry(include("MInt"))]
-pub fn lagrange_interpolation_polynomial<M: Modulus>(x: &[MInt<M>], y: &[MInt<M>]) -> Vec<MInt<M>> {
+pub fn lagrange_interpolation_polynomial<M: MIntBase>(
+    x: &[MInt<M>],
+    y: &[MInt<M>],
+) -> Vec<MInt<M>> {
     let n = x.len() - 1;
     let mut dp = vec![MInt::zero(); n + 2];
     let mut ndp = vec![MInt::zero(); n + 2];
