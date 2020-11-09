@@ -163,7 +163,7 @@ define_basic_mintbase!(
     DynModuloU64,
     unsafe { DYN_MODULUS_U64 },
     u64,
-    u64,
+    u128,
     [u64, u128, usize],
     [i64, i128, isize]
 );
@@ -468,11 +468,11 @@ where
 }
 impl<M> Display for MInt<M>
 where
-    M: MIntBase,
+    M: MIntConvert,
     M::Inner: Display,
 {
     fn fmt<'a>(&self, f: &mut fmt::Formatter<'a>) -> Result<(), fmt::Error> {
-        write!(f, "{}", self.x)
+        write!(f, "{}", self.inner())
     }
 }
 impl<M> FromStr for MInt<M>
