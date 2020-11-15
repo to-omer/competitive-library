@@ -26,16 +26,18 @@ macro_rules! chmax {
     }};
 }
 
-#[test]
-fn test_min() {
-    assert_eq!(min!(1), 1);
-    assert_eq!(min!(1, 2), 1);
-    assert_eq!(min!(4, 1, 2), 1);
-    assert_eq!(min!(4, 9, 2, 3), 2);
-}
-
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::eq_op)]
+
+    #[test]
+    fn test_min() {
+        assert_eq!(min!(1), 1);
+        assert_eq!(min!(1, 2), 1);
+        assert_eq!(min!(4, 1, 2), 1);
+        assert_eq!(min!(4, 9, 2, 3), 2);
+    }
+
     #[test]
     fn test_chmin() {
         let mut x = 100;

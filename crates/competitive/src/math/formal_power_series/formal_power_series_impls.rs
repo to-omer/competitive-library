@@ -91,7 +91,7 @@ impl<T, Multiplier> IndexMut<usize> for FormalPowerSeries<T, Multiplier> {
 
 impl<T, Multiplier> From<T> for FormalPowerSeries<T, Multiplier> {
     fn from(x: T) -> Self {
-        Self::from_iter(once(x))
+        once(x).collect()
     }
 }
 impl<T, Multiplier> From<Vec<T>> for FormalPowerSeries<T, Multiplier> {
@@ -199,7 +199,7 @@ where
             }
         } else {
             let inv2 = T::one() / (T::one() + T::one());
-            let mut f = Self::from(self[0].sqrt()?);
+            let mut f = Self::from(self[0].sqrt_coefficient()?);
             let mut i = 1;
             while i < deg {
                 f = (&f + &(self.prefix(i * 2) * f.inv(i * 2))).prefix(i * 2) * &inv2;

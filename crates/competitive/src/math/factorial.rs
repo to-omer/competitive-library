@@ -1,22 +1,22 @@
-use crate::num::{MInt, Modulus, One, Zero};
+use crate::num::{MInt, MIntConvert, One, Zero};
 
 #[codesnip::entry("factorial", include("MInt"))]
 #[derive(Clone, Debug)]
-pub struct MemorizedFactorial<M: Modulus> {
+pub struct MemorizedFactorial<M: MIntConvert<usize>> {
     pub fact: Vec<MInt<M>>,
     pub inv_fact: Vec<MInt<M>>,
 }
 #[codesnip::entry("factorial")]
-impl<M: Modulus> MemorizedFactorial<M> {
+impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     pub fn new(max_n: usize) -> Self {
         let mut fact = vec![MInt::one(); max_n + 1];
         let mut inv_fact = vec![MInt::one(); max_n + 1];
         for i in 2..=max_n {
-            fact[i] = fact[i - 1] * MInt::new(i as u32);
+            fact[i] = fact[i - 1] * MInt::from(i);
         }
         inv_fact[max_n] = fact[max_n].inv();
         for i in (3..=max_n).rev() {
-            inv_fact[i - 1] = inv_fact[i] * MInt::new(i as u32);
+            inv_fact[i - 1] = inv_fact[i] * MInt::from(i);
         }
         Self { fact, inv_fact }
     }
@@ -57,26 +57,26 @@ impl<M: Modulus> MemorizedFactorial<M> {
 
 #[codesnip::entry("SmallModMemorizedFactorial", include("MInt"))]
 #[derive(Clone, Debug)]
-pub struct SmallModMemorizedFactorial<M: Modulus> {
+pub struct SmallModMemorizedFactorial<M: MIntConvert<usize>> {
     fact: Vec<MInt<M>>,
 }
-impl<M: Modulus> Default for SmallModMemorizedFactorial<M> {
+impl<M: MIntConvert<usize>> Default for SmallModMemorizedFactorial<M> {
     fn default() -> Self {
-        let p = MInt::<M>::get_mod() as usize;
+        let p = M::mod_into();
         let mut fact = vec![MInt::<M>::one(); p];
         for i in 1..p {
-            fact[i] = fact[i - 1] * MInt::<M>::new(i as u32);
+            fact[i] = fact[i - 1] * MInt::<M>::from(i);
         }
         Self { fact }
     }
 }
-impl<M: Modulus> SmallModMemorizedFactorial<M> {
+impl<M: MIntConvert<usize>> SmallModMemorizedFactorial<M> {
     pub fn new() -> Self {
         Default::default()
     }
     /// n! = a * p^e
     pub fn factorial(&self, n: usize) -> (MInt<M>, usize) {
-        let p = MInt::<M>::get_mod() as usize;
+        let p = M::mod_into();
         if n == 0 {
             (MInt::<M>::one(), 0)
         } else {
@@ -108,9 +108,9 @@ mod tests {
 
     #[test]
     fn test_factorials() {
-        use crate::num::modulus::Modulo1000000007;
+        use crate::num::mint_basic::MInt1000000007;
         let fact = MemorizedFactorial::new(100);
-        type M = MInt<Modulo1000000007>;
+        type M = MInt1000000007;
         for i in 0..101 {
             assert_eq!(fact.fact[i] * fact.inv_fact[i], M::new(1));
         }
@@ -134,16 +134,17 @@ mod tests {
 
     #[test]
     fn test_small_factorials() {
-        use crate::num::Modulus;
+        use crate::num::{MIntBase, MIntConvert};
         use crate::tools::Xorshift;
-        struct DM {}
         static mut MOD: u32 = 2;
-        impl Modulus for DM {
-            #[inline]
-            fn get_modulus() -> u32 {
-                unsafe { MOD }
-            }
-        }
+        crate::define_basic_mintbase!(
+            DM,
+            unsafe { MOD },
+            u32,
+            u64,
+            [u32, u64, u128, usize],
+            [i32, i64, i128, isize]
+        );
         let mut rand = Xorshift::time();
         const N: usize = 10_000;
         const Q: usize = 10_000;

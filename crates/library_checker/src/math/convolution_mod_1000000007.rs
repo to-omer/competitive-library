@@ -1,6 +1,6 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
-pub use competitive::{math::convolve3, num::modulus::Modulo1000000007};
+pub use competitive::{math::convolve3, num::mint_basic::Modulo1000000007};
 
 #[verify::verify("https://judge.yosupo.jp/problem/convolution_mod_1000000007")]
 pub fn convolution_mod_1000000007(reader: &mut impl Read, writer: &mut impl Write) {

@@ -2,10 +2,6 @@
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(inline, include("zero_one")))]
 mod float;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("MInt", inline, include("scanner", "zero_one"))
-)]
 mod mint;
 #[cfg_attr(nightly, codesnip::entry("QuadDouble", inline))]
 mod quad_double;
