@@ -91,7 +91,7 @@ impl<T, Multiplier> IndexMut<usize> for FormalPowerSeries<T, Multiplier> {
 
 impl<T, Multiplier> From<T> for FormalPowerSeries<T, Multiplier> {
     fn from(x: T) -> Self {
-        Self::from_iter(once(x))
+        once(x).collect()
     }
 }
 impl<T, Multiplier> From<Vec<T>> for FormalPowerSeries<T, Multiplier> {
