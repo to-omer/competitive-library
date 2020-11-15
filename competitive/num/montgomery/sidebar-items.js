@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Modulo998244353",""]],"trait":[["MontgomeryReduction32","m is prime, n = 2^32"]],"type":[["MInt998244353",""]]});

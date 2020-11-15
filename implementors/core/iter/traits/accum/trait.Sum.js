@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["competitive"] = [{"text":"impl&lt;M:&nbsp;Modulus&gt; Sum&lt;MInt&lt;M&gt;&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]},{"text":"impl&lt;'a, M:&nbsp;Modulus + 'a&gt; Sum&lt;&amp;'a MInt&lt;M&gt;&gt; for MInt&lt;M&gt;","synthetic":false,"types":[]}];
+implementors["competitive"] = [{"text":"impl&lt;M&gt; Sum&lt;MInt&lt;M&gt;&gt; for MInt&lt;M&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;M: MIntBase,&nbsp;</span>","synthetic":false,"types":[]},{"text":"impl&lt;'a, M:&nbsp;'a&gt; Sum&lt;&amp;'a MInt&lt;M&gt;&gt; for MInt&lt;M&gt; <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;M: MIntBase,&nbsp;</span>","synthetic":false,"types":[]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

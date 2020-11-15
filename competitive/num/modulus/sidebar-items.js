@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["set_dyn_modulus",""]],"struct":[["DynModulo",""],["Modulo1000000007",""],["Modulo1000000009",""],["Modulo2",""],["Modulo998244353",""]],"type":[["DynMInt",""],["MInt1000000007",""],["MInt1000000009",""],["MInt2",""],["MInt998244353",""]]});
