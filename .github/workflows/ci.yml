@@ -10,6 +10,7 @@ jobs:
         toolchain:
           - 1.42.0-x86_64-unknown-linux-gnu
           - stable-x86_64-unknown-linux-gnu
+          - nightly-x86_64-unknown-linux-gnu
 
     name: Build (${{ matrix.toolchain }})
     runs-on: ubuntu-18.04
@@ -51,6 +52,23 @@ jobs:
         args: --workspace --no-fail-fast
       env:
         RUST_BACKTRACE: full
+
+
+  snippet:
+    name: Snippet
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup `stable-x86_64-unknown-linux-gnu`
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable-x86_64-unknown-linux-gnu
+        override: true
+        profile: minimal
+        components: rustfmt
 
     - name: cargo-install codesnip
       uses: actions-rs/cargo@v1
