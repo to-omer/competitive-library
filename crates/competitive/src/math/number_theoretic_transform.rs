@@ -1,5 +1,5 @@
 #[codesnip::skip]
-use crate::num::{mint_base, MInt, MIntBase, MIntConvert, One, Zero};
+use crate::num::{mint_basic, MInt, MIntBase, MIntConvert, One, Zero};
 
 pub struct NumberTheoreticTransform<M: MIntBase>(std::marker::PhantomData<fn() -> M>);
 pub trait NTTModulus: MIntBase {
@@ -7,7 +7,7 @@ pub trait NTTModulus: MIntBase {
 }
 mod number_theoretic_transform_impls {
     use super::*;
-    use mint_base::Modulo998244353;
+    use mint_basic::Modulo998244353;
     macro_rules! impl_ntt_modulus {
         ($([$name:ident, $t:ty, $g:expr]),*) => {
             $(impl NTTModulus for $name {
@@ -29,7 +29,7 @@ mod number_theoretic_transform_impls {
         [Modulo2013265921, 2_013_265_921, MInt2013265921]  // 27
     );
 }
-pub type NTT998244353 = NumberTheoreticTransform<mint_base::Modulo998244353>;
+pub type NTT998244353 = NumberTheoreticTransform<mint_basic::Modulo998244353>;
 impl<M: NTTModulus + MIntConvert<usize>> NumberTheoreticTransform<M> {
     pub fn convert<T: Into<MInt<M>>, I: IntoIterator<Item = T>>(iter: I) -> Vec<MInt<M>> {
         iter.into_iter().map(|x| x.into()).collect()
@@ -90,11 +90,11 @@ impl<M: NTTModulus + MIntConvert<usize>> NumberTheoreticTransform<M> {
 
 #[test]
 fn test_ntt998244353() {
-    use crate::num::mint_base::MInt998244353;
+    use crate::num::mint_basic::MInt998244353;
     use crate::tools::Xorshift;
     const N: usize = 3_000;
     let mut rand = Xorshift::time();
-    pub type NTT = NumberTheoreticTransform<mint_base::Modulo998244353>;
+    pub type NTT = NumberTheoreticTransform<mint_basic::Modulo998244353>;
     let a: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
     let b: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
     let mut c = vec![MInt998244353::zero(); N * 2 - 1];
@@ -194,7 +194,7 @@ where
 fn test_convolve3() {
     use crate::tools::Xorshift;
     const N: usize = 3_000;
-    type M = MInt<mint_base::Modulo1000000009>;
+    type M = MInt<mint_basic::Modulo1000000009>;
     let mut rand = Xorshift::time();
     let a: Vec<_> = (0..N)
         .map(|_| rand.rand(std::u32::MAX as u64) as u32)
@@ -208,7 +208,7 @@ fn test_convolve3() {
             c[i + j] += M::from(a[i] as u64 * b[j] as u64);
         }
     }
-    let d = convolve3::<mint_base::Modulo1000000009, _>(a, b);
+    let d = convolve3::<mint_basic::Modulo1000000009, _>(a, b);
     assert_eq!(c, d);
 }
 

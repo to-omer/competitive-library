@@ -1,7 +1,7 @@
 #[codesnip::skip]
 use crate::{
     math::{convolve3, NTTModulus, NumberTheoreticTransform},
-    num::{mint_base, MInt, MIntConvert, One, Zero},
+    num::{mint_basic, MInt, MIntConvert, One, Zero},
 };
 
 #[derive(Debug, Default)]
@@ -10,7 +10,7 @@ pub struct FormalPowerSeries<T, Multiplier> {
     _marker: std::marker::PhantomData<Multiplier>,
 }
 
-pub type FPS998244353 = FormalPowerSeries<mint_base::MInt998244353, mint_base::Modulo998244353>;
+pub type FPS998244353 = FormalPowerSeries<mint_basic::MInt998244353, mint_basic::Modulo998244353>;
 pub type FPS<M> = FormalPowerSeries<MInt<M>, DefaultFormalPowerSeriesMultiplier<M>>;
 
 pub trait FormalPowerSeriesCoefficient:

@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{
     algebra::{AdditiveOperation, CartesianOperation, LinearOperation},
     data_structure::LazySegmentTree,
-    num::{mint_base::MInt998244353, MInt},
+    num::{mint_basic::MInt998244353, MInt},
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/range_affine_range_sum")]

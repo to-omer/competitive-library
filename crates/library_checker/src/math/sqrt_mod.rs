@@ -1,5 +1,5 @@
 #[doc(no_inline)]
-pub use competitive::num::mint_base::{DynMIntU32, DynModuloU32};
+pub use competitive::num::mint_basic::{DynMIntU32, DynModuloU32};
 use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/sqrt_mod")]

@@ -320,7 +320,7 @@ fn culculate_montgomery() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::num::mint_base::MInt998244353 as M;
+    use crate::num::mint_basic::MInt998244353 as M;
     use crate::tools::Xorshift;
 
     #[test]

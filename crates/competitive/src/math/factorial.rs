@@ -108,7 +108,7 @@ mod tests {
 
     #[test]
     fn test_factorials() {
-        use crate::num::mint_base::MInt1000000007;
+        use crate::num::mint_basic::MInt1000000007;
         let fact = MemorizedFactorial::new(100);
         type M = MInt1000000007;
         for i in 0..101 {
