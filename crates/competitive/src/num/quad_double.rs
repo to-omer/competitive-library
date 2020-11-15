@@ -1,6 +1,6 @@
 #![allow(clippy::suspicious_arithmetic_impl)]
 
-/// ref: https://na-inet.jp/na/qd_ja.pdf
+/// ref: <https://na-inet.jp/na/qd_ja.pdf>
 #[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
 pub struct QuadDouble(pub f64, f64, f64, f64);
 pub mod quad_double_impl {
