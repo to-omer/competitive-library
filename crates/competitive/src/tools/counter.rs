@@ -38,15 +38,17 @@ impl<T: Eq + std::hash::Hash> Counter<T> {
             false
         }
     }
-    #[inline]
+    pub fn append(&mut self, other: &mut Self) {
+        for (k, v) in other.map.drain() {
+            *self.map.entry(k).or_default() += v;
+        }
+    }
     pub fn keys(&self) -> std::collections::hash_map::Keys<'_, T, usize> {
         self.map.keys()
     }
-    #[inline]
     pub fn values(&self) -> std::collections::hash_map::Values<'_, T, usize> {
         self.map.values()
     }
-    #[inline]
     pub fn iter(&self) -> std::collections::hash_map::Iter<'_, T, usize> {
         self.map.iter()
     }
