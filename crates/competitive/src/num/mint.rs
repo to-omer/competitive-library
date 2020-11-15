@@ -47,6 +47,9 @@ pub trait MIntConvert<T = <Self as MIntBase>::Inner>: MIntBase {
 
 pub mod mint_base;
 
+#[cfg_attr(nightly, codesnip::skip)]
+pub mod montgomery;
+
 #[test]
 fn test_mint() {
     use super::mint_base::MInt998244353;
