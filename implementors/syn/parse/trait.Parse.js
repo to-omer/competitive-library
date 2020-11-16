@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["codesnip_core"] = [{"text":"impl Parse for EntryArgs","synthetic":false,"types":[]},{"text":"impl Parse for EntryArg","synthetic":false,"types":[]},{"text":"impl Parse for EntryArgName","synthetic":false,"types":[]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

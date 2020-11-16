@@ -1,1 +1,0 @@
-initSidebarItems({"attr":[["entry",""],["skip",""]],"enum":[["Command",""],["Opt",""]],"mod":[["mapping",""],["parse",""],["verify",""]],"struct":[["Config",""]]});

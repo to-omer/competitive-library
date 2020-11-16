@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Error",""]],"fn":[["format_with_rustfmt",""],["parse_file_recursive",""],["rustfmt_exits",""]],"mod":[["entry",""]],"struct":[["Filter",""],["LinkedSnippet",""],["SnippetMap",""]],"trait":[["AttributeExt",""],["ItemExt",""],["PathExt",""]]});

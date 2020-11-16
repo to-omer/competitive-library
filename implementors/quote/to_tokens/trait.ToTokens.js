@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["codesnip_core"] = [{"text":"impl ToTokens for EntryArgs","synthetic":false,"types":[]},{"text":"impl ToTokens for EntryArg","synthetic":false,"types":[]},{"text":"impl ToTokens for EntryArgName","synthetic":false,"types":[]},{"text":"impl ToTokens for EntryArgInclude","synthetic":false,"types":[]},{"text":"impl ToTokens for EntryArgInline","synthetic":false,"types":[]},{"text":"impl ToTokens for EntryArgNoInline","synthetic":false,"types":[]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

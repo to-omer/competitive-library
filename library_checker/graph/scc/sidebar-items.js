@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["scc","✅  AC  247ms"]]});
+initSidebarItems({"fn":[["scc","✅  AC  231ms"]]});
