@@ -11,13 +11,6 @@ competitive programming library
 ## Doc
 generate documentation with verify results
 ```sh
-cargo doc --no-deps --all-features
-cp -r util/gh-pages/* target/doc
-```
-
-## Snippet
-generate snippet for vscode
-```sh
-cargo install --path crates/tools/codesnip
-cargo codesnip --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly snippet --output=.vscode/rust.code-snippets
+$ cargo doc --no-deps --all-features
+$ cp -r util/gh-pages/* target/doc
 ```
