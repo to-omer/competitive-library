@@ -7,10 +7,10 @@ pub use codesnip_attr::{entry, skip};
 use crate::{mapping::SnippetMapExt as _, parse::parse_files};
 use anyhow::Context as _;
 use codesnip_core::{Error::FileNotFound, Filter, SnippetMap};
-use serde_json::{from_reader, to_string};
+use serde_json::to_string;
 use std::{
     fs::File,
-    io::{stdout, BufReader, Write as _},
+    io::{stdout, Read as _, Write as _},
     path::{Path, PathBuf},
 };
 use structopt::{
@@ -110,10 +110,12 @@ impl Config {
         map.collect_entries(&items, self.filter());
         map.format_all();
 
+        let mut buf = Vec::new();
         for cache in self.use_cache.iter() {
-            let file = File::open(&cache).map_err(|err| FileNotFound(cache.clone(), err))?;
-            let reader = BufReader::new(file);
-            let mapt: SnippetMap = from_reader(reader)?;
+            buf.clear();
+            let mut file = File::open(&cache).map_err(|err| FileNotFound(cache.clone(), err))?;
+            file.read_to_end(&mut buf)?;
+            let mapt: SnippetMap = bincode::deserialize(&buf)?;
             map.extend(mapt);
         }
 
@@ -125,21 +127,21 @@ impl Command {
     pub fn execute(&self, map: SnippetMap) -> anyhow::Result<()> {
         match self {
             Self::Cache { output } => {
-                emit(&to_string(&map)?, Some(output))?;
+                create_recursive(output)?.write_all(&bincode::serialize(&map)?)?;
             }
             Self::List => {
-                for name in map.map.keys() {
-                    println!("{}", name);
-                }
+                let list = map.map.keys().cloned().collect::<Vec<_>>().join(" ");
+                stdout().write_all(list.as_bytes())?;
             }
             Self::Snippet {
                 output,
                 ignore_include,
             } => {
-                emit(
-                    &to_string(&map.to_vscode(*ignore_include))?,
-                    output.as_ref(),
-                )?;
+                let snippet = to_string(&map.to_vscode(*ignore_include))?;
+                match output {
+                    Some(file) => create_recursive(file)?.write_all(snippet.as_bytes())?,
+                    None => stdout().write_all(snippet.as_bytes())?,
+                }
             }
             Self::Bundle { name, excludes } => {
                 let link = map
@@ -147,7 +149,7 @@ impl Command {
                     .get(name)
                     .with_context(|| format!("snippet `{}` not found", name))?;
                 let excludes = excludes.iter().map(|s| s.as_str()).collect();
-                println!("{}", map.bundle(&name, link, excludes, true));
+                stdout().write_all(map.bundle(&name, link, excludes, true).as_bytes())?;
             }
             Self::Verify => {
                 verify::execute(map)?;
@@ -157,15 +159,9 @@ impl Command {
     }
 }
 
-fn emit<P: AsRef<Path>>(value: &str, output: Option<P>) -> anyhow::Result<()> {
-    match output {
-        Some(file) => {
-            if let Some(parent) = file.as_ref().parent() {
-                std::fs::create_dir_all(parent)?;
-            }
-            File::create(file)?.write_all(value.as_bytes())?
-        }
-        None => stdout().lock().write_all(value.as_bytes())?,
+fn create_recursive<P: AsRef<Path>>(path: P) -> std::io::Result<File> {
+    if let Some(parent) = path.as_ref().parent() {
+        std::fs::create_dir_all(parent)?;
     }
-    Ok(())
+    File::create(path)
 }
