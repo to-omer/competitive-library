@@ -84,22 +84,37 @@ where
 }
 
 #[codesnip::entry("binary_search")]
-/// binary search for sorted slice
+/// binary search for slice
 pub trait SliceBisectExt<T: Bisect + Ord> {
-    /// Returns the first index with elements greater than or equal to x.
+    /// Returns the first element that satisfies a predicate.
+    fn find_bisect(&self, f: impl FnMut(T) -> bool) -> Option<T>;
+    /// Returns the last element that satisfies a predicate.
+    fn rfind_bisect(&self, f: impl FnMut(T) -> bool) -> Option<T>;
+    /// Returns the first index that satisfies a predicate.
     /// if not found, returns `len()`.
-    fn lower_bound(&self, x: T) -> usize;
-    /// Returns the first index with elements greater than x.
-    /// if not found, returns `len()`.
-    fn upper_bound(&self, x: T) -> usize;
+    fn position_bisect(&self, f: impl FnMut(T) -> bool) -> usize;
+    /// Returns the last index+1 that satisfies a predicate.
+    /// if not found, returns `0`.
+    fn rposition_bisect(&self, f: impl FnMut(T) -> bool) -> usize;
 }
 #[codesnip::entry("binary_search")]
 impl<T: Bisect + Ord> SliceBisectExt<T> for [T] {
-    fn lower_bound(&self, x: T) -> usize {
-        binary_search(|i| self[i as usize] >= x, self.len() as i64, -1) as usize
+    fn find_bisect(&self, f: impl FnMut(T) -> bool) -> Option<T> {
+        self.get(self.position_bisect(f)).copied()
     }
-    fn upper_bound(&self, x: T) -> usize {
-        binary_search(|i| self[i as usize] > x, self.len() as i64, -1) as usize
+    fn rfind_bisect(&self, f: impl FnMut(T) -> bool) -> Option<T> {
+        let pos = self.rposition_bisect(f);
+        if pos == 0 {
+            None
+        } else {
+            Some(self[pos - 1])
+        }
+    }
+    fn position_bisect(&self, mut f: impl FnMut(T) -> bool) -> usize {
+        binary_search(|i| f(self[i as usize]), self.len() as i64, -1) as usize
+    }
+    fn rposition_bisect(&self, mut f: impl FnMut(T) -> bool) -> usize {
+        binary_search(|i| f(self[i - 1]), 0, self.len() + 1)
     }
 }
 
@@ -134,18 +149,19 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    const V: [i64; 10] = [0i64, 1, 1, 1, 2, 2, 3, 4, 7, 8];
+
     #[test]
     fn test_binary_search() {
-        let v = vec![0, 1, 1, 1, 2, 2, 3, 4, 7, 8];
-        assert_eq!(binary_search(&|x| v[x] >= 1, v.len(), 0), 1);
-        assert_eq!(binary_search(&|x| v[x] >= 2, v.len(), 0), 4);
-        assert_eq!(binary_search(&|x| v[x] >= 3, v.len(), 0), 6);
-        assert_eq!(binary_search(&|x| v[x] <= 1, 0, v.len()), 3);
-        assert_eq!(binary_search(&|x| v[x] <= 2, 0, v.len()), 5);
-        assert_eq!(binary_search(&|x| v[x] <= 3, 0, v.len()), 6);
+        assert_eq!(binary_search(&|x| V[x] >= 1, V.len(), 0), 1);
+        assert_eq!(binary_search(&|x| V[x] >= 2, V.len(), 0), 4);
+        assert_eq!(binary_search(&|x| V[x] >= 3, V.len(), 0), 6);
+        assert_eq!(binary_search(&|x| V[x] <= 1, 0, V.len()), 3);
+        assert_eq!(binary_search(&|x| V[x] <= 2, 0, V.len()), 5);
+        assert_eq!(binary_search(&|x| V[x] <= 3, 0, V.len()), 6);
 
         assert_eq!(
-            binary_search(&|x: i64| v[x as usize] as i64 <= -1, -1, v.len() as i64),
+            binary_search(&|x: i64| V[x as usize] as i64 <= -1, -1, V.len() as i64),
             -1
         );
 
@@ -155,41 +171,64 @@ mod tests {
     }
 
     #[test]
-    fn test_lower_bound() {
-        let v = vec![0i64, 1, 1, 1, 2, 2, 3, 4, 7, 8];
-        assert_eq!(v.lower_bound(-1), 0);
-        assert_eq!(v.lower_bound(0), 0);
-        assert_eq!(v.lower_bound(1), 1);
-        assert_eq!(v.lower_bound(2), 4);
-        assert_eq!(v.lower_bound(3), 6);
+    fn test_position() {
+        assert_eq!(V.position_bisect(|x| x >= -1), 0);
+        assert_eq!(V.position_bisect(|x| x >= 0), 0);
+        assert_eq!(V.position_bisect(|x| x >= 1), 1);
+        assert_eq!(V.position_bisect(|x| x >= 2), 4);
+        assert_eq!(V.position_bisect(|x| x >= 3), 6);
+        assert_eq!(V.position_bisect(|x| x >= 5), 8);
+        assert_eq!(V.position_bisect(|x| x >= 10), 10);
     }
 
     #[test]
-    fn test_upper_bound() {
-        let v = vec![0i64, 1, 1, 1, 2, 2, 3, 4, 7, 8];
-        assert_eq!(v.upper_bound(-1), 0);
-        assert_eq!(v.upper_bound(0), 1);
-        assert_eq!(v.upper_bound(1), 4);
-        assert_eq!(v.upper_bound(2), 6);
-        assert_eq!(v.upper_bound(3), 7);
+    fn test_find() {
+        assert_eq!(V.find_bisect(|x| x >= -1), Some(0));
+        assert_eq!(V.find_bisect(|x| x >= 0), Some(0));
+        assert_eq!(V.find_bisect(|x| x >= 1), Some(1));
+        assert_eq!(V.find_bisect(|x| x >= 2), Some(2));
+        assert_eq!(V.find_bisect(|x| x >= 3), Some(3));
+        assert_eq!(V.find_bisect(|x| x >= 5), Some(7));
+        assert_eq!(V.find_bisect(|x| x >= 10), None);
+    }
+
+    #[test]
+    fn test_rposition() {
+        assert_eq!(V.rposition_bisect(|x| x <= -1), 0);
+        assert_eq!(V.rposition_bisect(|x| x <= 0), 1);
+        assert_eq!(V.rposition_bisect(|x| x <= 1), 4);
+        assert_eq!(V.rposition_bisect(|x| x <= 2), 6);
+        assert_eq!(V.rposition_bisect(|x| x <= 3), 7);
+        assert_eq!(V.rposition_bisect(|x| x <= 5), 8);
+        assert_eq!(V.rposition_bisect(|x| x <= 10), 10);
+    }
+
+    #[test]
+    fn test_rfind() {
+        assert_eq!(V.rfind_bisect(|x| x <= -1), None);
+        assert_eq!(V.rfind_bisect(|x| x <= 0), Some(0));
+        assert_eq!(V.rfind_bisect(|x| x <= 1), Some(1));
+        assert_eq!(V.rfind_bisect(|x| x <= 2), Some(2));
+        assert_eq!(V.rfind_bisect(|x| x <= 3), Some(3));
+        assert_eq!(V.rfind_bisect(|x| x <= 5), Some(4));
+        assert_eq!(V.rfind_bisect(|x| x <= 10), Some(8));
     }
 
     #[test]
     fn test_count_monotone() {
-        let v = vec![0i64, 1, 1, 1, 2, 2, 3, 4, 7, 8];
-        assert_eq!(count_monotone(|i| v[i] >= 0, 0..v.len()), 10);
-        assert_eq!(count_monotone(|i| v[i] >= 1, 0..v.len()), 9);
-        assert_eq!(count_monotone(|i| v[i] >= 2, 0..v.len()), 6);
-        assert_eq!(count_monotone(|i| v[i] >= 3, 0..v.len()), 4);
-        assert_eq!(count_monotone(|i| v[i] >= 5, 0..v.len()), 2);
-        assert_eq!(count_monotone(|i| v[i] >= 10, 0..v.len()), 0);
+        assert_eq!(count_monotone(|i| V[i] >= 0, 0..V.len()), 10);
+        assert_eq!(count_monotone(|i| V[i] >= 1, 0..V.len()), 9);
+        assert_eq!(count_monotone(|i| V[i] >= 2, 0..V.len()), 6);
+        assert_eq!(count_monotone(|i| V[i] >= 3, 0..V.len()), 4);
+        assert_eq!(count_monotone(|i| V[i] >= 5, 0..V.len()), 2);
+        assert_eq!(count_monotone(|i| V[i] >= 10, 0..V.len()), 0);
 
-        assert_eq!(count_monotone(|i| v[i] < 0, 0..v.len()), 0);
-        assert_eq!(count_monotone(|i| v[i] < 1, 0..v.len()), 1);
-        assert_eq!(count_monotone(|i| v[i] < 2, 0..v.len()), 4);
-        assert_eq!(count_monotone(|i| v[i] < 3, 0..v.len()), 6);
-        assert_eq!(count_monotone(|i| v[i] < 5, 0..v.len()), 8);
-        assert_eq!(count_monotone(|i| v[i] < 10, 0..v.len()), 10);
+        assert_eq!(count_monotone(|i| V[i] < 0, 0..V.len()), 0);
+        assert_eq!(count_monotone(|i| V[i] < 1, 0..V.len()), 1);
+        assert_eq!(count_monotone(|i| V[i] < 2, 0..V.len()), 4);
+        assert_eq!(count_monotone(|i| V[i] < 3, 0..V.len()), 6);
+        assert_eq!(count_monotone(|i| V[i] < 5, 0..V.len()), 8);
+        assert_eq!(count_monotone(|i| V[i] < 10, 0..V.len()), 10);
     }
 }
 
