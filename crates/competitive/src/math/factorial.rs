@@ -60,6 +60,7 @@ impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
 pub struct SmallModMemorizedFactorial<M: MIntConvert<usize>> {
     fact: Vec<MInt<M>>,
 }
+#[codesnip::entry("SmallModMemorizedFactorial")]
 impl<M: MIntConvert<usize>> Default for SmallModMemorizedFactorial<M> {
     fn default() -> Self {
         let p = M::mod_into();
@@ -70,6 +71,7 @@ impl<M: MIntConvert<usize>> Default for SmallModMemorizedFactorial<M> {
         Self { fact }
     }
 }
+#[codesnip::entry("SmallModMemorizedFactorial")]
 impl<M: MIntConvert<usize>> SmallModMemorizedFactorial<M> {
     pub fn new() -> Self {
         Default::default()
