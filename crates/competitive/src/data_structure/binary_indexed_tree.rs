@@ -165,7 +165,7 @@ fn test_binary_indexed_tree_lower_bound() {
     }
     for _ in 0..n {
         let x = rand.rand(5_000_000_000_000) as i64;
-        assert_eq!(bit.lower_bound(x), arr.position_bisect(|a| a >= x));
+        assert_eq!(bit.lower_bound(x), arr.position_bisect(|&a| a >= x));
     }
 }
 

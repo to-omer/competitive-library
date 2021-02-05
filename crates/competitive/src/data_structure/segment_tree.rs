@@ -153,7 +153,7 @@ fn test_segment_tree() {
         let v = rand.rand(1_000_000_000 * n as u64) as usize;
         assert_eq!(
             seg.lower_bound_all(|&x| v <= x, n),
-            arr[1..].position_bisect(|x| x >= v)
+            arr[1..].position_bisect(|&x| x >= v)
         );
     }
     for _ in 0..q {
@@ -165,7 +165,7 @@ fn test_segment_tree() {
         }
         assert_eq!(
             seg.lower_bound(|&x| v <= x, l, r),
-            arr[l + 1..r + 1].position_bisect(|x| x >= v + arr[l]) + l
+            arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
         );
     }
 
