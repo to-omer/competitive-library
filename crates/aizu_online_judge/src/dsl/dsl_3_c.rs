@@ -8,14 +8,14 @@ pub fn dsl_3_c(reader: &mut impl Read, writer: &mut impl Write) {
     for x in x.take(q) {
         let mut ans = 0;
         let mut sum = 0;
-        let mut p = 0;
-        for (i, &b) in a.iter().enumerate() {
+        let mut l = 0;
+        for (r, &b) in a.iter().enumerate() {
             sum += b;
             while sum > x {
-                sum -= a[p];
-                p += 1;
+                sum -= a[l];
+                l += 1;
             }
-            ans += i - p + 1;
+            ans += r + 1 - l;
         }
         writeln!(writer, "{}", ans).ok();
     }
