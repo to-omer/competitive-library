@@ -238,9 +238,9 @@ pub mod quad_double_impl {
             }
         }
     }
-    impl Into<f64> for QuadDouble {
-        fn into(self) -> f64 {
-            self.3 + self.2 + self.1 + self.0
+    impl From<QuadDouble> for f64 {
+        fn from(x: QuadDouble) -> f64 {
+            x.3 + x.2 + x.1 + x.0
         }
     }
     impl From<f64> for QuadDouble {

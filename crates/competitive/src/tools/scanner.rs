@@ -123,7 +123,7 @@ pub mod marker {
         type Output = usize;
         #[inline]
         fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
-            Some(<usize as IterScan>::scan(iter)?.checked_sub(1)?)
+            <usize as IterScan>::scan(iter)?.checked_sub(1)
         }
     }
     #[derive(Debug, Copy, Clone)]
