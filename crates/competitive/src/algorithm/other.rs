@@ -18,6 +18,8 @@ pub fn run_length_encoding<T: PartialEq>(v: &[T]) -> Vec<(usize, usize)> {
 /// $P_0 =$ `init`, $P_{i+1} = f(P_i)$
 ///
 /// Return (f, g) then P = f, g, g, ...
+///
+/// ith: |(f, g), i| -> if i < f.len() { f[i] } else { g[(i - f.len()) % g.len()] }
 pub fn rho_path<T, F>(init: T, f: F) -> (Vec<T>, Vec<T>)
 where
     T: Clone + Eq + std::hash::Hash,
