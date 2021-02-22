@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::string::SuffixArray;
 
 #[verify::verify("https://judge.yosupo.jp/problem/suffixarray")]
-pub fn suffixarray(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn suffixarray(reader: impl Read, writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, s: Chars);

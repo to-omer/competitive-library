@@ -3,7 +3,7 @@ pub use competitive::combinatorial_optimization::ZeroOneKnapsackPloblemBranchAnd
 use competitive::prelude::*;
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/7/DPL/1/DPL_1_I")]
-pub fn dpl_1_i(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn dpl_1_i(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, w: u64, vwm: [(u64, u64, u64)]);

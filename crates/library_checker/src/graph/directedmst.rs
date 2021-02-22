@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{algebra::AdditiveOperation, graph::EdgeListGraphScanner};
 
 #[verify::verify("https://judge.yosupo.jp/problem/directedmst")]
-pub fn directedmst(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn directedmst(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, m, s, (graph, w): { EdgeListGraphScanner::<usize, i64>::new(n, m) });

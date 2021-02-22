@@ -3,7 +3,7 @@ pub use competitive::graph::TwoSatisfiability;
 use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/two_sat")]
-pub fn two_sat(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn two_sat(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(

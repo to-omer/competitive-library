@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::string::SuffixArray;
 
 #[verify::verify("https://judge.yosupo.jp/problem/number_of_substrings")]
-pub fn number_of_substrings(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn number_of_substrings(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, s: Chars);

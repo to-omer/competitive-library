@@ -4,12 +4,12 @@ pub fn read_stdin_all() -> String {
     std::io::stdin().read_to_string(&mut s).expect("io error");
     s
 }
-pub fn read_all(reader: &mut impl std::io::Read) -> String {
+pub fn read_all(mut reader: impl std::io::Read) -> String {
     let mut s = String::new();
     reader.read_to_string(&mut s).expect("io error");
     s
 }
-pub fn read_all_unchecked(reader: &mut impl std::io::Read) -> String {
+pub fn read_all_unchecked(mut reader: impl std::io::Read) -> String {
     let mut buf = Vec::new();
     reader.read_to_end(&mut buf).expect("io error");
     unsafe { String::from_utf8_unchecked(buf) }

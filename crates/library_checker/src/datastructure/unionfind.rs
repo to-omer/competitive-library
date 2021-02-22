@@ -3,7 +3,7 @@ pub use competitive::data_structure::UnionFind;
 use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/unionfind")]
-pub fn unionfind(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn unionfind(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);

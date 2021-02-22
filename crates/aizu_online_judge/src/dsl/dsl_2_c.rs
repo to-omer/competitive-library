@@ -3,7 +3,7 @@ pub use competitive::data_structure::Static2DTree;
 use competitive::prelude::*;
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_C")]
-pub fn dsl_2_c(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn dsl_2_c(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, xy: [(i64, i64)]);

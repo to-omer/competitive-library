@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{math::FPS998244353, num::mint_basic::MInt998244353};
 
 #[verify::verify("https://judge.yosupo.jp/problem/pow_of_formal_power_series")]
-pub fn pow_of_formal_power_series(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn pow_of_formal_power_series(reader: impl Read, writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, m, a: [MInt998244353; n]);

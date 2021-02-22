@@ -9,7 +9,7 @@ pub use competitive::{
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/vertex_set_path_composite")]
-pub fn vertex_set_path_composite(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n], (mut graph, _): { TreeGraphScanner::<usize, ()>::new(n) });

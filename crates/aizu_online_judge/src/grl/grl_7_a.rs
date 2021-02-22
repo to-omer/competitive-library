@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{algebra::AdditiveOperation, graph::DinicBuilder};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/7/GRL_7_A")]
-pub fn grl_7_a(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn grl_7_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, xs, ys, es, edges: [(usize, usize)]);

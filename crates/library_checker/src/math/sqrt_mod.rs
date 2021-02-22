@@ -3,7 +3,7 @@ pub use competitive::num::mint_basic::{DynMIntU32, DynModuloU32};
 use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/sqrt_mod")]
-pub fn sqrt_mod(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn sqrt_mod(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, q, yp: [(u32, u32)]);

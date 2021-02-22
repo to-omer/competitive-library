@@ -138,16 +138,16 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                         (::std::result::Result::Err(err), _)  | (_, ::std::result::Result::Err(err)) => ::std::result::Result::Err(err),
                     };
                     let res = config.finalize(res);
-                    assert!(res.is_ok(), "{}", res.unwrap_err());
+                    ::std::assert!(res.is_ok(), "{}", res.unwrap_err());
                 }
                 #[cfg_attr(feature = "verify_test", test)]
                 fn #test_name() {
                     let res = ::std::panic::catch_unwind(|| {
                         let (stdin, stdout) = (::std::io::stdin(), ::std::io::stdout());
                         let (mut reader, mut writer) = (::std::io::BufReader::new(stdin.lock()), ::std::io::BufWriter::new(stdout.lock()));
-                        #fn_name(&mut reader, &mut writer);
+                        #fn_name(reader, writer);
                     });
-                    assert!(res.is_ok(), "{}", ::std::stringify!(#fn_name));
+                    ::std::assert!(res.is_ok(), "{}", ::std::stringify!(#fn_name));
                 }
             };
             gen.into()

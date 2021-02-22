@@ -6,7 +6,7 @@ pub use competitive::{
 };
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/2/GRL_2_B")]
-pub fn grl_2_b(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn grl_2_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, vs, es, root, (graph, w): { EdgeListGraphScanner::<usize, i64>::new(vs, es) });

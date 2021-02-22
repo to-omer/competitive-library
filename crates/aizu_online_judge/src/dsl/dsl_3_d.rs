@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{algebra::MinOperation, data_structure::QueueAggregation};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/3/DSL_3_D")]
-pub fn dsl_3_d(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn dsl_3_d(reader: impl Read, writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, l, a: [u64]);

@@ -3,7 +3,7 @@ pub use competitive::math::prime_factors_rho;
 use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/factorize")]
-pub fn factorize(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn factorize(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, q);

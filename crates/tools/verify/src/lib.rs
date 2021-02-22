@@ -53,13 +53,8 @@ pub struct TestCase {
     pub output: String,
 }
 impl TestCase {
-    pub fn execute<'a, 'b>(
-        &'a self,
-        buf: &'b mut Vec<u8>,
-        solve: fn(&mut &'a [u8], &'b mut Vec<u8>),
-    ) {
-        let mut bytes = self.input.as_bytes();
-        solve(&mut bytes, buf);
+    pub fn execute<'a, 'b>(&'a self, buf: &'b mut Vec<u8>, solve: fn(&'a [u8], &'b mut Vec<u8>)) {
+        solve(self.input.as_bytes(), buf);
     }
     pub fn judge_with_env(&self, result: &[u8], env: &VerifyEnv) -> VerifyStatus {
         self.judge_with_env_inner(result, env)
@@ -78,15 +73,10 @@ impl TestCase {
     }
     pub fn judge_with_judger<'a, 'b>(
         &'a self,
-        mut result: &'b [u8],
-        judger: fn(&mut &'a [u8], &mut &'a [u8], &mut &'b [u8]) -> bool,
+        result: &'b [u8],
+        judger: fn(&'a [u8], &'a [u8], &'b [u8]) -> bool,
     ) -> VerifyStatus {
-        judger(
-            &mut self.input.as_bytes(),
-            &mut self.output.as_bytes(),
-            &mut result,
-        )
-        .into()
+        judger(self.input.as_bytes(), self.output.as_bytes(), result).into()
     }
     #[allow(dead_code)]
     pub fn judge_with_eps(&self, result: &[u8], eps: f64) -> VerifyStatus {

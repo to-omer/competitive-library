@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/4/DSL_4_A")]
-pub fn dsl_4_a(reader: &mut impl Read, writer: &mut impl Write) {
+pub fn dsl_4_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, xyxy: [(i64, i64, i64, i64); n]);

@@ -3,7 +3,7 @@
 use `verify::verify` attribute like `test` attribute
 ```rust
 #[verify::verify("problem-url")]
-fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
+fn problem_name(reader: impl Read, mut writer: impl Write) {
     writeln!(writer, "solved!").ok();
 }
 ```
@@ -11,7 +11,7 @@ fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
 set `eps` option and judge as floating point number
 ```rust
 #[verify::verify("problem-url", eps = "1e-6")]
-fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
+fn problem_name(reader: impl Read, mut writer: impl Write) {
     writeln!(writer, "12.34").ok();
 }
 ```
@@ -19,11 +19,11 @@ fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
 set `judge` option and judge with specified function
 ```rust
 #[verify::verify("problem-url", judge = "judge_problem_name")]
-fn problem_name(reader: &mut impl Read, writer: &mut impl Write) {
-    writeln!(writer, "12.34").ok();
+fn problem_name(reader: impl Read, mut writer: impl Write) {
+    writeln!(writer, "0").ok();
 }
 
-fn judge_problem_name(input: &mut impl Read, output: &mut impl Read, result: &mut impl Read) -> bool {
+fn judge_problem_name(input: impl Read, output: impl Read, result: impl Read) -> bool {
     let mut s = String::new();
     result.read_to_string(&mut s).ok();
     s.parse::<u64>().map(|ans| ans == 0).unwrap_or_default()
