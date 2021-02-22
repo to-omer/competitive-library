@@ -84,8 +84,8 @@ impl<'a> PrimalDual<'a> {
                 break; // early break
             }
             for a in self.graph.adjacencies(u) {
-                let ncost =
-                    self.dist[u] + self.costs[a.id] + self.potential[u] - self.potential[a.to];
+                let ncost = (self.dist[u].saturating_add(self.costs[a.id]))
+                    .saturating_add(self.potential[u].saturating_sub(self.potential[a.to]));
                 if self.capacities[a.id] > 0 && self.dist[a.to] > ncost {
                     self.dist[a.to] = ncost;
                     self.prev_vertex[a.to] = u;
@@ -102,7 +102,7 @@ impl<'a> PrimalDual<'a> {
         let mut cost = 0;
         while flow < limit && self.dijkstra(s, t) {
             for (p, d) in self.potential.iter_mut().zip(self.dist.iter()) {
-                *p += *d;
+                *p = p.saturating_add(*d);
             }
             let mut f = limit - flow;
             let mut v = t;
