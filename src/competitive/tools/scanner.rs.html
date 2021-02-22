@@ -279,12 +279,12 @@
     <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">stdin</span>().<span class="ident">read_to_string</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
     <span class="ident">s</span>
 }
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all</span>(<span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all</span>(<span class="kw-2">mut</span> <span class="ident">reader</span>: <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">String</span>::<span class="ident">new</span>();
     <span class="ident">reader</span>.<span class="ident">read_to_string</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">s</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
     <span class="ident">s</span>
 }
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all_unchecked</span>(<span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all_unchecked</span>(<span class="kw-2">mut</span> <span class="ident">reader</span>: <span class="kw">impl</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Read</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="ident">new</span>();
     <span class="ident">reader</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buf</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
     <span class="kw">unsafe</span> { <span class="ident">String</span>::<span class="ident">from_utf8_unchecked</span>(<span class="ident">buf</span>) }
@@ -398,7 +398,7 @@
         <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">usize</span>;
         <span class="attribute">#[<span class="ident">inline</span>]</span>
         <span class="kw">fn</span> <span class="ident">scan</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span>::<span class="ident">Output</span><span class="op">&gt;</span> {
-            <span class="prelude-val">Some</span>(<span class="op">&lt;</span><span class="ident">usize</span> <span class="kw">as</span> <span class="ident">IterScan</span><span class="op">&gt;</span>::<span class="ident">scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>.<span class="ident">checked_sub</span>(<span class="number">1</span>)<span class="question-mark">?</span>)
+            <span class="op">&lt;</span><span class="ident">usize</span> <span class="kw">as</span> <span class="ident">IterScan</span><span class="op">&gt;</span>::<span class="ident">scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>.<span class="ident">checked_sub</span>(<span class="number">1</span>)
         }
     }
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
@@ -514,4 +514,5 @@
     <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">z</span>, <span class="number">2</span>);
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "competitive";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>

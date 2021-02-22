@@ -250,8 +250,8 @@
                 <span class="kw">break</span>; <span class="comment">// early break</span>
             }
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
-                <span class="kw">let</span> <span class="ident">ncost</span> <span class="op">=</span>
-                    <span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">u</span>] <span class="op">+</span> <span class="self">self</span>.<span class="ident">costs</span>[<span class="ident">a</span>.<span class="ident">id</span>] <span class="op">+</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">u</span>] <span class="op">-</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">a</span>.<span class="ident">to</span>];
+                <span class="kw">let</span> <span class="ident">ncost</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">u</span>].<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">costs</span>[<span class="ident">a</span>.<span class="ident">id</span>]))
+                    .<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">u</span>].<span class="ident">saturating_sub</span>(<span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">a</span>.<span class="ident">to</span>]));
                 <span class="kw">if</span> <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">&gt;</span> <span class="ident">ncost</span> {
                     <span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">ncost</span>;
                     <span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">u</span>;
@@ -268,7 +268,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">while</span> <span class="ident">flow</span> <span class="op">&lt;</span> <span class="ident">limit</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">dijkstra</span>(<span class="ident">s</span>, <span class="ident">t</span>) {
             <span class="kw">for</span> (<span class="ident">p</span>, <span class="ident">d</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">potential</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="self">self</span>.<span class="ident">dist</span>.<span class="ident">iter</span>()) {
-                <span class="kw-2">*</span><span class="ident">p</span> <span class="op">+</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">d</span>;
+                <span class="kw-2">*</span><span class="ident">p</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">saturating_add</span>(<span class="kw-2">*</span><span class="ident">d</span>);
             }
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">limit</span> <span class="op">-</span> <span class="ident">flow</span>;
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">t</span>;
@@ -296,4 +296,5 @@
     }
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../";window.currentCrate = "competitive";</script><script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive"></div>
+    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script><script defer src="../../../search-index.js"></script></body></html>
