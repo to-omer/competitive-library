@@ -1,3 +1,5 @@
+#![cfg_attr(nightly, allow(clippy::upper_case_acronyms))]
+
 use lazy_static::lazy_static;
 use serde::{de::DeserializeOwned, Deserialize};
 use std::{
