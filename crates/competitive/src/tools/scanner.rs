@@ -1,37 +1,42 @@
+#[codesnip::skip]
 pub fn read_stdin_all() -> String {
     use std::io::Read as _;
     let mut s = String::new();
     std::io::stdin().read_to_string(&mut s).expect("io error");
     s
 }
+pub fn read_stdin_all_unchecked() -> String {
+    use std::io::Read as _;
+    let mut s = String::new();
+    std::io::stdin().read_to_string(&mut s).expect("io error");
+    s
+}
+#[codesnip::skip]
 pub fn read_all(mut reader: impl std::io::Read) -> String {
     let mut s = String::new();
     reader.read_to_string(&mut s).expect("io error");
     s
 }
+#[codesnip::skip]
 pub fn read_all_unchecked(mut reader: impl std::io::Read) -> String {
     let mut buf = Vec::new();
     reader.read_to_end(&mut buf).expect("io error");
     unsafe { String::from_utf8_unchecked(buf) }
 }
 
-#[codesnip::entry("scanner")]
 pub trait IterScan: Sized {
     type Output;
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output>;
 }
-#[codesnip::entry("scanner")]
 pub trait MarkedIterScan: Sized {
     type Output;
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
 }
-#[codesnip::entry("scanner")]
 #[derive(Clone, Debug)]
 pub struct Scanner<'a> {
     iter: std::str::SplitAsciiWhitespace<'a>,
 }
 
-#[codesnip::entry("scanner")]
 mod scanner_impls {
     use super::*;
     impl<'a> Scanner<'a> {
@@ -112,13 +117,21 @@ mod scanner_impls {
         }
     }
 }
+#[derive(Debug, Copy, Clone)]
+pub struct Usize1;
+#[derive(Debug, Copy, Clone)]
+pub struct Chars;
+#[derive(Debug, Copy, Clone)]
+pub struct CharsWithBase(pub char);
+#[derive(Debug, Copy, Clone)]
+pub struct Collect<T: IterScan, B: std::iter::FromIterator<<T as IterScan>::Output>> {
+    size: usize,
+    _marker: std::marker::PhantomData<fn() -> (T, B)>,
+}
 
-#[codesnip::entry("scanner")]
-pub mod marker {
+mod marker_impls {
     use super::*;
     use std::{iter::FromIterator, marker::PhantomData};
-    #[derive(Debug, Copy, Clone)]
-    pub struct Usize1;
     impl IterScan for Usize1 {
         type Output = usize;
         #[inline]
@@ -126,8 +139,6 @@ pub mod marker {
             <usize as IterScan>::scan(iter)?.checked_sub(1)
         }
     }
-    #[derive(Debug, Copy, Clone)]
-    pub struct Chars;
     impl IterScan for Chars {
         type Output = Vec<char>;
         #[inline]
@@ -135,8 +146,6 @@ pub mod marker {
             Some(iter.next()?.chars().collect())
         }
     }
-    #[derive(Debug, Copy, Clone)]
-    pub struct CharsWithBase(pub char);
     impl MarkedIterScan for CharsWithBase {
         type Output = Vec<usize>;
         #[inline]
@@ -148,11 +157,6 @@ pub mod marker {
                     .collect(),
             )
         }
-    }
-    #[derive(Debug, Copy, Clone)]
-    pub struct Collect<T: IterScan, B: FromIterator<<T as IterScan>::Output>> {
-        size: usize,
-        _marker: PhantomData<fn() -> (T, B)>,
     }
     impl<T: IterScan, B: FromIterator<<T as IterScan>::Output>> Collect<T, B> {
         pub fn new(size: usize) -> Self {
@@ -182,6 +186,9 @@ macro_rules! scan_value {
     };
     ($scanner:expr, [$t:tt; $len:expr]) => {
         (0..$len).map(|_| $crate::scan_value!($scanner, $t)).collect::<Vec<_>>()
+    };
+    ($scanner:expr, [$t:ty; $len:expr]) => {
+        $scanner.scan_vec::<$t>($len)
     };
     ($scanner:expr, [$t:ty]) => {
         $scanner.iter::<$t>()
@@ -232,7 +239,6 @@ macro_rules! scan {
 #[test]
 fn test_scan() {
     let mut s = Scanner::new("1 2 3");
-    use marker::Usize1;
     scan!(s, x, y: char, z: Usize1);
     assert_eq!(x, 1);
     assert_eq!(y, '2');

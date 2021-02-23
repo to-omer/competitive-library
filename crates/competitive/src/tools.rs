@@ -10,10 +10,16 @@ mod counter;
     codesnip::entry("SimuratedAnnealing", inline, include("Xorshift"))
 )]
 mod heuristics;
+#[macro_use]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("main", inline, include("scanner", "minmax", "echo"))
+)]
 mod main;
 mod output;
 #[cfg_attr(nightly, codesnip::entry("Xorshift", inline))]
 mod random;
+#[cfg_attr(nightly, codesnip::entry("scanner", inline))]
 mod scanner;
 #[cfg_attr(nightly, codesnip::entry("TotalOrd", inline))]
 mod totalord;
