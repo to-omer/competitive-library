@@ -9,6 +9,7 @@ mod maximum_flow;
 #[cfg_attr(nightly, codesnip::entry("PrimalDual", inline, include("SparseGraph")))]
 mod minimum_cost_flow;
 mod minimum_spanning_tree;
+mod order;
 mod shortest_path;
 mod sparse;
 mod strongly_connected_component;

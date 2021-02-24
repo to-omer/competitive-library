@@ -4,6 +4,7 @@ mod depth;
 mod euler_tour;
 mod heavy_light_decomposition;
 mod rerooting;
+mod tree_order;
 mod tree_rec;
 
 pub use euler_tour::*;
