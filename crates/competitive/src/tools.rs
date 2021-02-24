@@ -21,6 +21,7 @@ mod output;
 mod random;
 #[cfg_attr(nightly, codesnip::entry("scanner", inline))]
 mod scanner;
+mod slice;
 #[cfg_attr(nightly, codesnip::entry("TotalOrd", inline))]
 mod totalord;
 
@@ -29,4 +30,5 @@ pub use heuristics::SimuratedAnnealing;
 pub use output::echo;
 pub use random::Xorshift;
 pub use scanner::*;
+pub use slice::GetDistinctMut;
 pub use totalord::TotalOrd;
