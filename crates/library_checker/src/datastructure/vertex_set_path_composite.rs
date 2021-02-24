@@ -10,12 +10,12 @@ pub use competitive::{
 
 #[verify::verify("https://judge.yosupo.jp/problem/vertex_set_path_composite")]
 pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n], (mut graph, _): { TreeGraphScanner::<usize, ()>::new(n) });
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let monoid = LinearOperation::new();
-    let mut nab = vec![(MInt998244353::zero(), MInt998244353::zero()); n];
+    let mut nab = vec![(MInt998244353::default(), MInt998244353::default()); n];
     for i in 0..n {
         nab[hld.vidx[i]] = ab[i];
     }

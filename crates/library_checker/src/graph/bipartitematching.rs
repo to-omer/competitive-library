@@ -4,7 +4,7 @@ use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/bipartitematching")]
 pub fn bipartitematching(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, l, r, m, ab: [(usize, usize); m]);
     let mut builder = DinicBuilder::new(l + r + 2, m + l + r);

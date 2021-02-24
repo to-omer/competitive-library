@@ -4,7 +4,7 @@ use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/range_kth_smallest")]
 pub fn range_kth_smallest(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [usize; n]);
     let wm = WaveletMatrix::new(a, 30);

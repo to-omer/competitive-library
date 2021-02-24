@@ -4,7 +4,7 @@ use competitive::prelude::*;
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/3/GRL_3_B")]
 pub fn grl_3_b(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, vs, es, (graph, _): { UndirectedGraphScanner::<usize, ()>::new(vs, es) });
     let mut bridge = LowLink::new(&graph).bridge;

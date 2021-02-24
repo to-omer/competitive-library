@@ -7,7 +7,7 @@ pub use competitive::{
 
 #[verify::verify("https://judge.yosupo.jp/problem/lca")]
 pub fn lca_euler_tour(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, p: [usize]);
     let edges = p.take(n - 1).enumerate().map(|(i, p)| (i + 1, p)).collect();
@@ -21,7 +21,7 @@ pub fn lca_euler_tour(reader: impl Read, mut writer: impl Write) {
 
 #[verify::verify("https://judge.yosupo.jp/problem/lca")]
 pub fn lca_hld(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, p: [usize]);
     let edges = p.take(n - 1).enumerate().map(|(i, p)| (i + 1, p)).collect();

@@ -2,7 +2,7 @@ use competitive::prelude::*;
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/7/DPL/1/DPL_1_A")]
 pub fn dpl_1_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, m, c: [usize; m]);
     let mut dp = vec![std::usize::MAX; n + 1];

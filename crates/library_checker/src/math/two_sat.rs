@@ -4,7 +4,7 @@ use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/two_sat")]
 pub fn two_sat(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(
         scanner,

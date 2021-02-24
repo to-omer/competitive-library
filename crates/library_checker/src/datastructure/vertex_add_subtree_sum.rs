@@ -7,7 +7,7 @@ pub use competitive::{
 
 #[verify::verify("https://judge.yosupo.jp/problem/vertex_add_subtree_sum")]
 pub fn vertex_add_subtree_sum(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [u64; n], p: [usize]);
     let edges = p.take(n - 1).enumerate().map(|(i, p)| (i + 1, p)).collect();

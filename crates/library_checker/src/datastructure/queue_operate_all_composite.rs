@@ -8,7 +8,7 @@ pub use competitive::{
 
 #[verify::verify("https://judge.yosupo.jp/problem/queue_operate_all_composite")]
 pub fn queue_operate_all_composite(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, q);
     let mut que = QueueAggregation::new(LinearOperation::new());

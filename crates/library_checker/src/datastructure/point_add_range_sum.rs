@@ -7,7 +7,7 @@ pub use competitive::{
 
 #[verify::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
 pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64]);
     let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
@@ -28,7 +28,7 @@ pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: im
 
 #[verify::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
 pub fn point_add_range_sum_segment_tree(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n]);
     let mut seg = SegmentTree::from_vec(a, AdditiveOperation::new());

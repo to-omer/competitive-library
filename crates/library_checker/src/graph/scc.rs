@@ -4,7 +4,7 @@ use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/scc")]
 pub fn scc(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, vs, es, edges: [(usize, usize); es]);
     let graph = DirectedSparseGraph::from_edges(vs, edges);

@@ -4,7 +4,7 @@ pub use competitive::{algebra::AdditiveOperation, data_structure::WeightedUnionF
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_B")]
 pub fn dsl_1_b(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);
     let mut uf = WeightedUnionFind::new(n, AdditiveOperation::new());

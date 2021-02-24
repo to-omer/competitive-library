@@ -4,7 +4,7 @@ pub use competitive::{algebra::AdditiveOperation, data_structure::QueueAggregati
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/3/DSL_3_A")]
 pub fn dsl_3_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, s: u64, a: [u64]);
     let mut que = QueueAggregation::new(AdditiveOperation::new());

@@ -2,7 +2,7 @@ use competitive::prelude::*;
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/4/DSL_4_A")]
 pub fn dsl_4_a(reader: impl Read, mut writer: impl Write) {
-    let s = read_all(reader);
+    let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, xyxy: [(i64, i64, i64, i64); n]);
     let (mut xs, mut ys) = (Vec::with_capacity(2 * n), Vec::with_capacity(2 * n));
