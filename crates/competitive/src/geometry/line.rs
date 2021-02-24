@@ -1,6 +1,6 @@
-use super::{Point, Real, CCW};
+use super::{Ccw, Point, Real};
 
-#[codesnip::entry("Line", include("CCW", "Point", "Real"))]
+#[codesnip::entry("Line", include("Ccw", "Point", "Real"))]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Line {
     p1: Point,
@@ -14,8 +14,8 @@ impl Line {
     pub fn dir(&self) -> Point {
         self.p2 - self.p1
     }
-    pub fn ccw(&self, p: Point) -> CCW {
-        CCW::ccw(self.p1, self.p2, p)
+    pub fn ccw(&self, p: Point) -> Ccw {
+        Ccw::ccw(self.p1, self.p2, p)
     }
     pub fn projection(&self, p: Point) -> Point {
         let e = self.dir().unit();
@@ -41,7 +41,7 @@ pub struct LineSegment {
     p1: Point,
     p2: Point,
 }
-#[codesnip::entry("LineSegment", include("CCW", "Point", "Real"))]
+#[codesnip::entry("LineSegment", include("Ccw", "Point", "Real"))]
 impl LineSegment {
     pub fn new(p1: Point, p2: Point) -> Self {
         LineSegment { p1, p2 }
@@ -49,8 +49,8 @@ impl LineSegment {
     pub fn dir(&self) -> Point {
         self.p2 - self.p1
     }
-    pub fn ccw(&self, p: Point) -> CCW {
-        CCW::ccw(self.p1, self.p2, p)
+    pub fn ccw(&self, p: Point) -> Ccw {
+        Ccw::ccw(self.p1, self.p2, p)
     }
     pub fn projection(&self, p: Point) -> Point {
         let e = self.dir().unit();
@@ -70,7 +70,7 @@ impl LineSegment {
             && other.ccw(self.p1) as i8 * other.ccw(self.p2) as i8 <= 0
     }
     pub fn intersect_point(&self, p: Point) -> bool {
-        self.ccw(p) == CCW::OnSegment
+        self.ccw(p) == Ccw::OnSegment
     }
     pub fn cross_point(&self, other: &Self) -> Option<Point> {
         if self.intersect(other) {

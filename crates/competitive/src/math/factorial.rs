@@ -140,7 +140,7 @@ mod tests {
         use crate::tools::Xorshift;
         static mut MOD: u32 = 2;
         crate::define_basic_mintbase!(
-            DM,
+            D,
             unsafe { MOD },
             u32,
             u64,
@@ -150,7 +150,7 @@ mod tests {
         let mut rand = Xorshift::time();
         const N: usize = 10_000;
         const Q: usize = 10_000;
-        let fact = SmallModMemorizedFactorial::<DM>::new();
+        let fact = SmallModMemorizedFactorial::<D>::new();
         for _ in 0..Q {
             let n = rand.rand(N as u64) as usize + 1;
             let k = rand.rand(N as u64) as usize % n;

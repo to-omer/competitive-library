@@ -35,9 +35,9 @@ impl PartialOrd for Real {
     }
 }
 
-#[codesnip::entry("CCW", include("Point", "Real"))]
+#[codesnip::entry("Ccw", include("Point", "Real"))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub enum CCW {
+pub enum Ccw {
     /// a--b--c
     OnlineFront = -2,
     /// a--b-vc
@@ -49,8 +49,8 @@ pub enum CCW {
     /// c--a--b
     OnlineBack = 2,
 }
-#[codesnip::entry("CCW")]
-impl CCW {
+#[codesnip::entry("Ccw")]
+impl Ccw {
     pub fn ccw(a: Point, b: Point, c: Point) -> Self {
         let x = b - a;
         let y = c - a;

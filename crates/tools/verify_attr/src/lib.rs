@@ -129,7 +129,7 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                                 let elapsed = start.elapsed();
                                 let status = match result {
                                     ::std::result::Result::Ok(buf) => #inner,
-                                    ::std::result::Result::Err(err) => ::verify::VerifyStatus::RE,
+                                    ::std::result::Result::Err(err) => ::verify::VerifyStatus::RuntimeError,
                                 };
                                 res.push(case.name.clone(), status, elapsed);
                             }

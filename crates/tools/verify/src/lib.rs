@@ -1,5 +1,3 @@
-#![cfg_attr(nightly, allow(clippy::upper_case_acronyms))]
-
 use lazy_static::lazy_static;
 use serde::{de::DeserializeOwned, Deserialize};
 use std::{
@@ -60,7 +58,7 @@ impl TestCase {
     }
     pub fn judge_with_env(&self, result: &[u8], env: &VerifyEnv) -> VerifyStatus {
         self.judge_with_env_inner(result, env)
-            .unwrap_or(VerifyStatus::IE)
+            .unwrap_or(VerifyStatus::InternalError)
     }
     pub fn judge_with_env_inner(&self, result: &[u8], env: &VerifyEnv) -> OjResult<VerifyStatus> {
         match env {
@@ -93,19 +91,19 @@ impl TestCase {
                         (Some(x1), Some(x2)) => match (x1.parse::<f64>(), x2.parse::<f64>()) {
                             (Ok(x1), Ok(x2)) => {
                                 if (x1 - x2).abs() > eps {
-                                    VerifyStatus::WA
+                                    VerifyStatus::WrongAnswer
                                 } else {
                                     continue;
                                 }
                             }
-                            _ => VerifyStatus::WA,
+                            _ => VerifyStatus::WrongAnswer,
                         },
-                        (None, None) => VerifyStatus::AC,
-                        _ => VerifyStatus::WA,
+                        (None, None) => VerifyStatus::Accepted,
+                        _ => VerifyStatus::WrongAnswer,
                     };
                 }
             }
-            Err(_) => VerifyStatus::WA,
+            Err(_) => VerifyStatus::WrongAnswer,
         }
     }
 }
@@ -208,9 +206,9 @@ except Exception as e: assert False
             .args(&[input.as_os_str(), result.as_os_str(), output.as_os_str()])
             .output()?;
         match output.status.code() {
-            Some(0) => Ok(VerifyStatus::AC),
-            Some(1) => Ok(VerifyStatus::WA),
-            Some(_) => Ok(VerifyStatus::IE),
+            Some(0) => Ok(VerifyStatus::Accepted),
+            Some(1) => Ok(VerifyStatus::WrongAnswer),
+            Some(_) => Ok(VerifyStatus::InternalError),
             None => Err(OjError::StrError("checker broken".to_string())),
         }
     }
@@ -236,7 +234,7 @@ pub fn get_workspace_root() -> Option<PathBuf> {
 #[derive(Debug, thiserror::Error)]
 pub enum OjError {
     #[error("io error: {0}")]
-    IOError(#[from] io::Error),
+    IoError(#[from] io::Error),
     #[error("json error: {0}")]
     JsonError(#[from] serde_json::Error),
     #[error("utf8 error: {0}")]
@@ -381,32 +379,32 @@ pub enum VerifyEnv {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum VerifyStatus {
     /// Accepted
-    AC,
+    Accepted,
     // /// Time Limit Exceeded
     // TLE,
     /// Wrong Answer
-    WA,
+    WrongAnswer,
     /// Runtime Error
-    RE,
+    RuntimeError,
     /// Internal Error
-    IE,
+    InternalError,
 }
 impl From<bool> for VerifyStatus {
     fn from(b: bool) -> Self {
         if b {
-            Self::AC
+            Self::Accepted
         } else {
-            Self::WA
+            Self::WrongAnswer
         }
     }
 }
 impl Display for VerifyStatus {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Self::AC => write!(f, "AC"),
-            Self::WA => write!(f, "WA"),
-            Self::RE => write!(f, "RE"),
-            Self::IE => write!(f, "IE"),
+            Self::Accepted => write!(f, "AC"),
+            Self::WrongAnswer => write!(f, "Wrong Answer"),
+            Self::RuntimeError => write!(f, "Runtime Error"),
+            Self::InternalError => write!(f, "Internal Error"),
         }
     }
 }
@@ -449,10 +447,10 @@ impl VerifyResults {
             .iter()
             .map(|res| res.status)
             .max()
-            .unwrap_or(VerifyStatus::AC)
+            .unwrap_or(VerifyStatus::Accepted)
     }
     pub fn is_ac(&self) -> bool {
-        self.status() == VerifyStatus::AC
+        self.status() == VerifyStatus::Accepted
     }
     pub fn elapsed(&self) -> Duration {
         self.results

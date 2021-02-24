@@ -139,7 +139,7 @@ impl<'a> EulerTourForRichVertex<'a> {
 #[codesnip::entry("LowestCommonAncestor")]
 impl<'a> EulerTourForRichVertex<'a> {
     pub fn gen_lca(&'a self) -> LowestCommonAncestor<'a> {
-        let monoid = LCAMonoid::new(self.root, self.graph);
+        let monoid = LcaMonoid::new(self.root, self.graph);
         let dst = DisjointSparseTable::new(self.vtrace.clone(), monoid);
         LowestCommonAncestor { euler: self, dst }
     }
@@ -157,7 +157,7 @@ impl<'a> EulerTourForRichVertex<'a> {
 #[derive(Clone, Debug)]
 pub struct LowestCommonAncestor<'a> {
     euler: &'a EulerTourForRichVertex<'a>,
-    dst: DisjointSparseTable<LCAMonoid>,
+    dst: DisjointSparseTable<LcaMonoid>,
 }
 #[codesnip::entry("LowestCommonAncestor")]
 impl<'a> LowestCommonAncestor<'a> {
@@ -167,15 +167,15 @@ impl<'a> LowestCommonAncestor<'a> {
 }
 #[codesnip::entry("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
-pub struct LCAMonoid {
+pub struct LcaMonoid {
     depth: Vec<u64>,
 }
 #[codesnip::entry("LowestCommonAncestor")]
 pub mod impl_lcam {
     use super::*;
-    impl LCAMonoid {
+    impl LcaMonoid {
         pub fn new(root: usize, graph: &UndirectedSparseGraph) -> Self {
-            LCAMonoid {
+            LcaMonoid {
                 depth: graph.tree_depth(root),
             }
         }
@@ -189,11 +189,11 @@ pub mod impl_lcam {
             }
         }
     }
-    impl Magma for LCAMonoid {
+    impl Magma for LcaMonoid {
         type T = usize;
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             self.ancestor(*x, *y)
         }
     }
-    impl Associative for LCAMonoid {}
+    impl Associative for LcaMonoid {}
 }

@@ -2,7 +2,7 @@
 use crate::num::{mint_basic, MInt, MIntBase, MIntConvert, One, Zero};
 
 pub struct NumberTheoreticTransform<M: MIntBase>(std::marker::PhantomData<fn() -> M>);
-pub trait NTTModulus: MIntBase {
+pub trait NttModulus: MIntBase {
     fn primitive_root() -> usize;
 }
 mod number_theoretic_transform_impls {
@@ -10,7 +10,7 @@ mod number_theoretic_transform_impls {
     use mint_basic::Modulo998244353;
     macro_rules! impl_ntt_modulus {
         ($([$name:ident, $t:ty, $g:expr]),*) => {
-            $(impl NTTModulus for $name {
+            $(impl NttModulus for $name {
                 fn primitive_root() -> $t {
                     $g
                 }
@@ -29,8 +29,8 @@ mod number_theoretic_transform_impls {
         [Modulo2013265921, 2_013_265_921, MInt2013265921]  // 27
     );
 }
-pub type NTT998244353 = NumberTheoreticTransform<mint_basic::Modulo998244353>;
-impl<M: NTTModulus + MIntConvert<usize>> NumberTheoreticTransform<M> {
+pub type Ntt998244353 = NumberTheoreticTransform<mint_basic::Modulo998244353>;
+impl<M: NttModulus + MIntConvert<usize>> NumberTheoreticTransform<M> {
     pub fn convert<T: Into<MInt<M>>, I: IntoIterator<Item = T>>(iter: I) -> Vec<MInt<M>> {
         iter.into_iter().map(|x| x.into()).collect()
     }
@@ -94,16 +94,16 @@ fn test_ntt998244353() {
     use crate::tools::Xorshift;
     const N: usize = 3_000;
     let mut rand = Xorshift::time();
-    pub type NTT = NumberTheoreticTransform<mint_basic::Modulo998244353>;
-    let a: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
-    let b: Vec<_> = NTT::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
+    pub type Ntt = NumberTheoreticTransform<mint_basic::Modulo998244353>;
+    let a: Vec<_> = Ntt::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
+    let b: Vec<_> = Ntt::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
     let mut c = vec![MInt998244353::zero(); N * 2 - 1];
     for i in 0..N {
         for j in 0..N {
             c[i + j] += a[i] * b[j];
         }
     }
-    let d = NTT::convolve(a, b);
+    let d = Ntt::convolve(a, b);
     assert_eq!(c, d);
 }
 
@@ -273,14 +273,13 @@ fn find_proth() {
     use crate::math::{divisors, prime_factors_rho};
     static mut MOD: u32 = 2;
     crate::define_basic_mintbase!(
-        DM,
+        D,
         unsafe { MOD },
         u32,
         u64,
         [u32, u64, u128, usize],
         [i32, i64, i128, isize]
     );
-    pub type DMInt = MInt<DM>;
     // p = a * 2^b + 1 (b >= 1, a < 2^b)
     for b in 22..32 {
         for a in (1..1u64 << b).step_by(2) {
@@ -295,11 +294,11 @@ fn find_proth() {
             if f.len() == 1 && f[0] == p {
                 unsafe { MOD = p as u32 };
                 for g in (3..).step_by(2) {
-                    let g = MInt::<DM>::new(g);
+                    let g = MInt::<D>::new(g);
                     if divisors(p as usize - 1)
                         .into_iter()
                         .filter(|&d| d != p as usize - 1)
-                        .all(|d| g.pow(d) != MInt::<DM>::one())
+                        .all(|d| g.pow(d) != MInt::<D>::one())
                     {
                         println!("(p,a,b,g) = {:?}", (p, a, b, g));
                         break;

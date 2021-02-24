@@ -1,9 +1,9 @@
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct CHTLine {
+pub struct ChtLine {
     slope: i64,
     intercept: i64,
 }
-impl CHTLine {
+impl ChtLine {
     pub fn new(a: i64, b: i64) -> Self {
         Self {
             slope: a,
@@ -20,7 +20,7 @@ impl CHTLine {
 }
 #[derive(Clone, Debug, Default)]
 pub struct ConvexHullTrick {
-    deq: std::collections::VecDeque<CHTLine>,
+    deq: std::collections::VecDeque<ChtLine>,
 }
 impl ConvexHullTrick {
     pub fn new() -> Self {
@@ -28,7 +28,7 @@ impl ConvexHullTrick {
     }
     /// k-th add_line(a_k, b_k): a_k >= a_{k+1}
     pub fn add_line(&mut self, a: i64, b: i64) {
-        let line = CHTLine::new(a, b);
+        let line = ChtLine::new(a, b);
         while {
             let k = self.deq.len();
             k > 1 && self.deq[k - 2].check(&self.deq[k - 1], &line)

@@ -1,6 +1,6 @@
 #[codesnip::skip]
 use crate::{
-    math::{convolve3, NTTModulus, NumberTheoreticTransform},
+    math::{convolve3, NttModulus, NumberTheoreticTransform},
     num::{mint_basic, MInt, MIntConvert, One, Zero},
 };
 
@@ -10,8 +10,8 @@ pub struct FormalPowerSeries<T, Multiplier> {
     _marker: std::marker::PhantomData<Multiplier>,
 }
 
-pub type FPS998244353 = FormalPowerSeries<mint_basic::MInt998244353, mint_basic::Modulo998244353>;
-pub type FPS<M> = FormalPowerSeries<MInt<M>, DefaultFormalPowerSeriesMultiplier<M>>;
+pub type Fps998244353 = FormalPowerSeries<mint_basic::MInt998244353, mint_basic::Modulo998244353>;
+pub type Fps<M> = FormalPowerSeries<MInt<M>, DefaultFormalPowerSeriesMultiplier<M>>;
 
 pub trait FormalPowerSeriesCoefficient:
     Sized
@@ -66,7 +66,7 @@ impl<M: MIntConvert<u32>> FormalPowerSeriesMultiplier for DefaultFormalPowerSeri
     }
 }
 
-impl<M: NTTModulus + MIntConvert<usize>> FormalPowerSeriesMultiplier for M {
+impl<M: NttModulus + MIntConvert<usize>> FormalPowerSeriesMultiplier for M {
     type T = MInt<M>;
     fn convolve(
         x: &FormalPowerSeries<Self::T, Self>,

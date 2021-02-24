@@ -199,7 +199,7 @@ mod tests {
     use crate::tools::Xorshift;
     static mut MOD: u32 = 2;
     crate::define_basic_mintbase!(
-        DM,
+        D,
         unsafe { MOD },
         u32,
         u64,
@@ -210,7 +210,7 @@ mod tests {
     #[test]
     fn test_row_reduction() {
         const Q: usize = 1000;
-        type M = MInt<DM>;
+        type M = MInt<D>;
         let mut rand = Xorshift::time();
         let ps = vec![2, 3, 1_000_000_007];
         for _ in 0..Q {

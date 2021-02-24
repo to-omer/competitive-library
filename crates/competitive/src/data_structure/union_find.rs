@@ -188,16 +188,16 @@ impl<G: Group> WeightedUnionFind<G> {
 
 #[codesnip::entry("MergingUnionFind")]
 pub struct MergingUnionFind<T, F: Fn(&mut T, &mut T)> {
-    cells: Vec<merging_union_find_impls::UFCell<T>>,
+    cells: Vec<merging_union_find_impls::UfCell<T>>,
     merge: F,
 }
 #[codesnip::entry("MergingUnionFind")]
 mod merging_union_find_impls {
     use super::*;
     use std::cell::{Ref, RefCell, RefMut};
-    use UFCell::*;
+    use UfCell::*;
     #[derive(Clone, Debug)]
-    pub enum UFCell<T> {
+    pub enum UfCell<T> {
         Child(usize),
         Root(RefCell<RootData<T>>),
     }
@@ -211,7 +211,7 @@ mod merging_union_find_impls {
             Self { data, size }
         }
     }
-    impl<T> UFCell<T> {
+    impl<T> UfCell<T> {
         pub fn is_root(&self) -> bool {
             match self {
                 Self::Child(_) => false,

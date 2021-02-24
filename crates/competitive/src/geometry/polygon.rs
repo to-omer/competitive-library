@@ -1,7 +1,7 @@
-use super::{Point, CCW};
+use super::{Ccw, Point};
 use crate::tools::TotalOrd;
 
-#[codesnip::entry("convex_hull", include("CCW", "Point"))]
+#[codesnip::entry("convex_hull", include("Ccw", "Point"))]
 pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     let mut ps = ps;
     ps.sort_by(|p1, p2| ((p1.re, p1.im).partial_cmp(&(p2.re, p2.im)).unwrap()));
@@ -9,7 +9,7 @@ pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     for &p in ps.iter().chain(ps.iter().rev().skip(1)) {
         while {
             let k = qs.len();
-            k > 1 && CCW::ccw(qs[k - 2], qs[k - 1], p) == CCW::Clockwise
+            k > 1 && Ccw::ccw(qs[k - 2], qs[k - 1], p) == Ccw::Clockwise
         } {
             qs.pop();
         }
