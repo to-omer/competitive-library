@@ -1,6 +1,6 @@
 use super::SparseGraph;
 
-#[codesnip::entry("bfs_order")]
+#[codesnip::entry("bfs_order", include("SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn bfs_order(&self, root: usize) -> Vec<usize> {
         let mut visited = vec![false; self.vertices_size()];
@@ -21,7 +21,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[codesnip::entry("dfs_order")]
+#[codesnip::entry("dfs_order", include("SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn dfs_order(&self, root: usize) -> Vec<usize> {
         let mut visited = vec![false; self.vertices_size()];
@@ -41,7 +41,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[codesnip::entry("dfs_tree")]
+#[codesnip::entry("dfs_tree", include("SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn dfs_tree(&self, root: usize) -> Vec<bool> {
         let mut visited = vec![false; self.vertices_size()];
