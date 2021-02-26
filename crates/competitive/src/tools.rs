@@ -1,7 +1,7 @@
 #[macro_use]
 mod iterable;
 #[macro_use]
-#[cfg_attr(nightly, codesnip::entry("minmax", inline))]
+#[cfg_attr(nightly, codesnip::entry("_minmax", inline))]
 mod minmax;
 #[cfg_attr(nightly, codesnip::entry("Counter", inline))]
 mod counter;
@@ -13,7 +13,7 @@ mod heuristics;
 #[macro_use]
 #[cfg_attr(
     nightly,
-    codesnip::entry("main", inline, include("scanner", "minmax", "echo"))
+    codesnip::entry("main", inline, include("scanner", "_minmax", "_echo"))
 )]
 mod main;
 mod output;

@@ -1,4 +1,4 @@
-#[codesnip::entry]
+#[codesnip::entry("_echo")]
 pub fn echo<T: std::fmt::Display>(
     mut writer: impl std::io::Write,
     iter: impl IntoIterator<Item = T>,
