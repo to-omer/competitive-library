@@ -19,6 +19,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-${{ matrix.toolchain }}-${{ hashFiles('Cargo.lock') }}
+        restore-keys: ${{ runner.os }}-${{ matrix.toolchain }}-
+
     - name: Setup `${{ matrix.toolchain }}`
       uses: actions-rs/toolchain@v1
       with:
@@ -62,6 +72,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-stable-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        restore-keys: ${{ runner.os }}-stable-x86_64-unknown-linux-gnu-
+
     - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
       with:
@@ -103,7 +123,8 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: ${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        restore-keys: ${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-
 
     - name: Setup Python
       uses: actions/setup-python@v2
@@ -112,9 +133,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install online-judge-api-client
-    
-    - name: locate oj cache
-      run: python -c "import onlinejudge;print(onlinejudge.service.library_checker.LibraryCheckerService._get_cloned_repository_path())"
 
     - name: Setup `1.42.0-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -150,6 +168,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        restore-keys: ${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-
 
     - name: Download artifacts
       uses: actions/download-artifact@v2
