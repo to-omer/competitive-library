@@ -1,6 +1,11 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  schedule:
+    - cron: '0 0 */6 * *'
+  push:
+  pull_request:
+
 
 jobs:
   build:
@@ -18,6 +23,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: build-${{ runner.os }}-${{ matrix.toolchain }}-${{ hashFiles('Cargo.lock') }}
+        restore-keys: build-${{ runner.os }}-${{ matrix.toolchain }}-
 
     - name: Setup `${{ matrix.toolchain }}`
       uses: actions-rs/toolchain@v1
@@ -62,6 +77,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: snippet-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        restore-keys: snippet-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-
+
     - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
       with:
@@ -95,6 +120,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: verify-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        restore-keys: verify-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-
 
     - name: Setup Python
       uses: actions/setup-python@v2
@@ -138,6 +173,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        restore-keys: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-
 
     - name: Download artifacts
       uses: actions/download-artifact@v2
