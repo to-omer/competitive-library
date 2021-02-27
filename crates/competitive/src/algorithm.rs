@@ -1,5 +1,7 @@
 //! algorithm
 
+#[cfg_attr(nightly, codesnip::entry("BitDp", inline))]
+mod bitdp;
 mod combinations;
 #[cfg_attr(nightly, codesnip::entry("ConvexHullTrick", inline))]
 mod convex_hull_trick;
@@ -11,6 +13,7 @@ mod search;
 mod slide_minimum;
 mod zeta_transform;
 
+pub use bitdp::*;
 pub use combinations::*;
 pub use convex_hull_trick::*;
 pub use mo::MoSolver;
