@@ -6,10 +6,10 @@ mod bitdp_impls {
         pub fn is_element(mask: usize, x: usize) -> bool {
             mask & 1 << x != 0
         }
-        pub fn elements(&self, mask: usize) -> impl Iterator<Item = usize> {
+        pub fn elements(self, mask: usize) -> impl Iterator<Item = usize> {
             (0..self.0).filter(move |&x| Self::is_element(mask, x))
         }
-        pub fn not_elements(&self, mask: usize) -> impl Iterator<Item = usize> {
+        pub fn not_elements(self, mask: usize) -> impl Iterator<Item = usize> {
             (0..self.0).filter(move |&x| !Self::is_element(mask, x))
         }
         pub fn is_subset(mask: usize, elements: usize) -> bool {
@@ -37,7 +37,7 @@ mod bitdp_impls {
                 Some(((cur & !y) / x / 2) | y)
             }
         }
-        pub fn combinations(&self, k: usize) -> Combinations {
+        pub fn combinations(self, k: usize) -> Combinations {
             Combinations {
                 mask: 1 << self.0,
                 cur: Some((1 << k) - 1),
@@ -111,24 +111,6 @@ mod tests {
         assert_eq!(b.elements(0b101).collect::<Vec<_>>(), vec![0, 2]);
         assert_eq!(b.elements(0b110).collect::<Vec<_>>(), vec![1, 2]);
         assert_eq!(b.elements(0b111).collect::<Vec<_>>(), vec![0, 1, 2]);
-
-        let b = BitDp(4);
-        assert_eq!(b.elements(0b0000).collect::<Vec<_>>(), vec![]);
-        assert_eq!(b.elements(0b0001).collect::<Vec<_>>(), vec![0]);
-        assert_eq!(b.elements(0b0010).collect::<Vec<_>>(), vec![1]);
-        assert_eq!(b.elements(0b0011).collect::<Vec<_>>(), vec![0, 1]);
-        assert_eq!(b.elements(0b0100).collect::<Vec<_>>(), vec![2]);
-        assert_eq!(b.elements(0b0101).collect::<Vec<_>>(), vec![0, 2]);
-        assert_eq!(b.elements(0b0110).collect::<Vec<_>>(), vec![1, 2]);
-        assert_eq!(b.elements(0b0111).collect::<Vec<_>>(), vec![0, 1, 2]);
-        assert_eq!(b.elements(0b1000).collect::<Vec<_>>(), vec![3]);
-        assert_eq!(b.elements(0b1001).collect::<Vec<_>>(), vec![0, 3]);
-        assert_eq!(b.elements(0b1010).collect::<Vec<_>>(), vec![1, 3]);
-        assert_eq!(b.elements(0b1011).collect::<Vec<_>>(), vec![0, 1, 3]);
-        assert_eq!(b.elements(0b1100).collect::<Vec<_>>(), vec![2, 3]);
-        assert_eq!(b.elements(0b1101).collect::<Vec<_>>(), vec![0, 2, 3]);
-        assert_eq!(b.elements(0b1110).collect::<Vec<_>>(), vec![1, 2, 3]);
-        assert_eq!(b.elements(0b1111).collect::<Vec<_>>(), vec![0, 1, 2, 3]);
     }
 
     #[test]
@@ -156,24 +138,6 @@ mod tests {
         assert_eq!(b.not_elements(0b101).collect::<Vec<_>>(), vec![1]);
         assert_eq!(b.not_elements(0b110).collect::<Vec<_>>(), vec![0]);
         assert_eq!(b.not_elements(0b111).collect::<Vec<_>>(), vec![]);
-
-        let b = BitDp(4);
-        assert_eq!(b.not_elements(0b0000).collect::<Vec<_>>(), vec![0, 1, 2, 3]);
-        assert_eq!(b.not_elements(0b0001).collect::<Vec<_>>(), vec![1, 2, 3]);
-        assert_eq!(b.not_elements(0b0010).collect::<Vec<_>>(), vec![0, 2, 3]);
-        assert_eq!(b.not_elements(0b0011).collect::<Vec<_>>(), vec![2, 3]);
-        assert_eq!(b.not_elements(0b0100).collect::<Vec<_>>(), vec![0, 1, 3]);
-        assert_eq!(b.not_elements(0b0101).collect::<Vec<_>>(), vec![1, 3]);
-        assert_eq!(b.not_elements(0b0110).collect::<Vec<_>>(), vec![0, 3]);
-        assert_eq!(b.not_elements(0b0111).collect::<Vec<_>>(), vec![3]);
-        assert_eq!(b.not_elements(0b1000).collect::<Vec<_>>(), vec![0, 1, 2]);
-        assert_eq!(b.not_elements(0b1001).collect::<Vec<_>>(), vec![1, 2]);
-        assert_eq!(b.not_elements(0b1010).collect::<Vec<_>>(), vec![0, 2]);
-        assert_eq!(b.not_elements(0b1011).collect::<Vec<_>>(), vec![2]);
-        assert_eq!(b.not_elements(0b1100).collect::<Vec<_>>(), vec![0, 1]);
-        assert_eq!(b.not_elements(0b1101).collect::<Vec<_>>(), vec![1]);
-        assert_eq!(b.not_elements(0b1110).collect::<Vec<_>>(), vec![0]);
-        assert_eq!(b.not_elements(0b1111).collect::<Vec<_>>(), vec![]);
     }
 
     #[test]
