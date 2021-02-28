@@ -120,6 +120,8 @@ mod scanner_impls {
 #[derive(Debug, Copy, Clone)]
 pub struct Usize1;
 #[derive(Debug, Copy, Clone)]
+pub struct CharWithBase(pub char);
+#[derive(Debug, Copy, Clone)]
 pub struct Chars;
 #[derive(Debug, Copy, Clone)]
 pub struct CharsWithBase(pub char);
@@ -137,6 +139,13 @@ mod marker_impls {
         #[inline]
         fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
             <usize as IterScan>::scan(iter)?.checked_sub(1)
+        }
+    }
+    impl MarkedIterScan for CharWithBase {
+        type Output = usize;
+        #[inline]
+        fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+            Some((<char as IterScan>::scan(iter)? as u8 - self.0 as u8) as usize)
         }
     }
     impl IterScan for Chars {
