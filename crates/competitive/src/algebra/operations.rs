@@ -1,170 +1,74 @@
 //! binary operaions
 
 use super::magma::*;
-use crate::num::{One, Zero};
+use crate::num::{Bounded, One, Zero};
 
 /// binary operation to select larger element
-#[codesnip::entry("MaxOperation", include("algebra"))]
+#[codesnip::entry("MaxOperation", include("algebra", "bounded"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct MaxOperation<T: Clone + Ord + MinimumBounded> {
+pub struct MaxOperation<T: Clone + Ord + Bounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
-}
-#[codesnip::entry("MaxOperation")]
-pub trait MinimumBounded {
-    fn minimum() -> Self;
 }
 #[codesnip::entry("MaxOperation")]
 mod max_operation_impl {
     use super::*;
-    macro_rules! impl_minimum_with_min {
-        ($t:ty, $min:expr) => {
-            impl MinimumBounded for $t {
-                #[inline]
-                fn minimum() -> Self {
-                    $min
-                }
-            }
-        };
-    }
-    impl_minimum_with_min!(usize, std::usize::MIN);
-    impl_minimum_with_min!(u8, std::u8::MIN);
-    impl_minimum_with_min!(u16, std::u16::MIN);
-    impl_minimum_with_min!(u32, std::u32::MIN);
-    impl_minimum_with_min!(u64, std::u64::MIN);
-    impl_minimum_with_min!(isize, std::isize::MIN);
-    impl_minimum_with_min!(i8, std::i8::MIN);
-    impl_minimum_with_min!(i16, std::i16::MIN);
-    impl_minimum_with_min!(i32, std::i32::MIN);
-    impl_minimum_with_min!(i64, std::i64::MIN);
-    // impl_minimum_with_min!(f32, std::f32::MIN);
-    // impl_minimum_with_min!(f64, std::f64::MIN);
-    macro_rules! impl_minimum_tuple {
-        ($($T:ident)*) => {
-            impl<$($T: MinimumBounded),*> MinimumBounded for ($($T,)*) {
-                #[inline]
-                fn minimum() -> Self {
-                    ($(<$T as MinimumBounded>::minimum(),)*)
-                }
-            }
-        };
-    }
-    impl_minimum_tuple!();
-    impl_minimum_tuple!(A);
-    impl_minimum_tuple!(A B);
-    impl_minimum_tuple!(A B C);
-    impl_minimum_tuple!(A B C D);
-    impl_minimum_tuple!(A B C D E);
-    impl_minimum_tuple!(A B C D E F);
-    impl_minimum_tuple!(A B C D E F G);
-    impl_minimum_tuple!(A B C D E F G H);
-    impl_minimum_tuple!(A B C D E F G H I);
-    impl_minimum_tuple!(A B C D E F G H I J);
-    impl_minimum_tuple!(A B C D E F G H I J K);
-    impl<T: Clone + Ord + MinimumBounded> MaxOperation<T> {
+    impl<T: Clone + Ord + Bounded> MaxOperation<T> {
         pub fn new() -> Self {
             Self {
                 _marker: std::marker::PhantomData,
             }
         }
     }
-    impl<T: Clone + Ord + MinimumBounded> Magma for MaxOperation<T> {
+    impl<T: Clone + Ord + Bounded> Magma for MaxOperation<T> {
         type T = T;
         #[inline]
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             x.max(y).clone()
         }
     }
-    impl<T: Clone + Ord + MinimumBounded> Unital for MaxOperation<T> {
+    impl<T: Clone + Ord + Bounded> Unital for MaxOperation<T> {
         #[inline]
         fn unit(&self) -> Self::T {
-            MinimumBounded::minimum()
+            <T as Bounded>::MIN
         }
     }
-    impl<T: Clone + Ord + MinimumBounded> Associative for MaxOperation<T> {}
-    impl<T: Clone + Ord + MinimumBounded> Commutative for MaxOperation<T> {}
-    impl<T: Clone + Ord + MinimumBounded> Idempotent for MaxOperation<T> {}
+    impl<T: Clone + Ord + Bounded> Associative for MaxOperation<T> {}
+    impl<T: Clone + Ord + Bounded> Commutative for MaxOperation<T> {}
+    impl<T: Clone + Ord + Bounded> Idempotent for MaxOperation<T> {}
 }
 
 /// binary operation to select smaller element
-#[codesnip::entry("MinOperation", include("algebra"))]
+#[codesnip::entry("MinOperation", include("algebra", "bounded"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct MinOperation<T: Clone + Ord + MaximumBounded> {
+pub struct MinOperation<T: Clone + Ord + Bounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
-}
-#[codesnip::entry("MinOperation")]
-pub trait MaximumBounded {
-    fn maximum() -> Self;
 }
 #[codesnip::entry("MinOperation")]
 mod min_operation_impl {
     use super::*;
-    macro_rules! impl_maximum_with_max {
-        ($t:ty, $max:expr) => {
-            impl MaximumBounded for $t {
-                #[inline]
-                fn maximum() -> Self {
-                    $max
-                }
-            }
-        };
-    }
-    impl_maximum_with_max!(usize, std::usize::MAX);
-    impl_maximum_with_max!(u8, std::u8::MAX);
-    impl_maximum_with_max!(u16, std::u16::MAX);
-    impl_maximum_with_max!(u32, std::u32::MAX);
-    impl_maximum_with_max!(u64, std::u64::MAX);
-    impl_maximum_with_max!(isize, std::isize::MAX);
-    impl_maximum_with_max!(i8, std::i8::MAX);
-    impl_maximum_with_max!(i16, std::i16::MAX);
-    impl_maximum_with_max!(i32, std::i32::MAX);
-    impl_maximum_with_max!(i64, std::i64::MAX);
-    // impl_maximum_with_max!(f32, std::f32::MAX);
-    // impl_maximum_with_max!(f64, std::f64::MAX);
-    macro_rules! impl_maximum_tuple {
-        ($($T:ident)*) => {
-            impl<$($T: MaximumBounded),*> MaximumBounded for ($($T,)*) {
-                #[inline]
-                fn maximum() -> Self {
-                    ($(<$T as MaximumBounded>::maximum(),)*)
-                }
-            }
-        };
-    }
-    impl_maximum_tuple!();
-    impl_maximum_tuple!(A);
-    impl_maximum_tuple!(A B);
-    impl_maximum_tuple!(A B C);
-    impl_maximum_tuple!(A B C D);
-    impl_maximum_tuple!(A B C D E);
-    impl_maximum_tuple!(A B C D E F);
-    impl_maximum_tuple!(A B C D E F G);
-    impl_maximum_tuple!(A B C D E F G H);
-    impl_maximum_tuple!(A B C D E F G H I);
-    impl_maximum_tuple!(A B C D E F G H I J);
-    impl_maximum_tuple!(A B C D E F G H I J K);
-    impl<T: Clone + Ord + MaximumBounded> MinOperation<T> {
+    impl<T: Clone + Ord + Bounded> MinOperation<T> {
         pub fn new() -> Self {
             Self {
                 _marker: std::marker::PhantomData,
             }
         }
     }
-    impl<T: Clone + Ord + MaximumBounded> Magma for MinOperation<T> {
+    impl<T: Clone + Ord + Bounded> Magma for MinOperation<T> {
         type T = T;
         #[inline]
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             x.min(y).clone()
         }
     }
-    impl<T: Clone + Ord + MaximumBounded> Unital for MinOperation<T> {
+    impl<T: Clone + Ord + Bounded> Unital for MinOperation<T> {
         #[inline]
         fn unit(&self) -> Self::T {
-            MaximumBounded::maximum()
+            <T as Bounded>::MAX
         }
     }
-    impl<T: Clone + Ord + MaximumBounded> Associative for MinOperation<T> {}
-    impl<T: Clone + Ord + MaximumBounded> Commutative for MinOperation<T> {}
-    impl<T: Clone + Ord + MaximumBounded> Idempotent for MinOperation<T> {}
+    impl<T: Clone + Ord + Bounded> Associative for MinOperation<T> {}
+    impl<T: Clone + Ord + Bounded> Commutative for MinOperation<T> {}
+    impl<T: Clone + Ord + Bounded> Idempotent for MinOperation<T> {}
 }
 
 /// retain the first element
@@ -800,22 +704,22 @@ mod reverse_operation_impl {
     impl<M: Idempotent> Idempotent for ReverseOperation<M> {}
 }
 
-#[codesnip::entry("Top2Operation", include("algebra", "MaxOperation"))]
+#[codesnip::entry("Top2Operation", include("algebra", "bounded"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct Top2Operation<T: Clone + Ord + MinimumBounded> {
+pub struct Top2Operation<T: Clone + Ord + Bounded> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[codesnip::entry("Top2Operation")]
 mod top2_operation_impl {
     use super::*;
-    impl<T: Clone + Ord + MinimumBounded> Top2Operation<T> {
+    impl<T: Clone + Ord + Bounded> Top2Operation<T> {
         pub fn new() -> Self {
             Self {
                 _marker: std::marker::PhantomData,
             }
         }
     }
-    impl<T: Clone + Ord + MinimumBounded> Magma for Top2Operation<T> {
+    impl<T: Clone + Ord + Bounded> Magma for Top2Operation<T> {
         type T = (T, T);
         fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
             if x.0 < y.0 {
@@ -825,13 +729,13 @@ mod top2_operation_impl {
             }
         }
     }
-    impl<T: Clone + Ord + MinimumBounded> Unital for Top2Operation<T> {
+    impl<T: Clone + Ord + Bounded> Unital for Top2Operation<T> {
         fn unit(&self) -> Self::T {
-            (T::minimum(), T::minimum())
+            (<T as Bounded>::MIN, <T as Bounded>::MIN)
         }
     }
-    impl<T: Clone + Ord + MinimumBounded> Associative for Top2Operation<T> {}
-    impl<T: Clone + Ord + MinimumBounded> Commutative for Top2Operation<T> {}
+    impl<T: Clone + Ord + Bounded> Associative for Top2Operation<T> {}
+    impl<T: Clone + Ord + Bounded> Commutative for Top2Operation<T> {}
 }
 
 #[codesnip::entry("PermutationOperation", include("algebra"))]
