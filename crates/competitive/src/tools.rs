@@ -17,7 +17,6 @@ mod heuristics;
 )]
 mod main;
 mod output;
-#[cfg_attr(nightly, codesnip::entry("Xorshift", inline))]
 mod random;
 #[cfg_attr(nightly, codesnip::entry("scanner", inline))]
 mod scanner;
