@@ -7,9 +7,9 @@ use std::{
     ops::{Range, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive},
 };
 
-pub trait RandomGenerator<T> {
+pub trait RandomGenerator<T>: Sized {
     fn rand(&self, rng: &mut Xorshift) -> T;
-    fn rand_iter<'g, 'r>(&'g self, rng: &'r mut Xorshift) -> RandIter<'g, 'r, T, Self> {
+    fn rand_iter(self, rng: &mut Xorshift) -> RandIter<'_, T, Self> {
         RandIter {
             gen: self,
             rng,
@@ -18,13 +18,22 @@ pub trait RandomGenerator<T> {
     }
 }
 
+impl Xorshift {
+    pub fn gen<T, G: RandomGenerator<T>>(&mut self, generator: G) -> T {
+        generator.rand(self)
+    }
+    pub fn gen_iter<T, G: RandomGenerator<T>>(&mut self, generator: G) -> RandIter<'_, T, G> {
+        generator.rand_iter(self)
+    }
+}
+
 #[derive(Debug)]
-pub struct RandIter<'g, 'r, T, G: RandomGenerator<T> + ?Sized> {
-    gen: &'g G,
+pub struct RandIter<'r, T, G: RandomGenerator<T>> {
+    gen: G,
     rng: &'r mut Xorshift,
     _marker: PhantomData<fn() -> T>,
 }
-impl<'g, 'r, T, G: RandomGenerator<T>> Iterator for RandIter<'g, 'r, T, G> {
+impl<T, G: RandomGenerator<T>> Iterator for RandIter<'_, T, G> {
     type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
         Some(self.gen.rand(&mut self.rng))
@@ -164,26 +173,26 @@ fn randint_uniform(rng: &mut Xorshift, k: u64) -> u64 {
 
 #[macro_export]
 macro_rules! rand_value {
+    ($rng:expr, ($($e:expr),*)) => {
+        ($($crate::rand_value!($rng, $e)),*)
+    };
     ($rng:expr, ($($t:tt),*)) => {
         ($($crate::rand_value!($rng, $t)),*)
     };
     ($rng:expr, [$t:tt; $len:expr]) => {
-        std::iter::repeat_with(|| $crate::rand_value!($rng, $t)).take($len).collect::<Vec<_>>()
+        ::std::iter::repeat_with(|| $crate::rand_value!($rng, $t)).take($len).collect::<Vec<_>>()
     };
     ($rng:expr, [$g:expr; $len:expr]) => {
-        ($g).rand_iter($rng).take($len).collect::<Vec<_>>()
+        ($rng).gen_iter($g).take($len).collect::<Vec<_>>()
     };
-    ($rng:expr, [$t:tt]) => {
-        std::iter::repeat_with(|| $crate::rand_value!($rng, $t))
-    };
-    ($rng:expr, [$g:expr]) => {
-        ($g).rand_iter($rng)
+    ($rng:expr, [$($t:tt)*]) => {
+        ::std::iter::repeat_with(|| $crate::rand_value!($rng, $($t)*))
     };
     ($rng:expr, {$g:expr}) => {
-        ($g).rand($rng)
+        ($rng).gen($g)
     };
     ($rng:expr, $g:expr) => {
-        ($g).rand($rng)
+        ($rng).gen($g)
     };
 }
 #[macro_export]
@@ -193,8 +202,15 @@ macro_rules! rand {
     ($rng:expr, $var:tt: $t:tt) => {
         let $var = $crate::rand_value!($rng, $t);
     };
+    ($rng:expr, mut $var:tt: $t:tt) => {
+        let mut $var = $crate::rand_value!($rng, $t);
+    };
     ($rng:expr, $var:tt: $t:tt, $($rest:tt)*) => {
         let $var = $crate::rand_value!($rng, $t);
+        rand!($rng, $($rest)*)
+    };
+    ($rng:expr, mut $var:tt: $t:tt, $($rest:tt)*) => {
+        let mut $var = $crate::rand_value!($rng, $t);
         rand!($rng, $($rest)*)
     };
 }

@@ -88,25 +88,6 @@ impl<M: NttModulus + MIntConvert<usize>> NumberTheoreticTransform<M> {
     }
 }
 
-#[test]
-fn test_ntt998244353() {
-    use crate::num::mint_basic::MInt998244353;
-    use crate::tools::Xorshift;
-    const N: usize = 3_000;
-    let mut rand = Xorshift::time();
-    pub type Ntt = NumberTheoreticTransform<mint_basic::Modulo998244353>;
-    let a: Vec<_> = Ntt::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
-    let b: Vec<_> = Ntt::convert((0..N).map(|_| rand.rand(MInt998244353::get_mod() as u64)));
-    let mut c = vec![MInt998244353::zero(); N * 2 - 1];
-    for i in 0..N {
-        for j in 0..N {
-            c[i + j] += a[i] * b[j];
-        }
-    }
-    let d = Ntt::convolve(a, b);
-    assert_eq!(c, d);
-}
-
 /// max(a.len(), b.len()) * max(a) * max(b) < 3.64 * 10^18
 pub fn convolve2<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u64>
 where
@@ -132,24 +113,6 @@ where
             c1.inner() as u64 + p1 * ((c2 - MInt::<M2>::from(c1.inner())) * p1_inv).inner() as u64
         })
         .collect()
-}
-
-#[test]
-fn test_convolve2() {
-    use crate::tools::Xorshift;
-    const N: usize = 3_000;
-    let mut rand = Xorshift::time();
-    let m: u64 = ((std::u64::MAX / N as u64 / 100) as f64).sqrt() as u64;
-    let a: Vec<_> = (0..N).map(|_| rand.rand(m) as u32).collect();
-    let b: Vec<_> = (0..N).map(|_| rand.rand(m) as u32).collect();
-    let mut c = vec![0u64; N * 2 - 1];
-    for i in 0..N {
-        for j in 0..N {
-            c[i + j] += a[i] as u64 * b[j] as u64;
-        }
-    }
-    let d = convolve2(a, b);
-    assert_eq!(c, d);
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
@@ -190,28 +153,6 @@ where
         .collect()
 }
 
-#[test]
-fn test_convolve3() {
-    use crate::tools::Xorshift;
-    const N: usize = 3_000;
-    type M = MInt<mint_basic::Modulo1000000009>;
-    let mut rand = Xorshift::time();
-    let a: Vec<_> = (0..N)
-        .map(|_| rand.rand(std::u32::MAX as u64) as u32)
-        .collect();
-    let b: Vec<_> = (0..N)
-        .map(|_| rand.rand(std::u32::MAX as u64) as u32)
-        .collect();
-    let mut c = vec![M::zero(); N * 2 - 1];
-    for i in 0..N {
-        for j in 0..N {
-            c[i + j] += M::from(a[i] as u64 * b[j] as u64);
-        }
-    }
-    let d = convolve3::<mint_basic::Modulo1000000009, _>(a, b);
-    assert_eq!(c, d);
-}
-
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
 pub fn convolve3_128<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u128>
 where
@@ -249,92 +190,144 @@ where
         .collect()
 }
 
-#[test]
-fn test_convolve3_128() {
-    use crate::tools::Xorshift;
-    const N: usize = 3_000;
-    let mut rand = Xorshift::time();
-    let a: Vec<_> = (0..N).map(|_| rand.rand(std::u32::MAX as u64)).collect();
-    let b: Vec<_> = (0..N).map(|_| rand.rand(std::u32::MAX as u64)).collect();
-    let mut c = vec![0u128; N * 2 - 1];
-    for i in 0..N {
-        for j in 0..N {
-            c[i + j] += (a[i] * b[j]) as u128;
-        }
-    }
-    let d = convolve3_128(a, b);
-    assert_eq!(c, d);
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::num::mint_basic::{MInt998244353, Modulo1000000009, Modulo998244353};
+    use crate::{rand, tools::Xorshift};
 
-// #[test]
-#[codesnip::skip]
-#[allow(dead_code)]
-fn find_proth() {
-    use crate::math::{divisors, prime_factors_rho};
-    static mut MOD: u32 = 2;
-    crate::define_basic_mintbase!(
-        D,
-        unsafe { MOD },
-        u32,
-        u64,
-        [u32, u64, u128, usize],
-        [i32, i64, i128, isize]
-    );
-    // p = a * 2^b + 1 (b >= 1, a < 2^b)
-    for b in 22..32 {
-        for a in (1..1u64 << b).step_by(2) {
-            let p = a * (1u64 << b) + 1;
-            if 1 << 31 < p {
-                break;
+    const N: usize = 3_000;
+
+    #[test]
+    fn test_ntt998244353() {
+        let mut rng = Xorshift::time();
+        pub type Ntt = NumberTheoreticTransform<Modulo998244353>;
+        let a = Ntt::convert(rng.gen_iter(..MInt998244353::get_mod()).take(N));
+        let b = Ntt::convert(rng.gen_iter(..MInt998244353::get_mod()).take(N));
+        let mut c = vec![MInt998244353::zero(); N * 2 - 1];
+        for i in 0..N {
+            for j in 0..N {
+                c[i + j] += a[i] * b[j];
             }
-            if p < 1 << 29 {
-                continue;
+        }
+        let d = Ntt::convolve(a, b);
+        assert_eq!(c, d);
+    }
+
+    #[test]
+    fn test_convolve2() {
+        let mut rng = Xorshift::time();
+        let m: u32 = ((std::u64::MAX / N as u64 / 100) as f64).sqrt() as _;
+        rand!(rng, a: [..m; N], b: [..m; N]);
+        let mut c = vec![0u64; N * 2 - 1];
+        for i in 0..N {
+            for j in 0..N {
+                c[i + j] += a[i] as u64 * b[j] as u64;
             }
-            let f = prime_factors_rho(p);
-            if f.len() == 1 && f[0] == p {
-                unsafe { MOD = p as u32 };
-                for g in (3..).step_by(2) {
-                    let g = MInt::<D>::new(g);
-                    if divisors(p as usize - 1)
-                        .into_iter()
-                        .filter(|&d| d != p as usize - 1)
-                        .all(|d| g.pow(d) != MInt::<D>::one())
-                    {
-                        println!("(p,a,b,g) = {:?}", (p, a, b, g));
-                        break;
+        }
+        let d = convolve2(a, b);
+        assert_eq!(c, d);
+    }
+
+    #[test]
+    fn test_convolve3() {
+        type M = MInt<Modulo1000000009>;
+        let mut rng = Xorshift::time();
+        rand!(rng, a: [0u32..; N], b: [0u32..; N]);
+        let mut c = vec![M::zero(); N * 2 - 1];
+        for i in 0..N {
+            for j in 0..N {
+                c[i + j] += M::from(a[i] as u64 * b[j] as u64);
+            }
+        }
+        let d = convolve3::<Modulo1000000009, _>(a, b);
+        assert_eq!(c, d);
+    }
+
+    #[test]
+    fn test_convolve3_128() {
+        let mut rng = Xorshift::time();
+        const A: u64 = std::u32::MAX as _;
+        rand!(rng, a: [..=A; N], b: [..=A; N]);
+        let mut c = vec![0u128; N * 2 - 1];
+        for i in 0..N {
+            for j in 0..N {
+                c[i + j] += (a[i] * b[j]) as u128;
+            }
+        }
+        let d = convolve3_128(a, b);
+        assert_eq!(c, d);
+    }
+
+    // #[test]
+    #[allow(dead_code)]
+    fn find_proth() {
+        use crate::math::{divisors, prime_factors_rho};
+        static mut MOD: u32 = 2;
+        crate::define_basic_mintbase!(
+            D,
+            unsafe { MOD },
+            u32,
+            u64,
+            [u32, u64, u128, usize],
+            [i32, i64, i128, isize]
+        );
+        // p = a * 2^b + 1 (b >= 1, a < 2^b)
+        for b in 22..32 {
+            for a in (1..1u64 << b).step_by(2) {
+                let p = a * (1u64 << b) + 1;
+                if 1 << 31 < p {
+                    break;
+                }
+                if p < 1 << 29 {
+                    continue;
+                }
+                let f = prime_factors_rho(p);
+                if f.len() == 1 && f[0] == p {
+                    unsafe { MOD = p as u32 };
+                    for g in (3..).step_by(2) {
+                        let g = MInt::<D>::new(g);
+                        if divisors(p as usize - 1)
+                            .into_iter()
+                            .filter(|&d| d != p as usize - 1)
+                            .all(|d| g.pow(d) != MInt::<D>::one())
+                        {
+                            println!("(p,a,b,g) = {:?}", (p, a, b, g));
+                            break;
+                        }
                     }
                 }
             }
         }
+        // (p,a,b,g) = (666894337, 159, 22, 5)
+        // (p,a,b,g) = (683671553, 163, 22, 3)
+        // (p,a,b,g) = (918552577, 219, 22, 5)
+        // (p,a,b,g) = (935329793, 223, 22, 3)
+        // (p,a,b,g) = (943718401, 225, 22, 7)
+        // (p,a,b,g) = (985661441, 235, 22, 3)
+        // (p,a,b,g) = (1161822209, 277, 22, 3)
+        // (p,a,b,g) = (1212153857, 289, 22, 3)
+        // (p,a,b,g) = (1321205761, 315, 22, 11)
+        // (p,a,b,g) = (1438646273, 343, 22, 3)
+        // (p,a,b,g) = (1572864001, 375, 22, 13)
+        // (p,a,b,g) = (1790967809, 427, 22, 13)
+        // (p,a,b,g) = (1866465281, 445, 22, 3)
+        // (p,a,b,g) = (2025848833, 483, 22, 11)
+        // (p,a,b,g) = (595591169, 71, 23, 3)
+        // (p,a,b,g) = (645922817, 77, 23, 3)
+        // (p,a,b,g) = (880803841, 105, 23, 37)
+        // (p,a,b,g) = (897581057, 107, 23, 3)
+        // (p,a,b,g) = (998244353, 119, 23, 3)
+        // (p,a,b,g) = (1300234241, 155, 23, 3)
+        // (p,a,b,g) = (1484783617, 177, 23, 5)
+        // (p,a,b,g) = (2088763393, 249, 23, 5)
+        // (p,a,b,g) = (754974721, 45, 24, 11)
+        // (p,a,b,g) = (1224736769, 73, 24, 3)
+        // (p,a,b,g) = (2130706433, 127, 24, 3)
+        // (p,a,b,g) = (1107296257, 33, 25, 31)
+        // (p,a,b,g) = (1711276033, 51, 25, 29)
+        // (p,a,b,g) = (2113929217, 63, 25, 5)
+        // (p,a,b,g) = (1811939329, 27, 26, 13)
+        // (p,a,b,g) = (2013265921, 15, 27, 31)
     }
-    // (p,a,b,g) = (666894337, 159, 22, 5)
-    // (p,a,b,g) = (683671553, 163, 22, 3)
-    // (p,a,b,g) = (918552577, 219, 22, 5)
-    // (p,a,b,g) = (935329793, 223, 22, 3)
-    // (p,a,b,g) = (943718401, 225, 22, 7)
-    // (p,a,b,g) = (985661441, 235, 22, 3)
-    // (p,a,b,g) = (1161822209, 277, 22, 3)
-    // (p,a,b,g) = (1212153857, 289, 22, 3)
-    // (p,a,b,g) = (1321205761, 315, 22, 11)
-    // (p,a,b,g) = (1438646273, 343, 22, 3)
-    // (p,a,b,g) = (1572864001, 375, 22, 13)
-    // (p,a,b,g) = (1790967809, 427, 22, 13)
-    // (p,a,b,g) = (1866465281, 445, 22, 3)
-    // (p,a,b,g) = (2025848833, 483, 22, 11)
-    // (p,a,b,g) = (595591169, 71, 23, 3)
-    // (p,a,b,g) = (645922817, 77, 23, 3)
-    // (p,a,b,g) = (880803841, 105, 23, 37)
-    // (p,a,b,g) = (897581057, 107, 23, 3)
-    // (p,a,b,g) = (998244353, 119, 23, 3)
-    // (p,a,b,g) = (1300234241, 155, 23, 3)
-    // (p,a,b,g) = (1484783617, 177, 23, 5)
-    // (p,a,b,g) = (2088763393, 249, 23, 5)
-    // (p,a,b,g) = (754974721, 45, 24, 11)
-    // (p,a,b,g) = (1224736769, 73, 24, 3)
-    // (p,a,b,g) = (2130706433, 127, 24, 3)
-    // (p,a,b,g) = (1107296257, 33, 25, 31)
-    // (p,a,b,g) = (1711276033, 51, 25, 29)
-    // (p,a,b,g) = (2113929217, 63, 25, 5)
-    // (p,a,b,g) = (1811939329, 27, 26, 13)
-    // (p,a,b,g) = (2013265921, 15, 27, 31)
 }

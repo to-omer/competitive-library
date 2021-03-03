@@ -27,7 +27,7 @@ mod totalord;
 pub use counter::Counter;
 pub use heuristics::SimuratedAnnealing;
 pub use output::echo;
-pub use random::Xorshift;
+pub use random::*;
 pub use scanner::*;
 pub use slice::GetDistinctMut;
 pub use totalord::TotalOrd;

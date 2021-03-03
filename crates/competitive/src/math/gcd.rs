@@ -30,20 +30,6 @@ pub fn gcd_binary(mut a: u64, mut b: u64) -> u64 {
     a << k
 }
 
-#[test]
-fn test_gcd() {
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    const Q: usize = 10_000;
-    for _ in 0..Q {
-        let a = rand.rand64();
-        let b = rand.rand64();
-        assert_eq!(gcd(a, b), gcd_binary(a, b));
-    }
-    assert_eq!(gcd(0, 0), gcd_binary(0, 0));
-    assert_eq!(gcd(0, 100), gcd_binary(0, 100));
-}
-
 #[codesnip::entry(include("gcd"))]
 pub fn lcm(a: u64, b: u64) -> u64 {
     a / gcd(a, b) * b
@@ -73,19 +59,6 @@ pub fn extgcd_loop(mut a: i64, mut b: i64) -> (i64, i64, i64) {
         std::mem::swap(&mut b, &mut a);
     }
     (b, x, y)
-}
-
-#[test]
-fn test_extgcd() {
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    const Q: usize = 10_000;
-    for _ in 0..Q {
-        let a = rand.rand(1_000_000_007) as i64;
-        let b = rand.rand(1_000_000_007) as i64;
-        let (g, x, y) = extgcd_loop(a, b);
-        assert_eq!(a * x + b * y, g);
-    }
 }
 
 pub fn extgcd_binary(mut a: i64, mut b: i64) -> (i64, i64, i64) {
@@ -130,19 +103,6 @@ pub fn extgcd_binary(mut a: i64, mut b: i64) -> (i64, i64, i64) {
     (a << k, s, t)
 }
 
-#[test]
-fn test_extgcd_binary() {
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    const Q: usize = 10_000;
-    for _ in 0..Q {
-        let a = rand.rand(1_000_000_007) as i64;
-        let b = rand.rand(1_000_000_007) as i64;
-        let (g, x, y) = extgcd_binary(a, b);
-        assert_eq!(a * x + b * y, g);
-    }
-}
-
 #[codesnip::entry(include("extgcd"))]
 pub fn modinv(a: i64, m: i64) -> i64 {
     (extgcd(a, m).1 % m + m) % m
@@ -150,23 +110,6 @@ pub fn modinv(a: i64, m: i64) -> i64 {
 
 pub fn modinv_loop(a: i64, m: i64) -> i64 {
     (extgcd_loop(a, m).1 % m + m) % m
-}
-
-#[test]
-fn test_modinv() {
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    const Q: usize = 10_000;
-    for _ in 0..Q {
-        let m = rand.rand(1_000_000_009) + 1;
-        let a = rand.rand(m - 1) + 1;
-        let g = gcd(a, m);
-        let m = m / g;
-        let a = a / g;
-        let x = modinv(a as i64, m as i64) as u64;
-        assert!(x < m);
-        assert_eq!(a * x % m, 1);
-    }
 }
 
 /// 0 < a < p, gcd(a, p) == 1, p is prime > 2
@@ -202,20 +145,69 @@ pub fn modinv_extgcd_binary(mut a: u64, p: u64) -> u64 {
     s
 }
 
-#[test]
-fn test_modinv_extgcd_binary() {
+#[cfg(test)]
+mod tests {
+    use super::*;
     use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
     const Q: usize = 10_000;
-    for _ in 0..Q {
-        let m = rand.rand(1_000_000_009) + 1;
-        let m = m >> m.trailing_zeros();
-        let a = rand.rand(m - 1) + 1;
-        let g = gcd(a, m);
-        let m = m / g;
-        let a = a / g;
-        let x = modinv_extgcd_binary(a, m);
-        assert!(x < m);
-        assert_eq!(a * x % m, 1);
+    const A: i64 = 1_000_000_007;
+
+    #[test]
+    fn test_gcd() {
+        let mut rng = Xorshift::time();
+        for (a, b) in rng.gen_iter((0.., 0..)).take(Q) {
+            assert_eq!(gcd(a, b), gcd_binary(a, b));
+        }
+        assert_eq!(gcd(0, 0), gcd_binary(0, 0));
+        assert_eq!(gcd(0, 100), gcd_binary(0, 100));
+    }
+
+    #[test]
+    fn test_extgcd() {
+        let mut rng = Xorshift::time();
+        for (a, b) in rng.gen_iter((-A..=A, -A..=A)).take(Q) {
+            let (g, x, y) = extgcd_loop(a, b);
+            assert_eq!(a * x + b * y, g);
+        }
+    }
+
+    #[test]
+    fn test_extgcd_binary() {
+        let mut rng = Xorshift::time();
+        for (a, b) in rng.gen_iter((0..=A, 0..=A)).take(Q) {
+            let (g, x, y) = extgcd_binary(a, b);
+            assert_eq!(a * x + b * y, g);
+        }
+    }
+
+    #[test]
+    fn test_modinv() {
+        let mut rng = Xorshift::time();
+        for _ in 0..Q {
+            let m = rng.gen(1..=A as u64);
+            let a = rng.gen(1..m);
+            let g = gcd(a, m);
+            let m = m / g;
+            let a = a / g;
+            let x = modinv(a as i64, m as i64) as u64;
+            assert!(x < m);
+            assert_eq!(a * x % m, 1);
+        }
+    }
+
+    #[test]
+    fn test_modinv_extgcd_binary() {
+        let mut rng = Xorshift::time();
+        for _ in 0..Q {
+            let m = rng.gen(1..=A as u64);
+            let m = m >> m.trailing_zeros();
+            let a = rng.gen(1..m);
+            let g = gcd(a, m);
+            let m = m / g;
+            let a = a / g;
+            let x = modinv_extgcd_binary(a, m);
+            assert!(x < m);
+            assert_eq!(a * x % m, 1);
+        }
     }
 }

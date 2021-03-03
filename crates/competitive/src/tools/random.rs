@@ -55,6 +55,7 @@ impl Default for Xorshift {
     nightly,
     codesnip::entry("RandomGenerator", include("Xorshift", "bounded"))
 )]
+#[macro_use]
 mod ramdom_generator;
 #[codesnip::entry("RandomGenerator")]
 pub use ramdom_generator::{NotEmptySegment, RandIter, RandomGenerator};

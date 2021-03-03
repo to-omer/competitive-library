@@ -63,42 +63,6 @@ impl<G: Group> SubsetTransform<G> {
     }
 }
 
-#[test]
-fn test_subset_transform() {
-    use crate::algebra::{AdditiveOperation, MultiplicativeOperation};
-    use crate::tools::Xorshift;
-    const N: usize = 1 << 12;
-    const M: i64 = 100_000;
-    let mut rand = Xorshift::time();
-    let subset = SubsetTransform::new(AdditiveOperation::new());
-
-    let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let mut g = vec![0i64; N];
-    let h = f.clone();
-    for (s, f) in f.iter().enumerate() {
-        for (t, g) in g.iter_mut().enumerate() {
-            if s | t == t {
-                *g += f;
-            }
-        }
-    }
-    subset.zeta_transform(&mut f);
-    assert_eq!(f, g);
-    subset.mobius_transform(&mut f);
-    assert_eq!(f, h);
-
-    let f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let g: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let mut h = vec![0i64; N];
-    for i in 0..N {
-        for j in 0..N {
-            h[i | j] += f[i] * g[j];
-        }
-    }
-    let i = subset.convolve(f, g, MultiplicativeOperation::new());
-    assert_eq!(h, i);
-}
-
 #[codesnip::entry("SupersetTransform", include("algebra"))]
 pub struct SupersetTransform<M: Monoid> {
     monoid: M,
@@ -154,42 +118,6 @@ impl<G: Group> SupersetTransform<G> {
     }
 }
 
-#[test]
-fn test_superset_transform() {
-    use crate::algebra::{AdditiveOperation, MultiplicativeOperation};
-    use crate::tools::Xorshift;
-    const N: usize = 1 << 12;
-    const M: i64 = 100_000;
-    let mut rand = Xorshift::time();
-    let superset = SupersetTransform::new(AdditiveOperation::new());
-
-    let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let mut g = vec![0i64; N];
-    let h = f.clone();
-    for (s, f) in f.iter().enumerate() {
-        for (t, g) in g.iter_mut().enumerate() {
-            if s | t == s {
-                *g += f;
-            }
-        }
-    }
-    superset.zeta_transform(&mut f);
-    assert_eq!(f, g);
-    superset.mobius_transform(&mut f);
-    assert_eq!(f, h);
-
-    let f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let g: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let mut h = vec![0i64; N];
-    for i in 0..N {
-        for j in 0..N {
-            h[i & j] += f[i] * g[j];
-        }
-    }
-    let i = superset.convolve(f, g, MultiplicativeOperation::new());
-    assert_eq!(h, i);
-}
-
 #[codesnip::entry("DivisorTransform", include("algebra"))]
 pub struct DivisorTransform<M: Monoid> {
     monoid: M,
@@ -234,49 +162,6 @@ impl<G: Group> DivisorTransform<G> {
         self.mobius_transform(&mut f);
         f
     }
-}
-
-#[test]
-fn test_divisor_transform() {
-    use crate::algebra::{AdditiveOperation, MultiplicativeOperation};
-    use crate::math::{lcm, primes};
-    use crate::tools::Xorshift;
-    const N: usize = 3_000;
-    const M: i64 = 100_000;
-    let mut rand = Xorshift::time();
-    let divisor = DivisorTransform::new(AdditiveOperation::new(), primes(N));
-
-    let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    f[0] = 0;
-    let mut g = vec![0i64; N];
-    let h = f.clone();
-    for (s, f) in f.iter().enumerate().skip(1) {
-        for (t, g) in g.iter_mut().enumerate().skip(1) {
-            if t % s == 0 {
-                *g += f;
-            }
-        }
-    }
-    divisor.zeta_transform(&mut f);
-    assert_eq!(&f[1..], &g[1..]);
-    divisor.mobius_transform(&mut f);
-    assert_eq!(&f[1..], &h[1..]);
-
-    let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let mut g: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    f[0] = 0;
-    g[0] = 0;
-    let mut h = vec![0i64; N];
-    for (i, f) in f.iter().enumerate().skip(1) {
-        for (j, g) in g.iter().enumerate().skip(1) {
-            let k = lcm(i as _, j as _) as usize;
-            if k < N {
-                h[k] += f * g;
-            }
-        }
-    }
-    let i = divisor.convolve(f, g, MultiplicativeOperation::new());
-    assert_eq!(&h[1..], &i[1..]);
 }
 
 #[codesnip::entry("MultipleTransform", include("algebra"))]
@@ -325,42 +210,150 @@ impl<G: Group> MultipleTransform<G> {
     }
 }
 
-#[test]
-fn test_multiple_transform() {
-    use crate::algebra::{AdditiveOperation, MultiplicativeOperation};
-    use crate::math::{gcd, primes};
-    use crate::tools::Xorshift;
-    const N: usize = 3_000;
-    const M: i64 = 100_000;
-    let mut rand = Xorshift::time();
-    let multiple = MultipleTransform::new(AdditiveOperation::new(), primes(N));
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        algebra::{AdditiveOperation, MultiplicativeOperation},
+        math::{gcd, lcm, primes},
+        rand,
+        tools::Xorshift,
+    };
 
-    let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    f[0] = 0;
-    let mut g = vec![0i64; N];
-    let h = f.clone();
-    for (s, f) in f.iter().enumerate().skip(1) {
-        for (t, g) in g.iter_mut().enumerate().skip(1) {
-            if s % t == 0 {
-                *g += f;
+    const N: usize = 1 << 12;
+    const M: usize = 3000;
+    const A: i64 = 100_000;
+
+    #[test]
+    fn test_subset_transform() {
+        let mut rng = Xorshift::time();
+        let subset = SubsetTransform::new(AdditiveOperation::new());
+
+        rand!(rng, mut f: [-A..A; N]);
+        let mut g = vec![0i64; N];
+        let h = f.clone();
+        for (s, f) in f.iter().enumerate() {
+            for (t, g) in g.iter_mut().enumerate() {
+                if s | t == t {
+                    *g += f;
+                }
             }
         }
-    }
-    multiple.zeta_transform(&mut f);
-    assert_eq!(&f[1..], &g[1..]);
-    multiple.mobius_transform(&mut f);
-    assert_eq!(&f[1..], &h[1..]);
+        subset.zeta_transform(&mut f);
+        assert_eq!(f, g);
+        subset.mobius_transform(&mut f);
+        assert_eq!(f, h);
 
-    let mut f: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let mut g: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    f[0] = 0;
-    g[0] = 0;
-    let mut h = vec![0i64; N];
-    for i in 1..N {
-        for j in 1..N {
-            h[(gcd(i as _, j as _) as usize)] += f[i] * g[j];
+        rand!(rng, f: [-A..A; N], g: [-A..A; N]);
+        let mut h = vec![0i64; N];
+        for i in 0..N {
+            for j in 0..N {
+                h[i | j] += f[i] * g[j];
+            }
         }
+        let i = subset.convolve(f, g, MultiplicativeOperation::new());
+        assert_eq!(h, i);
     }
-    let i = multiple.convolve(f, g, MultiplicativeOperation::new());
-    assert_eq!(&h[1..], &i[1..]);
+
+    #[test]
+    fn test_superset_transform() {
+        let mut rng = Xorshift::time();
+        let superset = SupersetTransform::new(AdditiveOperation::new());
+
+        rand!(rng, mut f: [-A..A; N]);
+        let mut g = vec![0i64; N];
+        let h = f.clone();
+        for (s, f) in f.iter().enumerate() {
+            for (t, g) in g.iter_mut().enumerate() {
+                if s | t == s {
+                    *g += f;
+                }
+            }
+        }
+        superset.zeta_transform(&mut f);
+        assert_eq!(f, g);
+        superset.mobius_transform(&mut f);
+        assert_eq!(f, h);
+
+        rand!(rng, f: [-A..A; N], g: [-A..A; N]);
+        let mut h = vec![0i64; N];
+        for i in 0..N {
+            for j in 0..N {
+                h[i & j] += f[i] * g[j];
+            }
+        }
+        let i = superset.convolve(f, g, MultiplicativeOperation::new());
+        assert_eq!(h, i);
+    }
+
+    #[test]
+    fn test_divisor_transform() {
+        let mut rng = Xorshift::time();
+        let divisor = DivisorTransform::new(AdditiveOperation::new(), primes(M));
+
+        rand!(rng, mut f: [-A..A; M]);
+        f[0] = 0;
+        let mut g = vec![0i64; M];
+        let h = f.clone();
+        for (s, f) in f.iter().enumerate().skip(1) {
+            for (t, g) in g.iter_mut().enumerate().skip(1) {
+                if t % s == 0 {
+                    *g += f;
+                }
+            }
+        }
+        divisor.zeta_transform(&mut f);
+        assert_eq!(&f[1..], &g[1..]);
+        divisor.mobius_transform(&mut f);
+        assert_eq!(&f[1..], &h[1..]);
+
+        rand!(rng, mut f: [-A..A; M], mut g: [-A..A; M]);
+        f[0] = 0;
+        g[0] = 0;
+        let mut h = vec![0i64; M];
+        for (i, f) in f.iter().enumerate().skip(1) {
+            for (j, g) in g.iter().enumerate().skip(1) {
+                let k = lcm(i as _, j as _) as usize;
+                if k < M {
+                    h[k] += f * g;
+                }
+            }
+        }
+        let i = divisor.convolve(f, g, MultiplicativeOperation::new());
+        assert_eq!(&h[1..], &i[1..]);
+    }
+
+    #[test]
+    fn test_multiple_transform() {
+        let mut rng = Xorshift::time();
+        let multiple = MultipleTransform::new(AdditiveOperation::new(), primes(M));
+
+        rand!(rng, mut f: [-A..A; M]);
+        f[0] = 0;
+        let mut g = vec![0i64; M];
+        let h = f.clone();
+        for (s, f) in f.iter().enumerate().skip(1) {
+            for (t, g) in g.iter_mut().enumerate().skip(1) {
+                if s % t == 0 {
+                    *g += f;
+                }
+            }
+        }
+        multiple.zeta_transform(&mut f);
+        assert_eq!(&f[1..], &g[1..]);
+        multiple.mobius_transform(&mut f);
+        assert_eq!(&f[1..], &h[1..]);
+
+        rand!(rng, mut f: [-A..A; M], mut g: [-A..A; M]);
+        f[0] = 0;
+        g[0] = 0;
+        let mut h = vec![0i64; M];
+        for i in 1..M {
+            for j in 1..M {
+                h[(gcd(i as _, j as _) as usize)] += f[i] * g[j];
+            }
+        }
+        let i = multiple.convolve(f, g, MultiplicativeOperation::new());
+        assert_eq!(&h[1..], &i[1..]);
+    }
 }

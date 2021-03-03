@@ -325,7 +325,7 @@ mod tests {
 
     #[test]
     fn test_mint998244353() {
-        let mut rand = Xorshift::time();
+        let mut rng = Xorshift::time();
         const Q: usize = 1000;
         assert_eq!(0, MInt998244353::zero().inner());
         assert_eq!(1, MInt998244353::one().inner());
@@ -339,7 +339,7 @@ mod tests {
         );
         assert_eq!(Modulo998244353::reduce(Modulo998244353::n1() as u64), 1);
         for _ in 0..Q {
-            let x = rand.rand(MInt998244353::get_mod() as u64) as u32;
+            let x = rng.gen(..MInt998244353::get_mod());
             assert_eq!(x, MInt998244353::new(x).inner());
             assert_eq!((-M::new(x)).inner(), (-MInt998244353::new(x)).inner());
             assert_eq!(x, MInt998244353::new(x).inv().inv().inner());
@@ -347,8 +347,8 @@ mod tests {
         }
 
         for _ in 0..Q {
-            let x = rand.rand(MInt998244353::get_mod() as u64) as u32;
-            let y = rand.rand(MInt998244353::get_mod() as u64) as u32;
+            let x = rng.gen(..MInt998244353::get_mod());
+            let y = rng.gen(..MInt998244353::get_mod());
             assert_eq!(
                 (M::new(x) + M::new(y)).inner(),
                 (MInt998244353::new(x) + MInt998244353::new(y)).inner()
@@ -372,7 +372,7 @@ mod tests {
         }
 
         for _ in 0..Q {
-            let x = rand.rand64();
+            let x = rng.rand64();
             assert_eq!(
                 M::from(x as u32).inner(),
                 MInt998244353::from(x as u32).inner()

@@ -115,37 +115,32 @@ impl WaveletMatrix {
 
 #[test]
 fn test_wavelet_matrix() {
-    use crate::tools::Xorshift;
+    use crate::rand_value;
+    use crate::tools::{NotEmptySegment as Nes, Xorshift};
     const N: usize = 1_000;
     const Q: usize = 1_000;
     const A: usize = 1 << 8;
-    let mut rand = Xorshift::time();
-    let v: Vec<_> = (0..N).map(|_| rand.rand(A as u64) as usize).collect();
+    let mut rng = Xorshift::time();
+    crate::rand!(rng, v: [..A; N]);
     let wm = WaveletMatrix::new(v.clone(), 8);
     for (i, v) in v.iter().cloned().enumerate() {
         assert_eq!(wm.access(i), v);
     }
-    for _ in 0..Q {
-        let l = rand.rand(N as u64) as usize;
-        let r = rand.rand(N as u64) as usize;
-        let (l, r) = if l < r { (l, r) } else { (r, l) };
-        let a = rand.rand(A as u64) as usize;
+    for ((l, r), a) in rand_value!(rng, [(Nes(N), ..A); Q]) {
         assert_eq!(
             wm.rank(a, l..r),
             v[l..r].iter().filter(|&&x| x == a).count()
         );
 
-        let mut a = rand.rand(A as u64) as usize;
-        while wm.rank(a, 0..N) == 0 {
-            a = rand.rand(A as u64) as usize;
+        if wm.rank(a, 0..N) > 0 {
+            let k = rng.gen(..wm.rank(a, 0..N));
+            assert_eq!(
+                wm.select(a, k).unwrap().min(N),
+                (0..N)
+                    .position(|i| wm.rank(a, 0..i + 1) == k + 1)
+                    .unwrap_or(N)
+            );
         }
-        let k = rand.rand(wm.rank(a, 0..N) as u64) as usize;
-        assert_eq!(
-            wm.select(a, k).unwrap().min(N),
-            (0..N)
-                .position(|i| wm.rank(a, 0..i + 1) == k + 1)
-                .unwrap_or(N)
-        );
 
         assert_eq!(
             (0..r - l).map(|k| wm.quantile(l..r, k)).collect::<Vec<_>>(),
@@ -161,9 +156,7 @@ fn test_wavelet_matrix() {
             v[l..r].iter().filter(|&&x| x < a).count()
         );
 
-        let p = rand.rand(A as u64) as usize;
-        let q = rand.rand(A as u64) as usize;
-        let (p, q) = if p < q { (p, q) } else { (q, p) };
+        let (p, q) = rng.gen(Nes(A - 1));
         assert_eq!(
             wm.rank_range(p..q, l..r),
             v[l..r].iter().filter(|&&x| p <= x && x < q).count()

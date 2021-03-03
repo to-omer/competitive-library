@@ -147,13 +147,12 @@ mod tests {
             [u32, u64, u128, usize],
             [i32, i64, i128, isize]
         );
-        let mut rand = Xorshift::time();
-        const N: usize = 10_000;
-        const Q: usize = 10_000;
+        let mut rng = Xorshift::time();
+        const Q: usize = 100_000;
         let fact = SmallModMemorizedFactorial::<D>::new();
         for _ in 0..Q {
-            let n = rand.rand(N as u64) as usize + 1;
-            let k = rand.rand(N as u64) as usize % n;
+            let n = rng.gen(1..=1_000_000_000_000_000_000);
+            let k = rng.gen(0..=n);
             let x = fact.factorial(n).1 - fact.factorial(k).1 - fact.factorial(n - k).1;
             assert_eq!(x == 0, (n & k) == k);
         }
