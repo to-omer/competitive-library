@@ -47,7 +47,7 @@ impl<T: NotEmptyStep64> RandomGenerator<T> for Range<T> {
         <T as NotEmptyStep64>::forward_unchecked(&self.start, count)
     }
 }
-impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeFrom<T> {
+impl<T: NotEmptyStep64 + Bounded + Copy> RandomGenerator<T> for RangeFrom<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count =
             <T as NotEmptyStep64>::steps_between(&self.start, &<T as Bounded>::MAX).wrapping_add(1);
@@ -63,14 +63,14 @@ impl<T: NotEmptyStep64> RandomGenerator<T> for RangeInclusive<T> {
         <T as NotEmptyStep64>::forward_unchecked(&self.start(), count)
     }
 }
-impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeTo<T> {
+impl<T: NotEmptyStep64 + Bounded + Copy> RandomGenerator<T> for RangeTo<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count = <T as NotEmptyStep64>::steps_between(&<T as Bounded>::MIN, &self.end);
         let count = randint_uniform(rng, count);
         <T as NotEmptyStep64>::forward_unchecked(&<T as Bounded>::MIN, count)
     }
 }
-impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeToInclusive<T> {
+impl<T: NotEmptyStep64 + Bounded + Copy> RandomGenerator<T> for RangeToInclusive<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count =
             <T as NotEmptyStep64>::steps_between(&<T as Bounded>::MIN, &self.end).wrapping_add(1);
