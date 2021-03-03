@@ -58,7 +58,7 @@ mod tests {
     use super::*;
     use std::cmp::Reverse;
 
-    fn assert_bounded<T: Bounded, I: Iterator<Item = T>>(iter: I) {
+    fn assert_bounded<T: Bounded + Copy, I: Iterator<Item = T>>(iter: I) {
         assert!(T::MIN <= T::MAX);
         for item in iter {
             assert!(T::MIN <= item);
