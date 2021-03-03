@@ -1,14 +1,14 @@
 /// Trait for max/min bounds
 pub trait Bounded: PartialOrd {
-    const MAX: Self;
-    const MIN: Self;
+    fn maximum() -> Self;
+    fn minimum() -> Self;
 }
 
 macro_rules! bounded_num_impls {
     ($($t:ident)*) => {
         $(impl Bounded for $t {
-            const MAX: Self = std::$t::MAX;
-            const MIN: Self = std::$t::MIN;
+            fn maximum() -> Self { std::$t::MAX }
+            fn minimum() -> Self { std::$t::MIN }
         })*
     };
 }
@@ -17,8 +17,8 @@ bounded_num_impls!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize f32 f64);
 macro_rules! bounded_tuple_impls {
     ($($t:ident)*) => {
         impl<$($t: Bounded),*> Bounded for ($($t,)*) {
-            const MAX: Self = ($(<$t as Bounded>::MAX,)*);
-            const MIN: Self = ($(<$t as Bounded>::MIN,)*);
+            fn maximum() -> Self { ($(<$t as Bounded>::maximum(),)*) }
+            fn minimum() -> Self { ($(<$t as Bounded>::minimum(),)*) }
         }
     }
 }
@@ -35,22 +35,34 @@ bounded_tuple_impls!(A B C D E F G H I);
 bounded_tuple_impls!(A B C D E F G H I J);
 
 impl Bounded for bool {
-    const MAX: Self = true;
-    const MIN: Self = false;
+    fn maximum() -> Self {
+        true
+    }
+    fn minimum() -> Self {
+        false
+    }
 }
 impl<T> Bounded for Option<T>
 where
     T: Bounded,
 {
-    const MAX: Self = Some(<T as Bounded>::MAX);
-    const MIN: Self = None;
+    fn maximum() -> Self {
+        Some(<T as Bounded>::maximum())
+    }
+    fn minimum() -> Self {
+        None
+    }
 }
 impl<T> Bounded for std::cmp::Reverse<T>
 where
     T: Bounded,
 {
-    const MAX: Self = std::cmp::Reverse(<T as Bounded>::MIN);
-    const MIN: Self = std::cmp::Reverse(<T as Bounded>::MAX);
+    fn maximum() -> Self {
+        std::cmp::Reverse(<T as Bounded>::minimum())
+    }
+    fn minimum() -> Self {
+        std::cmp::Reverse(<T as Bounded>::maximum())
+    }
 }
 
 #[cfg(test)]
@@ -58,11 +70,11 @@ mod tests {
     use super::*;
     use std::cmp::Reverse;
 
-    fn assert_bounded<T: Bounded + Copy, I: Iterator<Item = T>>(iter: I) {
-        assert!(T::MIN <= T::MAX);
+    fn assert_bounded<T: Bounded, I: Iterator<Item = T>>(iter: I) {
+        assert!(T::minimum() <= T::maximum());
         for item in iter {
-            assert!(T::MIN <= item);
-            assert!(item <= T::MAX);
+            assert!(T::minimum() <= item);
+            assert!(item <= T::maximum());
         }
     }
 

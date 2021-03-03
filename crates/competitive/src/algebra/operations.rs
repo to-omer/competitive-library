@@ -29,7 +29,7 @@ mod max_operation_impl {
     impl<T: Clone + Ord + Bounded> Unital for MaxOperation<T> {
         #[inline]
         fn unit(&self) -> Self::T {
-            <T as Bounded>::MIN
+            <T as Bounded>::minimum()
         }
     }
     impl<T: Clone + Ord + Bounded> Associative for MaxOperation<T> {}
@@ -63,7 +63,7 @@ mod min_operation_impl {
     impl<T: Clone + Ord + Bounded> Unital for MinOperation<T> {
         #[inline]
         fn unit(&self) -> Self::T {
-            <T as Bounded>::MAX
+            <T as Bounded>::maximum()
         }
     }
     impl<T: Clone + Ord + Bounded> Associative for MinOperation<T> {}
@@ -731,7 +731,7 @@ mod top2_operation_impl {
     }
     impl<T: Clone + Ord + Bounded> Unital for Top2Operation<T> {
         fn unit(&self) -> Self::T {
-            (<T as Bounded>::MIN, <T as Bounded>::MIN)
+            (<T as Bounded>::minimum(), <T as Bounded>::minimum())
         }
     }
     impl<T: Clone + Ord + Bounded> Associative for Top2Operation<T> {}
