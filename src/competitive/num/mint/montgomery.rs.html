@@ -762,7 +762,7 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_mint998244353</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
         <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1000</span>;
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">0</span>, <span class="ident">MInt998244353</span>::<span class="ident">zero</span>().<span class="ident">inner</span>());
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">1</span>, <span class="ident">MInt998244353</span>::<span class="ident">one</span>().<span class="ident">inner</span>());
@@ -776,7 +776,7 @@
         );
         <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">Modulo998244353</span>::<span class="ident">reduce</span>(<span class="ident">Modulo998244353</span>::<span class="ident">n1</span>() <span class="kw">as</span> <span class="ident">u64</span>), <span class="number">1</span>);
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span>;
+            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>());
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">MInt998244353</span>::<span class="ident">new</span>(<span class="ident">x</span>).<span class="ident">inner</span>());
             <span class="macro">assert_eq</span><span class="macro">!</span>((<span class="op">-</span><span class="ident">M</span>::<span class="ident">new</span>(<span class="ident">x</span>)).<span class="ident">inner</span>(), (<span class="op">-</span><span class="ident">MInt998244353</span>::<span class="ident">new</span>(<span class="ident">x</span>)).<span class="ident">inner</span>());
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span>, <span class="ident">MInt998244353</span>::<span class="ident">new</span>(<span class="ident">x</span>).<span class="ident">inv</span>().<span class="ident">inv</span>().<span class="ident">inner</span>());
@@ -784,8 +784,8 @@
         }
 
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span>;
-            <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span>;
+            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>());
+            <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>());
             <span class="macro">assert_eq</span><span class="macro">!</span>(
                 (<span class="ident">M</span>::<span class="ident">new</span>(<span class="ident">x</span>) <span class="op">+</span> <span class="ident">M</span>::<span class="ident">new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
                 (<span class="ident">MInt998244353</span>::<span class="ident">new</span>(<span class="ident">x</span>) <span class="op">+</span> <span class="ident">MInt998244353</span>::<span class="ident">new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
@@ -809,7 +809,7 @@
         }
 
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand64</span>();
+            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">rand64</span>();
             <span class="macro">assert_eq</span><span class="macro">!</span>(
                 <span class="ident">M</span>::<span class="ident">from</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">inner</span>(),
                 <span class="ident">MInt998244353</span>::<span class="ident">from</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">inner</span>()

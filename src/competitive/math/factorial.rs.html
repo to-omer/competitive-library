@@ -192,7 +192,6 @@
 <span id="158">158</span>
 <span id="159">159</span>
 <span id="160">160</span>
-<span id="161">161</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::{<span class="ident">MInt</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
 
@@ -343,13 +342,12 @@
             [<span class="ident">u32</span>, <span class="ident">u64</span>, <span class="ident">u128</span>, <span class="ident">usize</span>],
             [<span class="ident">i32</span>, <span class="ident">i64</span>, <span class="ident">i128</span>, <span class="ident">isize</span>]
         );
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
-        <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10_000</span>;
-        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10_000</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
+        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">100_000</span>;
         <span class="kw">let</span> <span class="ident">fact</span> <span class="op">=</span> <span class="ident">SmallModMemorizedFactorial</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">new</span>();
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">N</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">N</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span> <span class="op">%</span> <span class="ident">n</span>;
+            <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="op">=</span><span class="number">1_000_000_000_000_000_000</span>);
+            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">0</span>..<span class="op">=</span><span class="ident">n</span>);
             <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">fact</span>.<span class="ident">factorial</span>(<span class="ident">n</span>).<span class="number">1</span> <span class="op">-</span> <span class="ident">fact</span>.<span class="ident">factorial</span>(<span class="ident">k</span>).<span class="number">1</span> <span class="op">-</span> <span class="ident">fact</span>.<span class="ident">factorial</span>(<span class="ident">n</span> <span class="op">-</span> <span class="ident">k</span>).<span class="number">1</span>;
             <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">x</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span>, (<span class="ident">n</span> <span class="op">&amp;</span> <span class="ident">k</span>) <span class="op">=</span><span class="op">=</span> <span class="ident">k</span>);
         }

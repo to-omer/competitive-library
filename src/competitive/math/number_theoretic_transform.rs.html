@@ -365,13 +365,6 @@
 <span id="331">331</span>
 <span id="332">332</span>
 <span id="333">333</span>
-<span id="334">334</span>
-<span id="335">335</span>
-<span id="336">336</span>
-<span id="337">337</span>
-<span id="338">338</span>
-<span id="339">339</span>
-<span id="340">340</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="attribute">#[<span class="ident">codesnip</span>::<span class="ident">skip</span>]</span>
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::{<span class="ident">mint_basic</span>, <span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
@@ -463,25 +456,6 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_ntt998244353</span>() {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::<span class="ident">mint_basic</span>::<span class="ident">MInt998244353</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tools</span>::<span class="ident">Xorshift</span>;
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3_000</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
-    <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Ntt</span> <span class="op">=</span> <span class="ident">NumberTheoreticTransform</span><span class="op">&lt;</span><span class="ident">mint_basic</span>::<span class="ident">Modulo998244353</span><span class="op">&gt;</span>;
-    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Ntt</span>::<span class="ident">convert</span>((<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span>)));
-    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Ntt</span>::<span class="ident">convert</span>((<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span>)));
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">MInt998244353</span>::<span class="ident">zero</span>(); <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>];
-        }
-    }
-    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">Ntt</span>::<span class="ident">convolve</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
-}
-
 <span class="doccomment">/// max(a.len(), b.len()) * max(a) * max(b) &lt; 3.64 * 10^18</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve2</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>
 <span class="kw">where</span>
@@ -507,24 +481,6 @@
             <span class="ident">c1</span>.<span class="ident">inner</span>() <span class="kw">as</span> <span class="ident">u64</span> <span class="op">+</span> <span class="ident">p1</span> <span class="op">*</span> ((<span class="ident">c2</span> <span class="op">-</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M2</span><span class="op">&gt;</span>::<span class="ident">from</span>(<span class="ident">c1</span>.<span class="ident">inner</span>())) <span class="op">*</span> <span class="ident">p1_inv</span>).<span class="ident">inner</span>() <span class="kw">as</span> <span class="ident">u64</span>
         })
         .<span class="ident">collect</span>()
-}
-
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_convolve2</span>() {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tools</span>::<span class="ident">Xorshift</span>;
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3_000</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
-    <span class="kw">let</span> <span class="ident">m</span>: <span class="ident">u64</span> <span class="op">=</span> ((<span class="ident">std</span>::<span class="ident">u64</span>::<span class="ident">MAX</span> <span class="op">/</span> <span class="ident">N</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">/</span> <span class="number">100</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">u64</span>;
-    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">m</span>) <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">m</span>) <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0u64</span>; <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>] <span class="kw">as</span> <span class="ident">u64</span>;
-        }
-    }
-    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve2</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
 }
 
 <span class="doccomment">/// max(a.len(), b.len()) * max(a) * max(b) &lt; 1.81 * 10^27</span>
@@ -565,28 +521,6 @@
         .<span class="ident">collect</span>()
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_convolve3</span>() {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tools</span>::<span class="ident">Xorshift</span>;
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3_000</span>;
-    <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">mint_basic</span>::<span class="ident">Modulo1000000009</span><span class="op">&gt;</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
-    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>)
-        .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span>)
-        .<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>)
-        .<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">u32</span>)
-        .<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">M</span>::<span class="ident">zero</span>(); <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">M</span>::<span class="ident">from</span>(<span class="ident">a</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>] <span class="kw">as</span> <span class="ident">u64</span>);
-        }
-    }
-    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve3</span>::<span class="op">&lt;</span><span class="ident">mint_basic</span>::<span class="ident">Modulo1000000009</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
-}
-
 <span class="doccomment">/// max(a.len(), b.len()) * max(a) * max(b) &lt; 1.81 * 10^27</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve3_128</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span>
 <span class="kw">where</span>
@@ -624,94 +558,146 @@
         .<span class="ident">collect</span>()
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_convolve3_128</span>() {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tools</span>::<span class="ident">Xorshift</span>;
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3_000</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rand</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
-    <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>)).<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="ident">u64</span>)).<span class="ident">collect</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0u128</span>; <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-        <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> (<span class="ident">a</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>]) <span class="kw">as</span> <span class="ident">u128</span>;
-        }
-    }
-    <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve3_128</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
-}
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">num</span>::<span class="ident">mint_basic</span>::{<span class="ident">MInt998244353</span>, <span class="ident">Modulo1000000009</span>, <span class="ident">Modulo998244353</span>};
+    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">rand</span>, <span class="ident">tools</span>::<span class="ident">Xorshift</span>};
 
-<span class="comment">// #[test]</span>
-<span class="attribute">#[<span class="ident">codesnip</span>::<span class="ident">skip</span>]</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-<span class="kw">fn</span> <span class="ident">find_proth</span>() {
-    <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">math</span>::{<span class="ident">divisors</span>, <span class="ident">prime_factors_rho</span>};
-    <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">MOD</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-    <span class="kw">crate</span>::<span class="macro">define_basic_mintbase</span><span class="macro">!</span>(
-        <span class="ident">D</span>,
-        <span class="kw">unsafe</span> { <span class="ident">MOD</span> },
-        <span class="ident">u32</span>,
-        <span class="ident">u64</span>,
-        [<span class="ident">u32</span>, <span class="ident">u64</span>, <span class="ident">u128</span>, <span class="ident">usize</span>],
-        [<span class="ident">i32</span>, <span class="ident">i64</span>, <span class="ident">i128</span>, <span class="ident">isize</span>]
-    );
-    <span class="comment">// p = a * 2^b + 1 (b &gt;= 1, a &lt; 2^b)</span>
-    <span class="kw">for</span> <span class="ident">b</span> <span class="kw">in</span> <span class="number">22</span>..<span class="number">32</span> {
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="number">1u64</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">b</span>).<span class="ident">step_by</span>(<span class="number">2</span>) {
-            <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">a</span> <span class="op">*</span> (<span class="number">1u64</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">b</span>) <span class="op">+</span> <span class="number">1</span>;
-            <span class="kw">if</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">31</span> <span class="op">&lt;</span> <span class="ident">p</span> {
-                <span class="kw">break</span>;
+    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">3_000</span>;
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_ntt998244353</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
+        <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Ntt</span> <span class="op">=</span> <span class="ident">NumberTheoreticTransform</span><span class="op">&lt;</span><span class="ident">Modulo998244353</span><span class="op">&gt;</span>;
+        <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Ntt</span>::<span class="ident">convert</span>(<span class="ident">rng</span>.<span class="ident">gen_iter</span>(..<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>()).<span class="ident">take</span>(<span class="ident">N</span>));
+        <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">Ntt</span>::<span class="ident">convert</span>(<span class="ident">rng</span>.<span class="ident">gen_iter</span>(..<span class="ident">MInt998244353</span>::<span class="ident">get_mod</span>()).<span class="ident">take</span>(<span class="ident">N</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">MInt998244353</span>::<span class="ident">zero</span>(); <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+                <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>];
             }
-            <span class="kw">if</span> <span class="ident">p</span> <span class="op">&lt;</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">29</span> {
-                <span class="kw">continue</span>;
+        }
+        <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">Ntt</span>::<span class="ident">convolve</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_convolve2</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
+        <span class="kw">let</span> <span class="ident">m</span>: <span class="ident">u32</span> <span class="op">=</span> ((<span class="ident">std</span>::<span class="ident">u64</span>::<span class="ident">MAX</span> <span class="op">/</span> <span class="ident">N</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">/</span> <span class="number">100</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="kw">_</span>;
+        <span class="macro">rand</span><span class="macro">!</span>(<span class="ident">rng</span>, <span class="ident">a</span>: [..<span class="ident">m</span>; <span class="ident">N</span>], <span class="ident">b</span>: [..<span class="ident">m</span>; <span class="ident">N</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0u64</span>; <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+                <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>] <span class="kw">as</span> <span class="ident">u64</span>;
             }
-            <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">prime_factors_rho</span>(<span class="ident">p</span>);
-            <span class="kw">if</span> <span class="ident">f</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">f</span>[<span class="number">0</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">p</span> {
-                <span class="kw">unsafe</span> { <span class="ident">MOD</span> <span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">u32</span> };
-                <span class="kw">for</span> <span class="ident">g</span> <span class="kw">in</span> (<span class="number">3</span>..).<span class="ident">step_by</span>(<span class="number">2</span>) {
-                    <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">g</span>);
-                    <span class="kw">if</span> <span class="ident">divisors</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>)
-                        .<span class="ident">into_iter</span>()
-                        .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>)
-                        .<span class="ident">all</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">pow</span>(<span class="ident">d</span>) <span class="op">!</span><span class="op">=</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">one</span>())
-                    {
-                        <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;(p,a,b,g) = {:?}&quot;</span>, (<span class="ident">p</span>, <span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">g</span>));
-                        <span class="kw">break</span>;
+        }
+        <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve2</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_convolve3</span>() {
+        <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">Modulo1000000009</span><span class="op">&gt;</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
+        <span class="macro">rand</span><span class="macro">!</span>(<span class="ident">rng</span>, <span class="ident">a</span>: [<span class="number">0u32</span>..; <span class="ident">N</span>], <span class="ident">b</span>: [<span class="number">0u32</span>..; <span class="ident">N</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">M</span>::<span class="ident">zero</span>(); <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+                <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">M</span>::<span class="ident">from</span>(<span class="ident">a</span>[<span class="ident">i</span>] <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>] <span class="kw">as</span> <span class="ident">u64</span>);
+            }
+        }
+        <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve3</span>::<span class="op">&lt;</span><span class="ident">Modulo1000000009</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">test_convolve3_128</span>() {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift</span>::<span class="ident">time</span>();
+        <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">u32</span>::<span class="ident">MAX</span> <span class="kw">as</span> <span class="kw">_</span>;
+        <span class="macro">rand</span><span class="macro">!</span>(<span class="ident">rng</span>, <span class="ident">a</span>: [..<span class="op">=</span><span class="ident">A</span>; <span class="ident">N</span>], <span class="ident">b</span>: [..<span class="op">=</span><span class="ident">A</span>; <span class="ident">N</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0u128</span>; <span class="ident">N</span> <span class="op">*</span> <span class="number">2</span> <span class="op">-</span> <span class="number">1</span>];
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+                <span class="ident">c</span>[<span class="ident">i</span> <span class="op">+</span> <span class="ident">j</span>] <span class="op">+</span><span class="op">=</span> (<span class="ident">a</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">b</span>[<span class="ident">j</span>]) <span class="kw">as</span> <span class="ident">u128</span>;
+            }
+        }
+        <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="ident">convolve3_128</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
+    }
+
+    <span class="comment">// #[test]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
+    <span class="kw">fn</span> <span class="ident">find_proth</span>() {
+        <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">math</span>::{<span class="ident">divisors</span>, <span class="ident">prime_factors_rho</span>};
+        <span class="kw">static</span> <span class="kw-2">mut</span> <span class="ident">MOD</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
+        <span class="kw">crate</span>::<span class="macro">define_basic_mintbase</span><span class="macro">!</span>(
+            <span class="ident">D</span>,
+            <span class="kw">unsafe</span> { <span class="ident">MOD</span> },
+            <span class="ident">u32</span>,
+            <span class="ident">u64</span>,
+            [<span class="ident">u32</span>, <span class="ident">u64</span>, <span class="ident">u128</span>, <span class="ident">usize</span>],
+            [<span class="ident">i32</span>, <span class="ident">i64</span>, <span class="ident">i128</span>, <span class="ident">isize</span>]
+        );
+        <span class="comment">// p = a * 2^b + 1 (b &gt;= 1, a &lt; 2^b)</span>
+        <span class="kw">for</span> <span class="ident">b</span> <span class="kw">in</span> <span class="number">22</span>..<span class="number">32</span> {
+            <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="number">1u64</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">b</span>).<span class="ident">step_by</span>(<span class="number">2</span>) {
+                <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">a</span> <span class="op">*</span> (<span class="number">1u64</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">b</span>) <span class="op">+</span> <span class="number">1</span>;
+                <span class="kw">if</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">31</span> <span class="op">&lt;</span> <span class="ident">p</span> {
+                    <span class="kw">break</span>;
+                }
+                <span class="kw">if</span> <span class="ident">p</span> <span class="op">&lt;</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">29</span> {
+                    <span class="kw">continue</span>;
+                }
+                <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="ident">prime_factors_rho</span>(<span class="ident">p</span>);
+                <span class="kw">if</span> <span class="ident">f</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="ident">f</span>[<span class="number">0</span>] <span class="op">=</span><span class="op">=</span> <span class="ident">p</span> {
+                    <span class="kw">unsafe</span> { <span class="ident">MOD</span> <span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">u32</span> };
+                    <span class="kw">for</span> <span class="ident">g</span> <span class="kw">in</span> (<span class="number">3</span>..).<span class="ident">step_by</span>(<span class="number">2</span>) {
+                        <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">new</span>(<span class="ident">g</span>);
+                        <span class="kw">if</span> <span class="ident">divisors</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>)
+                            .<span class="ident">into_iter</span>()
+                            .<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">-</span> <span class="number">1</span>)
+                            .<span class="ident">all</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">g</span>.<span class="ident">pow</span>(<span class="ident">d</span>) <span class="op">!</span><span class="op">=</span> <span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>::<span class="ident">one</span>())
+                        {
+                            <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;(p,a,b,g) = {:?}&quot;</span>, (<span class="ident">p</span>, <span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">g</span>));
+                            <span class="kw">break</span>;
+                        }
                     }
                 }
             }
         }
+        <span class="comment">// (p,a,b,g) = (666894337, 159, 22, 5)</span>
+        <span class="comment">// (p,a,b,g) = (683671553, 163, 22, 3)</span>
+        <span class="comment">// (p,a,b,g) = (918552577, 219, 22, 5)</span>
+        <span class="comment">// (p,a,b,g) = (935329793, 223, 22, 3)</span>
+        <span class="comment">// (p,a,b,g) = (943718401, 225, 22, 7)</span>
+        <span class="comment">// (p,a,b,g) = (985661441, 235, 22, 3)</span>
+        <span class="comment">// (p,a,b,g) = (1161822209, 277, 22, 3)</span>
+        <span class="comment">// (p,a,b,g) = (1212153857, 289, 22, 3)</span>
+        <span class="comment">// (p,a,b,g) = (1321205761, 315, 22, 11)</span>
+        <span class="comment">// (p,a,b,g) = (1438646273, 343, 22, 3)</span>
+        <span class="comment">// (p,a,b,g) = (1572864001, 375, 22, 13)</span>
+        <span class="comment">// (p,a,b,g) = (1790967809, 427, 22, 13)</span>
+        <span class="comment">// (p,a,b,g) = (1866465281, 445, 22, 3)</span>
+        <span class="comment">// (p,a,b,g) = (2025848833, 483, 22, 11)</span>
+        <span class="comment">// (p,a,b,g) = (595591169, 71, 23, 3)</span>
+        <span class="comment">// (p,a,b,g) = (645922817, 77, 23, 3)</span>
+        <span class="comment">// (p,a,b,g) = (880803841, 105, 23, 37)</span>
+        <span class="comment">// (p,a,b,g) = (897581057, 107, 23, 3)</span>
+        <span class="comment">// (p,a,b,g) = (998244353, 119, 23, 3)</span>
+        <span class="comment">// (p,a,b,g) = (1300234241, 155, 23, 3)</span>
+        <span class="comment">// (p,a,b,g) = (1484783617, 177, 23, 5)</span>
+        <span class="comment">// (p,a,b,g) = (2088763393, 249, 23, 5)</span>
+        <span class="comment">// (p,a,b,g) = (754974721, 45, 24, 11)</span>
+        <span class="comment">// (p,a,b,g) = (1224736769, 73, 24, 3)</span>
+        <span class="comment">// (p,a,b,g) = (2130706433, 127, 24, 3)</span>
+        <span class="comment">// (p,a,b,g) = (1107296257, 33, 25, 31)</span>
+        <span class="comment">// (p,a,b,g) = (1711276033, 51, 25, 29)</span>
+        <span class="comment">// (p,a,b,g) = (2113929217, 63, 25, 5)</span>
+        <span class="comment">// (p,a,b,g) = (1811939329, 27, 26, 13)</span>
+        <span class="comment">// (p,a,b,g) = (2013265921, 15, 27, 31)</span>
     }
-    <span class="comment">// (p,a,b,g) = (666894337, 159, 22, 5)</span>
-    <span class="comment">// (p,a,b,g) = (683671553, 163, 22, 3)</span>
-    <span class="comment">// (p,a,b,g) = (918552577, 219, 22, 5)</span>
-    <span class="comment">// (p,a,b,g) = (935329793, 223, 22, 3)</span>
-    <span class="comment">// (p,a,b,g) = (943718401, 225, 22, 7)</span>
-    <span class="comment">// (p,a,b,g) = (985661441, 235, 22, 3)</span>
-    <span class="comment">// (p,a,b,g) = (1161822209, 277, 22, 3)</span>
-    <span class="comment">// (p,a,b,g) = (1212153857, 289, 22, 3)</span>
-    <span class="comment">// (p,a,b,g) = (1321205761, 315, 22, 11)</span>
-    <span class="comment">// (p,a,b,g) = (1438646273, 343, 22, 3)</span>
-    <span class="comment">// (p,a,b,g) = (1572864001, 375, 22, 13)</span>
-    <span class="comment">// (p,a,b,g) = (1790967809, 427, 22, 13)</span>
-    <span class="comment">// (p,a,b,g) = (1866465281, 445, 22, 3)</span>
-    <span class="comment">// (p,a,b,g) = (2025848833, 483, 22, 11)</span>
-    <span class="comment">// (p,a,b,g) = (595591169, 71, 23, 3)</span>
-    <span class="comment">// (p,a,b,g) = (645922817, 77, 23, 3)</span>
-    <span class="comment">// (p,a,b,g) = (880803841, 105, 23, 37)</span>
-    <span class="comment">// (p,a,b,g) = (897581057, 107, 23, 3)</span>
-    <span class="comment">// (p,a,b,g) = (998244353, 119, 23, 3)</span>
-    <span class="comment">// (p,a,b,g) = (1300234241, 155, 23, 3)</span>
-    <span class="comment">// (p,a,b,g) = (1484783617, 177, 23, 5)</span>
-    <span class="comment">// (p,a,b,g) = (2088763393, 249, 23, 5)</span>
-    <span class="comment">// (p,a,b,g) = (754974721, 45, 24, 11)</span>
-    <span class="comment">// (p,a,b,g) = (1224736769, 73, 24, 3)</span>
-    <span class="comment">// (p,a,b,g) = (2130706433, 127, 24, 3)</span>
-    <span class="comment">// (p,a,b,g) = (1107296257, 33, 25, 31)</span>
-    <span class="comment">// (p,a,b,g) = (1711276033, 51, 25, 29)</span>
-    <span class="comment">// (p,a,b,g) = (2113929217, 63, 25, 5)</span>
-    <span class="comment">// (p,a,b,g) = (1811939329, 27, 26, 13)</span>
-    <span class="comment">// (p,a,b,g) = (2013265921, 15, 27, 31)</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive"></div>
