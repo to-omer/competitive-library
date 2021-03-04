@@ -7,9 +7,11 @@ use std::{
     ops::{Range, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive},
 };
 
-/// Trait for spec of generating random value
+/// Trait for spec of generating random value.
 pub trait RandomSpec<T>: Sized {
+    /// Return a random value.
     fn rand(&self, rng: &mut Xorshift) -> T;
+    /// Return an iterator that generates random values.
     fn rand_iter(self, rng: &mut Xorshift) -> RandIter<'_, T, Self> {
         RandIter {
             spec: self,
@@ -184,6 +186,7 @@ fn randint_uniform(rng: &mut Xorshift, k: u64) -> u64 {
 }
 
 #[macro_export]
+/// Return a random value using [`RandomSpec`].
 macro_rules! rand_value {
     ($rng:expr, ($($e:expr),*)) => {
         ($($crate::rand_value!($rng, $e)),*)
@@ -208,6 +211,7 @@ macro_rules! rand_value {
     };
 }
 #[macro_export]
+/// Declare random values using [`RandomSpec`].
 macro_rules! rand {
     ($rng:expr) => {};
     ($rng:expr,) => {};
