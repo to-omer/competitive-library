@@ -209,7 +209,7 @@ mod tests {
         [u32, u64, u128, usize],
         [i32, i64, i128, isize]
     );
-    impl crate::tools::RandomGenerator<MInt<D>> for D {
+    impl crate::tools::RandomSpec<MInt<D>> for D {
         fn rand(&self, rng: &mut Xorshift) -> MInt<D> {
             MInt::new_unchecked(rng.gen(..D::get_mod()))
         }

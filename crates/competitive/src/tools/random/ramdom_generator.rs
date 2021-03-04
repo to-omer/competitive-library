@@ -7,11 +7,12 @@ use std::{
     ops::{Range, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive},
 };
 
-pub trait RandomGenerator<T>: Sized {
+/// Trait for spec of generating random value
+pub trait RandomSpec<T>: Sized {
     fn rand(&self, rng: &mut Xorshift) -> T;
     fn rand_iter(self, rng: &mut Xorshift) -> RandIter<'_, T, Self> {
         RandIter {
-            gen: self,
+            spec: self,
             rng,
             _marker: PhantomData,
         }
@@ -19,35 +20,35 @@ pub trait RandomGenerator<T>: Sized {
 }
 
 impl Xorshift {
-    pub fn gen<T, G: RandomGenerator<T>>(&mut self, generator: G) -> T {
-        generator.rand(self)
+    pub fn gen<T, R: RandomSpec<T>>(&mut self, spec: R) -> T {
+        spec.rand(self)
     }
-    pub fn gen_iter<T, G: RandomGenerator<T>>(&mut self, generator: G) -> RandIter<'_, T, G> {
-        generator.rand_iter(self)
+    pub fn gen_iter<T, R: RandomSpec<T>>(&mut self, spec: R) -> RandIter<'_, T, R> {
+        spec.rand_iter(self)
     }
 }
 
 #[derive(Debug)]
-pub struct RandIter<'r, T, G: RandomGenerator<T>> {
-    gen: G,
+pub struct RandIter<'r, T, R: RandomSpec<T>> {
+    spec: R,
     rng: &'r mut Xorshift,
     _marker: PhantomData<fn() -> T>,
 }
-impl<T, G: RandomGenerator<T>> Iterator for RandIter<'_, T, G> {
+impl<T, R: RandomSpec<T>> Iterator for RandIter<'_, T, R> {
     type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
-        Some(self.gen.rand(&mut self.rng))
+        Some(self.spec.rand(&mut self.rng))
     }
 }
 
-impl<T: NotEmptyStep64> RandomGenerator<T> for Range<T> {
+impl<T: NotEmptyStep64> RandomSpec<T> for Range<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count = <T as NotEmptyStep64>::steps_between(&self.start, &self.end);
         let count = randint_uniform(rng, count);
         <T as NotEmptyStep64>::forward_unchecked(&self.start, count)
     }
 }
-impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeFrom<T> {
+impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeFrom<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count = <T as NotEmptyStep64>::steps_between(&self.start, &<T as Bounded>::maximum())
             .wrapping_add(1);
@@ -55,7 +56,7 @@ impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeFrom<T> {
         <T as NotEmptyStep64>::forward_unchecked(&self.start, count)
     }
 }
-impl<T: NotEmptyStep64> RandomGenerator<T> for RangeInclusive<T> {
+impl<T: NotEmptyStep64> RandomSpec<T> for RangeInclusive<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count =
             <T as NotEmptyStep64>::steps_between(&self.start(), &self.end()).wrapping_add(1);
@@ -63,14 +64,14 @@ impl<T: NotEmptyStep64> RandomGenerator<T> for RangeInclusive<T> {
         <T as NotEmptyStep64>::forward_unchecked(&self.start(), count)
     }
 }
-impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeTo<T> {
+impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeTo<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count = <T as NotEmptyStep64>::steps_between(&<T as Bounded>::minimum(), &self.end);
         let count = randint_uniform(rng, count);
         <T as NotEmptyStep64>::forward_unchecked(&<T as Bounded>::minimum(), count)
     }
 }
-impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeToInclusive<T> {
+impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeToInclusive<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count = <T as NotEmptyStep64>::steps_between(&<T as Bounded>::minimum(), &self.end)
             .wrapping_add(1);
@@ -78,11 +79,11 @@ impl<T: NotEmptyStep64 + Bounded> RandomGenerator<T> for RangeToInclusive<T> {
         <T as NotEmptyStep64>::forward_unchecked(&<T as Bounded>::minimum(), count)
     }
 }
-macro_rules! random_generator_tuple_impls {
-    ($($T:ident)*, $($G:ident)*, $($v:ident)*) => {
-        impl<$($T),*, $($G),*> RandomGenerator<($($T,)*)> for ($($G,)*)
+macro_rules! random_spec_tuple_impls {
+    ($($T:ident)*, $($R:ident)*, $($v:ident)*) => {
+        impl<$($T),*, $($R),*> RandomSpec<($($T,)*)> for ($($R,)*)
         where
-            $($G: RandomGenerator<$T>),*
+            $($R: RandomSpec<$T>),*
         {
             fn rand(&self, rng: &mut Xorshift) -> ($($T,)*) {
                 let ($($v,)*) = self;
@@ -91,25 +92,25 @@ macro_rules! random_generator_tuple_impls {
         }
     };
 }
-random_generator_tuple_impls!(A, GA, a);
-random_generator_tuple_impls!(A B, GA GB, a b);
-random_generator_tuple_impls!(A B C, GA GB GC, a b c);
-random_generator_tuple_impls!(A B C D, GA GB GC GD, a b c d);
-random_generator_tuple_impls!(A B C D E, GA GB GC GD GE, a b c d e);
-random_generator_tuple_impls!(A B C D E F, GA GB GC GD GE GF, a b c d e f);
-random_generator_tuple_impls!(A B C D E F G, GA GB GC GD GE GF GG, a b c d e f g);
-random_generator_tuple_impls!(A B C D E F G H, GA GB GC GD GE GF GG GH, a b c d e f g h);
-random_generator_tuple_impls!(A B C D E F G H I, GA GB GC GD GE GF GG GH GI, a b c d e f g h i);
-random_generator_tuple_impls!(A B C D E F G H I J, GA GB GC GD GE GF GG GH GI GJ, a b c d e f g h i j);
+random_spec_tuple_impls!(A, RA, a);
+random_spec_tuple_impls!(A B, RA RB, a b);
+random_spec_tuple_impls!(A B C, RA RB RC, a b c);
+random_spec_tuple_impls!(A B C D, RA RB RC RD, a b c d);
+random_spec_tuple_impls!(A B C D E, RA RB RC RD RE, a b c d e);
+random_spec_tuple_impls!(A B C D E F, RA RB RC RD RE RF, a b c d e f);
+random_spec_tuple_impls!(A B C D E F G, RA RB RC RD RE RF RG, a b c d e f g);
+random_spec_tuple_impls!(A B C D E F G H, RA RB RC RD RE RF RG RH, a b c d e f g h);
+random_spec_tuple_impls!(A B C D E F G H I, RA RB RC RD RE RF RG RH RI, a b c d e f g h i);
+random_spec_tuple_impls!(A B C D E F G H I J, RA RB RC RD RE RF RG RH RI RJ, a b c d e f g h i j);
 
-impl<T, G: RandomGenerator<T>> RandomGenerator<T> for &G {
+impl<T, R: RandomSpec<T>> RandomSpec<T> for &R {
     fn rand(&self, rng: &mut Xorshift) -> T {
-        <G as RandomGenerator<T>>::rand(self, rng)
+        <R as RandomSpec<T>>::rand(self, rng)
     }
 }
-impl<T, G: RandomGenerator<T>> RandomGenerator<T> for &mut G {
+impl<T, R: RandomSpec<T>> RandomSpec<T> for &mut R {
     fn rand(&self, rng: &mut Xorshift) -> T {
-        <G as RandomGenerator<T>>::rand(self, rng)
+        <R as RandomSpec<T>>::rand(self, rng)
     }
 }
 
@@ -165,7 +166,7 @@ impl NotEmptyStep64 for char {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 /// Left-close Right-open No Empty Segment
 pub struct NotEmptySegment(pub usize);
-impl RandomGenerator<(usize, usize)> for NotEmptySegment {
+impl RandomSpec<(usize, usize)> for NotEmptySegment {
     fn rand(&self, rng: &mut Xorshift) -> (usize, usize) {
         let n = randint_uniform(rng, self.0 as u64);
         let l = randint_uniform(rng, self.0 as u64 - n) as usize;
@@ -193,17 +194,17 @@ macro_rules! rand_value {
     ($rng:expr, [$t:tt; $len:expr]) => {
         ::std::iter::repeat_with(|| $crate::rand_value!($rng, $t)).take($len).collect::<Vec<_>>()
     };
-    ($rng:expr, [$g:expr; $len:expr]) => {
-        ($rng).gen_iter($g).take($len).collect::<Vec<_>>()
+    ($rng:expr, [$s:expr; $len:expr]) => {
+        ($rng).gen_iter($s).take($len).collect::<Vec<_>>()
     };
     ($rng:expr, [$($t:tt)*]) => {
         ::std::iter::repeat_with(|| $crate::rand_value!($rng, $($t)*))
     };
-    ($rng:expr, {$g:expr}) => {
-        ($rng).gen($g)
+    ($rng:expr, {$s:expr}) => {
+        ($rng).gen($s)
     };
-    ($rng:expr, $g:expr) => {
-        ($rng).gen($g)
+    ($rng:expr, $s:expr) => {
+        ($rng).gen($s)
     };
 }
 #[macro_export]
