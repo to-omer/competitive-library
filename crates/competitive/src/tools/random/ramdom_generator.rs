@@ -102,6 +102,17 @@ random_generator_tuple_impls!(A B C D E F G H, GA GB GC GD GE GF GG GH, a b c d 
 random_generator_tuple_impls!(A B C D E F G H I, GA GB GC GD GE GF GG GH GI, a b c d e f g h i);
 random_generator_tuple_impls!(A B C D E F G H I J, GA GB GC GD GE GF GG GH GI GJ, a b c d e f g h i j);
 
+impl<T, G: RandomGenerator<T>> RandomGenerator<T> for &G {
+    fn rand(&self, rng: &mut Xorshift) -> T {
+        <G as RandomGenerator<T>>::rand(self, rng)
+    }
+}
+impl<T, G: RandomGenerator<T>> RandomGenerator<T> for &mut G {
+    fn rand(&self, rng: &mut Xorshift) -> T {
+        <G as RandomGenerator<T>>::rand(self, rng)
+    }
+}
+
 pub trait NotEmptyStep64: Clone + PartialOrd {
     fn steps_between(start: &Self, end: &Self) -> u64;
     fn forward_unchecked(start: &Self, count: u64) -> Self;
@@ -248,6 +259,7 @@ mod tests {
             _lr: (NotEmptySegment(10)),
             _a: [..10; 10],
             _t: (..10,),
+            _r: (&(..10),&mut (..10)),
             _p: [(1..=10,2..=10); 2]
         );
     }
