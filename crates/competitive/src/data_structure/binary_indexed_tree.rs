@@ -41,44 +41,6 @@ impl<M: Monoid> BinaryIndexedTree<M> {
     }
 }
 
-#[test]
-fn test_binary_indexed_tree() {
-    use crate::algebra::{AdditiveOperation, MaxOperation};
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let n = 10_000;
-    let q = 100_000;
-    let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
-    let mut arr = vec![0; n];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        bit.update(k, v);
-        arr[k] += v;
-    }
-    for i in 0..n - 1 {
-        arr[i + 1] += arr[i];
-    }
-    for (i, a) in arr.iter().cloned().enumerate() {
-        assert_eq!(bit.accumulate(i), a);
-    }
-
-    let mut bit = BinaryIndexedTree::new(n, MaxOperation::new());
-    let mut arr = vec![0; n];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        bit.update(k, v);
-        arr[k] = std::cmp::max(arr[k], v);
-    }
-    for i in 0..n - 1 {
-        arr[i + 1] = std::cmp::max(arr[i], arr[i + 1]);
-    }
-    for (i, a) in arr.iter().cloned().enumerate() {
-        assert_eq!(bit.accumulate(i), a);
-    }
-}
-
 #[codesnip::entry("BinaryIndexedTree")]
 impl<G: Group> BinaryIndexedTree<G> {
     #[inline]
@@ -94,31 +56,6 @@ impl<G: Group> BinaryIndexedTree<G> {
     #[inline]
     pub fn set(&mut self, k: usize, x: G::T) {
         self.update(k, self.m.operate(&self.m.inverse(&self.get(k)), &x));
-    }
-}
-
-#[test]
-fn test_group_binary_indexed_tree() {
-    use crate::algebra::AdditiveOperation;
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let n = 1_000;
-    let q = 10_000;
-    let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
-    let mut arr = vec![0; n + 1];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(2_000_000_000) as i64 - 1_000_000_000;
-        bit.set(k, v);
-        arr[k + 1] = v;
-    }
-    for i in 0..n {
-        arr[i + 1] += arr[i];
-    }
-    for i in 0..n {
-        for j in i + 1..n + 1 {
-            assert_eq!(bit.fold(i, j), arr[j] - arr[i]);
-        }
     }
 }
 
@@ -141,31 +78,6 @@ where
             k >>= 1;
         }
         pos
-    }
-}
-
-#[test]
-fn test_binary_indexed_tree_lower_bound() {
-    use crate::algebra::AdditiveOperation;
-    use crate::algorithm::SliceBisectExt;
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let n = 1_000;
-    let q = 10_000;
-    let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
-    let mut arr = vec![0; n];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(1_000_000_000) as i64;
-        bit.set(k, v);
-        arr[k] = v;
-    }
-    for i in 0..n - 1 {
-        arr[i + 1] += arr[i];
-    }
-    for _ in 0..n {
-        let x = rand.rand(5_000_000_000_000) as i64;
-        assert_eq!(bit.lower_bound(x), arr.position_bisect(|&a| a >= x));
     }
 }
 
@@ -218,65 +130,6 @@ impl<M: Monoid> BinaryIndexedTree2D<M> {
     }
 }
 
-#[test]
-fn test_binary_indexed_tree_2d() {
-    use crate::algebra::{AdditiveOperation, MaxOperation};
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let h = 200;
-    let w = 200;
-    let q = 100_000;
-    let mut bit = BinaryIndexedTree2D::new(h, w, AdditiveOperation::new());
-    let mut arr = vec![vec![0; w]; h];
-    for _ in 0..q {
-        let i = rand.rand(h as u64) as usize;
-        let j = rand.rand(w as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        bit.update(i, j, v);
-        arr[i][j] += v;
-    }
-    for arr in arr.iter_mut() {
-        for j in 0..w - 1 {
-            arr[j + 1] += arr[j];
-        }
-    }
-    for i in 0..h - 1 {
-        for j in 0..w {
-            arr[i + 1][j] += arr[i][j];
-        }
-    }
-    for (i, arr) in arr.iter().enumerate() {
-        for (j, a) in arr.iter().cloned().enumerate() {
-            assert_eq!(bit.accumulate(i, j), a);
-        }
-    }
-
-    let mut bit = BinaryIndexedTree2D::new(h, w, MaxOperation::new());
-    let mut arr = vec![vec![0; w]; h];
-    for _ in 0..q {
-        let i = rand.rand(h as u64) as usize;
-        let j = rand.rand(w as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        bit.update(i, j, v);
-        arr[i][j] = std::cmp::max(arr[i][j], v);
-    }
-    for arr in arr.iter_mut() {
-        for j in 0..w - 1 {
-            arr[j + 1] = std::cmp::max(arr[j + 1], arr[j]);
-        }
-    }
-    for i in 0..h - 1 {
-        for j in 0..w {
-            arr[i + 1][j] = std::cmp::max(arr[i + 1][j], arr[i][j]);
-        }
-    }
-    for (i, arr) in arr.iter().enumerate() {
-        for (j, a) in arr.iter().cloned().enumerate() {
-            assert_eq!(bit.accumulate(i, j), a);
-        }
-    }
-}
-
 #[codesnip::entry("BinaryIndexedTree2D")]
 impl<G: Group> BinaryIndexedTree2D<G> {
     #[inline]
@@ -301,41 +154,167 @@ impl<G: Group> BinaryIndexedTree2D<G> {
     }
 }
 
-#[test]
-fn test_group_binary_indexed_tree2d() {
-    use crate::algebra::AdditiveOperation;
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let h = 20;
-    let w = 20;
-    let q = 100_000;
-    let mut bit = BinaryIndexedTree2D::new(h, w, AdditiveOperation::new());
-    let mut arr = vec![vec![0; w + 1]; h + 1];
-    for _ in 0..q {
-        let i = rand.rand(h as u64) as usize;
-        let j = rand.rand(w as u64) as usize;
-        let v = rand.rand(2_000_000_000) as i64 - 1_000_000_000;
-        bit.set(i, j, v);
-        arr[i + 1][j + 1] = v;
-    }
-    for arr in arr.iter_mut() {
-        for j in 0..w {
-            arr[j + 1] += arr[j];
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        algebra::{AdditiveOperation, MaxOperation},
+        algorithm::SliceBisectExt as _,
+        tools::Xorshift,
+    };
+
+    const N: usize = 10_000;
+    const Q: usize = 100_000;
+    const A: u64 = 1_000_000_000;
+    const B: i64 = 1_000_000_000;
+
+    #[test]
+    fn test_binary_indexed_tree() {
+        let mut rng = Xorshift::time();
+        let mut bit = BinaryIndexedTree::new(N, AdditiveOperation::new());
+        let mut arr = vec![0; N];
+        for (k, v) in rng.gen_iter((..N, ..A)).take(Q) {
+            bit.update(k, v);
+            arr[k] += v;
+        }
+        for i in 0..N - 1 {
+            arr[i + 1] += arr[i];
+        }
+        for (i, a) in arr.iter().cloned().enumerate() {
+            assert_eq!(bit.accumulate(i), a);
+        }
+
+        let mut bit = BinaryIndexedTree::new(N, MaxOperation::new());
+        let mut arr = vec![0; N];
+        for (k, v) in rng.gen_iter((..N, ..A)).take(Q) {
+            bit.update(k, v);
+            arr[k] = std::cmp::max(arr[k], v);
+        }
+        for i in 0..N - 1 {
+            arr[i + 1] = std::cmp::max(arr[i], arr[i + 1]);
+        }
+        for (i, a) in arr.iter().cloned().enumerate() {
+            assert_eq!(bit.accumulate(i), a);
         }
     }
-    for i in 0..h {
-        for j in 0..w + 1 {
-            arr[i + 1][j] += arr[i][j];
+
+    #[test]
+    fn test_group_binary_indexed_tree() {
+        const N: usize = 2_000;
+        let mut rng = Xorshift::time();
+        let mut bit = BinaryIndexedTree::new(N, AdditiveOperation::new());
+        let mut arr = vec![0; N + 1];
+        for (k, v) in rng.gen_iter((..N, -B..B)).take(Q) {
+            bit.set(k, v);
+            arr[k + 1] = v;
+        }
+        for i in 0..N {
+            arr[i + 1] += arr[i];
+        }
+        for i in 0..N {
+            for j in i + 1..N + 1 {
+                assert_eq!(bit.fold(i, j), arr[j] - arr[i]);
+            }
         }
     }
-    for i1 in 0..h {
-        for i2 in i1 + 1..h + 1 {
-            for j1 in 0..w {
-                for j2 in j1 + 1..w + 1 {
-                    assert_eq!(
-                        bit.fold(i1, j1, i2, j2),
-                        arr[i2][j2] - arr[i2][j1] - arr[i1][j2] + arr[i1][j1]
-                    );
+
+    #[test]
+    fn test_binary_indexed_tree_lower_bound() {
+        let mut rng = Xorshift::time();
+        let mut bit = BinaryIndexedTree::new(N, AdditiveOperation::new());
+        let mut arr = vec![0; N];
+        for (k, v) in rng.gen_iter((..N, 1..B)).take(Q) {
+            bit.set(k, v);
+            arr[k] = v;
+        }
+        for i in 0..N - 1 {
+            arr[i + 1] += arr[i];
+        }
+        for x in rng.gen_iter(1..B * N as i64).take(Q) {
+            assert_eq!(bit.lower_bound(x), arr.position_bisect(|&a| a >= x));
+        }
+    }
+
+    #[test]
+    fn test_binary_indexed_tree_2d() {
+        let mut rng = Xorshift::time();
+        const H: usize = 150;
+        const W: usize = 250;
+        let mut bit = BinaryIndexedTree2D::new(H, W, AdditiveOperation::new());
+        let mut arr = vec![vec![0; W]; H];
+        for (i, j, v) in rng.gen_iter((..H, ..W, ..A)).take(Q) {
+            bit.update(i, j, v);
+            arr[i][j] += v;
+        }
+        for arr in arr.iter_mut() {
+            for j in 0..W - 1 {
+                arr[j + 1] += arr[j];
+            }
+        }
+        for i in 0..H - 1 {
+            for j in 0..W {
+                arr[i + 1][j] += arr[i][j];
+            }
+        }
+        for (i, arr) in arr.iter().enumerate() {
+            for (j, a) in arr.iter().cloned().enumerate() {
+                assert_eq!(bit.accumulate(i, j), a);
+            }
+        }
+
+        let mut bit = BinaryIndexedTree2D::new(H, W, MaxOperation::new());
+        let mut arr = vec![vec![0; W]; H];
+        for (i, j, v) in rng.gen_iter((..H, ..W, ..A)).take(Q) {
+            bit.update(i, j, v);
+            arr[i][j] = std::cmp::max(arr[i][j], v);
+        }
+        for arr in arr.iter_mut() {
+            for j in 0..W - 1 {
+                arr[j + 1] = std::cmp::max(arr[j + 1], arr[j]);
+            }
+        }
+        for i in 0..H - 1 {
+            for j in 0..W {
+                arr[i + 1][j] = std::cmp::max(arr[i + 1][j], arr[i][j]);
+            }
+        }
+        for (i, arr) in arr.iter().enumerate() {
+            for (j, a) in arr.iter().cloned().enumerate() {
+                assert_eq!(bit.accumulate(i, j), a);
+            }
+        }
+    }
+
+    #[test]
+    fn test_group_binary_indexed_tree2d() {
+        let mut rng = Xorshift::time();
+        const H: usize = 15;
+        const W: usize = 25;
+        let mut bit = BinaryIndexedTree2D::new(H, W, AdditiveOperation::new());
+        let mut arr = vec![vec![0; W + 1]; H + 1];
+        for (i, j, v) in rng.gen_iter((..H, ..W, -B..B)).take(Q) {
+            bit.set(i, j, v);
+            arr[i + 1][j + 1] = v;
+        }
+        for arr in arr.iter_mut() {
+            for j in 0..W {
+                arr[j + 1] += arr[j];
+            }
+        }
+        for i in 0..H {
+            for j in 0..W + 1 {
+                arr[i + 1][j] += arr[i][j];
+            }
+        }
+        for i1 in 0..H {
+            for i2 in i1 + 1..H + 1 {
+                for j1 in 0..W {
+                    for j2 in j1 + 1..W + 1 {
+                        assert_eq!(
+                            bit.fold(i1, j1, i2, j2),
+                            arr[i2][j2] - arr[i2][j1] - arr[i1][j2] + arr[i1][j1]
+                        );
+                    }
                 }
             }
         }

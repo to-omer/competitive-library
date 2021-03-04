@@ -127,70 +127,6 @@ impl<M: Monoid> SegmentTree<M> {
     }
 }
 
-#[test]
-fn test_segment_tree() {
-    use crate::algebra::{AdditiveOperation, MaxOperation};
-    use crate::algorithm::SliceBisectExt;
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let n = 1_024;
-    let q = 10_000;
-    let mut seg = SegmentTree::new(n, AdditiveOperation::new());
-    let mut arr = vec![0; n + 1];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        seg.set(k, v);
-        arr[k + 1] = v;
-    }
-    for i in 0..n {
-        arr[i + 1] += arr[i];
-    }
-    for i in 0..n {
-        for j in i + 1..n + 1 {
-            assert_eq!(seg.fold(i, j), arr[j] - arr[i]);
-        }
-    }
-    for _ in 0..q {
-        let v = rand.rand(1_000_000_000 * n as u64) as usize;
-        assert_eq!(
-            seg.lower_bound_all(|&x| v <= x, n),
-            arr[1..].position_bisect(|&x| x >= v)
-        );
-    }
-    for _ in 0..q {
-        let v = rand.rand(1_000_000_000 * n as u64) as usize;
-        let mut l = rand.rand(n as u64) as usize;
-        let mut r = rand.rand(n as u64) as usize;
-        if l > r {
-            std::mem::swap(&mut l, &mut r);
-        }
-        assert_eq!(
-            seg.lower_bound(|&x| v <= x, l, r),
-            arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
-        );
-    }
-
-    let n = 1_000;
-    let mut seg = SegmentTree::new(n, MaxOperation::new());
-    let mut arr = vec![0; n];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        seg.set(k, v);
-        arr[k] = v;
-    }
-    for _ in 0..n {
-        let l = rand.rand(n as u64) as usize;
-        let r = rand.rand((n - l + 1) as u64) as usize + l;
-        let mut res = 0;
-        for a in arr[l..r].iter().cloned() {
-            res = std::cmp::max(res, a);
-        }
-        assert_eq!(seg.fold(l, r), res);
-    }
-}
-
 #[codesnip::entry("SegmentTreeMap", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct SegmentTreeMap<M: Monoid> {
@@ -318,66 +254,104 @@ impl<M: Monoid> SegmentTreeMap<M> {
     }
 }
 
-#[test]
-fn test_segment_tree_map() {
-    use crate::algebra::{AdditiveOperation, MaxOperation};
-    use crate::algorithm::SliceBisectExt;
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let n = 1_024;
-    let q = 10_000;
-    let mut seg = SegmentTreeMap::new(n, AdditiveOperation::new());
-    let mut arr = vec![0; n + 1];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        seg.set(k, v);
-        arr[k + 1] = v;
-    }
-    for i in 0..n {
-        arr[i + 1] += arr[i];
-    }
-    for i in 0..n {
-        for j in i + 1..n + 1 {
-            assert_eq!(seg.fold(i, j), arr[j] - arr[i]);
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        algebra::{AdditiveOperation, MaxOperation},
+        algorithm::SliceBisectExt as _,
+        rand,
+        tools::{NotEmptySegment as Nes, Xorshift},
+    };
+
+    const N: usize = 1_000;
+    const Q: usize = 10_000;
+    const A: i64 = 1_000_000_000;
+
+    #[test]
+    fn test_segment_tree() {
+        let mut rng = Xorshift::time();
+        let mut arr = vec![0; N + 1];
+        let mut seg = SegmentTree::new(N, AdditiveOperation::new());
+        for (k, v) in rng.gen_iter((..N, 1..=A)).take(Q) {
+            seg.set(k, v);
+            arr[k + 1] = v;
         }
-    }
-    for _ in 0..q {
-        let v = rand.rand(1_000_000_000 * n as u64) as usize;
-        assert_eq!(
-            seg.lower_bound_all(|&x| v <= x, n),
-            arr[1..].position_bisect(|&x| x >= v)
-        );
-    }
-    for _ in 0..q {
-        let v = rand.rand(1_000_000_000 * n as u64) as usize;
-        let mut l = rand.rand(n as u64) as usize;
-        let mut r = rand.rand(n as u64) as usize;
-        if l > r {
-            std::mem::swap(&mut l, &mut r);
+        for i in 0..N {
+            arr[i + 1] += arr[i];
         }
-        assert_eq!(
-            seg.lower_bound(|&x| v <= x, l, r),
-            arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
-        );
+        for i in 0..N {
+            for j in i + 1..N + 1 {
+                assert_eq!(seg.fold(i, j), arr[j] - arr[i]);
+            }
+        }
+        for v in rng.gen_iter(1..=A * N as i64).take(Q) {
+            assert_eq!(
+                seg.lower_bound_all(|&x| v <= x, N),
+                arr[1..].position_bisect(|&x| x >= v)
+            );
+        }
+        for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
+            assert_eq!(
+                seg.lower_bound(|&x| v <= x, l, r),
+                arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
+            );
+        }
+
+        rand!(rng, mut arr: [-A..=A; N]);
+        let mut seg = SegmentTree::from_vec(arr.clone(), MaxOperation::new());
+        for (k, v) in rng.gen_iter((..N, -A..=A)).take(Q) {
+            seg.set(k, v);
+            arr[k] = v;
+        }
+        for (l, r) in rng.gen_iter(Nes(N)).take(Q) {
+            let res = arr[l..r].iter().max().cloned().unwrap_or_default();
+            assert_eq!(seg.fold(l, r), res);
+        }
     }
 
-    let n = 1_000;
-    let mut seg = SegmentTree::new(n, MaxOperation::new());
-    let mut arr = vec![0; n];
-    for _ in 0..q {
-        let k = rand.rand(n as u64) as usize;
-        let v = rand.rand(1_000_000_000) as usize;
-        seg.set(k, v);
-        arr[k] = v;
-    }
-    for _ in 0..n {
-        let l = rand.rand(n as u64) as usize;
-        let r = rand.rand((n - l + 1) as u64) as usize + l;
-        let mut res = 0;
-        for a in arr[l..r].iter().cloned() {
-            res = std::cmp::max(res, a);
+    #[test]
+    fn test_segment_tree_map() {
+        let mut rng = Xorshift::time();
+        let mut arr = vec![0; N + 1];
+        let mut seg = SegmentTreeMap::new(N, AdditiveOperation::new());
+        for (k, v) in rng.gen_iter((..N, 1..=A)).take(Q) {
+            seg.set(k, v);
+            arr[k + 1] = v;
         }
-        assert_eq!(seg.fold(l, r), res);
+        for i in 0..N {
+            arr[i + 1] += arr[i];
+        }
+        for i in 0..N {
+            for j in i + 1..N + 1 {
+                assert_eq!(seg.fold(i, j), arr[j] - arr[i]);
+            }
+        }
+        for v in rng.gen_iter(1..=A * N as i64).take(Q) {
+            assert_eq!(
+                seg.lower_bound_all(|&x| v <= x, N),
+                arr[1..].position_bisect(|&x| x >= v)
+            );
+        }
+        for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
+            assert_eq!(
+                seg.lower_bound(|&x| v <= x, l, r),
+                arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
+            );
+        }
+
+        rand!(rng, mut arr: [-A..=A; N]);
+        let mut seg = SegmentTreeMap::new(N, MaxOperation::new());
+        for (i, a) in arr.iter().cloned().enumerate() {
+            seg.set(i, a);
+        }
+        for (k, v) in rng.gen_iter((..N, -A..=A)).take(Q) {
+            seg.set(k, v);
+            arr[k] = v;
+        }
+        for (l, r) in rng.gen_iter(Nes(N)).take(Q) {
+            let res = arr[l..r].iter().max().cloned().unwrap_or_default();
+            assert_eq!(seg.fold(l, r), res);
+        }
     }
 }

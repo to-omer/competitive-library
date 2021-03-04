@@ -195,8 +195,11 @@ mod matrix_impls {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::num::{MInt, MIntBase, MIntConvert};
-    use crate::tools::Xorshift;
+    use crate::{
+        num::{MInt, MIntBase, MIntConvert},
+        rand_value,
+        tools::Xorshift,
+    };
     static mut MOD: u32 = 2;
     crate::define_basic_mintbase!(
         D,
@@ -206,25 +209,22 @@ mod tests {
         [u32, u64, u128, usize],
         [i32, i64, i128, isize]
     );
+    impl crate::tools::RandomSpec<MInt<D>> for D {
+        fn rand(&self, rng: &mut Xorshift) -> MInt<D> {
+            MInt::new_unchecked(rng.gen(..D::get_mod()))
+        }
+    }
 
     #[test]
     fn test_row_reduction() {
         const Q: usize = 1000;
-        type M = MInt<D>;
-        let mut rand = Xorshift::time();
+        let mut rng = Xorshift::time();
         let ps = vec![2, 3, 1_000_000_007];
         for _ in 0..Q {
-            unsafe { MOD = ps[rand.rand(ps.len() as u64) as usize] as u32 };
-            let n = rand.rand(30) as usize + 2;
-            let mat = Matrix::from_vec(
-                (0..n)
-                    .map(|_| {
-                        (0..n)
-                            .map(|_| M::from(rand.rand(M::get_mod() as u64)))
-                            .collect::<Vec<_>>()
-                    })
-                    .collect::<Vec<_>>(),
-            );
+            let m = ps[rng.gen(..ps.len())];
+            unsafe { MOD = m };
+            let n = rng.gen(2..=30);
+            let mat = Matrix::from_vec(rand_value!(rng, [[D; n]; n]));
             let rank = mat.clone().rank();
             let inv = mat.inverse();
             assert_eq!(rank == n, inv.is_some());

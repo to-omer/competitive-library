@@ -106,12 +106,12 @@ fn test_linear_congruence() {
     use crate::tools::Xorshift;
     const N: usize = 5;
     const Q: usize = 1_000;
-    let mut rand = Xorshift::time();
+    let mut rng = Xorshift::time();
     for _ in 0..Q {
         let abm: Vec<_> = (0..N)
             .map(|_| {
-                let m = rand.rand(21) + 1;
-                (rand.rand(m) as i64, rand.rand(m) as i64, m as i64)
+                let m = rng.gen(2i64..=20);
+                (rng.gen(1..m), rng.gen(0..m), m)
             })
             .collect();
         if let Some((x, m0)) = linear_congruence(abm.iter().cloned()) {

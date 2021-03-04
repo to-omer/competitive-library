@@ -152,73 +152,6 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
     }
 }
 
-#[test]
-fn test_lazy_segment_tree() {
-    use crate::algebra::{AdditiveOperation, CartesianOperation, LastOperation, MaxOperation};
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let n = 1_024;
-    let m = 20_000;
-    // Range Sum Query & Range Add Query
-    let mut seg = LazySegmentTree::from_vec(
-        vec![(0, 1); n],
-        CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-        AdditiveOperation::new(),
-        |x, &y| (x.0 + y * x.1, x.1),
-    );
-    let mut arr = vec![0; n];
-    for _ in 0..m {
-        let q = rand.rand(2);
-        if q == 0 {
-            // Range Add Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let x = rand.rand(1_000_000_000) as usize;
-            seg.update(l, r, x);
-            for a in arr[l..r].iter_mut() {
-                *a += x;
-            }
-        } else {
-            // Range Sum Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let mut res = 0;
-            for a in arr[l..r].iter() {
-                res += a;
-            }
-            assert_eq!(seg.fold(l, r).0, res);
-        }
-    }
-
-    // Range Max Query & Range Update Query
-    let mut seg = LazySegmentTree::new(n, MaxOperation::new(), LastOperation::new(), |&x, y| {
-        y.unwrap_or(x)
-    });
-    let mut arr = vec![0; n];
-    for _ in 0..m {
-        let q = rand.rand(2);
-        if q == 0 {
-            // Range Update Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let x = rand.rand(1_000_000_000) as usize;
-            seg.update(l, r, Some(x));
-            for a in arr[l..r].iter_mut() {
-                *a = x;
-            }
-        } else {
-            // Range Max Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let mut res = 0;
-            for a in arr[l..r].iter() {
-                res = std::cmp::max(res, *a);
-            }
-            assert_eq!(seg.fold(l, r), res);
-        }
-    }
-}
-
 #[codesnip::entry("LazySegmentTreeMap", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct LazySegmentTreeMap<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
@@ -354,72 +287,121 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
     }
 }
 
-#[test]
-fn test_lazy_segment_tree_map() {
-    use crate::algebra::{AdditiveOperation, CartesianOperation, LastOperation, MaxOperation};
-    use crate::tools::Xorshift;
-    let mut rand = Xorshift::time();
-    let n = 1_024;
-    let m = 20_000;
-    // Range Sum Query & Range Add Query
-    let mut seg = LazySegmentTreeMap::new(
-        n,
-        CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-        AdditiveOperation::new(),
-        |x, &y| (x.0 + y * x.1, x.1),
-    );
-    for i in 0..n {
-        seg.set(i, (0, 1));
-    }
-    let mut arr = vec![0; n];
-    for _ in 0..m {
-        let q = rand.rand(2);
-        if q == 0 {
-            // Range Add Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let x = rand.rand(1_000_000_000) as usize;
-            seg.update(l, r, x);
-            for a in arr[l..r].iter_mut() {
-                *a += x;
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        algebra::{AdditiveOperation, CartesianOperation, LastOperation, MaxOperation},
+        rand,
+        tools::{NotEmptySegment, Xorshift},
+    };
+
+    const N: usize = 1_024;
+    const Q: usize = 20_000;
+    const A: i64 = 1_000_000_000;
+
+    #[test]
+    fn test_lazy_segment_tree() {
+        let mut rng = Xorshift::time();
+        // Range Sum Query & Range Add Query
+        rand!(rng, mut arr: [-A..A; N]);
+        let mut seg = LazySegmentTree::from_vec(
+            arr.iter().map(|&a| (a, 1)).collect(),
+            CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
+            AdditiveOperation::new(),
+            |x, &y| (x.0 + y * x.1, x.1),
+        );
+        for _ in 0..Q {
+            if rng.rand(2) == 0 {
+                // Range Add Query
+                rand!(rng, (l,r): (NotEmptySegment(N)), x: (-A..A));
+                seg.update(l, r, x);
+                for a in arr[l..r].iter_mut() {
+                    *a += x;
+                }
+            } else {
+                // Range Sum Query
+                rand!(rng, (l, r): (NotEmptySegment(N)));
+                let res = arr[l..r].iter().sum();
+                assert_eq!(seg.fold(l, r).0, res);
             }
-        } else {
-            // Range Sum Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let mut res = 0;
-            for a in arr[l..r].iter() {
-                res += a;
+        }
+
+        // Range Max Query & Range Update Query
+        rand!(rng, mut arr: [-A..A; N]);
+        let mut seg = LazySegmentTree::from_vec(
+            arr.clone(),
+            MaxOperation::new(),
+            LastOperation::new(),
+            |&x, y| y.unwrap_or(x),
+        );
+        for _ in 0..Q {
+            if rng.rand(2) == 0 {
+                // Range Update Query
+                rand!(rng, (l,r): (NotEmptySegment(N)), x: (-A..A));
+                seg.update(l, r, Some(x));
+                for a in arr[l..r].iter_mut() {
+                    *a = x;
+                }
+            } else {
+                // Range Max Query
+                rand!(rng, (l, r): (NotEmptySegment(N)));
+                let res = arr[l..r].iter().max().cloned().unwrap_or_default();
+                assert_eq!(seg.fold(l, r), res);
             }
-            assert_eq!(seg.fold(l, r).0, res);
         }
     }
 
-    // Range Max Query & Range Update Query
-    let mut seg = LazySegmentTree::new(n, MaxOperation::new(), LastOperation::new(), |&x, y| {
-        y.unwrap_or(x)
-    });
-    let mut arr = vec![0; n];
-    for _ in 0..m {
-        let q = rand.rand(2);
-        if q == 0 {
-            // Range Update Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let x = rand.rand(1_000_000_000) as usize;
-            seg.update(l, r, Some(x));
-            for a in arr[l..r].iter_mut() {
-                *a = x;
+    #[test]
+    fn test_lazy_segment_tree_map() {
+        let mut rng = Xorshift::time();
+        // Range Sum Query & Range Add Query
+        let mut arr = vec![0i64; N];
+        let mut seg = LazySegmentTreeMap::new(
+            N,
+            CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
+            AdditiveOperation::new(),
+            |x, &y| (x.0 + y * x.1, x.1),
+        );
+        for i in 0..N {
+            seg.set(i, (0i64, 1i64));
+        }
+        for _ in 0..Q {
+            if rng.rand(2) == 0 {
+                // Range Add Query
+                rand!(rng, (l,r): (NotEmptySegment(N)), x: (-A..A));
+                seg.update(l, r, x);
+                for a in arr[l..r].iter_mut() {
+                    *a += x;
+                }
+            } else {
+                // Range Sum Query
+                rand!(rng, (l, r): (NotEmptySegment(N)));
+                let res = arr[l..r].iter().sum();
+                assert_eq!(seg.fold(l, r).0, res);
             }
-        } else {
-            // Range Max Query
-            let l = rand.rand(n as u64) as usize;
-            let r = rand.rand((n - l + 1) as u64) as usize + l;
-            let mut res = 0;
-            for a in arr[l..r].iter() {
-                res = std::cmp::max(res, *a);
+        }
+
+        // Range Max Query & Range Update Query
+        let mut arr = vec![std::i64::MIN; N];
+        let mut seg =
+            LazySegmentTreeMap::new(N, MaxOperation::new(), LastOperation::new(), |&x, y| {
+                y.unwrap_or(x)
+            });
+        for _ in 0..Q {
+            if rng.rand(2) == 0 {
+                // Range Update Query
+                rand!(rng, (l,r): (NotEmptySegment(N)), x: (-A..A));
+                seg.update(l, r, Some(x));
+                for a in arr[l..r].iter_mut() {
+                    *a = x;
+                }
+            } else {
+                // Range Max Query
+                rand!(rng, (l, r): (NotEmptySegment(N)));
+                let res = arr[l..r].iter().max().cloned().unwrap_or_default();
+                assert_eq!(seg.fold(l, r), res);
             }
-            assert_eq!(seg.fold(l, r), res);
         }
     }
 }

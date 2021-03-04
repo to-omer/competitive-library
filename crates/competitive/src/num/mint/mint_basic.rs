@@ -245,10 +245,10 @@ pub type MInt2 = MInt<Modulo2>;
 #[test]
 fn test_mint() {
     use crate::tools::Xorshift;
-    let mut rand = Xorshift::default();
+    let mut rng = Xorshift::time();
     const Q: usize = 10_000;
     for _ in 0..Q {
-        let a = MInt998244353::new(rand.rand(MInt998244353::get_mod() as u64 - 1) as u32 + 1);
+        let a = MInt998244353::new_unchecked(rng.gen(1..MInt998244353::get_mod()));
         let x = a.inv();
         assert!(x.x < MInt998244353::get_mod());
         assert_eq!(a * x, MInt998244353::one());

@@ -155,69 +155,53 @@ impl std::iter::FromIterator<bool> for BitVector {
     }
 }
 
-#[test]
-fn test_rank_select_usize() {
+#[cfg(test)]
+mod tests {
+    use super::*;
     use crate::tools::Xorshift;
-    const Q: usize = 1_000;
-    const WORD_SIZE: usize = 0usize.count_zeros() as usize;
-    let mut rand = Xorshift::time();
-    for _ in 0..Q {
-        let x = rand.rand64() as usize;
-        {
+
+    const Q: usize = 5_000;
+
+    #[test]
+    fn test_rank_select_usize() {
+        const WORD_SIZE: usize = 0usize.count_zeros() as usize;
+        let mut rng = Xorshift::time();
+        for x in rng.gen_iter(0u64..).take(Q) {
             for k in 0..=WORD_SIZE {
                 assert_eq!(x.rank1(k), (0..k).filter(|&i| x.access(i)).count());
                 assert_eq!(x.rank0(k), (0..k).filter(|&i| !x.access(i)).count());
-            }
-        }
-
-        {
-            let k = rand.rand(WORD_SIZE as u64) as usize;
-            if let Some(i) = x.select1(k) {
-                assert_eq!((0..i).filter(|&j| x.access(j)).count(), k);
-                assert!(x.access(i));
-            } else {
-                assert!(x.rank1(WORD_SIZE) <= k);
-            }
-        }
-
-        {
-            let k = rand.rand(WORD_SIZE as u64) as usize;
-            if let Some(i) = x.select0(k) {
-                assert_eq!((0..i).filter(|&j| !x.access(j)).count(), k);
-                assert!(!x.access(i));
-            } else {
-                assert!(x.rank0(WORD_SIZE) <= k);
+                if let Some(i) = x.select1(k) {
+                    assert_eq!((0..i).filter(|&j| x.access(j)).count(), k);
+                    assert!(x.access(i));
+                } else {
+                    assert!(x.rank1(WORD_SIZE) <= k);
+                }
+                if let Some(i) = x.select0(k) {
+                    assert_eq!((0..i).filter(|&j| !x.access(j)).count(), k);
+                    assert!(!x.access(i));
+                } else {
+                    assert!(x.rank0(WORD_SIZE) <= k);
+                }
             }
         }
     }
-}
 
-#[test]
-fn test_rank_select_bit_vector() {
-    use crate::tools::Xorshift;
-    const Q: usize = 1_000;
-    const N: usize = 1_000;
-    let mut rand = Xorshift::time();
-    let x: BitVector = (0..N).map(|_| rand.rand(2) != 0).collect();
-    for _i in 0..Q {
-        {
-            let k = rand.rand(N as u64) as usize;
+    #[test]
+    fn test_rank_select_bit_vector() {
+        const N: usize = 1_000;
+        let mut rng = Xorshift::time();
+        let x: BitVector = (0..N).map(|_| rng.rand(2) != 0).collect();
+        for k in rng.gen_iter(..=N).take(Q) {
             assert_eq!(x.rank1(k), (0..k).filter(|&i| x.access(i)).count());
             assert_eq!(x.rank0(k), (0..k).filter(|&i| !x.access(i)).count());
-        }
 
-        {
-            let k = rand.rand(N as u64) as usize;
             if let Some(i) = x.select1(k) {
                 assert_eq!((0..i).filter(|&j| x.access(j)).count(), k);
                 assert!(x.access(i));
             } else {
                 assert!(x.rank1(N) <= k);
             }
-        }
 
-        {
-            let k = rand.rand(N as u64) as usize;
             if let Some(i) = x.select0(k) {
                 assert_eq!((0..i).filter(|&j| !x.access(j)).count(), k);
                 assert!(!x.access(i));
@@ -225,7 +209,7 @@ fn test_rank_select_bit_vector() {
                 assert!(x.rank0(N) <= k);
             }
         }
+        assert_eq!(x.rank1(0), 0);
+        assert_eq!(x.rank0(0), 0);
     }
-    assert_eq!(x.rank1(0), 0);
-    assert_eq!(x.rank0(0), 0);
 }

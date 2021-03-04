@@ -17,7 +17,6 @@ mod heuristics;
 )]
 mod main;
 mod output;
-#[cfg_attr(nightly, codesnip::entry("Xorshift", inline))]
 mod random;
 #[cfg_attr(nightly, codesnip::entry("scanner", inline))]
 mod scanner;
@@ -28,7 +27,7 @@ mod totalord;
 pub use counter::Counter;
 pub use heuristics::SimuratedAnnealing;
 pub use output::echo;
-pub use random::Xorshift;
+pub use random::*;
 pub use scanner::*;
 pub use slice::GetDistinctMut;
 pub use totalord::TotalOrd;

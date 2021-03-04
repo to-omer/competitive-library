@@ -1,3 +1,5 @@
+#[cfg_attr(nightly, codesnip::entry("bounded", inline))]
+mod bounded;
 #[cfg_attr(nightly, codesnip::entry("Complex", inline))]
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(inline, include("zero_one")))]
@@ -9,6 +11,7 @@ mod quad_double;
 #[cfg_attr(nightly, codesnip::entry("zero_one", inline))]
 mod zero_one;
 
+pub use bounded::Bounded;
 pub use complex::Complex;
 pub use integer::Saturating;
 pub use mint::*;

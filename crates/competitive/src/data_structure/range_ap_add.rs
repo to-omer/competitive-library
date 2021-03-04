@@ -45,19 +45,14 @@ impl RangeArithmeticProgressionAdd {
 
 #[test]
 fn test_range_ap_add() {
-    use crate::tools::Xorshift;
+    use crate::tools::{NotEmptySegment as Nes, Xorshift};
     const N: usize = 1000;
     const Q: usize = 10000;
     const A: i64 = 1_000_000_000;
-    let mut rand = Xorshift::default();
+    let mut rng = Xorshift::time();
     let mut v = vec![0i64; N];
     let mut ap = RangeArithmeticProgressionAdd::new(N);
-    for _ in 0..Q {
-        let l = rand.rand(N as u64) as usize;
-        let r = rand.rand(N as u64) as usize;
-        let (l, r) = if l <= r { (l, r) } else { (r, l) };
-        let a = rand.rand(A as u64 * 2) as i64 - A;
-        let d = rand.rand(A as u64 * 2) as i64 - A;
+    for ((l, r), a, d) in rng.gen_iter((Nes(N), -A..=A, -A..=A)).take(Q) {
         for (i, v) in v[l..r].iter_mut().enumerate() {
             *v += a + i as i64 * d;
         }

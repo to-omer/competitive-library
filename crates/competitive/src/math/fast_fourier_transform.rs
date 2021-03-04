@@ -48,12 +48,11 @@ pub fn convolve_i64(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
 
 #[test]
 fn test_fast_fourier_transform() {
-    use crate::tools::Xorshift;
+    use crate::{rand, tools::Xorshift};
     const N: usize = 3_000;
-    const M: i64 = 100_000;
-    let mut rand = Xorshift::time();
-    let a: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
-    let b: Vec<_> = (0..N).map(|_| rand.rand(M as u64 * 2) as i64 - M).collect();
+    const A: i64 = 100_000;
+    let mut rng = Xorshift::time();
+    rand!(rng, a: [-A..=A; N], b: [-A..=A; N]);
     let mut c = vec![0; N * 2 - 1];
     for i in 0..N {
         for j in 0..N {

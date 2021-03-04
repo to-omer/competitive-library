@@ -78,8 +78,8 @@ impl MultipleRollingHash {
         Self { rh }
     }
     pub fn new_rand(v: &[u64], n: usize) -> Self {
-        let mut rand = Xorshift::time();
-        let bases = rand
+        let mut rng = Xorshift::time();
+        let bases = rng
             .rands(RollingHash::MASK61 - 2, n)
             .into_iter()
             .map(|base| base + 2)

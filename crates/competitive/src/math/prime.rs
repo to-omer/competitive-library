@@ -310,9 +310,9 @@ pub fn prime_factors_rho(mut n: u64) -> Vec<u64> {
 fn test_prime_factors_rho() {
     use crate::tools::Xorshift;
     const Q: usize = 2_000;
-    let mut rand = Xorshift::time();
+    let mut rng = Xorshift::time();
     for _ in 0..Q {
-        let x = rand.rand64();
+        let x = rng.rand64();
         let factors = prime_factors_rho(x);
         assert!(factors.iter().all(|&p| miller_rabin(p)));
         let p = factors.into_iter().product::<u64>();
