@@ -114,8 +114,9 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                 #[test]
                 #[ignore]
                 fn #verify_name() {
-                    let _ = ::verify::init_logger(::std::module_path!().to_string() + "::" + &::std::stringify!(#verify_name));
-                    let config = ::verify::VerifyConfig::new(#url, ::std::file!(), ::std::stringify!(#fn_name));
+                    let target = ::std::module_path!().to_string() + "::" + &::std::stringify!(#verify_name);
+                    let _ = ::verify::init_logger(target.to_string());
+                    let config = ::verify::VerifyConfig::new(#url, ::std::file!(), ::std::stringify!(#fn_name), &target);
                     let res = match (config.get_testcases(), config.gen_env()) {
                         (::std::result::Result::Ok(problem), ::std::result::Result::Ok(env)) => {
                             let mut res = ::verify::VerifyResults::new();

@@ -1,3 +1,4 @@
+use chrono::{DateTime, FixedOffset, SecondsFormat, Utc};
 use lazy_static::lazy_static;
 use serde::{de::DeserializeOwned, Deserialize};
 use std::{
@@ -252,17 +253,26 @@ pub enum OjError {
 pub type OjResult<T> = Result<T, OjError>;
 
 #[derive(Clone, Debug)]
-pub struct VerifyConfig {
+pub struct VerifyConfig<'t> {
     url: &'static str,
     cur_file: &'static str,
     fn_name: &'static str,
+    target: &'t str,
+    start: DateTime<Utc>,
 }
-impl VerifyConfig {
-    pub fn new(url: &'static str, cur_file: &'static str, fn_name: &'static str) -> Self {
+impl<'t> VerifyConfig<'t> {
+    pub fn new(
+        url: &'static str,
+        cur_file: &'static str,
+        fn_name: &'static str,
+        target: &'t str,
+    ) -> Self {
         Self {
             url,
             cur_file,
             fn_name,
+            target: strip_package(target),
+            start: Utc::now(),
         }
     }
     pub fn gen_env(&self) -> OjResult<VerifyEnv> {
@@ -355,6 +365,21 @@ impl VerifyConfig {
                 buf
             })
             .unwrap_or_default();
+        let tz = FixedOffset::east(9 * 3600);
+        let end = Utc::now();
+        let meta = format!(
+            r#"
+VERIFY_TARGET: {}
+VERIFY_START: {}
+VERIFY_END: {}
+"#,
+            self.target,
+            self.start
+                .with_timezone(&tz)
+                .to_rfc3339_opts(SecondsFormat::Millis, true),
+            end.with_timezone(&tz)
+                .to_rfc3339_opts(SecondsFormat::Millis, true)
+        );
         format!(
             r###"{head}
 
@@ -362,10 +387,12 @@ problem [here]({url})
 
 {detail}
 
+<!-- {meta} -->
 "###,
             head = head,
             url = self.url,
-            detail = detail
+            detail = detail,
+            meta = meta
         )
     }
 }
@@ -402,9 +429,9 @@ impl Display for VerifyStatus {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
             Self::Accepted => write!(f, "AC"),
-            Self::WrongAnswer => write!(f, "Wrong Answer"),
-            Self::RuntimeError => write!(f, "Runtime Error"),
-            Self::InternalError => write!(f, "Internal Error"),
+            Self::WrongAnswer => write!(f, "WA"),
+            Self::RuntimeError => write!(f, "RE"),
+            Self::InternalError => write!(f, "IE"),
         }
     }
 }
@@ -461,12 +488,20 @@ impl VerifyResults {
     }
 }
 
+pub fn strip_package(target: &str) -> &str {
+    if let Some(k) = target.find("::").map(|i| i + 2) {
+        &target[k..]
+    } else {
+        target
+    }
+}
+
 pub fn log_formatter(
     buf: &mut env_logger::fmt::Formatter,
     record: &log::Record,
     target: &str,
 ) -> io::Result<()> {
-    let target = &target[target.find("::").map(|i| i + 2).unwrap_or_default()..];
+    let target = strip_package(target);
     writeln!(buf, "test {} ... {}", target, record.args())
 }
 
