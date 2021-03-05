@@ -11,6 +11,11 @@ pub fn read_stdin_all_unchecked() -> String {
     std::io::stdin().read_to_string(&mut s).expect("io error");
     s
 }
+pub fn read_stdin_line_unchecked() -> String {
+    let mut s = String::new();
+    std::io::stdin().read_line(&mut s).expect("io error");
+    s
+}
 #[codesnip::skip]
 pub fn read_all(mut reader: impl std::io::Read) -> String {
     let mut s = String::new();
