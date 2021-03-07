@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["aizu_online_judge","competitive","library_checker"];
