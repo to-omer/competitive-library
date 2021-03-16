@@ -9,7 +9,9 @@ SIZE = 16
 verify_packages = ['aizu_online_judge', 'library_checker']
 
 def cargo_verify(package: str, name: str):
-    run(['cargo', 'test', '--package', package, '--release', name, '--', '--ignored', '--exact', '--nocapture'])
+    res = run(['cargo', 'test', '--package', package, '--release', name, '--', '--ignored', '--exact', '--nocapture'])
+    if res.returncode:
+        print(f'::warning::verify failed `{name}`')
 
 def verify_list():
     for package in verify_packages:
