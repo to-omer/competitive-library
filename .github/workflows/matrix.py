@@ -8,10 +8,11 @@ SIZE = 16
 
 verify_packages = ['aizu_online_judge', 'library_checker']
 
-def cargo_verify(package: str, name: str):
+def cargo_verify(package: str, name: str) -> bool:
     res = run(['cargo', 'test', '--package', package, '--release', name, '--', '--ignored', '--exact', '--nocapture'])
     if res.returncode:
-        print(f'::warning::verify failed `{name}`')
+        print(f'::error::verify failed `{name}`')
+    return res.returncode == 0
 
 def verify_list():
     for package in verify_packages:
@@ -34,10 +35,14 @@ def main():
     parser = ArgumentParser()
     parser.add_argument('nth', type=int, nargs='?')
     args = parser.parse_args()
+    ok = True
     for package, name in islice(verify_list(), args.nth, None, SIZE):
-        cargo_verify(package, name)
+        ok &= cargo_verify(package, name)
 
     arrange_artifacts()
+
+    if not ok:
+        raise 'verify failed'
 
 if __name__ == '__main__':
     main()
