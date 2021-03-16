@@ -26,6 +26,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+      shell: bash
+
     - name: Cache
       uses: actions/cache@v2
       with:
@@ -33,7 +39,7 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: build-${{ runner.os }}-${{ matrix.toolchain }}-${{ hashFiles('Cargo.lock') }}
+        key: build-${{ runner.os }}-${{ matrix.toolchain }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
         restore-keys: build-${{ runner.os }}-${{ matrix.toolchain }}-
 
     - name: Setup `${{ matrix.toolchain }}`
@@ -79,6 +85,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+      shell: bash
+
     - name: Cache
       uses: actions/cache@v2
       with:
@@ -86,7 +98,7 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: snippet-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        key: snippet-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
         restore-keys: snippet-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-
 
     - name: Setup `stable-x86_64-unknown-linux-gnu`
@@ -125,6 +137,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+      shell: bash
+
     - name: Cache
       uses: actions/cache@v2
       with:
@@ -132,7 +150,7 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: verify-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        key: verify-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
         restore-keys: verify-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-
 
     - name: Setup Python
@@ -178,6 +196,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+      shell: bash
+
     - name: Cache
       uses: actions/cache@v2
       with:
@@ -185,7 +209,7 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           target
-        key: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-${{ hashFiles('Cargo.lock') }}
+        key: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
         restore-keys: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-
 
     - name: Download artifacts
