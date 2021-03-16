@@ -9,7 +9,7 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
     sync::Mutex,
-    time::Duration,
+    time::{Duration, Instant},
 };
 use tempfile::NamedTempFile;
 pub use verify_attr::verify;
@@ -281,7 +281,13 @@ impl<'t> VerifyConfig<'t> {
         let env = match service {
             Service::LibraryChecker => {
                 log::info!("download checker binary");
-                VerifyEnv::LibraryChecker(CheckerBinary::from_url(self.url)?)
+                let start = Instant::now();
+                let env = VerifyEnv::LibraryChecker(CheckerBinary::from_url(self.url)?);
+                log::info!(
+                    "success to download checker binary in {:.2}s",
+                    start.elapsed().as_secs_f64()
+                );
+                env
             }
             Service::AizuOnlineJudge => VerifyEnv::AizuOnlineJudge,
         };
@@ -289,9 +295,14 @@ impl<'t> VerifyConfig<'t> {
     }
     pub fn get_testcases(&self) -> OjResult<Problem> {
         log::info!("download testcases: {}", self.url);
+        let start = Instant::now();
         let res = OjApi::get_testcases(self.url);
         match &res {
-            Ok(problem) => log::info!("success to download {} testcases", problem.tests.len()),
+            Ok(problem) => log::info!(
+                "success to download {} testcases in {:.2}s",
+                problem.tests.len(),
+                start.elapsed().as_secs_f64()
+            ),
             Err(_) => log::info!("failed to download testcases"),
         }
         res
