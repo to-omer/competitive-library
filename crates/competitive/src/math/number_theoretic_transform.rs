@@ -287,10 +287,10 @@ mod tests {
                     unsafe { MOD = p as u32 };
                     for g in (3..).step_by(2) {
                         let g = MInt::<D>::new(g);
-                        if divisors(p as usize - 1)
+                        if divisors(p as u64 - 1)
                             .into_iter()
-                            .filter(|&d| d != p as usize - 1)
-                            .all(|d| g.pow(d) != MInt::<D>::one())
+                            .filter(|&d| d != p as u64 - 1)
+                            .all(|d| g.pow(d as usize) != MInt::<D>::one())
                         {
                             println!("(p,a,b,g) = {:?}", (p, a, b, g));
                             break;

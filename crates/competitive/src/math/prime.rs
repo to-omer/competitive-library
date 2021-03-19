@@ -1,37 +1,47 @@
 use super::gcd_binary;
 
-#[codesnip::entry("prime")]
+#[codesnip::entry("PrimeTable")]
 #[derive(Clone, Debug)]
 pub struct PrimeTable {
-    table: Vec<usize>,
+    table: Vec<u32>,
 }
-#[codesnip::entry("prime")]
+#[codesnip::entry("PrimeTable")]
 impl PrimeTable {
-    pub fn new(max_n: usize) -> Self {
-        let mut table = vec![1; max_n + 1];
+    pub fn new(max_n: u32) -> Self {
+        let mut table = vec![1; (max_n as usize + 1) / 2];
         table[0] = 0;
-        table[1] = 0;
-        for i in 2..=(max_n as f32).sqrt() as usize {
-            if table[i] == 1 {
-                for j in (i * i..=max_n).step_by(i) {
-                    if table[j] == 1 {
-                        table[j] = i;
+        for i in (3..).step_by(2) {
+            let i2 = i * i;
+            if i2 > max_n {
+                break;
+            }
+            if table[i as usize >> 1] == 1 {
+                for j in (i2..=max_n).step_by(i as usize * 2) {
+                    if table[j as usize >> 1] == 1 {
+                        table[j as usize >> 1] = i;
                     }
                 }
             }
         }
         PrimeTable { table }
     }
-    pub fn is_prime(&self, n: usize) -> bool {
-        self.table[n] == 1
+    pub fn is_prime(&self, n: u32) -> bool {
+        n == 2 || n % 2 == 1 && self.table[n as usize >> 1] == 1
     }
-    pub fn prime_factors(&self, mut n: usize) -> Vec<(usize, usize)> {
-        let mut factors = vec![];
-        while self.table[n] > 1 {
-            let p = self.table[n];
+    pub fn for_each<F>(&self, mut n: u32, mut f: F)
+    where
+        F: FnMut(u32, u32),
+    {
+        let k = n.trailing_zeros();
+        if k > 0 {
+            f(2, k);
+        }
+        n >>= k;
+        while self.table[n as usize >> 1] > 1 {
+            let p = self.table[n as usize >> 1];
             let mut cnt = 1;
             n /= p;
-            while self.table[n] == p {
+            while self.table[n as usize >> 1] == p {
                 n /= p;
                 cnt += 1;
             }
@@ -39,39 +49,27 @@ impl PrimeTable {
                 cnt += 1;
                 n /= p;
             }
-            factors.push((p, cnt));
+            f(p, cnt);
         }
         if n > 1 {
-            factors.push((n, 1));
+            f(n, 1);
         }
+    }
+    pub fn prime_factors(&self, n: u32) -> Vec<(u32, u32)> {
+        let mut factors = vec![];
+        self.for_each(n, |p, c| factors.push((p, c)));
         factors
     }
-    pub fn count_divisors(&self, mut n: usize) -> usize {
+    pub fn count_divisors(&self, n: u32) -> u32 {
         let mut divisor_cnt = 1;
-        while self.table[n] > 1 {
-            let p = self.table[n];
-            let mut cnt = 1;
-            n /= p;
-            while self.table[n] == p {
-                n /= p;
-                cnt += 1;
-            }
-            if n == p {
-                cnt += 1;
-                n /= p;
-            }
-            divisor_cnt *= cnt + 1;
-        }
-        if n > 1 {
-            divisor_cnt *= 2;
-        }
+        self.for_each(n, |_, cnt| divisor_cnt *= cnt + 1);
         divisor_cnt
     }
 }
 
 #[test]
 fn test_prime_table() {
-    const N: usize = 100_000;
+    const N: u32 = 100_000;
     let primes = PrimeTable::new(N);
     assert!(!primes.is_prime(N));
     assert!(primes.is_prime(99991));
@@ -87,23 +85,23 @@ fn test_prime_table() {
                 .prime_factors(i)
                 .into_iter()
                 .map(|(p, c)| p.pow(c as u32))
-                .product::<usize>()
+                .product::<u32>()
         );
         assert_eq!(
             primes
                 .prime_factors(i)
                 .into_iter()
                 .map(|(_, c)| c + 1)
-                .product::<usize>(),
+                .product::<u32>(),
             primes.count_divisors(i)
         );
     }
 }
 
 #[codesnip::entry]
-pub fn prime_factors(mut n: usize) -> Vec<(usize, usize)> {
+pub fn prime_factors(mut n: u32) -> Vec<(u32, u32)> {
     let mut factors = vec![];
-    for i in 2..=(n as f32).sqrt() as usize {
+    for i in 2..=(n as f32).sqrt() as u32 {
         if n % i == 0 {
             let mut cnt = 1;
             n /= i;
@@ -127,7 +125,7 @@ fn test_prime_factors() {
     let factors = prime_factors(2016);
     assert_eq!(factors, vec![(2, 5), (3, 2), (7, 1)]);
 
-    const N: usize = 100_000;
+    const N: u32 = 100_000;
     let primes = PrimeTable::new(N);
     for i in 1..=N {
         assert_eq!(primes.prime_factors(i), prime_factors(i));
@@ -135,9 +133,9 @@ fn test_prime_factors() {
 }
 
 #[codesnip::entry]
-pub fn divisors(n: usize) -> Vec<usize> {
+pub fn divisors(n: u64) -> Vec<u64> {
     let mut res = vec![];
-    for i in 1..(n as f32).sqrt() as usize + 1 {
+    for i in 1..(n as f32).sqrt() as u64 + 1 {
         if n % i == 0 {
             res.push(i);
             if i * i != n {
@@ -179,7 +177,9 @@ fn test_primes() {
     for i in 0..2000 {
         assert_eq!(
             primes(i),
-            (2..=i).filter(|&i| t.is_prime(i)).collect::<Vec<_>>(),
+            (2..=i)
+                .filter(|&i| t.is_prime(i as u32))
+                .collect::<Vec<_>>(),
         );
     }
 }
@@ -237,7 +237,7 @@ pub fn miller_rabin(p: u64) -> bool {
 
 #[test]
 fn test_miller_rabin() {
-    const N: usize = 1_000_000;
+    const N: u32 = 1_000_000;
     let primes = PrimeTable::new(N);
     for i in 2..=N {
         assert_eq!(primes.is_prime(i), miller_rabin(i as u64), "{}", i);
