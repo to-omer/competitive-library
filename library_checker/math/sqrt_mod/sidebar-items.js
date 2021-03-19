@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["sqrt_mod","✅  AC  144ms"]]});
+initSidebarItems({"fn":[["sqrt_mod","✅  AC  127ms"]]});
