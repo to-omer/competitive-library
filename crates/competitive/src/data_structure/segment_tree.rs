@@ -4,13 +4,19 @@ use crate::algebra::{AbelianMonoid, Monoid};
 
 #[codesnip::entry("SegmentTree", include("algebra"))]
 #[derive(Clone, Debug)]
-pub struct SegmentTree<M: Monoid> {
+pub struct SegmentTree<M>
+where
+    M: Monoid,
+{
     n: usize,
     seg: Vec<M::T>,
     m: M,
 }
 #[codesnip::entry("SegmentTree")]
-impl<M: Monoid> SegmentTree<M> {
+impl<M> SegmentTree<M>
+where
+    M: Monoid,
+{
     pub fn new(n: usize, m: M) -> Self {
         let seg = vec![m.unit(); 2 * n];
         Self { n, seg, m }
@@ -99,13 +105,11 @@ impl<M: Monoid> SegmentTree<M> {
         }
         (pos - self.n, acc)
     }
-    /// Returns the first index that satisfies a predicate.
-    pub fn position_accumlate<F: Fn(&M::T) -> bool>(
-        &self,
-        l: usize,
-        r: usize,
-        f: F,
-    ) -> Option<usize> {
+    /// Returns the first index that satisfies a accumlative predicate.
+    pub fn position_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
         let mut l = l + self.n;
         let r = r + self.n;
         let mut k = 0usize;
@@ -134,13 +138,11 @@ impl<M: Monoid> SegmentTree<M> {
         }
         None
     }
-    /// Returns the last index that satisfies a predicate.
-    pub fn rposition_accumlate<F: Fn(&M::T) -> bool>(
-        &self,
-        l: usize,
-        r: usize,
-        f: F,
-    ) -> Option<usize> {
+    /// Returns the last index that satisfies a accumlative predicate.
+    pub fn rposition_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
         let mut l = l + self.n;
         let mut r = r + self.n;
         let mut c = 0usize;
@@ -182,7 +184,10 @@ impl<M: Monoid> SegmentTree<M> {
     }
 }
 #[codesnip::entry("SegmentTree")]
-impl<M: AbelianMonoid> SegmentTree<M> {
+impl<M> SegmentTree<M>
+where
+    M: AbelianMonoid,
+{
     pub fn fold_all(&self) -> M::T {
         self.seg[1].clone()
     }
@@ -190,14 +195,20 @@ impl<M: AbelianMonoid> SegmentTree<M> {
 
 #[codesnip::entry("SegmentTreeMap", include("algebra"))]
 #[derive(Clone, Debug)]
-pub struct SegmentTreeMap<M: Monoid> {
+pub struct SegmentTreeMap<M>
+where
+    M: Monoid,
+{
     n: usize,
     seg: std::collections::HashMap<usize, M::T>,
     m: M,
     u: M::T,
 }
 #[codesnip::entry("SegmentTreeMap")]
-impl<M: Monoid> SegmentTreeMap<M> {
+impl<M> SegmentTreeMap<M>
+where
+    M: Monoid,
+{
     pub fn new(n: usize, m: M) -> Self {
         let u = m.unit();
         Self {
@@ -290,13 +301,11 @@ impl<M: Monoid> SegmentTreeMap<M> {
         }
         (pos - self.n, acc)
     }
-    /// Returns the first index that satisfies a predicate.
-    pub fn position_accumlate<F: Fn(&M::T) -> bool>(
-        &self,
-        l: usize,
-        r: usize,
-        f: F,
-    ) -> Option<usize> {
+    /// Returns the first index that satisfies a accumlative predicate.
+    pub fn position_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
         let mut l = l + self.n;
         let r = r + self.n;
         let mut k = 0usize;
@@ -325,13 +334,11 @@ impl<M: Monoid> SegmentTreeMap<M> {
         }
         None
     }
-    /// Returns the last index that satisfies a predicate.
-    pub fn rposition_accumlate<F: Fn(&M::T) -> bool>(
-        &self,
-        l: usize,
-        r: usize,
-        f: F,
-    ) -> Option<usize> {
+    /// Returns the last index that satisfies a accumlative predicate.
+    pub fn rposition_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
         let mut l = l + self.n;
         let mut r = r + self.n;
         let mut c = 0usize;
@@ -370,7 +377,10 @@ impl<M: Monoid> SegmentTreeMap<M> {
     }
 }
 #[codesnip::entry("SegmentTreeMap")]
-impl<M: AbelianMonoid> SegmentTreeMap<M> {
+impl<M> SegmentTreeMap<M>
+where
+    M: AbelianMonoid,
+{
     pub fn fold_all(&self) -> M::T {
         self.seg.get(&1).cloned().unwrap_or_else(|| self.m.unit())
     }
@@ -409,18 +419,17 @@ mod tests {
         }
         for v in rng.gen_iter(1..=A * N as i64).take(Q) {
             assert_eq!(
-                seg.position_accumlate(0, N, |&x| v <= x).unwrap_or(N),
+                seg.position_acc(0, N, |&x| v <= x).unwrap_or(N),
                 arr[1..].position_bisect(|&x| x >= v)
             );
         }
         for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
             assert_eq!(
-                seg.position_accumlate(l, r, |&x| v <= x).unwrap_or(r),
+                seg.position_acc(l, r, |&x| v <= x).unwrap_or(r),
                 arr[l + 1..r + 1].position_bisect(|&x| x - arr[l] >= v) + l
             );
             assert_eq!(
-                seg.rposition_accumlate(l, r, |&x| v <= x)
-                    .map_or(l, |i| i + 1),
+                seg.rposition_acc(l, r, |&x| v <= x).map_or(l, |i| i + 1),
                 arr[l..r].rposition_bisect(|&x| arr[r] - x >= v) + l
             );
         }
@@ -456,18 +465,17 @@ mod tests {
         }
         for v in rng.gen_iter(1..=A * N as i64).take(Q) {
             assert_eq!(
-                seg.position_accumlate(0, N, |&x| v <= x).unwrap_or(N),
+                seg.position_acc(0, N, |&x| v <= x).unwrap_or(N),
                 arr[1..].position_bisect(|&x| x >= v)
             );
         }
         for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
             assert_eq!(
-                seg.position_accumlate(l, r, |&x| v <= x).unwrap_or(r),
+                seg.position_acc(l, r, |&x| v <= x).unwrap_or(r),
                 arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
             );
             assert_eq!(
-                seg.rposition_accumlate(l, r, |&x| v <= x)
-                    .map_or(l, |i| i + 1),
+                seg.rposition_acc(l, r, |&x| v <= x).map_or(l, |i| i + 1),
                 arr[l..r].rposition_bisect(|&x| arr[r] - x >= v) + l
             );
         }
