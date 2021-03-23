@@ -1,23 +1,28 @@
 #![allow(clippy::or_fun_call)]
 
-use crate::algebra::Monoid;
+use crate::algebra::{AbelianMonoid, Monoid};
 
 #[codesnip::entry("SegmentTree", include("algebra"))]
 #[derive(Clone, Debug)]
-pub struct SegmentTree<M: Monoid> {
+pub struct SegmentTree<M>
+where
+    M: Monoid,
+{
     n: usize,
     seg: Vec<M::T>,
     m: M,
 }
 #[codesnip::entry("SegmentTree")]
-impl<M: Monoid> SegmentTree<M> {
+impl<M> SegmentTree<M>
+where
+    M: Monoid,
+{
     pub fn new(n: usize, m: M) -> Self {
-        let n = n.next_power_of_two();
         let seg = vec![m.unit(); 2 * n];
         Self { n, seg, m }
     }
     pub fn from_vec(v: Vec<M::T>, m: M) -> Self {
-        let n = v.len().next_power_of_two();
+        let n = v.len();
         let mut seg = vec![m.unit(); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
             seg[n + i] = x;
@@ -52,8 +57,8 @@ impl<M: Monoid> SegmentTree<M> {
         self.seg[k + self.n].clone()
     }
     pub fn fold(&self, l: usize, r: usize) -> M::T {
-        debug_assert!(l < self.n);
         debug_assert!(r <= self.n);
+        debug_assert!(l <= r);
         let mut l = l + self.n;
         let mut r = r + self.n;
         let mut vl = self.m.unit();
@@ -72,73 +77,139 @@ impl<M: Monoid> SegmentTree<M> {
         }
         self.m.operate(&vl, &vr)
     }
-    pub fn fold_all(&self) -> M::T {
-        self.seg[1].clone()
-    }
-    /// left most index [0, r) that satisfies monotonic condition
-    pub fn lower_bound_all<F: Fn(&M::T) -> bool>(&self, f: F, r: usize) -> usize {
-        if !f(&self.seg[1]) {
-            return r;
-        }
-        let mut acc = self.m.unit();
-        let mut pos = 1;
+    fn bisect_perfect<F>(&self, mut pos: usize, mut acc: M::T, f: F) -> (usize, M::T)
+    where
+        F: Fn(&M::T) -> bool,
+    {
         while pos < self.n {
-            pos *= 2;
-            let y = self.m.operate(&acc, &self.seg[pos]);
-            if !f(&y) {
-                acc = y;
+            pos <<= 1;
+            let nacc = self.m.operate(&acc, &self.seg[pos]);
+            if !f(&nacc) {
+                acc = nacc;
                 pos += 1;
             }
         }
-        std::cmp::min(pos - self.n, r)
+        (pos - self.n, acc)
     }
-    /// left most index [l, r) that satisfies monotonic condition
-    pub fn lower_bound<F: Fn(&M::T) -> bool>(&self, f: F, l: usize, r: usize) -> usize {
-        let mut acc = self.m.unit();
-        let mut pos = l + self.n;
-        let mut lim = r + self.n;
-        loop {
-            let y = self.m.operate(&acc, &self.seg[pos]);
-            if f(&y) {
-                while pos < self.n {
-                    pos *= 2;
-                    let y = self.m.operate(&acc, &self.seg[pos]);
-                    if !f(&y) {
-                        acc = y;
-                        pos += 1;
-                    }
-                }
-                return std::cmp::min(pos - self.n, r);
-            }
-            let is_right = pos & 1 == 1;
-            if pos == lim {
-                return r;
-            }
-            pos /= 2;
-            lim /= 2;
-            if is_right {
-                acc = y;
-                pos += 1;
+    fn rbisect_perfect<F>(&self, mut pos: usize, mut acc: M::T, f: F) -> (usize, M::T)
+    where
+        F: Fn(&M::T) -> bool,
+    {
+        while pos < self.n {
+            pos = pos * 2 + 1;
+            let nacc = self.m.operate(&self.seg[pos], &acc);
+            if !f(&nacc) {
+                acc = nacc;
+                pos -= 1;
             }
         }
+        (pos - self.n, acc)
+    }
+    /// Returns the first index that satisfies a accumlative predicate.
+    pub fn position_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let r = r + self.n;
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l < r >> k {
+            if l & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.seg[l]);
+                if f(&nacc) {
+                    return Some(self.bisect_perfect(l, acc, f).0);
+                }
+                acc = nacc;
+                l += 1;
+            }
+            l >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            let r = r >> k;
+            if r & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.seg[r - 1]);
+                if f(&nacc) {
+                    return Some(self.bisect_perfect(r - 1, acc, f).0);
+                }
+                acc = nacc;
+            }
+        }
+        None
+    }
+    /// Returns the last index that satisfies a accumlative predicate.
+    pub fn rposition_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let mut r = r + self.n;
+        let mut c = 0usize;
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l >> k < r {
+            c <<= 1;
+            if l & 1 << k != 0 {
+                l += 1 << k;
+                c += 1;
+            }
+            if r & 1 != 0 {
+                r -= 1;
+                let nacc = self.m.operate(&self.seg[r], &acc);
+                if f(&nacc) {
+                    return Some(self.rbisect_perfect(r, acc, f).0);
+                }
+                acc = nacc;
+            }
+            r >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            if c & 1 != 0 {
+                l -= 1 << k;
+                let l = l >> k;
+                let nacc = self.m.operate(&self.seg[l], &acc);
+                if f(&nacc) {
+                    return Some(self.rbisect_perfect(l, acc, f).0);
+                }
+                acc = nacc;
+            }
+            c >>= 1;
+        }
+        None
     }
     pub fn as_slice(&self) -> &[M::T] {
         &self.seg[self.n..]
     }
 }
+#[codesnip::entry("SegmentTree")]
+impl<M> SegmentTree<M>
+where
+    M: AbelianMonoid,
+{
+    pub fn fold_all(&self) -> M::T {
+        self.seg[1].clone()
+    }
+}
 
 #[codesnip::entry("SegmentTreeMap", include("algebra"))]
 #[derive(Clone, Debug)]
-pub struct SegmentTreeMap<M: Monoid> {
+pub struct SegmentTreeMap<M>
+where
+    M: Monoid,
+{
     n: usize,
     seg: std::collections::HashMap<usize, M::T>,
     m: M,
     u: M::T,
 }
 #[codesnip::entry("SegmentTreeMap")]
-impl<M: Monoid> SegmentTreeMap<M> {
+impl<M> SegmentTreeMap<M>
+where
+    M: Monoid,
+{
     pub fn new(n: usize, m: M) -> Self {
-        let n = n.next_power_of_two();
         let u = m.unit();
         Self {
             n,
@@ -182,7 +253,7 @@ impl<M: Monoid> SegmentTreeMap<M> {
             .unwrap_or_else(|| self.m.unit())
     }
     pub fn fold(&self, l: usize, r: usize) -> M::T {
-        debug_assert!(l < self.n);
+        debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut l = l + self.n;
         let mut r = r + self.n;
@@ -202,55 +273,116 @@ impl<M: Monoid> SegmentTreeMap<M> {
         }
         self.m.operate(&vl, &vr)
     }
+    fn bisect_perfect<F>(&self, mut pos: usize, mut acc: M::T, f: F) -> (usize, M::T)
+    where
+        F: Fn(&M::T) -> bool,
+    {
+        while pos < self.n {
+            pos <<= 1;
+            let nacc = self.m.operate(&acc, &self.get_ref(pos));
+            if !f(&nacc) {
+                acc = nacc;
+                pos += 1;
+            }
+        }
+        (pos - self.n, acc)
+    }
+    fn rbisect_perfect<F>(&self, mut pos: usize, mut acc: M::T, f: F) -> (usize, M::T)
+    where
+        F: Fn(&M::T) -> bool,
+    {
+        while pos < self.n {
+            pos = pos * 2 + 1;
+            let nacc = self.m.operate(&self.get_ref(pos), &acc);
+            if !f(&nacc) {
+                acc = nacc;
+                pos -= 1;
+            }
+        }
+        (pos - self.n, acc)
+    }
+    /// Returns the first index that satisfies a accumlative predicate.
+    pub fn position_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let r = r + self.n;
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l < r >> k {
+            if l & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.get_ref(l));
+                if f(&nacc) {
+                    return Some(self.bisect_perfect(l, acc, f).0);
+                }
+                acc = nacc;
+                l += 1;
+            }
+            l >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            let r = r >> k;
+            if r & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.get_ref(r - 1));
+                if f(&nacc) {
+                    return Some(self.bisect_perfect(r - 1, acc, f).0);
+                }
+                acc = nacc;
+            }
+        }
+        None
+    }
+    /// Returns the last index that satisfies a accumlative predicate.
+    pub fn rposition_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    where
+        F: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let mut r = r + self.n;
+        let mut c = 0usize;
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l >> k < r {
+            c <<= 1;
+            if l & 1 << k != 0 {
+                l += 1 << k;
+                c += 1;
+            }
+            if r & 1 != 0 {
+                r -= 1;
+                let nacc = self.m.operate(&self.get_ref(r), &acc);
+                if f(&nacc) {
+                    return Some(self.rbisect_perfect(r, acc, f).0);
+                }
+                acc = nacc;
+            }
+            r >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            if c & 1 != 0 {
+                l -= 1 << k;
+                let l = l >> k;
+                let nacc = self.m.operate(&self.get_ref(l), &acc);
+                if f(&nacc) {
+                    return Some(self.rbisect_perfect(l, acc, f).0);
+                }
+                acc = nacc;
+            }
+            c >>= 1;
+        }
+        None
+    }
+}
+#[codesnip::entry("SegmentTreeMap")]
+impl<M> SegmentTreeMap<M>
+where
+    M: AbelianMonoid,
+{
     pub fn fold_all(&self) -> M::T {
         self.seg.get(&1).cloned().unwrap_or_else(|| self.m.unit())
-    }
-    /// left most index [0, r) that satisfies monotonic condition
-    pub fn lower_bound_all<F: Fn(&M::T) -> bool>(&self, f: F, r: usize) -> usize {
-        if !f(&self.get_ref(1)) {
-            return r;
-        }
-        let mut acc = self.m.unit();
-        let mut pos = 1;
-        while pos < self.n {
-            pos *= 2;
-            let y = self.m.operate(&acc, self.get_ref(pos));
-            if !f(&y) {
-                acc = y;
-                pos += 1;
-            }
-        }
-        std::cmp::min(pos - self.n, r)
-    }
-    /// left most index [l, r) that satisfies monotonic condition
-    pub fn lower_bound<F: Fn(&M::T) -> bool>(&self, f: F, l: usize, r: usize) -> usize {
-        let mut acc = self.m.unit();
-        let mut pos = l + self.n;
-        let mut lim = r + self.n;
-        loop {
-            let y = self.m.operate(&acc, self.get_ref(pos));
-            if f(&y) {
-                while pos < self.n {
-                    pos *= 2;
-                    let y = self.m.operate(&acc, self.get_ref(pos));
-                    if !f(&y) {
-                        acc = y;
-                        pos += 1;
-                    }
-                }
-                return std::cmp::min(pos - self.n, r);
-            }
-            let is_right = pos & 1 == 1;
-            if pos == lim {
-                return r;
-            }
-            pos /= 2;
-            lim /= 2;
-            if is_right {
-                acc = y;
-                pos += 1;
-            }
-        }
     }
 }
 
@@ -287,14 +419,18 @@ mod tests {
         }
         for v in rng.gen_iter(1..=A * N as i64).take(Q) {
             assert_eq!(
-                seg.lower_bound_all(|&x| v <= x, N),
+                seg.position_acc(0, N, |&x| v <= x).unwrap_or(N),
                 arr[1..].position_bisect(|&x| x >= v)
             );
         }
         for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
             assert_eq!(
-                seg.lower_bound(|&x| v <= x, l, r),
-                arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
+                seg.position_acc(l, r, |&x| v <= x).unwrap_or(r),
+                arr[l + 1..r + 1].position_bisect(|&x| x - arr[l] >= v) + l
+            );
+            assert_eq!(
+                seg.rposition_acc(l, r, |&x| v <= x).map_or(l, |i| i + 1),
+                arr[l..r].rposition_bisect(|&x| arr[r] - x >= v) + l
             );
         }
 
@@ -329,14 +465,18 @@ mod tests {
         }
         for v in rng.gen_iter(1..=A * N as i64).take(Q) {
             assert_eq!(
-                seg.lower_bound_all(|&x| v <= x, N),
+                seg.position_acc(0, N, |&x| v <= x).unwrap_or(N),
                 arr[1..].position_bisect(|&x| x >= v)
             );
         }
         for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
             assert_eq!(
-                seg.lower_bound(|&x| v <= x, l, r),
+                seg.position_acc(l, r, |&x| v <= x).unwrap_or(r),
                 arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
+            );
+            assert_eq!(
+                seg.rposition_acc(l, r, |&x| v <= x).map_or(l, |i| i + 1),
+                arr[l..r].rposition_bisect(|&x| arr[r] - x >= v) + l
             );
         }
 
