@@ -76,6 +76,7 @@ pub struct DequeAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
 }
+#[codesnip::entry("DequeAggregation")]
 impl<M: Monoid> Default for DequeAggregation<M> {
     fn default() -> Self {
         Self {
