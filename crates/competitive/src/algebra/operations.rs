@@ -511,6 +511,33 @@ mod top2_operation_impl {
     impl<T: Clone + Ord + Bounded> Commutative for Top2Operation<T> {}
 }
 
+#[codesnip::entry("Bottom2Operation", include("algebra", "bounded"))]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct Bottom2Operation<T: Clone + Ord + Bounded> {
+    _marker: std::marker::PhantomData<fn() -> T>,
+}
+#[codesnip::entry("Bottom2Operation")]
+mod bottom2_operation_impl {
+    use super::*;
+    impl<T: Clone + Ord + Bounded> Magma for Bottom2Operation<T> {
+        type T = (T, T);
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            if x.0 > y.0 {
+                (y.0.clone(), if x.0 > y.1 { &y.1 } else { &x.0 }.clone())
+            } else {
+                (x.0.clone(), if x.1 > y.0 { &y.0 } else { &x.1 }.clone())
+            }
+        }
+    }
+    impl<T: Clone + Ord + Bounded> Unital for Bottom2Operation<T> {
+        fn unit() -> Self::T {
+            (<T as Bounded>::maximum(), <T as Bounded>::maximum())
+        }
+    }
+    impl<T: Clone + Ord + Bounded> Associative for Bottom2Operation<T> {}
+    impl<T: Clone + Ord + Bounded> Commutative for Bottom2Operation<T> {}
+}
+
 #[codesnip::entry("PermutationOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct PermutationOperation;
