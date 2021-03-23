@@ -7,9 +7,7 @@ use crate::algebra::Monoid;
 #[derive(Clone, Debug)]
 pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     n: usize,
-    height: u32,
-    seg: Vec<M::T>,
-    lazy: Vec<E::T>,
+    seg: Vec<(M::T, E::T)>,
     m: M,
     e: E,
     f: F,
@@ -17,77 +15,56 @@ pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
 #[codesnip::entry("LazySegmentTree")]
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F> {
     pub fn new(n: usize, m: M, e: E, f: F) -> Self {
-        let n = n.next_power_of_two();
-        let height = n.trailing_zeros();
-        let seg = vec![m.unit(); 2 * n];
-        let lazy = vec![e.unit(); 2 * n];
-        Self {
-            n,
-            height,
-            seg,
-            lazy,
-            m,
-            e,
-            f,
-        }
+        let seg = vec![(m.unit(), e.unit()); 2 * n];
+        Self { n, seg, m, e, f }
     }
     pub fn from_vec(v: Vec<M::T>, m: M, e: E, f: F) -> Self {
-        let n = v.len().next_power_of_two();
-        let height = n.trailing_zeros();
-        let mut seg = vec![m.unit(); 2 * n];
+        let n = v.len();
+        let mut seg = vec![(m.unit(), e.unit()); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
-            seg[i + n] = x;
+            seg[i + n].0 = x;
         }
         for i in (1..n).rev() {
-            seg[i] = m.operate(&seg[2 * i], &seg[2 * i + 1]);
+            seg[i].0 = m.operate(&seg[2 * i].0, &seg[2 * i + 1].0);
         }
-        let lazy = vec![e.unit(); 2 * n];
-        Self {
-            n,
-            height,
-            seg,
-            lazy,
-            m,
-            e,
-            f,
-        }
+        Self { n, seg, m, e, f }
     }
     #[inline]
     fn propagate(&mut self, k: usize) {
         debug_assert!(k < self.n);
-        if self.lazy[k] != self.e.unit() {
-            self.lazy[2 * k] = self.e.operate(&self.lazy[2 * k], &self.lazy[k]);
-            self.lazy[2 * k + 1] = self.e.operate(&self.lazy[2 * k + 1], &self.lazy[k]);
-            self.seg[k] = self.reflect(k);
-            self.lazy[k] = self.e.unit();
+        let x = std::mem::replace(&mut self.seg[k].1, self.e.unit());
+        if x != self.e.unit() {
+            self.seg[2 * k].1 = self.e.operate(&self.seg[2 * k].1, &x);
+            self.seg[2 * k + 1].1 = self.e.operate(&self.seg[2 * k + 1].1, &x);
+            self.seg[k].0 = (self.f)(&self.seg[k].0, &x);
         }
     }
     #[inline]
     fn thrust(&mut self, k: usize) {
-        for i in (1..=self.height).rev() {
+        for i in (1..(k + 1).next_power_of_two().trailing_zeros()).rev() {
             self.propagate(k >> i);
         }
     }
     #[inline]
     fn reflect(&self, k: usize) -> M::T {
-        if self.lazy[k] != self.e.unit() {
-            (self.f)(&self.seg[k], &self.lazy[k])
+        if self.seg[k].1 != self.e.unit() {
+            (self.f)(&self.seg[k].0, &self.seg[k].1)
         } else {
-            self.seg[k].clone()
+            self.seg[k].0.clone()
         }
     }
     #[inline]
     fn recalc(&mut self, mut k: usize) {
         k /= 2;
         while k > 0 {
-            self.seg[k] = self
+            self.seg[k].0 = self
                 .m
                 .operate(&self.reflect(2 * k), &self.reflect(2 * k + 1));
             k /= 2;
         }
     }
     pub fn update(&mut self, l: usize, r: usize, x: E::T) {
-        debug_assert!(l < self.n);
+        debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut a = l + self.n;
         let mut b = r + self.n;
@@ -95,12 +72,12 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         self.thrust(b - 1);
         while a < b {
             if a & 1 != 0 {
-                self.lazy[a] = self.e.operate(&self.lazy[a], &x);
+                self.seg[a].1 = self.e.operate(&self.seg[a].1, &x);
                 a += 1;
             }
             if b & 1 != 0 {
                 b -= 1;
-                self.lazy[b] = self.e.operate(&self.lazy[b], &x);
+                self.seg[b].1 = self.e.operate(&self.seg[b].1, &x);
             }
             a /= 2;
             b /= 2;
@@ -109,7 +86,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         self.recalc(r + self.n - 1);
     }
     pub fn fold(&mut self, l: usize, r: usize) -> M::T {
-        debug_assert!(l < self.n);
+        debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut l = l + self.n;
         let mut r = r + self.n;
@@ -134,8 +111,8 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
     pub fn set(&mut self, k: usize, x: M::T) {
         let k = k + self.n;
         self.thrust(k);
-        self.seg[k] = x;
-        self.lazy[k] = self.e.unit();
+        self.seg[k].0 = x;
+        self.seg[k].1 = self.e.unit();
         self.recalc(k);
     }
     pub fn get(&mut self, k: usize) -> M::T {
@@ -144,11 +121,113 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
     pub fn fold_all(&mut self) -> M::T {
         self.fold(0, self.n)
     }
-    pub fn as_slice(&self) -> &[M::T] {
-        &self.seg[self.n..]
+    fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::T, p: P) -> (usize, M::T)
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        while pos < self.n {
+            self.propagate(pos);
+            pos <<= 1;
+            let nacc = self.m.operate(&acc, &self.reflect(pos));
+            if !p(&nacc) {
+                acc = nacc;
+                pos += 1;
+            }
+        }
+        (pos - self.n, acc)
     }
-    pub fn as_slice_lazy(&self) -> &[E::T] {
-        &self.lazy[self.n..]
+    fn rbisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::T, p: P) -> (usize, M::T)
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        while pos < self.n {
+            self.propagate(pos);
+            pos = pos * 2 + 1;
+            let nacc = self.m.operate(&self.reflect(pos), &acc);
+            if !p(&nacc) {
+                acc = nacc;
+                pos -= 1;
+            }
+        }
+        (pos - self.n, acc)
+    }
+    /// Returns the first index that satisfies a accumlative predicate.
+    pub fn position_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let r = r + self.n;
+        self.thrust(l);
+        self.thrust(r - 1);
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l < r >> k {
+            if l & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.reflect(l));
+                if p(&nacc) {
+                    return Some(self.bisect_perfect(l, acc, p).0);
+                }
+                acc = nacc;
+                l += 1;
+            }
+            l >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            let r = r >> k;
+            if r & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.reflect(r - 1));
+                if p(&nacc) {
+                    return Some(self.bisect_perfect(r - 1, acc, p).0);
+                }
+                acc = nacc;
+            }
+        }
+        None
+    }
+    /// Returns the last index that satisfies a accumlative predicate.
+    pub fn rposition_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let mut r = r + self.n;
+        self.thrust(l);
+        self.thrust(r - 1);
+        let mut c = 0usize;
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l >> k < r {
+            c <<= 1;
+            if l & 1 << k != 0 {
+                l += 1 << k;
+                c += 1;
+            }
+            if r & 1 != 0 {
+                r -= 1;
+                let nacc = self.m.operate(&self.reflect(r), &acc);
+                if p(&nacc) {
+                    return Some(self.rbisect_perfect(r, acc, p).0);
+                }
+                acc = nacc;
+            }
+            r >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            if c & 1 != 0 {
+                l -= 1 << k;
+                let l = l >> k;
+                let nacc = self.m.operate(&self.reflect(l), &acc);
+                if p(&nacc) {
+                    return Some(self.rbisect_perfect(l, acc, p).0);
+                }
+                acc = nacc;
+            }
+            c >>= 1;
+        }
+        None
     }
 }
 
@@ -156,7 +235,6 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
 #[derive(Clone, Debug)]
 pub struct LazySegmentTreeMap<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     n: usize,
-    height: u32,
     seg: std::collections::HashMap<usize, (M::T, E::T)>,
     m: M,
     e: E,
@@ -166,8 +244,7 @@ pub struct LazySegmentTreeMap<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T>
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E, F> {
     pub fn new(n: usize, m: M, e: E, f: F) -> Self {
         Self {
-            n: n.next_power_of_two(),
-            height: n.next_power_of_two().trailing_zeros(),
+            n,
             seg: Default::default(),
             m,
             e,
@@ -199,7 +276,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
     }
     #[inline]
     fn thrust(&mut self, k: usize) {
-        for i in (1..=self.height).rev() {
+        for i in (1..(k + 1).next_power_of_two().trailing_zeros()).rev() {
             self.propagate(k >> i);
         }
     }
@@ -227,7 +304,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         }
     }
     pub fn update(&mut self, l: usize, r: usize, x: E::T) {
-        debug_assert!(l < self.n);
+        debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut a = l + self.n;
         let mut b = r + self.n;
@@ -251,7 +328,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         self.recalc(r + self.n - 1);
     }
     pub fn fold(&mut self, l: usize, r: usize) -> M::T {
-        debug_assert!(l < self.n);
+        debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut l = l + self.n;
         let mut r = r + self.n;
@@ -285,6 +362,114 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
     pub fn fold_all(&mut self) -> M::T {
         self.fold(0, self.n)
     }
+    fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::T, p: P) -> (usize, M::T)
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        while pos < self.n {
+            self.propagate(pos);
+            pos <<= 1;
+            let nacc = self.m.operate(&acc, &self.reflect(pos));
+            if !p(&nacc) {
+                acc = nacc;
+                pos += 1;
+            }
+        }
+        (pos - self.n, acc)
+    }
+    fn rbisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::T, p: P) -> (usize, M::T)
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        while pos < self.n {
+            self.propagate(pos);
+            pos = pos * 2 + 1;
+            let nacc = self.m.operate(&self.reflect(pos), &acc);
+            if !p(&nacc) {
+                acc = nacc;
+                pos -= 1;
+            }
+        }
+        (pos - self.n, acc)
+    }
+    /// Returns the first index that satisfies a accumlative predicate.
+    pub fn position_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let r = r + self.n;
+        self.thrust(l);
+        self.thrust(r - 1);
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l < r >> k {
+            if l & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.reflect(l));
+                if p(&nacc) {
+                    return Some(self.bisect_perfect(l, acc, p).0);
+                }
+                acc = nacc;
+                l += 1;
+            }
+            l >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            let r = r >> k;
+            if r & 1 != 0 {
+                let nacc = self.m.operate(&acc, &self.reflect(r - 1));
+                if p(&nacc) {
+                    return Some(self.bisect_perfect(r - 1, acc, p).0);
+                }
+                acc = nacc;
+            }
+        }
+        None
+    }
+    /// Returns the last index that satisfies a accumlative predicate.
+    pub fn rposition_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
+    where
+        P: Fn(&M::T) -> bool,
+    {
+        let mut l = l + self.n;
+        let mut r = r + self.n;
+        self.thrust(l);
+        self.thrust(r - 1);
+        let mut c = 0usize;
+        let mut k = 0usize;
+        let mut acc = self.m.unit();
+        while l >> k < r {
+            c <<= 1;
+            if l & 1 << k != 0 {
+                l += 1 << k;
+                c += 1;
+            }
+            if r & 1 != 0 {
+                r -= 1;
+                let nacc = self.m.operate(&self.reflect(r), &acc);
+                if p(&nacc) {
+                    return Some(self.rbisect_perfect(r, acc, p).0);
+                }
+                acc = nacc;
+            }
+            r >>= 1;
+            k += 1;
+        }
+        for k in (0..k).rev() {
+            if c & 1 != 0 {
+                l -= 1 << k;
+                let l = l >> k;
+                let nacc = self.m.operate(&self.reflect(l), &acc);
+                if p(&nacc) {
+                    return Some(self.rbisect_perfect(l, acc, p).0);
+                }
+                acc = nacc;
+            }
+            c >>= 1;
+        }
+        None
+    }
 }
 
 #[cfg(test)]
@@ -296,13 +481,13 @@ mod tests {
         tools::{NotEmptySegment, Xorshift},
     };
 
-    const N: usize = 1_024;
+    const N: usize = 1_000;
     const Q: usize = 20_000;
     const A: i64 = 1_000_000_000;
 
     #[test]
     fn test_lazy_segment_tree() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::default();
         // Range Sum Query & Range Add Query
         rand!(rng, mut arr: [-A..A; N]);
         let mut seg = LazySegmentTree::from_vec(
@@ -327,7 +512,7 @@ mod tests {
             }
         }
 
-        // Range Max Query & Range Update Query
+        // Range Max Query & Range Update Query & Binary Search Query
         rand!(rng, mut arr: [-A..A; N]);
         let mut seg = LazySegmentTree::from_vec(
             arr.clone(),
@@ -336,18 +521,51 @@ mod tests {
             |&x, y| y.unwrap_or(x),
         );
         for _ in 0..Q {
-            if rng.rand(2) == 0 {
-                // Range Update Query
-                rand!(rng, (l,r): (NotEmptySegment(N)), x: (-A..A));
-                seg.update(l, r, Some(x));
-                for a in arr[l..r].iter_mut() {
-                    *a = x;
+            let ty = rng.rand(4);
+            match ty {
+                0 => {
+                    // Range Update Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    seg.update(l, r, Some(x));
+                    arr[l..r].iter_mut().for_each(|a| *a = x);
                 }
-            } else {
-                // Range Max Query
-                rand!(rng, (l, r): (NotEmptySegment(N)));
-                let res = arr[l..r].iter().max().cloned().unwrap_or_default();
-                assert_eq!(seg.fold(l, r), res);
+                1 => {
+                    // Range Max Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)));
+                    let res = arr[l..r].iter().max().cloned().unwrap_or_default();
+                    assert_eq!(seg.fold(l, r), res);
+                }
+                2 => {
+                    // Binary Search Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    assert_eq!(
+                        seg.position_acc(l, r, |&d| d >= x),
+                        arr[l..r]
+                            .iter()
+                            .scan(std::i64::MIN, |acc, &a| {
+                                *acc = a.max(*acc);
+                                Some(*acc)
+                            })
+                            .position(|acc| acc >= x)
+                            .map(|i| i + l),
+                    );
+                }
+                _ => {
+                    // Binary Search Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    assert_eq!(
+                        seg.rposition_acc(l, r, |&d| d >= x),
+                        arr[l..r]
+                            .iter()
+                            .rev()
+                            .scan(std::i64::MIN, |acc, &a| {
+                                *acc = a.max(*acc);
+                                Some(*acc)
+                            })
+                            .position(|acc| acc >= x)
+                            .map(|i| r - i - 1),
+                    );
+                }
             }
         }
     }
@@ -382,25 +600,58 @@ mod tests {
             }
         }
 
-        // Range Max Query & Range Update Query
+        // Range Max Query & Range Update Query & Binary Search Query
         let mut arr = vec![std::i64::MIN; N];
         let mut seg =
             LazySegmentTreeMap::new(N, MaxOperation::new(), LastOperation::new(), |&x, y| {
                 y.unwrap_or(x)
             });
         for _ in 0..Q {
-            if rng.rand(2) == 0 {
-                // Range Update Query
-                rand!(rng, (l,r): (NotEmptySegment(N)), x: (-A..A));
-                seg.update(l, r, Some(x));
-                for a in arr[l..r].iter_mut() {
-                    *a = x;
+            let ty = rng.rand(4);
+            match ty {
+                0 => {
+                    // Range Update Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    seg.update(l, r, Some(x));
+                    arr[l..r].iter_mut().for_each(|a| *a = x);
                 }
-            } else {
-                // Range Max Query
-                rand!(rng, (l, r): (NotEmptySegment(N)));
-                let res = arr[l..r].iter().max().cloned().unwrap_or_default();
-                assert_eq!(seg.fold(l, r), res);
+                1 => {
+                    // Range Max Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)));
+                    let res = arr[l..r].iter().max().cloned().unwrap_or_default();
+                    assert_eq!(seg.fold(l, r), res);
+                }
+                2 => {
+                    // Binary Search Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    assert_eq!(
+                        seg.position_acc(l, r, |&d| d >= x),
+                        arr[l..r]
+                            .iter()
+                            .scan(std::i64::MIN, |acc, &a| {
+                                *acc = a.max(*acc);
+                                Some(*acc)
+                            })
+                            .position(|acc| acc >= x)
+                            .map(|i| i + l),
+                    );
+                }
+                _ => {
+                    // Binary Search Query
+                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    assert_eq!(
+                        seg.rposition_acc(l, r, |&d| d >= x),
+                        arr[l..r]
+                            .iter()
+                            .rev()
+                            .scan(std::i64::MIN, |acc, &a| {
+                                *acc = a.max(*acc);
+                                Some(*acc)
+                            })
+                            .position(|acc| acc >= x)
+                            .map(|i| r - i - 1),
+                    );
+                }
             }
         }
     }
