@@ -88,7 +88,23 @@ impl<M: Monoid + Idempotent> IdempotentMonoid for M {}
 
 #[macro_export]
 macro_rules! monoid_fold {
-    ($m:expr) => { ($m).unit() };
-    ($m:expr, $f:expr) => { ($f).clone() };
-    ($m:expr, $f:expr, $($ff:expr),*) => { ($m).operate(&($f), &monoid_fold!($m, $($ff),*)) };
+    ($m:ty) => { <$m as Unital>::unit() };
+    ($m:ty,) => { <$m as Unital>::unit() };
+    ($m:ty, $f:expr) => { $f };
+    ($m:ty, $f:expr, $($ff:expr),*) => { <$m as Magma>::operate(&($f), &monoid_fold!($m, $($ff),*)) };
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::algebra::operations::MaxOperation;
+
+    #[test]
+    #[allow(clippy::eq_op)]
+    fn test_monoid_fold() {
+        assert_eq!(monoid_fold!(MaxOperation<u32>,), 0);
+        assert_eq!(monoid_fold!(MaxOperation<u32>, 1), 1);
+        assert_eq!(monoid_fold!(MaxOperation<u32>, 1, 2), 2);
+        assert_eq!(monoid_fold!(MaxOperation<u32>, 0, 1, 5, 2), 5);
+    }
 }
