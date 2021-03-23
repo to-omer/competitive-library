@@ -7,7 +7,7 @@ pub fn grl_1_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, vs, es, r, (graph, d): { DirectedGraphScanner::<usize, i64>::new(vs, es) });
-    let (cost, is_neg) = graph.bellman_ford(r, AdditiveOperation::new(), |eid| d[eid]);
+    let (cost, is_neg) = graph.bellman_ford::<AdditiveOperation<_>, _>(r, |eid| d[eid]);
     if is_neg {
         writeln!(writer, "NEGATIVE CYCLE").ok();
     } else {

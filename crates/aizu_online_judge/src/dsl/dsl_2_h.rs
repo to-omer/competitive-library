@@ -10,10 +10,8 @@ pub fn dsl_2_h(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);
-    let mut seg = LazySegmentTree::from_vec(
+    let mut seg = LazySegmentTree::<MinOperation<_>, AdditiveOperation<_>, _>::from_vec(
         vec![0; n],
-        MinOperation::new(),
-        AdditiveOperation::new(),
         |x: &i64, &y| x + y,
     );
     for _ in 0..q {

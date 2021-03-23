@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     graph::UndirectedSparseGraph,
-    tree::{EulerTourForRichVertex, HeavyLightDecomposition},
+    tree::{EulerTourForRichVertex, HeavyLightDecomposition, LcaMonoidDefaultId},
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/lca")]
@@ -13,7 +13,7 @@ pub fn lca_euler_tour(reader: impl Read, mut writer: impl Write) {
     let edges = p.take(n - 1).enumerate().map(|(i, p)| (i + 1, p)).collect();
     let graph = UndirectedSparseGraph::from_edges(n, edges);
     let euler = EulerTourForRichVertex::new(0, &graph);
-    let lca = euler.gen_lca();
+    let lca = euler.gen_lca::<LcaMonoidDefaultId>();
     for (u, v) in scanner.iter::<(usize, usize)>().take(q) {
         writeln!(writer, "{}", lca.lca(u, v)).ok();
     }

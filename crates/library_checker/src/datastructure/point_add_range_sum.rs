@@ -10,7 +10,7 @@ pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: im
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64]);
-    let mut bit = BinaryIndexedTree::new(n, AdditiveOperation::new());
+    let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(n);
     for (i, a) in a.take(n).enumerate() {
         bit.update(i, a);
     }
@@ -31,7 +31,7 @@ pub fn point_add_range_sum_segment_tree(reader: impl Read, mut writer: impl Writ
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [i64; n]);
-    let mut seg = SegmentTree::from_vec(a, AdditiveOperation::new());
+    let mut seg = SegmentTree::<AdditiveOperation<_>>::from_vec(a);
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {

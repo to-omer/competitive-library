@@ -138,9 +138,9 @@ impl<'a> EulerTourForRichVertex<'a> {
 
 #[codesnip::entry("LowestCommonAncestor")]
 impl<'a> EulerTourForRichVertex<'a> {
-    pub fn gen_lca(&'a self) -> LowestCommonAncestor<'a> {
-        let monoid = LcaMonoid::new(self.root, self.graph);
-        let dst = DisjointSparseTable::new(self.vtrace.clone(), monoid);
+    pub fn gen_lca<D: LcaMonoidDispatch>(&'a self) -> LowestCommonAncestor<'a, D> {
+        D::set_depth(self.graph.tree_depth(self.root));
+        let dst = DisjointSparseTable::<LcaMonoid<D>>::new(self.vtrace.clone());
         LowestCommonAncestor { euler: self, dst }
     }
 }
@@ -155,45 +155,57 @@ impl<'a> EulerTourForRichVertex<'a> {
     )
 )]
 #[derive(Clone, Debug)]
-pub struct LowestCommonAncestor<'a> {
+pub struct LowestCommonAncestor<'a, D: LcaMonoidDispatch> {
     euler: &'a EulerTourForRichVertex<'a>,
-    dst: DisjointSparseTable<LcaMonoid>,
+    dst: DisjointSparseTable<LcaMonoid<D>>,
 }
 #[codesnip::entry("LowestCommonAncestor")]
-impl<'a> LowestCommonAncestor<'a> {
+impl<'a, D: LcaMonoidDispatch> LowestCommonAncestor<'a, D> {
     pub fn lca(&self, u: usize, v: usize) -> usize {
         self.euler.query(u, v, |l, r| self.dst.fold(l, r))
     }
 }
 #[codesnip::entry("LowestCommonAncestor")]
+pub trait LcaMonoidDispatch {
+    fn vsize() -> usize;
+    fn depth(u: usize) -> u64;
+    fn set_depth(depth: Vec<u64>);
+}
+#[codesnip::entry("LowestCommonAncestor")]
+pub struct LcaMonoidDefaultId;
+#[codesnip::entry("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
-pub struct LcaMonoid {
-    depth: Vec<u64>,
+pub struct LcaMonoid<D: LcaMonoidDispatch = LcaMonoidDefaultId> {
+    _marker: std::marker::PhantomData<fn() -> D>,
 }
 #[codesnip::entry("LowestCommonAncestor")]
 pub mod impl_lcam {
     use super::*;
-    impl LcaMonoid {
-        pub fn new(root: usize, graph: &UndirectedSparseGraph) -> Self {
-            LcaMonoid {
-                depth: graph.tree_depth(root),
-            }
+    thread_local! {
+        pub static DEPTH: std::cell::RefCell<Vec<u64>> = std::cell::RefCell::new(Vec::new());
+    }
+    impl LcaMonoidDispatch for LcaMonoidDefaultId {
+        fn vsize() -> usize {
+            DEPTH.with(|c| c.borrow().len())
         }
-        pub fn ancestor(&self, u: usize, v: usize) -> usize {
-            if u >= self.depth.len() {
-                v
-            } else if v >= self.depth.len() || self.depth[u] < self.depth[v] {
-                u
-            } else {
-                v
-            }
+        fn depth(u: usize) -> u64 {
+            DEPTH.with(|c| c.borrow()[u])
+        }
+        fn set_depth(depth: Vec<u64>) {
+            DEPTH.with(|c| *c.borrow_mut() = depth)
         }
     }
-    impl Magma for LcaMonoid {
+    impl<D: LcaMonoidDispatch> Magma for LcaMonoid<D> {
         type T = usize;
-        fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
-            self.ancestor(*x, *y)
+        fn operate(&x: &Self::T, &y: &Self::T) -> Self::T {
+            if x >= D::vsize() {
+                y
+            } else if y >= D::vsize() || D::depth(x) < D::depth(y) {
+                x
+            } else {
+                y
+            }
         }
     }
-    impl Associative for LcaMonoid {}
+    impl<D: LcaMonoidDispatch> Associative for LcaMonoid<D> {}
 }

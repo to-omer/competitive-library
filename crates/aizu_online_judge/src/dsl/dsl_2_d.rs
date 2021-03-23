@@ -10,9 +10,8 @@ pub fn dsl_2_d(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);
-    let mut seg = LazySegmentTree::new(n, MinOperation::new(), LastOperation::new(), |&x, y| {
-        y.unwrap_or(x)
-    });
+    let mut seg =
+        LazySegmentTree::<MinOperation<_>, LastOperation<_>, _>::new(n, |&x, y| y.unwrap_or(x));
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {

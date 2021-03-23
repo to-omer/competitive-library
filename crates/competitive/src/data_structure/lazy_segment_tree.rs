@@ -8,34 +8,32 @@ use crate::algebra::Monoid;
 pub struct LazySegmentTree<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     n: usize,
     seg: Vec<(M::T, E::T)>,
-    m: M,
-    e: E,
     f: F,
 }
 #[codesnip::entry("LazySegmentTree")]
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F> {
-    pub fn new(n: usize, m: M, e: E, f: F) -> Self {
-        let seg = vec![(m.unit(), e.unit()); 2 * n];
-        Self { n, seg, m, e, f }
+    pub fn new(n: usize, f: F) -> Self {
+        let seg = vec![(M::unit(), E::unit()); 2 * n];
+        Self { n, seg, f }
     }
-    pub fn from_vec(v: Vec<M::T>, m: M, e: E, f: F) -> Self {
+    pub fn from_vec(v: Vec<M::T>, f: F) -> Self {
         let n = v.len();
-        let mut seg = vec![(m.unit(), e.unit()); 2 * n];
+        let mut seg = vec![(M::unit(), E::unit()); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
             seg[i + n].0 = x;
         }
         for i in (1..n).rev() {
-            seg[i].0 = m.operate(&seg[2 * i].0, &seg[2 * i + 1].0);
+            seg[i].0 = M::operate(&seg[2 * i].0, &seg[2 * i + 1].0);
         }
-        Self { n, seg, m, e, f }
+        Self { n, seg, f }
     }
     #[inline]
     fn propagate(&mut self, k: usize) {
         debug_assert!(k < self.n);
-        let x = std::mem::replace(&mut self.seg[k].1, self.e.unit());
-        if x != self.e.unit() {
-            self.seg[2 * k].1 = self.e.operate(&self.seg[2 * k].1, &x);
-            self.seg[2 * k + 1].1 = self.e.operate(&self.seg[2 * k + 1].1, &x);
+        let x = std::mem::replace(&mut self.seg[k].1, E::unit());
+        if x != E::unit() {
+            self.seg[2 * k].1 = E::operate(&self.seg[2 * k].1, &x);
+            self.seg[2 * k + 1].1 = E::operate(&self.seg[2 * k + 1].1, &x);
             self.seg[k].0 = (self.f)(&self.seg[k].0, &x);
         }
     }
@@ -47,7 +45,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
     }
     #[inline]
     fn reflect(&self, k: usize) -> M::T {
-        if self.seg[k].1 != self.e.unit() {
+        if self.seg[k].1 != E::unit() {
             (self.f)(&self.seg[k].0, &self.seg[k].1)
         } else {
             self.seg[k].0.clone()
@@ -57,9 +55,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
     fn recalc(&mut self, mut k: usize) {
         k /= 2;
         while k > 0 {
-            self.seg[k].0 = self
-                .m
-                .operate(&self.reflect(2 * k), &self.reflect(2 * k + 1));
+            self.seg[k].0 = M::operate(&self.reflect(2 * k), &self.reflect(2 * k + 1));
             k /= 2;
         }
     }
@@ -72,12 +68,12 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         self.thrust(b - 1);
         while a < b {
             if a & 1 != 0 {
-                self.seg[a].1 = self.e.operate(&self.seg[a].1, &x);
+                self.seg[a].1 = E::operate(&self.seg[a].1, &x);
                 a += 1;
             }
             if b & 1 != 0 {
                 b -= 1;
-                self.seg[b].1 = self.e.operate(&self.seg[b].1, &x);
+                self.seg[b].1 = E::operate(&self.seg[b].1, &x);
             }
             a /= 2;
             b /= 2;
@@ -92,27 +88,27 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         let mut r = r + self.n;
         self.thrust(l);
         self.thrust(r - 1);
-        let mut vl = self.m.unit();
-        let mut vr = self.m.unit();
+        let mut vl = M::unit();
+        let mut vr = M::unit();
         while l < r {
             if l & 1 != 0 {
-                vl = self.m.operate(&vl, &self.reflect(l));
+                vl = M::operate(&vl, &self.reflect(l));
                 l += 1;
             }
             if r & 1 != 0 {
                 r -= 1;
-                vr = self.m.operate(&self.reflect(r), &vr);
+                vr = M::operate(&self.reflect(r), &vr);
             }
             l /= 2;
             r /= 2;
         }
-        self.m.operate(&vl, &vr)
+        M::operate(&vl, &vr)
     }
     pub fn set(&mut self, k: usize, x: M::T) {
         let k = k + self.n;
         self.thrust(k);
         self.seg[k].0 = x;
-        self.seg[k].1 = self.e.unit();
+        self.seg[k].1 = E::unit();
         self.recalc(k);
     }
     pub fn get(&mut self, k: usize) -> M::T {
@@ -128,7 +124,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         while pos < self.n {
             self.propagate(pos);
             pos <<= 1;
-            let nacc = self.m.operate(&acc, &self.reflect(pos));
+            let nacc = M::operate(&acc, &self.reflect(pos));
             if !p(&nacc) {
                 acc = nacc;
                 pos += 1;
@@ -143,7 +139,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         while pos < self.n {
             self.propagate(pos);
             pos = pos * 2 + 1;
-            let nacc = self.m.operate(&self.reflect(pos), &acc);
+            let nacc = M::operate(&self.reflect(pos), &acc);
             if !p(&nacc) {
                 acc = nacc;
                 pos -= 1;
@@ -161,10 +157,10 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         self.thrust(l);
         self.thrust(r - 1);
         let mut k = 0usize;
-        let mut acc = self.m.unit();
+        let mut acc = M::unit();
         while l < r >> k {
             if l & 1 != 0 {
-                let nacc = self.m.operate(&acc, &self.reflect(l));
+                let nacc = M::operate(&acc, &self.reflect(l));
                 if p(&nacc) {
                     return Some(self.bisect_perfect(l, acc, p).0);
                 }
@@ -177,7 +173,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         for k in (0..k).rev() {
             let r = r >> k;
             if r & 1 != 0 {
-                let nacc = self.m.operate(&acc, &self.reflect(r - 1));
+                let nacc = M::operate(&acc, &self.reflect(r - 1));
                 if p(&nacc) {
                     return Some(self.bisect_perfect(r - 1, acc, p).0);
                 }
@@ -197,7 +193,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
         self.thrust(r - 1);
         let mut c = 0usize;
         let mut k = 0usize;
-        let mut acc = self.m.unit();
+        let mut acc = M::unit();
         while l >> k < r {
             c <<= 1;
             if l & 1 << k != 0 {
@@ -206,7 +202,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
             }
             if r & 1 != 0 {
                 r -= 1;
-                let nacc = self.m.operate(&self.reflect(r), &acc);
+                let nacc = M::operate(&self.reflect(r), &acc);
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(r, acc, p).0);
                 }
@@ -219,7 +215,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
             if c & 1 != 0 {
                 l -= 1 << k;
                 let l = l >> k;
-                let nacc = self.m.operate(&self.reflect(l), &acc);
+                let nacc = M::operate(&self.reflect(l), &acc);
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(l, acc, p).0);
                 }
@@ -236,18 +232,14 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTree<M, E, F>
 pub struct LazySegmentTreeMap<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> {
     n: usize,
     seg: std::collections::HashMap<usize, (M::T, E::T)>,
-    m: M,
-    e: E,
     f: F,
 }
 #[codesnip::entry("LazySegmentTreeMap")]
 impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E, F> {
-    pub fn new(n: usize, m: M, e: E, f: F) -> Self {
+    pub fn new(n: usize, f: F) -> Self {
         Self {
             n,
             seg: Default::default(),
-            m,
-            e,
             f,
         }
     }
@@ -258,20 +250,13 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
             .seg
             .get(&k)
             .map(|t| t.1.clone())
-            .unwrap_or_else(|| self.e.unit());
-        if x != self.e.unit() {
-            let tl = self
-                .seg
-                .entry(2 * k)
-                .or_insert((self.m.unit(), self.e.unit()));
-            tl.1 = self.e.operate(&tl.1, &x);
-            let tr = self
-                .seg
-                .entry(2 * k + 1)
-                .or_insert((self.m.unit(), self.e.unit()));
-            tr.1 = self.e.operate(&tr.1, &x);
-            *self.seg.entry(k).or_insert((self.m.unit(), self.e.unit())) =
-                (self.reflect(k), self.e.unit());
+            .unwrap_or_else(E::unit);
+        if x != E::unit() {
+            let tl = self.seg.entry(2 * k).or_insert((M::unit(), E::unit()));
+            tl.1 = E::operate(&tl.1, &x);
+            let tr = self.seg.entry(2 * k + 1).or_insert((M::unit(), E::unit()));
+            tr.1 = E::operate(&tr.1, &x);
+            *self.seg.entry(k).or_insert((M::unit(), E::unit())) = (self.reflect(k), E::unit());
         }
     }
     #[inline]
@@ -282,9 +267,9 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
     }
     #[inline]
     fn reflect(&self, k: usize) -> M::T {
-        let u = (self.m.unit(), self.e.unit());
+        let u = (M::unit(), E::unit());
         let t = self.seg.get(&k).unwrap_or(&u);
-        if t.1 != self.e.unit() {
+        if t.1 != E::unit() {
             (self.f)(&t.0, &t.1)
         } else {
             t.0.clone()
@@ -294,12 +279,8 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
     fn recalc(&mut self, mut k: usize) {
         k /= 2;
         while k > 0 {
-            self.seg
-                .entry(k)
-                .or_insert((self.m.unit(), self.e.unit()))
-                .0 = self
-                .m
-                .operate(&self.reflect(2 * k), &self.reflect(2 * k + 1));
+            self.seg.entry(k).or_insert((M::unit(), E::unit())).0 =
+                M::operate(&self.reflect(2 * k), &self.reflect(2 * k + 1));
             k /= 2;
         }
     }
@@ -312,14 +293,14 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         self.thrust(b - 1);
         while a < b {
             if a & 1 != 0 {
-                let t = self.seg.entry(a).or_insert((self.m.unit(), self.e.unit()));
-                t.1 = self.e.operate(&t.1, &x);
+                let t = self.seg.entry(a).or_insert((M::unit(), E::unit()));
+                t.1 = E::operate(&t.1, &x);
                 a += 1;
             }
             if b & 1 != 0 {
                 b -= 1;
-                let t = self.seg.entry(b).or_insert((self.m.unit(), self.e.unit()));
-                t.1 = self.e.operate(&t.1, &x);
+                let t = self.seg.entry(b).or_insert((M::unit(), E::unit()));
+                t.1 = E::operate(&t.1, &x);
             }
             a /= 2;
             b /= 2;
@@ -334,26 +315,26 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         let mut r = r + self.n;
         self.thrust(l);
         self.thrust(r - 1);
-        let mut vl = self.m.unit();
-        let mut vr = self.m.unit();
+        let mut vl = M::unit();
+        let mut vr = M::unit();
         while l < r {
             if l & 1 != 0 {
-                vl = self.m.operate(&vl, &self.reflect(l));
+                vl = M::operate(&vl, &self.reflect(l));
                 l += 1;
             }
             if r & 1 != 0 {
                 r -= 1;
-                vr = self.m.operate(&self.reflect(r), &vr);
+                vr = M::operate(&self.reflect(r), &vr);
             }
             l /= 2;
             r /= 2;
         }
-        self.m.operate(&vl, &vr)
+        M::operate(&vl, &vr)
     }
     pub fn set(&mut self, k: usize, x: M::T) {
         let k = k + self.n;
         self.thrust(k);
-        *self.seg.entry(k).or_insert((self.m.unit(), self.e.unit())) = (x, self.e.unit());
+        *self.seg.entry(k).or_insert((M::unit(), E::unit())) = (x, E::unit());
         self.recalc(k);
     }
     pub fn get(&mut self, k: usize) -> M::T {
@@ -369,7 +350,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         while pos < self.n {
             self.propagate(pos);
             pos <<= 1;
-            let nacc = self.m.operate(&acc, &self.reflect(pos));
+            let nacc = M::operate(&acc, &self.reflect(pos));
             if !p(&nacc) {
                 acc = nacc;
                 pos += 1;
@@ -384,7 +365,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         while pos < self.n {
             self.propagate(pos);
             pos = pos * 2 + 1;
-            let nacc = self.m.operate(&self.reflect(pos), &acc);
+            let nacc = M::operate(&self.reflect(pos), &acc);
             if !p(&nacc) {
                 acc = nacc;
                 pos -= 1;
@@ -402,10 +383,10 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         self.thrust(l);
         self.thrust(r - 1);
         let mut k = 0usize;
-        let mut acc = self.m.unit();
+        let mut acc = M::unit();
         while l < r >> k {
             if l & 1 != 0 {
-                let nacc = self.m.operate(&acc, &self.reflect(l));
+                let nacc = M::operate(&acc, &self.reflect(l));
                 if p(&nacc) {
                     return Some(self.bisect_perfect(l, acc, p).0);
                 }
@@ -418,7 +399,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         for k in (0..k).rev() {
             let r = r >> k;
             if r & 1 != 0 {
-                let nacc = self.m.operate(&acc, &self.reflect(r - 1));
+                let nacc = M::operate(&acc, &self.reflect(r - 1));
                 if p(&nacc) {
                     return Some(self.bisect_perfect(r - 1, acc, p).0);
                 }
@@ -438,7 +419,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
         self.thrust(r - 1);
         let mut c = 0usize;
         let mut k = 0usize;
-        let mut acc = self.m.unit();
+        let mut acc = M::unit();
         while l >> k < r {
             c <<= 1;
             if l & 1 << k != 0 {
@@ -447,7 +428,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
             }
             if r & 1 != 0 {
                 r -= 1;
-                let nacc = self.m.operate(&self.reflect(r), &acc);
+                let nacc = M::operate(&self.reflect(r), &acc);
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(r, acc, p).0);
                 }
@@ -460,7 +441,7 @@ impl<M: Monoid, E: Monoid, F: Fn(&M::T, &E::T) -> M::T> LazySegmentTreeMap<M, E,
             if c & 1 != 0 {
                 l -= 1 << k;
                 let l = l >> k;
-                let nacc = self.m.operate(&self.reflect(l), &acc);
+                let nacc = M::operate(&self.reflect(l), &acc);
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(l, acc, p).0);
                 }
@@ -490,12 +471,13 @@ mod tests {
         let mut rng = Xorshift::default();
         // Range Sum Query & Range Add Query
         rand!(rng, mut arr: [-A..A; N]);
-        let mut seg = LazySegmentTree::from_vec(
-            arr.iter().map(|&a| (a, 1)).collect(),
-            CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-            AdditiveOperation::new(),
-            |x, &y| (x.0 + y * x.1, x.1),
-        );
+        let mut seg = LazySegmentTree::<
+            CartesianOperation<AdditiveOperation<_>, AdditiveOperation<_>>,
+            AdditiveOperation<_>,
+            _,
+        >::from_vec(arr.iter().map(|&a| (a, 1)).collect(), |x, &y| {
+            (x.0 + y * x.1, x.1)
+        });
         for _ in 0..Q {
             if rng.rand(2) == 0 {
                 // Range Add Query
@@ -514,10 +496,8 @@ mod tests {
 
         // Range Max Query & Range Update Query & Binary Search Query
         rand!(rng, mut arr: [-A..A; N]);
-        let mut seg = LazySegmentTree::from_vec(
+        let mut seg = LazySegmentTree::<MaxOperation<_>, LastOperation<_>, _>::from_vec(
             arr.clone(),
-            MaxOperation::new(),
-            LastOperation::new(),
             |&x, y| y.unwrap_or(x),
         );
         for _ in 0..Q {
@@ -575,12 +555,11 @@ mod tests {
         let mut rng = Xorshift::time();
         // Range Sum Query & Range Add Query
         let mut arr = vec![0i64; N];
-        let mut seg = LazySegmentTreeMap::new(
-            N,
-            CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-            AdditiveOperation::new(),
-            |x, &y| (x.0 + y * x.1, x.1),
-        );
+        let mut seg = LazySegmentTreeMap::<
+            CartesianOperation<AdditiveOperation<_>, AdditiveOperation<_>>,
+            AdditiveOperation<_>,
+            _,
+        >::new(N, |x, &y| (x.0 + y * x.1, x.1));
         for i in 0..N {
             seg.set(i, (0i64, 1i64));
         }
@@ -603,7 +582,7 @@ mod tests {
         // Range Max Query & Range Update Query & Binary Search Query
         let mut arr = vec![std::i64::MIN; N];
         let mut seg =
-            LazySegmentTreeMap::new(N, MaxOperation::new(), LastOperation::new(), |&x, y| {
+            LazySegmentTreeMap::<MaxOperation<_>, LastOperation<_>, _>::new(N, |&x, y| {
                 y.unwrap_or(x)
             });
         for _ in 0..Q {

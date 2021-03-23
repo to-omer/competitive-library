@@ -10,12 +10,13 @@ pub fn dsl_2_i(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);
-    let mut seg = LazySegmentTree::from_vec(
-        vec![(0, 1); n],
-        CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-        LastOperation::new(),
-        |x: &(i64, i64), y| (x.1 * y.unwrap_or(x.0), x.1),
-    );
+    let mut seg = LazySegmentTree::<
+        CartesianOperation<AdditiveOperation<_>, AdditiveOperation<_>>,
+        LastOperation<_>,
+        _,
+    >::from_vec(vec![(0, 1); n], |x: &(i64, i64), y| {
+        (x.1 * y.unwrap_or(x.0), x.1)
+    });
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {

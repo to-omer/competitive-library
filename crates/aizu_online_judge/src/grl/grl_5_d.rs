@@ -17,7 +17,7 @@ pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
     }
     let graph = UndirectedSparseGraph::from_edges(n, edges);
     let et = EulerTourForEdge::new(0, &graph);
-    let mut bit = BinaryIndexedTree::new(et.length(), AdditiveOperation::new());
+    let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(et.length());
 
     scan!(scanner, q);
     for _ in 0..q {

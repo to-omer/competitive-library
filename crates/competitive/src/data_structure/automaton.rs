@@ -19,7 +19,6 @@ pub fn automaton_dp<A, M>(
     dfa: A,
     sigma: impl Iterator<Item = A::Alphabet> + Clone,
     len: usize,
-    monoid: M,
     mul: impl Fn(&M::T, &A::Effect) -> M::T,
     init: M::T,
 ) -> M::T
@@ -37,7 +36,7 @@ where
                 if let Some((nstate, eff)) = dfa.next(&state, &alph) {
                     let nvalue = mul(&value, &eff);
                     ndp.entry(nstate)
-                        .and_modify(|acc| *acc = monoid.operate(acc, &nvalue))
+                        .and_modify(|acc| *acc = M::operate(acc, &nvalue))
                         .or_insert(nvalue);
                 }
             }
@@ -45,10 +44,10 @@ where
         std::mem::swap(&mut dp, &mut ndp);
         ndp.clear();
     }
-    let mut acc = monoid.unit();
+    let mut acc = M::unit();
     for (state, value) in dp.into_iter() {
         if dfa.accept(&state) {
-            acc = monoid.operate(&acc, &value);
+            acc = M::operate(&acc, &value);
         }
     }
     acc

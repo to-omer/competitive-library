@@ -11,8 +11,6 @@ use crate::graph::{Adjacency, UndirectedSparseGraph};
 #[derive(Clone, Debug)]
 pub struct ReRooting<'a, M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> {
     graph: &'a UndirectedSparseGraph,
-    /// merge subtree
-    monoid: M,
     /// dp\[v\]: result of v-rooted tree
     pub dp: Vec<M::T>,
     /// ep\[e\]: result of e-subtree, if e >= n then reversed-e-subtree
@@ -21,13 +19,16 @@ pub struct ReRooting<'a, M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> 
     rooting: F,
 }
 #[codesnip::entry("ReRooting")]
-impl<'a, M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<'a, M, F> {
-    pub fn new(graph: &'a UndirectedSparseGraph, monoid: M, rooting: F) -> Self {
-        let dp = vec![monoid.unit(); graph.vertices_size()];
-        let ep = vec![monoid.unit(); graph.vertices_size() * 2];
+impl<'a, M, F> ReRooting<'a, M, F>
+where
+    M: Monoid,
+    F: Fn(&M::T, usize, Option<usize>) -> M::T,
+{
+    pub fn new(graph: &'a UndirectedSparseGraph, rooting: F) -> Self {
+        let dp = vec![M::unit(); graph.vertices_size()];
+        let ep = vec![M::unit(); graph.vertices_size() * 2];
         let mut self_ = Self {
             graph,
-            monoid,
             dp,
             ep,
             rooting,
@@ -45,7 +46,7 @@ impl<'a, M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<'a, M,
     }
     #[inline]
     fn merge(&self, x: &M::T, y: &M::T) -> M::T {
-        self.monoid.operate(x, y)
+        M::operate(x, y)
     }
     #[inline]
     fn add_subroot(&self, x: &M::T, vid: usize, eid: usize) -> M::T {
@@ -67,8 +68,8 @@ impl<'a, M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> ReRooting<'a, M,
     }
     fn efs(&mut self, u: usize, p: usize) {
         let m = self.graph.adjacencies(u).len();
-        let mut left = vec![self.monoid.unit(); m + 1];
-        let mut right = vec![self.monoid.unit(); m + 1];
+        let mut left = vec![M::unit(); m + 1];
+        let mut right = vec![M::unit(); m + 1];
         for (k, a) in self.graph.adjacencies(u).enumerate() {
             let i = self.eidx(u, a);
             left[k + 1] = self.merge(&left[k], &self.ep[i]);

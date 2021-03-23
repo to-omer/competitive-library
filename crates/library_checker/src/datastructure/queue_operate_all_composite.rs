@@ -11,7 +11,7 @@ pub fn queue_operate_all_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, q);
-    let mut que = QueueAggregation::new(LinearOperation::new());
+    let mut que = QueueAggregation::<LinearOperation<_>>::new();
     for _ in 0..q {
         scan!(scanner, ty);
         match ty {

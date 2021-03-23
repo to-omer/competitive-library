@@ -18,18 +18,20 @@ impl UndirectedSparseGraph {
 
 #[codesnip::entry("weighted_tree_depth", include("algebra", "SparseGraph"))]
 impl UndirectedSparseGraph {
-    fn weighted_depth_dfs<M: Monoid, F: Fn(usize) -> M::T>(
+    fn weighted_depth_dfs<M, F>(
         &self,
         u: usize,
         p: usize,
         d: M::T,
         depth: &mut Vec<M::T>,
         weight: &F,
-        monoid: &M,
-    ) {
+    ) where
+        M: Monoid,
+        F: Fn(usize) -> M::T,
+    {
         for a in self.adjacencies(u).filter(|a| a.to != p) {
-            let nd = monoid.operate(&d, &weight(a.id));
-            self.weighted_depth_dfs(a.to, u, nd, depth, weight, monoid);
+            let nd = M::operate(&d, &weight(a.id));
+            self.weighted_depth_dfs::<M, _>(a.to, u, nd, depth, weight);
         }
         depth[u] = d;
     }
@@ -37,17 +39,9 @@ impl UndirectedSparseGraph {
         &self,
         root: usize,
         weight: F,
-        monoid: M,
     ) -> Vec<M::T> {
-        let mut depth = vec![monoid.unit(); self.vertices_size()];
-        self.weighted_depth_dfs(
-            root,
-            std::usize::MAX,
-            monoid.unit(),
-            &mut depth,
-            &weight,
-            &monoid,
-        );
+        let mut depth = vec![M::unit(); self.vertices_size()];
+        self.weighted_depth_dfs::<M, _>(root, std::usize::MAX, M::unit(), &mut depth, &weight);
         depth
     }
 }

@@ -19,13 +19,11 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
     }
     let mut graph = UndirectedSparseGraph::from_edges(n, edges);
     let hld = HeavyLightDecomposition::new(0, &mut graph);
-    let monoid = CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new());
-    let mut seg = LazySegmentTree::from_vec(
-        vec![(0u64, 1u64); n],
-        monoid.clone(),
-        AdditiveOperation::new(),
-        |x, &y| (x.0 + y * x.1, x.1),
-    );
+    type M = CartesianOperation<AdditiveOperation<u64>, AdditiveOperation<u64>>;
+    let mut seg =
+        LazySegmentTree::<M, AdditiveOperation<_>, _>::from_vec(vec![(0u64, 1u64); n], |x, &y| {
+            (x.0 + y * x.1, x.1)
+        });
 
     scan!(scanner, q);
     for _ in 0..q {
@@ -35,7 +33,7 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
             hld.update(0, v, true, |l, r| seg.update(l, r, w));
         } else {
             scan!(scanner, u);
-            let ans = hld.query(0, u, true, |l, r| seg.fold(l, r), &monoid).0;
+            let ans = hld.query::<M, _>(0, u, true, |l, r| seg.fold(l, r)).0;
             writeln!(writer, "{}", ans).ok();
         }
     }
