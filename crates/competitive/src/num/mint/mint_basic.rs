@@ -138,21 +138,23 @@ define_basic_mint32!(
     [Modulo998244353, 998_244_353, MInt998244353],
     [Modulo1000000007, 1_000_000_007, MInt1000000007],
     [Modulo1000000009, 1_000_000_009, MInt1000000009],
-    [DynModuloU32, unsafe { DYN_MODULUS_U32 }, DynMIntU32]
+    [
+        DynModuloU32,
+        DYN_MODULUS_U32.with(|cell| unsafe { *cell.get() }),
+        DynMIntU32
+    ]
 );
 
-static mut DYN_MODULUS_U32: u32 = 1_000_000_007;
+thread_local!(static DYN_MODULUS_U32: std::cell::UnsafeCell<u32> = std::cell::UnsafeCell::new(1_000_000_007));
 impl DynModuloU32 {
     pub fn set_mod(m: u32) {
-        unsafe {
-            DYN_MODULUS_U32 = m;
-        }
+        DYN_MODULUS_U32.with(|cell| unsafe { *cell.get() = m })
     }
 }
-static mut DYN_MODULUS_U64: u64 = 1_000_000_007;
+thread_local!(static DYN_MODULUS_U64: std::cell::UnsafeCell<u64> = std::cell::UnsafeCell::new(1_000_000_007));
 define_basic_mintbase!(
     DynModuloU64,
-    unsafe { DYN_MODULUS_U64 },
+    DYN_MODULUS_U64.with(|cell| unsafe { *cell.get() }),
     u64,
     u128,
     [u64, u128, usize],
@@ -160,9 +162,7 @@ define_basic_mintbase!(
 );
 impl DynModuloU64 {
     pub fn set_mod(m: u64) {
-        unsafe {
-            DYN_MODULUS_U64 = m;
-        }
+        DYN_MODULUS_U64.with(|cell| unsafe { *cell.get() = m })
     }
 }
 pub type DynMIntU64 = MInt<DynModuloU64>;

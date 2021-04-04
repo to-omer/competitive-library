@@ -263,15 +263,7 @@ mod tests {
     #[allow(dead_code)]
     fn find_proth() {
         use crate::math::{divisors, prime_factors_rho};
-        static mut MOD: u32 = 2;
-        crate::define_basic_mintbase!(
-            D,
-            unsafe { MOD },
-            u32,
-            u64,
-            [u32, u64, u128, usize],
-            [i32, i64, i128, isize]
-        );
+        use crate::num::mint_basic::{DynMIntU32, DynModuloU32};
         // p = a * 2^b + 1 (b >= 1, a < 2^b)
         for b in 22..32 {
             for a in (1..1u64 << b).step_by(2) {
@@ -284,13 +276,13 @@ mod tests {
                 }
                 let f = prime_factors_rho(p);
                 if f.len() == 1 && f[0] == p {
-                    unsafe { MOD = p as u32 };
+                    DynModuloU32::set_mod(p as u32);
                     for g in (3..).step_by(2) {
-                        let g = MInt::<D>::new(g);
+                        let g = DynMIntU32::new(g);
                         if divisors(p as u64 - 1)
                             .into_iter()
                             .filter(|&d| d != p as u64 - 1)
-                            .all(|d| g.pow(d as usize) != MInt::<D>::one())
+                            .all(|d| g.pow(d as usize) != DynMIntU32::one())
                         {
                             println!("(p,a,b,g) = {:?}", (p, a, b, g));
                             break;

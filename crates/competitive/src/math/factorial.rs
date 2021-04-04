@@ -136,20 +136,12 @@ mod tests {
 
     #[test]
     fn test_small_factorials() {
-        use crate::num::{MIntBase, MIntConvert};
+        use crate::num::mint_basic::DynModuloU32;
         use crate::tools::Xorshift;
-        static mut MOD: u32 = 2;
-        crate::define_basic_mintbase!(
-            D,
-            unsafe { MOD },
-            u32,
-            u64,
-            [u32, u64, u128, usize],
-            [i32, i64, i128, isize]
-        );
         let mut rng = Xorshift::time();
         const Q: usize = 100_000;
-        let fact = SmallModMemorizedFactorial::<D>::new();
+        DynModuloU32::set_mod(2);
+        let fact = SmallModMemorizedFactorial::<DynModuloU32>::new();
         for _ in 0..Q {
             let n = rng.gen(1..=1_000_000_000_000_000_000);
             let k = rng.gen(0..=n);
