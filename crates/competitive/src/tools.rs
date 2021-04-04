@@ -1,4 +1,7 @@
 #[macro_use]
+#[cfg_attr(nightly, codesnip::entry("AssociatedValue", inline))]
+mod associated_value;
+#[macro_use]
 mod iterable;
 #[macro_use]
 #[cfg_attr(nightly, codesnip::entry("ord_tools", inline))]
@@ -21,6 +24,7 @@ mod slice;
 #[cfg_attr(nightly, codesnip::entry("TotalOrd", inline))]
 mod totalord;
 
+pub use associated_value::AssociatedValue;
 pub use counter::Counter;
 pub use heuristics::SimuratedAnnealing;
 pub use ord_tools::*;

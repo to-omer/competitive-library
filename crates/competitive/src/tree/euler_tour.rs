@@ -182,17 +182,17 @@ pub struct LcaMonoid<D: LcaMonoidDispatch = LcaMonoidDefaultId> {
 pub mod impl_lcam {
     use super::*;
     thread_local! {
-        pub static DEPTH: std::cell::RefCell<Vec<u64>> = std::cell::RefCell::new(Vec::new());
+        static DEPTH: std::cell::UnsafeCell<Vec<u64>> = std::cell::UnsafeCell::new(Vec::new());
     }
     impl LcaMonoidDispatch for LcaMonoidDefaultId {
         fn vsize() -> usize {
-            DEPTH.with(|c| c.borrow().len())
+            DEPTH.with(|c| unsafe { (&*c.get()).len() })
         }
         fn depth(u: usize) -> u64 {
-            DEPTH.with(|c| c.borrow()[u])
+            DEPTH.with(|c| unsafe { (&*c.get())[u] })
         }
         fn set_depth(depth: Vec<u64>) {
-            DEPTH.with(|c| *c.borrow_mut() = depth)
+            DEPTH.with(|c| unsafe { *c.get() = depth })
         }
     }
     impl<D: LcaMonoidDispatch> Magma for LcaMonoid<D> {
