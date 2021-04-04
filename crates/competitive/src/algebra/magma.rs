@@ -5,10 +5,14 @@ pub trait Magma {
     /// type of operands: $T$
     type T: Clone + PartialEq;
     /// binary operaion: $\circ$
-    fn operate(&self, x: &Self::T, y: &Self::T) -> Self::T;
+    fn operate(x: &Self::T, y: &Self::T) -> Self::T;
     #[inline]
-    fn reverse_operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
-        self.operate(y, x)
+    fn reverse_operate(x: &Self::T, y: &Self::T) -> Self::T {
+        Self::operate(y, x)
+    }
+    #[inline]
+    fn operate_assign(x: &mut Self::T, y: &Self::T) {
+        *x = Self::operate(x, y);
     }
 }
 
@@ -23,21 +27,21 @@ impl<S: Magma + Associative> SemiGroup for S {}
 /// $\exists e \in T, \forall a \in T, e \circ a = a \circ e = e$
 pub trait Unital: Magma {
     /// identity element: $e$
-    fn unit(&self) -> Self::T;
+    fn unit() -> Self::T;
 }
 
 /// associative binary operation and an identity element
 pub trait Monoid: SemiGroup + Unital {
     /// binary exponentiation: $x^n = x\circ\ddots\circ x$
-    fn pow(&self, x: Self::T, n: usize) -> Self::T {
+    fn pow(x: Self::T, n: usize) -> Self::T {
         let mut n = n;
-        let mut res = self.unit();
+        let mut res = Self::unit();
         let mut base = x;
         while n > 0 {
             if n & 1 == 1 {
-                res = self.operate(&res, &base);
+                res = Self::operate(&res, &base);
             }
-            base = self.operate(&base, &base);
+            base = Self::operate(&base, &base);
             n >>= 1;
         }
         res
@@ -49,10 +53,10 @@ impl<M: SemiGroup + Unital> Monoid for M {}
 /// $\exists e \in T, \forall a \in T, \exists b,c \in T, b \circ a = a \circ c = e$
 pub trait Invertible: Magma {
     /// $a$ where $a \circ x = e$
-    fn inverse(&self, x: &Self::T) -> Self::T;
+    fn inverse(x: &Self::T) -> Self::T;
     #[inline]
-    fn rinv_operate(&self, x: &Self::T, y: &Self::T) -> Self::T {
-        self.operate(x, &self.inverse(y))
+    fn rinv_operate(x: &Self::T, y: &Self::T) -> Self::T {
+        Self::operate(x, &Self::inverse(y))
     }
 }
 
@@ -84,7 +88,23 @@ impl<M: Monoid + Idempotent> IdempotentMonoid for M {}
 
 #[macro_export]
 macro_rules! monoid_fold {
-    ($m:expr) => { ($m).unit() };
-    ($m:expr, $f:expr) => { ($f).clone() };
-    ($m:expr, $f:expr, $($ff:expr),*) => { ($m).operate(&($f), &monoid_fold!($m, $($ff),*)) };
+    ($m:ty) => { <$m as Unital>::unit() };
+    ($m:ty,) => { <$m as Unital>::unit() };
+    ($m:ty, $f:expr) => { $f };
+    ($m:ty, $f:expr, $($ff:expr),*) => { <$m as Magma>::operate(&($f), &monoid_fold!($m, $($ff),*)) };
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::algebra::operations::MaxOperation;
+
+    #[test]
+    #[allow(clippy::eq_op)]
+    fn test_monoid_fold() {
+        assert_eq!(monoid_fold!(MaxOperation<u32>,), 0);
+        assert_eq!(monoid_fold!(MaxOperation<u32>, 1), 1);
+        assert_eq!(monoid_fold!(MaxOperation<u32>, 1, 2), 2);
+        assert_eq!(monoid_fold!(MaxOperation<u32>, 0, 1, 5, 2), 5);
+    }
 }

@@ -7,7 +7,7 @@ pub fn dsl_3_d(reader: impl Read, writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, l, a: [u64]);
-    let mut que = QueueAggregation::new(MinOperation::new());
+    let mut que = QueueAggregation::<MinOperation<_>>::new();
     let mut ans = Vec::with_capacity(n - l + 1);
     for a in a.take(n) {
         que.push(a);

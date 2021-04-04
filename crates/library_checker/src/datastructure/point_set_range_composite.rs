@@ -11,7 +11,7 @@ pub fn point_set_range_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n]);
-    let mut seg = SegmentTree::from_vec(ab, LinearOperation::new());
+    let mut seg = SegmentTree::<LinearOperation<_>>::from_vec(ab);
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {

@@ -93,9 +93,8 @@ impl HeavyLightDecomposition {
         mut v: usize,
         is_edge: bool,
         mut f: F,
-        monoid: &M,
     ) -> M::T {
-        let (mut l, mut r) = (monoid.unit(), monoid.unit());
+        let (mut l, mut r) = (M::unit(), M::unit());
         loop {
             if self.vidx[u] > self.vidx[v] {
                 std::mem::swap(&mut u, &mut v);
@@ -104,11 +103,11 @@ impl HeavyLightDecomposition {
             if self.head[u] == self.head[v] {
                 break;
             }
-            l = monoid.operate(&f(self.vidx[self.head[v]], self.vidx[v] + 1), &l);
+            l = M::operate(&f(self.vidx[self.head[v]], self.vidx[v] + 1), &l);
             v = self.par[self.head[v]];
         }
-        monoid.operate(
-            &monoid.operate(&f(self.vidx[u] + is_edge as usize, self.vidx[v] + 1), &l),
+        M::operate(
+            &M::operate(&f(self.vidx[u] + is_edge as usize, self.vidx[v] + 1), &l),
             &r,
         )
     }
@@ -123,20 +122,19 @@ impl HeavyLightDecomposition {
         is_edge: bool,
         mut f1: F1,
         mut f2: F2,
-        monoid: &M,
     ) -> M::T {
-        let (mut l, mut r) = (monoid.unit(), monoid.unit());
+        let (mut l, mut r) = (M::unit(), M::unit());
         while self.head[u] != self.head[v] {
             if self.vidx[u] > self.vidx[v] {
-                l = monoid.operate(&l, &f2(self.vidx[self.head[u]], self.vidx[u] + 1));
+                l = M::operate(&l, &f2(self.vidx[self.head[u]], self.vidx[u] + 1));
                 u = self.par[self.head[u]];
             } else {
-                r = monoid.operate(&f1(self.vidx[self.head[v]], self.vidx[v] + 1), &r);
+                r = M::operate(&f1(self.vidx[self.head[v]], self.vidx[v] + 1), &r);
                 v = self.par[self.head[v]];
             }
         }
-        monoid.operate(
-            &monoid.operate(
+        M::operate(
+            &M::operate(
                 &l,
                 &if self.vidx[u] > self.vidx[v] {
                     f2(self.vidx[v] + is_edge as usize, self.vidx[u] + 1)

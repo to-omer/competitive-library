@@ -18,7 +18,7 @@ pub fn vertex_add_subtree_sum(reader: impl Read, mut writer: impl Write) {
     for i in 0..n {
         b[et.vidx[i].0] = a[i];
     }
-    let mut seg = SegmentTree::from_vec(b, AdditiveOperation::new());
+    let mut seg = SegmentTree::<AdditiveOperation<_>>::from_vec(b);
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {

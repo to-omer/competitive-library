@@ -7,7 +7,7 @@ pub fn dsl_2_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);
-    let mut seg = SegmentTree::new(n, MinOperation::new());
+    let mut seg = SegmentTree::<MinOperation<_>>::new(n);
     for _ in 0..q {
         scan!(scanner, ty, x, y);
         if ty == 0 {

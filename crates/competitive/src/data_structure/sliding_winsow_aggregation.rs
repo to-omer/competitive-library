@@ -5,16 +5,20 @@ use crate::algebra::Monoid;
 pub struct QueueAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
-    monoid: M,
 }
 #[codesnip::entry("QueueAggregation")]
-impl<M: Monoid> QueueAggregation<M> {
-    pub fn new(monoid: M) -> Self {
+impl<M: Monoid> Default for QueueAggregation<M> {
+    fn default() -> Self {
         Self {
             front_stack: Vec::new(),
             back_stack: Vec::new(),
-            monoid,
         }
+    }
+}
+#[codesnip::entry("QueueAggregation")]
+impl<M: Monoid> QueueAggregation<M> {
+    pub fn new() -> Self {
+        Self::default()
     }
     #[inline]
     pub fn len(&self) -> usize {
@@ -26,15 +30,9 @@ impl<M: Monoid> QueueAggregation<M> {
     }
     #[inline]
     pub fn fold_all(&self) -> M::T {
-        self.monoid.operate(
-            self.front_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
-            self.back_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
+        M::operate(
+            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
+            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
         )
     }
     #[inline]
@@ -46,23 +44,17 @@ impl<M: Monoid> QueueAggregation<M> {
     }
     #[inline]
     pub fn push(&mut self, value: M::T) {
-        let x = self.monoid.operate(
-            self.back_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
+        let x = M::operate(
+            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
             &value,
         );
         self.back_stack.push((x, value));
     }
     #[inline]
     fn push_front(&mut self, value: M::T) {
-        let x = self.monoid.operate(
+        let x = M::operate(
             &value,
-            self.front_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
+            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
         );
         self.front_stack.push((x, value));
     }
@@ -83,16 +75,20 @@ impl<M: Monoid> QueueAggregation<M> {
 pub struct DequeAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
-    monoid: M,
 }
 #[codesnip::entry("DequeAggregation")]
-impl<M: Monoid> DequeAggregation<M> {
-    pub fn new(monoid: M) -> Self {
+impl<M: Monoid> Default for DequeAggregation<M> {
+    fn default() -> Self {
         Self {
             front_stack: Vec::new(),
             back_stack: Vec::new(),
-            monoid,
         }
+    }
+}
+#[codesnip::entry("DequeAggregation")]
+impl<M: Monoid> DequeAggregation<M> {
+    pub fn new() -> Self {
+        Self::default()
     }
     #[inline]
     pub fn len(&self) -> usize {
@@ -104,15 +100,9 @@ impl<M: Monoid> DequeAggregation<M> {
     }
     #[inline]
     pub fn fold_all(&self) -> M::T {
-        self.monoid.operate(
-            self.front_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
-            self.back_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
+        M::operate(
+            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
+            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
         )
     }
     #[inline]
@@ -131,22 +121,16 @@ impl<M: Monoid> DequeAggregation<M> {
     }
     #[inline]
     pub fn push_front(&mut self, value: M::T) {
-        let x = self.monoid.operate(
+        let x = M::operate(
             &value,
-            self.front_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
+            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
         );
         self.front_stack.push((x, value));
     }
     #[inline]
     pub fn push_back(&mut self, value: M::T) {
-        let x = self.monoid.operate(
-            self.back_stack
-                .last()
-                .map(|t| &t.0)
-                .unwrap_or(&self.monoid.unit()),
+        let x = M::operate(
+            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
             &value,
         );
         self.back_stack.push((x, value));

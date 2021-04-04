@@ -26,26 +26,26 @@ impl EdgeListGraph {
 )]
 impl EdgeListGraph {
     /// tarjan
-    pub fn minimum_spanning_arborescence<G>(
+    pub fn minimum_spanning_arborescence<G, F>(
         &self,
         root: usize,
-        group: G,
-        weight: impl Fn(usize) -> G::T,
+        weight: F,
     ) -> Option<(G::T, Vec<usize>)>
     where
         G: Group,
         G::T: Ord,
+        F: Fn(usize) -> G::T,
     {
         use std::{cmp::Reverse, collections::BinaryHeap};
         let mut uf = MergingUnionFind::new(
             self.vertices_size(),
-            |_| (BinaryHeap::new(), group.unit()),
+            |_| (BinaryHeap::new(), G::unit()),
             |x, y| {
-                let ny = group.rinv_operate(&y.1, &x.1);
+                let ny = G::rinv_operate(&y.1, &x.1);
                 x.0.extend(
                     (y.0)
                         .drain()
-                        .map(|(Reverse(ref w), i)| (Reverse(group.operate(w, &ny)), i)),
+                        .map(|(Reverse(ref w), i)| (Reverse(G::operate(w, &ny)), i)),
                 )
             },
         );
@@ -58,7 +58,7 @@ impl EdgeListGraph {
         let mut ord = vec![];
         let mut leaf = vec![self.edges_size(); self.vertices_size()];
         let mut cycle = 0usize;
-        let mut acc = group.unit();
+        let mut acc = G::unit();
         for mut cur in self.vertices() {
             if state[cur] != 0 {
                 continue;
@@ -71,15 +71,15 @@ impl EdgeListGraph {
                 let (w, eid) = {
                     let (heap, lazy) = &mut uf.find_root_mut(cur).data;
                     match heap.pop() {
-                        Some((Reverse(w), eid)) => (group.operate(&w, &lazy), eid),
+                        Some((Reverse(w), eid)) => (G::operate(&w, &lazy), eid),
                         None => return None,
                     }
                 };
                 {
                     let curw = &mut uf.find_root_mut(cur).data.1;
-                    *curw = group.rinv_operate(curw, &w);
+                    *curw = G::rinv_operate(curw, &w);
                 }
-                acc = group.operate(&acc, &w);
+                acc = G::operate(&acc, &w);
                 ord.push(eid);
                 let (u, v) = self[eid];
                 if leaf[v] >= self.edges_size() {

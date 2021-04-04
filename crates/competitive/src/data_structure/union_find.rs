@@ -97,20 +97,15 @@ fn test_union_find() {
 #[codesnip::entry("WeightedUnionFind", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct WeightedUnionFind<G: Group> {
-    group: G,
     parents: Vec<isize>,
     diff: Vec<G::T>,
 }
 #[codesnip::entry("WeightedUnionFind")]
 impl<G: Group> WeightedUnionFind<G> {
-    pub fn new(n: usize, group: G) -> Self {
+    pub fn new(n: usize) -> Self {
         let parents = vec![-1; n];
-        let diff = vec![group.unit(); n];
-        Self {
-            parents,
-            diff,
-            group,
-        }
+        let diff = vec![G::unit(); n];
+        Self { parents, diff }
     }
     pub fn find(&mut self, x: usize) -> usize {
         if self.parents[x] < 0 {
@@ -118,7 +113,7 @@ impl<G: Group> WeightedUnionFind<G> {
         } else {
             let px = self.parents[x] as usize;
             let y = self.find(px);
-            let w = self.group.operate(&self.diff[x], &self.diff[px]);
+            let w = G::operate(&self.diff[x], &self.diff[px]);
             self.diff[x] = w;
             self.parents[x] = y as isize;
             y
@@ -131,8 +126,8 @@ impl<G: Group> WeightedUnionFind<G> {
     pub fn unite(&mut self, x: usize, y: usize, w: G::T) -> bool {
         let wx = self.get_weight(x);
         let wy = self.get_weight(y);
-        let mut w = self.group.operate(&w, &wx);
-        w = self.group.rinv_operate(&w, &wy);
+        let mut w = G::operate(&w, &wx);
+        w = G::rinv_operate(&w, &wy);
         use std::mem::swap;
         let mut x = self.find(x);
         let mut y = self.find(y);
@@ -141,7 +136,7 @@ impl<G: Group> WeightedUnionFind<G> {
         }
         if self.parents[x] > self.parents[y] {
             swap(&mut x, &mut y);
-            w = self.group.inverse(&w);
+            w = G::inverse(&w);
         }
         self.parents[x] += self.parents[y];
         self.parents[y] = x as isize;
@@ -157,7 +152,7 @@ impl<G: Group> WeightedUnionFind<G> {
     }
     pub fn get_difference(&mut self, x: usize, y: usize) -> Option<G::T> {
         if self.is_same(x, y) {
-            Some(self.group.rinv_operate(&self.diff[y], &self.diff[x]))
+            Some(G::rinv_operate(&self.diff[y], &self.diff[x]))
         } else {
             None
         }

@@ -7,7 +7,7 @@ pub fn dsl_3_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, s: u64, a: [u64]);
-    let mut que = QueueAggregation::new(AdditiveOperation::new());
+    let mut que = QueueAggregation::<AdditiveOperation<_>>::new();
     let mut ans = std::usize::MAX;
     for a in a.take(n) {
         que.push(a);

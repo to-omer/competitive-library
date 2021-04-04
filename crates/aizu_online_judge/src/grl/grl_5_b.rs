@@ -7,7 +7,7 @@ pub fn grl_5_b(reader: impl Read, writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, (graph, w): { TreeGraphScanner::<usize, u64>::new(n) });
-    let re = ReRooting::new(&graph, MaxOperation::new(), |d, _vid, eid_opt| {
+    let re = ReRooting::<MaxOperation<_>, _>::new(&graph, |d, _vid, eid_opt| {
         d + eid_opt.map_or(0, |eid| w[eid])
     });
     echo(writer, re.dp, '\n').ok();

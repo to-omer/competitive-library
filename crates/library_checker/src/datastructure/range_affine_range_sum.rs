@@ -1,9 +1,9 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
-    algebra::{AdditiveOperation, CartesianOperation, LinearOperation},
+    algebra::{AdditiveOperation, CartesianOperation, RangeSumRangeLinear},
     data_structure::LazySegmentTree,
-    num::{mint_basic::MInt998244353, MInt},
+    num::{mint_basic::MInt998244353, MInt, One},
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/range_affine_range_sum")]
@@ -11,11 +11,8 @@ pub fn range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [MInt998244353]);
-    let mut seg = LazySegmentTree::from_vec(
-        a.take(n).map(|x| (x, 1u32)).collect::<_>(),
-        CartesianOperation::new(AdditiveOperation::new(), AdditiveOperation::new()),
-        LinearOperation::new(),
-        |x, y| (y.0 * x.0 + y.1 * MInt998244353::new(x.1), x.1),
+    let mut seg = LazySegmentTree::<RangeSumRangeLinear<_>>::from_vec(
+        a.take(n).map(|x| (x, MInt998244353::one())).collect::<_>(),
     );
     for _ in 0..q {
         scan!(scanner, ty);
