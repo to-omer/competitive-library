@@ -46,16 +46,14 @@ pub trait MonoidAction {
     )
 )]
 pub mod monoid_action_impls {
-    use std::{
-        marker::PhantomData,
-        ops::{Add, Mul},
-    };
-
+    #[codesnip::skip]
     use super::*;
     pub struct RangeSumRangeAdd<T> {
-        _marker: PhantomData<fn() -> T>,
+        _marker: std::marker::PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Zero + Add<Output = T> + Mul<Output = T>> MonoidAction for RangeSumRangeAdd<T> {
+    impl<T: Copy + Zero + std::ops::Add<Output = T> + std::ops::Mul<Output = T>> MonoidAction
+        for RangeSumRangeAdd<T>
+    {
         type MT = (T, T);
         type AT = T;
         type M = CartesianOperation<AdditiveOperation<T>, AdditiveOperation<T>>;
@@ -66,9 +64,9 @@ pub mod monoid_action_impls {
     }
 
     pub struct RangeSumRangeLinear<T> {
-        _marker: PhantomData<fn() -> T>,
+        _marker: std::marker::PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> MonoidAction
+    impl<T: Copy + Zero + One + std::ops::Add<Output = T> + std::ops::Mul<Output = T>> MonoidAction
         for RangeSumRangeLinear<T>
     {
         type MT = (T, T);
@@ -81,10 +79,10 @@ pub mod monoid_action_impls {
     }
 
     pub struct RangeSumRangeUpdate<T> {
-        _marker: PhantomData<fn() -> T>,
+        _marker: std::marker::PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Zero + Add<Output = T> + Mul<Output = T> + PartialEq> MonoidAction
-        for RangeSumRangeUpdate<T>
+    impl<T: Copy + Zero + std::ops::Add<Output = T> + std::ops::Mul<Output = T> + PartialEq>
+        MonoidAction for RangeSumRangeUpdate<T>
     {
         type MT = (T, T);
         type AT = Option<T>;
@@ -96,7 +94,7 @@ pub mod monoid_action_impls {
     }
 
     pub struct RangeMaxRangeUpdate<T> {
-        _marker: PhantomData<fn() -> T>,
+        _marker: std::marker::PhantomData<fn() -> T>,
     }
     impl<T: Clone + PartialEq + Ord + Bounded> MonoidAction for RangeMaxRangeUpdate<T> {
         type MT = T;
@@ -109,7 +107,7 @@ pub mod monoid_action_impls {
     }
 
     pub struct RangeMinRangeUpdate<T> {
-        _marker: PhantomData<fn() -> T>,
+        _marker: std::marker::PhantomData<fn() -> T>,
     }
     impl<T: Clone + PartialEq + Ord + Bounded> MonoidAction for RangeMinRangeUpdate<T> {
         type MT = T;
@@ -122,9 +120,11 @@ pub mod monoid_action_impls {
     }
 
     pub struct RangeMinRangeAdd<T> {
-        _marker: PhantomData<fn() -> T>,
+        _marker: std::marker::PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Ord + Bounded + Zero + Add<Output = T>> MonoidAction for RangeMinRangeAdd<T> {
+    impl<T: Copy + Ord + Bounded + Zero + std::ops::Add<Output = T>> MonoidAction
+        for RangeMinRangeAdd<T>
+    {
         type MT = T;
         type AT = T;
         type M = MinOperation<T>;
