@@ -11,6 +11,8 @@ mod other;
 mod rho_path;
 mod search;
 mod slide_minimum;
+#[cfg_attr(nightly, codesnip::entry("XorBasis", inline))]
+mod xorbasis;
 mod zeta_transform;
 
 pub use bitdp::*;
@@ -21,4 +23,5 @@ pub use other::*;
 pub use rho_path::RhoPath;
 pub use search::*;
 pub use slide_minimum::*;
+pub use xorbasis::XorBasis;
 pub use zeta_transform::*;
