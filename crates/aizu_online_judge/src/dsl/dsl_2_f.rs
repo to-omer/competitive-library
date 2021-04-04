@@ -1,17 +1,13 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
-pub use competitive::{
-    algebra::{LastOperation, MinOperation},
-    data_structure::LazySegmentTree,
-};
+pub use competitive::{algebra::RangeMinRangeUpdate, data_structure::LazySegmentTree};
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_F")]
 pub fn dsl_2_f(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q);
-    let mut seg =
-        LazySegmentTree::<MinOperation<_>, LastOperation<_>, _>::new(n, |&x, y| y.unwrap_or(x));
+    let mut seg = LazySegmentTree::<RangeMinRangeUpdate<_>>::new(n);
     for _ in 0..q {
         scan!(scanner, ty);
         if ty == 0 {
