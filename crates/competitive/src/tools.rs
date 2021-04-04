@@ -6,6 +6,8 @@ mod iterable;
 #[macro_use]
 #[cfg_attr(nightly, codesnip::entry("ord_tools", inline))]
 mod ord_tools;
+#[macro_use]
+mod capture;
 #[cfg_attr(nightly, codesnip::entry("Counter", inline))]
 mod counter;
 #[cfg_attr(
