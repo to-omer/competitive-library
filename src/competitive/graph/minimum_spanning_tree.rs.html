@@ -170,7 +170,7 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">idx</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">edges_size</span>()).<span class="ident">collect</span>();
         <span class="ident">idx</span>.<span class="ident">sort_by_key</span>(<span class="ident">weight</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">uf</span> <span class="op">=</span> <span class="ident">UnionFind</span>::<span class="ident">new</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
         <span class="kw">for</span> <span class="ident">eid</span> <span class="kw">in</span> <span class="ident">idx</span>.<span class="ident">into_iter</span>() {
             <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="self">self</span>[<span class="ident">eid</span>];
             <span class="ident">res</span>[<span class="ident">eid</span>] <span class="op">=</span> <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="ident">u</span>, <span class="ident">v</span>);
@@ -208,22 +208,22 @@
                 )
             },
         );
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()]; <span class="comment">// 0: unprocessed, 1: in process, 2: completed</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()]; <span class="comment">// 0: unprocessed, 1: in process, 2: completed</span>
         <span class="ident">state</span>[<span class="ident">root</span>] <span class="op">=</span> <span class="number">2</span>;
         <span class="kw">for</span> (<span class="ident">id</span>, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">to</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">edges</span>().<span class="ident">enumerate</span>() {
             <span class="ident">uf</span>.<span class="ident">find_root_mut</span>(<span class="ident">to</span>).<span class="ident">data</span>.<span class="number">0</span>.<span class="ident">push</span>((<span class="ident">Reverse</span>(<span class="ident">weight</span>(<span class="ident">id</span>)), <span class="ident">id</span>));
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">paredge</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">leaf</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="self">self</span>.<span class="ident">edges_size</span>(); <span class="self">self</span>.<span class="ident">vertices_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">paredge</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">leaf</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="self">self</span>.<span class="ident">edges_size</span>(); <span class="self">self</span>.<span class="ident">vertices_size</span>()];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cycle</span> <span class="op">=</span> <span class="number">0usize</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">G</span>::<span class="ident">unit</span>();
         <span class="kw">for</span> <span class="kw-2">mut</span> <span class="ident">cur</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
             <span class="kw">if</span> <span class="ident">state</span>[<span class="ident">cur</span>] <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
                 <span class="kw">continue</span>;
             }
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ch</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[];
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ch</span> <span class="op">=</span> <span class="macro">vec!</span>[];
             <span class="kw">while</span> <span class="ident">state</span>[<span class="ident">cur</span>] <span class="op">!</span><span class="op">=</span> <span class="number">2</span> {
                 <span class="ident">path</span>.<span class="ident">push</span>(<span class="ident">cur</span>);
                 <span class="ident">state</span>[<span class="ident">cur</span>] <span class="op">=</span> <span class="number">1</span>;
@@ -265,8 +265,8 @@
                 <span class="ident">state</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="number">2</span>;
             }
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tree</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="ident">root</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tree</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">root</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
         <span class="kw">for</span> <span class="ident">eid</span> <span class="kw">in</span> <span class="ident">ord</span>.<span class="ident">into_iter</span>().<span class="ident">rev</span>() {
             <span class="kw">if</span> <span class="op">!</span><span class="ident">used</span>[<span class="ident">eid</span>] {
                 <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) <span class="op">=</span> <span class="self">self</span>[<span class="ident">eid</span>];
