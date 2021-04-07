@@ -46,6 +46,7 @@ impl<T, R: RandomSpec<T>> Iterator for RandIter<'_, T, R> {
 impl<T: NotEmptyStep64> RandomSpec<T> for Range<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count = <T as NotEmptyStep64>::steps_between(&self.start, &self.end);
+        assert_ne!(count, 0, "empty range in `RandomSpec<T> for Range<T>`");
         let count = randint_uniform(rng, count);
         <T as NotEmptyStep64>::forward_unchecked(&self.start, count)
     }
@@ -69,6 +70,7 @@ impl<T: NotEmptyStep64> RandomSpec<T> for RangeInclusive<T> {
 impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeTo<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
         let count = <T as NotEmptyStep64>::steps_between(&<T as Bounded>::minimum(), &self.end);
+        assert_ne!(count, 0, "empty range in `RandomSpec<T> for RangeTo<T>`");
         let count = randint_uniform(rng, count);
         <T as NotEmptyStep64>::forward_unchecked(&<T as Bounded>::minimum(), count)
     }
@@ -125,7 +127,7 @@ macro_rules! step64_impls {
     ([$($u:ty),*],[$($i:ty),*]) => {
         $(impl NotEmptyStep64 for $u {
             fn steps_between(start: &Self, end: &Self) -> u64 {
-                if *start < *end {
+                if *start <= *end {
                     (*end - *start) as u64
                 } else {
                     panic!("empty range in `NotEmptyStep64`");
@@ -137,7 +139,7 @@ macro_rules! step64_impls {
         })*
         $(impl NotEmptyStep64 for $i {
             fn steps_between(start: &Self, end: &Self) -> u64 {
-                if *start < *end {
+                if *start <= *end {
                     ((*end as i64).wrapping_sub(*start as i64)) as u64
                 } else {
                     panic!("empty range in `NotEmptyStep64`");
@@ -154,7 +156,7 @@ impl NotEmptyStep64 for char {
     fn steps_between(start: &Self, end: &Self) -> u64 {
         let start = *start as u8;
         let end = *end as u8;
-        if start < end {
+        if start <= end {
             (end - start) as u64
         } else {
             panic!("empty range in `NotEmptyStep64`");
