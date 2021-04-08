@@ -2,6 +2,8 @@
 
 mod adjacency_list;
 mod edge_list;
+#[cfg_attr(nightly, codesnip::entry("graphvis", inline, include("SparseGraph")))]
+mod graphvis;
 mod grid;
 mod low_link;
 #[cfg_attr(nightly, codesnip::entry("Dinic", inline, include("SparseGraph")))]
