@@ -49,8 +49,8 @@ impl RandomSpec<UndirectedSparseGraph> for MixedTree {
             let mut edges = Vec::with_capacity(n.saturating_sub(1));
             if n >= 2 {
                 let k = rng.gen(1..n);
-                let ty = rng.rand(6);
                 for n in [k, n - k].iter().cloned() {
+                    let ty = rng.rand(6);
                     edges.extend(match ty {
                         0 => from_prufer_sequence(
                             n,
