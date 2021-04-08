@@ -1,4 +1,4 @@
-use crate::graph::SparseGraph;
+use crate::graph::UndirectedSparseGraph;
 
 #[codesnip::entry("tree_center")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -7,7 +7,7 @@ pub enum TreeCenter {
     Two(usize, usize),
 }
 #[codesnip::entry("tree_center", include("SparseGraph"))]
-impl<D> SparseGraph<D> {
+impl UndirectedSparseGraph {
     /// tree center
     pub fn tree_center(&self) -> TreeCenter {
         let n = self.vertices_size();
@@ -57,10 +57,31 @@ impl<D> SparseGraph<D> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::graph::UndirectedSparseGraph;
+    use crate::{graph::UndirectedSparseGraph, tools::Xorshift, tree::MixedTree};
+
+    impl UndirectedSparseGraph {
+        fn naive_tree_center(&self) -> TreeCenter {
+            let mut md: Vec<_> = self
+                .vertices()
+                .map(|u| (self.tree_depth(u).into_iter().max().unwrap_or_default(), u))
+                .collect();
+            md.sort_unstable();
+            if md.len() == 1 {
+                TreeCenter::One(md[0].1)
+            } else if md.len() >= 2 {
+                if md[0].0 == md[1].0 {
+                    TreeCenter::Two(md[0].1, md[1].1)
+                } else {
+                    TreeCenter::One(md[0].1)
+                }
+            } else {
+                panic!("vertex size should be larger than one.");
+            }
+        }
+    }
 
     #[test]
-    fn test_center() {
+    fn test_center_handmaid() {
         assert_eq!(
             UndirectedSparseGraph::from_edges(1, vec![]).tree_center(),
             TreeCenter::One(0)
@@ -78,7 +99,7 @@ mod tests {
             TreeCenter::One(1)
         );
         assert_eq!(
-            UndirectedSparseGraph::from_edges(6, vec![(0, 1), (1, 2), (1, 3), (3, 4)])
+            UndirectedSparseGraph::from_edges(5, vec![(0, 1), (1, 2), (1, 3), (3, 4)])
                 .tree_center(),
             TreeCenter::Two(1, 3)
         );
@@ -90,5 +111,17 @@ mod tests {
             .tree_center(),
             TreeCenter::One(3)
         );
+    }
+
+    #[test]
+    fn test_center_random() {
+        let mut rng = Xorshift::default();
+        const N: usize = 200;
+        const Q: usize = 200;
+        for _ in 0..Q {
+            let n = rng.gen(1..=N);
+            let g = rng.gen(MixedTree(n));
+            assert_eq!(g.tree_center(), g.naive_tree_center());
+        }
     }
 }
