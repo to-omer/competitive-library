@@ -107,6 +107,17 @@ random_spec_tuple_impls!(A B C D E F G H, RA RB RC RD RE RF RG RH, a b c d e f g
 random_spec_tuple_impls!(A B C D E F G H I, RA RB RC RD RE RF RG RH RI, a b c d e f g h i);
 random_spec_tuple_impls!(A B C D E F G H I J, RA RB RC RD RE RF RG RH RI RJ, a b c d e f g h i j);
 
+macro_rules! random_spec_primitive_impls {
+    ($($t:ty)*) => {
+        $(impl RandomSpec<$t> for $t {
+            fn rand(&self, _rng: &mut Xorshift) -> $t {
+                *self
+            }
+        })*
+    };
+}
+random_spec_primitive_impls!(() u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize bool char);
+
 impl<T, R: RandomSpec<T>> RandomSpec<T> for &R {
     fn rand(&self, rng: &mut Xorshift) -> T {
         <R as RandomSpec<T>>::rand(self, rng)
@@ -169,12 +180,13 @@ impl NotEmptyStep64 for char {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 /// Left-close Right-open No Empty Segment
-pub struct NotEmptySegment(pub usize);
-impl RandomSpec<(usize, usize)> for NotEmptySegment {
+pub struct NotEmptySegment<T>(pub T);
+impl<T: RandomSpec<usize>> RandomSpec<(usize, usize)> for NotEmptySegment<T> {
     fn rand(&self, rng: &mut Xorshift) -> (usize, usize) {
-        let n = randint_uniform(rng, self.0 as u64);
-        let l = randint_uniform(rng, self.0 as u64 - n) as usize;
-        (l, l + n as usize + 1)
+        let n = rng.gen(&self.0) as u64;
+        let k = randint_uniform(rng, n);
+        let l = randint_uniform(rng, n - k) as usize;
+        (l, l + k as usize + 1)
     }
 }
 

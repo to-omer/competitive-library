@@ -5,11 +5,11 @@ use crate::{
 };
 
 /// Generate Tree with Prüfer sequence
-pub struct PruferSequence(pub usize);
+pub struct PruferSequence<T>(pub T);
 
-impl RandomSpec<UndirectedSparseGraph> for PruferSequence {
+impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for PruferSequence<T> {
     fn rand(&self, rng: &mut Xorshift) -> UndirectedSparseGraph {
-        let n = self.0;
+        let n = rng.gen(&self.0);
         let edges = from_prufer_sequence(
             n,
             &rng.gen_iter(0..n)
@@ -20,32 +20,31 @@ impl RandomSpec<UndirectedSparseGraph> for PruferSequence {
     }
 }
 
-pub struct PathTree(pub usize);
+pub struct PathTree<T>(pub T);
 
-impl RandomSpec<UndirectedSparseGraph> for PathTree {
-    fn rand(&self, _rng: &mut Xorshift) -> UndirectedSparseGraph {
-        let n = self.0;
+impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for PathTree<T> {
+    fn rand(&self, rng: &mut Xorshift) -> UndirectedSparseGraph {
+        let n = rng.gen(&self.0);
         let edges = (1..n).map(|u| (u - 1, u)).collect();
         UndirectedSparseGraph::from_edges(n, edges)
     }
 }
 
-pub struct StarTree(pub usize);
+pub struct StarTree<T>(pub T);
 
-impl RandomSpec<UndirectedSparseGraph> for StarTree {
-    fn rand(&self, _rng: &mut Xorshift) -> UndirectedSparseGraph {
-        let n = self.0;
+impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for StarTree<T> {
+    fn rand(&self, rng: &mut Xorshift) -> UndirectedSparseGraph {
+        let n = rng.gen(&self.0);
         let edges = (1..n).map(|u| (0, u)).collect();
         UndirectedSparseGraph::from_edges(n, edges)
     }
 }
 
-pub struct MixedTree(pub usize);
+pub struct MixedTree<T>(pub T);
 
-impl RandomSpec<UndirectedSparseGraph> for MixedTree {
+impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for MixedTree<T> {
     fn rand(&self, rng: &mut Xorshift) -> UndirectedSparseGraph {
-        fn rand_inner(mix: &MixedTree, rng: &mut Xorshift) -> Vec<(usize, usize)> {
-            let n = mix.0;
+        fn rand_inner(n: usize, rng: &mut Xorshift) -> Vec<(usize, usize)> {
             let mut edges = Vec::with_capacity(n.saturating_sub(1));
             if n >= 2 {
                 let k = rng.gen(1..n);
@@ -60,7 +59,7 @@ impl RandomSpec<UndirectedSparseGraph> for MixedTree {
                         ),
                         1 => (1..n).map(|u| (u - 1, u)).collect(),
                         2 => (1..n).map(|u| (0, u)).collect(),
-                        _ => rand_inner(&MixedTree(n), rng),
+                        _ => rand_inner(n, rng),
                     });
                 }
                 for (u, v) in edges[k - 1..].iter_mut() {
@@ -71,8 +70,8 @@ impl RandomSpec<UndirectedSparseGraph> for MixedTree {
             }
             edges
         }
-        let n = self.0;
-        let edges = rand_inner(self, rng);
+        let n = rng.gen(&self.0);
+        let edges = rand_inner(n, rng);
         UndirectedSparseGraph::from_edges(n, edges)
     }
 }
@@ -134,8 +133,7 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let n = rng.gen(1..=N);
-            let g = rng.gen(PruferSequence(n));
+            let g = rng.gen(PruferSequence(1..=N));
             assert!(is_tree(&g));
         }
     }
@@ -146,8 +144,7 @@ mod tests {
         const N: usize = 10_000;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let n = rng.gen(N - Q..=N);
-            let g = rng.gen(PruferSequence(n));
+            let g = rng.gen(PruferSequence(N - Q..=N));
             assert!(is_tree(&g));
         }
     }
@@ -200,8 +197,7 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let n = rng.gen(1..=N);
-            let g = rng.gen(MixedTree(n));
+            let g = rng.gen(MixedTree(1..=N));
             assert!(is_tree(&g));
         }
     }
@@ -212,8 +208,7 @@ mod tests {
         const N: usize = 10_000;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let n = rng.gen(N - Q..=N);
-            let g = rng.gen(MixedTree(n));
+            let g = rng.gen(MixedTree(N - Q..=N));
             assert!(is_tree(&g));
         }
     }
