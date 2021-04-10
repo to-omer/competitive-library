@@ -7,11 +7,11 @@ pub fn read_stdin_all() -> String {
 }
 pub fn read_stdin_all_unchecked() -> String {
     use std::io::Read as _;
-    let mut s = String::new();
-    std::io::stdin().read_to_string(&mut s).expect("io error");
-    s
+    let mut buf = Vec::new();
+    std::io::stdin().read_to_end(&mut buf).expect("io error");
+    unsafe { String::from_utf8_unchecked(buf) }
 }
-pub fn read_stdin_line_unchecked() -> String {
+pub fn read_stdin_line() -> String {
     let mut s = String::new();
     std::io::stdin().read_line(&mut s).expect("io error");
     s
