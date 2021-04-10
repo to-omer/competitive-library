@@ -1,5 +1,7 @@
 //! data structures
 
+#[cfg_attr(nightly, codesnip::entry("Accumulate", inline, include("algebra")))]
+mod accumulate;
 #[cfg_attr(nightly, codesnip::entry(inline, include("algebra")))]
 mod automaton;
 mod binary_indexed_tree;
@@ -21,6 +23,7 @@ mod trie;
 mod union_find;
 mod wavelet_matrix;
 
+pub use accumulate::*;
 pub use automaton::*;
 pub use binary_indexed_tree::{BinaryIndexedTree, BinaryIndexedTree2D};
 pub use bit_vector::*;

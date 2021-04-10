@@ -196,7 +196,7 @@ pub struct LinearOperation<
 #[codesnip::entry("LinearOperation")]
 mod linear_operation_impl {
     use super::*;
-    use std::ops::{Add, Mul};
+    use std::ops::{Add, Div, Mul, Neg, Sub};
     impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Magma for LinearOperation<T> {
         type T = (T, T);
         #[inline]
@@ -211,6 +211,22 @@ mod linear_operation_impl {
         }
     }
     impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Associative for LinearOperation<T> {}
+    impl<
+            T: Copy
+                + Zero
+                + One
+                + Add<Output = T>
+                + Sub<Output = T>
+                + Neg<Output = T>
+                + Mul<Output = T>
+                + Div<Output = T>,
+        > Invertible for LinearOperation<T>
+    {
+        fn inverse(x: &Self::T) -> Self::T {
+            let y = <T as One>::one().div(x.0);
+            (y, -y.mul(x.1))
+        }
+    }
 }
 
 /// &
