@@ -94,58 +94,58 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">num</span>::{<span class="ident">One</span>, <span class="ident">Zero</span>},
-    <span class="ident">tools</span>::<span class="ident">IterScan</span>,
+    <span class="ident">tools::IterScan</span>,
 };
 
-<span class="attribute">#[<span class="ident">codesnip</span>::<span class="ident">entry</span>(<span class="string">&quot;MIntBase&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;scanner&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MIntBase&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;scanner&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
-    <span class="ident">x</span>: <span class="ident">M</span>::<span class="ident">Inner</span>,
-    <span class="ident">_marker</span>: <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">x</span>: <span class="ident">M::Inner</span>,
+    <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M</span><span class="op">&gt;</span>,
 }
 
-<span class="attribute">#[<span class="ident">codesnip</span>::<span class="ident">entry</span>(<span class="string">&quot;MIntBase&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MIntBase&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntBase</span> {
-    <span class="kw">type</span> <span class="ident">Inner</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">std</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span> <span class="op">+</span> <span class="ident">std</span>::<span class="ident">hash</span>::<span class="ident">Hash</span>;
-    <span class="kw">fn</span> <span class="ident">get_mod</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_zero</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_one</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_add</span>(<span class="ident">x</span>: <span class="self">Self</span>::<span class="ident">Inner</span>, <span class="ident">y</span>: <span class="self">Self</span>::<span class="ident">Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_sub</span>(<span class="ident">x</span>: <span class="self">Self</span>::<span class="ident">Inner</span>, <span class="ident">y</span>: <span class="self">Self</span>::<span class="ident">Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_mul</span>(<span class="ident">x</span>: <span class="self">Self</span>::<span class="ident">Inner</span>, <span class="ident">y</span>: <span class="self">Self</span>::<span class="ident">Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_div</span>(<span class="ident">x</span>: <span class="self">Self</span>::<span class="ident">Inner</span>, <span class="ident">y</span>: <span class="self">Self</span>::<span class="ident">Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_neg</span>(<span class="ident">x</span>: <span class="self">Self</span>::<span class="ident">Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_inv</span>(<span class="ident">x</span>: <span class="self">Self</span>::<span class="ident">Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">mod_pow</span>(<span class="ident">x</span>: <span class="self">Self</span>::<span class="ident">Inner</span>, <span class="ident">y</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>::<span class="ident">Inner</span> {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">x</span>, <span class="kw-2">mut</span> <span class="ident">y</span>, <span class="kw-2">mut</span> <span class="ident">z</span>) <span class="op">=</span> (<span class="ident">x</span>, <span class="ident">y</span>, <span class="self">Self</span>::<span class="ident">mod_one</span>());
+    <span class="kw">type</span> <span class="ident">Inner</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">std::hash::Hash</span>;
+    <span class="kw">fn</span> <span class="ident">get_mod</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_zero</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_one</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_add</span>(<span class="ident">x</span>: <span class="self">Self</span><span class="ident">::Inner</span>, <span class="ident">y</span>: <span class="self">Self</span><span class="ident">::Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_sub</span>(<span class="ident">x</span>: <span class="self">Self</span><span class="ident">::Inner</span>, <span class="ident">y</span>: <span class="self">Self</span><span class="ident">::Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_mul</span>(<span class="ident">x</span>: <span class="self">Self</span><span class="ident">::Inner</span>, <span class="ident">y</span>: <span class="self">Self</span><span class="ident">::Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_div</span>(<span class="ident">x</span>: <span class="self">Self</span><span class="ident">::Inner</span>, <span class="ident">y</span>: <span class="self">Self</span><span class="ident">::Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_neg</span>(<span class="ident">x</span>: <span class="self">Self</span><span class="ident">::Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_inv</span>(<span class="ident">x</span>: <span class="self">Self</span><span class="ident">::Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_pow</span>(<span class="ident">x</span>: <span class="self">Self</span><span class="ident">::Inner</span>, <span class="ident">y</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span><span class="ident">::Inner</span> {
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">x</span>, <span class="kw-2">mut</span> <span class="ident">y</span>, <span class="kw-2">mut</span> <span class="ident">z</span>) <span class="op">=</span> (<span class="ident">x</span>, <span class="ident">y</span>, <span class="self">Self</span><span class="ident">::mod_one</span>());
         <span class="kw">while</span> <span class="ident">y</span> <span class="op">&gt;</span> <span class="number">0</span> {
             <span class="kw">if</span> <span class="ident">y</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
-                <span class="ident">z</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">mod_mul</span>(<span class="ident">z</span>, <span class="ident">x</span>);
+                <span class="ident">z</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::mod_mul</span>(<span class="ident">z</span>, <span class="ident">x</span>);
             }
-            <span class="ident">x</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">mod_mul</span>(<span class="ident">x</span>, <span class="ident">x</span>);
+            <span class="ident">x</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::mod_mul</span>(<span class="ident">x</span>, <span class="ident">x</span>);
             <span class="ident">y</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
         }
         <span class="ident">z</span>
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip</span>::<span class="ident">entry</span>(<span class="string">&quot;MIntBase&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span>::<span class="ident">Inner</span><span class="op">&gt;</span>: <span class="ident">MIntBase</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span>::<span class="ident">Inner</span>;
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span>::<span class="ident">Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>;
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MIntBase&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span><span class="op">&gt;</span>: <span class="ident">MIntBase</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>;
     <span class="kw">fn</span> <span class="ident">mod_into</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>;
 }
 
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip</span>::<span class="ident">entry</span>(<span class="string">&quot;MIntBase&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;MIntBase&quot;</span>))]</span>
 <span class="kw">mod</span> <span class="ident">mint_base</span>;
 
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip</span>::<span class="ident">entry</span>(<span class="string">&quot;MInt&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>)))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;MInt&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">mint_basic</span>;
 
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip</span>::<span class="ident">entry</span>(<span class="string">&quot;montgomery&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>)))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;montgomery&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>)))]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">montgomery</span>;
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-search-js="../../../search-index.js"></div>

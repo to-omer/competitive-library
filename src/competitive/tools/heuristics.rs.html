@@ -96,13 +96,13 @@
 <span id="62">62</span>
 <span id="63">63</span>
 </pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#[<span class="ident">codesnip</span>::<span class="ident">skip</span>]</span>
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">tools</span>::<span class="ident">Xorshift</span>;
+<span class="attribute">#[<span class="ident">codesnip::skip</span>]</span>
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::tools::Xorshift</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SimuratedAnnealing</span> {
     <span class="kw">pub</span> <span class="ident">iter_count</span>: <span class="ident">usize</span>,
-    <span class="kw">pub</span> <span class="ident">now</span>: <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Instant</span>,
+    <span class="kw">pub</span> <span class="ident">now</span>: <span class="ident">std::time::Instant</span>,
     <span class="kw">pub</span> <span class="ident">time</span>: <span class="ident">f64</span>,
     <span class="kw">pub</span> <span class="ident">temperture</span>: <span class="ident">f64</span>,
     <span class="kw">pub</span> <span class="ident">log_table</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
@@ -110,17 +110,17 @@
 }
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SimuratedAnnealing</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Instant</span>::<span class="ident">now</span>();
-        <span class="kw">let</span> <span class="ident">log_table</span> <span class="op">=</span> (<span class="number">0</span>..<span class="self">Self</span>::<span class="ident">LOG_TABLE_SIZE</span>)
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> ((<span class="ident">i</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">f64</span> <span class="op">/</span> (<span class="self">Self</span>::<span class="ident">LOG_TABLE_SIZE</span> <span class="op">*</span> <span class="number">2</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">ln</span>())
+        <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">std::time::Instant::now</span>();
+        <span class="kw">let</span> <span class="ident">log_table</span> <span class="op">=</span> (<span class="number">0</span>..<span class="self">Self</span><span class="ident">::LOG_TABLE_SIZE</span>)
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> ((<span class="ident">i</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">f64</span> <span class="op">/</span> (<span class="self">Self</span><span class="ident">::LOG_TABLE_SIZE</span> <span class="op">*</span> <span class="number">2</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">ln</span>())
             .<span class="ident">collect</span>();
         <span class="self">Self</span> {
             <span class="ident">iter_count</span>: <span class="number">0</span>,
             <span class="ident">now</span>,
             <span class="ident">time</span>: <span class="number">0.</span>,
-            <span class="ident">temperture</span>: <span class="self">Self</span>::<span class="ident">START_TEMP</span>,
+            <span class="ident">temperture</span>: <span class="self">Self</span><span class="ident">::START_TEMP</span>,
             <span class="ident">log_table</span>,
-            <span class="ident">rand</span>: <span class="ident">Xorshift</span>::<span class="ident">new</span>(<span class="self">Self</span>::<span class="ident">SEED</span>),
+            <span class="ident">rand</span>: <span class="ident">Xorshift::new</span>(<span class="self">Self</span><span class="ident">::SEED</span>),
         }
     }
 }
@@ -128,32 +128,32 @@
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IS_MAXIMIZE</span>: <span class="ident">bool</span> <span class="op">=</span> <span class="bool-val">true</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">START_TEMP</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">3e3</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">END_TEMP</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">1e-8</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TEMP_RATIO</span>: <span class="ident">f64</span> <span class="op">=</span> (<span class="self">Self</span>::<span class="ident">END_TEMP</span> <span class="op">-</span> <span class="self">Self</span>::<span class="ident">START_TEMP</span>) <span class="op">/</span> <span class="self">Self</span>::<span class="ident">TIME_LIMIT</span>;
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TEMP_RATIO</span>: <span class="ident">f64</span> <span class="op">=</span> (<span class="self">Self</span><span class="ident">::END_TEMP</span> <span class="op">-</span> <span class="self">Self</span><span class="ident">::START_TEMP</span>) <span class="op">/</span> <span class="self">Self</span><span class="ident">::TIME_LIMIT</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TIME_LIMIT</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">1.99</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG_TABLE_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0x10000</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UPDATE_INTERVAL</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0xff</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">0xbeef_cafe</span>;
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">Default</span>::<span class="ident">default</span>()
+        <span class="ident">Default::default</span>()
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_accepted</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">current_score</span>: <span class="ident">f64</span>, <span class="ident">next_score</span>: <span class="ident">f64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">Self</span>::<span class="ident">IS_MAXIMIZE</span> {
+        <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">Self</span><span class="ident">::IS_MAXIMIZE</span> {
             <span class="ident">next_score</span> <span class="op">-</span> <span class="ident">current_score</span>
         } <span class="kw">else</span> {
             <span class="ident">current_score</span> <span class="op">-</span> <span class="ident">next_score</span>
         };
         <span class="ident">diff</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0.</span>
             <span class="op">|</span><span class="op">|</span> <span class="ident">diff</span>
-                <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">log_table</span>[<span class="self">self</span>.<span class="ident">rand</span>.<span class="ident">rand</span>(<span class="self">Self</span>::<span class="ident">LOG_TABLE_SIZE</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span>]
+                <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">log_table</span>[<span class="self">self</span>.<span class="ident">rand</span>.<span class="ident">rand</span>(<span class="self">Self</span><span class="ident">::LOG_TABLE_SIZE</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span>]
                     <span class="op">*</span> <span class="self">self</span>.<span class="ident">temperture</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_end</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">iter_count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">iter_count</span> <span class="op">&amp;</span> <span class="self">Self</span>::<span class="ident">UPDATE_INTERVAL</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">iter_count</span> <span class="op">&amp;</span> <span class="self">Self</span><span class="ident">::UPDATE_INTERVAL</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
             <span class="self">self</span>.<span class="ident">time</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">now</span>.<span class="ident">elapsed</span>().<span class="ident">as_secs_f64</span>();
-            <span class="self">self</span>.<span class="ident">temperture</span> <span class="op">=</span> <span class="self">Self</span>::<span class="ident">START_TEMP</span> <span class="op">+</span> <span class="self">Self</span>::<span class="ident">TEMP_RATIO</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">time</span>;
-            <span class="self">self</span>.<span class="ident">time</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">Self</span>::<span class="ident">TIME_LIMIT</span>
+            <span class="self">self</span>.<span class="ident">temperture</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::START_TEMP</span> <span class="op">+</span> <span class="self">Self</span><span class="ident">::TEMP_RATIO</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">time</span>;
+            <span class="self">self</span>.<span class="ident">time</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">Self</span><span class="ident">::TIME_LIMIT</span>
         } <span class="kw">else</span> {
             <span class="bool-val">false</span>
         }
