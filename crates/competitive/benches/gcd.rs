@@ -1,107 +1,75 @@
-#![feature(test)]
-extern crate test;
+use competitive::{math::*, tools::Xorshift};
+use criterion::{BatchSize, Criterion};
 
-use competitive::{math::*, rand, tools::Xorshift};
-
-#[bench]
-fn bench_gcd(b: &mut test::Bencher) {
-    let mut rng = Xorshift::default();
-    const Q: usize = 10_000;
-    rand!(rng, v: [(0u64.., 0u64..); Q]);
-    b.iter(|| {
-        let mut x = 0;
-        for &(a, b) in &v {
-            x ^= gcd(a, b);
-        }
-        x
-    })
+pub fn bench_gcd(c: &mut Criterion) {
+    let spec = (0u64.., 0u64..);
+    let mut group = c.benchmark_group("gcd");
+    group.bench_function("gcd", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(|| rng.gen(&spec), |(a, b)| gcd(a, b), BatchSize::SmallInput)
+    });
+    group.bench_function("gcd_binary", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || rng.gen(&spec),
+            |(a, b)| gcd_binary(a, b),
+            BatchSize::SmallInput,
+        )
+    });
 }
 
-#[bench]
-fn bench_gcd_binary(b: &mut test::Bencher) {
-    let mut rng = Xorshift::default();
-    const Q: usize = 10_000;
-    rand!(rng, v: [(0u64.., 0u64..); Q]);
-    b.iter(|| {
-        let mut x = 0;
-        for &(a, b) in &v {
-            x ^= gcd_binary(a, b);
-        }
-        x
-    })
-}
-
-#[bench]
-fn bench_extgcd(b: &mut test::Bencher) {
-    let mut rng = Xorshift::default();
-    const Q: usize = 10_000;
+pub fn bench_extgcd(c: &mut Criterion) {
     const M: i64 = 1_000_000_007;
-    rand!(rng, v: [(0..M, 0..M); Q]);
-    b.iter(|| {
-        let mut x = 0;
-        for &(a, b) in &v {
-            x ^= extgcd_loop(a, b).0;
-        }
-        x
-    })
+    let spec = (0..M, 0..M);
+    let mut group = c.benchmark_group("extgcd");
+    group.bench_function("extgcd", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || rng.gen(&spec),
+            |(a, b)| extgcd(a, b),
+            BatchSize::SmallInput,
+        )
+    });
+    group.bench_function("extgcd_loop", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || rng.gen(&spec),
+            |(a, b)| extgcd_loop(a, b),
+            BatchSize::SmallInput,
+        )
+    });
+    group.bench_function("extgcd_binary", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || rng.gen(&spec),
+            |(a, b)| extgcd_binary(a, b),
+            BatchSize::SmallInput,
+        )
+    });
 }
 
-#[bench]
-fn bench_extgcd_binary(b: &mut test::Bencher) {
-    let mut rng = Xorshift::default();
-    const Q: usize = 10_000;
+pub fn bench_modinv(c: &mut Criterion) {
     const M: i64 = 1_000_000_007;
-    rand!(rng, v: [(0..M, 0..M); Q]);
-    b.iter(|| {
-        let mut x = 0;
-        for &(a, b) in &v {
-            x ^= extgcd_binary(a, b).0;
-        }
-        x
-    })
-}
-
-#[bench]
-fn bench_modinv(b: &mut test::Bencher) {
-    let mut rng = Xorshift::default();
-    const Q: usize = 10_000;
-    const M: i64 = 1_000_000_007;
-    rand!(rng, v: [1..M; Q]);
-    b.iter(|| {
-        let mut x = 0;
-        for &a in &v {
-            x ^= modinv(a, M);
-        }
-        x
-    })
-}
-
-#[bench]
-fn bench_modinv_loop(b: &mut test::Bencher) {
-    const M: i64 = 1_000_000_007;
-    let mut rng = Xorshift::default();
-    const Q: usize = 10_000;
-    rand!(rng, v: [1..M; Q]);
-    b.iter(|| {
-        let mut x = 0;
-        for &a in &v {
-            x ^= modinv_loop(a, M);
-        }
-        x
-    })
-}
-
-#[bench]
-fn bench_modinv_extgcd_binary(b: &mut test::Bencher) {
-    const M: u64 = 1_000_000_007;
-    let mut rng = Xorshift::default();
-    const Q: usize = 10_000;
-    rand!(rng, v: [1..M; Q]);
-    b.iter(|| {
-        let mut x = 0;
-        for &a in &v {
-            x ^= modinv_extgcd_binary(a, M);
-        }
-        x
-    })
+    let spec = 1..M;
+    let mut group = c.benchmark_group("modinv");
+    group.bench_function("modinv", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(|| rng.gen(&spec), |a| modinv(a, M), BatchSize::SmallInput)
+    });
+    group.bench_function("modinv_loop", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || rng.gen(&spec),
+            |a| modinv_loop(a, M),
+            BatchSize::SmallInput,
+        )
+    });
+    group.bench_function("modinv_extgcd_binary", |b| {
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || rng.gen(&spec) as u64,
+            |a| modinv_extgcd_binary(a, M as u64),
+            BatchSize::SmallInput,
+        )
+    });
 }

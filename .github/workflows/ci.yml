@@ -185,6 +185,56 @@ jobs:
         path: artifact/**/*
 
 
+  benchmark:
+    strategy:
+      fail-fast: false
+
+    name: Benchmark
+    runs-on: ubuntu-18.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
+      shell: bash
+
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: benchmark-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
+        restore-keys: benchmark-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-
+
+    - name: Setup `stable-x86_64-unknown-linux-gnu`
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable-x86_64-unknown-linux-gnu
+        override: true
+        profile: minimal
+
+    - name: Benchmark
+      env:
+        CRITERION_HOME: ./../../target/doc/benchmarks
+        RUST_BACKTRACE: full
+      run: |
+        ulimit -s unlimited
+        cargo bench -p competitive --bench criterion
+
+    - name: upload artifacts
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: benchmarks
+        path: target/doc/benchmarks/**/*
+
+
   generate-doc:
     needs: verify
     if: github.ref == 'refs/heads/master'
@@ -231,6 +281,9 @@ jobs:
         args: --workspace --no-deps --all-features
       env:
         RUSTDOCFLAGS: --html-in-header util/header.html
+
+    - name: Arrange benchmarks
+      run: cp -r benchmarks/* target/doc/benchmarks
 
     - name: Arrange doc resources
       run: cp -r util/gh-pages/* target/doc
