@@ -4,7 +4,7 @@ from pathlib import Path
 from shutil import move
 from subprocess import run
 
-SIZE = 16
+SIZE = 15
 
 verify_packages = ['aizu_online_judge', 'library_checker']
 
