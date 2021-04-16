@@ -1,6 +1,6 @@
 #[cfg_attr(nightly, codesnip::entry("bounded", inline))]
 mod bounded;
-#[cfg_attr(nightly, codesnip::entry("Complex", inline))]
+#[cfg_attr(nightly, codesnip::entry("Complex", inline, include("zero_one")))]
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(inline, include("zero_one")))]
 mod float;
