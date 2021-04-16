@@ -29,4 +29,5 @@ pub fn bench_mod_mul(c: &mut Criterion) {
             BatchSize::SmallInput,
         )
     });
+    group.finish();
 }
