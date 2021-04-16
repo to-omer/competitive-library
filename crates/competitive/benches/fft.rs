@@ -14,7 +14,7 @@ pub fn bench_convolve(c: &mut Criterion) {
         group.throughput(Throughput::Elements(size as _));
         rand!(rng, x: [0..=A; size], y: [0..=A; size]);
         group.bench_with_input(BenchmarkId::from_parameter(size), &(&x, &y), |b, (x, y)| {
-            b.iter(|| convolve_fft(x.iter().cloned(), y.iter().cloned()))
+            b.iter_with_large_drop(|| convolve_fft(x.iter().cloned(), y.iter().cloned()))
         });
     }
     group.finish();
