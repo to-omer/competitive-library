@@ -16,6 +16,7 @@ pub fn bench_gcd(c: &mut Criterion) {
             BatchSize::SmallInput,
         )
     });
+    group.finish();
 }
 
 pub fn bench_extgcd(c: &mut Criterion) {
@@ -46,6 +47,7 @@ pub fn bench_extgcd(c: &mut Criterion) {
             BatchSize::SmallInput,
         )
     });
+    group.finish();
 }
 
 pub fn bench_modinv(c: &mut Criterion) {
@@ -72,4 +74,5 @@ pub fn bench_modinv(c: &mut Criterion) {
             BatchSize::SmallInput,
         )
     });
+    group.finish();
 }
