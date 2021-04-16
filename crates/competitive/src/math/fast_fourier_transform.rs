@@ -8,7 +8,6 @@ use crate::{
 pub use fast_fourier_transform_impls::convolve_fft;
 #[codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))]
 pub mod fast_fourier_transform_impls {
-    #![allow(clippy::needless_range_loop)]
     use super::*;
     struct RotateCache;
     impl RotateCache {
@@ -101,6 +100,7 @@ pub mod fast_fourier_transform_impls {
             })
             .collect()
     }
+    #[allow(clippy::needless_range_loop)]
     fn fft(a: &mut [Complex<f64>], cache: &[Complex<f64>]) {
         let n = a.len();
         let mut u = 1;
@@ -118,6 +118,7 @@ pub mod fast_fourier_transform_impls {
             v >>= 1;
         }
     }
+    #[allow(clippy::needless_range_loop)]
     fn ifft(a: &mut [Complex<f64>], cache: &[Complex<f64>]) {
         let n = a.len();
         let mut u = n / 2;
