@@ -16,18 +16,21 @@ pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
         bit.update(hld.vidx[i], a);
     }
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, p, x: i64);
-            bit.update(hld.vidx[p], x);
-        } else {
-            scan!(scanner, u, v);
-            writeln!(
-                writer,
-                "{}",
-                hld.query::<AdditiveOperation<_>, _>(u, v, false, |l, r| bit.fold(l, r))
-            )
-            .ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, p, x: i64);
+                bit.update(hld.vidx[p], x);
+            }
+            1 => {
+                scan!(scanner, u, v);
+                writeln!(
+                    writer,
+                    "{}",
+                    hld.query::<AdditiveOperation<_>, _>(u, v, false, |l, r| bit.fold(l, r))
+                )
+                .ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }

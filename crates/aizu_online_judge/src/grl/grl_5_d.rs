@@ -21,20 +21,23 @@ pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
 
     scan!(scanner, q);
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, v, w: i64);
-            let (l, r) = et.eidx[et.par[v]];
-            bit.update(l, w);
-            bit.update(r, -w);
-        } else {
-            scan!(scanner, u);
-            let ans = if u > 0 {
-                bit.accumulate(et.eidx[et.par[u]].0)
-            } else {
-                0
-            };
-            writeln!(writer, "{}", ans).ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, v, w: i64);
+                let (l, r) = et.eidx[et.par[v]];
+                bit.update(l, w);
+                bit.update(r, -w);
+            }
+            1 => {
+                scan!(scanner, u);
+                let ans = if u > 0 {
+                    bit.accumulate(et.eidx[et.par[u]].0)
+                } else {
+                    0
+                };
+                writeln!(writer, "{}", ans).ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }

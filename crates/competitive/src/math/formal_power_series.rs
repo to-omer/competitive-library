@@ -83,7 +83,7 @@ pub trait FormalPowerSeriesCoefficientSqrt: FormalPowerSeriesCoefficient {
 
 impl<M: MIntConvert<u32> + MIntConvert<usize>> FormalPowerSeriesCoefficientSqrt for MInt<M> {
     fn sqrt_coefficient(&self) -> Option<Self> {
-        self.clone().sqrt()
+        self.sqrt()
     }
 }
 

@@ -13,8 +13,7 @@ pub fn queue_operate_all_composite(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, q);
     let mut que = QueueAggregation::<LinearOperation<_>>::new();
     for _ in 0..q {
-        scan!(scanner, ty);
-        match ty {
+        match scanner.scan::<usize>() {
             0 => {
                 scan!(scanner, ab: (MInt998244353, MInt998244353));
                 que.push(ab);
@@ -22,11 +21,12 @@ pub fn queue_operate_all_composite(reader: impl Read, mut writer: impl Write) {
             1 => {
                 que.pop();
             }
-            _ => {
+            2 => {
                 scan!(scanner, x: MInt998244353);
                 let (a, b) = que.fold_all();
                 writeln!(writer, "{}", a * x + b).ok();
             }
+            _ => panic!("unknown query"),
         }
     }
 }

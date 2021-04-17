@@ -15,13 +15,16 @@ pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: im
         bit.update(i, a);
     }
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, p, x: i64);
-            bit.update(p, x);
-        } else {
-            scan!(scanner, l, r);
-            writeln!(writer, "{}", bit.fold(l, r)).ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, p, x: i64);
+                bit.update(p, x);
+            }
+            1 => {
+                scan!(scanner, l, r);
+                writeln!(writer, "{}", bit.fold(l, r)).ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }
@@ -33,13 +36,16 @@ pub fn point_add_range_sum_segment_tree(reader: impl Read, mut writer: impl Writ
     scan!(scanner, n, q, a: [i64; n]);
     let mut seg = SegmentTree::<AdditiveOperation<_>>::from_vec(a);
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, p, x: i64);
-            seg.update(p, x);
-        } else {
-            scan!(scanner, l, r);
-            writeln!(writer, "{}", seg.fold(l, r)).ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, p, x: i64);
+                seg.update(p, x);
+            }
+            1 => {
+                scan!(scanner, l, r);
+                writeln!(writer, "{}", seg.fold(l, r)).ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }

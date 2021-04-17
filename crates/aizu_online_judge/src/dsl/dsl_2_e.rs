@@ -9,13 +9,16 @@ pub fn dsl_2_e(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, n, q);
     let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(vec![(0, 1); n]);
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, s, t, x: u64);
-            seg.update(s - 1, t, x);
-        } else {
-            scan!(scanner, i);
-            writeln!(writer, "{}", seg.fold(i - 1, i).0).ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, s, t, x: u64);
+                seg.update(s - 1, t, x);
+            }
+            1 => {
+                scan!(scanner, i);
+                writeln!(writer, "{}", seg.fold(i - 1, i).0).ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }

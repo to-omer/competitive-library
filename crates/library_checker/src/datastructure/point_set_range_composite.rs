@@ -13,14 +13,17 @@ pub fn point_set_range_composite(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, n, q, ab: [(MInt998244353, MInt998244353); n]);
     let mut seg = SegmentTree::<LinearOperation<_>>::from_vec(ab);
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, p, cd: (MInt998244353, MInt998244353));
-            seg.set(p, cd);
-        } else {
-            scan!(scanner, l, r, x: MInt998244353);
-            let (a, b) = seg.fold(l, r);
-            writeln!(writer, "{}", a * x + b).ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, p, cd: (MInt998244353, MInt998244353));
+                seg.set(p, cd);
+            }
+            1 => {
+                scan!(scanner, l, r, x: MInt998244353);
+                let (a, b) = seg.fold(l, r);
+                writeln!(writer, "{}", a * x + b).ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }

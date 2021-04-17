@@ -21,21 +21,24 @@ pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
     let mut seg1 = SegmentTree::<LinearOperation<_>>::from_vec(nab.clone());
     let mut seg2 = SegmentTree::<ReverseOperation<LinearOperation<_>>>::from_vec(nab);
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, p, cd: (MInt998244353, MInt998244353));
-            seg1.set(hld.vidx[p], cd);
-            seg2.set(hld.vidx[p], cd);
-        } else {
-            scan!(scanner, u, v, x: MInt998244353);
-            let (a, b) = hld.query_noncom::<LinearOperation<_>, _, _>(
-                u,
-                v,
-                false,
-                |l, r| seg1.fold(l, r),
-                |l, r| seg2.fold(l, r),
-            );
-            writeln!(writer, "{}", a * x + b).ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, p, cd: (MInt998244353, MInt998244353));
+                seg1.set(hld.vidx[p], cd);
+                seg2.set(hld.vidx[p], cd);
+            }
+            1 => {
+                scan!(scanner, u, v, x: MInt998244353);
+                let (a, b) = hld.query_noncom::<LinearOperation<_>, _, _>(
+                    u,
+                    v,
+                    false,
+                    |l, r| seg1.fold(l, r),
+                    |l, r| seg2.fold(l, r),
+                );
+                writeln!(writer, "{}", a * x + b).ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }

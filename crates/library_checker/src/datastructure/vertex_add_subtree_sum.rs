@@ -20,13 +20,16 @@ pub fn vertex_add_subtree_sum(reader: impl Read, mut writer: impl Write) {
     }
     let mut seg = SegmentTree::<AdditiveOperation<_>>::from_vec(b);
     for _ in 0..q {
-        scan!(scanner, ty);
-        if ty == 0 {
-            scan!(scanner, u, x: u64);
-            et.subtree_update(u, x, |k, x| seg.update(k, x));
-        } else {
-            scan!(scanner, u);
-            writeln!(writer, "{}", et.subtree_query(u, |l, r| seg.fold(l, r))).ok();
+        match scanner.scan::<usize>() {
+            0 => {
+                scan!(scanner, u, x: u64);
+                et.subtree_update(u, x, |k, x| seg.update(k, x));
+            }
+            1 => {
+                scan!(scanner, u);
+                writeln!(writer, "{}", et.subtree_query(u, |l, r| seg.fold(l, r))).ok();
+            }
+            _ => panic!("unknown query"),
         }
     }
 }
