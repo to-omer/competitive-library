@@ -54,37 +54,17 @@ where
         }
     }
     fn mod_inv(x: Self::Inner) -> Self::Inner {
-        let mut a = x;
-        let m = Self::get_mod();
-        let (mut b, mut u, mut s) = (m, 1, 0);
-        let k = a.trailing_zeros();
-        a >>= k;
-        for _ in 0..k {
-            if u & 1 == 1 {
-                u += m;
-            }
-            u /= 2;
+        let p = Self::get_mod() as i32;
+        let (mut a, mut b) = (x as i32, p);
+        let (mut u, mut x) = (1, 0);
+        while a != 0 {
+            let k = b / a;
+            x -= k * u;
+            b -= k * a;
+            std::mem::swap(&mut x, &mut u);
+            std::mem::swap(&mut b, &mut a);
         }
-        while a != b {
-            if b < a {
-                std::mem::swap(&mut a, &mut b);
-                std::mem::swap(&mut u, &mut s);
-            }
-            b -= a;
-            if s < u {
-                s += m;
-            }
-            s -= u;
-            let k = b.trailing_zeros();
-            b >>= k;
-            for _ in 0..k {
-                if s & 1 == 1 {
-                    s += m;
-                }
-                s /= 2;
-            }
-        }
-        Self::reduce(s as u64 * Self::n3() as u64)
+        Self::reduce((if x < 0 { x + p } else { x }) as u64 * Self::n3() as u64)
     }
 }
 impl<M> MIntConvert<u32> for M

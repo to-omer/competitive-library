@@ -2,7 +2,7 @@ use super::*;
 
 #[macro_export]
 macro_rules! define_basic_mintbase {
-    ($name:ident, $m:expr, $basety:ty, $upperty:ty, [$($unsigned:ty),*], [$($signed:ty),*]) => {
+    ($name:ident, $m:expr, $basety:ty, $signedty:ty, $upperty:ty, [$($unsigned:ty),*], [$($signed:ty),*]) => {
         pub struct $name;
         impl MIntBase for $name {
             type Inner = $basety;
@@ -53,36 +53,17 @@ macro_rules! define_basic_mintbase {
                 }
             }
             fn mod_inv(x: Self::Inner) -> Self::Inner {
-                let mut a = x;
-                let (mut b, mut u, mut s) = (Self::get_mod(), 1, 0);
-                let k = a.trailing_zeros();
-                a >>= k;
-                for _ in 0..k {
-                    if u & 1 == 1 {
-                        u += Self::get_mod();
-                    }
-                    u /= 2;
+                let p = Self::get_mod() as $signedty;
+                let (mut a, mut b) = (x as $signedty, p);
+                let (mut u, mut x) = (1, 0);
+                while a != 0 {
+                    let k = b / a;
+                    x -= k * u;
+                    b -= k * a;
+                    std::mem::swap(&mut x, &mut u);
+                    std::mem::swap(&mut b, &mut a);
                 }
-                while a != b {
-                    if b < a {
-                        std::mem::swap(&mut a, &mut b);
-                        std::mem::swap(&mut u, &mut s);
-                    }
-                    b -= a;
-                    if s < u {
-                        s += Self::get_mod();
-                    }
-                    s -= u;
-                    let k = b.trailing_zeros();
-                    b >>= k;
-                    for _ in 0..k {
-                        if s & 1 == 1 {
-                            s += Self::get_mod();
-                        }
-                        s /= 2;
-                    }
-                }
-                s
+                (if x < 0 { x + p } else { x }) as _
             }
         }
         $(impl MIntConvert<$unsigned> for $name {
@@ -127,6 +108,7 @@ macro_rules! define_basic_mint32 {
             $name,
             $m,
             u32,
+            i32,
             u64,
             [u32, u64, u128, usize],
             [i32, i64, i128, isize]
@@ -156,6 +138,7 @@ define_basic_mintbase!(
     DynModuloU64,
     DYN_MODULUS_U64.with(|cell| unsafe { *cell.get() }),
     u64,
+    i64,
     u128,
     [u64, u128, usize],
     [i64, i128, isize]
@@ -242,16 +225,28 @@ impl_to_mint_base_for_modulo2!(
 );
 pub type MInt2 = MInt<Modulo2>;
 
-#[test]
-fn test_mint() {
+#[cfg(test)]
+mod tests {
+    use super::*;
     use crate::tools::Xorshift;
-    let mut rng = Xorshift::time();
-    const Q: usize = 10_000;
-    for _ in 0..Q {
-        let a = MInt998244353::new_unchecked(rng.gen(1..MInt998244353::get_mod()));
-        let x = a.inv();
-        assert!(x.x < MInt998244353::get_mod());
-        assert_eq!(a * x, MInt998244353::one());
-        assert_eq!(x, a.pow(MInt998244353::get_mod() as usize - 2));
+
+    macro_rules! test_mint {
+        ($test_name:ident $mint:ident) => {
+            #[test]
+            fn $test_name() {
+                let mut rng = Xorshift::time();
+                const Q: usize = 10_000;
+                for _ in 0..Q {
+                    let a = $mint::new_unchecked(rng.gen(1..$mint::get_mod()));
+                    let x = a.inv();
+                    assert!(x.x < $mint::get_mod());
+                    assert_eq!(a * x, $mint::one());
+                }
+            }
+        };
     }
+    test_mint!(test_mint2 MInt2);
+    test_mint!(test_mint998244353 MInt998244353);
+    test_mint!(test_mint1000000007 MInt1000000007);
+    test_mint!(test_mint1000000009 MInt1000000009);
 }
