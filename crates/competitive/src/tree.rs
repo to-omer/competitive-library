@@ -4,7 +4,7 @@ mod depth;
 mod euler_tour;
 #[cfg_attr(
     nightly,
-    codesnip::entry("tree_generator", inline, include("SparseGraph", "ramdom_generator"))
+    codesnip::entry("tree_generator", inline, include("SparseGraph", "random_generator"))
 )]
 mod generator;
 mod heavy_light_decomposition;
