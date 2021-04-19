@@ -3,7 +3,7 @@
 /// binary operaion: $T \circ T \to T$
 pub trait Magma {
     /// type of operands: $T$
-    type T: Clone + PartialEq;
+    type T: Clone;
     /// binary operaion: $\circ$
     fn operate(x: &Self::T, y: &Self::T) -> Self::T;
     #[inline]
@@ -28,6 +28,13 @@ impl<S: Magma + Associative> SemiGroup for S {}
 pub trait Unital: Magma {
     /// identity element: $e$
     fn unit() -> Self::T;
+    #[inline]
+    fn is_unit(x: &Self::T) -> bool
+    where
+        <Self as Magma>::T: PartialEq,
+    {
+        x == &Self::unit()
+    }
 }
 
 /// associative binary operation and an identity element

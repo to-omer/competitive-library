@@ -60,53 +60,53 @@ mod min_operation_impl {
 /// retain the first element
 #[codesnip::entry("FirstOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct FirstOperation<T: Clone + PartialEq> {
+pub struct FirstOperation<T: Clone> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[codesnip::entry("FirstOperation")]
 mod first_operation_impl {
     use super::*;
-    impl<T: Clone + PartialEq> Magma for FirstOperation<T> {
+    impl<T: Clone> Magma for FirstOperation<T> {
         type T = Option<T>;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.as_ref().or_else(|| y.as_ref()).cloned()
         }
     }
-    impl<T: Clone + PartialEq> Unital for FirstOperation<T> {
+    impl<T: Clone> Unital for FirstOperation<T> {
         #[inline]
         fn unit() -> Self::T {
             None
         }
     }
-    impl<T: Clone + PartialEq> Associative for FirstOperation<T> {}
-    impl<T: Clone + PartialEq> Idempotent for FirstOperation<T> {}
+    impl<T: Clone> Associative for FirstOperation<T> {}
+    impl<T: Clone> Idempotent for FirstOperation<T> {}
 }
 
 /// retain the last element
 #[codesnip::entry("LastOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct LastOperation<T: Clone + PartialEq> {
+pub struct LastOperation<T: Clone> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[codesnip::entry("LastOperation")]
 mod last_operation_impl {
     use super::*;
-    impl<T: Clone + PartialEq> Magma for LastOperation<T> {
+    impl<T: Clone> Magma for LastOperation<T> {
         type T = Option<T>;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             y.as_ref().or_else(|| x.as_ref()).cloned()
         }
     }
-    impl<T: Clone + PartialEq> Unital for LastOperation<T> {
+    impl<T: Clone> Unital for LastOperation<T> {
         #[inline]
         fn unit() -> Self::T {
             None
         }
     }
-    impl<T: Clone + PartialEq> Associative for LastOperation<T> {}
-    impl<T: Clone + PartialEq> Idempotent for LastOperation<T> {}
+    impl<T: Clone> Associative for LastOperation<T> {}
+    impl<T: Clone> Idempotent for LastOperation<T> {}
 }
 
 /// $+$
@@ -189,7 +189,7 @@ mod multiplicative_operation_impl {
 #[codesnip::entry("LinearOperation", include("algebra", "zero_one"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct LinearOperation<
-    T: Copy + PartialEq + Zero + std::ops::Add<Output = T> + One + std::ops::Mul<Output = T>,
+    T: Copy + Zero + std::ops::Add<Output = T> + One + std::ops::Mul<Output = T>,
 > {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
@@ -232,7 +232,7 @@ mod linear_operation_impl {
 /// &
 #[codesnip::entry("BitAndOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct BitAndOperation<T: Copy + PartialEq + BitAndIdentity> {
+pub struct BitAndOperation<T: Copy + BitAndIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[codesnip::entry("BitAndOperation")]
@@ -272,28 +272,28 @@ mod bitand_operation_impl {
     impl_bitand_identity!(i16, std::i16::MIN);
     impl_bitand_identity!(i32, std::i32::MIN);
     impl_bitand_identity!(i64, std::i64::MIN);
-    impl<T: Copy + PartialEq + BitAndIdentity> Magma for BitAndOperation<T> {
+    impl<T: Copy + BitAndIdentity> Magma for BitAndOperation<T> {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             *x & *y
         }
     }
-    impl<T: Copy + PartialEq + BitAndIdentity> Unital for BitAndOperation<T> {
+    impl<T: Copy + BitAndIdentity> Unital for BitAndOperation<T> {
         #[inline]
         fn unit() -> Self::T {
             BitAndIdentity::all_one()
         }
     }
-    impl<T: Copy + PartialEq + BitAndIdentity> Associative for BitAndOperation<T> {}
-    impl<T: Copy + PartialEq + BitAndIdentity> Commutative for BitAndOperation<T> {}
-    impl<T: Copy + PartialEq + BitAndIdentity> Idempotent for BitAndOperation<T> {}
+    impl<T: Copy + BitAndIdentity> Associative for BitAndOperation<T> {}
+    impl<T: Copy + BitAndIdentity> Commutative for BitAndOperation<T> {}
+    impl<T: Copy + BitAndIdentity> Idempotent for BitAndOperation<T> {}
 }
 
 /// |
 #[codesnip::entry("BitOrOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct BitOrOperation<T: Copy + PartialEq + BitOrIdentity> {
+pub struct BitOrOperation<T: Copy + BitOrIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[codesnip::entry("BitOrOperation")]
@@ -333,28 +333,28 @@ mod bitor_operation_impl {
     impl_bitor_identity!(i16, 0i16);
     impl_bitor_identity!(i32, 0i32);
     impl_bitor_identity!(i64, 0i64);
-    impl<T: Copy + PartialEq + BitOrIdentity> Magma for BitOrOperation<T> {
+    impl<T: Copy + BitOrIdentity> Magma for BitOrOperation<T> {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             *x | *y
         }
     }
-    impl<T: Copy + PartialEq + BitOrIdentity> Unital for BitOrOperation<T> {
+    impl<T: Copy + BitOrIdentity> Unital for BitOrOperation<T> {
         #[inline]
         fn unit() -> Self::T {
             BitOrIdentity::all_zero()
         }
     }
-    impl<T: Copy + PartialEq + BitOrIdentity> Associative for BitOrOperation<T> {}
-    impl<T: Copy + PartialEq + BitOrIdentity> Commutative for BitOrOperation<T> {}
-    impl<T: Copy + PartialEq + BitOrIdentity> Idempotent for BitOrOperation<T> {}
+    impl<T: Copy + BitOrIdentity> Associative for BitOrOperation<T> {}
+    impl<T: Copy + BitOrIdentity> Commutative for BitOrOperation<T> {}
+    impl<T: Copy + BitOrIdentity> Idempotent for BitOrOperation<T> {}
 }
 
 /// ^
 #[codesnip::entry("BitXorOperation", include("algebra"))]
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct BitXorOperation<T: Copy + PartialEq + BitXorIdentity> {
+pub struct BitXorOperation<T: Copy + BitXorIdentity> {
     _marker: std::marker::PhantomData<fn() -> T>,
 }
 #[codesnip::entry("BitXorOperation")]
@@ -377,22 +377,22 @@ mod bitxor_operation_impl {
     impl_bitxor_identity!(i16, 0i16);
     impl_bitxor_identity!(i32, 0i32);
     impl_bitxor_identity!(i64, 0i64);
-    impl<T: Copy + PartialEq + BitXorIdentity> Magma for BitXorOperation<T> {
+    impl<T: Copy + BitXorIdentity> Magma for BitXorOperation<T> {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             *x ^ *y
         }
     }
-    impl<T: Copy + PartialEq + BitXorIdentity> Unital for BitXorOperation<T> {
+    impl<T: Copy + BitXorIdentity> Unital for BitXorOperation<T> {
         #[inline]
         fn unit() -> Self::T {
             BitXorIdentity::xor_zero()
         }
     }
-    impl<T: Copy + PartialEq + BitXorIdentity> Associative for BitXorOperation<T> {}
-    impl<T: Copy + PartialEq + BitXorIdentity> Commutative for BitXorOperation<T> {}
-    impl<T: Copy + PartialEq + BitXorIdentity> Invertible for BitXorOperation<T> {
+    impl<T: Copy + BitXorIdentity> Associative for BitXorOperation<T> {}
+    impl<T: Copy + BitXorIdentity> Commutative for BitXorOperation<T> {}
+    impl<T: Copy + BitXorIdentity> Invertible for BitXorOperation<T> {
         fn inverse(x: &Self::T) -> Self::T {
             *x
         }
@@ -439,7 +439,10 @@ pub struct CountingOperation<M> {
 #[codesnip::entry("CountingOperation")]
 mod counting_operation_impl {
     use super::*;
-    impl<M: Magma> Magma for CountingOperation<M> {
+    impl<M: Magma> Magma for CountingOperation<M>
+    where
+        M::T: PartialEq,
+    {
         type T = (M::T, usize);
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -457,7 +460,10 @@ mod counting_operation_impl {
             }
         }
     }
-    impl<M: Unital> Unital for CountingOperation<M> {
+    impl<M: Unital> Unital for CountingOperation<M>
+    where
+        M::T: PartialEq,
+    {
         #[inline]
         fn unit() -> Self::T {
             (M::unit(), 0)

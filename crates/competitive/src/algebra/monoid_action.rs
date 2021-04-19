@@ -3,8 +3,8 @@ use crate::num::{Bounded, One, Zero};
 
 #[codesnip::entry("MonoidAction", include("algebra"))]
 pub trait MonoidAction {
-    type MT: Clone + PartialEq;
-    type AT: Clone + PartialEq;
+    type MT: Clone;
+    type AT: Clone;
     type M: Monoid<T = Self::MT>;
     type A: Monoid<T = Self::AT>;
     fn act(x: &Self::MT, a: &Self::AT) -> Self::MT;
