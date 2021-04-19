@@ -44,15 +44,13 @@ pub trait Unital: Magma {
 /// associative binary operation and an identity element
 pub trait Monoid: SemiGroup + Unital {
     /// binary exponentiation: $x^n = x\circ\ddots\circ x$
-    fn pow(x: Self::T, n: usize) -> Self::T {
-        let mut n = n;
+    fn pow(mut x: Self::T, mut n: usize) -> Self::T {
         let mut res = Self::unit();
-        let mut base = x;
         while n > 0 {
             if n & 1 == 1 {
-                res = Self::operate(&res, &base);
+                res = Self::operate(&res, &x);
             }
-            base = Self::operate(&base, &base);
+            x = Self::operate(&x, &x);
             n >>= 1;
         }
         res
