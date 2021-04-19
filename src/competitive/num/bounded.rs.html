@@ -139,11 +139,35 @@
 <span id="105">105</span>
 <span id="106">106</span>
 <span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">/// Trait for max/min bounds</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Bounded</span>: <span class="ident">PartialOrd</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Bounded</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">PartialOrd</span> {
     <span class="kw">fn</span> <span class="ident">maximum</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
     <span class="kw">fn</span> <span class="ident">minimum</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
+    <span class="kw">fn</span> <span class="ident">is_maximum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">Self</span><span class="ident">::maximum</span>()
+    }
+    <span class="kw">fn</span> <span class="ident">is_minimum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">Self</span><span class="ident">::minimum</span>()
+    }
+    <span class="kw">fn</span> <span class="ident">set_maximum</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::maximum</span>()
+    }
+    <span class="kw">fn</span> <span class="ident">set_minimum</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+        <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::minimum</span>()
+    }
 }
 
 <span class="macro">macro_rules!</span> <span class="ident">bounded_num_impls</span> {
