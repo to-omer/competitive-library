@@ -36,7 +36,7 @@ pub trait MonoidAction {
     include(
         "MonoidAction",
         "AdditiveOperation",
-        "CartesianOperation",
+        "TupleOperation",
         "LastOperation",
         "LinearOperation",
         "MaxOperation",
@@ -56,7 +56,7 @@ pub mod monoid_action_impls {
     {
         type MT = (T, T);
         type AT = T;
-        type M = CartesianOperation<AdditiveOperation<T>, AdditiveOperation<T>>;
+        type M = (AdditiveOperation<T>, AdditiveOperation<T>);
         type A = AdditiveOperation<T>;
         fn act(&(x, y): &Self::MT, &a: &Self::AT) -> Self::MT {
             (x + a * y, y)
@@ -71,7 +71,7 @@ pub mod monoid_action_impls {
     {
         type MT = (T, T);
         type AT = (T, T);
-        type M = CartesianOperation<AdditiveOperation<T>, AdditiveOperation<T>>;
+        type M = (AdditiveOperation<T>, AdditiveOperation<T>);
         type A = LinearOperation<T>;
         fn act(&(x, y): &Self::MT, &(a, b): &Self::AT) -> Self::MT {
             (a * x + b * y, y)
@@ -86,7 +86,7 @@ pub mod monoid_action_impls {
     {
         type MT = (T, T);
         type AT = Option<T>;
-        type M = CartesianOperation<AdditiveOperation<T>, AdditiveOperation<T>>;
+        type M = (AdditiveOperation<T>, AdditiveOperation<T>);
         type A = LastOperation<T>;
         fn act(&(x, y): &Self::MT, a: &Self::AT) -> Self::MT {
             (a.unwrap_or(x) * y, y)

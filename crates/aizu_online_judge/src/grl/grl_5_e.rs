@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
-    algebra::{AdditiveOperation, CartesianOperation, RangeSumRangeAdd},
+    algebra::{AdditiveOperation, RangeSumRangeAdd},
     data_structure::LazySegmentTree,
     graph::UndirectedSparseGraph,
     tree::HeavyLightDecomposition,
@@ -19,7 +19,7 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
     }
     let mut graph = UndirectedSparseGraph::from_edges(n, edges);
     let hld = HeavyLightDecomposition::new(0, &mut graph);
-    type M = CartesianOperation<AdditiveOperation<u64>, AdditiveOperation<u64>>;
+    type M = (AdditiveOperation<u64>, AdditiveOperation<u64>);
     let mut seg = LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(vec![(0u64, 1u64); n]);
 
     scan!(scanner, q);

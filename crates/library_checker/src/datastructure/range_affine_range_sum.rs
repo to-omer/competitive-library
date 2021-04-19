@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
-    algebra::{AdditiveOperation, CartesianOperation, RangeSumRangeLinear},
+    algebra::RangeSumRangeLinear,
     data_structure::LazySegmentTree,
     num::{mint_basic::MInt998244353, MInt, One},
 };

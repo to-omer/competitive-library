@@ -392,35 +392,47 @@ mod bitxor_operation_impl {
     }
 }
 
-/// $(M_1, M_2)$
-#[codesnip::entry("CartesianOperation", include("algebra"))]
-pub struct CartesianOperation<M1, M2> {
-    _marker: std::marker::PhantomData<fn() -> (M1, M2)>,
-}
-#[codesnip::entry("CartesianOperation")]
-mod cartesian_operation_impl {
+#[codesnip::entry("TupleOperation", include("algebra"))]
+mod tuple_operation_impl {
+    #![allow(unused_variables)]
     use super::*;
-    impl<M1: Magma, M2: Magma> Magma for CartesianOperation<M1, M2> {
-        type T = (M1::T, M2::T);
-        #[inline]
-        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            (M1::operate(&x.0, &y.0), M2::operate(&x.1, &y.1))
-        }
+    macro_rules! impl_tuple_operation {
+        ($($M:ident)*, $($i:tt)*) => {
+            impl<$($M: Magma),*> Magma for ($($M,)*) {
+                type T = ($(<$M as Magma>::T,)*);
+                #[inline]
+                fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+                    ($(<$M as Magma>::operate(&x.$i, &y.$i),)*)
+                }
+            }
+            impl<$($M: Unital),*> Unital for ($($M,)*) {
+                #[inline]
+                fn unit() -> Self::T {
+                    ($(<$M as Unital>::unit(),)*)
+                }
+            }
+            impl<$($M: Associative),*> Associative for ($($M,)*) {}
+            impl<$($M: Commutative),*> Commutative for ($($M,)*) {}
+            impl<$($M: Idempotent),*> Idempotent for ($($M,)*) {}
+            impl<$($M: Invertible),*> Invertible for ($($M,)*) {
+                #[inline]
+                fn inverse(x: &Self::T) -> Self::T {
+                    ($(<$M as Invertible>::inverse(&x.$i),)*)
+                }
+            }
+        };
     }
-    impl<M1: Unital, M2: Unital> Unital for CartesianOperation<M1, M2> {
-        #[inline]
-        fn unit() -> Self::T {
-            (M1::unit(), M2::unit())
-        }
-    }
-    impl<M1: Associative, M2: Associative> Associative for CartesianOperation<M1, M2> {}
-    impl<M1: Commutative, M2: Commutative> Commutative for CartesianOperation<M1, M2> {}
-    impl<M1: Invertible, M2: Invertible> Invertible for CartesianOperation<M1, M2> {
-        #[inline]
-        fn inverse(x: &Self::T) -> Self::T {
-            (M1::inverse(&x.0), M2::inverse(&x.1))
-        }
-    }
+    impl_tuple_operation!(,);
+    impl_tuple_operation!(A, 0);
+    impl_tuple_operation!(A B, 0 1);
+    impl_tuple_operation!(A B C, 0 1 2);
+    impl_tuple_operation!(A B C D, 0 1 2 3);
+    impl_tuple_operation!(A B C D E, 0 1 2 3 4);
+    impl_tuple_operation!(A B C D E F, 0 1 2 3 4 5);
+    impl_tuple_operation!(A B C D E F G, 0 1 2 3 4 5 6);
+    impl_tuple_operation!(A B C D E F G H, 0 1 2 3 4 5 6 7);
+    impl_tuple_operation!(A B C D E F G H I, 0 1 2 3 4 5 6 7 8);
+    impl_tuple_operation!(A B C D E F G H I J, 0 1 2 3 4 5 6 7 8 9);
 }
 
 #[codesnip::entry("CountingOperation", include("algebra"))]
