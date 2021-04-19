@@ -1,19 +1,29 @@
 pub trait Zero: Sized {
     fn zero() -> Self;
+    #[inline]
     fn is_zero(&self) -> bool
     where
         Self: PartialEq,
     {
         self == &Self::zero()
     }
+    #[inline]
+    fn set_zero(&mut self) {
+        *self = Self::zero();
+    }
 }
 pub trait One: Sized {
     fn one() -> Self;
+    #[inline]
     fn is_one(&self) -> bool
     where
         Self: PartialEq,
     {
         self == &Self::one()
+    }
+    #[inline]
+    fn set_one(&mut self) {
+        *self = Self::one();
     }
 }
 macro_rules! zero_one_impls {

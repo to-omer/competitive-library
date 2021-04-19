@@ -35,6 +35,10 @@ pub trait Unital: Magma {
     {
         x == &Self::unit()
     }
+    #[inline]
+    fn set_unit(x: &mut Self::T) {
+        *x = Self::unit();
+    }
 }
 
 /// associative binary operation and an identity element
