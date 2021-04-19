@@ -267,15 +267,14 @@ jobs:
         key: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
         restore-keys: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-
 
+    - name: Remove previous doc
+      run: rm -rf target/doc
+
     - name: Download artifacts
       uses: actions/download-artifact@v2
 
     - name: Arrange artifacts
-      run: |
-        cp -r artifact/* .
-        rm -rf target/doc/benchmarks
-        mkdir -p target/doc/benchmarks
-        cp -r benchmarks/* target/doc/benchmarks
+      run: cp -r artifact/* .
 
     - name: Setup `nightly-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -290,6 +289,11 @@ jobs:
         args: --workspace --no-deps --all-features
       env:
         RUSTDOCFLAGS: --html-in-header util/header.html
+
+    - name: Arrange benchmarks
+      run: |
+        mkdir target/doc/benchmarks
+        cp -r benchmarks/* target/doc/benchmarks
 
     - name: Arrange doc resources
       run: cp -r util/gh-pages/* target/doc
