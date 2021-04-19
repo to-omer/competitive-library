@@ -26,7 +26,10 @@ mod matrix_impls {
             }
         }
     }
-    impl<T: Clone + Zero> Matrix<T> {
+    impl<T> Matrix<T>
+    where
+        T: Clone + Zero,
+    {
         pub fn zeros(shape: (usize, usize)) -> Self {
             Self {
                 shape,
@@ -34,7 +37,10 @@ mod matrix_impls {
             }
         }
     }
-    impl<T: Clone + Zero + One> Matrix<T> {
+    impl<T> Matrix<T>
+    where
+        T: Clone + Zero + One,
+    {
         pub fn eye(shape: (usize, usize)) -> Self {
             let mut data = vec![vec![Zero::zero(); shape.1]; shape.0];
             for (i, d) in data.iter_mut().enumerate() {
@@ -65,7 +71,10 @@ mod matrix_impls {
             &mut self.data[index.0][index.1]
         }
     }
-    impl<'a, T: Copy + Zero + Add<Output = T>> Add for &'a Matrix<T> {
+    impl<'a, T> Add for &'a Matrix<T>
+    where
+        T: Copy + Zero + Add<Output = T>,
+    {
         type Output = Matrix<T>;
         fn add(self, rhs: Self) -> Self::Output {
             assert_eq!(self.shape, rhs.shape);
@@ -78,7 +87,10 @@ mod matrix_impls {
             res
         }
     }
-    impl<'a, T: Copy + Zero + Sub<Output = T>> Sub for &'a Matrix<T> {
+    impl<'a, T> Sub for &'a Matrix<T>
+    where
+        T: Copy + Zero + Sub<Output = T>,
+    {
         type Output = Matrix<T>;
         fn sub(self, rhs: Self) -> Self::Output {
             assert_eq!(self.shape, rhs.shape);
@@ -91,7 +103,10 @@ mod matrix_impls {
             res
         }
     }
-    impl<'a, T: Copy + Zero + Add<Output = T> + Mul<Output = T>> Mul for &'a Matrix<T> {
+    impl<'a, T> Mul for &'a Matrix<T>
+    where
+        T: Copy + Zero + Add<Output = T> + Mul<Output = T>,
+    {
         type Output = Matrix<T>;
         fn mul(self, rhs: Self) -> Self::Output {
             assert_eq!(self.shape.1, rhs.shape.0);
@@ -106,7 +121,10 @@ mod matrix_impls {
             res
         }
     }
-    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> Matrix<T> {
+    impl<T> Matrix<T>
+    where
+        T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>,
+    {
         pub fn pow(&self, mut n: usize) -> Self {
             assert_eq!(self.shape.0, self.shape.1);
             let mut x = self.clone();
@@ -121,7 +139,10 @@ mod matrix_impls {
             res
         }
     }
-    impl<T: Copy + Zero + One + Sub<Output = T> + Mul<Output = T> + Div<Output = T>> Matrix<T> {
+    impl<T> Matrix<T>
+    where
+        T: Copy + PartialEq + Zero + One + Sub<Output = T> + Mul<Output = T> + Div<Output = T>,
+    {
         pub fn row_reduction(&mut self) {
             let (n, m) = self.shape;
             let mut c = 0;

@@ -1,15 +1,17 @@
 #[codesnip::entry]
-/// return: [(start, length)]
-pub fn run_length_encoding<T: PartialEq>(v: &[T]) -> Vec<(usize, usize)> {
+/// return: \[(elem, length)\]
+pub fn run_length_encoding<T: Clone + PartialEq, I: Iterator<Item = T>>(
+    iter: I,
+) -> Vec<(T, usize)> {
     let mut res = Vec::new();
-    for (i, a) in v.iter().enumerate() {
-        if let Some((start, len)) = res.last_mut() {
-            if &v[*start] == a {
+    for a in iter {
+        if let Some((p, len)) = res.last_mut() {
+            if p == &a {
                 *len += 1;
                 continue;
             }
         }
-        res.push((i, 1));
+        res.push((a, 1));
     }
     res
 }
@@ -36,6 +38,23 @@ pub fn floor_kernel(n: usize) -> Vec<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{rand, tools::Xorshift};
+
+    #[test]
+    fn test_run_length_encoding() {
+        let mut rng = Xorshift::default();
+        const N: usize = 100_000;
+        rand!(rng, v: [0u8..8u8; N]);
+        let r = run_length_encoding(v.iter());
+        let mut s = 0;
+        for (a, l) in r {
+            for v in &v[s..s + l] {
+                assert_eq!(a, v);
+            }
+            s += l;
+        }
+    }
+
     #[test]
     fn test_floor_kernel() {
         for n in 1..1000 {

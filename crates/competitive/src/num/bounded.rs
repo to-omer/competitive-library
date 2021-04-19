@@ -1,7 +1,19 @@
 /// Trait for max/min bounds
-pub trait Bounded: PartialOrd {
+pub trait Bounded: Sized + PartialOrd {
     fn maximum() -> Self;
     fn minimum() -> Self;
+    fn is_maximum(&self) -> bool {
+        self == &Self::maximum()
+    }
+    fn is_minimum(&self) -> bool {
+        self == &Self::minimum()
+    }
+    fn set_maximum(&mut self) {
+        *self = Self::maximum()
+    }
+    fn set_minimum(&mut self) {
+        *self = Self::minimum()
+    }
 }
 
 macro_rules! bounded_num_impls {

@@ -19,12 +19,12 @@ mod polynomial_impls {
             self.data.len()
         }
     }
-    impl<T: PartialEq> Zero for Polynomial<T> {
+    impl<T> Zero for Polynomial<T> {
         fn zero() -> Self {
             Self::from_vec(Vec::new())
         }
     }
-    impl<T: PartialEq + Zero + One> One for Polynomial<T> {
+    impl<T: Zero + One> One for Polynomial<T> {
         fn one() -> Self {
             Self::from_vec(vec![Zero::zero(), One::one()])
         }

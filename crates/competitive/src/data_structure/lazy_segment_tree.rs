@@ -1,13 +1,21 @@
-use crate::algebra::MonoidAction;
+use crate::algebra::{MonoidAction, Unital};
 
 #[codesnip::entry("LazySegmentTree", include("MonoidAction"))]
 #[derive(Clone, Debug)]
-pub struct LazySegmentTree<M: MonoidAction> {
+pub struct LazySegmentTree<M>
+where
+    M: MonoidAction,
+    M::AT: PartialEq,
+{
     n: usize,
     seg: Vec<(M::MT, M::AT)>,
 }
 #[codesnip::entry("LazySegmentTree")]
-impl<M: MonoidAction> LazySegmentTree<M> {
+impl<M> LazySegmentTree<M>
+where
+    M: MonoidAction,
+    M::AT: PartialEq,
+{
     pub fn new(n: usize) -> Self {
         let seg = vec![(M::munit(), M::aunit()); 2 * n];
         Self { n, seg }
@@ -27,7 +35,7 @@ impl<M: MonoidAction> LazySegmentTree<M> {
     fn propagate(&mut self, k: usize) {
         debug_assert!(k < self.n);
         let x = std::mem::replace(&mut self.seg[k].1, M::aunit());
-        if x != M::aunit() {
+        if !<M::A as Unital>::is_unit(&x) {
             self.seg[2 * k].1 = M::aoperate(&self.seg[2 * k].1, &x);
             self.seg[2 * k + 1].1 = M::aoperate(&self.seg[2 * k + 1].1, &x);
             M::act_assign(&mut self.seg[k].0, &x);
@@ -41,7 +49,7 @@ impl<M: MonoidAction> LazySegmentTree<M> {
     }
     #[inline]
     fn reflect(&self, k: usize) -> M::MT {
-        if self.seg[k].1 != M::aunit() {
+        if !<M::A as Unital>::is_unit(&self.seg[k].1) {
             M::act(&self.seg[k].0, &self.seg[k].1)
         } else {
             self.seg[k].0.clone()
@@ -225,12 +233,20 @@ impl<M: MonoidAction> LazySegmentTree<M> {
 
 #[codesnip::entry("LazySegmentTreeMap", include("MonoidAction"))]
 #[derive(Clone, Debug)]
-pub struct LazySegmentTreeMap<M: MonoidAction> {
+pub struct LazySegmentTreeMap<M>
+where
+    M: MonoidAction,
+    M::AT: PartialEq,
+{
     n: usize,
     seg: std::collections::HashMap<usize, (M::MT, M::AT)>,
 }
 #[codesnip::entry("LazySegmentTreeMap")]
-impl<M: MonoidAction> LazySegmentTreeMap<M> {
+impl<M> LazySegmentTreeMap<M>
+where
+    M: MonoidAction,
+    M::AT: PartialEq,
+{
     pub fn new(n: usize) -> Self {
         Self {
             n,
@@ -245,7 +261,7 @@ impl<M: MonoidAction> LazySegmentTreeMap<M> {
             .get(&k)
             .map(|t| t.1.clone())
             .unwrap_or_else(M::aunit);
-        if x != M::aunit() {
+        if !<M::A as Unital>::is_unit(&x) {
             let tl = self.seg.entry(2 * k).or_insert((M::munit(), M::aunit()));
             tl.1 = M::aoperate(&tl.1, &x);
             let tr = self
@@ -266,7 +282,7 @@ impl<M: MonoidAction> LazySegmentTreeMap<M> {
     fn reflect(&self, k: usize) -> M::MT {
         let u = (M::munit(), M::aunit());
         let t = self.seg.get(&k).unwrap_or(&u);
-        if t.1 != M::aunit() {
+        if !<M::A as Unital>::is_unit(&t.1) {
             M::act(&t.0, &t.1)
         } else {
             t.0.clone()

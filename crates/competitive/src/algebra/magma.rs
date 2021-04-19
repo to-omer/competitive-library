@@ -3,7 +3,7 @@
 /// binary operaion: $T \circ T \to T$
 pub trait Magma {
     /// type of operands: $T$
-    type T: Clone + PartialEq;
+    type T: Clone;
     /// binary operaion: $\circ$
     fn operate(x: &Self::T, y: &Self::T) -> Self::T;
     #[inline]
@@ -28,20 +28,29 @@ impl<S: Magma + Associative> SemiGroup for S {}
 pub trait Unital: Magma {
     /// identity element: $e$
     fn unit() -> Self::T;
+    #[inline]
+    fn is_unit(x: &Self::T) -> bool
+    where
+        <Self as Magma>::T: PartialEq,
+    {
+        x == &Self::unit()
+    }
+    #[inline]
+    fn set_unit(x: &mut Self::T) {
+        *x = Self::unit();
+    }
 }
 
 /// associative binary operation and an identity element
 pub trait Monoid: SemiGroup + Unital {
     /// binary exponentiation: $x^n = x\circ\ddots\circ x$
-    fn pow(x: Self::T, n: usize) -> Self::T {
-        let mut n = n;
+    fn pow(mut x: Self::T, mut n: usize) -> Self::T {
         let mut res = Self::unit();
-        let mut base = x;
         while n > 0 {
             if n & 1 == 1 {
-                res = Self::operate(&res, &base);
+                res = Self::operate(&res, &x);
             }
-            base = Self::operate(&base, &base);
+            x = Self::operate(&x, &x);
             n >>= 1;
         }
         res
