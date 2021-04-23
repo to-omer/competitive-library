@@ -11,7 +11,7 @@ pub trait NttModulus:
 {
     fn primitive_root() -> MInt<Self>;
 }
-mod number_theoretic_transform_impls {
+pub mod number_theoretic_transform_impls {
     use super::*;
     use mint_basic::Modulo998244353;
     macro_rules! impl_ntt_modulus {
@@ -89,19 +89,14 @@ mod number_theoretic_transform_impls {
         }
     }
     impl<M: NttModulus + MIntConvert<usize>> NumberTheoreticTransform<M> {
-        pub fn convolve_inner(mut a: Vec<MInt<M>>, mut b: Vec<MInt<M>>) -> (Vec<MInt<M>>, usize) {
-            let m = a.len() + b.len() - 1;
-            let n = m.max(2).next_power_of_two();
-            a.resize_with(n, Zero::zero);
-            b.resize_with(n, Zero::zero);
+        fn convolve_inner(mut a: Vec<MInt<M>>, mut b: Vec<MInt<M>>) -> Vec<MInt<M>> {
             Self::ntt(&mut a);
             Self::ntt(&mut b);
             for (a, b) in a.iter_mut().zip(b.iter_mut()) {
                 *a *= *b;
             }
             Self::intt(&mut a);
-            a.truncate(m);
-            (a, n)
+            a
         }
         #[allow(clippy::needless_range_loop)]
         fn ntt(a: &mut [MInt<M>]) {
@@ -148,18 +143,47 @@ mod number_theoretic_transform_impls {
         pub fn convert<T: Into<MInt<M>>, I: IntoIterator<Item = T>>(iter: I) -> Vec<MInt<M>> {
             iter.into_iter().map(|x| x.into()).collect()
         }
-        pub fn convolve(a: Vec<MInt<M>>, b: Vec<MInt<M>>) -> Vec<MInt<M>> {
-            let (mut c, n) = Self::convolve_inner(a, b);
+        pub fn convolve(mut a: Vec<MInt<M>>, mut b: Vec<MInt<M>>) -> Vec<MInt<M>> {
+            let m = a.len() + b.len() - 1;
+            let n = m.max(2).next_power_of_two();
+            a.resize_with(n, Zero::zero);
+            b.resize_with(n, Zero::zero);
+            let mut c = Self::convolve_inner(a, b);
+            c.truncate(m);
             let ninv = MInt::from(n).inv();
             for c in c.iter_mut() {
                 *c *= ninv;
             }
             c
         }
-        pub fn convolve_it<T: Into<MInt<M>>, I: IntoIterator<Item = T>>(
-            iter1: I,
-            iter2: I,
-        ) -> Vec<MInt<M>> {
+        pub fn convolve_ref<T: Clone + Into<MInt<M>>>(a: &[T], b: &[T]) -> Vec<MInt<M>> {
+            let m = a.len() + b.len() - 1;
+            let n = m.max(2).next_power_of_two();
+            let a = a
+                .iter()
+                .map(|a| a.clone().into())
+                .chain(std::iter::repeat_with(Zero::zero))
+                .take(n)
+                .collect();
+            let b = b
+                .iter()
+                .map(|b| b.clone().into())
+                .chain(std::iter::repeat_with(Zero::zero))
+                .take(n)
+                .collect();
+            let mut c = Self::convolve_inner(a, b);
+            c.truncate(m);
+            let ninv = MInt::from(n).inv();
+            for c in c.iter_mut() {
+                *c *= ninv;
+            }
+            c
+        }
+        pub fn convolve_it<T, I>(iter1: I, iter2: I) -> Vec<MInt<M>>
+        where
+            T: Into<MInt<M>>,
+            I: IntoIterator<Item = T>,
+        {
             Self::convolve(Self::convert(iter1), Self::convert(iter2))
         }
     }
@@ -167,26 +191,20 @@ mod number_theoretic_transform_impls {
 pub type Ntt998244353 = NumberTheoreticTransform<mint_basic::Modulo998244353>;
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 3.64 * 10^18
-pub fn convolve2<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u64>
+pub fn convolve2<T>(a: &[T], b: &[T]) -> Vec<u64>
 where
-    T: Into<number_theoretic_transform_impls::MInt2013265921>
-        + Into<number_theoretic_transform_impls::MInt1811939329>
-        + Clone
-        + Zero,
+    T: Clone
+        + Into<number_theoretic_transform_impls::MInt2013265921>
+        + Into<number_theoretic_transform_impls::MInt1811939329>,
 {
-    let m = a.len() + b.len() - 1;
-    let n = m.next_power_of_two();
-    a.resize_with(n, Zero::zero);
-    b.resize_with(n, Zero::zero);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
-    let c1 = NumberTheoreticTransform::<M1>::convolve_it(a.iter().cloned(), b.iter().cloned());
-    let c2 = NumberTheoreticTransform::<M2>::convolve_it(a.iter().cloned(), b.iter().cloned());
+    let c1 = NumberTheoreticTransform::<M1>::convolve_ref(&a, &b);
+    let c2 = NumberTheoreticTransform::<M2>::convolve_ref(&a, &b);
     let p1: u64 = M1::mod_into();
     let p1_inv = MInt::<M2>::new(M1::get_mod()).inv();
     c1.into_iter()
         .zip(c2.into_iter())
-        .take(m)
         .map(|(c1, c2)| {
             c1.inner() as u64 + p1 * ((c2 - MInt::<M2>::from(c1.inner())) * p1_inv).inner() as u64
         })
@@ -194,24 +212,17 @@ where
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
-pub fn convolve3<M: MIntConvert<u32>, T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<MInt<M>>
+pub fn convolve3<M>(a: &[MInt<M>], b: &[MInt<M>]) -> Vec<MInt<M>>
 where
-    T: Into<number_theoretic_transform_impls::MInt2013265921>
-        + Into<number_theoretic_transform_impls::MInt1811939329>
-        + Into<number_theoretic_transform_impls::MInt2113929217>
-        + Clone
-        + Zero,
+    M: MIntConvert<u32>,
 {
-    let m = a.len() + b.len() - 1;
-    let n = m.next_power_of_two();
-    a.resize_with(n, Zero::zero);
-    b.resize_with(n, Zero::zero);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
     type M3 = number_theoretic_transform_impls::Modulo2113929217;
-    let c1 = NumberTheoreticTransform::<M1>::convolve_it(a.iter().cloned(), b.iter().cloned());
-    let c2 = NumberTheoreticTransform::<M2>::convolve_it(a.iter().cloned(), b.iter().cloned());
-    let c3 = NumberTheoreticTransform::<M3>::convolve_it(a.iter().cloned(), b.iter().cloned());
+    let cvt = |a: &MInt<M>| -> u32 { a.clone().into() };
+    let c1 = NumberTheoreticTransform::<M1>::convolve_it(a.iter().map(cvt), b.iter().map(cvt));
+    let c2 = NumberTheoreticTransform::<M2>::convolve_it(a.iter().map(cvt), b.iter().map(cvt));
+    let c3 = NumberTheoreticTransform::<M3>::convolve_it(a.iter().map(cvt), b.iter().map(cvt));
     let t1 = MInt::<M2>::new(M1::get_mod()).inv();
     let m1 = MInt::<M>::from(M1::get_mod());
     let m13 = MInt::<M3>::new(M1::get_mod());
@@ -220,7 +231,6 @@ where
     c1.into_iter()
         .zip(c2.into_iter())
         .zip(c3.into_iter())
-        .take(m)
         .map(|((c1, c2), c3)| {
             let x = MInt::<M3>::new(c1.inner())
                 + MInt::<M3>::new(((c2 - MInt::<M2>::from(c1.inner())) * t1).inner()) * m13;
@@ -303,7 +313,7 @@ mod tests {
                 c[i + j] += a[i] as u64 * b[j] as u64;
             }
         }
-        let d = convolve2(a, b);
+        let d = convolve2(&a, &b);
         assert_eq!(c, d);
     }
 
@@ -311,14 +321,23 @@ mod tests {
     fn test_convolve3() {
         type M = MInt<Modulo1000000009>;
         let mut rng = Xorshift::time();
-        rand!(rng, a: [0u32..; N], b: [0u32..; N]);
+        let a: Vec<_> = rng
+            .gen_iter(..M::get_mod())
+            .map(M::new_unchecked)
+            .take(N)
+            .collect();
+        let b: Vec<_> = rng
+            .gen_iter(..M::get_mod())
+            .map(M::new_unchecked)
+            .take(N)
+            .collect();
         let mut c = vec![M::zero(); N * 2 - 1];
         for i in 0..N {
             for j in 0..N {
-                c[i + j] += M::from(a[i] as u64 * b[j] as u64);
+                c[i + j] += a[i] * b[j];
             }
         }
-        let d = convolve3::<Modulo1000000009, _>(a, b);
+        let d = convolve3::<Modulo1000000009>(&a, &b);
         assert_eq!(c, d);
     }
 
