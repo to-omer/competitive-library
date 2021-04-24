@@ -7,7 +7,7 @@ use crate::{
 
 pub struct NumberTheoreticTransform<M: MIntBase>(std::marker::PhantomData<fn() -> M>);
 pub trait NttModulus:
-    Sized + MIntBase + AssociatedValue<T = number_theoretic_transform_impls::NttCache<Self>>
+    'static + Sized + MIntBase + AssociatedValue<T = number_theoretic_transform_impls::NttCache<Self>>
 {
     fn primitive_root() -> MInt<Self>;
 }
