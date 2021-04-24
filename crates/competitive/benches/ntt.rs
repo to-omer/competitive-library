@@ -20,13 +20,9 @@ pub fn bench_convolve(c: &mut Criterion) {
             .map(mint_basic::MInt998244353::new_unchecked)
             .take(size)
             .collect();
-        group.bench_with_input(
-            BenchmarkId::new("convolve_ntt", size),
-            &(x, y),
-            |b, (x, y)| {
-                b.iter_with_large_drop(|| Ntt998244353::convolve(x.to_owned(), y.to_owned()))
-            },
-        );
+        group.bench_with_input(BenchmarkId::from_parameter(size), &(x, y), |b, (x, y)| {
+            b.iter_with_large_drop(|| Ntt998244353::convolve(x.to_owned(), y.to_owned()))
+        });
     }
     group.finish();
 }
