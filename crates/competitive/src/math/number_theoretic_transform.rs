@@ -219,7 +219,7 @@ where
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
     type M3 = number_theoretic_transform_impls::Modulo2113929217;
-    let cvt = |a: &MInt<M>| -> u32 { a.clone().into() };
+    let cvt = |a: &MInt<M>| -> u32 { (*a).into() };
     let c1 = NumberTheoreticTransform::<M1>::convolve_it(a.iter().map(cvt), b.iter().map(cvt));
     let c2 = NumberTheoreticTransform::<M2>::convolve_it(a.iter().map(cvt), b.iter().map(cvt));
     let c3 = NumberTheoreticTransform::<M3>::convolve_it(a.iter().map(cvt), b.iter().map(cvt));
