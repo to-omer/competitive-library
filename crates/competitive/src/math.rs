@@ -17,7 +17,7 @@ mod matrix;
 mod mod_sqrt;
 #[cfg_attr(
     nightly,
-    codesnip::entry("NumberTheoreticTransform", inline, include("MInt"))
+    codesnip::entry("NumberTheoreticTransform", inline, include("MInt", "AssociatedValue"))
 )]
 mod number_theoretic_transform;
 mod nums;

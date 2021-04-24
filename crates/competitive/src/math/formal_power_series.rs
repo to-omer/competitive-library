@@ -1,6 +1,6 @@
 #[codesnip::skip]
 use crate::{
-    math::{convolve3, NttModulus, NumberTheoreticTransform},
+    math::{convolve_mint, NttModulus, NumberTheoreticTransform},
     num::{mint_basic, MInt, MIntConvert, One, Zero},
 };
 
@@ -58,10 +58,7 @@ impl<M: MIntConvert<u32>> FormalPowerSeriesMultiplier for DefaultFormalPowerSeri
         x: &FormalPowerSeries<Self::T, Self>,
         y: &FormalPowerSeries<Self::T, Self>,
     ) -> FormalPowerSeries<Self::T, Self> {
-        let z = convolve3::<_, u32>(
-            x.data.iter().cloned().map(|x| x.into()).collect(),
-            y.data.iter().cloned().map(|x| x.into()).collect(),
-        );
+        let z = convolve_mint(&x.data, &y.data);
         FormalPowerSeries::from_vec(z)
     }
 }
@@ -72,7 +69,7 @@ impl<M: NttModulus + MIntConvert<usize>> FormalPowerSeriesMultiplier for M {
         x: &FormalPowerSeries<Self::T, Self>,
         y: &FormalPowerSeries<Self::T, Self>,
     ) -> FormalPowerSeries<Self::T, Self> {
-        let z = NumberTheoreticTransform::<M>::convolve(x.data.clone(), y.data.clone());
+        let z = NumberTheoreticTransform::<M>::convolve_ref(&x.data, &y.data);
         FormalPowerSeries::from_vec(z)
     }
 }
