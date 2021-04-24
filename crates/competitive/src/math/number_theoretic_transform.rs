@@ -212,7 +212,7 @@ where
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
-pub fn convolve3<M>(a: &[MInt<M>], b: &[MInt<M>]) -> Vec<MInt<M>>
+pub fn convolve_mint<M>(a: &[MInt<M>], b: &[MInt<M>]) -> Vec<MInt<M>>
 where
     M: MIntConvert<u32>,
 {
@@ -242,7 +242,7 @@ where
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
-pub fn convolve3_128<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u128>
+pub fn convolve3<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u128>
 where
     T: Into<MInt<number_theoretic_transform_impls::Modulo2013265921>>
         + Into<MInt<number_theoretic_transform_impls::Modulo1811939329>>
@@ -337,7 +337,7 @@ mod tests {
                 c[i + j] += a[i] * b[j];
             }
         }
-        let d = convolve3::<Modulo1000000009>(&a, &b);
+        let d = convolve_mint::<Modulo1000000009>(&a, &b);
         assert_eq!(c, d);
     }
 
@@ -352,7 +352,7 @@ mod tests {
                 c[i + j] += (a[i] * b[j]) as u128;
             }
         }
-        let d = convolve3_128(a, b);
+        let d = convolve3(a, b);
         assert_eq!(c, d);
     }
 
