@@ -60,3 +60,34 @@ impl<D> SparseGraph<D> {
         used
     }
 }
+
+#[codesnip::entry("for_each_connected_components", include("SparseGraph"))]
+impl<D> SparseGraph<D> {
+    /// f: |g, root, ord: [vertex, parent]| {}
+    pub fn for_each_connected_components<F>(&self, mut f: F)
+    where
+        F: FnMut(&Self, usize, &[(usize, usize)]),
+    {
+        let mut visited = vec![false; self.vertices_size()];
+        let mut ord = Vec::with_capacity(self.vertices_size());
+        for u in self.vertices() {
+            if !visited[u] {
+                visited[u] = true;
+                ord.push((u, !0));
+                let mut i = 0;
+                while i < ord.len() {
+                    let u = ord[i].0;
+                    for a in self.adjacencies(u).rev() {
+                        if !visited[a.to] {
+                            visited[a.to] = true;
+                            ord.push((a.to, u));
+                        }
+                    }
+                    i += 1;
+                }
+                f(self, u, &ord);
+                ord.clear();
+            }
+        }
+    }
+}
