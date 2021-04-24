@@ -589,3 +589,42 @@ mod permutation_operation_impl {
         }
     }
 }
+
+#[codesnip::entry("FindMajorityOperation", include("algebra"))]
+/// Find majority(strict) of a sequence.
+///
+/// fold $x \in S$ with `(Some(x), 1)`
+///
+/// `(Some(m), _)` represents `m` may be a majority of $S$.
+///
+/// `(None, _)` represents that there is no majority value.
+pub struct FindMajorityOperation<T> {
+    _marker: std::marker::PhantomData<fn() -> T>,
+}
+#[codesnip::entry("FindMajorityOperation")]
+mod find_majority_operation_impl {
+    use super::*;
+    impl<T: Clone + Eq> Magma for FindMajorityOperation<T> {
+        type T = (Option<T>, usize);
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            if y.0.is_none() {
+                x.clone()
+            } else if x.0.is_none() {
+                y.clone()
+            } else {
+                match (x.0.eq(&y.0), x.1.cmp(&y.1)) {
+                    (true, _) => (x.0.clone(), x.1 + y.1),
+                    (_, std::cmp::Ordering::Less) => (y.0.clone(), y.1 - x.1),
+                    (_, std::cmp::Ordering::Equal) => (None, 0),
+                    (_, std::cmp::Ordering::Greater) => (x.0.clone(), x.1 - y.1),
+                }
+            }
+        }
+    }
+    impl<T: Clone + Eq> Unital for FindMajorityOperation<T> {
+        fn unit() -> Self::T {
+            (None, 0)
+        }
+    }
+    impl<T> Associative for FindMajorityOperation<T> {}
+}
