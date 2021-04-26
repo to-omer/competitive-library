@@ -5,6 +5,7 @@ mod fft;
 mod gcd;
 mod mint;
 mod ntt;
+mod special_modulo;
 
 criterion_group!(
     name = small_benches;
@@ -15,6 +16,7 @@ criterion_group!(
         gcd::bench_extgcd,
         gcd::bench_modinv,
         mint::bench_mod_mul,
+        special_modulo::bench_special_modulo,
 );
 
 criterion_group!(benches, fft::bench_convolve, ntt::bench_convolve,);

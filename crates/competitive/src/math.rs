@@ -23,6 +23,7 @@ mod number_theoretic_transform;
 mod nums;
 mod polynomial;
 mod prime;
+mod special_modulo;
 
 pub use factorial::*;
 pub use fast_fourier_transform::*;
@@ -34,3 +35,4 @@ pub use number_theoretic_transform::*;
 pub use nums::*;
 pub use polynomial::*;
 pub use prime::*;
+pub use special_modulo::*;
