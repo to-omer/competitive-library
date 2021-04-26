@@ -8,8 +8,6 @@ mod iterable;
 mod ord_tools;
 #[macro_use]
 mod capture;
-#[cfg_attr(nightly, codesnip::entry("Counter", inline))]
-mod counter;
 #[cfg_attr(
     nightly,
     codesnip::entry("SimuratedAnnealing", inline, include("Xorshift"))
@@ -27,7 +25,6 @@ mod slice;
 mod totalord;
 
 pub use associated_value::AssociatedValue;
-pub use counter::Counter;
 pub use heuristics::SimuratedAnnealing;
 pub use ord_tools::*;
 pub use output::echo;
