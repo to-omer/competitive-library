@@ -19,6 +19,8 @@ mod disjoint_sparse_table;
 mod kdtree;
 mod lazy_segment_tree;
 mod range_ap_add;
+#[cfg_attr(nightly, codesnip::entry("RangeMap", inline))]
+mod range_map;
 mod segment_tree;
 mod sliding_winsow_aggregation;
 mod trie;
@@ -35,6 +37,7 @@ pub use disjoint_sparse_table::DisjointSparseTable;
 pub use kdtree::*;
 pub use lazy_segment_tree::{LazySegmentTree, LazySegmentTreeMap};
 pub use range_ap_add::RangeArithmeticProgressionAdd;
+pub use range_map::*;
 pub use segment_tree::{SegmentTree, SegmentTreeMap};
 pub use sliding_winsow_aggregation::{DequeAggregation, QueueAggregation};
 pub use trie::*;
