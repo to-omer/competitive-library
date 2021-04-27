@@ -1,8 +1,19 @@
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct HashCounter<T> {
     map: std::collections::HashMap<T, usize>,
 }
-impl<T> Default for HashCounter<T> {
+impl<T> std::fmt::Debug for HashCounter<T>
+where
+    T: std::fmt::Debug,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_map().entries(self.iter()).finish()
+    }
+}
+impl<T> Default for HashCounter<T>
+where
+    T: Eq + std::hash::Hash,
+{
     fn default() -> Self {
         Self {
             map: std::collections::HashMap::default(),
@@ -10,14 +21,6 @@ impl<T> Default for HashCounter<T> {
     }
 }
 impl<T> HashCounter<T> {
-    pub fn new() -> Self {
-        Self::default()
-    }
-    pub fn with_capacity(capacity: usize) -> Self {
-        Self {
-            map: std::collections::HashMap::with_capacity(capacity),
-        }
-    }
     pub fn len(&self) -> usize {
         self.map.len()
     }
@@ -44,6 +47,14 @@ impl<T> HashCounter<T>
 where
     T: Eq + std::hash::Hash,
 {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            map: std::collections::HashMap::with_capacity(capacity),
+        }
+    }
     pub fn get(&self, item: &T) -> usize {
         self.map.get(item).cloned().unwrap_or_default()
     }
