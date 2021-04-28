@@ -21,3 +21,11 @@ impl<T: PartialOrd> Ord for TotalOrd<T> {
         self.partial_cmp(&other).unwrap()
     }
 }
+pub trait AsTotalOrd {
+    fn as_total_ord(&self) -> TotalOrd<&Self>;
+}
+impl<T: PartialOrd> AsTotalOrd for T {
+    fn as_total_ord(&self) -> TotalOrd<&Self> {
+        TotalOrd(self)
+    }
+}
