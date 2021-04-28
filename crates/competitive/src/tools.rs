@@ -16,6 +16,7 @@ mod heuristics;
 #[macro_use]
 #[cfg_attr(nightly, codesnip::entry("main", inline, include("scanner", "_echo")))]
 mod main;
+mod map;
 mod output;
 mod random;
 #[cfg_attr(nightly, codesnip::entry("scanner", inline))]
