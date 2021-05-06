@@ -4,8 +4,8 @@ use crate::num::{Bounded, One, Zero};
 // primitive integer = arithmetic operations + binary represented operation
 // arithmetic operations = integer basic operations + (unsigned operations | signed operations)
 
-pub use integer_impls::{BinaryRepr, IntBase, Saturating, Signed, Unsigned, Wrapping};
-pub mod integer_impls {
+pub use integer_impls::{BinaryRepr, ExtendedGcd, IntBase, Saturating, Signed, Unsigned, Wrapping};
+mod integer_impls {
     use super::*;
     use std::{
         fmt::{self, Display},
@@ -59,11 +59,63 @@ pub mod integer_impls {
     }
     impl_int_base!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
 
+    /// extended_gcd(a,b): ax + by = g = gcd(a,b)
+    pub struct ExtendedGcd<T: Unsigned> {
+        pub g: T,
+        pub x: T::Signed,
+        pub y: T::Signed,
+    }
+
     pub trait Unsigned: IntBase {
-        type Signed: Signed;
+        type Signed: Signed<Unsigned = Self>;
+        fn signed(self) -> Self::Signed;
+        fn abs_sub(self, other: Self) -> Self {
+            if self > other {
+                self - other
+            } else {
+                other - self
+            }
+        }
+        fn gcd(self, other: Self) -> Self;
+        fn lcm(self, other: Self) -> Self {
+            if self.is_zero() && other.is_zero() {
+                Self::zero()
+            } else {
+                self / self.gcd(other) * other
+            }
+        }
+        fn extgcd(self, other: Self) -> ExtendedGcd<Self> {
+            let (mut a, mut b) = (self.signed(), other.signed());
+            let (mut u, mut v, mut x, mut y) = (
+                Self::Signed::one(),
+                Self::Signed::zero(),
+                Self::Signed::zero(),
+                Self::Signed::one(),
+            );
+            while !a.is_zero() {
+                let k = b / a;
+                x -= k * u;
+                y -= k * v;
+                b -= k * a;
+                std::mem::swap(&mut x, &mut u);
+                std::mem::swap(&mut y, &mut v);
+                std::mem::swap(&mut b, &mut a);
+            }
+            ExtendedGcd {
+                g: b.unsigned(),
+                x,
+                y,
+            }
+        }
+        fn modinv(self, modulo: Self) -> Self {
+            let extgcd = self.extgcd(modulo);
+            assert!(extgcd.g.is_one());
+            extgcd.x.rem_euclid(modulo.signed()).unsigned()
+        }
     }
     pub trait Signed: IntBase + Neg<Output = Self> {
-        type Unsigned: Unsigned;
+        type Unsigned: Unsigned<Signed = Self>;
+        fn unsigned(self) -> Self::Unsigned;
         fn abs(self) -> Self;
         fn is_negative(self) -> bool;
         fn is_positive(self) -> bool;
@@ -75,9 +127,30 @@ pub mod integer_impls {
             $(
                 impl Unsigned for $unsigned {
                     type Signed = $signed;
+                    fn signed(self) -> Self::Signed { self as Self::Signed }
+                    fn gcd(self, other: Self) -> Self {
+                        let (mut a, mut b) = (self, other);
+                        if a.is_zero() || b.is_zero() {
+                            return a | b;
+                        }
+                        let u = a.trailing_zeros();
+                        let v = b.trailing_zeros();
+                        a >>= u;
+                        b >>= v;
+                        let k = u.min(v);
+                        while a != b {
+                            if a < b {
+                                std::mem::swap(&mut a, &mut b);
+                            }
+                            a -= b;
+                            a >>= a.trailing_zeros();
+                        }
+                        a << k
+                    }
                 }
                 impl Signed for $signed {
                     type Unsigned = $unsigned;
+                    fn unsigned(self) -> Self::Unsigned { self as Self::Unsigned }
                     fn abs(self) -> Self { self.abs() }
                     fn is_negative(self) -> bool { self.is_negative() }
                     fn is_positive(self) -> bool { self.is_positive() }
@@ -295,9 +368,12 @@ pub mod integer_impls {
             $(
                 impl Unsigned for Saturating<$unsigned> {
                     type Signed = Saturating<$signed>;
+                    fn signed(self) -> Self::Signed { Saturating(std::convert::TryFrom::try_from(self.0).ok().unwrap_or_else($signed::maximum)) }
+                    fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
                 }
                 impl Signed for Saturating<$signed> {
                     type Unsigned = Saturating<$unsigned>;
+                    fn unsigned(self) -> Self::Unsigned { Saturating(std::convert::TryFrom::try_from(self.0).ok().unwrap_or_else($unsigned::minimum)) }
                     fn abs(self) -> Self { Self(self.0.saturating_abs()) }
                     fn is_negative(self) -> bool { self.0.is_negative() }
                     fn is_positive(self) -> bool { self.0.is_positive() }
@@ -510,9 +586,12 @@ pub mod integer_impls {
             $(
                 impl Unsigned for Wrapping<$unsigned> {
                     type Signed = Wrapping<$signed>;
+                    fn signed(self) -> Self::Signed { Wrapping(self.0.signed()) }
+                    fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
                 }
                 impl Signed for Wrapping<$signed> {
                     type Unsigned = Wrapping<$unsigned>;
+                    fn unsigned(self) -> Self::Unsigned { Wrapping(self.0.unsigned()) }
                     fn abs(self) -> Self { Self(self.0.wrapping_abs()) }
                     fn is_negative(self) -> bool { self.0.is_negative() }
                     fn is_positive(self) -> bool { self.0.is_positive() }
@@ -569,4 +648,61 @@ pub mod integer_impls {
         };
     }
     impl_binary_repr_for_wrapping!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
+    const Q: usize = 10_000;
+    macro_rules! test_unsigned {
+        ($($t:ident)*) => {
+            $(
+                mod $t {
+                    use super::*;
+                    const A: $t = $t::max_value() / 2;
+                    fn gcd(mut a: $t, mut b: $t) -> $t {
+                        while b != 0 {
+                            a %= b;
+                            std::mem::swap(&mut a, &mut b);
+                        }
+                        a
+                    }
+                    #[test]
+                    fn test_gcd() {
+                        let mut rng = Xorshift::default();
+                            for (a, b) in rng.gen_iter((0..=A, 0..=A)).take(Q) {
+                            assert_eq!(a.gcd(b), gcd(a, b));
+                        }
+                        assert_eq!($t::zero().gcd(0), 0);
+                        assert_eq!($t::zero().gcd(100), 100);
+                    }
+                    #[test]
+                    fn test_extgcd() {
+                        let mut rng = Xorshift::default();
+                        for (a, b) in rng.gen_iter((0..=A, 0..=A)).take(Q) {
+                            let ExtendedGcd { g, x, y } = a.extgcd(b);
+                            assert_eq!(g, a.gcd(b));
+                            assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g as i128);
+                        }
+                    }
+                    #[test]
+                    fn test_modinv() {
+                        let mut rng = Xorshift::default();
+                        for _ in 0..Q {
+                            let m = rng.gen(2..=A);
+                            let a = rng.gen(1..m);
+                            let g = a.gcd(m);
+                            let m = m / g;
+                            let a = a / g;
+                            let x = a.modinv(m);
+                            assert!(x < m);
+                            assert_eq!(a as u128 * x as u128 % m as u128, 1);
+                        }
+                    }
+                }
+            )*
+        };
+    }
+    test_unsigned!(u8 u16 u32 u64 usize);
 }

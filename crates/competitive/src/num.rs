@@ -14,7 +14,7 @@ mod zero_one;
 
 pub use bounded::Bounded;
 pub use complex::Complex;
-pub use integer::Saturating;
+pub use integer::*;
 pub use mint::*;
 pub use quad_double::QuadDouble;
 pub use zero_one::*;
