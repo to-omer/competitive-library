@@ -8,6 +8,7 @@ pub use integer_impls::{BinaryRepr, ExtendedGcd, IntBase, Saturating, Signed, Un
 mod integer_impls {
     use super::*;
     use std::{
+        convert::TryFrom,
         fmt::{self, Display},
         ops::{
             Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Div,
@@ -358,6 +359,11 @@ mod integer_impls {
                         <$t as IntBase>::from_str_radix(src, radix).map(Self)
                     }
                 }
+                impl From<$t> for Saturating<$t> {
+                    fn from(t: $t) -> Self {
+                        Self(t)
+                    }
+                }
             )*
         };
     }
@@ -368,12 +374,12 @@ mod integer_impls {
             $(
                 impl Unsigned for Saturating<$unsigned> {
                     type Signed = Saturating<$signed>;
-                    fn signed(self) -> Self::Signed { Saturating(std::convert::TryFrom::try_from(self.0).ok().unwrap_or_else($signed::maximum)) }
+                    fn signed(self) -> Self::Signed { Saturating(TryFrom::try_from(self.0).ok().unwrap_or_else($signed::maximum)) }
                     fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
                 }
                 impl Signed for Saturating<$signed> {
                     type Unsigned = Saturating<$unsigned>;
-                    fn unsigned(self) -> Self::Unsigned { Saturating(std::convert::TryFrom::try_from(self.0).ok().unwrap_or_else($unsigned::minimum)) }
+                    fn unsigned(self) -> Self::Unsigned { Saturating(TryFrom::try_from(self.0).ok().unwrap_or_else($unsigned::minimum)) }
                     fn abs(self) -> Self { Self(self.0.saturating_abs()) }
                     fn is_negative(self) -> bool { self.0.is_negative() }
                     fn is_positive(self) -> bool { self.0.is_positive() }
@@ -574,6 +580,11 @@ mod integer_impls {
                     }
                     fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::Error> {
                         <$t as IntBase>::from_str_radix(src, radix).map(Self)
+                    }
+                }
+                impl From<$t> for Wrapping<$t> {
+                    fn from(t: $t) -> Self {
+                        Self(t)
                     }
                 }
             )*
