@@ -18,6 +18,7 @@ mod integer_impls {
         str::FromStr,
     };
 
+    /// Trait for basic primitive integer operations.
     pub trait IntBase:
         Copy
         + Bounded
@@ -62,11 +63,13 @@ mod integer_impls {
 
     /// extended_gcd(a,b): ax + by = g = gcd(a,b)
     pub struct ExtendedGcd<T: Unsigned> {
+        /// gcd
         pub g: T,
         pub x: T::Signed,
         pub y: T::Signed,
     }
 
+    /// Trait for unsigned integer operations.
     pub trait Unsigned: IntBase {
         type Signed: Signed<Unsigned = Self>;
         fn signed(self) -> Self::Signed;
@@ -109,11 +112,22 @@ mod integer_impls {
             }
         }
         fn modinv(self, modulo: Self) -> Self {
+            assert!(
+                !self.is_zero(),
+                "attempt to inverse zero with modulo {}",
+                modulo
+            );
             let extgcd = self.extgcd(modulo);
-            assert!(extgcd.g.is_one());
+            assert!(
+                extgcd.g.is_one(),
+                "there is no inverse {} modulo {}",
+                self,
+                modulo
+            );
             extgcd.x.rem_euclid(modulo.signed()).unsigned()
         }
     }
+    /// Trait for signed integer operations.
     pub trait Signed: IntBase + Neg<Output = Self> {
         type Unsigned: Unsigned<Signed = Self>;
         fn unsigned(self) -> Self::Unsigned;
@@ -162,6 +176,7 @@ mod integer_impls {
     }
     impl_unsigned_signed!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
 
+    /// Trait for operations of integer in binary representation.
     pub trait BinaryRepr<Size = u32>:
         Sized
         + Not<Output = Self>
@@ -234,6 +249,7 @@ mod integer_impls {
 
     #[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
     #[repr(transparent)]
+    /// Wrapper type of arithmetic `saturating_*` operations.
     pub struct Saturating<T>(pub T);
 
     impl<T> fmt::Debug for Saturating<T>
@@ -439,6 +455,7 @@ mod integer_impls {
 
     #[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
     #[repr(transparent)]
+    /// Wrapper type of arithmetic `wrapping_*` operations.
     pub struct Wrapping<T>(pub T);
 
     impl<T> fmt::Debug for Wrapping<T>
