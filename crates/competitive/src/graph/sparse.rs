@@ -187,11 +187,11 @@ pub mod sparse_graph {
         }
     }
 
-    pub type DirectedGraphScanner<U, T> = SparseGraphScanner<U, T, DirectedEdge>;
-    pub type UndirectedGraphScanner<U, T> = SparseGraphScanner<U, T, UndirectedEdge>;
-    pub type BidirectionalGraphScanner<U, T> = SparseGraphScanner<U, T, BidirectionalEdge>;
+    pub type DirectedGraphScanner<U, T = ()> = SparseGraphScanner<U, T, DirectedEdge>;
+    pub type UndirectedGraphScanner<U, T = ()> = SparseGraphScanner<U, T, UndirectedEdge>;
+    pub type BidirectionalGraphScanner<U, T = ()> = SparseGraphScanner<U, T, BidirectionalEdge>;
 
-    pub struct TreeGraphScanner<U: IterScan<Output = usize>, T: IterScan> {
+    pub struct TreeGraphScanner<U: IterScan<Output = usize>, T: IterScan = ()> {
         vsize: usize,
         _marker: Marker<(U, T)>,
     }
