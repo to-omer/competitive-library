@@ -85,11 +85,11 @@ where
 
 #[codesnip::entry("binary_search")]
 /// binary search for slice
-pub trait SliceBisectExt<T: Bisect + Ord> {
+pub trait SliceBisectExt<T> {
     /// Returns the first element that satisfies a predicate.
-    fn find_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<T>;
+    fn find_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<&T>;
     /// Returns the last element that satisfies a predicate.
-    fn rfind_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<T>;
+    fn rfind_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<&T>;
     /// Returns the first index that satisfies a predicate.
     /// if not found, returns `len()`.
     fn position_bisect(&self, f: impl FnMut(&T) -> bool) -> usize;
@@ -98,16 +98,16 @@ pub trait SliceBisectExt<T: Bisect + Ord> {
     fn rposition_bisect(&self, f: impl FnMut(&T) -> bool) -> usize;
 }
 #[codesnip::entry("binary_search")]
-impl<T: Bisect + Ord> SliceBisectExt<T> for [T] {
-    fn find_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<T> {
-        self.get(self.position_bisect(f)).cloned()
+impl<T> SliceBisectExt<T> for [T] {
+    fn find_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<&T> {
+        self.get(self.position_bisect(f))
     }
-    fn rfind_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<T> {
+    fn rfind_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<&T> {
         let pos = self.rposition_bisect(f);
         if pos == 0 {
             None
         } else {
-            self.get(pos - 1).cloned()
+            self.get(pos - 1)
         }
     }
     fn position_bisect(&self, mut f: impl FnMut(&T) -> bool) -> usize {
@@ -155,12 +155,12 @@ mod tests {
 
     #[test]
     fn test_find() {
-        assert_eq!(V.find_bisect(|&x| x >= -1), Some(0));
-        assert_eq!(V.find_bisect(|&x| x >= 0), Some(0));
-        assert_eq!(V.find_bisect(|&x| x >= 1), Some(1));
-        assert_eq!(V.find_bisect(|&x| x >= 2), Some(2));
-        assert_eq!(V.find_bisect(|&x| x >= 3), Some(3));
-        assert_eq!(V.find_bisect(|&x| x >= 5), Some(7));
+        assert_eq!(V.find_bisect(|&x| x >= -1), Some(&0));
+        assert_eq!(V.find_bisect(|&x| x >= 0), Some(&0));
+        assert_eq!(V.find_bisect(|&x| x >= 1), Some(&1));
+        assert_eq!(V.find_bisect(|&x| x >= 2), Some(&2));
+        assert_eq!(V.find_bisect(|&x| x >= 3), Some(&3));
+        assert_eq!(V.find_bisect(|&x| x >= 5), Some(&7));
         assert_eq!(V.find_bisect(|&x| x >= 10), None);
     }
 
@@ -178,12 +178,12 @@ mod tests {
     #[test]
     fn test_rfind() {
         assert_eq!(V.rfind_bisect(|&x| x <= -1), None);
-        assert_eq!(V.rfind_bisect(|&x| x <= 0), Some(0));
-        assert_eq!(V.rfind_bisect(|&x| x <= 1), Some(1));
-        assert_eq!(V.rfind_bisect(|&x| x <= 2), Some(2));
-        assert_eq!(V.rfind_bisect(|&x| x <= 3), Some(3));
-        assert_eq!(V.rfind_bisect(|&x| x <= 5), Some(4));
-        assert_eq!(V.rfind_bisect(|&x| x <= 10), Some(8));
+        assert_eq!(V.rfind_bisect(|&x| x <= 0), Some(&0));
+        assert_eq!(V.rfind_bisect(|&x| x <= 1), Some(&1));
+        assert_eq!(V.rfind_bisect(|&x| x <= 2), Some(&2));
+        assert_eq!(V.rfind_bisect(|&x| x <= 3), Some(&3));
+        assert_eq!(V.rfind_bisect(|&x| x <= 5), Some(&4));
+        assert_eq!(V.rfind_bisect(|&x| x <= 10), Some(&8));
     }
 }
 
