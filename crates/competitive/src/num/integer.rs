@@ -193,12 +193,12 @@ mod integer_impls {
     {
         fn count_ones(self) -> Size;
         fn count_zeros(self) -> Size;
-        fn leading_ones(self) -> Size;
+        // fn leading_ones(self) -> Size;
         fn leading_zeros(self) -> Size;
         fn reverse_bits(self) -> Self;
         fn rotate_left(self, n: Size) -> Self;
         fn rotate_right(self, n: Size) -> Self;
-        fn trailing_ones(self) -> Size;
+        // fn trailing_ones(self) -> Size;
         fn trailing_zeros(self) -> Size;
     }
 
@@ -208,12 +208,12 @@ mod integer_impls {
                 impl BinaryRepr for $t {
                     fn count_ones(self) -> u32 { self.count_ones() }
                     fn count_zeros(self) -> u32 { self.count_zeros() }
-                    fn leading_ones(self) -> u32 { self.leading_ones() }
+                    // // fn leading_ones(self) -> u32 { self.leading_ones() }
                     fn leading_zeros(self) -> u32 { self.leading_zeros() }
                     fn reverse_bits(self) -> Self { self.reverse_bits() }
                     fn rotate_left(self, n: u32) -> Self { self.rotate_left(n) }
                     fn rotate_right(self, n: u32) -> Self { self.rotate_right(n) }
-                    fn trailing_ones(self) -> u32 { self.trailing_ones() }
+                    // // fn trailing_ones(self) -> u32 { self.trailing_ones() }
                     fn trailing_zeros(self) -> u32 { self.trailing_zeros() }
                 }
             )*
@@ -396,7 +396,8 @@ mod integer_impls {
                 impl Signed for Saturating<$signed> {
                     type Unsigned = Saturating<$unsigned>;
                     fn unsigned(self) -> Self::Unsigned { Saturating(TryFrom::try_from(self.0).ok().unwrap_or_else($unsigned::minimum)) }
-                    fn abs(self) -> Self { Self(self.0.saturating_abs()) }
+                    // fn abs(self) -> Self { Self(self.0.saturating_abs()) }
+                    fn abs(self) -> Self { Self(self.0.abs()) }
                     fn is_negative(self) -> bool { self.0.is_negative() }
                     fn is_positive(self) -> bool { self.0.is_positive() }
                     fn signum(self) -> Self { Self(self.0.signum()) }
@@ -404,7 +405,8 @@ mod integer_impls {
                 impl Neg for Saturating<$signed> {
                     type Output = Self;
                     fn neg(self) -> Self::Output {
-                        Self(self.0.saturating_neg())
+                        // Self(self.0.saturating_neg())
+                        Self(self.0.neg())
                     }
                 }
             )*
@@ -440,12 +442,12 @@ mod integer_impls {
                 impl BinaryRepr for Saturating<$t> {
                     fn count_ones(self) -> u32 { self.0.count_ones() }
                     fn count_zeros(self) -> u32 { self.0.count_zeros() }
-                    fn leading_ones(self) -> u32 { self.0.leading_ones() }
+                    // // fn leading_ones(self) -> u32 { self.0.leading_ones() }
                     fn leading_zeros(self) -> u32 { self.0.leading_zeros() }
                     fn reverse_bits(self) -> Self { Self(self.0.reverse_bits()) }
                     fn rotate_left(self, n: u32) -> Self { Self(self.0.rotate_left(n)) }
                     fn rotate_right(self, n: u32) -> Self { Self(self.0.rotate_right(n)) }
-                    fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
+                    // // fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
                     fn trailing_zeros(self) -> u32 { self.0.trailing_zeros() }
                 }
             )*
@@ -664,12 +666,12 @@ mod integer_impls {
                 impl BinaryRepr for Wrapping<$t> {
                     fn count_ones(self) -> u32 { self.0.count_ones() }
                     fn count_zeros(self) -> u32 { self.0.count_zeros() }
-                    fn leading_ones(self) -> u32 { self.0.leading_ones() }
+                    // // fn leading_ones(self) -> u32 { self.0.leading_ones() }
                     fn leading_zeros(self) -> u32 { self.0.leading_zeros() }
                     fn reverse_bits(self) -> Self { Self(self.0.reverse_bits()) }
                     fn rotate_left(self, n: u32) -> Self { Self(self.0.rotate_left(n)) }
                     fn rotate_right(self, n: u32) -> Self { Self(self.0.rotate_right(n)) }
-                    fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
+                    // // fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
                     fn trailing_zeros(self) -> u32 { self.0.trailing_zeros() }
                 }
             )*
