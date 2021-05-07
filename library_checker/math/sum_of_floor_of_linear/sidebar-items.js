@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["sum_of_floor_of_linear","✅  AC  72ms"]]});
+initSidebarItems({"fn":[["sum_of_floor_of_linear","✅  AC  67ms"]]});
