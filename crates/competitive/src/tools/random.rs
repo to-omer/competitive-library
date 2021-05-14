@@ -43,6 +43,14 @@ impl Xorshift {
     pub fn gen_bool(&mut self, p: f64) -> bool {
         self.randf() < p
     }
+    pub fn shuffle<T>(&mut self, slice: &mut [T]) {
+        let mut n = slice.len();
+        while n > 1 {
+            let i = self.rand(n as _) as usize;
+            n -= 1;
+            slice.swap(i, n);
+        }
+    }
 }
 #[codesnip::entry("Xorshift")]
 impl Default for Xorshift {
