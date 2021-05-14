@@ -29,21 +29,20 @@ pub fn read_all_unchecked(mut reader: impl std::io::Read) -> String {
     unsafe { String::from_utf8_unchecked(buf) }
 }
 
-pub trait IterScan: Sized {
-    type Output;
-    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output>;
-}
-pub trait MarkedIterScan: Sized {
-    type Output;
-    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
-}
-#[derive(Clone, Debug)]
-pub struct Scanner<'a> {
-    iter: std::str::SplitAsciiWhitespace<'a>,
-}
-
+pub use scanner_impls::{IterScan, MarkedIterScan, Scanner};
 mod scanner_impls {
-    use super::*;
+    pub trait IterScan: Sized {
+        type Output;
+        fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output>;
+    }
+    pub trait MarkedIterScan: Sized {
+        type Output;
+        fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
+    }
+    #[derive(Clone, Debug)]
+    pub struct Scanner<'a> {
+        iter: std::str::SplitAsciiWhitespace<'a>,
+    }
     impl<'a> Scanner<'a> {
         #[inline]
         pub fn new(s: &'a str) -> Self {
@@ -51,21 +50,33 @@ mod scanner_impls {
             Self { iter }
         }
         #[inline]
-        pub fn scan<T: IterScan>(&mut self) -> <T as IterScan>::Output {
+        pub fn scan<T>(&mut self) -> <T as IterScan>::Output
+        where
+            T: IterScan,
+        {
             <T as IterScan>::scan(&mut self.iter).expect("scan error")
         }
         #[inline]
-        pub fn mscan<T: MarkedIterScan>(&mut self, marker: T) -> <T as MarkedIterScan>::Output {
+        pub fn mscan<T>(&mut self, marker: T) -> <T as MarkedIterScan>::Output
+        where
+            T: MarkedIterScan,
+        {
             marker.mscan(&mut self.iter).expect("scan error")
         }
         #[inline]
-        pub fn scan_vec<T: IterScan>(&mut self, size: usize) -> Vec<<T as IterScan>::Output> {
+        pub fn scan_vec<T>(&mut self, size: usize) -> Vec<<T as IterScan>::Output>
+        where
+            T: IterScan,
+        {
             (0..size)
                 .map(|_| <T as IterScan>::scan(&mut self.iter).expect("scan error"))
                 .collect()
         }
         #[inline]
-        pub fn iter<'b, T: IterScan>(&'b mut self) -> ScannerIter<'a, 'b, T> {
+        pub fn iter<'b, T>(&'b mut self) -> ScannerIter<'a, 'b, T>
+        where
+            T: IterScan,
+        {
             ScannerIter {
                 inner: self,
                 _marker: std::marker::PhantomData,
@@ -114,7 +125,10 @@ mod scanner_impls {
         inner: &'b mut Scanner<'a>,
         _marker: std::marker::PhantomData<fn() -> T>,
     }
-    impl<'a, 'b, T: IterScan> Iterator for ScannerIter<'a, 'b, T> {
+    impl<'a, 'b, T> Iterator for ScannerIter<'a, 'b, T>
+    where
+        T: IterScan,
+    {
         type Item = <T as IterScan>::Output;
         #[inline]
         fn next(&mut self) -> Option<Self::Item> {
@@ -122,23 +136,17 @@ mod scanner_impls {
         }
     }
 }
-#[derive(Debug, Copy, Clone)]
-pub struct Usize1;
-#[derive(Debug, Copy, Clone)]
-pub struct CharWithBase(pub char);
-#[derive(Debug, Copy, Clone)]
-pub struct Chars;
-#[derive(Debug, Copy, Clone)]
-pub struct CharsWithBase(pub char);
-#[derive(Debug, Copy, Clone)]
-pub struct Collect<T: IterScan, B: std::iter::FromIterator<<T as IterScan>::Output>> {
-    size: usize,
-    _marker: std::marker::PhantomData<fn() -> (T, B)>,
-}
 
+pub use marker_impls::{CharWithBase, Chars, CharsWithBase, Collect, SizedCollect, Usize1};
 mod marker_impls {
     use super::*;
-    use std::{iter::FromIterator, marker::PhantomData};
+    use std::{
+        iter::{repeat_with, FromIterator},
+        marker::PhantomData,
+    };
+
+    #[derive(Debug, Copy, Clone)]
+    pub struct Usize1;
     impl IterScan for Usize1 {
         type Output = usize;
         #[inline]
@@ -146,6 +154,8 @@ mod marker_impls {
             <usize as IterScan>::scan(iter)?.checked_sub(1)
         }
     }
+    #[derive(Debug, Copy, Clone)]
+    pub struct CharWithBase(pub char);
     impl MarkedIterScan for CharWithBase {
         type Output = usize;
         #[inline]
@@ -153,6 +163,8 @@ mod marker_impls {
             Some((<char as IterScan>::scan(iter)? as u8 - self.0 as u8) as usize)
         }
     }
+    #[derive(Debug, Copy, Clone)]
+    pub struct Chars;
     impl IterScan for Chars {
         type Output = Vec<char>;
         #[inline]
@@ -160,6 +172,8 @@ mod marker_impls {
             Some(iter.next()?.chars().collect())
         }
     }
+    #[derive(Debug, Copy, Clone)]
+    pub struct CharsWithBase(pub char);
     impl MarkedIterScan for CharsWithBase {
         type Output = Vec<usize>;
         #[inline]
@@ -172,7 +186,20 @@ mod marker_impls {
             )
         }
     }
-    impl<T: IterScan, B: FromIterator<<T as IterScan>::Output>> Collect<T, B> {
+    #[derive(Debug, Copy, Clone)]
+    pub struct Collect<T, B = Vec<<T as IterScan>::Output>>
+    where
+        T: IterScan,
+        B: FromIterator<<T as IterScan>::Output>,
+    {
+        size: usize,
+        _marker: PhantomData<fn() -> (T, B)>,
+    }
+    impl<T, B> Collect<T, B>
+    where
+        T: IterScan,
+        B: FromIterator<<T as IterScan>::Output>,
+    {
         pub fn new(size: usize) -> Self {
             Self {
                 size,
@@ -180,15 +207,39 @@ mod marker_impls {
             }
         }
     }
-    impl<T: IterScan, B: FromIterator<<T as IterScan>::Output>> MarkedIterScan for Collect<T, B> {
+    impl<T, B> MarkedIterScan for Collect<T, B>
+    where
+        T: IterScan,
+        B: FromIterator<<T as IterScan>::Output>,
+    {
         type Output = B;
         #[inline]
         fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-            Some(
-                (0..self.size)
-                    .map(|_| <T as IterScan>::scan(iter).expect("scan error"))
-                    .collect::<B>(),
-            )
+            repeat_with(|| <T as IterScan>::scan(iter))
+                .take(self.size)
+                .collect()
+        }
+    }
+    #[derive(Debug, Copy, Clone)]
+    pub struct SizedCollect<T, B = Vec<<T as IterScan>::Output>>
+    where
+        T: IterScan,
+        B: FromIterator<<T as IterScan>::Output>,
+    {
+        _marker: PhantomData<fn() -> (T, B)>,
+    }
+    impl<T, B> IterScan for SizedCollect<T, B>
+    where
+        T: IterScan,
+        B: FromIterator<<T as IterScan>::Output>,
+    {
+        type Output = B;
+        #[inline]
+        fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+            let size = usize::scan(iter)?;
+            repeat_with(|| <T as IterScan>::scan(iter))
+                .take(size)
+                .collect()
         }
     }
 }

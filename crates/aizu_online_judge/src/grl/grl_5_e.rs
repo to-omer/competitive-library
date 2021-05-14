@@ -4,6 +4,7 @@ pub use competitive::{
     algebra::{AdditiveOperation, RangeSumRangeAdd},
     data_structure::LazySegmentTree,
     graph::UndirectedSparseGraph,
+    tools::SizedCollect,
     tree::HeavyLightDecomposition,
 };
 
@@ -11,12 +12,13 @@ pub use competitive::{
 pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n);
-    let mut edges = Vec::with_capacity(n - 1);
-    for u in 0..n {
-        scan!(scanner, k, c: [usize]);
-        edges.extend(c.take(k).map(|v| (u, v)));
-    }
+    scan!(scanner, n, c: [SizedCollect<usize>]);
+    let edges = c
+        .take(n)
+        .enumerate()
+        .map(|(u, it)| it.into_iter().map(move |v| (u, v)))
+        .flatten()
+        .collect();
     let mut graph = UndirectedSparseGraph::from_edges(n, edges);
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     type M = (AdditiveOperation<u64>, AdditiveOperation<u64>);

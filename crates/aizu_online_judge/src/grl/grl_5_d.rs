@@ -2,19 +2,20 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     algebra::AdditiveOperation, data_structure::BinaryIndexedTree, graph::UndirectedSparseGraph,
-    tree::EulerTourForEdge,
+    tools::SizedCollect, tree::EulerTourForEdge,
 };
 
 #[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_D")]
 pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n);
-    let mut edges = Vec::with_capacity(n - 1);
-    for u in 0..n {
-        scan!(scanner, k, c: [usize]);
-        edges.extend(c.take(k).map(|v| (u, v)));
-    }
+    scan!(scanner, n, c: [SizedCollect<usize>]);
+    let edges = c
+        .take(n)
+        .enumerate()
+        .map(|(u, it)| it.into_iter().map(move |v| (u, v)))
+        .flatten()
+        .collect();
     let graph = UndirectedSparseGraph::from_edges(n, edges);
     let et = EulerTourForEdge::new(0, &graph);
     let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(et.length());
