@@ -1,4 +1,3 @@
-#[codesnip::entry]
 #[macro_export]
 macro_rules! capture {
     ([$($ca:tt)*], fn $name:ident($($arg:tt)*) -> $ret:ty $body:block) => {
@@ -37,5 +36,50 @@ macro_rules! capture {
     };
     ({$($done:tt)*}[$g:ident, $($rest:tt)*] $($info:tt)*) => {
         capture!({$($done)* ($g, $g, usize)}[$($rest)*]$($info)*)
+    };
+}
+
+#[macro_export]
+macro_rules! crecurse {
+    (
+        [$($cargs:ident: $cargsty:ty),*],
+        fn $func:ident ($($args:ident: $argsty:ty),*) -> $ret:ty $body:block
+    ) => {{
+        fn call<F>(f: &F, $($args: $argsty,)* $($cargs: &mut $cargsty,)*) -> $ret
+        where
+            F: Fn(&dyn Fn($($argsty,)* $(&mut $cargsty,)*) -> $ret, $($argsty,)* $(&mut $cargsty,)*) -> $ret,
+        {
+            f(
+                &|$($args: $argsty,)* $($cargs: &mut $cargsty,)*| -> $ret {
+                    call(f, $($args,)* $($cargs,)*)
+                },
+                $($args,)* $($cargs,)*
+            )
+        }
+        |$($args: $argsty,)*| -> $ret {
+            call(
+                &|$func, $($args: $argsty,)* $($cargs: &mut $cargsty,)*| -> $ret {
+                    #[allow(unused_macros)]
+                    macro_rules! $func {
+                        () => {
+                            |$($args: $argsty,)*| -> $ret {
+                                $func($($args,)* $($cargs,)*)
+                            }
+                        }
+                    }
+                    $body
+                },
+                $($args,)* $(&mut $cargs,)*
+            )
+        }
+    }};
+    (fn $($rest:tt)*) => {
+        crecurse!([], fn $($rest)*)
+    };
+    ([$($caps:tt)*], fn $func:ident ($($args:ident: $argsty:ty),*) $body:block) => {
+        crecurse!([$($caps)*], fn $func($($args: $argsty),*) -> () $body)
+    };
+    ([$($caps:tt)*], fn $func:ident ($($args:ident: $argsty:ty),*,) $($rest:tt)*) => {
+        crecurse!([$($caps)*], fn $func($($args: $argsty),*) $($rest)*)
     };
 }
