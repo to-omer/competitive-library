@@ -2,6 +2,8 @@
 
 #[cfg_attr(nightly, codesnip::entry("BitDp", inline))]
 mod bitdp;
+#[cfg_attr(nightly, codesnip::entry(inline, include("MIntBase", "binary_search")))]
+mod chromatic_number;
 mod combinations;
 #[cfg_attr(nightly, codesnip::entry("ConvexHullTrick", inline))]
 mod convex_hull_trick;
@@ -16,6 +18,7 @@ mod xorbasis;
 mod zeta_transform;
 
 pub use bitdp::*;
+pub use chromatic_number::*;
 pub use combinations::*;
 pub use convex_hull_trick::*;
 pub use mo::MoSolver;
