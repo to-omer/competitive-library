@@ -29,7 +29,7 @@ mod totalord;
 pub use associated_value::AssociatedValue;
 pub use heuristics::SimuratedAnnealing;
 pub use ord_tools::*;
-pub use output::echo;
+pub use output::{echo, Echo};
 pub use random::*;
 pub use scanner::*;
 pub use slice::GetDistinctMut;
