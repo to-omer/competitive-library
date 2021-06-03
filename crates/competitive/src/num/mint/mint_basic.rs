@@ -175,7 +175,7 @@ impl MIntBase for Modulo2 {
     }
     #[inline]
     fn mod_mul(x: Self::Inner, y: Self::Inner) -> Self::Inner {
-        x | y
+        x & y
     }
     #[inline]
     fn mod_div(x: Self::Inner, y: Self::Inner) -> Self::Inner {
