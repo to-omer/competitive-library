@@ -47,6 +47,40 @@
 <span id="13">13</span>
 <span id="14">14</span>
 <span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
 </pre><pre class="rust">
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;_echo&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">echo</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">std::fmt::Display</span><span class="op">&gt;</span>(
@@ -62,6 +96,40 @@
         <span class="macro">write!</span>(<span class="ident">writer</span>, <span class="string">&quot;{}{}&quot;</span>, <span class="ident">sep</span>, <span class="ident">item</span>)<span class="question-mark">?</span>;
     }
     <span class="macro">writeln!</span>(<span class="ident">writer</span>)
+}
+
+<span class="doccomment">/// Struct for formatting an Iterator with separator.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Echo</span><span class="op">&lt;</span><span class="ident">Iter</span>, <span class="ident">Sep</span><span class="op">&gt;</span>(<span class="kw">pub</span> <span class="ident">Iter</span>, <span class="kw">pub</span> <span class="ident">Sep</span>);
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Iter</span><span class="op">&gt;</span> <span class="ident">Echo</span><span class="op">&lt;</span><span class="ident">Iter</span>, <span class="ident">char</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">line</span>(<span class="ident">iter</span>: <span class="ident">Iter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">iter</span>, <span class="string">&#39;\n&#39;</span>)
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">white</span>(<span class="ident">iter</span>: <span class="ident">Iter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">iter</span>, <span class="string">&#39; &#39;</span>)
+    }
+}
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Iter</span><span class="op">&gt;</span> <span class="ident">Echo</span><span class="op">&lt;</span><span class="ident">Iter</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">none</span>(<span class="ident">iter</span>: <span class="ident">Iter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">iter</span>, <span class="string">&quot;&quot;</span>)
+    }
+}
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Iter</span>, <span class="ident">E</span>, <span class="ident">Sep</span><span class="op">&gt;</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">Echo</span><span class="op">&lt;</span><span class="ident">Iter</span>, <span class="ident">Sep</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">Iter</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">E</span><span class="op">&gt;</span>,
+    <span class="ident">E</span>: <span class="ident">std::fmt::Display</span>,
+    <span class="ident">Sep</span>: <span class="ident">std::fmt::Display</span>,
+{
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::fmt::Result</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">clone</span>().<span class="ident">into_iter</span>();
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">item</span>) <span class="op">=</span> <span class="ident">iter</span>.<span class="ident">next</span>() {
+            <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">item</span>)<span class="question-mark">?</span>;
+        }
+        <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">iter</span> {
+            <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}{}&quot;</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="ident">item</span>)<span class="question-mark">?</span>;
+        }
+        <span class="macro">writeln!</span>(<span class="ident">f</span>)
+    }
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
