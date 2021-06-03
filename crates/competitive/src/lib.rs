@@ -19,7 +19,7 @@ pub mod geometry;
 pub mod graph;
 pub mod math;
 pub mod num;
+pub mod prelude;
 pub mod string;
 pub mod tools;
-pub mod prelude;
 pub mod tree;
