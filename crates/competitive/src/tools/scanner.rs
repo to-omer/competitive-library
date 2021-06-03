@@ -135,6 +135,63 @@ mod scanner_impls {
             <T as IterScan>::scan(&mut self.inner.iter)
         }
     }
+
+    #[macro_export]
+    macro_rules! scan_value {
+        ($scanner:expr, ($($t:tt),*)) => {
+            ($($crate::scan_value!($scanner, $t)),*)
+        };
+        ($scanner:expr, [$t:tt; $len:expr]) => {
+            (0..$len).map(|_| $crate::scan_value!($scanner, $t)).collect::<Vec<_>>()
+        };
+        ($scanner:expr, [$t:ty; $len:expr]) => {
+            $scanner.scan_vec::<$t>($len)
+        };
+        ($scanner:expr, [$t:ty]) => {
+            $scanner.iter::<$t>()
+        };
+        ($scanner:expr, {$e:expr}) => {
+            $scanner.mscan($e)
+        };
+        ($scanner:expr, $t:ty) => {
+            $scanner.scan::<$t>()
+        };
+    }
+
+    #[macro_export]
+    macro_rules! scan {
+        ($scanner:expr) => {};
+        ($scanner:expr,) => {};
+        ($scanner:expr, mut $var:tt: $t:tt) => {
+            let mut $var = $crate::scan_value!($scanner, $t);
+        };
+        ($scanner:expr, $var:tt: $t:tt) => {
+            let $var = $crate::scan_value!($scanner, $t);
+        };
+        ($scanner:expr, mut $var:tt: $t:tt, $($rest:tt)*) => {
+            let mut $var = $crate::scan_value!($scanner, $t);
+            scan!($scanner, $($rest)*)
+        };
+        ($scanner:expr, $var:tt: $t:tt, $($rest:tt)*) => {
+            let $var = $crate::scan_value!($scanner, $t);
+            scan!($scanner, $($rest)*)
+        };
+
+        ($scanner:expr, mut $var:tt) => {
+            let mut $var = $crate::scan_value!($scanner, usize);
+        };
+        ($scanner:expr, $var:tt) => {
+            let $var = $crate::scan_value!($scanner, usize);
+        };
+        ($scanner:expr, mut $var:tt, $($rest:tt)*) => {
+            let mut $var = $crate::scan_value!($scanner, usize);
+            scan!($scanner, $($rest)*)
+        };
+        ($scanner:expr, $var:tt, $($rest:tt)*) => {
+            let $var = $crate::scan_value!($scanner, usize);
+            scan!($scanner, $($rest)*)
+        };
+    }
 }
 
 pub use marker_impls::{CharWithBase, Chars, CharsWithBase, Collect, SizedCollect, Usize1};
@@ -244,65 +301,9 @@ mod marker_impls {
     }
 }
 
-#[macro_export]
-macro_rules! scan_value {
-    ($scanner:expr, ($($t:tt),*)) => {
-        ($($crate::scan_value!($scanner, $t)),*)
-    };
-    ($scanner:expr, [$t:tt; $len:expr]) => {
-        (0..$len).map(|_| $crate::scan_value!($scanner, $t)).collect::<Vec<_>>()
-    };
-    ($scanner:expr, [$t:ty; $len:expr]) => {
-        $scanner.scan_vec::<$t>($len)
-    };
-    ($scanner:expr, [$t:ty]) => {
-        $scanner.iter::<$t>()
-    };
-    ($scanner:expr, {$e:expr}) => {
-        $scanner.mscan($e)
-    };
-    ($scanner:expr, $t:ty) => {
-        $scanner.scan::<$t>()
-    };
-}
-
-#[macro_export]
-macro_rules! scan {
-    ($scanner:expr) => {};
-    ($scanner:expr,) => {};
-    ($scanner:expr, mut $var:tt: $t:tt) => {
-        let mut $var = $crate::scan_value!($scanner, $t);
-    };
-    ($scanner:expr, $var:tt: $t:tt) => {
-        let $var = $crate::scan_value!($scanner, $t);
-    };
-    ($scanner:expr, mut $var:tt: $t:tt, $($rest:tt)*) => {
-        let mut $var = $crate::scan_value!($scanner, $t);
-        scan!($scanner, $($rest)*)
-    };
-    ($scanner:expr, $var:tt: $t:tt, $($rest:tt)*) => {
-        let $var = $crate::scan_value!($scanner, $t);
-        scan!($scanner, $($rest)*)
-    };
-
-    ($scanner:expr, mut $var:tt) => {
-        let mut $var = $crate::scan_value!($scanner, usize);
-    };
-    ($scanner:expr, $var:tt) => {
-        let $var = $crate::scan_value!($scanner, usize);
-    };
-    ($scanner:expr, mut $var:tt, $($rest:tt)*) => {
-        let mut $var = $crate::scan_value!($scanner, usize);
-        scan!($scanner, $($rest)*)
-    };
-    ($scanner:expr, $var:tt, $($rest:tt)*) => {
-        let $var = $crate::scan_value!($scanner, usize);
-        scan!($scanner, $($rest)*)
-    };
-}
-
 #[test]
 fn test_scan() {
+    use crate::scan;
     let mut s = Scanner::new("1 2 3");
     scan!(s, x, y: char, z: Usize1);
     assert_eq!(x, 1);

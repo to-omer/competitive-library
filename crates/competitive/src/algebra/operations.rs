@@ -237,7 +237,7 @@ pub trait BitAndIdentity: Sized + std::ops::BitAnd<Output = Self> {
 #[codesnip::entry("BitAndOperation")]
 mod bitand_operation_impl {
     use super::*;
-    #[macro_export(local_inner_macros)]
+    #[macro_export]
     macro_rules! impl_bitand_identity {
         ([$($wh:tt)*], $t:ty, $all_one:expr) => {
             impl<$($wh)*> BitAndIdentity for $t {
@@ -297,7 +297,7 @@ pub trait BitOrIdentity: Sized + std::ops::BitOr<Output = Self> {
 #[codesnip::entry("BitOrOperation")]
 mod bitor_operation_impl {
     use super::*;
-    #[macro_export(local_inner_macros)]
+    #[macro_export]
     macro_rules! impl_bitor_identity {
         ([$($wh:tt)*], $t:ty, $all_zero:expr) => {
             impl<$($wh)*> BitOrIdentity for $t {
@@ -357,7 +357,7 @@ pub trait BitXorIdentity: Sized + std::ops::BitXor<Output = Self> {
 #[codesnip::entry("BitXorOperation")]
 mod bitxor_operation_impl {
     use super::*;
-    #[macro_export(local_inner_macros)]
+    #[macro_export]
     macro_rules !impl_bitxor_identity {([$($wh :tt ) *] ,$t :ty ,$xor_zero :expr ) =>{impl <$($wh ) *>BitXorIdentity for $t {#[inline ] fn xor_zero () ->Self {$xor_zero } } } ;($t :ty ,$xor_zero :expr ) =>{impl BitXorIdentity for $t {#[inline ] fn xor_zero () ->Self {$xor_zero } } } ;}
     impl_bitxor_identity!(bool, false);
     impl_bitxor_identity!(usize, 0usize);

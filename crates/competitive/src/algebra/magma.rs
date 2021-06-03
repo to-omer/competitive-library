@@ -95,18 +95,20 @@ pub trait IdempotentMonoid: Monoid + Idempotent {}
 
 impl<M: Monoid + Idempotent> IdempotentMonoid for M {}
 
-#[macro_export]
-macro_rules! monoid_fold {
-    ($m:ty) => { <$m as Unital>::unit() };
-    ($m:ty,) => { <$m as Unital>::unit() };
-    ($m:ty, $f:expr) => { $f };
-    ($m:ty, $f:expr, $($ff:expr),*) => { <$m as Magma>::operate(&($f), &monoid_fold!($m, $($ff),*)) };
+mod monoid_macros {
+    #[macro_export]
+    macro_rules! monoid_fold {
+        ($m:ty) => { <$m as Unital>::unit() };
+        ($m:ty,) => { <$m as Unital>::unit() };
+        ($m:ty, $f:expr) => { $f };
+        ($m:ty, $f:expr, $($ff:expr),*) => { <$m as Magma>::operate(&($f), &monoid_fold!($m, $($ff),*)) };
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::algebra::operations::MaxOperation;
+    use crate::{algebra::operations::MaxOperation, monoid_fold};
 
     #[test]
     #[allow(clippy::eq_op)]

@@ -7,6 +7,7 @@ mod capture;
     codesnip::entry("SimuratedAnnealing", inline, include("Xorshift"))
 )]
 mod heuristics;
+#[cfg_attr(nightly, codesnip::entry("comprehension"))]
 mod iterable;
 #[cfg_attr(nightly, codesnip::entry("main", inline, include("scanner", "_echo")))]
 mod main;

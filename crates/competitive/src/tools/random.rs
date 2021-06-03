@@ -63,7 +63,6 @@ impl Default for Xorshift {
     nightly,
     codesnip::entry("random_generator", include("Xorshift", "bounded"))
 )]
-#[macro_use]
 mod random_generator;
 #[codesnip::entry("random_generator")]
 pub use random_generator::{NotEmptySegment, RandIter, RandomSpec};

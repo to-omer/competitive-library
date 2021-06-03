@@ -18,13 +18,15 @@ fn main() {
     scan!(scanner, _n);
 }
 
-#[macro_export]
-macro_rules! prepare_io {
-    ($in_buf:ident, $scanner:ident, $out:ident) => {
-        use std::io::{stdout, BufWriter, Write as _};
-        let $in_buf = read_stdin_all_unchecked();
-        let mut $scanner = Scanner::new(&$in_buf);
-        let $out = stdout();
-        let mut $out = BufWriter::new($out.lock());
-    };
+mod main_macros {
+    #[macro_export]
+    macro_rules! prepare_io {
+        ($in_buf:ident, $scanner:ident, $out:ident) => {
+            use std::io::{stdout, BufWriter, Write as _};
+            let $in_buf = read_stdin_all_unchecked();
+            let mut $scanner = Scanner::new(&$in_buf);
+            let $out = stdout();
+            let mut $out = BufWriter::new($out.lock());
+        };
+    }
 }
