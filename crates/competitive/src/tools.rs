@@ -1,12 +1,5 @@
-#[macro_use]
 #[cfg_attr(nightly, codesnip::entry("AssociatedValue", inline))]
 mod associated_value;
-#[macro_use]
-mod iterable;
-#[macro_use]
-#[cfg_attr(nightly, codesnip::entry("ord_tools", inline))]
-mod ord_tools;
-#[macro_use]
 #[cfg_attr(nightly, codesnip::entry)]
 mod capture;
 #[cfg_attr(
@@ -14,10 +7,12 @@ mod capture;
     codesnip::entry("SimuratedAnnealing", inline, include("Xorshift"))
 )]
 mod heuristics;
-#[macro_use]
+mod iterable;
 #[cfg_attr(nightly, codesnip::entry("main", inline, include("scanner", "_echo")))]
 mod main;
 mod map;
+#[cfg_attr(nightly, codesnip::entry("ord_tools", inline))]
+mod ord_tools;
 mod output;
 mod random;
 #[cfg_attr(nightly, codesnip::entry("scanner", inline))]

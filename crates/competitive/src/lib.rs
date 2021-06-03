@@ -20,7 +20,6 @@ pub mod graph;
 pub mod math;
 pub mod num;
 pub mod string;
-#[macro_use]
 pub mod tools;
 pub mod prelude;
 pub mod tree;
