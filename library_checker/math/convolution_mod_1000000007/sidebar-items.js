@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["convolution_mod_1000000007","✅  AC  555ms"]]});
+initSidebarItems({"fn":[["convolution_mod_1000000007",""]]});

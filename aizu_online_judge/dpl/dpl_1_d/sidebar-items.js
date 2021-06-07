@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dpl_1_d","✅  AC  7ms"]]});
+initSidebarItems({"fn":[["dpl_1_d",""]]});
