@@ -1,4 +1,5 @@
 #![cfg_attr(feature = "verify_doc", feature(doc_alias))]
+#![cfg_attr(feature = "verify_doc", feature(extended_key_value_attributes))]
 #![allow(clippy::many_single_char_names)]
 
 //! Verification of [`competitive` crate] by [Aizu Online Judge]
