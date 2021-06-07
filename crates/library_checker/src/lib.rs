@@ -1,4 +1,3 @@
-#![cfg_attr(feature = "verify_doc", feature(external_doc))]
 #![cfg_attr(feature = "verify_doc", feature(doc_alias))]
 #![allow(clippy::many_single_char_names)]
 

@@ -108,7 +108,7 @@ pub fn verify(attr: TokenStream, item: TokenStream) -> TokenStream {
                 quote! { case.judge_with_env(buf.as_ref(), &env) }
             };
             let gen = quote! {
-                #[cfg_attr(feature = "verify_doc", doc(include = #md))]
+                #[cfg_attr(feature = "verify_doc", doc(include_str!(#md)))]
                 #[cfg_attr(feature = "verify_doc", doc(alias = "verify"))]
                 #ast
                 #[test]
