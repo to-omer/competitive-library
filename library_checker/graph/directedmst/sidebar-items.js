@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["directedmst",""]]});
+initSidebarItems({"fn":[["directedmst","✅  AC  172ms"]]});
