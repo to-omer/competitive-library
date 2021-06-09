@@ -10,6 +10,7 @@ pub fn main() {
 }
 
 mod main_macros {
+    /// Prepare useful macros.
     /// - `prepare!();`: default (all scanner + buf print)
     /// - `prepare!(?);`: interactive (line scanner + buf print)
     /// - `prepare!(!);`: line scanner
