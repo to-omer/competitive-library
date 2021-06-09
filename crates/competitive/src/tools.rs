@@ -19,7 +19,6 @@ mod main;
 mod map;
 #[cfg_attr(nightly, codesnip::entry("ord_tools", inline))]
 mod ord_tools;
-mod output;
 mod random;
 #[cfg_attr(nightly, codesnip::entry("scanner", inline))]
 mod scanner;
@@ -30,7 +29,6 @@ mod totalord;
 pub use associated_value::AssociatedValue;
 pub use heuristics::SimuratedAnnealing;
 pub use ord_tools::*;
-pub use output::{echo, Echo};
 pub use random::*;
 pub use scanner::*;
 pub use slice::GetDistinctMut;

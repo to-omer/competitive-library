@@ -6,10 +6,10 @@ pub use competitive::{
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/convolution_mod")]
-pub fn convolution_mod(reader: impl Read, writer: impl Write) {
+pub fn convolution_mod(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, m, a: [MInt998244353; n], b: [MInt998244353; m]);
     let c = Ntt998244353::convolve(a, b);
-    echo(writer, c, ' ').ok();
+    iter_print!(writer, @iter c);
 }

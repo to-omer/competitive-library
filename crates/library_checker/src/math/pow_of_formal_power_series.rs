@@ -3,11 +3,11 @@ use competitive::prelude::*;
 pub use competitive::{math::Fps998244353, num::mint_basic::MInt998244353};
 
 #[verify::verify("https://judge.yosupo.jp/problem/pow_of_formal_power_series")]
-pub fn pow_of_formal_power_series(reader: impl Read, writer: impl Write) {
+pub fn pow_of_formal_power_series(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, m, a: [MInt998244353; n]);
     let f = Fps998244353::from_vec(a);
     let g = f.pow(m, n);
-    echo(writer, g.data, ' ').ok();
+    iter_print!(writer, @iter g.data);
 }

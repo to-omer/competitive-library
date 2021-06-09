@@ -3,10 +3,10 @@ use competitive::prelude::*;
 pub use competitive::string::Zarray;
 
 #[verify::verify("https://judge.yosupo.jp/problem/zalgorithm")]
-pub fn zalgorithm(reader: impl Read, writer: impl Write) {
+pub fn zalgorithm(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, s: Chars);
     let z = Zarray::new(&s);
-    echo(writer, (0..s.len()).map(|i| z[i]), ' ').ok();
+    iter_print!(writer, @iter (0..s.len()).map(|i| z[i]));
 }
