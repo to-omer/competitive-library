@@ -55,10 +55,13 @@ iter_print_tuple_impl!(A a B b C c D d E e F f G g H h I i J j K k);
 /// - `iter_print!(writer, args...)`
 /// - `@sep $expr,`: set separator (default: `' '`)
 /// - `@fmt $lit => {$($expr),*}`: print `format!($lit, $($expr),*)`
+/// - `@flush`: flush writer
 /// - `@iter $expr`: print iterator
-/// - `@tuple $expr`: print tuple (need to import [`IterPrint`])
+/// - `@tuple $expr`: print tuple (need to import [`IterPrint`], each elements impls `Display`)
 /// - `$expr`: print expr
 /// - `;`: println
+///
+/// [`IterPrint`]: IterPrint
 #[macro_export]
 macro_rules! iter_print {
     (@@fmt $writer:expr, $sep:expr, $is_head:expr, $lit:literal, $($e:expr),*) => {
@@ -93,6 +96,10 @@ macro_rules! iter_print {
     };
     (@@inner $writer:expr, $sep:expr, $is_head:expr, @sep $e:expr, $($t:tt)*) => {
         $crate::iter_print!(@@inner $writer, $e, $is_head, $($t)*);
+    };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, @flush $($t:tt)*) => {
+        $writer.flush().expect("io error");
+        $crate::iter_print!(@@inner $writer, $sep, $is_head, $($t)*);
     };
     (@@inner $writer:expr, $sep:expr, $is_head:expr, @fmt $lit:literal => {$($e:expr),* $(,)?} $($t:tt)*) => {
         $crate::iter_print!(@@fmt $writer, $sep, $is_head, $lit, $($e),*);
@@ -146,7 +153,9 @@ mod tests {
         iter_print!(
             buf, 1, 2, @sep '.', 3, 4; 5, 6, @sep ' ', @iter 7..=10;
             @tuple (1, 2, 3);
-            4, @fmt "{}?{}" => {5, 6.7}
+            @flush,
+            4, @fmt "{}?{}" => {5, 6.7},
+            @flush,
         );
         let expected = "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7\n";
         assert_eq!(expected, String::from_utf8_lossy(&buf));
