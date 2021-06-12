@@ -6,15 +6,13 @@ from subprocess import PIPE, run
 
 SIZE = 15
 
-verify_packages = ["aizu_online_judge library_checker"]
+verify_packages = ["aizu_online_judge", "library_checker"]
 
 
 def cargo_verify(package: str, name: str):
     res = run(
-        [
-            f"cargo test --package {package} --release {name}"
-            " -- --ignored --exact --nocapture"
-        ]
+        f"cargo test --package {package} --release {name}"
+        " -- --ignored --exact --nocapture"
     )
     if res.returncode:
         print(f"::error::verify failed `{name}`")
@@ -22,9 +20,9 @@ def cargo_verify(package: str, name: str):
 
 def verify_list():
     for package in verify_packages:
-        command = [
+        command = (
             f"cargo test --package {package} --quiet --release -- --list --ignored"
-        ]
+        )
         res = run(command, stdout=PIPE)
         for s in res.stdout.splitlines():
             yield (package, s.split()[0][:-1].decode("utf-8"))
