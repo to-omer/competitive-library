@@ -11,8 +11,18 @@ verify_packages = ["aizu_online_judge", "library_checker"]
 
 def cargo_verify(package: str, name: str):
     res = run(
-        f"cargo test --package {package} --release {name}"
-        " -- --ignored --exact --nocapture"
+        [
+            "cargo",
+            "test",
+            "--package",
+            package,
+            "--release",
+            name,
+            "--",
+            "--ignored",
+            "--exact",
+            "--nocapture",
+        ]
     )
     if res.returncode:
         print(f"::error::verify failed `{name}`")
@@ -20,16 +30,24 @@ def cargo_verify(package: str, name: str):
 
 def verify_list():
     for package in verify_packages:
-        command = (
-            f"cargo test --package {package} --quiet --release -- --list --ignored"
-        )
+        command = [
+            "cargo",
+            "test",
+            "--package",
+            package,
+            "--quiet",
+            "--release",
+            "--",
+            "--list",
+            "--ignored",
+        ]
         res = run(command, stdout=PIPE)
         for s in res.stdout.splitlines():
             yield (package, s.split()[0][:-1].decode("utf-8"))
 
 
 def arrange_artifacts():
-    res = run("git ls-files -o --exclude-standard crates", stdout=PIPE)
+    res = run(["git", "ls-files", "-o", "--exclude-standard", "crates"], stdout=PIPE)
     artifact = Path("artifact")
     artifact.mkdir(exist_ok=True)
     for s in res.stdout.split():
