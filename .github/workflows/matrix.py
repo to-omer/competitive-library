@@ -11,7 +11,7 @@ verify_packages = ["aizu_online_judge", "library_checker"]
 
 def cargo_verify(package: str, name: str):
     res = run(
-        f"/usr/share/rust/.cargo/bin/cargo test --package {package} --release {name}"
+        f"cargo test --package {package} --release {name}"
         " -- --ignored --exact --nocapture"
     )
     if res.returncode:
@@ -21,8 +21,7 @@ def cargo_verify(package: str, name: str):
 def verify_list():
     for package in verify_packages:
         command = (
-            f"/usr/share/rust/.cargo/bin/cargo test --package {package}"
-            " --quiet --release -- --list --ignored"
+            f"cargo test --package {package} --quiet --release -- --list --ignored"
         )
         res = run(command, stdout=PIPE)
         for s in res.stdout.splitlines():
@@ -44,9 +43,9 @@ def main():
     parser.add_argument("nth", type=int, nargs="?")
     args = parser.parse_args()
     for package, name in islice(verify_list(), args.nth, None, SIZE):
-        print(package, name)
+        cargo_verify(package, name)
 
-    # arrange_artifacts()
+    arrange_artifacts()
 
 
 if __name__ == "__main__":
