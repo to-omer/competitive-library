@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["many_aplusb","✅  AC  186ms"]]});
+initSidebarItems({"fn":[["many_aplusb","✅  AC  169ms"]]});
