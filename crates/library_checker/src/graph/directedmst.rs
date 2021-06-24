@@ -6,7 +6,7 @@ pub use competitive::{algebra::AdditiveOperation, graph::EdgeListGraphScanner};
 pub fn directedmst(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, m, s, (graph, w): { EdgeListGraphScanner::<usize, i64>::new(n, m) });
+    scan!(scanner, n, m, s, (graph, w): @EdgeListGraphScanner::<usize, i64>::new(n, m));
     let res = graph
         .minimum_spanning_arborescence::<AdditiveOperation<_>, _>(s, |u| w[u])
         .unwrap();

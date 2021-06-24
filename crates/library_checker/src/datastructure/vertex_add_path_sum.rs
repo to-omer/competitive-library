@@ -9,7 +9,7 @@ pub use competitive::{
 pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, q, a: [i64; n], (mut graph, _): { TreeGraphScanner::<usize, ()>::new(n) });
+    scan!(scanner, n, q, a: [i64; n], (mut graph, _): @TreeGraphScanner::<usize, ()>::new(n));
     let hld = HeavyLightDecomposition::new(0, &mut graph);
     let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(n);
     for (i, a) in a.iter().cloned().enumerate() {

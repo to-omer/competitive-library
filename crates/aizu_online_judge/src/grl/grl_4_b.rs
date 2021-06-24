@@ -9,7 +9,7 @@ use competitive::prelude::*;
 pub fn grl_4_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es, (graph, _): { DirectedGraphScanner::<usize, ()>::new(vs, es) });
+    scan!(scanner, vs, es, (graph, _): @DirectedGraphScanner::<usize, ()>::new(vs, es));
     for u in graph.topological_sort().into_iter() {
         writeln!(writer, "{}", u).ok();
     }

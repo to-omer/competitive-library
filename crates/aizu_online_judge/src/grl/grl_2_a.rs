@@ -6,7 +6,7 @@ use competitive::prelude::*;
 pub fn grl_2_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es, (graph, w): { EdgeListGraphScanner::<usize, u64>::new(vs, es) });
+    scan!(scanner, vs, es, (graph, w): @EdgeListGraphScanner::<usize, u64>::new(vs, es));
     let span = graph.minimum_spanning_tree(|&eid| w[eid]);
     let ans = (0..es).map(|eid| w[eid] * span[eid] as u64).sum::<u64>();
     writeln!(writer, "{}", ans).ok();

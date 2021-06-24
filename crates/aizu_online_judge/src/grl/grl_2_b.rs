@@ -9,7 +9,7 @@ pub use competitive::{
 pub fn grl_2_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, vs, es, root, (graph, w): { EdgeListGraphScanner::<usize, i64>::new(vs, es) });
+    scan!(scanner, vs, es, root, (graph, w): @EdgeListGraphScanner::<usize, i64>::new(vs, es));
     let res = graph.minimum_spanning_arborescence::<AdditiveOperation<_>, _>(root, |u| w[u]);
     writeln!(writer, "{}", res.unwrap().0).ok();
 }
