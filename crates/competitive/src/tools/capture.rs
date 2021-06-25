@@ -106,7 +106,7 @@ macro_rules! memorize {
                 if let Some(value) = $map.get(&($($args,)*)).cloned() {
                     value
                 } else {
-                    let value = $body;
+                    let value = (|| $body)();
                     $map.insert(($($args,)*), value.clone());
                     value
                 }
