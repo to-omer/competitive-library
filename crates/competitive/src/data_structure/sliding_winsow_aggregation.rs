@@ -1,12 +1,11 @@
-use crate::algebra::Monoid;
+use super::Monoid;
 
-#[codesnip::entry("QueueAggregation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct QueueAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
 }
-#[codesnip::entry("QueueAggregation")]
+
 impl<M: Monoid> Default for QueueAggregation<M> {
     fn default() -> Self {
         Self {
@@ -15,7 +14,7 @@ impl<M: Monoid> Default for QueueAggregation<M> {
         }
     }
 }
-#[codesnip::entry("QueueAggregation")]
+
 impl<M: Monoid> QueueAggregation<M> {
     pub fn new() -> Self {
         Self::default()
@@ -70,13 +69,12 @@ impl<M: Monoid> QueueAggregation<M> {
     }
 }
 
-#[codesnip::entry("DequeAggregation", include("algebra"))]
 #[derive(Clone, Debug)]
 pub struct DequeAggregation<M: Monoid> {
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
 }
-#[codesnip::entry("DequeAggregation")]
+
 impl<M: Monoid> Default for DequeAggregation<M> {
     fn default() -> Self {
         Self {
@@ -85,7 +83,7 @@ impl<M: Monoid> Default for DequeAggregation<M> {
         }
     }
 }
-#[codesnip::entry("DequeAggregation")]
+
 impl<M: Monoid> DequeAggregation<M> {
     pub fn new() -> Self {
         Self::default()

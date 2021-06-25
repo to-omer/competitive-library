@@ -1,11 +1,12 @@
 use super::{BitVector, RankSelectDictionaries};
+use std::ops::Range;
 
-#[codesnip::entry(include("RankSelectDictionaries"))]
+#[derive(Debug, Clone)]
 pub struct WaveletMatrix {
     len: usize,
     table: Vec<(usize, BitVector)>,
 }
-#[codesnip::entry("WaveletMatrix")]
+
 impl WaveletMatrix {
     pub fn new<T: Clone + RankSelectDictionaries>(mut v: Vec<T>, bit_length: usize) -> Self {
         let len = v.len();
@@ -36,7 +37,7 @@ impl WaveletMatrix {
         val
     }
     /// the number of val in range
-    pub fn rank(&self, val: usize, mut range: std::ops::Range<usize>) -> usize {
+    pub fn rank(&self, val: usize, mut range: Range<usize>) -> usize {
         for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
             if val.access(d) {
                 range.start = c + b.rank1(range.start);
@@ -72,7 +73,7 @@ impl WaveletMatrix {
         Some(i)
     }
     /// get k-th smallest value in range
-    pub fn quantile(&self, mut range: std::ops::Range<usize>, mut k: usize) -> usize {
+    pub fn quantile(&self, mut range: Range<usize>, mut k: usize) -> usize {
         let mut val = 0;
         for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
             let z = b.rank0(range.end) - b.rank0(range.start);
@@ -89,7 +90,7 @@ impl WaveletMatrix {
         val
     }
     /// the number of value less than val in range
-    pub fn rank_lessthan(&self, val: usize, mut range: std::ops::Range<usize>) -> usize {
+    pub fn rank_lessthan(&self, val: usize, mut range: Range<usize>) -> usize {
         let mut res = 0;
         for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
             if val.access(d) {
@@ -104,11 +105,7 @@ impl WaveletMatrix {
         res
     }
     /// the number of valrange in range
-    pub fn rank_range(
-        &self,
-        valrange: std::ops::Range<usize>,
-        range: std::ops::Range<usize>,
-    ) -> usize {
+    pub fn rank_range(&self, valrange: Range<usize>, range: Range<usize>) -> usize {
         self.rank_lessthan(valrange.end, range.clone()) - self.rank_lessthan(valrange.start, range)
     }
 }

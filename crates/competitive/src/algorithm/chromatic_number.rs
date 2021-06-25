@@ -1,8 +1,4 @@
-#[codesnip::skip]
-use crate::{
-    algorithm::binary_search,
-    num::{MInt, MIntBase, One, Zero},
-};
+use super::{binary_search, MInt, MIntBase, One, Zero};
 
 #[derive(Debug, Clone)]
 pub struct IndependentSubSet<M: MIntBase> {

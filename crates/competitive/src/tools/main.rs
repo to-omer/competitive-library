@@ -9,6 +9,12 @@ pub fn main() {
     sc!(_n);
 }
 
+#[allow(unused_imports)]
+use std::{
+    cmp::{Ordering, Reverse},
+    collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, VecDeque},
+};
+
 mod main_macros {
     /// Prepare useful macros.
     /// - `prepare!();`: default (all input scanner (`sc!`, `sv!`) + buf print (`pp!`))

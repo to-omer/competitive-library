@@ -1,8 +1,4 @@
-#[codesnip::skip]
-use crate::{
-    graph::UndirectedSparseGraph,
-    tools::{RandomSpec, Xorshift},
-};
+use super::{RandomSpec, UndirectedSparseGraph, Xorshift};
 
 /// Generate Tree with Prüfer sequence
 pub struct PruferSequence<T>(pub T);

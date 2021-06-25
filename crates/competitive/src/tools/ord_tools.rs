@@ -29,47 +29,45 @@ where
     }
 }
 
-mod ord_tools_macros {
-    #[macro_export]
-    macro_rules! min {
-        ($l:expr) => { $l };
-        ($l:expr,) => { $crate::min!($l) };
-        ($l:expr, $r:expr) => { ($l).min($r) };
-        ($l:expr, $r:expr,) => { $crate::min!($l, $r) };
-        ($l:expr, $r:expr, $($t:tt)*) => { $crate::min!($crate::min!($l, $r), $($t)*) };
-    }
+#[macro_export]
+macro_rules! min {
+    ($l:expr) => { $l };
+    ($l:expr,) => { $crate::min!($l) };
+    ($l:expr, $r:expr) => { ($l).min($r) };
+    ($l:expr, $r:expr,) => { $crate::min!($l, $r) };
+    ($l:expr, $r:expr, $($t:tt)*) => { $crate::min!($crate::min!($l, $r), $($t)*) };
+}
 
-    #[macro_export]
-    macro_rules! chmin {
-        ($l:expr) => {};
-        ($l:expr,) => {};
-        ($l:expr, $r:expr) => {{ let r = $r; if $l > r { $l = r; } }};
-        ($l:expr, $r:expr,) => { $crate::chmin!($l, $r) };
-        ($l:expr, $r:expr, $($t:tt)*) => { $crate::chmin!($l, $r); $crate::chmin!($l, $($t)*) };
-    }
+#[macro_export]
+macro_rules! chmin {
+    ($l:expr) => {};
+    ($l:expr,) => {};
+    ($l:expr, $r:expr) => {{ let r = $r; if $l > r { $l = r; } }};
+    ($l:expr, $r:expr,) => { $crate::chmin!($l, $r) };
+    ($l:expr, $r:expr, $($t:tt)*) => { $crate::chmin!($l, $r); $crate::chmin!($l, $($t)*) };
+}
 
-    #[macro_export]
-    macro_rules! max {
-        ($l:expr) => { $l };
-        ($l:expr,) => { $crate::max!($l) };
-        ($l:expr, $r:expr) => { ($l).max($r) };
-        ($l:expr, $r:expr,) => { $crate::max!($l, $r) };
-        ($l:expr, $r:expr, $($t:tt)*) => { $crate::max!($crate::max!($l, $r), $($t)*) };
-    }
+#[macro_export]
+macro_rules! max {
+    ($l:expr) => { $l };
+    ($l:expr,) => { $crate::max!($l) };
+    ($l:expr, $r:expr) => { ($l).max($r) };
+    ($l:expr, $r:expr,) => { $crate::max!($l, $r) };
+    ($l:expr, $r:expr, $($t:tt)*) => { $crate::max!($crate::max!($l, $r), $($t)*) };
+}
 
-    #[macro_export]
-    macro_rules! chmax {
-        ($l:expr) => {};
-        ($l:expr,) => {};
-        ($l:expr, $r:expr) => {{ let r = $r; if $l < r { $l = r; } }};
-        ($l:expr, $r:expr,) => { $crate::chmax!($l, $r) };
-        ($l:expr, $r:expr, $($t:tt)*) => { $crate::chmax!($l, $r); $crate::chmax!($l, $($t)*) };
-    }
+#[macro_export]
+macro_rules! chmax {
+    ($l:expr) => {};
+    ($l:expr,) => {};
+    ($l:expr, $r:expr) => {{ let r = $r; if $l < r { $l = r; } }};
+    ($l:expr, $r:expr,) => { $crate::chmax!($l, $r) };
+    ($l:expr, $r:expr, $($t:tt)*) => { $crate::chmax!($l, $r); $crate::chmax!($l, $($t)*) };
+}
 
-    #[macro_export]
-    macro_rules! minmax {
-        ($($t:tt)*) => { ($crate::min!($($t)*), $crate::max!($($t)*)) };
-    }
+#[macro_export]
+macro_rules! minmax {
+    ($($t:tt)*) => { ($crate::min!($($t)*), $crate::max!($($t)*)) };
 }
 
 #[cfg(test)]

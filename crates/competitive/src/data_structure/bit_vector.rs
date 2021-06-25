@@ -1,3 +1,5 @@
+use std::iter::FromIterator;
+
 /// rank_i(select_i(k)) = k
 /// rank_i(select_i(k) + 1) = k + 1
 pub trait RankSelectDictionaries {
@@ -74,6 +76,8 @@ macro_rules! impl_rank_select_for_bits {
     };
 }
 impl_rank_select_for_bits!(u8 u16 u32 u64 usize i8 i16 i32 i64 isize u128 i128);
+
+#[derive(Debug, Clone)]
 pub struct BitVector {
     /// [(bit, sum)]
     data: Vec<(usize, usize)>,
@@ -128,7 +132,7 @@ impl RankSelectDictionaries for BitVector {
         Some(l * Self::WORD_SIZE + bit.select0(k).unwrap())
     }
 }
-impl std::iter::FromIterator<bool> for BitVector {
+impl FromIterator<bool> for BitVector {
     fn from_iter<T: IntoIterator<Item = bool>>(iter: T) -> Self {
         let mut iter = iter.into_iter();
         let mut data = Vec::new();

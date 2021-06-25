@@ -1,7 +1,12 @@
+use std::{
+    collections::BTreeMap,
+    iter::{Extend, FromIterator},
+};
+
 /// A map to control intervals that have same values.
 #[derive(Debug, Clone)]
 pub struct RangeMap<K, V> {
-    map: std::collections::BTreeMap<(K, K), V>,
+    map: BTreeMap<(K, K), V>,
 }
 impl<K, V> Default for RangeMap<K, V>
 where
@@ -212,7 +217,7 @@ impl<K, V> RangeMap<K, V> {
         }
     }
 }
-impl<K, V> std::iter::Extend<((K, K), V)> for RangeMap<K, V>
+impl<K, V> Extend<((K, K), V)> for RangeMap<K, V>
 where
     K: Clone + Ord,
     V: Clone + Eq,
@@ -223,7 +228,7 @@ where
         }
     }
 }
-impl<K, V> std::iter::FromIterator<((K, K), V)> for RangeMap<K, V>
+impl<K, V> FromIterator<((K, K), V)> for RangeMap<K, V>
 where
     K: Clone + Ord,
     V: Clone + Eq,
@@ -342,7 +347,7 @@ impl<T> RangeSet<T> {
         self.map.drain_with(range, |r, _| f(r));
     }
 }
-impl<K> std::iter::Extend<(K, K)> for RangeSet<K>
+impl<K> Extend<(K, K)> for RangeSet<K>
 where
     K: Clone + Ord,
 {
@@ -352,7 +357,7 @@ where
         }
     }
 }
-impl<K> std::iter::FromIterator<(K, K)> for RangeSet<K>
+impl<K> FromIterator<(K, K)> for RangeSet<K>
 where
     K: Clone + Ord,
 {

@@ -3,14 +3,16 @@
 use super::magma::*;
 use crate::num::{Bounded, One, Zero};
 
-/// binary operation to select larger element
-#[codesnip::entry("MaxOperation", include("algebra", "bounded"))]
-pub struct MaxOperation<T: Clone + Ord + Bounded> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("MaxOperation")]
+pub use self::max_operation_impl::MaxOperation;
+#[codesnip::entry("MaxOperation", include("algebra", "bounded"))]
 mod max_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    /// binary operation to select larger element
+    pub struct MaxOperation<T: Clone + Ord + Bounded> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + Ord + Bounded> Magma for MaxOperation<T> {
         type T = T;
         #[inline]
@@ -29,14 +31,16 @@ mod max_operation_impl {
     impl<T: Clone + Ord + Bounded> Idempotent for MaxOperation<T> {}
 }
 
-/// binary operation to select smaller element
-#[codesnip::entry("MinOperation", include("algebra", "bounded"))]
-pub struct MinOperation<T: Clone + Ord + Bounded> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("MinOperation")]
+pub use self::min_operation_impl::MinOperation;
+#[codesnip::entry("MinOperation", include("algebra", "bounded"))]
 mod min_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    /// binary operation to select smaller element
+    pub struct MinOperation<T: Clone + Ord + Bounded> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + Ord + Bounded> Magma for MinOperation<T> {
         type T = T;
         #[inline]
@@ -55,14 +59,16 @@ mod min_operation_impl {
     impl<T: Clone + Ord + Bounded> Idempotent for MinOperation<T> {}
 }
 
-/// retain the first element
-#[codesnip::entry("FirstOperation", include("algebra"))]
-pub struct FirstOperation<T: Clone> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("FirstOperation")]
+pub use self::first_operation_impl::FirstOperation;
+#[codesnip::entry("FirstOperation", include("algebra"))]
 mod first_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    /// retain the first element
+    pub struct FirstOperation<T: Clone> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone> Magma for FirstOperation<T> {
         type T = Option<T>;
         #[inline]
@@ -80,14 +86,16 @@ mod first_operation_impl {
     impl<T: Clone> Idempotent for FirstOperation<T> {}
 }
 
-/// retain the last element
-#[codesnip::entry("LastOperation", include("algebra"))]
-pub struct LastOperation<T: Clone> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("LastOperation")]
+pub use self::last_operation_impl::LastOperation;
+#[codesnip::entry("LastOperation", include("algebra"))]
 mod last_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    /// retain the last element
+    pub struct LastOperation<T: Clone> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone> Magma for LastOperation<T> {
         type T = Option<T>;
         #[inline]
@@ -105,15 +113,19 @@ mod last_operation_impl {
     impl<T: Clone> Idempotent for LastOperation<T> {}
 }
 
-/// $+$
-#[codesnip::entry("AdditiveOperation", include("algebra", "zero_one"))]
-pub struct AdditiveOperation<T: Clone + Zero + std::ops::Add<Output = T>> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("AdditiveOperation")]
+pub use self::additive_operation_impl::AdditiveOperation;
+#[codesnip::entry("AdditiveOperation", include("algebra", "zero_one"))]
 mod additive_operation_impl {
     use super::*;
-    use std::ops::{Add, Neg, Sub};
+    use std::{
+        marker::PhantomData,
+        ops::{Add, Neg, Sub},
+    };
+    /// $+$
+    pub struct AdditiveOperation<T: Clone + Zero + Add<Output = T>> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + Zero + Add<Output = T>> Magma for AdditiveOperation<T> {
         type T = T;
         #[inline]
@@ -143,15 +155,19 @@ mod additive_operation_impl {
     }
 }
 
-/// $\times$
-#[codesnip::entry("MultiplicativeOperation", include("algebra", "zero_one"))]
-pub struct MultiplicativeOperation<T: Clone + One + std::ops::Mul<Output = T>> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("MultiplicativeOperation")]
+pub use self::multiplicative_operation_impl::MultiplicativeOperation;
+#[codesnip::entry("MultiplicativeOperation", include("algebra", "zero_one"))]
 mod multiplicative_operation_impl {
     use super::*;
-    use std::ops::{Div, Mul};
+    use std::{
+        marker::PhantomData,
+        ops::{Div, Mul},
+    };
+    /// $\times$
+    pub struct MultiplicativeOperation<T: Clone + One + Mul<Output = T>> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + One + Mul<Output = T>> Magma for MultiplicativeOperation<T> {
         type T = T;
         #[inline]
@@ -179,17 +195,19 @@ mod multiplicative_operation_impl {
     }
 }
 
-/// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
-#[codesnip::entry("LinearOperation", include("algebra", "zero_one"))]
-pub struct LinearOperation<
-    T: Clone + Zero + std::ops::Add<Output = T> + One + std::ops::Mul<Output = T>,
-> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("LinearOperation")]
+pub use self::linear_operation_impl::LinearOperation;
+#[codesnip::entry("LinearOperation", include("algebra", "zero_one"))]
 mod linear_operation_impl {
     use super::*;
-    use std::ops::{Add, Div, Mul, Neg, Sub};
+    use std::{
+        marker::PhantomData,
+        ops::{Add, Div, Mul, Neg, Sub},
+    };
+    /// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
+    pub struct LinearOperation<T: Clone + Zero + Add<Output = T> + One + Mul<Output = T>> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>> Magma for LinearOperation<T> {
         type T = (T, T);
         #[inline]
@@ -225,18 +243,19 @@ mod linear_operation_impl {
     }
 }
 
-/// &
+#[codesnip::entry("BitAndOperation")]
+pub use self::bitand_operation_impl::{BitAndIdentity, BitAndOperation};
 #[codesnip::entry("BitAndOperation", include("algebra"))]
-pub struct BitAndOperation<T: Clone + BitAndIdentity> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
-#[codesnip::entry("BitAndOperation")]
-pub trait BitAndIdentity: Sized + std::ops::BitAnd<Output = Self> {
-    fn all_one() -> Self;
-}
-#[codesnip::entry("BitAndOperation")]
 mod bitand_operation_impl {
     use super::*;
+    use std::{marker::PhantomData, ops::BitAnd};
+    /// &
+    pub struct BitAndOperation<T: Clone + BitAndIdentity> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    pub trait BitAndIdentity: Sized + BitAnd<Output = Self> {
+        fn all_one() -> Self;
+    }
     #[macro_export]
     macro_rules! impl_bitand_identity {
         ([$($wh:tt)*], $t:ty, $all_one:expr) => {
@@ -285,18 +304,19 @@ mod bitand_operation_impl {
     impl<T: Clone + BitAndIdentity> Idempotent for BitAndOperation<T> {}
 }
 
-/// |
+#[codesnip::entry("BitOrOperation")]
+pub use self::bitor_operation_impl::{BitOrIdentity, BitOrOperation};
 #[codesnip::entry("BitOrOperation", include("algebra"))]
-pub struct BitOrOperation<T: Clone + BitOrIdentity> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
-#[codesnip::entry("BitOrOperation")]
-pub trait BitOrIdentity: Sized + std::ops::BitOr<Output = Self> {
-    fn all_zero() -> Self;
-}
-#[codesnip::entry("BitOrOperation")]
 mod bitor_operation_impl {
     use super::*;
+    use std::{marker::PhantomData, ops::BitOr};
+    /// |
+    pub struct BitOrOperation<T: Clone + BitOrIdentity> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    pub trait BitOrIdentity: Sized + BitOr<Output = Self> {
+        fn all_zero() -> Self;
+    }
     #[macro_export]
     macro_rules! impl_bitor_identity {
         ([$($wh:tt)*], $t:ty, $all_zero:expr) => {
@@ -345,20 +365,34 @@ mod bitor_operation_impl {
     impl<T: Clone + BitOrIdentity> Idempotent for BitOrOperation<T> {}
 }
 
-/// ^
+#[codesnip::entry("BitXorOperation")]
+pub use self::bitxor_operation_impl::{BitXorIdentity, BitXorOperation};
 #[codesnip::entry("BitXorOperation", include("algebra"))]
-pub struct BitXorOperation<T: Clone + BitXorIdentity> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
-#[codesnip::entry("BitXorOperation")]
-pub trait BitXorIdentity: Sized + std::ops::BitXor<Output = Self> {
-    fn xor_zero() -> Self;
-}
-#[codesnip::entry("BitXorOperation")]
 mod bitxor_operation_impl {
     use super::*;
+    use std::{marker::PhantomData, ops::BitXor};
+    /// ^
+    pub struct BitXorOperation<T: Clone + BitXorIdentity> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    pub trait BitXorIdentity: Sized + BitXor<Output = Self> {
+        fn xor_zero() -> Self;
+    }
     #[macro_export]
-    macro_rules !impl_bitxor_identity {([$($wh :tt ) *] ,$t :ty ,$xor_zero :expr ) =>{impl <$($wh ) *>BitXorIdentity for $t {#[inline ] fn xor_zero () ->Self {$xor_zero } } } ;($t :ty ,$xor_zero :expr ) =>{impl BitXorIdentity for $t {#[inline ] fn xor_zero () ->Self {$xor_zero } } } ;}
+    macro_rules! impl_bitxor_identity {
+        ([$($wh:tt)*], $t:ty, $xor_zero:expr) => {
+            impl<$($wh)*> BitXorIdentity for $t {
+                #[inline]
+                fn xor_zero() -> Self { $xor_zero }
+            }
+        };
+        ($t:ty, $xor_zero:expr) =>{
+            impl BitXorIdentity for $t {
+                #[inline]
+                fn xor_zero() -> Self { $xor_zero }
+            }
+        };
+    }
     impl_bitxor_identity!(bool, false);
     impl_bitxor_identity!(usize, 0usize);
     impl_bitxor_identity!(u8, 0u8);
@@ -397,51 +431,53 @@ mod tuple_operation_impl {
     #![allow(unused_variables)]
     use super::*;
     macro_rules! impl_tuple_operation {
-        ($($M:ident)*, $($i:tt)*) => {
-            impl<$($M: Magma),*> Magma for ($($M,)*) {
-                type T = ($(<$M as Magma>::T,)*);
+        (@impl $($T:ident)*, $($i:tt)*) => {
+            impl<$($T: Magma),*> Magma for ($($T,)*) {
+                type T = ($(<$T as Magma>::T,)*);
                 #[inline]
                 fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-                    ($(<$M as Magma>::operate(&x.$i, &y.$i),)*)
+                    ($(<$T as Magma>::operate(&x.$i, &y.$i),)*)
                 }
             }
-            impl<$($M: Unital),*> Unital for ($($M,)*) {
+            impl<$($T: Unital),*> Unital for ($($T,)*) {
                 #[inline]
                 fn unit() -> Self::T {
-                    ($(<$M as Unital>::unit(),)*)
+                    ($(<$T as Unital>::unit(),)*)
                 }
             }
-            impl<$($M: Associative),*> Associative for ($($M,)*) {}
-            impl<$($M: Commutative),*> Commutative for ($($M,)*) {}
-            impl<$($M: Idempotent),*> Idempotent for ($($M,)*) {}
-            impl<$($M: Invertible),*> Invertible for ($($M,)*) {
+            impl<$($T: Associative),*> Associative for ($($T,)*) {}
+            impl<$($T: Commutative),*> Commutative for ($($T,)*) {}
+            impl<$($T: Idempotent),*> Idempotent for ($($T,)*) {}
+            impl<$($T: Invertible),*> Invertible for ($($T,)*) {
                 #[inline]
                 fn inverse(x: &Self::T) -> Self::T {
-                    ($(<$M as Invertible>::inverse(&x.$i),)*)
+                    ($(<$T as Invertible>::inverse(&x.$i),)*)
                 }
             }
         };
+        (@inner [$($T:ident)*][] [$($i:tt)*][]) => {
+            impl_tuple_operation!(@impl $($T)*, $($i)*);
+        };
+        (@inner [$($T:ident)*][$U:ident $($Rest:ident)*] [$($i:tt)*][$j:tt $($rest:tt)*]) => {
+            impl_tuple_operation!(@impl $($T)*, $($i)*);
+            impl_tuple_operation!(@inner [$($T)* $U][$($Rest)*] [$($i)* $j][$($rest)*]);
+        };
+        ($($T:ident)*, $($i:tt)*) => {
+            impl_tuple_operation!(@inner [][$($T)*] [][$($i)*]);
+        };
     }
-    impl_tuple_operation!(,);
-    impl_tuple_operation!(A, 0);
-    impl_tuple_operation!(A B, 0 1);
-    impl_tuple_operation!(A B C, 0 1 2);
-    impl_tuple_operation!(A B C D, 0 1 2 3);
-    impl_tuple_operation!(A B C D E, 0 1 2 3 4);
-    impl_tuple_operation!(A B C D E F, 0 1 2 3 4 5);
-    impl_tuple_operation!(A B C D E F G, 0 1 2 3 4 5 6);
-    impl_tuple_operation!(A B C D E F G H, 0 1 2 3 4 5 6 7);
-    impl_tuple_operation!(A B C D E F G H I, 0 1 2 3 4 5 6 7 8);
     impl_tuple_operation!(A B C D E F G H I J, 0 1 2 3 4 5 6 7 8 9);
 }
 
-#[codesnip::entry("CountingOperation", include("algebra"))]
-pub struct CountingOperation<M> {
-    _marker: std::marker::PhantomData<fn() -> M>,
-}
 #[codesnip::entry("CountingOperation")]
+pub use self::counting_operation_impl::CountingOperation;
+#[codesnip::entry("CountingOperation", include("algebra"))]
 mod counting_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    pub struct CountingOperation<M> {
+        _marker: PhantomData<fn() -> M>,
+    }
     impl<M: Magma> Magma for CountingOperation<M>
     where
         M::T: PartialEq,
@@ -477,13 +513,15 @@ mod counting_operation_impl {
     impl<M: Idempotent> Idempotent for CountingOperation<M> {}
 }
 
-#[codesnip::entry("ReverseOperation", include("algebra"))]
-pub struct ReverseOperation<M> {
-    _marker: std::marker::PhantomData<fn() -> M>,
-}
 #[codesnip::entry("ReverseOperation")]
+pub use self::reverse_operation_impl::ReverseOperation;
+#[codesnip::entry("ReverseOperation", include("algebra"))]
 mod reverse_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    pub struct ReverseOperation<M> {
+        _marker: PhantomData<fn() -> M>,
+    }
     impl<M: Magma> Magma for ReverseOperation<M> {
         type T = M::T;
         #[inline]
@@ -508,13 +546,15 @@ mod reverse_operation_impl {
     impl<M: Idempotent> Idempotent for ReverseOperation<M> {}
 }
 
-#[codesnip::entry("Top2Operation", include("algebra", "bounded"))]
-pub struct Top2Operation<T: Clone + Ord + Bounded> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("Top2Operation")]
+pub use self::top2_operation_impl::Top2Operation;
+#[codesnip::entry("Top2Operation", include("algebra", "bounded"))]
 mod top2_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    pub struct Top2Operation<T: Clone + Ord + Bounded> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + Ord + Bounded> Magma for Top2Operation<T> {
         type T = (T, T);
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -534,13 +574,15 @@ mod top2_operation_impl {
     impl<T: Clone + Ord + Bounded> Commutative for Top2Operation<T> {}
 }
 
-#[codesnip::entry("Bottom2Operation", include("algebra", "bounded"))]
-pub struct Bottom2Operation<T: Clone + Ord + Bounded> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("Bottom2Operation")]
+pub use self::bottom2_operation_impl::Bottom2Operation;
+#[codesnip::entry("Bottom2Operation", include("algebra", "bounded"))]
 mod bottom2_operation_impl {
     use super::*;
+    use std::marker::PhantomData;
+    pub struct Bottom2Operation<T: Clone + Ord + Bounded> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + Ord + Bounded> Magma for Bottom2Operation<T> {
         type T = (T, T);
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -560,11 +602,12 @@ mod bottom2_operation_impl {
     impl<T: Clone + Ord + Bounded> Commutative for Bottom2Operation<T> {}
 }
 
-#[codesnip::entry("PermutationOperation", include("algebra"))]
-pub struct PermutationOperation;
 #[codesnip::entry("PermutationOperation")]
+pub use self::permutation_operation_impl::PermutationOperation;
+#[codesnip::entry("PermutationOperation", include("algebra"))]
 mod permutation_operation_impl {
     use super::*;
+    pub struct PermutationOperation;
     impl Magma for PermutationOperation {
         type T = Vec<usize>;
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -590,20 +633,22 @@ mod permutation_operation_impl {
     }
 }
 
-#[codesnip::entry("FindMajorityOperation", include("algebra"))]
-/// Find majority(strict) of a sequence.
-///
-/// fold $x \in S$ with `(Some(x), 1)`
-///
-/// `(Some(m), _)` represents `m` may be a majority of $S$.
-///
-/// `(None, _)` represents that there is no majority value.
-pub struct FindMajorityOperation<T> {
-    _marker: std::marker::PhantomData<fn() -> T>,
-}
 #[codesnip::entry("FindMajorityOperation")]
+pub use self::find_majority_operation_impl::FindMajorityOperation;
+#[codesnip::entry("FindMajorityOperation", include("algebra"))]
 mod find_majority_operation_impl {
     use super::*;
+    use std::{cmp::Ordering, marker::PhantomData};
+    /// Find majority(strict) of a sequence.
+    ///
+    /// fold $x \in S$ with `(Some(x), 1)`
+    ///
+    /// `(Some(m), _)` represents `m` may be a majority of $S$.
+    ///
+    /// `(None, _)` represents that there is no majority value.
+    pub struct FindMajorityOperation<T> {
+        _marker: PhantomData<fn() -> T>,
+    }
     impl<T: Clone + Eq> Magma for FindMajorityOperation<T> {
         type T = (Option<T>, usize);
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -614,9 +659,9 @@ mod find_majority_operation_impl {
             } else {
                 match (x.0.eq(&y.0), x.1.cmp(&y.1)) {
                     (true, _) => (x.0.clone(), x.1 + y.1),
-                    (_, std::cmp::Ordering::Less) => (y.0.clone(), y.1 - x.1),
-                    (_, std::cmp::Ordering::Equal) => (None, 0),
-                    (_, std::cmp::Ordering::Greater) => (x.0.clone(), x.1 - y.1),
+                    (_, Ordering::Less) => (y.0.clone(), y.1 - x.1),
+                    (_, Ordering::Equal) => (None, 0),
+                    (_, Ordering::Greater) => (x.0.clone(), x.1 - y.1),
                 }
             }
         }

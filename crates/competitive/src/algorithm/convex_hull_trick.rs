@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ChtLine {
     slope: i64,
@@ -20,7 +22,7 @@ impl ChtLine {
 }
 #[derive(Clone, Debug, Default)]
 pub struct ConvexHullTrick {
-    deq: std::collections::VecDeque<ChtLine>,
+    deq: VecDeque<ChtLine>,
 }
 impl ConvexHullTrick {
     pub fn new() -> Self {

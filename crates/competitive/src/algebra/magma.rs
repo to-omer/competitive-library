@@ -95,14 +95,12 @@ pub trait IdempotentMonoid: Monoid + Idempotent {}
 
 impl<M: Monoid + Idempotent> IdempotentMonoid for M {}
 
-mod monoid_macros {
-    #[macro_export]
-    macro_rules! monoid_fold {
-        ($m:ty) => { <$m as Unital>::unit() };
-        ($m:ty,) => { <$m as Unital>::unit() };
-        ($m:ty, $f:expr) => { $f };
-        ($m:ty, $f:expr, $($ff:expr),*) => { <$m as Magma>::operate(&($f), &monoid_fold!($m, $($ff),*)) };
-    }
+#[macro_export]
+macro_rules! monoid_fold {
+    ($m:ty) => { <$m as Unital>::unit() };
+    ($m:ty,) => { <$m as Unital>::unit() };
+    ($m:ty, $f:expr) => { $f };
+    ($m:ty, $f:expr, $($ff:expr),*) => { <$m as Magma>::operate(&($f), &monoid_fold!($m, $($ff),*)) };
 }
 
 #[cfg(test)]

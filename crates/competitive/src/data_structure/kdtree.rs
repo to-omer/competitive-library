@@ -1,10 +1,21 @@
-#[codesnip::entry("Static2DTree")]
-pub struct Static2DTree<T: Ord, U: Ord, V> {
+use std::ops::Range;
+
+pub struct Static2DTree<T, U, V>
+where
+    T: Ord,
+    U: Ord,
+{
     data: Vec<(T, U, V)>,
 }
-#[codesnip::entry("Static2DTree")]
-impl<T: Ord, U: Ord, V> Static2DTree<T, U, V> {
-    pub fn new(data: impl IntoIterator<Item = (T, U, V)>) -> Self {
+impl<T, U, V> Static2DTree<T, U, V>
+where
+    T: Ord,
+    U: Ord,
+{
+    pub fn new<I>(data: I) -> Self
+    where
+        I: IntoIterator<Item = (T, U, V)>,
+    {
         let mut data: Vec<_> = data.into_iter().collect();
         let n = data.len();
         Self::build(&mut data, 0, n, 0);
@@ -22,15 +33,15 @@ impl<T: Ord, U: Ord, V> Static2DTree<T, U, V> {
             Self::build(data, m + 1, r, depth + 1);
         }
     }
-    pub fn range(&self, range1: std::ops::Range<T>, range2: std::ops::Range<U>) -> Vec<&V> {
+    pub fn range(&self, range1: Range<T>, range2: Range<U>) -> Vec<&V> {
         let mut res = vec![];
         self.range_inner(&range1, &range2, 0, self.data.len(), 0, &mut res);
         res
     }
     fn range_inner<'a>(
         &'a self,
-        range1: &std::ops::Range<T>,
-        range2: &std::ops::Range<U>,
+        range1: &Range<T>,
+        range2: &Range<U>,
         l: usize,
         r: usize,
         depth: usize,

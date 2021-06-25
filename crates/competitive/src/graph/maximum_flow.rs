@@ -1,5 +1,5 @@
-#[codesnip::skip]
 use super::BidirectionalSparseGraph;
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone)]
 pub struct DinicBuilder {
@@ -33,7 +33,7 @@ impl DinicBuilder {
             capacities,
             iter: Vec::with_capacity(vsize),
             level: Vec::with_capacity(vsize),
-            deq: std::collections::VecDeque::with_capacity(vsize),
+            deq: VecDeque::with_capacity(vsize),
         }
     }
 }
@@ -51,7 +51,7 @@ pub struct Dinic<'a> {
     capacities: Vec<u64>,
     iter: Vec<usize>,
     level: Vec<usize>,
-    deq: std::collections::VecDeque<usize>,
+    deq: VecDeque<usize>,
 }
 impl<'a> Dinic<'a> {
     fn bfs(&mut self, s: usize, t: usize) -> bool {

@@ -1,83 +1,81 @@
 #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 pub struct BitDp(pub usize);
-mod bitdp_impls {
-    use super::*;
-    impl BitDp {
-        pub fn is_element(mask: usize, x: usize) -> bool {
-            mask & 1 << x != 0
-        }
-        pub fn elements(self, mask: usize) -> impl Iterator<Item = usize> {
-            (0..self.0).filter(move |&x| Self::is_element(mask, x))
-        }
-        pub fn not_elements(self, mask: usize) -> impl Iterator<Item = usize> {
-            (0..self.0).filter(move |&x| !Self::is_element(mask, x))
-        }
-        pub fn is_subset(mask: usize, elements: usize) -> bool {
-            mask & elements == elements
-        }
-        fn next_subset(mask: usize, cur: usize) -> Option<usize> {
-            if cur == 0 {
-                None
-            } else {
-                Some((cur - 1) & mask)
-            }
-        }
-        pub fn subsets(mask: usize) -> Subsets {
-            Subsets {
-                mask,
-                cur: Some(mask),
-            }
-        }
-        fn next_combination(cur: usize) -> Option<usize> {
-            if cur == 0 {
-                None
-            } else {
-                let x = cur & (!cur + 1);
-                let y = cur + x;
-                Some(((cur & !y) / x / 2) | y)
-            }
-        }
-        pub fn combinations(self, k: usize) -> Combinations {
-            Combinations {
-                mask: 1 << self.0,
-                cur: Some((1 << k) - 1),
-            }
+
+impl BitDp {
+    pub fn is_element(mask: usize, x: usize) -> bool {
+        mask & 1 << x != 0
+    }
+    pub fn elements(self, mask: usize) -> impl Iterator<Item = usize> {
+        (0..self.0).filter(move |&x| Self::is_element(mask, x))
+    }
+    pub fn not_elements(self, mask: usize) -> impl Iterator<Item = usize> {
+        (0..self.0).filter(move |&x| !Self::is_element(mask, x))
+    }
+    pub fn is_subset(mask: usize, elements: usize) -> bool {
+        mask & elements == elements
+    }
+    fn next_subset(mask: usize, cur: usize) -> Option<usize> {
+        if cur == 0 {
+            None
+        } else {
+            Some((cur - 1) & mask)
         }
     }
-    #[derive(Debug, Clone)]
-    pub struct Subsets {
-        mask: usize,
-        cur: Option<usize>,
+    pub fn subsets(mask: usize) -> Subsets {
+        Subsets {
+            mask,
+            cur: Some(mask),
+        }
     }
-    impl Iterator for Subsets {
-        type Item = usize;
-        fn next(&mut self) -> Option<Self::Item> {
-            if let Some(cur) = self.cur {
-                self.cur = BitDp::next_subset(self.mask, cur);
+    fn next_combination(cur: usize) -> Option<usize> {
+        if cur == 0 {
+            None
+        } else {
+            let x = cur & (!cur + 1);
+            let y = cur + x;
+            Some(((cur & !y) / x / 2) | y)
+        }
+    }
+    pub fn combinations(self, k: usize) -> Combinations {
+        Combinations {
+            mask: 1 << self.0,
+            cur: Some((1 << k) - 1),
+        }
+    }
+}
+#[derive(Debug, Clone)]
+pub struct Subsets {
+    mask: usize,
+    cur: Option<usize>,
+}
+impl Iterator for Subsets {
+    type Item = usize;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(cur) = self.cur {
+            self.cur = BitDp::next_subset(self.mask, cur);
+            Some(cur)
+        } else {
+            None
+        }
+    }
+}
+#[derive(Debug, Clone)]
+pub struct Combinations {
+    mask: usize,
+    cur: Option<usize>,
+}
+impl Iterator for Combinations {
+    type Item = usize;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(cur) = self.cur {
+            if cur < self.mask {
+                self.cur = BitDp::next_combination(cur);
                 Some(cur)
             } else {
                 None
             }
-        }
-    }
-    #[derive(Debug, Clone)]
-    pub struct Combinations {
-        mask: usize,
-        cur: Option<usize>,
-    }
-    impl Iterator for Combinations {
-        type Item = usize;
-        fn next(&mut self) -> Option<Self::Item> {
-            if let Some(cur) = self.cur {
-                if cur < self.mask {
-                    self.cur = BitDp::next_combination(cur);
-                    Some(cur)
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
+        } else {
+            None
         }
     }
 }

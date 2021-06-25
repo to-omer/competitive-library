@@ -1,5 +1,5 @@
-#[codesnip::skip]
-use crate::algebra::SemiGroup;
+use super::SemiGroup;
+use std::ops::Index;
 
 #[derive(Clone, Debug)]
 pub struct DisjointSparseTable<S: SemiGroup> {
@@ -51,7 +51,7 @@ impl<S: SemiGroup> DisjointSparseTable<S> {
         self.fold_close(l, r - 1)
     }
 }
-impl<S: SemiGroup> std::ops::Index<usize> for DisjointSparseTable<S> {
+impl<S: SemiGroup> Index<usize> for DisjointSparseTable<S> {
     type Output = S::T;
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {

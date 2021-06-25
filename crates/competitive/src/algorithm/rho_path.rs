@@ -1,3 +1,5 @@
+use std::{collections::HashMap, hash::Hash};
+
 /// $P_0 =$ `init`, $P_{i+1} = next(P_i)$
 ///
 /// if |T| is finite then P = f, g, g, ...
@@ -10,11 +12,11 @@ impl<T> RhoPath<T> {
     /// build rho path
     pub fn build<F>(init: T, next: F) -> Self
     where
-        T: Clone + Eq + std::hash::Hash,
+        T: Clone + Eq + Hash,
         F: Fn(&T) -> T,
     {
         let mut path = vec![init.clone()];
-        let mut visited = std::collections::HashMap::new();
+        let mut visited = HashMap::new();
         visited.insert(init, 0);
         let loop_start = loop {
             let next_val = next(path.last().unwrap());

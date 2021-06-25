@@ -1,27 +1,54 @@
 //! graph structures and algorithms
 
+use crate::tools::{IterScan, MarkedIterScan};
+
+#[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph"))]
+pub use self::adjacency_list::{AdjacencyListGraph, AdjacencyListGraphScanner};
+#[cfg_attr(nightly, codesnip::entry("EdgeListGraph"))]
+pub use self::edge_list::{EdgeListGraph, EdgeListGraphScanner};
+#[cfg_attr(nightly, codesnip::entry("GridGraph"))]
+pub use self::grid::GridGraph;
+#[cfg_attr(nightly, codesnip::entry("LowLink"))]
+pub use self::low_link::LowLink;
+#[cfg_attr(nightly, codesnip::entry("Dinic"))]
+pub use self::maximum_flow::{Dinic, DinicBuilder};
+#[cfg_attr(nightly, codesnip::entry("PrimalDual"))]
+pub use self::minimum_cost_flow::{PrimalDual, PrimalDualBuilder};
+#[cfg_attr(nightly, codesnip::entry("SparseGraph"))]
+pub use self::sparse_graph::*;
+#[cfg_attr(nightly, codesnip::entry("StronglyConnectedComponent"))]
+pub use self::strongly_connected_component::StronglyConnectedComponent;
+#[cfg_attr(nightly, codesnip::entry("TwoSatisfiability"))]
+pub use self::two_satisfiability::TwoSatisfiability;
+
+#[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph", include("scanner")))]
 mod adjacency_list;
+#[cfg_attr(nightly, codesnip::entry("EdgeListGraph", include("scanner")))]
 mod edge_list;
-#[cfg_attr(nightly, codesnip::entry("graphvis", inline, include("SparseGraph")))]
+#[cfg_attr(nightly, codesnip::entry("graphvis", include("SparseGraph")))]
 mod graphvis;
+#[cfg_attr(nightly, codesnip::entry("GridGraph"))]
 mod grid;
+#[cfg_attr(nightly, codesnip::entry("LowLink", include("SparseGraph")))]
 mod low_link;
-#[cfg_attr(nightly, codesnip::entry("Dinic", inline, include("SparseGraph")))]
+#[cfg_attr(nightly, codesnip::entry("Dinic", include("SparseGraph")))]
 mod maximum_flow;
-#[cfg_attr(nightly, codesnip::entry("PrimalDual", inline, include("SparseGraph")))]
+#[cfg_attr(nightly, codesnip::entry("PrimalDual", include("SparseGraph")))]
 mod minimum_cost_flow;
 mod minimum_spanning_tree;
 mod order;
 mod shortest_path;
-mod sparse;
+#[cfg_attr(nightly, codesnip::entry("SparseGraph", include("scanner")))]
+mod sparse_graph;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("StronglyConnectedComponent", include("SparseGraph"))
+)]
 mod strongly_connected_component;
+#[cfg_attr(nightly, codesnip::entry("topological_sort", include("SparseGraph")))]
 mod topological_sort;
-
-pub use adjacency_list::*;
-pub use edge_list::*;
-pub use grid::*;
-pub use low_link::*;
-pub use maximum_flow::*;
-pub use minimum_cost_flow::*;
-pub use sparse::*;
-pub use strongly_connected_component::*;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("TwoSatisfiability", include("StronglyConnectedComponent"))
+)]
+mod two_satisfiability;

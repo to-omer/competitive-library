@@ -1,5 +1,5 @@
-#[codesnip::skip]
-use crate::algebra::Monoid;
+use super::Monoid;
+use std::{cmp::Ordering, collections::HashMap, hash::Hash, marker::PhantomData};
 
 pub trait Automaton {
     type Alphabet;
@@ -15,20 +15,16 @@ pub trait Automaton {
     fn accept(&self, state: &Self::State) -> bool;
 }
 
-pub fn automaton_dp<A, M>(
-    dfa: A,
-    sigma: impl Iterator<Item = A::Alphabet> + Clone,
-    len: usize,
-    mul: impl Fn(&M::T, &A::Effect) -> M::T,
-    init: M::T,
-) -> M::T
+pub fn automaton_dp<M, A, I, F>(dfa: A, sigma: I, len: usize, mul: F, init: M::T) -> M::T
 where
     A: Automaton,
-    A::State: Eq + std::hash::Hash,
+    A::State: Eq + Hash,
     M: Monoid,
+    I: Iterator<Item = A::Alphabet> + Clone,
+    F: Fn(&M::T, &A::Effect) -> M::T,
 {
-    let mut dp = std::collections::HashMap::new();
-    let mut ndp = std::collections::HashMap::new();
+    let mut dp = HashMap::new();
+    let mut ndp = HashMap::new();
     dp.insert(dfa.initial(), init);
     for _ in 0..len {
         for (state, value) in dp.drain() {
@@ -157,8 +153,8 @@ impl<T: Ord> Automaton for LessThanAutomaton<'_, T> {
         self.buf
             .get(state.0)
             .and_then(|c| match (state.1, c.cmp(alph)) {
-                (true, std::cmp::Ordering::Equal) => Some(((state.0 + 1, true), ())),
-                (true, std::cmp::Ordering::Less) => None,
+                (true, Ordering::Equal) => Some(((state.0 + 1, true), ())),
+                (true, Ordering::Less) => None,
                 _ => Some(((state.0 + 1, false), ())),
             })
     }
@@ -191,8 +187,8 @@ impl<T: Ord> Automaton for GreaterThanAutomaton<'_, T> {
         self.buf
             .get(state.0)
             .and_then(|c| match (state.1, c.cmp(alph)) {
-                (true, std::cmp::Ordering::Equal) => Some(((state.0 + 1, true), ())),
-                (true, std::cmp::Ordering::Greater) => None,
+                (true, Ordering::Equal) => Some(((state.0 + 1, true), ())),
+                (true, Ordering::Greater) => None,
                 _ => Some(((state.0 + 1, false), ())),
             })
     }
@@ -243,7 +239,7 @@ impl<'a, T: Eq> Automaton for ContainCounterAutomaton<'a, T> {
 }
 
 #[derive(Debug, Clone)]
-pub struct AlwaysAcceptingAutomaton<A>(std::marker::PhantomData<fn() -> A>);
+pub struct AlwaysAcceptingAutomaton<A>(PhantomData<fn() -> A>);
 impl<A> AlwaysAcceptingAutomaton<A> {
     pub fn new() -> Self {
         Default::default()
@@ -251,7 +247,7 @@ impl<A> AlwaysAcceptingAutomaton<A> {
 }
 impl<A> Default for AlwaysAcceptingAutomaton<A> {
     fn default() -> Self {
-        Self(std::marker::PhantomData)
+        Self(PhantomData)
     }
 }
 impl<A> Automaton for AlwaysAcceptingAutomaton<A> {

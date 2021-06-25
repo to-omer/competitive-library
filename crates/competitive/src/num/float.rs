@@ -1,21 +1,28 @@
-#[codesnip::skip]
-use crate::num::{One, Zero};
+use super::{One, Zero};
+use std::{
+    cmp::Ordering,
+    convert::TryInto,
+    fmt::Display,
+    num::FpCategory,
+    ops::{Add, Div, Mul, Neg, Rem, Sub},
+    str::FromStr,
+};
 
 pub trait Float:
     Copy
     + Default
-    + std::fmt::Display
-    + std::str::FromStr
+    + Display
+    + FromStr
     + PartialEq
     + PartialOrd
     + Zero
     + One
-    + std::ops::Add<Output = Self>
-    + std::ops::Sub<Output = Self>
-    + std::ops::Mul<Output = Self>
-    + std::ops::Div<Output = Self>
-    + std::ops::Neg<Output = Self>
-    + std::ops::Rem<Output = Self>
+    + Add<Output = Self>
+    + Sub<Output = Self>
+    + Mul<Output = Self>
+    + Div<Output = Self>
+    + Neg<Output = Self>
+    + Rem<Output = Self>
 {
     fn floor(self) -> Self;
     fn ceil(self) -> Self;
@@ -59,7 +66,7 @@ pub trait Float:
     fn is_infinite(self) -> bool;
     fn is_finite(self) -> bool;
     fn is_normal(self) -> bool;
-    fn classify(self) -> std::num::FpCategory;
+    fn classify(self) -> FpCategory;
     fn is_sign_positive(self) -> bool;
     fn is_sign_negative(self) -> bool;
     fn recip(self) -> Self;
@@ -69,7 +76,7 @@ pub trait Float:
     fn min(self, other: Self) -> Self;
     fn to_bits(self) -> u64;
     fn from_bits(v: u64) -> Self;
-    fn total_cmp(&self, other: &Self) -> std::cmp::Ordering;
+    fn total_cmp(&self, other: &Self) -> Ordering;
     const RADIX: u32;
     const MANTISSA_DIGITS: u32;
     const DIGITS: u32;
@@ -157,8 +164,8 @@ macro_rules! primitive_float_impls {
             fn max(self, other: Self) -> Self { self.max(other) }
             fn min(self, other: Self) -> Self { self.min(other) }
             fn to_bits(self) -> u64 { self.to_bits().into() }
-            fn from_bits(v: u64) -> Self { use std::convert::TryInto; $t::from_bits(v.try_into().unwrap()) }
-            fn total_cmp(&self, other: &Self) -> std::cmp::Ordering {
+            fn from_bits(v: u64) -> Self { $t::from_bits(v.try_into().unwrap()) }
+            fn total_cmp(&self, other: &Self) -> Ordering {
                 let mut left = self.to_bits() as $i;
                 let mut right = other.to_bits() as $i;
                 left ^= (((left >> $e) as $u) >> 1) as $i;
@@ -232,50 +239,50 @@ macro_rules! ord_float_impls {
                 Self(<$t as One>::one())
             }
         }
-        impl std::ops::Add for $n {
+        impl Add for $n {
             type Output = Self;
             fn add(self, rhs: Self) -> Self::Output {
-                Self(<$t as std::ops::Add>::add(self.0, rhs.0))
+                Self(<$t as Add>::add(self.0, rhs.0))
             }
         }
-        impl std::ops::Sub for $n {
+        impl Sub for $n {
             type Output = Self;
             fn sub(self, rhs: Self) -> Self::Output {
-                Self(<$t as std::ops::Sub>::sub(self.0, rhs.0))
+                Self(<$t as Sub>::sub(self.0, rhs.0))
             }
         }
-        impl std::ops::Mul for $n {
+        impl Mul for $n {
             type Output = Self;
             fn mul(self, rhs: Self) -> Self::Output {
-                Self(<$t as std::ops::Mul>::mul(self.0, rhs.0))
+                Self(<$t as Mul>::mul(self.0, rhs.0))
             }
         }
-        impl std::ops::Div for $n {
+        impl Div for $n {
             type Output = Self;
             fn div(self, rhs: Self) -> Self::Output {
-                Self(<$t as std::ops::Div>::div(self.0, rhs.0))
+                Self(<$t as Div>::div(self.0, rhs.0))
             }
         }
-        impl std::ops::Neg for $n {
+        impl Neg for $n {
             type Output = Self;
             fn neg(self) -> Self::Output {
-                Self(<$t as std::ops::Neg>::neg(self.0))
+                Self(<$t as Neg>::neg(self.0))
             }
         }
-        impl std::ops::Rem for $n {
+        impl Rem for $n {
             type Output = Self;
             fn rem(self, rhs: Self) -> Self::Output {
-                Self(<$t as std::ops::Rem>::rem(self.0, rhs.0))
+                Self(<$t as Rem>::rem(self.0, rhs.0))
             }
         }
         impl Eq for $n {}
         impl PartialOrd for $n {
-            fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+            fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
                 Some(self.total_cmp(other))
             }
         }
         impl Ord for $n {
-            fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+            fn cmp(&self, other: &Self) -> Ordering {
                 self.partial_cmp(other).unwrap()
             }
         }
@@ -332,7 +339,7 @@ macro_rules! ord_float_impls {
             fn min(self, other: Self) -> Self { Self(<$t as Float>::min(self.0, other.0)) }
             fn to_bits(self) -> u64 { <$t as Float>::to_bits(self.0) }
             fn from_bits(v: u64) -> Self { Self(<$t as Float>::from_bits(v)) }
-            fn total_cmp(&self, other: &Self) -> std::cmp::Ordering { <$t as Float>::total_cmp(&self.0, &other.0) }
+            fn total_cmp(&self, other: &Self) -> Ordering { <$t as Float>::total_cmp(&self.0, &other.0) }
             const RADIX: u32 = <$t as Float>::RADIX;
             const MANTISSA_DIGITS: u32 = <$t as Float>::MANTISSA_DIGITS;
             const DIGITS: u32 = <$t as Float>::DIGITS;

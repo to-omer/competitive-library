@@ -1,9 +1,7 @@
-#[codesnip::entry("RangeArithmeticProgressionAdd")]
 #[derive(Debug, Clone)]
 pub struct RangeArithmeticProgressionAdd {
     pub dd: Vec<i64>,
 }
-#[codesnip::entry("RangeArithmeticProgressionAdd")]
 impl RangeArithmeticProgressionAdd {
     pub fn new(n: usize) -> Self {
         Self { dd: vec![0; n] }

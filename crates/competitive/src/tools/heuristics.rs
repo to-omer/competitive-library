@@ -1,5 +1,4 @@
-#[codesnip::skip]
-use crate::tools::Xorshift;
+use super::Xorshift;
 
 #[derive(Debug)]
 pub struct SimuratedAnnealing {

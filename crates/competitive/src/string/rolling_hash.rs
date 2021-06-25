@@ -1,5 +1,4 @@
-#[codesnip::skip]
-use crate::tools::Xorshift;
+use super::Xorshift;
 
 #[derive(Clone, Debug)]
 pub struct RollingHash {

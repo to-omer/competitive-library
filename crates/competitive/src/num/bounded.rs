@@ -27,23 +27,23 @@ macro_rules! bounded_num_impls {
 bounded_num_impls!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize f32 f64);
 
 macro_rules! bounded_tuple_impls {
-    ($($t:ident)*) => {
-        impl<$($t: Bounded),*> Bounded for ($($t,)*) {
-            fn maximum() -> Self { ($(<$t as Bounded>::maximum(),)*) }
-            fn minimum() -> Self { ($(<$t as Bounded>::minimum(),)*) }
+    (@impl $($T:ident)*) => {
+        impl<$($T: Bounded),*> Bounded for ($($T,)*) {
+            fn maximum() -> Self { ($(<$T as Bounded>::maximum(),)*) }
+            fn minimum() -> Self { ($(<$T as Bounded>::minimum(),)*) }
         }
-    }
+    };
+    (@inner $($T:ident)*,) => {
+        bounded_tuple_impls!(@impl $($T)*);
+    };
+    (@inner $($T:ident)*, $U:ident $($Rest:ident)*) => {
+        bounded_tuple_impls!(@impl $($T)*);
+        bounded_tuple_impls!(@inner $($T)* $U, $($Rest)*);
+    };
+    ($($T:ident)*) => {
+        bounded_tuple_impls!(@inner , $($T)*);
+    };
 }
-bounded_tuple_impls!();
-bounded_tuple_impls!(A);
-bounded_tuple_impls!(A B);
-bounded_tuple_impls!(A B C);
-bounded_tuple_impls!(A B C D);
-bounded_tuple_impls!(A B C D E);
-bounded_tuple_impls!(A B C D E F);
-bounded_tuple_impls!(A B C D E F G);
-bounded_tuple_impls!(A B C D E F G H);
-bounded_tuple_impls!(A B C D E F G H I);
 bounded_tuple_impls!(A B C D E F G H I J);
 
 impl Bounded for bool {

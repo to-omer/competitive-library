@@ -1,22 +1,31 @@
+use std::{
+    borrow::Borrow,
+    collections::{btree_map, hash_map, BTreeMap, HashMap},
+    fmt::{self, Debug},
+    hash::Hash,
+    iter::{Extend, FromIterator},
+    ops::RangeBounds,
+};
+
 #[derive(Clone)]
 pub struct HashCounter<T> {
-    map: std::collections::HashMap<T, usize>,
+    map: HashMap<T, usize>,
 }
-impl<T> std::fmt::Debug for HashCounter<T>
+impl<T> Debug for HashCounter<T>
 where
-    T: std::fmt::Debug,
+    T: Debug,
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_map().entries(self.iter()).finish()
     }
 }
 impl<T> Default for HashCounter<T>
 where
-    T: Eq + std::hash::Hash,
+    T: Eq + Hash,
 {
     fn default() -> Self {
         Self {
-            map: std::collections::HashMap::default(),
+            map: HashMap::default(),
         }
     }
 }
@@ -30,29 +39,29 @@ impl<T> HashCounter<T> {
     pub fn clear(&mut self) {
         self.map.clear();
     }
-    pub fn keys(&self) -> std::collections::hash_map::Keys<'_, T, usize> {
+    pub fn keys(&self) -> hash_map::Keys<'_, T, usize> {
         self.map.keys()
     }
-    pub fn values(&self) -> std::collections::hash_map::Values<'_, T, usize> {
+    pub fn values(&self) -> hash_map::Values<'_, T, usize> {
         self.map.values()
     }
-    pub fn iter(&self) -> std::collections::hash_map::Iter<'_, T, usize> {
+    pub fn iter(&self) -> hash_map::Iter<'_, T, usize> {
         self.map.iter()
     }
-    pub fn drain(&mut self) -> std::collections::hash_map::Drain<'_, T, usize> {
+    pub fn drain(&mut self) -> hash_map::Drain<'_, T, usize> {
         self.map.drain()
     }
 }
 impl<T> HashCounter<T>
 where
-    T: Eq + std::hash::Hash,
+    T: Eq + Hash,
 {
     pub fn new() -> Self {
         Self::default()
     }
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
-            map: std::collections::HashMap::with_capacity(capacity),
+            map: HashMap::with_capacity(capacity),
         }
     }
     pub fn get(&self, item: &T) -> usize {
@@ -88,9 +97,9 @@ where
         self.extend(other.map.drain());
     }
 }
-impl<T> std::iter::Extend<T> for HashCounter<T>
+impl<T> Extend<T> for HashCounter<T>
 where
-    T: Eq + std::hash::Hash,
+    T: Eq + Hash,
 {
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
         for item in iter {
@@ -98,9 +107,9 @@ where
         }
     }
 }
-impl<T> std::iter::Extend<(T, usize)> for HashCounter<T>
+impl<T> Extend<(T, usize)> for HashCounter<T>
 where
-    T: Eq + std::hash::Hash,
+    T: Eq + Hash,
 {
     fn extend<I: IntoIterator<Item = (T, usize)>>(&mut self, iter: I) {
         for (item, count) in iter {
@@ -108,9 +117,9 @@ where
         }
     }
 }
-impl<T> std::iter::FromIterator<T> for HashCounter<T>
+impl<T> FromIterator<T> for HashCounter<T>
 where
-    T: Eq + std::hash::Hash,
+    T: Eq + Hash,
 {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let mut map = Self::default();
@@ -118,9 +127,9 @@ where
         map
     }
 }
-impl<T> std::iter::FromIterator<(T, usize)> for HashCounter<T>
+impl<T> FromIterator<(T, usize)> for HashCounter<T>
 where
-    T: Eq + std::hash::Hash,
+    T: Eq + Hash,
 {
     fn from_iter<I: IntoIterator<Item = (T, usize)>>(iter: I) -> Self {
         let mut map = Self::default();
@@ -129,9 +138,17 @@ where
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct BTreeCounter<T> {
-    map: std::collections::BTreeMap<T, usize>,
+    map: BTreeMap<T, usize>,
+}
+impl<T> Debug for BTreeCounter<T>
+where
+    T: Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_map().entries(self.iter()).finish()
+    }
 }
 impl<T> Default for BTreeCounter<T>
 where
@@ -139,7 +156,7 @@ where
 {
     fn default() -> Self {
         Self {
-            map: std::collections::BTreeMap::default(),
+            map: BTreeMap::default(),
         }
     }
 }
@@ -150,20 +167,20 @@ impl<T> BTreeCounter<T> {
     pub fn is_empty(&self) -> bool {
         self.map.is_empty()
     }
-    pub fn keys(&self) -> std::collections::btree_map::Keys<'_, T, usize> {
+    pub fn keys(&self) -> btree_map::Keys<'_, T, usize> {
         self.map.keys()
     }
-    pub fn values(&self) -> std::collections::btree_map::Values<'_, T, usize> {
+    pub fn values(&self) -> btree_map::Values<'_, T, usize> {
         self.map.values()
     }
-    pub fn iter(&self) -> std::collections::btree_map::Iter<'_, T, usize> {
+    pub fn iter(&self) -> btree_map::Iter<'_, T, usize> {
         self.map.iter()
     }
-    pub fn range<Q, R>(&self, range: R) -> std::collections::btree_map::Range<'_, T, usize>
+    pub fn range<Q, R>(&self, range: R) -> btree_map::Range<'_, T, usize>
     where
         Q: Ord,
-        R: std::ops::RangeBounds<Q>,
-        T: std::borrow::Borrow<Q> + Ord,
+        R: RangeBounds<Q>,
+        T: Borrow<Q> + Ord,
     {
         self.map.range(range)
     }
@@ -205,7 +222,7 @@ where
         }
     }
 }
-impl<T> std::iter::Extend<T> for BTreeCounter<T>
+impl<T> Extend<T> for BTreeCounter<T>
 where
     T: Ord,
 {
@@ -215,7 +232,7 @@ where
         }
     }
 }
-impl<T> std::iter::Extend<(T, usize)> for BTreeCounter<T>
+impl<T> Extend<(T, usize)> for BTreeCounter<T>
 where
     T: Ord,
 {
@@ -225,7 +242,7 @@ where
         }
     }
 }
-impl<T> std::iter::FromIterator<T> for BTreeCounter<T>
+impl<T> FromIterator<T> for BTreeCounter<T>
 where
     T: Ord,
 {
@@ -235,7 +252,7 @@ where
         map
     }
 }
-impl<T> std::iter::FromIterator<(T, usize)> for BTreeCounter<T>
+impl<T> FromIterator<(T, usize)> for BTreeCounter<T>
 where
     T: Ord,
 {

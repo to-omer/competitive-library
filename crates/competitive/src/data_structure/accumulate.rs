@@ -1,12 +1,12 @@
-#[codesnip::skip]
-use crate::algebra::{Group, Monoid};
+use super::{Group, Monoid};
+use std::iter::FromIterator;
 
 #[derive(Debug, Clone)]
 /// Accumlated data
 pub struct Accumulate<M: Monoid> {
     data: Vec<M::T>,
 }
-impl<M: Monoid> std::iter::FromIterator<M::T> for Accumulate<M> {
+impl<M: Monoid> FromIterator<M::T> for Accumulate<M> {
     fn from_iter<T: IntoIterator<Item = M::T>>(iter: T) -> Self {
         let iter = iter.into_iter();
         let (lower, _) = iter.size_hint();
