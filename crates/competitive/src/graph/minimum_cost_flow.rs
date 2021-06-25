@@ -68,6 +68,9 @@ pub struct PrimalDual<'a> {
     prev_edge: Vec<usize>,
 }
 impl<'a> PrimalDual<'a> {
+    pub fn builder(vsize: usize, esize_expect: usize) -> PrimalDualBuilder {
+        PrimalDualBuilder::new(vsize, esize_expect)
+    }
     fn dijkstra(&mut self, s: usize, t: usize) -> bool {
         use std::{cmp::Reverse, collections::BinaryHeap};
         self.dist.clear();

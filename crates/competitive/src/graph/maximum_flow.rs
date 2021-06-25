@@ -54,6 +54,9 @@ pub struct Dinic<'a> {
     deq: VecDeque<usize>,
 }
 impl<'a> Dinic<'a> {
+    pub fn builder(vsize: usize, esize_expect: usize) -> DinicBuilder {
+        DinicBuilder::new(vsize, esize_expect)
+    }
     fn bfs(&mut self, s: usize, t: usize) -> bool {
         use std::usize::MAX;
         self.level.clear();
