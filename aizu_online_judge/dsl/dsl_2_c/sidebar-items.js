@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["dsl_2_c","✅  AC  588ms"]]});
+initSidebarItems({"fn":[["dsl_2_c","✅  AC  501ms"]]});
