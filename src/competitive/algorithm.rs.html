@@ -59,37 +59,57 @@
 <span id="28">28</span>
 <span id="29">29</span>
 <span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
 </pre><pre class="rust">
 <span class="doccomment">//! algorithm</span>
 
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;BitDp&quot;</span>, <span class="ident">inline</span>))]</span>
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::num</span>::{<span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
+
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;BitDp&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::bitdp</span>::{<span class="ident">BitDp</span>, <span class="ident">Combinations</span>, <span class="ident">Subsets</span>};
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;chromatic_number&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::chromatic_number::IndependentSubSet</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::combinations</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;ConvexHullTrick&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::convex_hull_trick::ConvexHullTrick</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::mo::MoSolver</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::other</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;RhoPath&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::rho_path::RhoPath</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::search</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::slide_minimum</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;XorBasis&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::xorbasis::XorBasis</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::zeta_transform</span>::<span class="kw-2">*</span>;
+
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;BitDp&quot;</span>))]</span>
 <span class="kw">mod</span> <span class="ident">bitdp</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="ident">inline</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>, <span class="string">&quot;binary_search&quot;</span>)))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(
+    <span class="ident">nightly</span>,
+    <span class="ident">codesnip::entry</span>(<span class="string">&quot;chromatic_number&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>, <span class="string">&quot;binary_search&quot;</span>))
+)]</span>
 <span class="kw">mod</span> <span class="ident">chromatic_number</span>;
 <span class="kw">mod</span> <span class="ident">combinations</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;ConvexHullTrick&quot;</span>, <span class="ident">inline</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;ConvexHullTrick&quot;</span>))]</span>
 <span class="kw">mod</span> <span class="ident">convex_hull_trick</span>;
 <span class="kw">mod</span> <span class="ident">mo</span>;
 <span class="kw">mod</span> <span class="ident">other</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;RhoPath&quot;</span>, <span class="ident">inline</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;RhoPath&quot;</span>))]</span>
 <span class="kw">mod</span> <span class="ident">rho_path</span>;
 <span class="kw">mod</span> <span class="ident">search</span>;
 <span class="kw">mod</span> <span class="ident">slide_minimum</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;XorBasis&quot;</span>, <span class="ident">inline</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;XorBasis&quot;</span>))]</span>
 <span class="kw">mod</span> <span class="ident">xorbasis</span>;
 <span class="kw">mod</span> <span class="ident">zeta_transform</span>;
-
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">bitdp</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">chromatic_number</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">combinations</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">convex_hull_trick</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">mo::MoSolver</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">other</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rho_path::RhoPath</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">search</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">slide_minimum</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">xorbasis::XorBasis</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">zeta_transform</span>::<span class="kw-2">*</span>;
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="competitive" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>

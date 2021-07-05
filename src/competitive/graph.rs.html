@@ -56,34 +56,88 @@
 <span id="25">25</span>
 <span id="26">26</span>
 <span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
 </pre><pre class="rust">
 <span class="doccomment">//! graph structures and algorithms</span>
 
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::tools</span>::{<span class="ident">IterScan</span>, <span class="ident">MarkedIterScan</span>};
+
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;AdjacencyListGraph&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::adjacency_list</span>::{<span class="ident">AdjacencyListGraph</span>, <span class="ident">AdjacencyListGraphScanner</span>};
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;EdgeListGraph&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::edge_list</span>::{<span class="ident">EdgeListGraph</span>, <span class="ident">EdgeListGraphScanner</span>};
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;GridGraph&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::grid::GridGraph</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;LowLink&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::low_link::LowLink</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Dinic&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::maximum_flow</span>::{<span class="ident">Dinic</span>, <span class="ident">DinicBuilder</span>};
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimalDual&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::minimum_cost_flow</span>::{<span class="ident">PrimalDual</span>, <span class="ident">PrimalDualBuilder</span>};
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::sparse_graph</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;StronglyConnectedComponent&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::strongly_connected_component::StronglyConnectedComponent</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;TwoSatisfiability&quot;</span>))]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::two_satisfiability::TwoSatisfiability</span>;
+
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;AdjacencyListGraph&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;scanner&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">adjacency_list</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;EdgeListGraph&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;scanner&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">edge_list</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;graphvis&quot;</span>, <span class="ident">inline</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;graphvis&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">graphvis</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;GridGraph&quot;</span>))]</span>
 <span class="kw">mod</span> <span class="ident">grid</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;LowLink&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">low_link</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Dinic&quot;</span>, <span class="ident">inline</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Dinic&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">maximum_flow</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimalDual&quot;</span>, <span class="ident">inline</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimalDual&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">minimum_cost_flow</span>;
 <span class="kw">mod</span> <span class="ident">minimum_spanning_tree</span>;
 <span class="kw">mod</span> <span class="ident">order</span>;
 <span class="kw">mod</span> <span class="ident">shortest_path</span>;
-<span class="kw">mod</span> <span class="ident">sparse</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;SparseGraph&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;scanner&quot;</span>)))]</span>
+<span class="kw">mod</span> <span class="ident">sparse_graph</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(
+    <span class="ident">nightly</span>,
+    <span class="ident">codesnip::entry</span>(<span class="string">&quot;StronglyConnectedComponent&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>))
+)]</span>
 <span class="kw">mod</span> <span class="ident">strongly_connected_component</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;topological_sort&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">topological_sort</span>;
-
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">adjacency_list</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">edge_list</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">grid</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">low_link</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">maximum_flow</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">minimum_cost_flow</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sparse</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">strongly_connected_component</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(
+    <span class="ident">nightly</span>,
+    <span class="ident">codesnip::entry</span>(<span class="string">&quot;TwoSatisfiability&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;StronglyConnectedComponent&quot;</span>))
+)]</span>
+<span class="kw">mod</span> <span class="ident">two_satisfiability</span>;
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="competitive" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>

@@ -165,6 +165,7 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
+<span id="137">137</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">magma</span>::<span class="kw-2">*</span>, <span class="ident">operations</span>::<span class="kw-2">*</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::num</span>::{<span class="ident">Bounded</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
@@ -198,9 +199,11 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;monoid_action_impls&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span><span class="ident">::monoid_action_impls</span>::<span class="kw-2">*</span>;
+
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(
     <span class="string">&quot;monoid_action_impls&quot;</span>,
-    <span class="ident">inline</span>,
     <span class="ident">include</span>(
         <span class="string">&quot;MonoidAction&quot;</span>,
         <span class="string">&quot;AdditiveOperation&quot;</span>,
@@ -214,14 +217,15 @@
     )
 )]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">monoid_action_impls</span> {
-    <span class="attribute">#[<span class="ident">codesnip::skip</span>]</span>
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use</span> <span class="ident">std</span>::{
+        <span class="ident">marker::PhantomData</span>,
+        <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">Mul</span>},
+    };
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">std::ops::Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::ops::Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span>
-        <span class="kw">for</span> <span class="ident">RangeSumRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    {
+    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeSumRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> (<span class="ident">T</span>, <span class="ident">T</span>);
         <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="ident">T</span>;
         <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> (<span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
@@ -232,9 +236,9 @@
     }
 
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeLinear</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">One</span> <span class="op">+</span> <span class="ident">std::ops::Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::ops::Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span>
+    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">One</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span>
         <span class="kw">for</span> <span class="ident">RangeSumRangeLinear</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
     {
         <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> (<span class="ident">T</span>, <span class="ident">T</span>);
@@ -247,10 +251,10 @@
     }
 
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">std::ops::Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">std::ops::Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">PartialEq</span><span class="op">&gt;</span>
-        <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeSumRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">PartialEq</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span>
+        <span class="kw">for</span> <span class="ident">RangeSumRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
     {
         <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> (<span class="ident">T</span>, <span class="ident">T</span>);
         <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
@@ -262,7 +266,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMaxRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
     }
     <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Bounded</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMaxRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> <span class="ident">T</span>;
@@ -275,7 +279,7 @@
     }
 
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMinRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
     }
     <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Bounded</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMinRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> <span class="ident">T</span>;
@@ -288,11 +292,9 @@
     }
 
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMinRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span><span class="op">&gt;</span>,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Bounded</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">std::ops::Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span>
-        <span class="kw">for</span> <span class="ident">RangeMinRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    {
+    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Bounded</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMinRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> <span class="ident">T</span>;
         <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="ident">T</span>;
         <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">MinOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;

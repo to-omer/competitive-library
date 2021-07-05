@@ -244,7 +244,13 @@
 <span id="213">213</span>
 <span id="214">214</span>
 <span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
 </pre><pre class="rust">
+<span class="kw">use</span> <span class="ident">std::iter::FromIterator</span>;
+
 <span class="doccomment">/// rank_i(select_i(k)) = k</span>
 <span class="doccomment">/// rank_i(select_i(k) + 1) = k + 1</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RankSelectDictionaries</span> {
@@ -321,6 +327,8 @@
     };
 }
 <span class="macro">impl_rank_select_for_bits!</span>(<span class="ident">u8</span> <span class="ident">u16</span> <span class="ident">u32</span> <span class="ident">u64</span> <span class="ident">usize</span> <span class="ident">i8</span> <span class="ident">i16</span> <span class="ident">i32</span> <span class="ident">i64</span> <span class="ident">isize</span> <span class="ident">u128</span> <span class="ident">i128</span>);
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitVector</span> {
     <span class="doccomment">/// [(bit, sum)]</span>
     <span class="ident">data</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>,
@@ -375,7 +383,7 @@
         <span class="prelude-val">Some</span>(<span class="ident">l</span> <span class="op">*</span> <span class="self">Self</span><span class="ident">::WORD_SIZE</span> <span class="op">+</span> <span class="ident">bit</span>.<span class="ident">select0</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>())
     }
 }
-<span class="kw">impl</span> <span class="ident">std::iter::FromIterator</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BitVector</span> {
+<span class="kw">impl</span> <span class="ident">FromIterator</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BitVector</span> {
     <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">bool</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">iter</span>.<span class="ident">into_iter</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Vec::new</span>();

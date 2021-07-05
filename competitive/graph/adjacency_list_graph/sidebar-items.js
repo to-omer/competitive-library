@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Adjacency",""],["AdjacencyListGraph",""],["AdjacencyListGraphScanner",""]]});

@@ -156,9 +156,12 @@
 <span id="125">125</span>
 <span id="126">126</span>
 <span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
 </pre><pre class="rust">
-<span class="attribute">#[<span class="ident">codesnip::skip</span>]</span>
 <span class="kw">use</span> <span class="kw">super</span><span class="ident">::BidirectionalSparseGraph</span>;
+<span class="kw">use</span> <span class="ident">std::collections::VecDeque</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DinicBuilder</span> {
@@ -192,7 +195,7 @@
             <span class="ident">capacities</span>,
             <span class="ident">iter</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">vsize</span>),
             <span class="ident">level</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">vsize</span>),
-            <span class="ident">deq</span>: <span class="ident">std::collections::VecDeque::with_capacity</span>(<span class="ident">vsize</span>),
+            <span class="ident">deq</span>: <span class="ident">VecDeque::with_capacity</span>(<span class="ident">vsize</span>),
         }
     }
 }
@@ -210,9 +213,12 @@
     <span class="ident">capacities</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
     <span class="ident">iter</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="ident">level</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">deq</span>: <span class="ident">std::collections::VecDeque</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="ident">deq</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Dinic</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builder</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>, <span class="ident">esize_expect</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">DinicBuilder</span> {
+        <span class="ident">DinicBuilder::new</span>(<span class="ident">vsize</span>, <span class="ident">esize_expect</span>)
+    }
     <span class="kw">fn</span> <span class="ident">bfs</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">use</span> <span class="ident">std::usize::MAX</span>;
         <span class="self">self</span>.<span class="ident">level</span>.<span class="ident">clear</span>();
