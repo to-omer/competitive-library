@@ -288,6 +288,15 @@ where
             .collect()
     }
 }
+impl<T, F> MarkedIterScan for F
+where
+    F: Fn(&str) -> Option<T>,
+{
+    type Output = T;
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+        self(iter.next()?)
+    }
+}
 
 #[test]
 fn test_scan() {
