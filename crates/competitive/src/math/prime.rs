@@ -269,26 +269,20 @@ pub mod prime_list {
 
         let pl = PrimeList::new(100_000);
         for n in (0..1000).chain(rng.gen_iter(0..=1_000_000_000).take(100)) {
-            assert_eq!(
-                prime_factors(n),
-                pl.prime_factors(n as u64)
-                    .into_iter()
-                    .map(|(p, c)| (p as u32, c))
-                    .collect::<Vec<_>>(),
-            );
+            assert_eq!(prime_factors(n), pl.prime_factors(n as u64));
         }
     }
 }
 
 #[codesnip::entry]
-pub fn prime_factors(mut n: u32) -> Vec<(u32, u32)> {
+pub fn prime_factors(mut n: u64) -> Vec<(u64, u32)> {
     let mut factors = vec![];
     let k = n.trailing_zeros();
     if n > 0 && k > 0 {
         n >>= k;
         factors.push((2, k));
     }
-    for i in (3..=(n as f32).sqrt() as u32).step_by(2) {
+    for i in (3..=(n as f64).sqrt() as u64).step_by(2) {
         if n % i == 0 {
             let mut cnt = 1;
             n /= i;
@@ -315,7 +309,13 @@ fn test_prime_factors() {
     const N: u32 = 100_000;
     let primes = PrimeTable::new(N);
     for i in 1..=N {
-        assert_eq!(primes.prime_factors(i), prime_factors(i));
+        assert_eq!(
+            primes.prime_factors(i),
+            prime_factors(i as _)
+                .into_iter()
+                .map(|(p, c)| (p as u32, c))
+                .collect::<Vec<_>>()
+        );
     }
 }
 
