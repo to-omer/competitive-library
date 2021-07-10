@@ -42,7 +42,7 @@ impl<M: Monoid> BinaryIndexedTree<M> {
 impl<G: Group> BinaryIndexedTree<G> {
     #[inline]
     pub fn fold(&self, l: usize, r: usize) -> G::T {
-        debug_assert!(l < self.n && 0 < r && r <= self.n);
+        debug_assert!(l <= self.n && r <= self.n);
         G::operate(&G::inverse(&self.accumulate0(l)), &self.accumulate0(r))
     }
     #[inline]
