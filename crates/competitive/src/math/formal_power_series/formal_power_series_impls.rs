@@ -211,3 +211,24 @@ where
         Some(Self::zeros(deg))
     }
 }
+
+impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+where
+    T: FormalPowerSeriesCoefficient,
+    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+{
+    pub fn count_subset_sum(&self, deg: usize, inv: &[T]) -> Self {
+        let n = self.data.len();
+        let mut f = Self::zeros(n);
+        for i in 1..n {
+            for (j, d) in (0..n).step_by(i).enumerate().skip(1) {
+                if j & 1 != 0 {
+                    f[d] += self[i].clone() * &inv[j];
+                } else {
+                    f[d] -= self[i].clone() * &inv[j];
+                }
+            }
+        }
+        f.exp(deg)
+    }
+}
