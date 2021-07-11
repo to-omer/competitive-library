@@ -122,6 +122,12 @@ where
             )
             .collect()
     }
+    pub fn even(&self) -> Self {
+        self.data.iter().cloned().step_by(2).collect()
+    }
+    pub fn odd(&self) -> Self {
+        self.data.iter().cloned().skip(1).step_by(2).collect()
+    }
 }
 
 impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
@@ -230,5 +236,26 @@ where
             }
         }
         f.exp(deg)
+    }
+    pub fn bostan_mori(&self, rhs: &Self, mut n: usize) -> T {
+        let mut p = self.clone();
+        let mut q = rhs.clone();
+        while n > 0 {
+            let mut mq = q.clone();
+            mq.data
+                .iter_mut()
+                .skip(1)
+                .step_by(2)
+                .for_each(|x| *x = -x.clone());
+            let u = p * mq.clone();
+            if n % 2 == 0 {
+                p = u.even();
+            } else {
+                p = u.odd();
+            }
+            q = (q * mq).even();
+            n /= 2;
+        }
+        p[0].clone() / q[0].clone()
     }
 }
