@@ -265,6 +265,59 @@ where
 }
 
 #[derive(Debug, Clone)]
+pub struct MappingAutomaton<A, S, F, G, H>
+where
+    A: Automaton,
+    F: Fn() -> S,
+    G: Fn(&A::State, &S, &A::Alphabet) -> Option<S>,
+    H: Fn(&A::State, &S) -> bool,
+{
+    dfa: A,
+    fn_initial: F,
+    fn_next: G,
+    fn_accept: H,
+    _marker: PhantomData<fn() -> S>,
+}
+impl<A, S, F, G, H> MappingAutomaton<A, S, F, G, H>
+where
+    A: Automaton,
+    F: Fn() -> S,
+    G: Fn(&A::State, &S, &A::Alphabet) -> Option<S>,
+    H: Fn(&A::State, &S) -> bool,
+{
+    pub fn new(dfa: A, fn_initial: F, fn_next: G, fn_accept: H) -> Self {
+        Self {
+            dfa,
+            fn_initial,
+            fn_next,
+            fn_accept,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<A, S, F, G, H> Automaton for MappingAutomaton<A, S, F, G, H>
+where
+    A: Automaton,
+    F: Fn() -> S,
+    G: Fn(&A::State, &S, &A::Alphabet) -> Option<S>,
+    H: Fn(&A::State, &S) -> bool,
+{
+    type Alphabet = A::Alphabet;
+    type State = (A::State, S);
+    fn initial(&self) -> Self::State {
+        (self.dfa.initial(), (self.fn_initial)())
+    }
+    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+        self.dfa
+            .next(&state.0, alph)
+            .and_then(|s| (self.fn_next)(&s, &state.1, alph).map(|ss| (s, ss)))
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        self.dfa.accept(&state.0) && (self.fn_accept)(&state.0, &state.1)
+    }
+}
+
+#[derive(Debug, Clone)]
 /// DFA to accept Less/Greater than (or equal to) the sequence
 pub struct LexicographicalAutomaton<'a, T> {
     sequence: &'a [T],
@@ -329,6 +382,22 @@ where
 pub struct MonoidalAutomaton<M>(PhantomData<fn() -> M>)
 where
     M: Monoid;
+impl<M> MonoidalAutomaton<M>
+where
+    M: Monoid,
+{
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+impl<M> Default for MonoidalAutomaton<M>
+where
+    M: Monoid,
+{
+    fn default() -> Self {
+        Self(PhantomData)
+    }
+}
 impl<M> Automaton for MonoidalAutomaton<M>
 where
     M: Monoid,
@@ -371,17 +440,32 @@ impl<A> Automaton for AlwaysAcceptingAutomaton<A> {
 }
 
 pub trait ToDigitSequence: Sized {
-    fn to_digit_sequence(&self, len: usize) -> Vec<Self>;
-    fn to_digit_sequence_radix(&self, radix: Self, len: usize) -> Vec<Self>;
+    fn to_digit_sequence(&self) -> Vec<Self>;
+    fn to_digit_sequence_radix(&self, radix: Self) -> Vec<Self>;
+    fn to_digit_sequence_len(&self, len: usize) -> Vec<Self>;
+    fn to_digit_sequence_radix_len(&self, radix: Self, len: usize) -> Vec<Self>;
 }
 
 macro_rules! impl_to_digit_sequence {
     ($($t:ty)*) => {
         $(impl ToDigitSequence for $t {
-            fn to_digit_sequence(&self, len: usize) -> Vec<$t> {
-                self.to_digit_sequence_radix(10, len)
+            fn to_digit_sequence(&self) -> Vec<$t> {
+                self.to_digit_sequence_radix(10)
             }
-            fn to_digit_sequence_radix(&self, radix: Self, len: usize) -> Vec<$t> {
+            fn to_digit_sequence_radix(&self, radix: Self) -> Vec<$t> {
+                let mut x = *self;
+                let mut res: Vec<$t> = vec![];
+                while x > 0 {
+                    res.push(x % radix);
+                    x /= radix;
+                }
+                res.reverse();
+                res
+            }
+            fn to_digit_sequence_len(&self, len: usize) -> Vec<$t> {
+                self.to_digit_sequence_radix_len(10, len)
+            }
+            fn to_digit_sequence_radix_len(&self, radix: Self, len: usize) -> Vec<$t> {
                 let mut x = *self;
                 let mut res: Vec<$t> = vec![0; len];
                 for r in res.iter_mut().rev() {
@@ -398,27 +482,99 @@ macro_rules! impl_to_digit_sequence {
 }
 impl_to_digit_sequence!(u8 u16 u32 u64 u128 usize);
 
+/// build automaton
+///
+/// - `automaton!(A)`
+/// - `<= seq`: `LexicographicalAutomaton::less_than_or_equal(seq)`
+/// - `>= seq`: `LexicographicalAutomaton::greater_than_or_equal(seq)`
+/// - `< seq`: `LexicographicalAutomaton::greater_than(seq)`
+/// - `> seq`: `LexicographicalAutomaton::greater_than(seq)`
+/// - `=> f g h`: `FunctionalAutomaton::new(f, g, h)`
+/// - `=> (A) f g h`: `MappingAutomaton::new(A, f, g, h)`
+/// - `@`: `AlwaysAcceptingAutomaton::new()`
+/// - `(A) * (B)`: `ProductAutomaton(A, B)`
+/// - `(A) & (B)`: `IntersectionAutomaton(A, B)`
+/// - `(A) | (B)`: `UnionAutomaton(A, B)`
 #[macro_export]
 macro_rules! automaton {
-    (@inner ($($t:tt)*))                              => { $crate::automaton!(@inner $($t)*) };
-    (@inner <= $e:expr)                               => { LexicographicalAutomaton::less_than_or_equal(&$e) };
-    (@inner >= $e:expr)                               => { LexicographicalAutomaton::greater_than_or_equal(&$e) };
-    (@inner < $e:expr)                                => { LexicographicalAutomaton::less_than(&$e) };
-    (@inner > $e:expr)                                => { LexicographicalAutomaton::greater_than(&$e) };
-    (@inner => $f:expr, $g:expr, $h:expr $(,)?)       => { FunctionalAutomaton::new($f, $g, $h) };
-    (@inner ($($h:tt)*) $($op:tt ($($t:tt)*))*)       => { $crate::automaton!(@union [] ($($h)*) $($op ($($t)*))*) };
-    (@inner $($t:tt)*)                                => { $($t)* };
-    (@union [] ($($h:tt)*) $($t:tt)*)                 => { $crate::automaton!(@union [($($h)*)] $($t)*) };
-    (@union [$($h:tt)*] | ($($x:tt)*) $($t:tt)*)      => { UnionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
-    (@union [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*) => { $crate::automaton!(@union [$($h)* $op ($($x)*)] $($t)*) };
-    (@union [$($h:tt)*])                              => { $crate::automaton!(@inter [] $($h)*) };
-    (@inter [] ($($h:tt)*) $($t:tt)*)                 => { $crate::automaton!(@inter [($($h)*)] $($t)*) };
-    (@inter [$($h:tt)*] & ($($x:tt)*) $($t:tt)*)      => { IntersectionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
-    (@inter [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*) => { $crate::automaton!(@inter [$($h)* $op ($($x)*)] $($t)*) };
-    (@inter [$($h:tt)*])                              => { $crate::automaton!(@prod [] $($h)*) };
-    (@prod [] ($($h:tt)*) $($t:tt)*)                  => { $crate::automaton!(@prod [($($h)*)] $($t)*) };
-    (@prod [$($h:tt)*] * ($($x:tt)*) $($t:tt)*)       => { ProductAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
-    (@prod [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)  => { $crate::automaton!(@prod [$($h)* $op ($($x)*)] $($t)*) };
-    (@prod [$($h:tt)*])                               => { $crate::automaton!(@inner $($h)*) };
-    ($($t:tt)*)                                       => { $crate::automaton!(@inner $($t)*) };
+    (@inner ($($t:tt)*))                                    => { $crate::automaton!(@inner $($t)*) };
+    (@inner <= $e:expr)                                     => { LexicographicalAutomaton::less_than_or_equal(&$e) };
+    (@inner >= $e:expr)                                     => { LexicographicalAutomaton::greater_than_or_equal(&$e) };
+    (@inner < $e:expr)                                      => { LexicographicalAutomaton::less_than(&$e) };
+    (@inner > $e:expr)                                      => { LexicographicalAutomaton::greater_than(&$e) };
+    (@inner => ($($t:tt)*) $f:expr, $g:expr, $h:expr $(,)?) => { MappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
+    (@inner => $f:expr, $g:expr, $h:expr $(,)?)             => { FunctionalAutomaton::new($f, $g, $h) };
+    (@inner ($($h:tt)*) $($op:tt ($($t:tt)*))*)             => { $crate::automaton!(@union [] ($($h)*) $($op ($($t)*))*) };
+    (@inner @)                                              => { AlwaysAcceptingAutomaton::new() };
+    (@inner $($t:tt)*)                                      => { $($t)* };
+    (@union [] ($($h:tt)*) $($t:tt)*)                       => { $crate::automaton!(@union [($($h)*)] $($t)*) };
+    (@union [$($h:tt)*] | ($($x:tt)*) $($t:tt)*)            => { UnionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
+    (@union [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)       => { $crate::automaton!(@union [$($h)* $op ($($x)*)] $($t)*) };
+    (@union [$($h:tt)*])                                    => { $crate::automaton!(@inter [] $($h)*) };
+    (@inter [] ($($h:tt)*) $($t:tt)*)                       => { $crate::automaton!(@inter [($($h)*)] $($t)*) };
+    (@inter [$($h:tt)*] & ($($x:tt)*) $($t:tt)*)            => { IntersectionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
+    (@inter [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)       => { $crate::automaton!(@inter [$($h)* $op ($($x)*)] $($t)*) };
+    (@inter [$($h:tt)*])                                    => { $crate::automaton!(@prod [] $($h)*) };
+    (@prod [] ($($h:tt)*) $($t:tt)*)                        => { $crate::automaton!(@prod [($($h)*)] $($t)*) };
+    (@prod [$($h:tt)*] * ($($x:tt)*) $($t:tt)*)             => { ProductAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
+    (@prod [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)        => { $crate::automaton!(@prod [$($h)* $op ($($x)*)] $($t)*) };
+    (@prod [$($h:tt)*])                                     => { $crate::automaton!(@inner $($h)*) };
+    ($($t:tt)*)                                             => { $crate::automaton!(@inner $($t)*) };
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{algebra::AdditiveOperation, automaton, tools::Xorshift};
+
+    #[test]
+    fn test_lexicographical() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
+            let nd = n.to_digit_sequence_radix(r);
+            assert_eq!(n + 1, automaton!(<= nd).dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(n, automaton!(< nd).dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(
+                r.pow(nd.len() as _) - n,
+                automaton!(>= nd).dp::<A>(1).run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                r.pow(nd.len() as _) - n - 1,
+                automaton!(> nd).dp::<A>(1).run(|| 0..r, nd.len())
+            );
+        }
+    }
+
+    struct C(usize, usize);
+    impl Automaton for C {
+        type Alphabet = usize;
+        type State = usize;
+        fn initial(&self) -> Self::State {
+            0
+        }
+        fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+            Some((state * self.1 + alph) % self.0)
+        }
+        fn accept(&self, state: &Self::State) -> bool {
+            *state == 0
+        }
+    }
+
+    #[test]
+    fn test_prim() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for (n, r, c) in rng.gen_iter((0..10usize.pow(18), 2..=10, 2..200)).take(Q) {
+            let nd = n.to_digit_sequence_radix(r);
+            let dfa = automaton!((< nd) & (C(c, r)));
+            assert_eq!((n + c - 1) / c, dfa.dp::<A>(1).run(|| 0..r, nd.len()));
+
+            let dfa =
+                automaton!((< nd) & (=> || 0usize, |s, a| Some((s * r + a) % c), |s| *s == 0));
+            assert_eq!((n + c - 1) / c, dfa.dp::<A>(1).run(|| 0..r, nd.len()));
+        }
+    }
 }
