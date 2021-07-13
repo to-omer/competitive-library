@@ -379,6 +379,64 @@ where
 }
 
 #[derive(Debug, Clone)]
+/// DFA to accept Less/Greater than (or equal to) the reversed sequence
+pub struct RevLexicographicalAutomaton<'a, T> {
+    sequence: &'a [T],
+    ordering: Ordering,
+    equal: bool,
+}
+impl<'a, T> RevLexicographicalAutomaton<'a, T> {
+    pub fn less_than(sequence: &'a [T]) -> Self {
+        Self {
+            sequence,
+            ordering: Ordering::Less,
+            equal: false,
+        }
+    }
+    pub fn less_than_or_equal(sequence: &'a [T]) -> Self {
+        Self {
+            sequence,
+            ordering: Ordering::Less,
+            equal: true,
+        }
+    }
+    pub fn greater_than(sequence: &'a [T]) -> Self {
+        Self {
+            sequence,
+            ordering: Ordering::Greater,
+            equal: false,
+        }
+    }
+    pub fn greater_than_or_equal(sequence: &'a [T]) -> Self {
+        Self {
+            sequence,
+            ordering: Ordering::Greater,
+            equal: true,
+        }
+    }
+}
+impl<'a, T> Automaton for RevLexicographicalAutomaton<'a, T>
+where
+    T: Ord,
+{
+    type Alphabet = T;
+    /// (next position of sequence, is equal)
+    type State = (usize, Ordering);
+    fn initial(&self) -> Self::State {
+        (self.sequence.len(), Ordering::Equal)
+    }
+    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+        let index = state.0.wrapping_add(!0);
+        self.sequence
+            .get(index)
+            .map(|c| (index, alph.cmp(c).then(state.1)))
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        state.1 == self.ordering || self.equal && matches!(state.1, Ordering::Equal)
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct MonoidalAutomaton<M>(PhantomData<fn() -> M>)
 where
     M: Monoid;
@@ -489,6 +547,10 @@ impl_to_digit_sequence!(u8 u16 u32 u64 u128 usize);
 /// - `>= seq`: `LexicographicalAutomaton::greater_than_or_equal(seq)`
 /// - `< seq`: `LexicographicalAutomaton::greater_than(seq)`
 /// - `> seq`: `LexicographicalAutomaton::greater_than(seq)`
+/// - `!<= seq`: `RevLexicographicalAutomaton::less_than_or_equal(seq)`
+/// - `!>= seq`: `RevLexicographicalAutomaton::greater_than_or_equal(seq)`
+/// - `!< seq`: `RevLexicographicalAutomaton::greater_than(seq)`
+/// - `!> seq`: `RevLexicographicalAutomaton::greater_than(seq)`
 /// - `=> f g h`: `FunctionalAutomaton::new(f, g, h)`
 /// - `=> (A) f g h`: `MappingAutomaton::new(A, f, g, h)`
 /// - `@`: `AlwaysAcceptingAutomaton::new()`
@@ -502,6 +564,10 @@ macro_rules! automaton {
     (@inner >= $e:expr)                                     => { LexicographicalAutomaton::greater_than_or_equal(&$e) };
     (@inner < $e:expr)                                      => { LexicographicalAutomaton::less_than(&$e) };
     (@inner > $e:expr)                                      => { LexicographicalAutomaton::greater_than(&$e) };
+    (@inner !<= $e:expr)                                    => { RevLexicographicalAutomaton::less_than_or_equal(&$e) };
+    (@inner !>= $e:expr)                                    => { RevLexicographicalAutomaton::greater_than_or_equal(&$e) };
+    (@inner !< $e:expr)                                     => { RevLexicographicalAutomaton::less_than(&$e) };
+    (@inner !> $e:expr)                                     => { RevLexicographicalAutomaton::greater_than(&$e) };
     (@inner => ($($t:tt)*) $f:expr, $g:expr, $h:expr $(,)?) => { MappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
     (@inner => $f:expr, $g:expr, $h:expr $(,)?)             => { FunctionalAutomaton::new($f, $g, $h) };
     (@inner ($($h:tt)*) $($op:tt ($($t:tt)*))*)             => { $crate::automaton!(@union [] ($($h)*) $($op ($($t)*))*) };
@@ -543,6 +609,26 @@ mod tests {
             assert_eq!(
                 r.pow(nd.len() as _) - n - 1,
                 automaton!(> nd).dp::<A>(1).run(|| 0..r, nd.len())
+            );
+        }
+    }
+
+    #[test]
+    fn test_revlexicographical() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
+            let nd = n.to_digit_sequence_radix(r);
+            assert_eq!(n + 1, automaton!(!<= nd).dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(n, automaton!(!< nd).dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(
+                r.pow(nd.len() as _) - n,
+                automaton!(!>= nd).dp::<A>(1).run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                r.pow(nd.len() as _) - n - 1,
+                automaton!(!> nd).dp::<A>(1).run(|| 0..r, nd.len())
             );
         }
     }
