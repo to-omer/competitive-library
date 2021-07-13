@@ -269,8 +269,8 @@ pub struct MappingAutomaton<A, S, F, G, H>
 where
     A: Automaton,
     F: Fn() -> S,
-    G: Fn(&A::State, &S, &A::Alphabet) -> Option<S>,
-    H: Fn(&A::State, &S) -> bool,
+    G: Fn(&(A::State, S), &A::Alphabet) -> Option<S>,
+    H: Fn(&(A::State, S)) -> bool,
 {
     dfa: A,
     fn_initial: F,
@@ -282,8 +282,8 @@ impl<A, S, F, G, H> MappingAutomaton<A, S, F, G, H>
 where
     A: Automaton,
     F: Fn() -> S,
-    G: Fn(&A::State, &S, &A::Alphabet) -> Option<S>,
-    H: Fn(&A::State, &S) -> bool,
+    G: Fn(&(A::State, S), &A::Alphabet) -> Option<S>,
+    H: Fn(&(A::State, S)) -> bool,
 {
     pub fn new(dfa: A, fn_initial: F, fn_next: G, fn_accept: H) -> Self {
         Self {
@@ -299,8 +299,8 @@ impl<A, S, F, G, H> Automaton for MappingAutomaton<A, S, F, G, H>
 where
     A: Automaton,
     F: Fn() -> S,
-    G: Fn(&A::State, &S, &A::Alphabet) -> Option<S>,
-    H: Fn(&A::State, &S) -> bool,
+    G: Fn(&(A::State, S), &A::Alphabet) -> Option<S>,
+    H: Fn(&(A::State, S)) -> bool,
 {
     type Alphabet = A::Alphabet;
     type State = (A::State, S);
@@ -310,10 +310,10 @@ where
     fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
         self.dfa
             .next(&state.0, alph)
-            .and_then(|s| (self.fn_next)(&s, &state.1, alph).map(|ss| (s, ss)))
+            .and_then(|s| (self.fn_next)(state, alph).map(|ss| (s, ss)))
     }
     fn accept(&self, state: &Self::State) -> bool {
-        self.dfa.accept(&state.0) && (self.fn_accept)(&state.0, &state.1)
+        self.dfa.accept(&state.0) && (self.fn_accept)(state)
     }
 }
 
