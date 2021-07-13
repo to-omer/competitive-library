@@ -233,6 +233,38 @@ impl MarkedIterScan for CharsWithBase {
     }
 }
 #[derive(Debug, Copy, Clone)]
+pub struct ByteWithBase(pub u8);
+impl MarkedIterScan for ByteWithBase {
+    type Output = usize;
+    #[inline]
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+        Some((<char as IterScan>::scan(iter)? as u8 - self.0) as usize)
+    }
+}
+#[derive(Debug, Copy, Clone)]
+pub struct Bytes;
+impl IterScan for Bytes {
+    type Output = Vec<u8>;
+    #[inline]
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+        Some(iter.next()?.bytes().collect())
+    }
+}
+#[derive(Debug, Copy, Clone)]
+pub struct BytesWithBase(pub u8);
+impl MarkedIterScan for BytesWithBase {
+    type Output = Vec<usize>;
+    #[inline]
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+        Some(
+            iter.next()?
+                .bytes()
+                .map(|c| (c - self.0) as usize)
+                .collect(),
+        )
+    }
+}
+#[derive(Debug, Copy, Clone)]
 pub struct Collect<T, B = Vec<<T as IterScan>::Output>>
 where
     T: IterScan,
