@@ -85,11 +85,21 @@ macro_rules! iter_print {
             $crate::iter_print!(@@item $writer, $sep, false, item);
         }
     }};
+    (@@iterns $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {{
+        let mut iter = $iter.into_iter();
+        if let Some(item) = iter.next() {
+            $crate::iter_print!(@@item $writer, $sep, $is_head, item);
+        }
+        for item in iter {
+            $crate::iter_print!(@@item $writer, $sep, true, item);
+        }
+    }};
     (@@tuple $writer:expr, $sep:expr, $is_head:expr, $tuple:expr) => {
         IterPrint::iter_print($tuple, &mut $writer, $sep, $is_head).expect("io error");
     };
     (@@assert_tag item) => {};
     (@@assert_tag iter) => {};
+    (@@assert_tag iterns) => {};
     (@@assert_tag tuple) => {};
     (@@assert_tag $tag:ident) => {
         ::std::compile_error!(::std::concat!("invalid tag in `iter_print!`: `", std::stringify!($tag), "`"));
@@ -154,10 +164,10 @@ mod tests {
             buf, 1, 2, @sep '.', 3, 4; 5, 6, @sep ' ', @iter 7..=10;
             @tuple (1, 2, 3);
             @flush,
-            4, @fmt "{}?{}" => {5, 6.7},
+            4, @fmt "{}?{}" => {5, 6.7}, @iterns 8..=10,
             @flush,
         );
-        let expected = "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7\n";
+        let expected = "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7 8910\n";
         assert_eq!(expected, String::from_utf8_lossy(&buf));
     }
 }
