@@ -16,11 +16,7 @@ pub fn two_sat(reader: impl Read, mut writer: impl Write) {
     );
     let mut two_sat = TwoSatisfiability::new(n);
     for (a, b, _) in ab.take(m) {
-        let u = (a.abs() as usize - 1) * 2;
-        let v = (b.abs() as usize - 1) * 2;
-        let na = (a < 0) as usize;
-        let nb = (b < 0) as usize;
-        two_sat.add_inner(u ^ na ^ 1, v ^ nb);
+        two_sat.add_clause(a.abs() as usize - 1, a >= 0, b.abs() as usize - 1, b >= 0);
     }
     if let Some(v) = two_sat.two_satisfiability() {
         writeln!(writer, "s SATISFIABLE").ok();

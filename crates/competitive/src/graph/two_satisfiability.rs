@@ -13,21 +13,22 @@ impl TwoSatisfiability {
             edges: Vec::new(),
         }
     }
-    pub fn add_inner(&mut self, u: usize, v: usize) {
-        self.edges.push((u, v));
-        self.edges.push((v ^ 1, u ^ 1));
+    /// (p_x = f) | (p_y = g)
+    pub fn add_clause(&mut self, x: usize, f: bool, y: usize, g: bool) {
+        self.edges.push((2 * x + f as usize, 2 * y + !g as usize));
+        self.edges.push((2 * y + g as usize, 2 * x + !f as usize));
     }
     pub fn add_or(&mut self, x: usize, y: usize) {
-        self.add_inner(x * 2 + 1, y * 2);
+        self.add_clause(x, true, y, true);
     }
     pub fn add_nand(&mut self, x: usize, y: usize) {
-        self.add_inner(x * 2, y * 2 + 1);
+        self.add_clause(x, false, y, false);
     }
     pub fn set_true(&mut self, x: usize) {
-        self.add_inner(x * 2 + 1, x * 2);
+        self.edges.push((2 * x + 1, 2 * x));
     }
     pub fn set_false(&mut self, x: usize) {
-        self.add_inner(x * 2, x * 2 + 1);
+        self.edges.push((2 * x, 2 * x + 1));
     }
     pub fn two_satisfiability(self) -> Option<Vec<bool>> {
         let graph = DirectedSparseGraph::from_edges(self.vsize * 2, self.edges);
