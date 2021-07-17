@@ -11,6 +11,8 @@ pub use self::slice::GetDistinctMut;
 #[codesnip::entry("TotalOrd")]
 pub use self::totalord::TotalOrd;
 
+#[cfg_attr(nightly, codesnip::entry)]
+mod assign_ops;
 #[cfg_attr(nightly, codesnip::entry("AssociatedValue"))]
 mod associated_value;
 #[cfg_attr(nightly, codesnip::entry)]
