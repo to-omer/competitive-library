@@ -9,12 +9,11 @@ impl<D> SparseGraph<D> {
         M::T: Ord,
         F: Fn(usize) -> M::T,
     {
-        use std::cmp::Reverse;
         let mut cost = vec![None; self.vertices_size()];
         let mut heap = std::collections::BinaryHeap::new();
         cost[start] = Some(M::unit());
-        heap.push((Reverse(M::unit()), start));
-        while let Some((Reverse(d), u)) = heap.pop() {
+        heap.push((std::cmp::Reverse(M::unit()), start));
+        while let Some((std::cmp::Reverse(d), u)) = heap.pop() {
             if cost[u].as_ref().unwrap() < &d {
                 continue;
             }
@@ -22,7 +21,7 @@ impl<D> SparseGraph<D> {
                 let nd = M::operate(&d, &weight(a.id));
                 if cost[a.to].as_ref().map_or(true, |c| c > &nd) {
                     cost[a.to] = Some(nd.clone());
-                    heap.push((Reverse(nd), a.to));
+                    heap.push((std::cmp::Reverse(nd), a.to));
                 }
             }
         }
