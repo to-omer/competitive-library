@@ -1,7 +1,4 @@
-//! binary / ternary search
-
 /// binary search helper
-#[codesnip::entry("binary_search")]
 pub trait Bisect: Clone {
     /// return between two elements
     fn halve(&self, other: &Self) -> Self;
@@ -9,68 +6,64 @@ pub trait Bisect: Clone {
     fn section_end(&self, other: &Self) -> bool;
 }
 
-#[codesnip::entry("binary_search")]
-mod bisect_impl {
-    use super::*;
-    macro_rules! impl_bisect_unsigned {
-        ($($t:ty)*) => {
-            $(impl Bisect for $t {
-                fn halve(&self, other: &Self) -> Self {
-                    if self > other {
-                        other + (self - other) / 2
-                    } else {
-                        self + (other - self) / 2
-                    }
+macro_rules! impl_bisect_unsigned {
+    ($($t:ty)*) => {
+        $(impl Bisect for $t {
+            fn halve(&self, other: &Self) -> Self {
+                if self > other {
+                    other + (self - other) / 2
+                } else {
+                    self + (other - self) / 2
                 }
-                fn section_end(&self, other: &Self) -> bool {
-                    (if self > other {
-                        self - other
-                    } else {
-                        other - self
-                    }) <= 1
-                }
-            })*
-        };
-    }
-    macro_rules! impl_bisect_signed {
-        ($($t:ty)*) => {
-            $(impl Bisect for $t {
-                fn halve(&self, other: &Self) -> Self {
-                    (self + other) / 2
-                }
-                fn section_end(&self, other: &Self) -> bool {
-                    (self - other).abs() <= 1
-                }
-            })*
-        };
-    }
-    macro_rules! impl_bisect_float {
-        ($($t:ty)*) => {
-            $(impl Bisect for $t {
-                fn halve(&self, other: &Self) -> Self {
-                    (self + other) / 2.
-                }
-                fn section_end(&self, other: &Self) -> bool {
-                    const BISECT_SECTION_END_EPS: $t = 1e-8;
-                    (self - other).abs() <= BISECT_SECTION_END_EPS
-                }
-            })*
-        };
-    }
-    impl_bisect_unsigned!(u8 u16 u32 u64 usize);
-    impl_bisect_signed!(i8 i16 i32 i64 isize);
-    impl_bisect_float!(f32 f64);
+            }
+            fn section_end(&self, other: &Self) -> bool {
+                (if self > other {
+                    self - other
+                } else {
+                    other - self
+                }) <= 1
+            }
+        })*
+    };
 }
+macro_rules! impl_bisect_signed {
+    ($($t:ty)*) => {
+        $(impl Bisect for $t {
+            fn halve(&self, other: &Self) -> Self {
+                (self + other) / 2
+            }
+            fn section_end(&self, other: &Self) -> bool {
+                (self - other).abs() <= 1
+            }
+        })*
+    };
+}
+macro_rules! impl_bisect_float {
+    ($($t:ty)*) => {
+        $(impl Bisect for $t {
+            fn halve(&self, other: &Self) -> Self {
+                (self + other) / 2.
+            }
+            fn section_end(&self, other: &Self) -> bool {
+                const BISECT_SECTION_END_EPS: $t = 1e-8;
+                (self - other).abs() <= BISECT_SECTION_END_EPS
+            }
+        })*
+    };
+}
+impl_bisect_unsigned!(u8 u16 u32 u64 u128 usize);
+impl_bisect_signed!(i8 i16 i32 i64 i128 isize);
+impl_bisect_float!(f32 f64);
 
-#[codesnip::entry("binary_search")]
 /// binary search for monotone segment
 ///
 /// if `ok < err` then search [ok, err) where t(`ok`), t, t, .... t, t(`ret`), f,  ... f, f, f, `err`
 ///
 /// if `err < ok` then search (err, ok] where `err`, f, f, f, ... f, t(`ret`), ... t, t, t(`ok`)
-pub fn binary_search<T>(mut f: impl FnMut(&T) -> bool, mut ok: T, mut err: T) -> T
+pub fn binary_search<T, F>(mut f: F, mut ok: T, mut err: T) -> T
 where
     T: Bisect,
+    F: FnMut(&T) -> bool,
 {
     while !ok.section_end(&err) {
         let m = ok.halve(&err);
@@ -83,7 +76,6 @@ where
     ok
 }
 
-#[codesnip::entry("binary_search")]
 /// binary search for slice
 pub trait SliceBisectExt<T> {
     /// Returns the first element that satisfies a predicate.
@@ -97,7 +89,6 @@ pub trait SliceBisectExt<T> {
     /// if not found, returns `0`.
     fn rposition_bisect(&self, f: impl FnMut(&T) -> bool) -> usize;
 }
-#[codesnip::entry("binary_search")]
 impl<T> SliceBisectExt<T> for [T] {
     fn find_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<&T> {
         self.get(self.position_bisect(f))
@@ -185,77 +176,4 @@ mod tests {
         assert_eq!(V.rfind_bisect(|&x| x <= 5), Some(&4));
         assert_eq!(V.rfind_bisect(|&x| x <= 10), Some(&8));
     }
-}
-
-#[codesnip::entry("ternary_search")]
-/// ternary search helper
-pub trait Trisect: Clone {
-    /// Divide into 3 sections
-    fn next_section(&self, other: &Self) -> (Self, Self);
-    /// the end condition of ternary search
-    fn section_end(&self, other: &Self) -> bool;
-}
-#[codesnip::entry("ternary_search")]
-mod trisect_impl {
-    use super::*;
-    macro_rules! impl_trisect_unsigned {
-        ($($t:ty)*) => {
-            $(impl Trisect for $t {
-                fn next_section(&self, other: &Self) -> (Self, Self) {
-                    ((self * 2 + other) / 3, (self + other * 2) / 3)
-                }
-                fn section_end(&self, other: &Self) -> bool {
-                    (if self > other {
-                        self - other
-                    } else {
-                        other - self
-                    }) <= 1
-                }
-            })*
-        };
-    }
-    macro_rules! impl_trisect_signed {
-        ($($t:ty)*) => {
-            $(impl Trisect for $t {
-                fn next_section(&self, other: &Self) -> (Self, Self) {
-                    ((self * 2 + other) / 3, (self + other * 2) / 3)
-                }
-                fn section_end(&self, other: &Self) -> bool {
-                    (self - other).abs() <= 1
-                }
-            })*
-        };
-    }
-    macro_rules! impl_trisect_float {
-        ($($t:ty)*) => {
-            $(impl Trisect for $t {
-                fn next_section(&self, other: &Self) -> (Self, Self) {
-                    ((self * 2. + other) / 3., (self + other * 2.) / 3.)
-                }
-                fn section_end(&self, other: &Self) -> bool {
-                    (self - other).abs() <= 1e-8
-                }
-            })*
-        };
-    }
-    impl_trisect_unsigned!(u8 u16 u32 u64 usize);
-    impl_trisect_signed!(i8 i16 i32 i64 isize);
-    impl_trisect_float!(f32 f64);
-}
-#[codesnip::entry("ternary_search")]
-/// like `(left..right).min_by_key(f)`
-pub fn ternary_search<T, U>(mut f: impl FnMut(&T) -> U, mut left: T, mut right: T) -> T
-where
-    T: Trisect,
-    U: PartialOrd,
-{
-    while !left.section_end(&right) {
-        let (l, r) = left.next_section(&right);
-        if f(&l) > f(&r) {
-            left = l;
-        } else {
-            right = r;
-        }
-    }
-    left
 }
