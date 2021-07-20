@@ -252,16 +252,16 @@ mod tests {
         let mut seg =
             LazySegmentTree::<RangeSumRangeAdd<_>>::from_vec(arr.iter().map(|&a| (a, 1)).collect());
         for _ in 0..Q {
+            rand!(rng, (l, r): (NotEmptySegment(N)));
             if rng.rand(2) == 0 {
                 // Range Add Query
-                rand!(rng, (l,r): (NotEmptySegment(N)), x: (-A..A));
+                rand!(rng, x: (-A..A));
                 seg.update(l, r, x);
                 for a in arr[l..r].iter_mut() {
                     *a += x;
                 }
             } else {
                 // Range Sum Query
-                rand!(rng, (l, r): (NotEmptySegment(N)));
                 let res = arr[l..r].iter().sum();
                 assert_eq!(seg.fold(l, r).0, res);
             }
@@ -271,23 +271,22 @@ mod tests {
         rand!(rng, mut arr: [-A..A; N]);
         let mut seg = LazySegmentTree::<RangeMaxRangeUpdate<_>>::from_vec(arr.clone());
         for _ in 0..Q {
-            let ty = rng.rand(4);
+            rand!(rng, ty: (0..4), (l, r): (NotEmptySegment(N)));
             match ty {
                 0 => {
                     // Range Update Query
-                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    rand!(rng, x: (-A..A));
                     seg.update(l, r, Some(x));
                     arr[l..r].iter_mut().for_each(|a| *a = x);
                 }
                 1 => {
                     // Range Max Query
-                    rand!(rng, (l, r): (NotEmptySegment(N)));
                     let res = arr[l..r].iter().max().cloned().unwrap_or_default();
                     assert_eq!(seg.fold(l, r), res);
                 }
                 2 => {
                     // Binary Search Query
-                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    rand!(rng, x: (-A..A));
                     assert_eq!(
                         seg.position_acc(l, r, |&d| d >= x),
                         arr[l..r]
@@ -302,7 +301,7 @@ mod tests {
                 }
                 _ => {
                     // Binary Search Query
-                    rand!(rng, (l, r): (NotEmptySegment(N)), x: (-A..A));
+                    rand!(rng, x: (-A..A));
                     assert_eq!(
                         seg.rposition_acc(l, r, |&d| d >= x),
                         arr[l..r]
