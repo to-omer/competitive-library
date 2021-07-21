@@ -37,14 +37,16 @@ macro_rules! impl_discrete_steps_integer {
         #[allow(arithmetic_overflow)]
         fn forward(start: Self, delta: $u_source) -> Self {
             if Self::forward_checked(start, delta).is_none() {
-                let _ = Self::MAX + 1;
+                panic!("attempt to add with overflow");
+                // let _ = Self::MAX + 1;
             }
             start.wrapping_add(delta as Self)
         }
         #[allow(arithmetic_overflow)]
         fn backward(start: Self, delta: $u_source) -> Self {
             if Self::backward_checked(start, delta).is_none() {
-                let _ = Self::MIN - 1;
+                panic!("attempt to subtract with overflow");
+                // let _ = Self::MIN - 1;
             }
             start.wrapping_sub(delta as Self)
         }
