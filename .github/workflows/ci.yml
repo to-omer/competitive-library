@@ -21,26 +21,39 @@ jobs:
 
     name: Build (${{ matrix.toolchain }})
     runs-on: ubuntu-18.04
+    env:
+      RUST_BACKTRACE: full
+      RUSTC_WRAPPER: sccache
+      SCCACHE_CACHE_SIZE: 1.5G
+      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Get Date
-      id: get-date
+    - name: Install sccache (ubuntu-latest)
+      env:
+        LINK: https://github.com/mozilla/sccache/releases/download
+        SCCACHE_VERSION: 0.2.15
       run: |
-        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-      shell: bash
+        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
+        mkdir -p $HOME/.local/bin
+        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
+        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Cache
+    - name: Cache cargo and sccache
       uses: actions/cache@v2
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target
-        key: build-${{ runner.os }}-${{ matrix.toolchain }}-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
-        restore-keys: build-${{ runner.os }}-${{ matrix.toolchain }}-
+          /home/runner/.cache/sccache
+        key: cargo-${{ runner.os }}-${{ matrix.toolchain }}
+        restore-keys: cargo-${{ runner.os }}-
+
+    - name: Start sccache server
+      run: sccache --start-server    
 
     - name: Setup `${{ matrix.toolchain }}`
       uses: actions-rs/toolchain@v1
@@ -73,33 +86,50 @@ jobs:
       with:
         command: test
         args: --workspace --no-fail-fast
-      env:
-        RUST_BACKTRACE: full
+
+    - name: Print sccache stats
+      run: sccache --show-stats
+
+    - name: Stop sccache server
+      run: sccache --stop-server || true
 
 
   snippet:
     name: Snippet
     runs-on: ubuntu-18.04
+    env:
+      RUST_BACKTRACE: full
+      RUSTC_WRAPPER: sccache
+      SCCACHE_CACHE_SIZE: 1.5G
+      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Get Date
-      id: get-date
+    - name: Install sccache (ubuntu-latest)
+      env:
+        LINK: https://github.com/mozilla/sccache/releases/download
+        SCCACHE_VERSION: 0.2.15
       run: |
-        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-      shell: bash
+        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
+        mkdir -p $HOME/.local/bin
+        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
+        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Cache
+    - name: Cache cargo and sccache
       uses: actions/cache@v2
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target
-        key: snippet-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
-        restore-keys: snippet-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-
+          /home/runner/.cache/sccache
+        key: cargo-${{ runner.os }}-stable-x86_64-unknown-linux-gnu
+        restore-keys: cargo-${{ runner.os }}-
+
+    - name: Start sccache server
+      run: sccache --start-server    
 
     - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -123,6 +153,12 @@ jobs:
         command: codesnip
         args: --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly verify --verbose
 
+    - name: Print sccache stats
+      run: sccache --show-stats
+
+    - name: Stop sccache server
+      run: sccache --stop-server || true
+
 
   verify:
     strategy:
@@ -132,26 +168,39 @@ jobs:
 
     name: Verify
     runs-on: ubuntu-18.04
+    env:
+      RUST_BACKTRACE: full
+      RUSTC_WRAPPER: sccache
+      SCCACHE_CACHE_SIZE: 1.5G
+      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Get Date
-      id: get-date
+    - name: Install sccache (ubuntu-latest)
+      env:
+        LINK: https://github.com/mozilla/sccache/releases/download
+        SCCACHE_VERSION: 0.2.15
       run: |
-        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-      shell: bash
+        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
+        mkdir -p $HOME/.local/bin
+        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
+        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Cache
+    - name: Cache cargo and sccache
       uses: actions/cache@v2
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target
-        key: verify-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
-        restore-keys: verify-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu-
+          /home/runner/.cache/sccache
+        key: cargo-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu
+        restore-keys: cargo-${{ runner.os }}-
+
+    - name: Start sccache server
+      run: sccache --start-server    
 
     - name: Setup Python
       uses: actions/setup-python@v2
@@ -171,7 +220,6 @@ jobs:
     - name: Verify
       env:
         RUST_MIN_STACK: 268435456
-        RUST_BACKTRACE: full
         RUST_LOG: verify=info
       run: |
         ulimit -s unlimited
@@ -184,6 +232,12 @@ jobs:
         name: artifact
         path: artifact/**/*
 
+    - name: Print sccache stats
+      run: sccache --show-stats
+
+    - name: Stop sccache server
+      run: sccache --stop-server || true
+
 
   benchmark:
     strategy:
@@ -191,26 +245,39 @@ jobs:
 
     name: Benchmark
     runs-on: ubuntu-18.04
+    env:
+      RUST_BACKTRACE: full
+      RUSTC_WRAPPER: sccache
+      SCCACHE_CACHE_SIZE: 1.5G
+      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Get Date
-      id: get-date
+    - name: Install sccache (ubuntu-latest)
+      env:
+        LINK: https://github.com/mozilla/sccache/releases/download
+        SCCACHE_VERSION: 0.2.15
       run: |
-        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-      shell: bash
+        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
+        mkdir -p $HOME/.local/bin
+        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
+        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Cache
+    - name: Cache cargo and sccache
       uses: actions/cache@v2
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target
-        key: benchmark-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
-        restore-keys: benchmark-${{ runner.os }}-stable-x86_64-unknown-linux-gnu-
+          /home/runner/.cache/sccache
+        key: cargo-${{ runner.os }}-stable-x86_64-unknown-linux-gnu
+        restore-keys: cargo-${{ runner.os }}-
+
+    - name: Start sccache server
+      run: sccache --start-server    
 
     - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -226,7 +293,6 @@ jobs:
     - name: Benchmark
       env:
         CRITERION_HOME: ./../../target/doc/benchmarks
-        RUST_BACKTRACE: full
       run: |
         rm -rf target/doc/benchmarks
         ulimit -s unlimited
@@ -239,6 +305,12 @@ jobs:
         name: benchmarks
         path: target/doc/benchmarks/**/*
 
+    - name: Print sccache stats
+      run: sccache --show-stats
+
+    - name: Stop sccache server
+      run: sccache --stop-server || true
+
 
   generate-doc:
     needs: [verify, benchmark]
@@ -246,26 +318,39 @@ jobs:
 
     name: Generate Doc
     runs-on: ubuntu-18.04
+    env:
+      RUST_BACKTRACE: full
+      RUSTC_WRAPPER: sccache
+      SCCACHE_CACHE_SIZE: 1.5G
+      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Get Date
-      id: get-date
+    - name: Install sccache (ubuntu-latest)
+      env:
+        LINK: https://github.com/mozilla/sccache/releases/download
+        SCCACHE_VERSION: 0.2.15
       run: |
-        echo "::set-output name=date::$(/bin/date -u "+%Y%m%d")"
-      shell: bash
+        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
+        mkdir -p $HOME/.local/bin
+        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
+        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Cache
+    - name: Cache cargo and sccache
       uses: actions/cache@v2
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target
-        key: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-${{ steps.get-date.outputs.date }}-${{ hashFiles('Cargo.lock') }}
-        restore-keys: doc-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu-
+          /home/runner/.cache/sccache
+        key: cargo-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu
+        restore-keys: cargo-${{ runner.os }}-
+
+    - name: Start sccache server
+      run: sccache --start-server    
 
     - name: Setup `nightly-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -303,3 +388,9 @@ jobs:
       with:
         personal_token: ${{ secrets.GH_PAT }}
         publish_dir: ./target/doc
+
+    - name: Print sccache stats
+      run: sccache --show-stats
+
+    - name: Stop sccache server
+      run: sccache --stop-server || true
