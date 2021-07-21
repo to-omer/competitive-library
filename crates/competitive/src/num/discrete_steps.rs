@@ -132,11 +132,11 @@ impl_discrete_steps_integer!(u16 i16; u8 i8, u16 i16, usize isize; u32 i32, u64 
 impl_discrete_steps_integer!(u32 i32; u8 i8, u16 i16, u32 i32, usize isize; u64 i64, u128 i128);
 impl_discrete_steps_integer!(u64 i64; u8 i8, u16 i16, u32 i32, u64 i64, usize isize; u128 i128);
 impl_discrete_steps_integer!(u128 i128; u8 i8, u16 i16, u32 i32, u64 i64, u128 i128, usize isize;);
-#[cfg(target_pointer_width = "16")]
-impl_discrete_steps_integer!(usize isize; u8 i8, u16 i16, usize isize; u32 i32, u64 i64, u128 i128);
-#[cfg(target_pointer_width = "32")]
-impl_discrete_steps_integer!(usize isize; u8 i8, u16 i16, u32 i32, usize isize; u64 i64, u128 i128);
-#[cfg(target_pointer_width = "64")]
+// #[cfg(target_pointer_width = "16")]
+// impl_discrete_steps_integer!(usize isize; u8 i8, u16 i16, usize isize; u32 i32, u64 i64, u128 i128);
+// #[cfg(target_pointer_width = "32")]
+// impl_discrete_steps_integer!(usize isize; u8 i8, u16 i16, u32 i32, usize isize; u64 i64, u128 i128);
+// #[cfg(target_pointer_width = "64")]
 impl_discrete_steps_integer!(usize isize; u8 i8, u16 i16, u32 i32, u64 i64, usize isize; u128 i128);
 
 pub trait RangeBoundsExt<T> {
