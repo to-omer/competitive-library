@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["sqrt_of_formal_power_series","✅  AC  897ms"]]});
+initSidebarItems({"fn":[["sqrt_of_formal_power_series","✅  AC  1005ms"]]});
