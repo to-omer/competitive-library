@@ -44,7 +44,7 @@ where
         debug_assert!(k < self.n);
         let mut k = k + self.n;
         let t = self.seg.entry(k).or_insert(M::unit());
-        *t = M::operate(&t, &x);
+        *t = M::operate(t, &x);
         k /= 2;
         while k > 0 {
             *self.seg.entry(k).or_insert(M::unit()) =
@@ -83,7 +83,7 @@ where
     {
         while pos < self.n {
             pos <<= 1;
-            let nacc = M::operate(&acc, &self.get_ref(pos));
+            let nacc = M::operate(&acc, self.get_ref(pos));
             if !f(&nacc) {
                 acc = nacc;
                 pos += 1;
@@ -97,7 +97,7 @@ where
     {
         while pos < self.n {
             pos = pos * 2 + 1;
-            let nacc = M::operate(&self.get_ref(pos), &acc);
+            let nacc = M::operate(self.get_ref(pos), &acc);
             if !f(&nacc) {
                 acc = nacc;
                 pos -= 1;
@@ -116,7 +116,7 @@ where
         let mut acc = M::unit();
         while l < r >> k {
             if l & 1 != 0 {
-                let nacc = M::operate(&acc, &self.get_ref(l));
+                let nacc = M::operate(&acc, self.get_ref(l));
                 if f(&nacc) {
                     return Some(self.bisect_perfect(l, acc, f).0);
                 }
@@ -129,7 +129,7 @@ where
         for k in (0..k).rev() {
             let r = r >> k;
             if r & 1 != 0 {
-                let nacc = M::operate(&acc, &self.get_ref(r - 1));
+                let nacc = M::operate(&acc, self.get_ref(r - 1));
                 if f(&nacc) {
                     return Some(self.bisect_perfect(r - 1, acc, f).0);
                 }
@@ -156,7 +156,7 @@ where
             }
             if r & 1 != 0 {
                 r -= 1;
-                let nacc = M::operate(&self.get_ref(r), &acc);
+                let nacc = M::operate(self.get_ref(r), &acc);
                 if f(&nacc) {
                     return Some(self.rbisect_perfect(r, acc, f).0);
                 }
@@ -169,7 +169,7 @@ where
             if c & 1 != 0 {
                 l -= 1 << k;
                 let l = l >> k;
-                let nacc = M::operate(&self.get_ref(l), &acc);
+                let nacc = M::operate(self.get_ref(l), &acc);
                 if f(&nacc) {
                     return Some(self.rbisect_perfect(l, acc, f).0);
                 }

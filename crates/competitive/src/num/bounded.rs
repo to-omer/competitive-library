@@ -40,12 +40,16 @@ macro_rules! bounded_tuple_impls {
         bounded_tuple_impls!(@impl $($T)*);
         bounded_tuple_impls!(@inner $($T)* $U, $($Rest)*);
     };
-    ($($T:ident)*) => {
-        bounded_tuple_impls!(@inner , $($T)*);
+    ($T:ident $($Rest:ident)*) => {
+        bounded_tuple_impls!(@inner $T, $($Rest)*);
     };
 }
 bounded_tuple_impls!(A B C D E F G H I J);
 
+impl Bounded for () {
+    fn maximum() -> Self {}
+    fn minimum() -> Self {}
+}
 impl Bounded for bool {
     fn maximum() -> Self {
         true

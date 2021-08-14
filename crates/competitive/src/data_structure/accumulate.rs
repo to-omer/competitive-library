@@ -91,7 +91,7 @@ mod tests {
             let mut d = M::unit();
             for (r, v) in v.iter().enumerate().skip(l) {
                 assert_eq!(acc.fold(l, r), d);
-                M::operate_assign(&mut d, &v);
+                M::operate_assign(&mut d, v);
             }
             assert_eq!(acc.fold(l, N), d);
         }

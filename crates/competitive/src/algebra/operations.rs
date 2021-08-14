@@ -428,7 +428,7 @@ mod bitxor_operation_impl {
 
 #[codesnip::entry("TupleOperation", include("algebra"))]
 mod tuple_operation_impl {
-    #![allow(unused_variables)]
+    #![allow(unused_variables, clippy::unused_unit)]
     use super::*;
     macro_rules! impl_tuple_operation {
         (@impl $($T:ident)*, $($i:tt)*) => {
@@ -526,7 +526,7 @@ mod reverse_operation_impl {
         type T = M::T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            M::operate(&y, &x)
+            M::operate(y, x)
         }
     }
     impl<M: Unital> Unital for ReverseOperation<M> {
@@ -540,7 +540,7 @@ mod reverse_operation_impl {
     impl<M: Invertible> Invertible for ReverseOperation<M> {
         #[inline]
         fn inverse(x: &Self::T) -> Self::T {
-            M::inverse(&x)
+            M::inverse(x)
         }
     }
     impl<M: Idempotent> Idempotent for ReverseOperation<M> {}

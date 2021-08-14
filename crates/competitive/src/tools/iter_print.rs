@@ -60,8 +60,6 @@ iter_print_tuple_impl!(A a B b C c D d E e F f G g H h I i J j K k);
 /// - `@tuple $expr`: print tuple (need to import [`IterPrint`], each elements impls `Display`)
 /// - `$expr`: print expr
 /// - `;`: println
-///
-/// [`IterPrint`]: IterPrint
 #[macro_export]
 macro_rules! iter_print {
     (@@fmt $writer:expr, $sep:expr, $is_head:expr, $lit:literal, $($e:expr),*) => {

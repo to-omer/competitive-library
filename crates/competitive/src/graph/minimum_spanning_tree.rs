@@ -71,7 +71,7 @@ impl EdgeListGraph {
                 let (w, eid) = {
                     let (heap, lazy) = &mut uf.find_root_mut(cur).data;
                     match heap.pop() {
-                        Some((Reverse(w), eid)) => (G::operate(&w, &lazy), eid),
+                        Some((Reverse(w), eid)) => (G::operate(&w, lazy), eid),
                         None => return None,
                     }
                 };

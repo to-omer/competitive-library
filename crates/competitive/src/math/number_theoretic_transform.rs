@@ -199,8 +199,8 @@ where
 {
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
-    let c1 = NumberTheoreticTransform::<M1>::convolve_ref(&a, &b);
-    let c2 = NumberTheoreticTransform::<M2>::convolve_ref(&a, &b);
+    let c1 = NumberTheoreticTransform::<M1>::convolve_ref(a, b);
+    let c2 = NumberTheoreticTransform::<M2>::convolve_ref(a, b);
     let p1: u64 = M1::mod_into();
     let p1_inv = MInt::<M2>::new(M1::get_mod()).inv();
     c1.into_iter()

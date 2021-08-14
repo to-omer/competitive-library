@@ -18,7 +18,7 @@ impl<T: PartialOrd> PartialOrd for TotalOrd<T> {
 }
 impl<T: PartialOrd> Ord for TotalOrd<T> {
     fn cmp(&self, other: &TotalOrd<T>) -> std::cmp::Ordering {
-        self.partial_cmp(&other).unwrap()
+        self.partial_cmp(other).unwrap()
     }
 }
 pub trait AsTotalOrd {

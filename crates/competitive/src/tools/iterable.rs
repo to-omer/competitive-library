@@ -25,7 +25,7 @@ macro_rules! comprehension {
         comprehension![$it.filter_map(|$p| if $b { Some($e) } else { None }); @$type]
     };
     ($it:expr; @$type:ty; $p:pat => $e:expr, $b1:expr, $b2:expr) => {
-        comprehension![$it; @$type; $p => $e, $b1 & $b2];
+        comprehension![$it; @$type; $p => $e, $b1 & $b2]
     };
     ($it:expr; @$type:ty; $p:pat => $e:expr, $b1:expr, $b2:expr, $($t:tt)*) => {
         comprehension![$it; @$type; $p => $e, $b1 & $b2, $($t)*]

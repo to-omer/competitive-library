@@ -67,7 +67,7 @@ pub mod fast_fourier_transform_impls {
 
         RotateCache::ensure(n / 2);
         RotateCache::with(|cache| {
-            fft(&mut c, &cache);
+            fft(&mut c, cache);
 
             c[0] = Complex::new(0., c[0].re * c[0].im);
             c[1] = Complex::new(0., c[1].re * c[1].im);
@@ -86,7 +86,7 @@ pub mod fast_fourier_transform_impls {
                 c[i] = c[i * 2] - (c[i * 2] - c[i * 2 + 1]) * wi / 2.;
             }
 
-            ifft(&mut c[..n / 2], &cache);
+            ifft(&mut c[..n / 2], cache);
         });
 
         (0..m)

@@ -61,10 +61,9 @@ impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeFrom<T> {
 }
 impl<T: NotEmptyStep64> RandomSpec<T> for RangeInclusive<T> {
     fn rand(&self, rng: &mut Xorshift) -> T {
-        let count =
-            <T as NotEmptyStep64>::steps_between(&self.start(), &self.end()).wrapping_add(1);
+        let count = <T as NotEmptyStep64>::steps_between(self.start(), self.end()).wrapping_add(1);
         let count = randint_uniform(rng, count);
-        <T as NotEmptyStep64>::forward_unchecked(&self.start(), count)
+        <T as NotEmptyStep64>::forward_unchecked(self.start(), count)
     }
 }
 impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeTo<T> {
