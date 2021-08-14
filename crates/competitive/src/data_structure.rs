@@ -1,6 +1,8 @@
 //! data structures
 
 use crate::algebra::{AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup, Unital};
+use crate::algorithm::SliceBisectExt;
+use crate::tools::GetDistinctMut;
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::Accumulate;
@@ -32,6 +34,8 @@ pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 pub use self::range_map::{RangeMap, RangeSet};
 #[codesnip::entry("SegmentTree")]
 pub use self::segment_tree::SegmentTree;
+#[codesnip::entry("SegmentTree2D")]
+pub use self::segment_tree_2d::SegmentTree2D;
 #[codesnip::entry("SegmentTreeMap")]
 pub use self::segment_tree_map::SegmentTreeMap;
 #[codesnip::entry("sliding_winsow_aggregation")]
@@ -78,6 +82,14 @@ mod range_ap_add;
 mod range_map;
 #[cfg_attr(nightly, codesnip::entry("SegmentTree", include("algebra")))]
 mod segment_tree;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "SegmentTree2D",
+        include("binary_search", "GetDistinctMut", "SegmentTree")
+    )
+)]
+mod segment_tree_2d;
 #[cfg_attr(nightly, codesnip::entry("SegmentTreeMap", include("algebra")))]
 mod segment_tree_map;
 #[cfg_attr(
