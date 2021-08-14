@@ -148,6 +148,10 @@
 <span id="117">117</span>
 <span id="118">118</span>
 <span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
 </pre><pre class="rust">
 <span class="doccomment">/// Trait for max/min bounds</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Bounded</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">PartialOrd</span> {
@@ -191,12 +195,16 @@
         <span class="macro">bounded_tuple_impls!</span>(@<span class="kw">impl</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>);
         <span class="macro">bounded_tuple_impls!</span>(@<span class="ident">inner</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="op">*</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">U</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">Rest</span>)<span class="kw-2">*</span>);
     };
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
-        <span class="macro">bounded_tuple_impls!</span>(@<span class="ident">inner</span> , $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>);
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">Rest</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+        <span class="macro">bounded_tuple_impls!</span>(@<span class="ident">inner</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">Rest</span>)<span class="kw-2">*</span>);
     };
 }
 <span class="macro">bounded_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span> <span class="ident">G</span> <span class="ident">H</span> <span class="ident">I</span> <span class="ident">J</span>);
 
+<span class="kw">impl</span> <span class="ident">Bounded</span> <span class="kw">for</span> () {
+    <span class="kw">fn</span> <span class="ident">maximum</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {}
+    <span class="kw">fn</span> <span class="ident">minimum</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {}
+}
 <span class="kw">impl</span> <span class="ident">Bounded</span> <span class="kw">for</span> <span class="ident">bool</span> {
     <span class="kw">fn</span> <span class="ident">maximum</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="bool-val">true</span>
