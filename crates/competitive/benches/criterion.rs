@@ -1,10 +1,8 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use std::time::Duration;
 
-mod fft;
 mod gcd;
 mod mint;
-mod ntt;
 mod special_modulo;
 
 criterion_group!(
@@ -19,6 +17,4 @@ criterion_group!(
         special_modulo::bench_special_modulo,
 );
 
-criterion_group!(benches, fft::bench_convolve, ntt::bench_convolve,);
-
-criterion_main!(small_benches, benches);
+criterion_main!(small_benches);
