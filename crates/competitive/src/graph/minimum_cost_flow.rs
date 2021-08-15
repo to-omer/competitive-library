@@ -6,6 +6,7 @@ pub struct PrimalDualBuilder {
     edges: Vec<(usize, usize)>,
     capacities: Vec<u64>,
     costs: Vec<i64>,
+    has_negedge: bool,
 }
 impl PrimalDualBuilder {
     pub fn new(vsize: usize, esize_expect: usize) -> Self {
@@ -14,16 +15,14 @@ impl PrimalDualBuilder {
             edges: Vec::with_capacity(esize_expect),
             capacities: Vec::with_capacity(esize_expect * 2),
             costs: Vec::with_capacity(esize_expect * 2),
+            has_negedge: false,
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize, cap: u64, cost: i64) {
         self.edges.push((from, to));
         self.capacities.push(cap);
         self.capacities.push(0);
-        debug_assert!(
-            cost >= 0,
-            "To use negative edge, comment out the early break of PrimalDual::dijkstra."
-        );
+        self.has_negedge |= cost < 0;
         self.costs.push(cost);
         self.costs.push(-cost);
     }
@@ -36,6 +35,7 @@ impl PrimalDualBuilder {
             vsize,
             capacities,
             costs,
+            has_negedge,
             ..
         } = self;
         PrimalDual {
@@ -46,6 +46,7 @@ impl PrimalDualBuilder {
             dist: Vec::with_capacity(vsize),
             prev_vertex: std::iter::repeat(0).take(vsize).collect(),
             prev_edge: std::iter::repeat(0).take(vsize).collect(),
+            has_negedge,
         }
     }
 }
@@ -66,10 +67,32 @@ pub struct PrimalDual<'a> {
     dist: Vec<i64>,
     prev_vertex: Vec<usize>,
     prev_edge: Vec<usize>,
+    has_negedge: bool,
 }
 impl<'a> PrimalDual<'a> {
     pub fn builder(vsize: usize, esize_expect: usize) -> PrimalDualBuilder {
         PrimalDualBuilder::new(vsize, esize_expect)
+    }
+    fn bellman_ford(&mut self, s: usize) {
+        self.potential.clear();
+        self.potential
+            .resize(self.graph.vertices_size(), std::i64::MAX);
+        self.potential[s] = 0;
+        for _ in 1..self.graph.vertices_size() {
+            let mut end = true;
+            for u in self.graph.vertices() {
+                for a in self.graph.adjacencies(u) {
+                    let ncost = self.potential[u].saturating_add(self.costs[a.id]);
+                    if self.capacities[a.id] > 0 && self.potential[a.to] > ncost {
+                        self.potential[a.to] = ncost;
+                        end = false;
+                    }
+                }
+            }
+            if end {
+                break;
+            }
+        }
     }
     fn dijkstra(&mut self, s: usize, t: usize) -> bool {
         use std::{cmp::Reverse, collections::BinaryHeap};
@@ -79,11 +102,11 @@ impl<'a> PrimalDual<'a> {
         let mut heap = BinaryHeap::new();
         heap.push((Reverse(0), s));
         while let Some((Reverse(d), u)) = heap.pop() {
-            if self.dist[u] + self.potential[u] < d {
+            if self.dist[u] < d {
                 continue;
             }
-            if u == t {
-                break; // early break
+            if !self.has_negedge && u == t {
+                break;
             }
             for a in self.graph.adjacencies(u) {
                 let ncost = (self.dist[u].saturating_add(self.costs[a.id]))
@@ -92,7 +115,7 @@ impl<'a> PrimalDual<'a> {
                     self.dist[a.to] = ncost;
                     self.prev_vertex[a.to] = u;
                     self.prev_edge[a.to] = a.id;
-                    heap.push((Reverse(d + self.costs[a.id]), a.to));
+                    heap.push((Reverse(ncost), a.to));
                 }
             }
         }
@@ -102,6 +125,9 @@ impl<'a> PrimalDual<'a> {
     pub fn minimum_cost_flow_limited(&mut self, s: usize, t: usize, limit: u64) -> (u64, i64) {
         let mut flow = 0;
         let mut cost = 0;
+        if self.has_negedge {
+            self.bellman_ford(s);
+        }
         while flow < limit && self.dijkstra(s, t) {
             for (p, d) in self.potential.iter_mut().zip(self.dist.iter()) {
                 *p = p.saturating_add(*d);
