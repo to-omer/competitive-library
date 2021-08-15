@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates&#x2F;competitive&#x2F;src&#x2F;graph&#x2F;minimum_cost_flow.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>minimum_cost_flow.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates&#x2F;competitive&#x2F;src&#x2F;graph&#x2F;minimum_cost_flow.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>minimum_cost_flow.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -162,6 +162,32 @@
 <span id="131">131</span>
 <span id="132">132</span>
 <span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::BidirectionalSparseGraph</span>;
 
@@ -171,6 +197,7 @@
     <span class="ident">edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>,
     <span class="ident">capacities</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
     <span class="ident">costs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>,
+    <span class="ident">has_negedge</span>: <span class="ident">bool</span>,
 }
 <span class="kw">impl</span> <span class="ident">PrimalDualBuilder</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>, <span class="ident">esize_expect</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
@@ -179,16 +206,14 @@
             <span class="ident">edges</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">esize_expect</span>),
             <span class="ident">capacities</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">esize_expect</span> <span class="op">*</span> <span class="number">2</span>),
             <span class="ident">costs</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">esize_expect</span> <span class="op">*</span> <span class="number">2</span>),
+            <span class="ident">has_negedge</span>: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_edge</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">from</span>: <span class="ident">usize</span>, <span class="ident">to</span>: <span class="ident">usize</span>, <span class="ident">cap</span>: <span class="ident">u64</span>, <span class="ident">cost</span>: <span class="ident">i64</span>) {
         <span class="self">self</span>.<span class="ident">edges</span>.<span class="ident">push</span>((<span class="ident">from</span>, <span class="ident">to</span>));
         <span class="self">self</span>.<span class="ident">capacities</span>.<span class="ident">push</span>(<span class="ident">cap</span>);
         <span class="self">self</span>.<span class="ident">capacities</span>.<span class="ident">push</span>(<span class="number">0</span>);
-        <span class="macro">debug_assert!</span>(
-            <span class="ident">cost</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span>,
-            <span class="string">&quot;To use negative edge, comment out the early break of PrimalDual::dijkstra.&quot;</span>
-        );
+        <span class="self">self</span>.<span class="ident">has_negedge</span> <span class="op">|</span><span class="op">=</span> <span class="ident">cost</span> <span class="op">&lt;</span> <span class="number">0</span>;
         <span class="self">self</span>.<span class="ident">costs</span>.<span class="ident">push</span>(<span class="ident">cost</span>);
         <span class="self">self</span>.<span class="ident">costs</span>.<span class="ident">push</span>(<span class="op">-</span><span class="ident">cost</span>);
     }
@@ -201,6 +226,7 @@
             <span class="ident">vsize</span>,
             <span class="ident">capacities</span>,
             <span class="ident">costs</span>,
+            <span class="ident">has_negedge</span>,
             ..
         } <span class="op">=</span> <span class="self">self</span>;
         <span class="ident">PrimalDual</span> {
@@ -211,6 +237,7 @@
             <span class="ident">dist</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">vsize</span>),
             <span class="ident">prev_vertex</span>: <span class="ident">std::iter::repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">vsize</span>).<span class="ident">collect</span>(),
             <span class="ident">prev_edge</span>: <span class="ident">std::iter::repeat</span>(<span class="number">0</span>).<span class="ident">take</span>(<span class="ident">vsize</span>).<span class="ident">collect</span>(),
+            <span class="ident">has_negedge</span>,
         }
     }
 }
@@ -231,10 +258,32 @@
     <span class="ident">dist</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>,
     <span class="ident">prev_vertex</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
     <span class="ident">prev_edge</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="ident">has_negedge</span>: <span class="ident">bool</span>,
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PrimalDual</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builder</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>, <span class="ident">esize_expect</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">PrimalDualBuilder</span> {
         <span class="ident">PrimalDualBuilder::new</span>(<span class="ident">vsize</span>, <span class="ident">esize_expect</span>)
+    }
+    <span class="kw">fn</span> <span class="ident">bellman_ford</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>) {
+        <span class="self">self</span>.<span class="ident">potential</span>.<span class="ident">clear</span>();
+        <span class="self">self</span>.<span class="ident">potential</span>
+            .<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>(), <span class="ident">std::i64::MAX</span>);
+        <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">s</span>] <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">1</span>..<span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>() {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">end</span> <span class="op">=</span> <span class="bool-val">true</span>;
+            <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices</span>() {
+                <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
+                    <span class="kw">let</span> <span class="ident">ncost</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">u</span>].<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">costs</span>[<span class="ident">a</span>.<span class="ident">id</span>]);
+                    <span class="kw">if</span> <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">&gt;</span> <span class="ident">ncost</span> {
+                        <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">ncost</span>;
+                        <span class="ident">end</span> <span class="op">=</span> <span class="bool-val">false</span>;
+                    }
+                }
+            }
+            <span class="kw">if</span> <span class="ident">end</span> {
+                <span class="kw">break</span>;
+            }
+        }
     }
     <span class="kw">fn</span> <span class="ident">dijkstra</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cmp::Reverse</span>, <span class="ident">collections::BinaryHeap</span>};
@@ -244,11 +293,11 @@
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">heap</span> <span class="op">=</span> <span class="ident">BinaryHeap::new</span>();
         <span class="ident">heap</span>.<span class="ident">push</span>((<span class="ident">Reverse</span>(<span class="number">0</span>), <span class="ident">s</span>));
         <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">Reverse</span>(<span class="ident">d</span>), <span class="ident">u</span>)) <span class="op">=</span> <span class="ident">heap</span>.<span class="ident">pop</span>() {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">u</span>] <span class="op">+</span> <span class="self">self</span>.<span class="ident">potential</span>[<span class="ident">u</span>] <span class="op">&lt;</span> <span class="ident">d</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">u</span>] <span class="op">&lt;</span> <span class="ident">d</span> {
                 <span class="kw">continue</span>;
             }
-            <span class="kw">if</span> <span class="ident">u</span> <span class="op">=</span><span class="op">=</span> <span class="ident">t</span> {
-                <span class="kw">break</span>; <span class="comment">// early break</span>
+            <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">has_negedge</span> <span class="op">&amp;&amp;</span> <span class="ident">u</span> <span class="op">=</span><span class="op">=</span> <span class="ident">t</span> {
+                <span class="kw">break</span>;
             }
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
                 <span class="kw">let</span> <span class="ident">ncost</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">u</span>].<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">costs</span>[<span class="ident">a</span>.<span class="ident">id</span>]))
@@ -257,7 +306,7 @@
                     <span class="self">self</span>.<span class="ident">dist</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">ncost</span>;
                     <span class="self">self</span>.<span class="ident">prev_vertex</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">u</span>;
                     <span class="self">self</span>.<span class="ident">prev_edge</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">a</span>.<span class="ident">id</span>;
-                    <span class="ident">heap</span>.<span class="ident">push</span>((<span class="ident">Reverse</span>(<span class="ident">d</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">costs</span>[<span class="ident">a</span>.<span class="ident">id</span>]), <span class="ident">a</span>.<span class="ident">to</span>));
+                    <span class="ident">heap</span>.<span class="ident">push</span>((<span class="ident">Reverse</span>(<span class="ident">ncost</span>), <span class="ident">a</span>.<span class="ident">to</span>));
                 }
             }
         }
@@ -267,6 +316,9 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_cost_flow_limited</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>, <span class="ident">limit</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">u64</span>, <span class="ident">i64</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flow</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">has_negedge</span> {
+            <span class="self">self</span>.<span class="ident">bellman_ford</span>(<span class="ident">s</span>);
+        }
         <span class="kw">while</span> <span class="ident">flow</span> <span class="op">&lt;</span> <span class="ident">limit</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">dijkstra</span>(<span class="ident">s</span>, <span class="ident">t</span>) {
             <span class="kw">for</span> (<span class="ident">p</span>, <span class="ident">d</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">potential</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="self">self</span>.<span class="ident">dist</span>.<span class="ident">iter</span>()) {
                 <span class="kw-2">*</span><span class="ident">p</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">saturating_add</span>(<span class="kw-2">*</span><span class="ident">d</span>);
