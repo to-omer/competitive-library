@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["range_affine_range_sum","✅  AC  688ms"]]});
+initSidebarItems({"fn":[["range_affine_range_sum","✅  AC  528ms"]]});
