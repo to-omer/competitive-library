@@ -1,5 +1,7 @@
 #[codesnip::entry("AssociatedValue")]
 pub use self::associated_value::AssociatedValue;
+#[codesnip::entry("char_tools")]
+pub use self::char_tools::CharTools;
 #[codesnip::entry("SimuratedAnnealing")]
 pub use self::heuristics::SimuratedAnnealing;
 #[codesnip::entry("ord_tools")]
@@ -17,6 +19,8 @@ mod assign_ops;
 mod associated_value;
 #[cfg_attr(nightly, codesnip::entry)]
 mod capture;
+#[cfg_attr(nightly, codesnip::entry("char_tools"))]
+mod char_tools;
 #[cfg_attr(nightly, codesnip::entry("SimuratedAnnealing", include("Xorshift")))]
 mod heuristics;
 #[cfg_attr(nightly, codesnip::entry("_iter_print"))]
