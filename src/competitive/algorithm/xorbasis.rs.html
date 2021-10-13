@@ -158,12 +158,12 @@
 }
 <span class="kw">impl</span> <span class="ident">XorBasis</span> {
     <span class="doccomment">/// Create a empty space.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
         <span class="ident">Default::default</span>()
     }
     <span class="doccomment">/// Return (reduced basis, coordinate).</span>
     <span class="doccomment">/// Coordinate means if i-th bit is 1, x was reduced by i-th inserted basis.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reduce</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">x</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">u64</span>, <span class="ident">u64</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reduce</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">x</span>: <span class="ident">u64</span>) -&gt; (<span class="ident">u64</span>, <span class="ident">u64</span>) {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">coord</span> <span class="op">=</span> <span class="number">0u64</span>;
         <span class="kw">for</span> (<span class="ident">i</span>, (<span class="ident">u</span>, <span class="ident">c</span>, <span class="kw">_</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bases</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
             <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span> <span class="ident">u</span> <span class="op">^</span> <span class="ident">x</span> {
@@ -175,7 +175,7 @@
     }
     <span class="doccomment">/// Return true if inserted element cannot be consisted by current basis and be added as a new basis.</span>
     <span class="doccomment">/// Return false if inserted element can be consisted by current basis.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">u64</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">let</span> (<span class="ident">y</span>, <span class="ident">coord</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">reduce</span>(<span class="ident">x</span>);
         <span class="kw">if</span> <span class="ident">y</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
             <span class="self">self</span>.<span class="ident">bases</span>.<span class="ident">push</span>((<span class="ident">y</span>, <span class="ident">coord</span>, <span class="ident">x</span>));
@@ -183,18 +183,18 @@
         <span class="ident">y</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
     }
     <span class="doccomment">/// Return coordinate if element can be consisted by current basis.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">u64</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">y</span>, <span class="ident">coord</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">reduce</span>(<span class="ident">x</span>);
-        <span class="kw">if</span> <span class="ident">y</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">y</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="prelude-val">Some</span>(<span class="ident">coord</span>)
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
         }
     }
     <span class="doccomment">/// Return coordinate if element can be consisted by current basis.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">basis</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">u64</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="ident">y</span>, <span class="ident">coord</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">reduce</span>(<span class="ident">x</span>);
-        <span class="kw">if</span> <span class="ident">y</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">y</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="prelude-val">Some</span>(
                 <span class="self">self</span>.<span class="ident">bases</span>
                     .<span class="ident">iter</span>()
@@ -208,12 +208,12 @@
     }
 }
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">XorBasis</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
         <span class="ident">XorBasis</span> { <span class="ident">bases</span>: <span class="ident">Vec::new</span>() }
     }
 }
 <span class="kw">impl</span> <span class="ident">std::iter::FromIterator</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">XorBasis</span> {
-    <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">basis</span> <span class="op">=</span> <span class="ident">XorBasis::default</span>();
         <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">iter</span> {
             <span class="ident">basis</span>.<span class="ident">insert</span>(<span class="ident">x</span>);
@@ -243,7 +243,7 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">consistables</span>(<span class="ident">b</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">std::collections::HashSet</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">consistables</span>(<span class="ident">b</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>]) -&gt; <span class="ident">std::collections::HashSet</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
         <span class="macro">assert!</span>(<span class="ident">b</span>.<span class="ident">len</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="number">20</span>);
         (<span class="number">0</span>..<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">b</span>.<span class="ident">len</span>())
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> {

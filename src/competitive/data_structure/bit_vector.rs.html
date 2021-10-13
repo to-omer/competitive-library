@@ -253,19 +253,19 @@
 <span class="doccomment">/// rank_i(select_i(k)) = k</span>
 <span class="doccomment">/// rank_i(select_i(k) + 1) = k + 1</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RankSelectDictionaries</span> {
-    <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span>;
+    <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span>;
     <span class="doccomment">/// get k-th bit</span>
-    <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
+    <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span>;
     <span class="doccomment">/// the number of 1 in [0, k)</span>
-    <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
         (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">i</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">access</span>(<span class="ident">i</span>)).<span class="ident">count</span>()
     }
     <span class="doccomment">/// the number of 0 in [0, k)</span>
-    <span class="kw">fn</span> <span class="ident">rank0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">rank0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
         <span class="ident">k</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">rank1</span>(<span class="ident">k</span>)
     }
     <span class="doccomment">/// index of k-th 1</span>
-    <span class="kw">fn</span> <span class="ident">select1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">select1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bit_length</span>();
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rank1</span>(<span class="ident">n</span>) <span class="op">&lt;</span><span class="op">=</span> <span class="ident">k</span> {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -282,7 +282,7 @@
         <span class="prelude-val">Some</span>(<span class="ident">l</span>)
     }
     <span class="doccomment">/// index of k-th 0</span>
-    <span class="kw">fn</span> <span class="ident">select0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">select0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">bit_length</span>();
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rank0</span>(<span class="ident">n</span>) <span class="op">&lt;</span><span class="op">=</span> <span class="ident">k</span> {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -300,13 +300,13 @@
     }
 }
 <span class="macro">macro_rules!</span> <span class="ident">impl_rank_select_for_bits</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {$(
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) =&gt; {$(
         <span class="kw">impl</span> <span class="ident">RankSelectDictionaries</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-            <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+            <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
                 <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> (<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>).<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
                 <span class="ident">WORD_SIZE</span>
             }
-            <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+            <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
                 <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> (<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>).<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
                 <span class="kw">if</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="ident">WORD_SIZE</span> {
                     <span class="self">self</span> <span class="op">&amp;</span> (<span class="number">1</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
@@ -314,7 +314,7 @@
                     <span class="bool-val">false</span>
                 }
             }
-            <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+            <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
                 <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> (<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>).<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
                 <span class="kw">if</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="ident">WORD_SIZE</span> {
                     (<span class="self">self</span> <span class="op">&amp;</span> <span class="op">!</span>(<span class="op">!</span>(<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span>)).<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">usize</span>
@@ -337,17 +337,17 @@
     <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0usize</span>.<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
 }
 <span class="kw">impl</span> <span class="ident">RankSelectDictionaries</span> <span class="kw">for</span> <span class="ident">BitVector</span> {
-    <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>() <span class="op">*</span> <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>
     }
-    <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">k</span> <span class="op">/</span> <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>].<span class="number">0</span> <span class="op">&amp;</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="ident">k</span> <span class="op">%</span> <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>)) <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
     }
-    <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
         <span class="kw">let</span> (<span class="ident">bit</span>, <span class="ident">sum</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">k</span> <span class="op">/</span> <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>];
         <span class="ident">sum</span> <span class="op">+</span> (<span class="ident">bit</span> <span class="op">&amp;</span> <span class="op">!</span>(<span class="ident">std::usize::MAX</span> <span class="op">&lt;</span><span class="op">&lt;</span> (<span class="ident">k</span> <span class="op">%</span> <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>))).<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">usize</span>
     }
-    <span class="kw">fn</span> <span class="ident">select1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">select1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) <span class="op">=</span> (<span class="number">0</span>, <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>());
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">sum</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">k</span> {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -364,7 +364,7 @@
         <span class="ident">k</span> <span class="op">-</span><span class="op">=</span> <span class="ident">sum</span>;
         <span class="prelude-val">Some</span>(<span class="ident">l</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::WORD_SIZE</span> <span class="op">+</span> <span class="ident">bit</span>.<span class="ident">select1</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>())
     }
-    <span class="kw">fn</span> <span class="ident">select0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">select0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) <span class="op">=</span> (<span class="number">0</span>, <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>());
         <span class="kw">if</span> <span class="ident">r</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::WORD_SIZE</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">sum</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">k</span> {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -383,7 +383,7 @@
     }
 }
 <span class="kw">impl</span> <span class="ident">FromIterator</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BitVector</span> {
-    <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">bool</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from_iter</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">bool</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">iter</span>.<span class="ident">into_iter</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> <span class="op">=</span> <span class="number">0</span>;

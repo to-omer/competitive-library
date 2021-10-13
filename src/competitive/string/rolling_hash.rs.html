@@ -141,7 +141,7 @@
     <span class="kw">const</span> <span class="ident">MASK61</span>: <span class="ident">u64</span> <span class="op">=</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">61</span>) <span class="op">-</span> <span class="number">1</span>;
     <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::MASK61</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mersenne_mod</span>(<span class="ident">a</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mersenne_mod</span>(<span class="ident">a</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> (<span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">61</span>) <span class="op">+</span> (<span class="ident">a</span> <span class="op">&amp;</span> <span class="ident"><span class="self">Self</span>::MASK61</span>);
         <span class="kw">if</span> <span class="ident">res</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MASK61</span> {
             <span class="ident">res</span> <span class="op">-</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MASK61</span>;
@@ -149,7 +149,7 @@
         <span class="ident">res</span>
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mersenne_mul</span>(<span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">b</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mersenne_mul</span>(<span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">b</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
         <span class="kw">let</span> <span class="ident">au</span> <span class="op">=</span> <span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">31</span>;
         <span class="kw">let</span> <span class="ident">ad</span> <span class="op">=</span> <span class="ident">a</span> <span class="op">&amp;</span> <span class="ident"><span class="self">Self</span>::MASK31</span>;
         <span class="kw">let</span> <span class="ident">bu</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">31</span>;
@@ -160,10 +160,10 @@
         <span class="ident">au</span> <span class="op">*</span> <span class="ident">bu</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="ident">midu</span> <span class="op">+</span> (<span class="ident">midd</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">31</span>) <span class="op">+</span> <span class="ident">ad</span> <span class="op">*</span> <span class="ident">bd</span>
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mersenne_mul_mod</span>(<span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">b</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mersenne_mul_mod</span>(<span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">b</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
         <span class="ident"><span class="self">Self</span>::mersenne_mod</span>(<span class="ident"><span class="self">Self</span>::mersenne_mul</span>(<span class="ident">a</span>, <span class="ident">b</span>))
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">base</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">base</span>: <span class="ident">u64</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pow</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>; <span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>];
@@ -173,7 +173,7 @@
         }
         <span class="self">Self</span> { <span class="ident">base</span>, <span class="ident">hash</span>, <span class="ident">pow</span> }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hash_once</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hash_once</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>]) -&gt; <span class="ident">u64</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hash</span> <span class="op">=</span> <span class="number">0</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pow</span> <span class="op">=</span> <span class="number">1</span>;
         <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">v</span>.<span class="ident">iter</span>() {
@@ -183,12 +183,12 @@
         <span class="ident">hash</span>
     }
     <span class="doccomment">/// S [l, r)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) -&gt; <span class="ident">u64</span> {
         <span class="ident"><span class="self">Self</span>::mersenne_mod</span>(
             <span class="self">self</span>.<span class="ident">hash</span>[<span class="ident">r</span>] <span class="op">+</span> <span class="ident"><span class="self">Self</span>::MOD</span> <span class="op">-</span> <span class="ident"><span class="self">Self</span>::mersenne_mul_mod</span>(<span class="self">self</span>.<span class="ident">hash</span>[<span class="ident">l</span>], <span class="self">self</span>.<span class="ident">pow</span>[<span class="ident">r</span> <span class="op">-</span> <span class="ident">l</span>]),
         )
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">concat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">h1</span>: <span class="ident">u64</span>, <span class="ident">h2</span>: <span class="ident">u64</span>, <span class="ident">l2</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">concat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">h1</span>: <span class="ident">u64</span>, <span class="ident">h2</span>: <span class="ident">u64</span>, <span class="ident">l2</span>: <span class="ident">usize</span>) -&gt; <span class="ident">u64</span> {
         <span class="ident"><span class="self">Self</span>::mersenne_mod</span>(<span class="ident"><span class="self">Self</span>::mersenne_mul</span>(<span class="ident">h1</span>, <span class="self">self</span>.<span class="ident">pow</span>[<span class="ident">l2</span>]) <span class="op">+</span> <span class="ident">h2</span>)
     }
 }
@@ -198,14 +198,14 @@
     <span class="ident">rh</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">RollingHash</span><span class="op">&gt;</span>,
 }
 <span class="kw">impl</span> <span class="ident">MultipleRollingHash</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">bases</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">bases</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>]) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">rh</span> <span class="op">=</span> <span class="ident">bases</span>
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">base</span><span class="op">|</span> <span class="ident">RollingHash::new</span>(<span class="ident">v</span>, <span class="ident">base</span>))
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
         <span class="self">Self</span> { <span class="ident">rh</span> }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_rand</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_rand</span>(<span class="ident">v</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
         <span class="kw">let</span> <span class="ident">bases</span> <span class="op">=</span> <span class="ident">rng</span>
             .<span class="ident">rands</span>(<span class="ident">RollingHash::MASK61</span> <span class="op">-</span> <span class="number">2</span>, <span class="ident">n</span>)
@@ -214,10 +214,10 @@
             .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
         <span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">v</span>, <span class="kw-2">&amp;</span><span class="ident">bases</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">rh</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">find</span>(<span class="ident">l</span>, <span class="ident">r</span>)).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">concat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">h1</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">h2</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">l2</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">concat</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">h1</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">h2</span>: <span class="kw-2">&amp;</span>[<span class="ident">u64</span>], <span class="ident">l2</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">rh</span>
             .<span class="ident">iter</span>()
             .<span class="ident">zip</span>(<span class="ident">h1</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">h2</span>.<span class="ident">iter</span>()))

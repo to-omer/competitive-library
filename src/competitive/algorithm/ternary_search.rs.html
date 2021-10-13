@@ -132,53 +132,53 @@
 </pre><pre class="rust"><code><span class="doccomment">/// ternary search helper</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Trisect</span>: <span class="ident">Clone</span> {
     <span class="doccomment">/// Divide into 3 sections</span>
-    <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="self">Self</span>);
+    <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>);
     <span class="doccomment">/// the end condition of ternary search</span>
-    <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>;
+    <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span>;
     <span class="doccomment">/// middle point of section</span>
-    <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>;
+    <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span>;
 }
 
 <span class="macro">macro_rules!</span> <span class="ident">impl_trisect_unsigned</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-            <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="self">Self</span>) {
+            <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
                 ((<span class="self">self</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">3</span>, (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span> <span class="op">*</span> <span class="number">2</span>) <span class="op">/</span> <span class="number">3</span>)
             }
-            <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+            <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
                 <span class="kw-2">&amp;</span>(<span class="self">self</span> <span class="op">+</span> <span class="number">2</span>) <span class="op">&gt;</span><span class="op">=</span> <span class="ident">other</span>
             }
-            <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+            <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span> {
                 (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">2</span>
             }
         })<span class="op">*</span>
     };
 }
 <span class="macro">macro_rules!</span> <span class="ident">impl_trisect_signed</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-            <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="self">Self</span>) {
+            <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
                 ((<span class="self">self</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">3</span>, (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span> <span class="op">*</span> <span class="number">2</span>) <span class="op">/</span> <span class="number">3</span>)
             }
-            <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+            <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
                 <span class="kw-2">&amp;</span>(<span class="self">self</span> <span class="op">+</span> <span class="number">2</span>) <span class="op">&gt;</span><span class="op">=</span> <span class="ident">other</span>
             }
-            <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+            <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span> {
                 (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">2</span>
             }
         })<span class="op">*</span>
     };
 }
 <span class="macro">macro_rules!</span> <span class="ident">impl_trisect_float</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) <span class="op">=</span><span class="op">&gt;</span> {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl</span> <span class="ident">Trisect</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-            <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="self">Self</span>, <span class="self">Self</span>) {
+            <span class="kw">fn</span> <span class="ident">next_section</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
                 ((<span class="self">self</span> <span class="op">*</span> <span class="number">2.</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">3.</span>, (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span> <span class="op">*</span> <span class="number">2.</span>) <span class="op">/</span> <span class="number">3.</span>)
             }
-            <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+            <span class="kw">fn</span> <span class="ident">section_end</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
                 <span class="kw-2">&amp;</span>(<span class="self">self</span> <span class="op">+</span>  <span class="number">1e-8</span>) <span class="op">&gt;</span><span class="op">=</span> <span class="ident">other</span>
             }
-            <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+            <span class="kw">fn</span> <span class="ident">middle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span> {
                 (<span class="self">self</span> <span class="op">+</span> <span class="ident">other</span>) <span class="op">/</span> <span class="number">2.</span>
             }
         })<span class="op">*</span>
@@ -191,7 +191,7 @@
 <span class="doccomment">/// like `(left..=right).min_by_key(f)`</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// `f` should be strictly concave up</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ternary_search</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">U</span>, <span class="kw-2">mut</span> <span class="ident">left</span>: <span class="ident">T</span>, <span class="kw-2">mut</span> <span class="ident">right</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">T</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ternary_search</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) -&gt; <span class="ident">U</span>, <span class="kw-2">mut</span> <span class="ident">left</span>: <span class="ident">T</span>, <span class="kw-2">mut</span> <span class="ident">right</span>: <span class="ident">T</span>) -&gt; <span class="ident">T</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Trisect</span>,
     <span class="ident">U</span>: <span class="ident">PartialOrd</span>,

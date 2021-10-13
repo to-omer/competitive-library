@@ -70,7 +70,7 @@
     <span class="kw">pub</span> <span class="ident">ind</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntBase</span><span class="op">&gt;</span> <span class="ident">IndependentSubSet</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_adj_graph</span>(<span class="ident">g</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_adj_graph</span>(<span class="ident">g</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">g</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ind</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">n</span>);
         <span class="ident">ind</span>.<span class="ident">push</span>(<span class="ident">MInt::one</span>());
@@ -80,18 +80,18 @@
         }
         <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">ind</span> }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">k_colorable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">k_colorable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
         <span class="op">!</span><span class="self">self</span>
             .<span class="ident">ind</span>
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="ident">d</span>.<span class="ident">pow</span>(<span class="ident">k</span>))
             .<span class="ident">enumerate</span>()
-            .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">s</span>, <span class="ident">d</span>)<span class="op">|</span> <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">count_ones</span>() <span class="op">%</span> <span class="number">2</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> { <span class="ident">d</span> } <span class="kw">else</span> { <span class="op">-</span><span class="ident">d</span> })
+            .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">s</span>, <span class="ident">d</span>)<span class="op">|</span> <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">count_ones</span>() <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">0</span> { <span class="ident">d</span> } <span class="kw">else</span> { <span class="op">-</span><span class="ident">d</span> })
             .<span class="ident">sum</span>::<span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>()
             .<span class="ident">is_zero</span>()
     }
     <span class="doccomment">/// The smallest number of colors needed to color a graph.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">chromatic_number</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">chromatic_number</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="ident">binary_search</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">k</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">k_colorable</span>(<span class="ident">k</span>), <span class="self">self</span>.<span class="ident">n</span>, <span class="number">0</span>)
     }
 }

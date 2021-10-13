@@ -167,7 +167,7 @@
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;tree_center&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
 <span class="kw">impl</span> <span class="ident">UndirectedSparseGraph</span> {
     <span class="doccomment">/// tree center</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree_center</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TreeCenter</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree_center</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TreeCenter</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vertices_size</span>();
         <span class="macro">assert_ne!</span>(<span class="ident">n</span>, <span class="number">0</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> <span class="op">=</span> <span class="ident">std::collections::VecDeque::with_capacity</span>(<span class="ident">n</span>);
@@ -185,20 +185,20 @@
                 <span class="ident">k</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
                 <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
                     <span class="ident">deg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
-                    <span class="kw">if</span> <span class="ident">deg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+                    <span class="kw">if</span> <span class="ident">deg</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">==</span> <span class="number">1</span> {
                         <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">a</span>.<span class="ident">to</span>);
                         <span class="ident">cnt</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                        <span class="kw">if</span> <span class="ident">cnt</span> <span class="op">=</span><span class="op">=</span> <span class="ident">n</span> {
+                        <span class="kw">if</span> <span class="ident">cnt</span> <span class="op">==</span> <span class="ident">n</span> {
                             <span class="kw">break</span> <span class="lifetime">&#39;outer</span>;
                         }
                     }
                 }
-                <span class="kw">if</span> <span class="ident">k</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+                <span class="kw">if</span> <span class="ident">k</span> <span class="op">==</span> <span class="number">0</span> {
                     <span class="ident">k</span> <span class="op">=</span> <span class="ident">deq</span>.<span class="ident">len</span>();
                 }
             }
         }
-        <span class="kw">if</span> <span class="ident">deq</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="ident">k</span> <span class="op">+</span> <span class="number">1</span> {
+        <span class="kw">if</span> <span class="ident">deq</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">k</span> <span class="op">+</span> <span class="number">1</span> {
             <span class="ident">TreeCenter::One</span>(<span class="kw-2">*</span><span class="ident">deq</span>.<span class="ident">back</span>().<span class="ident">unwrap</span>())
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">deq</span>.<span class="ident">pop_back</span>().<span class="ident">unwrap</span>();
@@ -218,16 +218,16 @@
     <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">graph::UndirectedSparseGraph</span>, <span class="ident">tools::Xorshift</span>, <span class="ident">tree::MixedTree</span>};
 
     <span class="kw">impl</span> <span class="ident">UndirectedSparseGraph</span> {
-        <span class="kw">fn</span> <span class="ident">naive_tree_center</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">TreeCenter</span> {
+        <span class="kw">fn</span> <span class="ident">naive_tree_center</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TreeCenter</span> {
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">md</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>
                 .<span class="ident">vertices</span>()
                 .<span class="ident">map</span>(<span class="op">|</span><span class="ident">u</span><span class="op">|</span> (<span class="self">self</span>.<span class="ident">tree_depth</span>(<span class="ident">u</span>).<span class="ident">into_iter</span>().<span class="ident">max</span>().<span class="ident">unwrap_or_default</span>(), <span class="ident">u</span>))
                 .<span class="ident">collect</span>();
             <span class="ident">md</span>.<span class="ident">sort_unstable</span>();
-            <span class="kw">if</span> <span class="ident">md</span>.<span class="ident">len</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span> {
+            <span class="kw">if</span> <span class="ident">md</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="number">1</span> {
                 <span class="ident">TreeCenter::One</span>(<span class="ident">md</span>[<span class="number">0</span>].<span class="number">1</span>)
             } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">md</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="number">2</span> {
-                <span class="kw">if</span> <span class="ident">md</span>[<span class="number">0</span>].<span class="number">0</span> <span class="op">=</span><span class="op">=</span> <span class="ident">md</span>[<span class="number">1</span>].<span class="number">0</span> {
+                <span class="kw">if</span> <span class="ident">md</span>[<span class="number">0</span>].<span class="number">0</span> <span class="op">==</span> <span class="ident">md</span>[<span class="number">1</span>].<span class="number">0</span> {
                     <span class="ident">TreeCenter::Two</span>(<span class="ident">md</span>[<span class="number">0</span>].<span class="number">1</span>, <span class="ident">md</span>[<span class="number">1</span>].<span class="number">1</span>)
                 } <span class="kw">else</span> {
                     <span class="ident">TreeCenter::One</span>(<span class="ident">md</span>[<span class="number">0</span>].<span class="number">1</span>)

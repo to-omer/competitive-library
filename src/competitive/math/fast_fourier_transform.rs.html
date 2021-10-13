@@ -257,7 +257,7 @@
         }
     }
     <span class="macro">impl_assoc_value!</span>(<span class="ident">RotateCache</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="macro">vec!</span>[<span class="ident">Complex::one</span>()]);
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve_fft</span><span class="op">&lt;</span><span class="ident">IA</span>, <span class="ident">T</span>, <span class="ident">IB</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="ident">a</span>: <span class="ident">IA</span>, <span class="ident">b</span>: <span class="ident">IB</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convolve_fft</span><span class="op">&lt;</span><span class="ident">IA</span>, <span class="ident">T</span>, <span class="ident">IB</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="ident">a</span>: <span class="ident">IA</span>, <span class="ident">b</span>: <span class="ident">IB</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
         <span class="ident">U</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
@@ -308,7 +308,7 @@
 
         (<span class="number">0</span>..<span class="ident">m</span>)
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> {
-                (<span class="kw">if</span> <span class="ident">i</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+                (<span class="kw">if</span> <span class="ident">i</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">0</span> {
                     <span class="ident">c</span>[<span class="ident">i</span> <span class="op">/</span> <span class="number">2</span>].<span class="ident">im</span>
                 } <span class="kw">else</span> {
                     <span class="ident">c</span>[<span class="ident">i</span> <span class="op">/</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>].<span class="ident">re</span>
@@ -353,9 +353,9 @@
             <span class="ident">v</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>;
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fast_fourier_transform</span>(<span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">inv</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fast_fourier_transform</span>(<span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">inv</span>: <span class="ident">bool</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Complex</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">len</span>();
-        <span class="macro">debug_assert!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>() <span class="op">=</span><span class="op">=</span> <span class="number">1</span>);
+        <span class="macro">debug_assert!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>() <span class="op">==</span> <span class="number">1</span>);
         <span class="kw">let</span> <span class="ident">mask</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>;
         <span class="kw">const</span> <span class="ident">TAU</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">2.</span> <span class="op">*</span> <span class="ident">std::f64::consts::PI</span>;
         <span class="kw">let</span> <span class="ident">omega</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">inv</span> { <span class="op">-</span><span class="ident">TAU</span> <span class="op">/</span> <span class="ident">n</span> <span class="kw">as</span> <span class="ident">f64</span> } <span class="kw">else</span> { <span class="ident">TAU</span> <span class="op">/</span> <span class="ident">n</span> <span class="kw">as</span> <span class="ident">f64</span> };

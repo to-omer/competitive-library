@@ -211,33 +211,33 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitDp</span>(<span class="kw">pub</span> <span class="ident">usize</span>);
 
 <span class="kw">impl</span> <span class="ident">BitDp</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_element</span>(<span class="ident">mask</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_element</span>(<span class="ident">mask</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
         <span class="ident">mask</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">x</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span>
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">elements</span>(<span class="self">self</span>, <span class="ident">mask</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">elements</span>(<span class="self">self</span>, <span class="ident">mask</span>: <span class="ident">usize</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span> {
         (<span class="number">0</span>..<span class="self">self</span>.<span class="number">0</span>).<span class="ident">filter</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident"><span class="self">Self</span>::is_element</span>(<span class="ident">mask</span>, <span class="ident">x</span>))
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">not_elements</span>(<span class="self">self</span>, <span class="ident">mask</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">not_elements</span>(<span class="self">self</span>, <span class="ident">mask</span>: <span class="ident">usize</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span> {
         (<span class="number">0</span>..<span class="self">self</span>.<span class="number">0</span>).<span class="ident">filter</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="op">!</span><span class="ident"><span class="self">Self</span>::is_element</span>(<span class="ident">mask</span>, <span class="ident">x</span>))
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_subset</span>(<span class="ident">mask</span>: <span class="ident">usize</span>, <span class="ident">elements</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="ident">mask</span> <span class="op">&amp;</span> <span class="ident">elements</span> <span class="op">=</span><span class="op">=</span> <span class="ident">elements</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_subset</span>(<span class="ident">mask</span>: <span class="ident">usize</span>, <span class="ident">elements</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
+        <span class="ident">mask</span> <span class="op">&amp;</span> <span class="ident">elements</span> <span class="op">==</span> <span class="ident">elements</span>
     }
-    <span class="kw">fn</span> <span class="ident">next_subset</span>(<span class="ident">mask</span>: <span class="ident">usize</span>, <span class="ident">cur</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">cur</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">fn</span> <span class="ident">next_subset</span>(<span class="ident">mask</span>: <span class="ident">usize</span>, <span class="ident">cur</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="ident">cur</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="prelude-val">None</span>
         } <span class="kw">else</span> {
             <span class="prelude-val">Some</span>((<span class="ident">cur</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">&amp;</span> <span class="ident">mask</span>)
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subsets</span>(<span class="ident">mask</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Subsets</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subsets</span>(<span class="ident">mask</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Subsets</span> {
         <span class="ident">Subsets</span> {
             <span class="ident">mask</span>,
             <span class="ident">cur</span>: <span class="prelude-val">Some</span>(<span class="ident">mask</span>),
         }
     }
-    <span class="kw">fn</span> <span class="ident">next_combination</span>(<span class="ident">cur</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">cur</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="kw">fn</span> <span class="ident">next_combination</span>(<span class="ident">cur</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="ident">cur</span> <span class="op">==</span> <span class="number">0</span> {
             <span class="prelude-val">None</span>
         } <span class="kw">else</span> {
             <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">cur</span> <span class="op">&amp;</span> (<span class="op">!</span><span class="ident">cur</span> <span class="op">+</span> <span class="number">1</span>);
@@ -245,7 +245,7 @@
             <span class="prelude-val">Some</span>(((<span class="ident">cur</span> <span class="op">&amp;</span> <span class="op">!</span><span class="ident">y</span>) <span class="op">/</span> <span class="ident">x</span> <span class="op">/</span> <span class="number">2</span>) <span class="op">|</span> <span class="ident">y</span>)
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">combinations</span>(<span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Combinations</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">combinations</span>(<span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Combinations</span> {
         <span class="ident">Combinations</span> {
             <span class="ident">mask</span>: <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="self">self</span>.<span class="number">0</span>,
             <span class="ident">cur</span>: <span class="prelude-val">Some</span>((<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span>) <span class="op">-</span> <span class="number">1</span>),
@@ -259,7 +259,7 @@
 }
 <span class="kw">impl</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">Subsets</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span>;
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cur</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">cur</span> {
             <span class="self">self</span>.<span class="ident">cur</span> <span class="op">=</span> <span class="ident">BitDp::next_subset</span>(<span class="self">self</span>.<span class="ident">mask</span>, <span class="ident">cur</span>);
             <span class="prelude-val">Some</span>(<span class="ident">cur</span>)
@@ -275,7 +275,7 @@
 }
 <span class="kw">impl</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">Combinations</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span>;
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">cur</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">cur</span> {
             <span class="kw">if</span> <span class="ident">cur</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">mask</span> {
                 <span class="self">self</span>.<span class="ident">cur</span> <span class="op">=</span> <span class="ident">BitDp::next_combination</span>(<span class="ident">cur</span>);
@@ -377,7 +377,7 @@
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">combinations</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">combinations</span>(<span class="ident">k</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
                 <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">combinations</span>.<span class="ident">len</span>();
                 <span class="macro">assert_eq!</span>(<span class="ident">len</span>, <span class="ident">comb</span>[<span class="ident">n</span> <span class="op">-</span> <span class="ident">k</span>][<span class="ident">k</span>]);
-                <span class="macro">assert!</span>(<span class="ident">combinations</span>.<span class="ident">iter</span>().<span class="ident">all</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">usize</span> <span class="op">=</span><span class="op">=</span> <span class="ident">k</span>));
+                <span class="macro">assert!</span>(<span class="ident">combinations</span>.<span class="ident">iter</span>().<span class="ident">all</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">usize</span> <span class="op">==</span> <span class="ident">k</span>));
                 <span class="ident">combinations</span>.<span class="ident">sort_unstable</span>();
                 <span class="ident">combinations</span>.<span class="ident">dedup</span>();
                 <span class="macro">assert_eq!</span>(<span class="ident">len</span>, <span class="ident">combinations</span>.<span class="ident">len</span>());

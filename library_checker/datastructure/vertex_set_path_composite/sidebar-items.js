@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["vertex_set_path_composite","✅  AC  269ms"]]});
+initSidebarItems({"fn":[["vertex_set_path_composite","✅  AC  242ms"]]});

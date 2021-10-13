@@ -368,11 +368,11 @@
     <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
     <span class="ident">M::AT</span>: <span class="ident">PartialEq</span>,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">seg</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">M::munit</span>(), <span class="ident">M::aunit</span>()); <span class="number">2</span> <span class="op">*</span> <span class="ident">n</span>];
         <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">seg</span> }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">v</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M::MT</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">v</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M::MT</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">len</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="ident">M::munit</span>(), <span class="ident">M::aunit</span>()); <span class="number">2</span> <span class="op">*</span> <span class="ident">n</span>];
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">x</span>) <span class="kw">in</span> <span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
@@ -400,7 +400,7 @@
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">reflect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::MT</span> {
+    <span class="kw">fn</span> <span class="ident">reflect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::MT</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="op">&lt;</span><span class="ident">M::A</span> <span class="kw">as</span> <span class="ident">Unital</span><span class="op">&gt;</span><span class="ident">::is_unit</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">1</span>) {
             <span class="ident">M::act</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">1</span>)
         } <span class="kw">else</span> {
@@ -437,7 +437,7 @@
         <span class="self">self</span>.<span class="ident">recalc</span>(<span class="ident">l</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>);
         <span class="self">self</span>.<span class="ident">recalc</span>(<span class="ident">r</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>);
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::MT</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::MT</span> {
         <span class="macro">debug_assert!</span>(<span class="ident">l</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">r</span>);
         <span class="macro">debug_assert!</span>(<span class="ident">r</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">n</span>);
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">l</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
@@ -467,15 +467,15 @@
         <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">1</span> <span class="op">=</span> <span class="ident">M::aunit</span>();
         <span class="self">self</span>.<span class="ident">recalc</span>(<span class="ident">k</span>);
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::MT</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::MT</span> {
         <span class="self">self</span>.<span class="ident">fold</span>(<span class="ident">k</span>, <span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold_all</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">M::MT</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold_all</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">M::MT</span> {
         <span class="self">self</span>.<span class="ident">fold</span>(<span class="number">0</span>, <span class="self">self</span>.<span class="ident">n</span>)
     }
-    <span class="kw">fn</span> <span class="ident">bisect_perfect</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::MT</span>, <span class="ident">p</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">usize</span>, <span class="ident">M::MT</span>)
+    <span class="kw">fn</span> <span class="ident">bisect_perfect</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::MT</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::MT</span>)
     <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
+        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
     {
         <span class="kw">while</span> <span class="ident">pos</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span> {
             <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">pos</span>);
@@ -488,9 +488,9 @@
         }
         (<span class="ident">pos</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
     }
-    <span class="kw">fn</span> <span class="ident">rbisect_perfect</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::MT</span>, <span class="ident">p</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">usize</span>, <span class="ident">M::MT</span>)
+    <span class="kw">fn</span> <span class="ident">rbisect_perfect</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::MT</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::MT</span>)
     <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
+        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
     {
         <span class="kw">while</span> <span class="ident">pos</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span> {
             <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">pos</span>);
@@ -504,9 +504,9 @@
         (<span class="ident">pos</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
     }
     <span class="doccomment">/// Returns the first index that satisfies a accumlative predicate.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">position_acc</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">position_acc</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
+        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">l</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
         <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
@@ -539,9 +539,9 @@
         <span class="prelude-val">None</span>
     }
     <span class="doccomment">/// Returns the last index that satisfies a accumlative predicate.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rposition_acc</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rposition_acc</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
+        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
     {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">l</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
@@ -605,7 +605,7 @@
             <span class="ident">LazySegmentTree</span>::<span class="op">&lt;</span><span class="ident">RangeSumRangeAdd</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">arr</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">a</span><span class="op">|</span> (<span class="ident">a</span>, <span class="number">1</span>)).<span class="ident">collect</span>());
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
             <span class="macro">rand!</span>(<span class="ident">rng</span>, (<span class="ident">l</span>, <span class="ident">r</span>): (<span class="ident">NotEmptySegment</span>(<span class="ident">N</span>)));
-            <span class="kw">if</span> <span class="ident">rng</span>.<span class="ident">rand</span>(<span class="number">2</span>) <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">rng</span>.<span class="ident">rand</span>(<span class="number">2</span>) <span class="op">==</span> <span class="number">0</span> {
                 <span class="comment">// Range Add Query</span>
                 <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (<span class="op">-</span><span class="ident">A</span>..<span class="ident">A</span>));
                 <span class="ident">seg</span>.<span class="ident">update</span>(<span class="ident">l</span>, <span class="ident">r</span>, <span class="ident">x</span>);
@@ -625,18 +625,18 @@
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
             <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">ty</span>: (<span class="number">0</span>..<span class="number">4</span>), (<span class="ident">l</span>, <span class="ident">r</span>): (<span class="ident">NotEmptySegment</span>(<span class="ident">N</span>)));
             <span class="kw">match</span> <span class="ident">ty</span> {
-                <span class="number">0</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="number">0</span> =&gt; {
                     <span class="comment">// Range Update Query</span>
                     <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (<span class="op">-</span><span class="ident">A</span>..<span class="ident">A</span>));
                     <span class="ident">seg</span>.<span class="ident">update</span>(<span class="ident">l</span>, <span class="ident">r</span>, <span class="prelude-val">Some</span>(<span class="ident">x</span>));
                     <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter_mut</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">a</span> <span class="op">=</span> <span class="ident">x</span>);
                 }
-                <span class="number">1</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="number">1</span> =&gt; {
                     <span class="comment">// Range Max Query</span>
                     <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">max</span>().<span class="ident">cloned</span>().<span class="ident">unwrap_or_default</span>();
                     <span class="macro">assert_eq!</span>(<span class="ident">seg</span>.<span class="ident">fold</span>(<span class="ident">l</span>, <span class="ident">r</span>), <span class="ident">res</span>);
                 }
-                <span class="number">2</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="number">2</span> =&gt; {
                     <span class="comment">// Binary Search Query</span>
                     <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (<span class="op">-</span><span class="ident">A</span>..<span class="ident">A</span>));
                     <span class="macro">assert_eq!</span>(
@@ -651,7 +651,7 @@
                             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span> <span class="op">+</span> <span class="ident">l</span>),
                     );
                 }
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="kw">_</span> =&gt; {
                     <span class="comment">// Binary Search Query</span>
                     <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (<span class="op">-</span><span class="ident">A</span>..<span class="ident">A</span>));
                     <span class="macro">assert_eq!</span>(
