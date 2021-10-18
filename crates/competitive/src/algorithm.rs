@@ -2,6 +2,7 @@
 
 use crate::num::{MInt, MIntBase, One, Zero};
 
+pub use self::baby_step_giant_step::BabyStepGiantStep;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
 pub use self::binary_search::*;
 #[codesnip::entry("BitDp")]
@@ -22,6 +23,7 @@ pub use self::ternary_search::*;
 pub use self::xorbasis::XorBasis;
 pub use self::zeta_transform::*;
 
+mod baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry)]
 mod binary_search;
 #[cfg_attr(nightly, codesnip::entry("BitDp"))]
