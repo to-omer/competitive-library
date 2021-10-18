@@ -1,3 +1,5 @@
+#![allow(clippy::self_named_constructors)]
+
 mod circle;
 mod closest_pair;
 mod line;

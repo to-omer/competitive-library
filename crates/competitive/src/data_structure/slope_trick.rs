@@ -1,21 +1,10 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct SlopeTrick {
     left: std::collections::BinaryHeap<i64>,
     right: std::collections::BinaryHeap<i64>,
     addl: i64,
     addr: i64,
     minval: i64,
-}
-impl Default for SlopeTrick {
-    fn default() -> Self {
-        Self {
-            left: Default::default(),
-            right: Default::default(),
-            addl: 0,
-            addr: 0,
-            minval: 0,
-        }
-    }
 }
 impl SlopeTrick {
     /// Create empty

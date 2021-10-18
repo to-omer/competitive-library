@@ -39,7 +39,7 @@ pub struct RandIter<'r, T, R: RandomSpec<T>> {
 impl<T, R: RandomSpec<T>> Iterator for RandIter<'_, T, R> {
     type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
-        Some(self.spec.rand(&mut self.rng))
+        Some(self.spec.rand(self.rng))
     }
 }
 

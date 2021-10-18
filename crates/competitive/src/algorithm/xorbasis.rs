@@ -1,5 +1,5 @@
 /// Basis of xor operation.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct XorBasis {
     /// (reduced basis, coordinates, inserted basis)
     bases: Vec<(u64, u64, u64)>,
@@ -53,11 +53,6 @@ impl XorBasis {
         } else {
             None
         }
-    }
-}
-impl Default for XorBasis {
-    fn default() -> Self {
-        XorBasis { bases: Vec::new() }
     }
 }
 impl std::iter::FromIterator<u64> for XorBasis {

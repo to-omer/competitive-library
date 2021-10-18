@@ -34,20 +34,12 @@ macro_rules! impl_discrete_steps_integer {
         fn delta() -> $u_source {
             1
         }
-        #[allow(arithmetic_overflow)]
         fn forward(start: Self, delta: $u_source) -> Self {
-            if Self::forward_checked(start, delta).is_none() {
-                panic!("attempt to add with overflow");
-                // let _ = Self::MAX + 1;
-            }
+            assert!(Self::forward_checked(start, delta).is_some(), "attempt to add with overflow");
             start.wrapping_add(delta as Self)
         }
-        #[allow(arithmetic_overflow)]
         fn backward(start: Self, delta: $u_source) -> Self {
-            if Self::backward_checked(start, delta).is_none() {
-                panic!("attempt to subtract with overflow");
-                // let _ = Self::MIN - 1;
-            }
+            assert!(Self::backward_checked(start, delta).is_some(), "attempt to subtract with overflow");
             start.wrapping_sub(delta as Self)
         }
     };
