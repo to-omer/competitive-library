@@ -510,7 +510,7 @@
                 <span class="ident">icache</span>: <span class="ident">Vec::new</span>(),
             }
         }
-        <span class="kw">fn</span> <span class="ident">ensure</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) {
+        <span class="kw">fn</span> <span class="ident">ensure</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) {
             <span class="macro">assert_eq!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>(), <span class="number">1</span>, <span class="string">&quot;call with power of two but {}&quot;</span>, <span class="ident">n</span>);
             <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">len</span>();
             <span class="macro">assert!</span>(
@@ -543,16 +543,16 @@
     }
     <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">NttModulus</span> <span class="op">+</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">NumberTheoreticTransform</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
         <span class="kw">fn</span> <span class="ident">convolve_inner</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-            <span class="ident"><span class="self">Self</span>::ntt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>);
-            <span class="ident"><span class="self">Self</span>::ntt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">b</span>);
+            <span class="ident"><span class="self">Self</span>::ntt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
+            <span class="ident"><span class="self">Self</span>::ntt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>);
             <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">a</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">b</span>.<span class="ident">iter_mut</span>()) {
                 <span class="kw-2">*</span><span class="ident">a</span> <span class="kw-2">*</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">b</span>;
             }
-            <span class="ident"><span class="self">Self</span>::intt</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">a</span>);
+            <span class="ident"><span class="self">Self</span>::intt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
             <span class="ident">a</span>
         }
         <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::needless_range_loop</span>)]</span>
-        <span class="kw">fn</span> <span class="ident">ntt</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>]) {
+        <span class="kw">fn</span> <span class="ident">ntt</span>(<span class="ident">a</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>]) {
             <span class="ident">M::modify</span>(<span class="op">|</span><span class="ident">cache</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">len</span>();
                 <span class="ident">cache</span>.<span class="ident">ensure</span>(<span class="ident">n</span> <span class="op">/</span> <span class="number">2</span>);
@@ -573,7 +573,7 @@
             });
         }
         <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::needless_range_loop</span>)]</span>
-        <span class="kw">fn</span> <span class="ident">intt</span>(<span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>]) {
+        <span class="kw">fn</span> <span class="ident">intt</span>(<span class="ident">a</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>]) {
             <span class="ident">M::modify</span>(<span class="op">|</span><span class="ident">cache</span><span class="op">|</span> {
                 <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">len</span>();
                 <span class="ident">cache</span>.<span class="ident">ensure</span>(<span class="ident">n</span> <span class="op">/</span> <span class="number">2</span>);

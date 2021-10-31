@@ -267,7 +267,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">epos</span>
     }
-    <span class="kw">fn</span> <span class="ident">edge_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
+    <span class="kw">fn</span> <span class="ident">edge_tour</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
         <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
             <span class="self">self</span>.<span class="ident">par</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="ident">a</span>.<span class="ident">id</span>;
             <span class="self">self</span>.<span class="ident">eidx</span>[<span class="ident">a</span>.<span class="ident">id</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">epos</span>;
@@ -298,7 +298,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">vpos</span>
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subtree_vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">subtree_vertex_tour</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vpos</span>;
         <span class="self">self</span>.<span class="ident">vpos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
@@ -306,7 +306,7 @@
         }
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vpos</span>;
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">path_vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">path_vertex_tour</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vpos</span>;
         <span class="self">self</span>.<span class="ident">vpos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
         <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
@@ -326,7 +326,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">path_query</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">usize</span>, <span class="ident">usize</span>) -&gt; <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">v</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">T</span> {
         <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) <span class="op">=</span> (<span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span>, <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">v</span>].<span class="number">0</span>);
         <span class="kw">if</span> <span class="ident">l</span> <span class="op">&gt;</span> <span class="ident">r</span> {
-            <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
+            <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">l</span>, <span class="kw-2">&amp;mut</span> <span class="ident">r</span>);
         }
         <span class="ident">f</span>(<span class="ident">l</span>, <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>)
     }
@@ -360,7 +360,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">len</span>()
     }
-    <span class="kw">fn</span> <span class="ident">vertex_tour</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
+    <span class="kw">fn</span> <span class="ident">vertex_tour</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
         <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">len</span>();
         <span class="self">self</span>.<span class="ident">vtrace</span>.<span class="ident">push</span>(<span class="ident">u</span>);
         <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">filter</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">!</span><span class="op">=</span> <span class="ident">p</span>) {
@@ -372,7 +372,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">usize</span>, <span class="ident">usize</span>) -&gt; <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">v</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">T</span> {
         <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) <span class="op">=</span> (<span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">u</span>].<span class="number">0</span>, <span class="self">self</span>.<span class="ident">vidx</span>[<span class="ident">v</span>].<span class="number">0</span>);
         <span class="kw">if</span> <span class="ident">l</span> <span class="op">&gt;</span> <span class="ident">r</span> {
-            <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">r</span>);
+            <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">l</span>, <span class="kw-2">&amp;mut</span> <span class="ident">r</span>);
         }
         <span class="ident">f</span>(<span class="ident">l</span>, <span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>)
     }
