@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["factorize","✅  AC  2577ms"]]});
+initSidebarItems({"fn":[["factorize","✅  AC  2325ms"]]});
