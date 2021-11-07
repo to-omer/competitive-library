@@ -8,7 +8,6 @@ where
     G: Group,
     G::T: Eq + std::hash::Hash,
 {
-    size: usize,
     block_size: usize,
     baby: std::collections::HashMap<G::T, usize>,
     xi: G::T,
@@ -30,7 +29,6 @@ where
         let xi = G::inverse(&xj);
         baby.entry(xj).or_insert(block_size);
         Self {
-            size: n,
             block_size,
             baby,
             xi,
