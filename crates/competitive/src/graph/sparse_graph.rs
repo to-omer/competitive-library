@@ -1,5 +1,5 @@
 use super::{IterScan, MarkedIterScan};
-use std::{marker::PhantomData, mem::MaybeUninit, ops, slice};
+use std::{marker::PhantomData, ops, slice};
 
 type Marker<T> = PhantomData<fn() -> T>;
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -69,8 +69,7 @@ impl SparseGraphConstruction for DirectedEdge {
         for i in 1..=vsize {
             start[i] += start[i - 1];
         }
-        let mut uninit = MaybeUninit::<Vec<Adjacency>>::new(Vec::with_capacity(edges.len()));
-        let elist = unsafe { &mut *uninit.as_mut_ptr() };
+        let mut elist = Vec::<Adjacency>::with_capacity(edges.len());
         let ptr = elist.as_mut_ptr();
         for (id, (from, to)) in edges.iter().cloned().enumerate() {
             start[from] -= 1;
@@ -80,7 +79,7 @@ impl SparseGraphConstruction for DirectedEdge {
         SparseGraph {
             vsize,
             start,
-            elist: unsafe { uninit.assume_init() },
+            elist,
             edges,
             _marker: PhantomData,
         }
@@ -97,8 +96,7 @@ impl SparseGraphConstruction for UndirectedEdge {
         for i in 1..=vsize {
             start[i] += start[i - 1];
         }
-        let mut uninit = MaybeUninit::<Vec<Adjacency>>::new(Vec::with_capacity(edges.len() * 2));
-        let elist = unsafe { &mut *uninit.as_mut_ptr() };
+        let mut elist = Vec::<Adjacency>::with_capacity(edges.len() * 2);
         let ptr = elist.as_mut_ptr();
         for (id, (from, to)) in edges.iter().cloned().enumerate() {
             start[from] -= 1;
@@ -110,7 +108,7 @@ impl SparseGraphConstruction for UndirectedEdge {
         SparseGraph {
             vsize,
             start,
-            elist: unsafe { uninit.assume_init() },
+            elist,
             edges,
             _marker: PhantomData,
         }
@@ -127,8 +125,7 @@ impl SparseGraphConstruction for BidirectionalEdge {
         for i in 1..=vsize {
             start[i] += start[i - 1];
         }
-        let mut uninit = MaybeUninit::<Vec<Adjacency>>::new(Vec::with_capacity(edges.len() * 2));
-        let elist = unsafe { &mut *uninit.as_mut_ptr() };
+        let mut elist = Vec::<Adjacency>::with_capacity(edges.len() * 2);
         let ptr = elist.as_mut_ptr();
         for (id, (from, to)) in edges.iter().cloned().enumerate() {
             start[from] -= 1;
@@ -140,7 +137,7 @@ impl SparseGraphConstruction for BidirectionalEdge {
         SparseGraph {
             vsize,
             start,
-            elist: unsafe { uninit.assume_init() },
+            elist,
             edges,
             _marker: PhantomData,
         }
