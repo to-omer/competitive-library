@@ -53,13 +53,17 @@ iter_print_tuple_impl!(A a B b C c D d E e F f G g H h I i J j K k);
 
 /// Print expressions with a separator.
 /// - `iter_print!(writer, args...)`
-/// - `@sep $expr,`: set separator (default: `' '`)
+/// - `@sep $expr`: set separator (default: `' '`)
 /// - `@fmt $lit => {$($expr),*}`: print `format!($lit, $($expr),*)`
-/// - `@flush`: flush writer
+/// - `@flush`: flush writer (auto insert `!`)
 /// - `@iter $expr`: print iterator
+/// - `@iterns $expr`: print iterator with no separators
+/// - `@iterln $expr`: print iterator with separator `'\n'`
+/// - `@iter2d $expr`: print 2d-iterator
 /// - `@tuple $expr`: print tuple (need to import [`IterPrint`], each elements impls `Display`)
 /// - `$expr`: print expr
-/// - `;`: println
+/// - `;`: print `'\n'`
+/// - `!`: not print `'\n'` at the end
 #[macro_export]
 macro_rules! iter_print {
     (@@fmt $writer:expr, $sep:expr, $is_head:expr, $lit:literal, $($e:expr),*) => {
@@ -92,12 +96,33 @@ macro_rules! iter_print {
             $crate::iter_print!(@@item $writer, $sep, true, item);
         }
     }};
+    (@@iterln $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {{
+        let mut iter = $iter.into_iter();
+        if let Some(item) = iter.next() {
+            $crate::iter_print!(@@item $writer, '\n', $is_head, item);
+        }
+        for item in iter {
+            $crate::iter_print!(@@item $writer, '\n', false, item);
+        }
+    }};
+    (@@iter2d $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {
+        let mut iter = $iter.into_iter();
+        if let Some(item) = iter.next() {
+            $crate::iter_print!(@@iter $writer, $sep, $is_head, item);
+        }
+        for item in iter {
+            $crate::iter_print!(@@line_feed $writer);
+            $crate::iter_print!(@@iter $writer, $sep, true, item);
+        }
+    };
     (@@tuple $writer:expr, $sep:expr, $is_head:expr, $tuple:expr) => {
         IterPrint::iter_print($tuple, &mut $writer, $sep, $is_head).expect("io error");
     };
     (@@assert_tag item) => {};
     (@@assert_tag iter) => {};
     (@@assert_tag iterns) => {};
+    (@@assert_tag iterln) => {};
+    (@@assert_tag iter2d) => {};
     (@@assert_tag tuple) => {};
     (@@assert_tag $tag:ident) => {
         ::std::compile_error!(::std::concat!("invalid tag in `iter_print!`: `", std::stringify!($tag), "`"));
@@ -107,7 +132,7 @@ macro_rules! iter_print {
     };
     (@@inner $writer:expr, $sep:expr, $is_head:expr, @flush $($t:tt)*) => {
         $writer.flush().expect("io error");
-        $crate::iter_print!(@@inner $writer, $sep, $is_head, $($t)*);
+        $crate::iter_print!(@@inner $writer, $sep, $is_head, ! $($t)*);
     };
     (@@inner $writer:expr, $sep:expr, $is_head:expr, @fmt $lit:literal => {$($e:expr),* $(,)?} $($t:tt)*) => {
         $crate::iter_print!(@@fmt $writer, $sep, $is_head, $lit, $($e),*);
@@ -139,6 +164,10 @@ macro_rules! iter_print {
         $crate::iter_print!(@@line_feed $writer);
         $crate::iter_print!(@@inner $writer, $sep, $is_head, $($t)*);
     };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, ! $($t:tt)*) => {
+        $crate::iter_print!(@@inner $writer, $sep, $is_head, $($t)*);
+    };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, !) => {};
     (@@inner $writer:expr, $sep:expr, $is_head:expr,) => {
         $crate::iter_print!(@@line_feed $writer);
     };
@@ -162,10 +191,13 @@ mod tests {
             buf, 1, 2, @sep '.', 3, 4; 5, 6, @sep ' ', @iter 7..=10;
             @tuple (1, 2, 3);
             @flush,
-            4, @fmt "{}?{}" => {5, 6.7}, @iterns 8..=10,
+            4, @fmt "{}?{}" => {5, 6.7}, @iterns 8..=10;
+            @iterln 11..=13,
+            @iter2d (0..3).map(|i| (14..=15).map(move |j| j + 2 * i)),
             @flush,
         );
-        let expected = "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7 8910\n";
+        let expected =
+            "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7 8910\n11\n12\n13 14 15\n16 17\n18 19\n";
         assert_eq!(expected, String::from_utf8_lossy(&buf));
     }
 }
