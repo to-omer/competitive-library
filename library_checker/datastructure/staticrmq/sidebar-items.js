@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["staticrmq_disjoint_sparse_table","✅  AC  152ms"],["staticrmq_segment_tree","✅  AC  168ms"]]});
+initSidebarItems({"fn":[["staticrmq_disjoint_sparse_table","✅  AC  184ms"],["staticrmq_segment_tree","✅  AC  128ms"]]});
