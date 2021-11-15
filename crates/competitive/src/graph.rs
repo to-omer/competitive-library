@@ -4,6 +4,8 @@ use crate::tools::{IterScan, MarkedIterScan};
 
 #[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph"))]
 pub use self::adjacency_list::{AdjacencyListGraph, AdjacencyListGraphScanner};
+#[cfg_attr(nightly, codesnip::entry("dulmage_mendelsohn_decomposition"))]
+pub use self::dulmage_mendelsohn_decomposition::dulmage_mendelsohn_decomposition;
 #[cfg_attr(nightly, codesnip::entry("EdgeListGraph"))]
 pub use self::edge_list::{EdgeListGraph, EdgeListGraphScanner};
 #[cfg_attr(nightly, codesnip::entry("GridGraph"))]
@@ -23,6 +25,14 @@ pub use self::two_satisfiability::TwoSatisfiability;
 
 #[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph", include("scanner")))]
 mod adjacency_list;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "dulmage_mendelsohn_decomposition",
+        include("Dinic", "StronglyConnectedComponent")
+    )
+)]
+mod dulmage_mendelsohn_decomposition;
 #[cfg_attr(nightly, codesnip::entry("EdgeListGraph", include("scanner")))]
 mod edge_list;
 #[cfg_attr(nightly, codesnip::entry("graphvis", include("SparseGraph")))]
