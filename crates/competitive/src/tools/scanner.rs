@@ -1,5 +1,5 @@
 use std::{
-    iter::{repeat_with, FromIterator},
+    iter::{from_fn, repeat_with, FromIterator},
     marker::PhantomData,
 };
 
@@ -320,6 +320,45 @@ where
             .collect()
     }
 }
+#[derive(Debug, Copy, Clone)]
+pub struct Splitted<T, P>
+where
+    T: IterScan,
+{
+    pat: P,
+    _marker: PhantomData<fn() -> T>,
+}
+impl<T, P> Splitted<T, P>
+where
+    T: IterScan,
+{
+    pub fn new(pat: P) -> Self {
+        Self {
+            pat,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<T> MarkedIterScan for Splitted<T, char>
+where
+    T: IterScan,
+{
+    type Output = Vec<<T as IterScan>::Output>;
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+        let mut iter = iter.next()?.split(self.pat);
+        Some(from_fn(|| <T as IterScan>::scan(&mut iter)).collect())
+    }
+}
+impl<T> MarkedIterScan for Splitted<T, &str>
+where
+    T: IterScan,
+{
+    type Output = Vec<<T as IterScan>::Output>;
+    fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
+        let mut iter = iter.next()?.split(self.pat);
+        Some(from_fn(|| <T as IterScan>::scan(&mut iter)).collect())
+    }
+}
 impl<T, F> MarkedIterScan for F
 where
     F: Fn(&str) -> Option<T>,
@@ -333,12 +372,13 @@ where
 #[test]
 fn test_scan() {
     use crate::scan;
-    let mut s = Scanner::new("1 2 3 a 1 2 1 1");
-    scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')));
+    let mut s = Scanner::new("1 2 3 a 1 2 1 1 1.1");
+    scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'));
     assert_eq!(x, 1);
     assert_eq!(y, '2');
     assert_eq!(z, 2);
     assert_eq!(a, 0);
     assert_eq!(b, vec![1, 2]);
     assert_eq!(c, (1, 1));
+    assert_eq!(d, vec![1, 1]);
 }
