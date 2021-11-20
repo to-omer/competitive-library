@@ -1,10 +1,11 @@
-use super::{One, Zero};
+use super::{IterScan, One, Zero};
 use std::{
+    cmp::Ordering,
     iter::{Product, Sum},
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Complex<T> {
     pub re: T,
     pub im: T,
@@ -55,26 +56,47 @@ where
 }
 impl<T> Complex<T>
 where
-    T: Add<Output = T> + Mul<Output = T>,
+    T: Mul,
+    <T as Mul>::Output: Add,
 {
-    pub fn dot(self, rhs: Self) -> T {
+    pub fn dot(self, rhs: Self) -> <<T as Mul>::Output as Add>::Output {
         self.re * rhs.re + self.im * rhs.im
     }
 }
 impl<T> Complex<T>
 where
-    T: Sub<Output = T> + Mul<Output = T>,
+    T: Mul,
+    <T as Mul>::Output: Sub,
 {
-    pub fn cross(self, rhs: Self) -> T {
+    pub fn cross(self, rhs: Self) -> <<T as Mul>::Output as Sub>::Output {
         self.re * rhs.im - self.im * rhs.re
     }
 }
 impl<T> Complex<T>
 where
-    T: Clone + Add<Output = T> + Mul<Output = T>,
+    T: Mul + Clone,
+    <T as Mul>::Output: Add,
 {
-    pub fn norm(self) -> T {
+    pub fn norm(self) -> <<T as Mul>::Output as Add>::Output {
         self.re.clone() * self.re + self.im.clone() * self.im
+    }
+}
+impl<T> Complex<T>
+where
+    T: Zero + Ord + Mul,
+    <T as Mul>::Output: Ord,
+{
+    pub fn cmp_by_arg(self, other: Self) -> Ordering {
+        fn pos<T>(c: &Complex<T>) -> bool
+        where
+            T: Zero + Ord,
+        {
+            let zero = T::zero();
+            c.im < zero || c.im <= zero && c.re < zero
+        }
+        pos(&self)
+            .cmp(&pos(&other))
+            .then_with(|| (self.re * other.im).cmp(&(self.im * other.re)).reverse())
     }
 }
 impl Complex<f64> {
@@ -93,11 +115,11 @@ impl Complex<f64> {
 }
 impl<T> Add for Complex<T>
 where
-    T: Add<Output = T>,
+    T: Add,
 {
-    type Output = Self;
+    type Output = Complex<<T as Add>::Output>;
     fn add(self, rhs: Self) -> Self::Output {
-        Self::new(self.re + rhs.re, self.im + rhs.im)
+        Complex::new(self.re + rhs.re, self.im + rhs.im)
     }
 }
 impl<T> Add<T> for Complex<T>
@@ -111,11 +133,11 @@ where
 }
 impl<T> Sub for Complex<T>
 where
-    T: Sub<Output = T>,
+    T: Sub,
 {
-    type Output = Self;
+    type Output = Complex<<T as Sub>::Output>;
     fn sub(self, rhs: Self) -> Self::Output {
-        Self::new(self.re - rhs.re, self.im - rhs.im)
+        Complex::new(self.re - rhs.re, self.im - rhs.im)
     }
 }
 impl<T> Sub<T> for Complex<T>
@@ -127,13 +149,14 @@ where
         Self::new(self.re - rhs, self.im)
     }
 }
-impl<T> Mul for Complex<T>
+impl<T, U> Mul for Complex<T>
 where
-    T: Clone + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+    T: Clone + Mul,
+    <T as Mul>::Output: Add<Output = U> + Sub<Output = U>,
 {
-    type Output = Self;
+    type Output = Complex<U>;
     fn mul(self, rhs: Self) -> Self::Output {
-        Self::new(
+        Complex::new(
             self.re.clone() * rhs.re.clone() - self.im.clone() * rhs.im.clone(),
             self.re * rhs.im + self.im * rhs.re,
         )
@@ -141,21 +164,21 @@ where
 }
 impl<T> Mul<T> for Complex<T>
 where
-    T: Clone + Mul<Output = T>,
+    T: Clone + Mul,
 {
-    type Output = Self;
+    type Output = Complex<<T as Mul>::Output>;
     fn mul(self, rhs: T) -> Self::Output {
-        Self::new(self.re * rhs.clone(), self.im * rhs)
+        Complex::new(self.re * rhs.clone(), self.im * rhs)
     }
 }
 impl<T> Div for Complex<T>
 where
-    T: Clone + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T>,
+    T: Clone + Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div,
 {
-    type Output = Self;
+    type Output = Complex<<T as Div>::Output>;
     fn div(self, rhs: Self) -> Self::Output {
         let d = rhs.re.clone() * rhs.re.clone() + rhs.im.clone() * rhs.im.clone();
-        Self::new(
+        Complex::new(
             (self.re.clone() * rhs.re.clone() + self.im.clone() * rhs.im.clone()) / d.clone(),
             (self.im * rhs.re - self.re * rhs.im) / d,
         )
@@ -163,20 +186,20 @@ where
 }
 impl<T> Div<T> for Complex<T>
 where
-    T: Clone + Div<Output = T>,
+    T: Clone + Div,
 {
-    type Output = Self;
+    type Output = Complex<<T as Div>::Output>;
     fn div(self, rhs: T) -> Self::Output {
-        Self::new(self.re / rhs.clone(), self.im / rhs)
+        Complex::new(self.re / rhs.clone(), self.im / rhs)
     }
 }
 impl<T> Neg for Complex<T>
 where
-    T: Neg<Output = T>,
+    T: Neg,
 {
-    type Output = Self;
+    type Output = Complex<<T as Neg>::Output>;
     fn neg(self) -> Self::Output {
-        Self::new(-self.re, -self.im)
+        Complex::new(-self.re, -self.im)
     }
 }
 macro_rules! impl_complex_ref_binop {
@@ -282,3 +305,13 @@ macro_rules! impl_complex_fold {
 }
 impl_complex_fold!(impl<T> Sum sum (Complex<T>) Zero zero Add add where Add);
 impl_complex_fold!(impl<T> Product product (Complex<T>) One one Mul mul where Add Sub Mul + Zero + Clone);
+
+impl<T: IterScan> IterScan for Complex<T> {
+    type Output = Complex<<T as IterScan>::Output>;
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+        Some(Complex::new(
+            <T as IterScan>::scan(iter)?,
+            <T as IterScan>::scan(iter)?,
+        ))
+    }
+}

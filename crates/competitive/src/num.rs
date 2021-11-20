@@ -1,3 +1,5 @@
+use crate::tools::IterScan;
+
 #[codesnip::entry("bounded")]
 pub use self::bounded::Bounded;
 #[codesnip::entry("Complex")]
@@ -16,7 +18,7 @@ pub use self::zero_one::{One, Zero};
 
 #[cfg_attr(nightly, codesnip::entry)]
 mod bounded;
-#[cfg_attr(nightly, codesnip::entry("Complex", include("zero_one")))]
+#[cfg_attr(nightly, codesnip::entry("Complex", include("zero_one", "scanner")))]
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(include("bounded")))]
 mod discrete_steps;
