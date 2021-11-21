@@ -1,12 +1,10 @@
-use super::{Ccw, Point, Real};
+use super::{Approx, Ccw, Point};
 
-#[codesnip::entry("Line", include("Ccw", "Point", "Real"))]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Line {
     p1: Point,
     p2: Point,
 }
-#[codesnip::entry("Line")]
 impl Line {
     pub fn new(p1: Point, p2: Point) -> Self {
         Line { p1, p2 }
@@ -28,20 +26,18 @@ impl Line {
         (p / self.dir().unit()).re
     }
     pub fn is_parallel(&self, other: &Self) -> bool {
-        Real(self.dir().cross(other.dir())) == Real(0.)
+        Approx(self.dir().cross(other.dir())) == Approx(0.)
     }
     pub fn is_orthogonal(&self, other: &Self) -> bool {
-        Real(self.dir().dot(other.dir())) == Real(0.)
+        Approx(self.dir().dot(other.dir())) == Approx(0.)
     }
 }
 
-#[codesnip::entry("LineSegment")]
 #[derive(Clone, Debug, PartialEq)]
 pub struct LineSegment {
     p1: Point,
     p2: Point,
 }
-#[codesnip::entry("LineSegment", include("Ccw", "Point", "Real"))]
 impl LineSegment {
     pub fn new(p1: Point, p2: Point) -> Self {
         LineSegment { p1, p2 }
@@ -60,10 +56,10 @@ impl LineSegment {
         p + (self.projection(p) - p) * 2.0
     }
     pub fn is_parallel(&self, other: &Self) -> bool {
-        Real(self.dir().cross(other.dir())) == Real(0.)
+        Approx(self.dir().cross(other.dir())) == Approx(0.)
     }
     pub fn is_orthogonal(&self, other: &Self) -> bool {
-        Real(self.dir().dot(other.dir())) == Real(0.)
+        Approx(self.dir().dot(other.dir())) == Approx(0.)
     }
     pub fn intersect(&self, other: &Self) -> bool {
         self.ccw(other.p1) as i8 * self.ccw(other.p2) as i8 <= 0
@@ -76,7 +72,7 @@ impl LineSegment {
         if self.intersect(other) {
             let a = self.dir().cross(other.dir());
             let b = self.dir().cross(self.p2 - other.p1);
-            if Real(a.abs()) == Real(0.) && Real(b.abs()) == Real(0.) {
+            if Approx(a.abs()) == Approx(0.) && Approx(b.abs()) == Approx(0.) {
                 Some(other.p1)
             } else {
                 Some(other.p1 + (other.dir() * b / a))

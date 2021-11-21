@@ -1,13 +1,10 @@
-use super::Point;
-use crate::tools::TotalOrd;
+use super::{Point, TotalOrd};
 
-#[codesnip::entry("closest_pair", include("Point", "TotalOrd"))]
 pub fn closest_pair(a: Vec<Point>) -> f64 {
     let mut a = a;
     a.sort_by_key(|&p| TotalOrd(p.re));
     closest_pair_inner(&mut a[..])
 }
-#[codesnip::entry("closest_pair")]
 fn closest_pair_inner(a: &mut [Point]) -> f64 {
     use std::cmp::min;
     let n = a.len();

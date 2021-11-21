@@ -1,12 +1,10 @@
-use super::{Point, Real};
+use super::{Approx, Point};
 
-#[codesnip::entry("Circle", include("Point", "Real"))]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Circle {
     c: Point,
     r: f64,
 }
-#[codesnip::entry("Circle")]
 impl Circle {
     pub fn new(c: Point, r: f64) -> Self {
         Circle { c, r }
@@ -26,6 +24,6 @@ impl Circle {
         ))
     }
     pub fn contains_point(&self, p: Point) -> bool {
-        Real((self.c - p).abs()) <= Real(self.r)
+        Approx((self.c - p).abs()) <= Approx(self.r)
     }
 }
