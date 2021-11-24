@@ -16,6 +16,8 @@ pub use self::low_link::LowLink;
 pub use self::maximum_flow::{Dinic, DinicBuilder};
 #[cfg_attr(nightly, codesnip::entry("PrimalDual"))]
 pub use self::minimum_cost_flow::{PrimalDual, PrimalDualBuilder};
+#[cfg_attr(nightly, codesnip::entry("ProjectSelectionProblem"))]
+pub use self::project_selection_problem::ProjectSelectionProblem;
 #[cfg_attr(nightly, codesnip::entry("SparseGraph"))]
 pub use self::sparse_graph::*;
 #[cfg_attr(nightly, codesnip::entry("StronglyConnectedComponent"))]
@@ -47,6 +49,8 @@ mod maximum_flow;
 mod minimum_cost_flow;
 mod minimum_spanning_tree;
 mod order;
+#[cfg_attr(nightly, codesnip::entry("ProjectSelectionProblem", include("Dinic")))]
+mod project_selection_problem;
 mod shortest_path;
 #[cfg_attr(nightly, codesnip::entry("SparseGraph", include("scanner")))]
 mod sparse_graph;
