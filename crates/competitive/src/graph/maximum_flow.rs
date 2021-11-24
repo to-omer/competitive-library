@@ -119,6 +119,21 @@ impl<'a> Dinic<'a> {
     pub fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
         self.maximum_flow_limited(s, t, std::u64::MAX)
     }
+    pub fn minimum_cut(&mut self, s: usize) -> Vec<bool> {
+        let mut visited = vec![false; self.graph.vertices_size()];
+        visited[s] = true;
+        self.deq.clear();
+        self.deq.push_back(s);
+        while let Some(u) = self.deq.pop_front() {
+            for a in self.graph.adjacencies(u) {
+                if self.capacities[a.id] > 0 && !visited[a.to] {
+                    visited[a.to] = true;
+                    self.deq.push_back(a.to);
+                }
+            }
+        }
+        visited
+    }
     pub fn get_flow(&self, eid: usize) -> u64 {
         self.capacities[eid * 2 + 1]
     }
