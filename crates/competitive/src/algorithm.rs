@@ -14,6 +14,8 @@ pub use self::combinations::*;
 pub use self::convex_hull_trick::ConvexHullTrick;
 pub use self::mo::MoSolver;
 pub use self::other::*;
+#[codesnip::entry("PartisanGame")]
+pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer};
 #[codesnip::entry("RhoPath")]
 pub use self::rho_path::RhoPath;
 pub use self::slide_minimum::*;
@@ -38,6 +40,8 @@ mod combinations;
 mod convex_hull_trick;
 mod mo;
 mod other;
+#[cfg_attr(nightly, codesnip::entry("PartisanGame"))]
+mod partisan_game;
 #[cfg_attr(nightly, codesnip::entry("RhoPath"))]
 mod rho_path;
 mod slide_minimum;
