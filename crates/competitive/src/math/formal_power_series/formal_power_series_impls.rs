@@ -223,15 +223,35 @@ where
     T: FormalPowerSeriesCoefficient,
     Multiplier: FormalPowerSeriesMultiplier<T = T>,
 {
-    pub fn count_subset_sum(&self, deg: usize, inv: &[T]) -> Self {
+    pub fn count_subset_sum<F>(&self, deg: usize, mut inverse: F) -> Self
+    where
+        F: FnMut(usize) -> T,
+    {
         let n = self.data.len();
         let mut f = Self::zeros(n);
         for i in 1..n {
-            for (j, d) in (0..n).step_by(i).enumerate().skip(1) {
-                if j & 1 != 0 {
-                    f[d] += self[i].clone() * &inv[j];
-                } else {
-                    f[d] -= self[i].clone() * &inv[j];
+            if !self[i].is_zero() {
+                for (j, d) in (0..n).step_by(i).enumerate().skip(1) {
+                    if j & 1 != 0 {
+                        f[d] += self[i].clone() * &inverse(j);
+                    } else {
+                        f[d] -= self[i].clone() * &inverse(j);
+                    }
+                }
+            }
+        }
+        f.exp(deg)
+    }
+    pub fn count_multiset_sum<F>(&self, deg: usize, mut inverse: F) -> Self
+    where
+        F: FnMut(usize) -> T,
+    {
+        let n = self.data.len();
+        let mut f = Self::zeros(n);
+        for i in 1..n {
+            if !self[i].is_zero() {
+                for (j, d) in (0..n).step_by(i).enumerate().skip(1) {
+                    f[d] += self[i].clone() * &inverse(j);
                 }
             }
         }
