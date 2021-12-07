@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["inv_of_formal_power_series","✅  AC  461ms"]]});
+initSidebarItems({"fn":[["inv_of_formal_power_series","✅  AC  522ms"]]});
