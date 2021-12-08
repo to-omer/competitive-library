@@ -108,10 +108,12 @@ pub mod number_theoretic_transform_impls {
                 for i in (1..=n.trailing_zeros()).rev() {
                     for jh in 0..u {
                         let wj = cache.cache[jh];
-                        for j in jh << i..(jh << i) + v {
-                            let ajv = wj * a[j + v];
-                            a[j + v] = a[j] - ajv;
-                            a[j] += ajv;
+                        let p = jh << i;
+                        let (l, r) = a.split_at_mut(p + v);
+                        for (x, y) in l[p..].iter_mut().zip(&mut r[..v]) {
+                            let ajv = wj * *y;
+                            *y = *x - ajv;
+                            *x += ajv;
                         }
                     }
                     u <<= 1;
@@ -129,10 +131,12 @@ pub mod number_theoretic_transform_impls {
                 for i in 1..=n.trailing_zeros() {
                     for jh in 0..u {
                         let wj = cache.icache[jh];
-                        for j in jh << i..(jh << i) + v {
-                            let ajv = a[j] - a[j + v];
-                            a[j] += a[j + v];
-                            a[j + v] = wj * ajv;
+                        let p = jh << i;
+                        let (l, r) = a.split_at_mut(p + v);
+                        for (x, y) in l[p..].iter_mut().zip(&mut r[..v]) {
+                            let ajv = *x - *y;
+                            *x += *y;
+                            *y = wj * ajv;
                         }
                     }
                     u >>= 1;
@@ -225,24 +229,24 @@ where
     let c3 = NumberTheoreticTransform::<M3>::convolve_it(a.iter().map(cvt), b.iter().map(cvt));
     let t1 = MInt::<M2>::new(M1::get_mod()).inv();
     let m1 = MInt::<M>::from(M1::get_mod());
-    let m13 = MInt::<M3>::new(M1::get_mod());
-    let t2 = (MInt::<M3>::new(M1::get_mod()) * MInt::<M3>::new(M2::get_mod())).inv();
+    let m1_3 = MInt::<M3>::new(M1::get_mod());
+    let t2 = (m1_3 * MInt::<M3>::new(M2::get_mod())).inv();
     let m2 = m1 * MInt::<M>::from(M2::get_mod());
     c1.into_iter()
         .zip(c2.into_iter())
         .zip(c3.into_iter())
         .map(|((c1, c2), c3)| {
-            let x = MInt::<M3>::new(c1.inner())
-                + MInt::<M3>::new(((c2 - MInt::<M2>::from(c1.inner())) * t1).inner()) * m13;
-            MInt::<M>::from(c1.inner())
-                + MInt::<M>::from(((c2 - MInt::<M2>::from(c1.inner())) * t1).inner()) * m1
-                + MInt::<M>::from(((c3 - MInt::<M3>::from(x.inner())) * t2).inner()) * m2
+            let d1 = c1.inner();
+            let d2 = ((c2 - MInt::<M2>::from(d1)) * t1).inner();
+            let x = MInt::<M3>::new(d1) + MInt::<M3>::new(d2) * m1_3;
+            let d3 = ((c3 - x) * t2).inner();
+            MInt::<M>::from(d1) + MInt::<M>::from(d2) * m1 + MInt::<M>::from(d3) * m2
         })
         .collect()
 }
 
 /// max(a.len(), b.len()) * max(a) * max(b) < 1.81 * 10^27
-pub fn convolve3<T>(mut a: Vec<T>, mut b: Vec<T>) -> Vec<u128>
+pub fn convolve3<T>(a: Vec<T>, b: Vec<T>) -> Vec<u128>
 where
     T: Into<MInt<number_theoretic_transform_impls::Modulo2013265921>>
         + Into<MInt<number_theoretic_transform_impls::Modulo1811939329>>
@@ -250,10 +254,6 @@ where
         + Clone
         + Zero,
 {
-    let m = a.len() + b.len() - 1;
-    let n = m.next_power_of_two();
-    a.resize_with(n, Zero::zero);
-    b.resize_with(n, Zero::zero);
     type M1 = number_theoretic_transform_impls::Modulo2013265921;
     type M2 = number_theoretic_transform_impls::Modulo1811939329;
     type M3 = number_theoretic_transform_impls::Modulo2113929217;
@@ -269,11 +269,12 @@ where
     c1.into_iter()
         .zip(c2.into_iter())
         .zip(c3.into_iter())
-        .take(m)
         .map(|((c1, c2), c3)| {
-            let x =
-                c1.inner() as u64 + ((c2 - MInt::<M2>::from(c1.inner())) * t1).inner() as u64 * m1;
-            x as u128 + ((c3 - MInt::<M3>::from(x)) * t2).inner() as u128 * m2
+            let d1 = c1.inner() as u64;
+            let d2 = ((c2 - MInt::<M2>::from(c1.inner())) * t1).inner() as u64;
+            let x = d1 + d2 * m1;
+            let d3 = ((c3 - MInt::<M3>::from(x)) * t2).inner() as u128;
+            x as u128 + d3 * m2
         })
         .collect()
 }
