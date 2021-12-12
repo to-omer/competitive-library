@@ -164,10 +164,10 @@ macro_rules! iter_print {
         $crate::iter_print!(@@line_feed $writer);
         $crate::iter_print!(@@inner $writer, $sep, $is_head, $($t)*);
     };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, ! $(,)?) => {};
     (@@inner $writer:expr, $sep:expr, $is_head:expr, ! $($t:tt)*) => {
         $crate::iter_print!(@@inner $writer, $sep, $is_head, $($t)*);
     };
-    (@@inner $writer:expr, $sep:expr, $is_head:expr, !) => {};
     (@@inner $writer:expr, $sep:expr, $is_head:expr,) => {
         $crate::iter_print!(@@line_feed $writer);
     };
@@ -196,8 +196,7 @@ mod tests {
             @iter2d (0..3).map(|i| (14..=15).map(move |j| j + 2 * i)),
             @flush,
         );
-        let expected =
-            "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7 8910\n11\n12\n13 14 15\n16 17\n18 19\n";
+        let expected = "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7 8910\n11\n12\n13 14 15\n16 17\n18 19";
         assert_eq!(expected, String::from_utf8_lossy(&buf));
     }
 }
