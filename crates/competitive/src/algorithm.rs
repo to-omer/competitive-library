@@ -1,5 +1,6 @@
 //! algorithm
 
+use crate::algebra::{Magma, Monoid, Unital};
 use crate::num::{MInt, MIntBase, One, Zero};
 
 pub use self::baby_step_giant_step::BabyStepGiantStep;
@@ -19,7 +20,9 @@ pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer}
 #[codesnip::entry("RhoPath")]
 pub use self::rho_path::RhoPath;
 pub use self::slide_minimum::*;
-#[cfg_attr(nightly, codesnip::entry("ternary_search"))]
+#[codesnip::entry("SqrtDecomposition")]
+pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
+#[codesnip::entry("ternary_search")]
 pub use self::ternary_search::*;
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
@@ -45,6 +48,8 @@ mod partisan_game;
 #[cfg_attr(nightly, codesnip::entry("RhoPath"))]
 mod rho_path;
 mod slide_minimum;
+#[cfg_attr(nightly, codesnip::entry("SqrtDecomposition", include("algebra")))]
+mod sqrt_decomposition;
 #[cfg_attr(nightly, codesnip::entry)]
 mod ternary_search;
 #[cfg_attr(nightly, codesnip::entry("XorBasis"))]
