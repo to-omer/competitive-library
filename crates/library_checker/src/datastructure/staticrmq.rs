@@ -5,7 +5,7 @@ pub use competitive::{
     data_structure::{DisjointSparseTable, SegmentTree},
 };
 
-#[verify::verify("https://judge.yosupo.jp/problem/staticrmq")]
+#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/staticrmq"))]
 pub fn staticrmq_disjoint_sparse_table(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
@@ -16,7 +16,7 @@ pub fn staticrmq_disjoint_sparse_table(reader: impl Read, mut writer: impl Write
     }
 }
 
-#[verify::verify("https://judge.yosupo.jp/problem/staticrmq")]
+#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/staticrmq"))]
 pub fn staticrmq_segment_tree(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

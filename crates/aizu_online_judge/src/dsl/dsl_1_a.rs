@@ -2,7 +2,7 @@
 pub use competitive::data_structure::UnionFind;
 use competitive::prelude::*;
 
-#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_A")]
+#[cfg_attr(nightly, verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_A"))]
 pub fn dsl_1_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

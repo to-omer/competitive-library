@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::string::SuffixArray;
 
-#[verify::verify("https://judge.yosupo.jp/problem/suffixarray")]
+#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/suffixarray"))]
 pub fn suffixarray(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

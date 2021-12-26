@@ -2,7 +2,7 @@
 pub use competitive::math::floor_sum;
 use competitive::prelude::*;
 
-#[verify::verify("https://judge.yosupo.jp/problem/sum_of_floor_of_linear")]
+#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/sum_of_floor_of_linear"))]
 pub fn sum_of_floor_of_linear(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

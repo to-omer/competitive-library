@@ -5,7 +5,7 @@ pub use competitive::{
     tree::{EulerTourForRichVertex, HeavyLightDecomposition, LcaMonoidDefaultId},
 };
 
-#[verify::verify("https://judge.yosupo.jp/problem/lca")]
+#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/lca"))]
 pub fn lca_euler_tour(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
@@ -19,7 +19,7 @@ pub fn lca_euler_tour(reader: impl Read, mut writer: impl Write) {
     }
 }
 
-#[verify::verify("https://judge.yosupo.jp/problem/lca")]
+#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/lca"))]
 pub fn lca_hld(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

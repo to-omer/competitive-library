@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{algebra::AdditiveOperation, data_structure::QueueAggregation};
 
-#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/3/DSL_3_A")]
+#[cfg_attr(nightly, verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/3/DSL_3_A"))]
 pub fn dsl_3_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
