@@ -472,7 +472,10 @@ pub fn find_factor(n: u64) -> u64 {
     unreachable!();
 }
 
-#[cfg_attr(nightly, codesnip::entry("prime_factors_rho", include("miller_rabin",) "gcd_binary"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("prime_factors_rho", include("miller_rabin", "gcd_binary"))
+)]
 pub fn prime_factors_rho(mut n: u64) -> Vec<u64> {
     let k = n.trailing_zeros();
     let mut res = vec![2; k as usize];

@@ -121,7 +121,10 @@ mod last_operation_impl {
 
 #[cfg_attr(nightly, codesnip::entry("AdditiveOperation"))]
 pub use self::additive_operation_impl::AdditiveOperation;
-#[cfg_attr(nightly, codesnip::entry("AdditiveOperation", include("algebra",) "zero_one"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("AdditiveOperation", include("algebra", "zero_one"))
+)]
 mod additive_operation_impl {
     use super::*;
     use std::{
@@ -163,7 +166,10 @@ mod additive_operation_impl {
 
 #[cfg_attr(nightly, codesnip::entry("MultiplicativeOperation"))]
 pub use self::multiplicative_operation_impl::MultiplicativeOperation;
-#[cfg_attr(nightly, codesnip::entry("MultiplicativeOperation", include("algebra",) "zero_one"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("MultiplicativeOperation", include("algebra", "zero_one"))
+)]
 mod multiplicative_operation_impl {
     use super::*;
     use std::{
