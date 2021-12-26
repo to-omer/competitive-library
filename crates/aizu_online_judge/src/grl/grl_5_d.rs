@@ -5,7 +5,10 @@ pub use competitive::{
     tools::SizedCollect, tree::EulerTourForEdge,
 };
 
-#[cfg_attr(nightly, verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_D"))]
+#[cfg_attr(
+    nightly,
+    verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/5/GRL_5_D")
+)]
 pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

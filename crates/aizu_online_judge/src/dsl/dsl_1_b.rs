@@ -2,7 +2,10 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{algebra::AdditiveOperation, data_structure::WeightedUnionFind};
 
-#[cfg_attr(nightly, verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_B"))]
+#[cfg_attr(
+    nightly,
+    verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/1/DSL_1_B")
+)]
 pub fn dsl_1_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

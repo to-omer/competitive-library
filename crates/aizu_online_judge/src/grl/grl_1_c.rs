@@ -2,7 +2,10 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{algebra::AdditiveOperation, graph::DirectedGraphScanner, num::Saturating};
 
-#[cfg_attr(nightly, verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/1/GRL_1_C"))]
+#[cfg_attr(
+    nightly,
+    verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/1/GRL_1_C")
+)]
 pub fn grl_1_c(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

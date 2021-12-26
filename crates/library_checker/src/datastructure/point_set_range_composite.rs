@@ -6,7 +6,10 @@ pub use competitive::{
     num::{mint_basic::MInt998244353, MInt},
 };
 
-#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/point_set_range_composite"))]
+#[cfg_attr(
+    nightly,
+    verify::verify("https://judge.yosupo.jp/problem/point_set_range_composite")
+)]
 pub fn point_set_range_composite(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

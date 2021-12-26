@@ -2,7 +2,10 @@
 pub use competitive::math::segmented_sieve_primes;
 use competitive::prelude::*;
 
-#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/enumerate_primes"))]
+#[cfg_attr(
+    nightly,
+    verify::verify("https://judge.yosupo.jp/problem/enumerate_primes")
+)]
 pub fn enumerate_primes(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

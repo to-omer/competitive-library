@@ -2,7 +2,10 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{math::convolve_mint, num::mint_basic::MInt1000000007};
 
-#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/convolution_mod_1000000007"))]
+#[cfg_attr(
+    nightly,
+    verify::verify("https://judge.yosupo.jp/problem/convolution_mod_1000000007")
+)]
 pub fn convolution_mod_1000000007(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

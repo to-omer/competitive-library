@@ -5,7 +5,10 @@ pub use competitive::{
     num::{mint_basic::MInt998244353, One, Zero},
 };
 
-#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/sharp_p_subset_sum"))]
+#[cfg_attr(
+    nightly,
+    verify::verify("https://judge.yosupo.jp/problem/sharp_p_subset_sum")
+)]
 pub fn sharp_p_subset_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
