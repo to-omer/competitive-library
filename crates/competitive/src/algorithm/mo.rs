@@ -1,4 +1,4 @@
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub trait MoSolver {
     type Answer;
     fn insert(&mut self, i: usize);

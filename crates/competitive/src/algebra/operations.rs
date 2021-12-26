@@ -3,9 +3,12 @@
 use super::magma::*;
 use crate::num::{Bounded, One, Zero};
 
-#[codesnip::entry("MaxOperation")]
+#[cfg_attr(nightly, codesnip::entry("MaxOperation"))]
 pub use self::max_operation_impl::MaxOperation;
-#[codesnip::entry("MaxOperation", include("algebra", "bounded"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("MaxOperation", include("algebra", "bounded"))
+)]
 mod max_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -31,9 +34,12 @@ mod max_operation_impl {
     impl<T: Clone + Ord + Bounded> Idempotent for MaxOperation<T> {}
 }
 
-#[codesnip::entry("MinOperation")]
+#[cfg_attr(nightly, codesnip::entry("MinOperation"))]
 pub use self::min_operation_impl::MinOperation;
-#[codesnip::entry("MinOperation", include("algebra", "bounded"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("MinOperation", include("algebra", "bounded"))
+)]
 mod min_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -59,9 +65,9 @@ mod min_operation_impl {
     impl<T: Clone + Ord + Bounded> Idempotent for MinOperation<T> {}
 }
 
-#[codesnip::entry("FirstOperation")]
+#[cfg_attr(nightly, codesnip::entry("FirstOperation"))]
 pub use self::first_operation_impl::FirstOperation;
-#[codesnip::entry("FirstOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("FirstOperation", include("algebra")))]
 mod first_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -86,9 +92,9 @@ mod first_operation_impl {
     impl<T: Clone> Idempotent for FirstOperation<T> {}
 }
 
-#[codesnip::entry("LastOperation")]
+#[cfg_attr(nightly, codesnip::entry("LastOperation"))]
 pub use self::last_operation_impl::LastOperation;
-#[codesnip::entry("LastOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("LastOperation", include("algebra")))]
 mod last_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -113,9 +119,9 @@ mod last_operation_impl {
     impl<T: Clone> Idempotent for LastOperation<T> {}
 }
 
-#[codesnip::entry("AdditiveOperation")]
+#[cfg_attr(nightly, codesnip::entry("AdditiveOperation"))]
 pub use self::additive_operation_impl::AdditiveOperation;
-#[codesnip::entry("AdditiveOperation", include("algebra", "zero_one"))]
+#[cfg_attr(nightly, codesnip::entry("AdditiveOperation", include("algebra",) "zero_one"))]
 mod additive_operation_impl {
     use super::*;
     use std::{
@@ -155,9 +161,9 @@ mod additive_operation_impl {
     }
 }
 
-#[codesnip::entry("MultiplicativeOperation")]
+#[cfg_attr(nightly, codesnip::entry("MultiplicativeOperation"))]
 pub use self::multiplicative_operation_impl::MultiplicativeOperation;
-#[codesnip::entry("MultiplicativeOperation", include("algebra", "zero_one"))]
+#[cfg_attr(nightly, codesnip::entry("MultiplicativeOperation", include("algebra",) "zero_one"))]
 mod multiplicative_operation_impl {
     use super::*;
     use std::{
@@ -195,9 +201,12 @@ mod multiplicative_operation_impl {
     }
 }
 
-#[codesnip::entry("LinearOperation")]
+#[cfg_attr(nightly, codesnip::entry("LinearOperation"))]
 pub use self::linear_operation_impl::LinearOperation;
-#[codesnip::entry("LinearOperation", include("algebra", "zero_one"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("LinearOperation", include("algebra", "zero_one"))
+)]
 mod linear_operation_impl {
     use super::*;
     use std::{
@@ -243,9 +252,9 @@ mod linear_operation_impl {
     }
 }
 
-#[codesnip::entry("BitAndOperation")]
+#[cfg_attr(nightly, codesnip::entry("BitAndOperation"))]
 pub use self::bitand_operation_impl::{BitAndIdentity, BitAndOperation};
-#[codesnip::entry("BitAndOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("BitAndOperation", include("algebra")))]
 mod bitand_operation_impl {
     use super::*;
     use std::{marker::PhantomData, ops::BitAnd};
@@ -304,9 +313,9 @@ mod bitand_operation_impl {
     impl<T: Clone + BitAndIdentity> Idempotent for BitAndOperation<T> {}
 }
 
-#[codesnip::entry("BitOrOperation")]
+#[cfg_attr(nightly, codesnip::entry("BitOrOperation"))]
 pub use self::bitor_operation_impl::{BitOrIdentity, BitOrOperation};
-#[codesnip::entry("BitOrOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("BitOrOperation", include("algebra")))]
 mod bitor_operation_impl {
     use super::*;
     use std::{marker::PhantomData, ops::BitOr};
@@ -365,9 +374,9 @@ mod bitor_operation_impl {
     impl<T: Clone + BitOrIdentity> Idempotent for BitOrOperation<T> {}
 }
 
-#[codesnip::entry("BitXorOperation")]
+#[cfg_attr(nightly, codesnip::entry("BitXorOperation"))]
 pub use self::bitxor_operation_impl::{BitXorIdentity, BitXorOperation};
-#[codesnip::entry("BitXorOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("BitXorOperation", include("algebra")))]
 mod bitxor_operation_impl {
     use super::*;
     use std::{marker::PhantomData, ops::BitXor};
@@ -426,7 +435,7 @@ mod bitxor_operation_impl {
     }
 }
 
-#[codesnip::entry("TupleOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("TupleOperation", include("algebra")))]
 mod tuple_operation_impl {
     #![allow(unused_variables, clippy::unused_unit)]
     use super::*;
@@ -469,9 +478,9 @@ mod tuple_operation_impl {
     impl_tuple_operation!(A B C D E F G H I J, 0 1 2 3 4 5 6 7 8 9);
 }
 
-#[codesnip::entry("CountingOperation")]
+#[cfg_attr(nightly, codesnip::entry("CountingOperation"))]
 pub use self::counting_operation_impl::CountingOperation;
-#[codesnip::entry("CountingOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("CountingOperation", include("algebra")))]
 mod counting_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -513,9 +522,9 @@ mod counting_operation_impl {
     impl<M: Idempotent> Idempotent for CountingOperation<M> {}
 }
 
-#[codesnip::entry("ReverseOperation")]
+#[cfg_attr(nightly, codesnip::entry("ReverseOperation"))]
 pub use self::reverse_operation_impl::ReverseOperation;
-#[codesnip::entry("ReverseOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("ReverseOperation", include("algebra")))]
 mod reverse_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -546,9 +555,12 @@ mod reverse_operation_impl {
     impl<M: Idempotent> Idempotent for ReverseOperation<M> {}
 }
 
-#[codesnip::entry("Top2Operation")]
+#[cfg_attr(nightly, codesnip::entry("Top2Operation"))]
 pub use self::top2_operation_impl::Top2Operation;
-#[codesnip::entry("Top2Operation", include("algebra", "bounded"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Top2Operation", include("algebra", "bounded"))
+)]
 mod top2_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -574,9 +586,12 @@ mod top2_operation_impl {
     impl<T: Clone + Ord + Bounded> Commutative for Top2Operation<T> {}
 }
 
-#[codesnip::entry("Bottom2Operation")]
+#[cfg_attr(nightly, codesnip::entry("Bottom2Operation"))]
 pub use self::bottom2_operation_impl::Bottom2Operation;
-#[codesnip::entry("Bottom2Operation", include("algebra", "bounded"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Bottom2Operation", include("algebra", "bounded"))
+)]
 mod bottom2_operation_impl {
     use super::*;
     use std::marker::PhantomData;
@@ -602,9 +617,9 @@ mod bottom2_operation_impl {
     impl<T: Clone + Ord + Bounded> Commutative for Bottom2Operation<T> {}
 }
 
-#[codesnip::entry("PermutationOperation")]
+#[cfg_attr(nightly, codesnip::entry("PermutationOperation"))]
 pub use self::permutation_operation_impl::PermutationOperation;
-#[codesnip::entry("PermutationOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("PermutationOperation", include("algebra")))]
 mod permutation_operation_impl {
     use super::*;
     pub struct PermutationOperation;
@@ -633,9 +648,9 @@ mod permutation_operation_impl {
     }
 }
 
-#[codesnip::entry("FindMajorityOperation")]
+#[cfg_attr(nightly, codesnip::entry("FindMajorityOperation"))]
 pub use self::find_majority_operation_impl::FindMajorityOperation;
-#[codesnip::entry("FindMajorityOperation", include("algebra"))]
+#[cfg_attr(nightly, codesnip::entry("FindMajorityOperation", include("algebra")))]
 mod find_majority_operation_impl {
     use super::*;
     use std::{cmp::Ordering, marker::PhantomData};

@@ -1,11 +1,11 @@
 use super::gcd_binary;
 
-#[codesnip::entry("PrimeTable")]
+#[cfg_attr(nightly, codesnip::entry("PrimeTable"))]
 #[derive(Clone, Debug)]
 pub struct PrimeTable {
     table: Vec<u32>,
 }
-#[codesnip::entry("PrimeTable")]
+#[cfg_attr(nightly, codesnip::entry("PrimeTable"))]
 impl PrimeTable {
     pub fn new(max_n: u32) -> Self {
         let mut table = vec![1; (max_n as usize + 1) / 2];
@@ -98,9 +98,9 @@ fn test_prime_table() {
     }
 }
 
-#[codesnip::entry("PrimeList")]
+#[cfg_attr(nightly, codesnip::entry("PrimeList"))]
 pub use prime_list::PrimeList;
-#[codesnip::entry("PrimeList")]
+#[cfg_attr(nightly, codesnip::entry("PrimeList"))]
 pub mod prime_list {
     #[derive(Debug, Clone, Default)]
     pub struct PrimeList {
@@ -274,7 +274,7 @@ pub mod prime_list {
     }
 }
 
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn prime_factors(mut n: u64) -> Vec<(u64, u32)> {
     let mut factors = vec![];
     let k = n.trailing_zeros();
@@ -319,7 +319,7 @@ fn test_prime_factors() {
     }
 }
 
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn divisors(n: u64) -> Vec<u64> {
     let mut res = vec![];
     for i in 1..(n as f32).sqrt() as u64 + 1 {
@@ -334,7 +334,7 @@ pub fn divisors(n: u64) -> Vec<u64> {
     res
 }
 
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn primes(n: usize) -> Vec<usize> {
     if n < 2 {
         return vec![];
@@ -371,7 +371,7 @@ fn test_primes() {
     }
 }
 
-#[codesnip::entry("miller_rabin")]
+#[cfg_attr(nightly, codesnip::entry("miller_rabin"))]
 pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     let mut x = x as u128;
     let mut y = y as u128;
@@ -387,7 +387,7 @@ pub fn pow(x: u64, y: u64, z: u64) -> u64 {
     res as u64
 }
 
-#[codesnip::entry("miller_rabin")]
+#[cfg_attr(nightly, codesnip::entry("miller_rabin"))]
 pub fn miller_rabin(p: u64) -> bool {
     if p == 2 {
         return true;
@@ -433,7 +433,7 @@ fn test_miller_rabin() {
     assert!(!miller_rabin(1_000_000_011));
 }
 
-#[codesnip::entry("prime_factors_rho")]
+#[cfg_attr(nightly, codesnip::entry("prime_factors_rho"))]
 pub fn find_factor(n: u64) -> u64 {
     const M: usize = 128;
     let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
@@ -472,7 +472,7 @@ pub fn find_factor(n: u64) -> u64 {
     unreachable!();
 }
 
-#[codesnip::entry("prime_factors_rho", include("miller_rabin", "gcd_binary"))]
+#[cfg_attr(nightly, codesnip::entry("prime_factors_rho", include("miller_rabin",) "gcd_binary"))]
 pub fn prime_factors_rho(mut n: u64) -> Vec<u64> {
     let k = n.trailing_zeros();
     let mut res = vec![2; k as usize];
@@ -547,7 +547,7 @@ impl EulerPhiTable {
     }
 }
 
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 /// g(d) = Sigma mu(d) * f(n/d)
 pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     let mut res = std::collections::HashMap::new();
@@ -578,7 +578,7 @@ pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     res
 }
 
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn segmented_sieve_primes(n: usize) -> Vec<usize> {
     if n < 2 {
         return Vec::new();

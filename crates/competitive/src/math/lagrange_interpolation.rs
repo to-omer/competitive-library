@@ -19,7 +19,10 @@ pub fn lagrange_interpolation<M: MIntBase>(x: &[MInt<M>], y: &[MInt<M>], t: MInt
     )
 }
 
-#[codesnip::entry("lagrange_interpolation", include("factorial", "MInt"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("lagrange_interpolation", include("factorial", "MInt"))
+)]
 impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     /// Lagrange interpolation with (i, f(i)) (0 <= i <= n)
     pub fn lagrange_interpolation<F>(&self, n: usize, f: F, t: MInt<M>) -> MInt<M>
@@ -43,7 +46,7 @@ impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     }
 }
 
-#[codesnip::entry(include("MInt"))]
+#[cfg_attr(nightly, codesnip::entry(include("MInt")))]
 pub fn lagrange_interpolation_polynomial<M: MIntBase>(
     x: &[MInt<M>],
     y: &[MInt<M>],

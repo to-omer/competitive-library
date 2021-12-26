@@ -5,19 +5,19 @@ use crate::{
     tools::TotalOrd,
 };
 
-#[codesnip::entry("Approx")]
+#[cfg_attr(nightly, codesnip::entry("Approx"))]
 pub use self::approx::{Approx, ApproxOrd};
-#[codesnip::entry("Ccw")]
+#[cfg_attr(nightly, codesnip::entry("Ccw"))]
 pub use self::ccw::Ccw;
-#[codesnip::entry("Circle")]
+#[cfg_attr(nightly, codesnip::entry("Circle"))]
 pub use self::circle::Circle;
-#[codesnip::entry("closest_pair")]
+#[cfg_attr(nightly, codesnip::entry("closest_pair"))]
 pub use self::closest_pair::closest_pair;
-#[codesnip::entry("Line")]
+#[cfg_attr(nightly, codesnip::entry("Line"))]
 pub use self::line::{Line, LineSegment};
 pub use self::polygon::{convex_diameter, convex_hull};
 
-#[codesnip::entry("Point", include("Complex"))]
+#[cfg_attr(nightly, codesnip::entry("Point", include("Complex")))]
 pub type Point = Complex<f64>;
 
 #[cfg_attr(nightly, codesnip::entry("Approx"))]

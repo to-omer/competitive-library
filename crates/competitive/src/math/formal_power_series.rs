@@ -1,4 +1,4 @@
-#[codesnip::skip]
+#[cfg_attr(nightly, codesnip::skip)]
 use crate::{
     math::{convolve_mint, NttModulus, NumberTheoreticTransform},
     num::{mint_basic, MInt, MIntConvert, One, Zero},

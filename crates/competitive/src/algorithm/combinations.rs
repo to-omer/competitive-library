@@ -15,7 +15,7 @@
 /// }
 /// assert_eq!(p, q);
 /// ```
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn product<T: Clone, F>(n: &[T], r: usize, mut f: F)
 where
     F: FnMut(&[T]),
@@ -61,7 +61,7 @@ where
 /// }
 /// assert_eq!(p, q);
 /// ```
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn permutations<T: Clone, F>(n: &[T], r: usize, mut f: F)
 where
     F: FnMut(&[T]),
@@ -114,7 +114,7 @@ where
 /// }
 /// assert_eq!(p, q);
 /// ```
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn combinations<T: Clone, F>(n: &[T], r: usize, mut f: F)
 where
     F: FnMut(&[T]),
@@ -163,7 +163,7 @@ where
 /// }
 /// assert_eq!(p, q);
 /// ```
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn combinations_with_replacement<T: Clone, F>(n: &[T], r: usize, mut f: F)
 where
     F: FnMut(&[T]),

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-#[codesnip::skip]
+#[cfg_attr(nightly, codesnip::skip)]
 use crate::tools::{read_stdin_all_unchecked, Scanner};
 
 #[cfg_attr(any(), rust_minify::skip)]

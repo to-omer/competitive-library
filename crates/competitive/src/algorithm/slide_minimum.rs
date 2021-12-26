@@ -1,4 +1,4 @@
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn slide_minimum<T: Clone + Ord>(v: &[T], k: usize) -> Vec<usize> {
     let mut deq = std::collections::VecDeque::new();
     let mut res = vec![];
@@ -18,7 +18,7 @@ pub fn slide_minimum<T: Clone + Ord>(v: &[T], k: usize) -> Vec<usize> {
     res
 }
 
-#[codesnip::entry("SlideMinimum")]
+#[cfg_attr(nightly, codesnip::entry("SlideMinimum"))]
 pub struct SlideMinimum<'a> {
     deq: std::collections::VecDeque<usize>,
     width: usize,
@@ -26,7 +26,7 @@ pub struct SlideMinimum<'a> {
     right: usize,
     seq: &'a [i64],
 }
-#[codesnip::entry("SlideMinimum")]
+#[cfg_attr(nightly, codesnip::entry("SlideMinimum"))]
 impl<'a> SlideMinimum<'a> {
     pub fn new(width: usize, seq: &'a [i64]) -> Self {
         let mut self_ = Self {

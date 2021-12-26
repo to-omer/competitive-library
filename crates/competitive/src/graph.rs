@@ -2,27 +2,27 @@
 
 use crate::tools::{IterScan, MarkedIterScan};
 
-#[codesnip::entry("AdjacencyListGraph")]
+#[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph"))]
 pub use self::adjacency_list::{AdjacencyListGraph, AdjacencyListGraphScanner};
-#[codesnip::entry("dulmage_mendelsohn_decomposition")]
+#[cfg_attr(nightly, codesnip::entry("dulmage_mendelsohn_decomposition"))]
 pub use self::dulmage_mendelsohn_decomposition::dulmage_mendelsohn_decomposition;
-#[codesnip::entry("EdgeListGraph")]
+#[cfg_attr(nightly, codesnip::entry("EdgeListGraph"))]
 pub use self::edge_list::{EdgeListGraph, EdgeListGraphScanner};
-#[codesnip::entry("GridGraph")]
+#[cfg_attr(nightly, codesnip::entry("GridGraph"))]
 pub use self::grid::GridGraph;
-#[codesnip::entry("LowLink")]
+#[cfg_attr(nightly, codesnip::entry("LowLink"))]
 pub use self::low_link::LowLink;
-#[codesnip::entry("Dinic")]
+#[cfg_attr(nightly, codesnip::entry("Dinic"))]
 pub use self::maximum_flow::{Dinic, DinicBuilder};
-#[codesnip::entry("PrimalDual")]
+#[cfg_attr(nightly, codesnip::entry("PrimalDual"))]
 pub use self::minimum_cost_flow::{PrimalDual, PrimalDualBuilder};
-#[codesnip::entry("ProjectSelectionProblem")]
+#[cfg_attr(nightly, codesnip::entry("ProjectSelectionProblem"))]
 pub use self::project_selection_problem::ProjectSelectionProblem;
-#[codesnip::entry("SparseGraph")]
+#[cfg_attr(nightly, codesnip::entry("SparseGraph"))]
 pub use self::sparse_graph::*;
-#[codesnip::entry("StronglyConnectedComponent")]
+#[cfg_attr(nightly, codesnip::entry("StronglyConnectedComponent"))]
 pub use self::strongly_connected_component::StronglyConnectedComponent;
-#[codesnip::entry("TwoSatisfiability")]
+#[cfg_attr(nightly, codesnip::entry("TwoSatisfiability"))]
 pub use self::two_satisfiability::TwoSatisfiability;
 
 #[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph", include("scanner")))]

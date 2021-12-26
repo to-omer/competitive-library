@@ -1,12 +1,12 @@
 use crate::num::{MInt, MIntConvert, One, Zero};
 
-#[codesnip::entry("factorial", include("MInt"))]
+#[cfg_attr(nightly, codesnip::entry("factorial", include("MInt")))]
 #[derive(Clone, Debug)]
 pub struct MemorizedFactorial<M: MIntConvert<usize>> {
     pub fact: Vec<MInt<M>>,
     pub inv_fact: Vec<MInt<M>>,
 }
-#[codesnip::entry("factorial")]
+#[cfg_attr(nightly, codesnip::entry("factorial"))]
 impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     pub fn new(max_n: usize) -> Self {
         let mut fact = vec![MInt::one(); max_n + 1];
@@ -55,12 +55,15 @@ impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     }
 }
 
-#[codesnip::entry("SmallModMemorizedFactorial", include("MInt"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SmallModMemorizedFactorial", include("MInt"))
+)]
 #[derive(Clone, Debug)]
 pub struct SmallModMemorizedFactorial<M: MIntConvert<usize>> {
     fact: Vec<MInt<M>>,
 }
-#[codesnip::entry("SmallModMemorizedFactorial")]
+#[cfg_attr(nightly, codesnip::entry("SmallModMemorizedFactorial"))]
 impl<M: MIntConvert<usize>> Default for SmallModMemorizedFactorial<M> {
     fn default() -> Self {
         let p = M::mod_into();
@@ -71,7 +74,7 @@ impl<M: MIntConvert<usize>> Default for SmallModMemorizedFactorial<M> {
         Self { fact }
     }
 }
-#[codesnip::entry("SmallModMemorizedFactorial")]
+#[cfg_attr(nightly, codesnip::entry("SmallModMemorizedFactorial"))]
 impl<M: MIntConvert<usize>> SmallModMemorizedFactorial<M> {
     pub fn new() -> Self {
         Default::default()

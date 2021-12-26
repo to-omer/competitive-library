@@ -6,25 +6,25 @@ use crate::num::{MInt, MIntBase, One, Zero};
 pub use self::baby_step_giant_step::BabyStepGiantStep;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
 pub use self::binary_search::*;
-#[codesnip::entry("BitDp")]
+#[cfg_attr(nightly, codesnip::entry("BitDp"))]
 pub use self::bitdp::{BitDp, Combinations, Subsets};
-#[codesnip::entry("chromatic_number")]
+#[cfg_attr(nightly, codesnip::entry("chromatic_number"))]
 pub use self::chromatic_number::IndependentSubSet;
 pub use self::combinations::*;
-#[codesnip::entry("ConvexHullTrick")]
+#[cfg_attr(nightly, codesnip::entry("ConvexHullTrick"))]
 pub use self::convex_hull_trick::ConvexHullTrick;
 pub use self::mo::MoSolver;
 pub use self::other::*;
-#[codesnip::entry("PartisanGame")]
+#[cfg_attr(nightly, codesnip::entry("PartisanGame"))]
 pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer};
-#[codesnip::entry("RhoPath")]
+#[cfg_attr(nightly, codesnip::entry("RhoPath"))]
 pub use self::rho_path::RhoPath;
 pub use self::slide_minimum::*;
-#[codesnip::entry("SqrtDecomposition")]
+#[cfg_attr(nightly, codesnip::entry("SqrtDecomposition"))]
 pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
-#[codesnip::entry("ternary_search")]
+#[cfg_attr(nightly, codesnip::entry("ternary_search"))]
 pub use self::ternary_search::*;
-#[codesnip::entry("XorBasis")]
+#[cfg_attr(nightly, codesnip::entry("XorBasis"))]
 pub use self::xorbasis::XorBasis;
 pub use self::zeta_transform::*;
 

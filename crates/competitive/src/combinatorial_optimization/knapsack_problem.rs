@@ -1,8 +1,8 @@
-#[codesnip::entry("KnapsackPloblemSmallWeight")]
+#[cfg_attr(nightly, codesnip::entry("KnapsackPloblemSmallWeight"))]
 pub struct KnapsackPloblemSmallWeight {
     pub dp: Vec<usize>,
 }
-#[codesnip::entry("KnapsackPloblemSmallWeight")]
+#[cfg_attr(nightly, codesnip::entry("KnapsackPloblemSmallWeight"))]
 impl KnapsackPloblemSmallWeight {
     pub fn new(max_weight: usize) -> Self {
         Self {
@@ -79,11 +79,11 @@ impl KnapsackPloblemSmallWeight {
     }
 }
 
-#[codesnip::entry("KnapsackPloblemSmallValue")]
+#[cfg_attr(nightly, codesnip::entry("KnapsackPloblemSmallValue"))]
 pub struct KnapsackPloblemSmallValue {
     pub dp: Vec<usize>,
 }
-#[codesnip::entry("KnapsackPloblemSmallValue")]
+#[cfg_attr(nightly, codesnip::entry("KnapsackPloblemSmallValue"))]
 impl KnapsackPloblemSmallValue {
     pub fn new(max_value: usize) -> Self {
         let mut dp = vec![std::usize::MAX; max_value + 1];
@@ -134,13 +134,13 @@ impl KnapsackPloblemSmallValue {
     }
 }
 
-#[codesnip::entry("ZeroOneKnapsackProblemSmallItems")]
+#[cfg_attr(nightly, codesnip::entry("ZeroOneKnapsackProblemSmallItems"))]
 #[derive(Debug, Clone)]
 pub struct ZeroOneKnapsackProblemSmallItems {
     a: Vec<(u64, u64)>,
     b: Vec<(u64, u64)>,
 }
-#[codesnip::entry("ZeroOneKnapsackProblemSmallItems")]
+#[cfg_attr(nightly, codesnip::entry("ZeroOneKnapsackProblemSmallItems"))]
 impl Default for ZeroOneKnapsackProblemSmallItems {
     fn default() -> Self {
         Self {
@@ -149,7 +149,7 @@ impl Default for ZeroOneKnapsackProblemSmallItems {
         }
     }
 }
-#[codesnip::entry("ZeroOneKnapsackProblemSmallItems")]
+#[cfg_attr(nightly, codesnip::entry("ZeroOneKnapsackProblemSmallItems"))]
 impl ZeroOneKnapsackProblemSmallItems {
     pub fn new() -> Self {
         Default::default()
@@ -214,11 +214,11 @@ impl ZeroOneKnapsackProblemSmallItems {
     }
 }
 
-#[codesnip::entry("ZeroOneKnapsackPloblemBranchAndBound")]
+#[cfg_attr(nightly, codesnip::entry("ZeroOneKnapsackPloblemBranchAndBound"))]
 pub struct ZeroOneKnapsackPloblemBranchAndBound {
     items: Vec<zero_one_knapsack_problem_branch_and_bound_impls::Item>,
 }
-#[codesnip::entry("ZeroOneKnapsackPloblemBranchAndBound")]
+#[cfg_attr(nightly, codesnip::entry("ZeroOneKnapsackPloblemBranchAndBound"))]
 mod zero_one_knapsack_problem_branch_and_bound_impls {
     use super::*;
     #[derive(Copy, Clone, Default, Debug)]

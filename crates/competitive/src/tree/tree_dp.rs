@@ -1,6 +1,6 @@
 use crate::graph::UndirectedSparseGraph;
 
-#[codesnip::entry("tree_dp", include("SparseGraph"))]
+#[cfg_attr(nightly, codesnip::entry("tree_dp", include("SparseGraph")))]
 impl UndirectedSparseGraph {
     pub fn tree_dp_bottom_up<T, F>(&self, root: usize, dp: &mut [T], mut f: F)
     where

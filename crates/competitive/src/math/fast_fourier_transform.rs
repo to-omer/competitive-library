@@ -3,9 +3,12 @@ use crate::{
     tools::AssociatedValue,
 };
 
-#[codesnip::entry("fast_fourier_transform")]
+#[cfg_attr(nightly, codesnip::entry("fast_fourier_transform"))]
 pub use fast_fourier_transform_impls::convolve_fft;
-#[codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))
+)]
 pub mod fast_fourier_transform_impls {
     use super::*;
     struct RotateCache;

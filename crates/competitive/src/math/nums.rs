@@ -18,7 +18,7 @@ pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(
 /// Sum of Floor of Linear
 ///
 /// $$\sum_{i=0}^{n-1}\left\lfloor\frac{a\times i+b}{m}\right\rfloor$$
-#[codesnip::entry]
+#[cfg_attr(nightly, codesnip::entry)]
 pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
     let mut ans = 0u64;
     if a >= m {
@@ -42,7 +42,7 @@ pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
 /// return: (y,z)
 ///
 /// forall (a,b,m), ax = b mod m, where x = y mod z
-#[codesnip::entry(include("gcd", "modinv"))]
+#[cfg_attr(nightly, codesnip::entry(include("gcd", "modinv")))]
 pub fn linear_congruence(abm: impl IntoIterator<Item = (i64, i64, i64)>) -> Option<(i64, i64)> {
     let mut x = 0i64;
     let mut m0 = 1i64;

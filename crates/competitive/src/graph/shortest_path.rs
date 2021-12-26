@@ -1,7 +1,10 @@
 use super::SparseGraph;
 use crate::algebra::Monoid;
 
-#[codesnip::entry("dijkstra", include("algebra", "SparseGraph"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("dijkstra", include("algebra", "SparseGraph"))
+)]
 impl<D> SparseGraph<D> {
     pub fn dijkstra<M, F>(&self, start: usize, weight: F) -> Vec<Option<M::T>>
     where
@@ -29,7 +32,10 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[codesnip::entry("bellman_ford", include("algebra", "SparseGraph"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("bellman_ford", include("algebra", "SparseGraph"))
+)]
 impl<D> SparseGraph<D> {
     pub fn bellman_ford<M, F>(&self, start: usize, weight: F) -> (Vec<Option<M::T>>, bool)
     where
@@ -59,7 +65,10 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[codesnip::entry("warshall_floyd", include("algebra", "SparseGraph"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("warshall_floyd", include("algebra", "SparseGraph"))
+)]
 impl<D> SparseGraph<D> {
     pub fn warshall_floyd<M, F>(&self, weight: F) -> Vec<Vec<Option<M::T>>>
     where

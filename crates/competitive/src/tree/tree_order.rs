@@ -1,6 +1,6 @@
 use crate::graph::SparseGraph;
 
-#[codesnip::entry("tree_order", include("SparseGraph"))]
+#[cfg_attr(nightly, codesnip::entry("tree_order", include("SparseGraph")))]
 impl<D> SparseGraph<D> {
     /// (order, parents)
     pub fn tree_order(&self, root: usize) -> (Vec<usize>, Vec<usize>) {

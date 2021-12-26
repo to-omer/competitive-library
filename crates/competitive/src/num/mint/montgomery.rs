@@ -250,7 +250,7 @@ impl_montgomery_reduction_32!(
 
 // #[test]
 #[allow(dead_code)]
-#[codesnip::skip]
+#[cfg_attr(nightly, codesnip::skip)]
 fn culculate_montgomery() {
     use crate::math::modinv;
     let m: u64 = 998_244_353;

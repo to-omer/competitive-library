@@ -2,7 +2,10 @@ use super::EdgeListGraph;
 use crate::algebra::Group;
 use crate::data_structure::{MergingUnionFind, UnionFind};
 
-#[codesnip::entry("minimum_spanning_tree", include("EdgeListGraph", "UnionFind"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("minimum_spanning_tree", include("EdgeListGraph", "UnionFind"))
+)]
 impl EdgeListGraph {
     pub fn minimum_spanning_tree<T>(&self, weight: impl Fn(&usize) -> T) -> Vec<bool>
     where
@@ -20,9 +23,12 @@ impl EdgeListGraph {
     }
 }
 
-#[codesnip::entry(
-    "minimum_spanning_arborescence",
-    include("algebra", "EdgeListGraph", "MergingUnionFind")
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "minimum_spanning_arborescence",
+        include("algebra", "EdgeListGraph", "MergingUnionFind")
+    )
 )]
 impl EdgeListGraph {
     /// tarjan
