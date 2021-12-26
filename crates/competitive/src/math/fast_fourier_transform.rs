@@ -1,5 +1,4 @@
 use crate::{
-    impl_assoc_value,
     num::{Complex, One, Zero},
     tools::AssociatedValue,
 };
@@ -39,7 +38,7 @@ pub mod fast_fourier_transform_impls {
             });
         }
     }
-    impl_assoc_value!(RotateCache, Vec<Complex<f64>>, vec![Complex::one()]);
+    crate::impl_assoc_value!(RotateCache, Vec<Complex<f64>>, vec![Complex::one()]);
     pub fn convolve_fft<IA, T, IB, U>(a: IA, b: IB) -> Vec<i64>
     where
         T: Into<f64>,

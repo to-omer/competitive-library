@@ -1,6 +1,5 @@
 #[codesnip::skip]
 use crate::{
-    impl_assoc_value,
     num::{mint_basic, MInt, MIntBase, MIntConvert, One, Zero},
     tools::AssociatedValue,
 };
@@ -22,7 +21,7 @@ pub mod number_theoretic_transform_impls {
                         MInt::new_unchecked($g)
                     }
                 }
-                impl_assoc_value!($name, NttCache<$name>, NttCache::new());
+                crate::impl_assoc_value!($name, NttCache<$name>, NttCache::new());
             )*
         };
     }
