@@ -4,6 +4,8 @@ pub use self::associated_value::AssociatedValue;
 pub use self::char_tools::CharTools;
 #[codesnip::entry("SimuratedAnnealing")]
 pub use self::heuristics::SimuratedAnnealing;
+#[codesnip::entry("_iter_print")]
+pub use self::iter_print::IterPrint;
 #[codesnip::entry("ord_tools")]
 pub use self::ord_tools::PartialOrdExt;
 pub use self::random::*;
