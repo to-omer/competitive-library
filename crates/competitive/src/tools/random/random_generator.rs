@@ -1,4 +1,4 @@
-#[cfg_attr(nightly, codesnip::skip)]
+#[codesnip::skip]
 use crate::num::Bounded;
 
 use super::*;

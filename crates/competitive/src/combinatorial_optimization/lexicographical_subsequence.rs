@@ -1,10 +1,10 @@
-#[cfg_attr(nightly, codesnip::entry("LexicographicalSubsequence"))]
+#[codesnip::entry("LexicographicalSubsequence")]
 #[derive(Debug, Clone)]
 pub struct LexicographicalSubsequence {
     dp: Vec<usize>,
     index: Vec<Vec<usize>>,
 }
-#[cfg_attr(nightly, codesnip::entry("LexicographicalSubsequence"))]
+#[codesnip::entry("LexicographicalSubsequence")]
 impl LexicographicalSubsequence {
     pub fn new(sequence: &[usize]) -> Self {
         let n = sequence.len();

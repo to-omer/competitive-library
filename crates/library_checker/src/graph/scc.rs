@@ -2,7 +2,7 @@
 pub use competitive::graph::{DirectedSparseGraph, StronglyConnectedComponent};
 use competitive::prelude::*;
 
-#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/scc"))]
+#[verify::verify("https://judge.yosupo.jp/problem/scc")]
 pub fn scc(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

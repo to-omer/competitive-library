@@ -2,10 +2,7 @@
 pub use competitive::data_structure::Static2DTree;
 use competitive::prelude::*;
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_C")
-)]
+#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_C")]
 pub fn dsl_2_c(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

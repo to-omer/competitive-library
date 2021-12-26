@@ -1,4 +1,4 @@
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 /// return: \[(elem, length)\]
 pub fn run_length_encoding<T: Clone + PartialEq, I: Iterator<Item = T>>(
     iter: I,
@@ -16,7 +16,7 @@ pub fn run_length_encoding<T: Clone + PartialEq, I: Iterator<Item = T>>(
     res
 }
 
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 /// $y = \left\lfloor\frac{n}{x}\right\rfloor$
 ///
 /// segments that have same x or y

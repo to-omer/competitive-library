@@ -2,12 +2,9 @@
 pub use competitive::graph::DirectedGraphScanner;
 use competitive::prelude::*;
 
-#[cfg_attr(
-    nightly,
-    verify::verify(
-        "https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/4/GRL_4_B",
-        judge = "judge_grl_4_b"
-    )
+#[verify::verify(
+    "https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/4/GRL_4_B",
+    judge = "judge_grl_4_b"
 )]
 pub fn grl_4_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);

@@ -1,7 +1,7 @@
 use super::{magma::*, operations::*};
 use crate::num::{Bounded, One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("MonoidAction", include("algebra")))]
+#[codesnip::entry("MonoidAction", include("algebra"))]
 pub trait MonoidAction {
     type MT: Clone;
     type AT: Clone;
@@ -30,24 +30,21 @@ pub trait MonoidAction {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("monoid_action_impls"))]
+#[codesnip::entry("monoid_action_impls")]
 pub use self::monoid_action_impls::*;
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "monoid_action_impls",
-        include(
-            "MonoidAction",
-            "AdditiveOperation",
-            "TupleOperation",
-            "LastOperation",
-            "LinearOperation",
-            "MaxOperation",
-            "MinOperation",
-            "bounded",
-            "zero_one"
-        )
+#[codesnip::entry(
+    "monoid_action_impls",
+    include(
+        "MonoidAction",
+        "AdditiveOperation",
+        "TupleOperation",
+        "LastOperation",
+        "LinearOperation",
+        "MaxOperation",
+        "MinOperation",
+        "bounded",
+        "zero_one"
     )
 )]
 pub mod monoid_action_impls {

@@ -5,7 +5,7 @@ use crate::{
     tools::IterScan,
 };
 
-#[cfg_attr(nightly, codesnip::entry("MIntBase", include("scanner", "zero_one")))]
+#[codesnip::entry("MIntBase", include("scanner", "zero_one"))]
 #[repr(transparent)]
 pub struct MInt<M>
 where
@@ -15,7 +15,7 @@ where
     _marker: std::marker::PhantomData<fn() -> M>,
 }
 
-#[cfg_attr(nightly, codesnip::entry("MIntBase"))]
+#[codesnip::entry("MIntBase")]
 pub trait MIntBase {
     type Inner: Sized + Copy + Eq + std::fmt::Debug + std::hash::Hash;
     fn get_mod() -> Self::Inner;
@@ -40,7 +40,7 @@ pub trait MIntBase {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("MIntBase"))]
+#[codesnip::entry("MIntBase")]
 pub trait MIntConvert<T = <Self as MIntBase>::Inner>: MIntBase {
     fn from(x: T) -> <Self as MIntBase>::Inner;
     fn into(x: <Self as MIntBase>::Inner) -> T;

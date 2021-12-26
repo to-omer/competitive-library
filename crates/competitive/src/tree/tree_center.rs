@@ -1,12 +1,12 @@
 use crate::graph::UndirectedSparseGraph;
 
-#[cfg_attr(nightly, codesnip::entry("tree_center"))]
+#[codesnip::entry("tree_center")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum TreeCenter {
     One(usize),
     Two(usize, usize),
 }
-#[cfg_attr(nightly, codesnip::entry("tree_center", include("SparseGraph")))]
+#[codesnip::entry("tree_center", include("SparseGraph"))]
 impl UndirectedSparseGraph {
     /// tree center
     pub fn tree_center(&self) -> TreeCenter {

@@ -1,15 +1,12 @@
 use crate::{graph::UndirectedSparseGraph, tools::Xorshift, tree::TreeCenter};
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry("tree_hash", include("Xorshift", "tree_center"))
-)]
+#[codesnip::entry("tree_hash", include("Xorshift", "tree_center"))]
 #[derive(Default, Debug)]
 pub struct TreeHasher {
     rv: Vec<u64>,
     rng: Xorshift,
 }
-#[cfg_attr(nightly, codesnip::entry("tree_hash"))]
+#[codesnip::entry("tree_hash")]
 impl TreeHasher {
     const MASK30: u64 = (1 << 30) - 1;
     const MASK31: u64 = (1 << 31) - 1;

@@ -1,19 +1,19 @@
 use crate::tools::IterScan;
 
-#[cfg_attr(nightly, codesnip::entry("bounded"))]
+#[codesnip::entry("bounded")]
 pub use self::bounded::Bounded;
-#[cfg_attr(nightly, codesnip::entry("Complex"))]
+#[codesnip::entry("Complex")]
 pub use self::complex::Complex;
-#[cfg_attr(nightly, codesnip::entry("discrete_steps"))]
+#[codesnip::entry("discrete_steps")]
 pub use self::discrete_steps::{DiscreteSteps, RangeBoundsExt};
-#[cfg_attr(nightly, codesnip::entry("float"))]
+#[codesnip::entry("float")]
 pub use self::float::{Float, Float32, Float64};
-#[cfg_attr(nightly, codesnip::entry("integer"))]
+#[codesnip::entry("integer")]
 pub use self::integer::{BinaryRepr, ExtendedGcd, IntBase, Saturating, Signed, Unsigned, Wrapping};
 pub use self::mint::*;
-#[cfg_attr(nightly, codesnip::entry("QuadDouble"))]
+#[codesnip::entry("QuadDouble")]
 pub use self::quad_double::QuadDouble;
-#[cfg_attr(nightly, codesnip::entry("zero_one"))]
+#[codesnip::entry("zero_one")]
 pub use self::zero_one::{One, Zero};
 
 #[cfg_attr(nightly, codesnip::entry)]

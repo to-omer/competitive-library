@@ -1,6 +1,6 @@
 use crate::num::{MInt, MIntConvert, One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("mod_sqrt", include("MInt")))]
+#[codesnip::entry("mod_sqrt", include("MInt"))]
 impl<M: MIntConvert<u32>> MInt<M> {
     pub fn sqrt(self) -> Option<Self> {
         fn jacobi<M: MIntConvert<u32>>(mut x: u32) -> i8 {

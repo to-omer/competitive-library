@@ -1,7 +1,7 @@
 use super::{Ccw, Point};
 use crate::tools::TotalOrd;
 
-#[cfg_attr(nightly, codesnip::entry("convex_hull", include("Ccw", "Point")))]
+#[codesnip::entry("convex_hull", include("Ccw", "Point"))]
 pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     let mut ps = ps;
     ps.sort_by(|p1, p2| ((p1.re, p1.im).partial_cmp(&(p2.re, p2.im)).unwrap()));
@@ -19,10 +19,7 @@ pub fn convex_hull(ps: Vec<Point>) -> Vec<Point> {
     qs
 }
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry("convex_diameter", include("Point", "TotalOrd"))
-)]
+#[codesnip::entry("convex_diameter", include("Point", "TotalOrd"))]
 pub fn convex_diameter(ps: Vec<Point>) -> f64 {
     let n = ps.len();
     let mut i = (0..n).max_by_key(|&i| TotalOrd(ps[i].re)).unwrap_or(0);

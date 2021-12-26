@@ -8,11 +8,11 @@
 
 use crate::algebra::{Group, Monoid};
 
-#[cfg_attr(nightly, codesnip::entry("SubsetTransform", include("algebra")))]
+#[codesnip::entry("SubsetTransform", include("algebra"))]
 pub struct SubsetTransform<M: Monoid> {
     _marker: std::marker::PhantomData<fn() -> M>,
 }
-#[cfg_attr(nightly, codesnip::entry("SubsetTransform"))]
+#[codesnip::entry("SubsetTransform")]
 impl<M: Monoid> SubsetTransform<M> {
     /// $$g(T) = \sum_{S\subset T}f(S)$$
     pub fn zeta_transform(f: &mut [M::T]) {
@@ -28,7 +28,7 @@ impl<M: Monoid> SubsetTransform<M> {
         }
     }
 }
-#[cfg_attr(nightly, codesnip::entry("SubsetTransform"))]
+#[codesnip::entry("SubsetTransform")]
 impl<G: Group> SubsetTransform<G> {
     /// $$f(T) = \sum_{S\subset T}h(S)$$
     pub fn mobius_transform(f: &mut [G::T]) {
@@ -55,11 +55,11 @@ impl<G: Group> SubsetTransform<G> {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("SupersetTransform", include("algebra")))]
+#[codesnip::entry("SupersetTransform", include("algebra"))]
 pub struct SupersetTransform<M: Monoid> {
     _marker: std::marker::PhantomData<fn() -> M>,
 }
-#[cfg_attr(nightly, codesnip::entry("SupersetTransform"))]
+#[codesnip::entry("SupersetTransform")]
 impl<M: Monoid> SupersetTransform<M> {
     /// $$g(T) = \sum_{S\supset T}f(S)$$
     pub fn zeta_transform(f: &mut [M::T]) {
@@ -75,7 +75,7 @@ impl<M: Monoid> SupersetTransform<M> {
         }
     }
 }
-#[cfg_attr(nightly, codesnip::entry("SupersetTransform"))]
+#[codesnip::entry("SupersetTransform")]
 impl<G: Group> SupersetTransform<G> {
     /// $$f(T) = \sum_{S\supset T}h(S)$$
     pub fn mobius_transform(f: &mut [G::T]) {
@@ -102,12 +102,12 @@ impl<G: Group> SupersetTransform<G> {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("DivisorTransform", include("algebra")))]
+#[codesnip::entry("DivisorTransform", include("algebra"))]
 pub struct DivisorTransform<M: Monoid> {
     primes: Vec<usize>,
     _marker: std::marker::PhantomData<fn() -> M>,
 }
-#[cfg_attr(nightly, codesnip::entry("DivisorTransform"))]
+#[codesnip::entry("DivisorTransform")]
 impl<M: Monoid> DivisorTransform<M> {
     pub fn new(primes: Vec<usize>) -> Self {
         Self {
@@ -124,7 +124,7 @@ impl<M: Monoid> DivisorTransform<M> {
         }
     }
 }
-#[cfg_attr(nightly, codesnip::entry("DivisorTransform"))]
+#[codesnip::entry("DivisorTransform")]
 impl<G: Group> DivisorTransform<G> {
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {
@@ -146,12 +146,12 @@ impl<G: Group> DivisorTransform<G> {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("MultipleTransform", include("algebra")))]
+#[codesnip::entry("MultipleTransform", include("algebra"))]
 pub struct MultipleTransform<M: Monoid> {
     primes: Vec<usize>,
     _marker: std::marker::PhantomData<fn() -> M>,
 }
-#[cfg_attr(nightly, codesnip::entry("MultipleTransform"))]
+#[codesnip::entry("MultipleTransform")]
 impl<M: Monoid> MultipleTransform<M> {
     pub fn new(primes: Vec<usize>) -> Self {
         Self {
@@ -168,7 +168,7 @@ impl<M: Monoid> MultipleTransform<M> {
         }
     }
 }
-#[cfg_attr(nightly, codesnip::entry("MultipleTransform"))]
+#[codesnip::entry("MultipleTransform")]
 impl<G: Group> MultipleTransform<G> {
     /// $$f(m) = \sum_{m \mid n}h(n)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {

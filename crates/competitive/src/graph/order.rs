@@ -1,6 +1,6 @@
 use super::SparseGraph;
 
-#[cfg_attr(nightly, codesnip::entry("bfs_order", include("SparseGraph")))]
+#[codesnip::entry("bfs_order", include("SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn bfs_order(&self, root: usize) -> Vec<usize> {
         let mut visited = vec![false; self.vertices_size()];
@@ -21,7 +21,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("dfs_order", include("SparseGraph")))]
+#[codesnip::entry("dfs_order", include("SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn dfs_order(&self, root: usize) -> Vec<usize> {
         let mut visited = vec![false; self.vertices_size()];
@@ -41,7 +41,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("dfs_tree", include("SparseGraph")))]
+#[codesnip::entry("dfs_tree", include("SparseGraph"))]
 impl<D> SparseGraph<D> {
     pub fn dfs_tree(&self, root: usize) -> Vec<bool> {
         let mut visited = vec![false; self.vertices_size()];
@@ -61,10 +61,7 @@ impl<D> SparseGraph<D> {
     }
 }
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry("for_each_connected_components", include("SparseGraph"))
-)]
+#[codesnip::entry("for_each_connected_components", include("SparseGraph"))]
 impl<D> SparseGraph<D> {
     /// f: |g, root, ord: [vertex, parent]| {}
     pub fn for_each_connected_components<F>(&self, mut f: F)

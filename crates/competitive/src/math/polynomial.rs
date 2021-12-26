@@ -2,12 +2,12 @@
 
 use crate::num::{One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("Polynomial", include("zero_one")))]
+#[codesnip::entry("Polynomial", include("zero_one"))]
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Polynomial<T> {
     pub data: Vec<T>,
 }
-#[cfg_attr(nightly, codesnip::entry("Polynomial"))]
+#[codesnip::entry("Polynomial")]
 mod polynomial_impls {
     use super::*;
     use std::ops::{Add, Div, Index, IndexMut, Mul, Rem, Sub};

@@ -2,13 +2,13 @@
 
 use crate::tools::Xorshift;
 
-#[cfg_attr(nightly, codesnip::entry("KnuthMorrisPratt"))]
+#[codesnip::entry("KnuthMorrisPratt")]
 pub use self::knuth_morris_pratt::KnuthMorrisPratt;
-#[cfg_attr(nightly, codesnip::entry("RollingHash"))]
+#[codesnip::entry("RollingHash")]
 pub use self::rolling_hash::{MultipleRollingHash, RollingHash};
-#[cfg_attr(nightly, codesnip::entry("SuffixArray"))]
+#[codesnip::entry("SuffixArray")]
 pub use self::suffix_array::SuffixArray;
-#[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]
+#[codesnip::entry("ZAlgorithm")]
 pub use self::z_algorithm::Zarray;
 
 #[cfg_attr(nightly, codesnip::entry("KnuthMorrisPratt"))]

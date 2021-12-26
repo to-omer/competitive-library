@@ -2,10 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::string::SuffixArray;
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://judge.yosupo.jp/problem/number_of_substrings")
-)]
+#[verify::verify("https://judge.yosupo.jp/problem/number_of_substrings")]
 pub fn number_of_substrings(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

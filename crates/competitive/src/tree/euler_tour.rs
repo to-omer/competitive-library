@@ -2,7 +2,7 @@ use crate::algebra::{Associative, Magma};
 use crate::data_structure::DisjointSparseTable;
 use crate::graph::UndirectedSparseGraph;
 
-#[cfg_attr(nightly, codesnip::entry("EulerTourForEdge", include("SparseGraph")))]
+#[codesnip::entry("EulerTourForEdge", include("SparseGraph"))]
 #[derive(Clone, Debug)]
 pub struct EulerTourForEdge<'a> {
     graph: &'a UndirectedSparseGraph,
@@ -10,7 +10,7 @@ pub struct EulerTourForEdge<'a> {
     pub par: Vec<usize>,
     epos: usize,
 }
-#[cfg_attr(nightly, codesnip::entry("EulerTourForEdge"))]
+#[codesnip::entry("EulerTourForEdge")]
 impl<'a> EulerTourForEdge<'a> {
     pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
         let mut self_ = Self {
@@ -37,14 +37,14 @@ impl<'a> EulerTourForEdge<'a> {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("EulerTourForVertex", include("SparseGraph")))]
+#[codesnip::entry("EulerTourForVertex", include("SparseGraph"))]
 #[derive(Clone, Debug)]
 pub struct EulerTourForVertex<'a> {
     graph: &'a UndirectedSparseGraph,
     pub vidx: Vec<(usize, usize)>,
     vpos: usize,
 }
-#[cfg_attr(nightly, codesnip::entry("EulerTourForVertex"))]
+#[codesnip::entry("EulerTourForVertex")]
 impl<'a> EulerTourForVertex<'a> {
     pub fn new(graph: &'a UndirectedSparseGraph) -> Self {
         Self {
@@ -95,10 +95,7 @@ impl<'a> EulerTourForVertex<'a> {
     }
 }
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry("EulerTourForRichVertex", include("SparseGraph"))
-)]
+#[codesnip::entry("EulerTourForRichVertex", include("SparseGraph"))]
 #[derive(Clone, Debug)]
 pub struct EulerTourForRichVertex<'a> {
     graph: &'a UndirectedSparseGraph,
@@ -106,7 +103,7 @@ pub struct EulerTourForRichVertex<'a> {
     vidx: Vec<(usize, usize)>,
     vtrace: Vec<usize>,
 }
-#[cfg_attr(nightly, codesnip::entry("EulerTourForRichVertex"))]
+#[codesnip::entry("EulerTourForRichVertex")]
 impl<'a> EulerTourForRichVertex<'a> {
     pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
         let mut self_ = Self {
@@ -139,7 +136,7 @@ impl<'a> EulerTourForRichVertex<'a> {
     }
 }
 
-#[cfg_attr(nightly, codesnip::entry("LowestCommonAncestor"))]
+#[codesnip::entry("LowestCommonAncestor")]
 impl<'a> EulerTourForRichVertex<'a> {
     pub fn gen_lca<D: LcaMonoidDispatch>(&'a self) -> LowestCommonAncestor<'a, D> {
         D::set_depth(self.graph.tree_depth(self.root));
@@ -147,17 +144,14 @@ impl<'a> EulerTourForRichVertex<'a> {
         LowestCommonAncestor { euler: self, dst }
     }
 }
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "LowestCommonAncestor",
-        include(
-            "algebra",
-            "DisjointSparseTable",
-            "EulerTourForRichVertex",
-            "SparseGraph",
-            "tree_depth"
-        )
+#[codesnip::entry(
+    "LowestCommonAncestor",
+    include(
+        "algebra",
+        "DisjointSparseTable",
+        "EulerTourForRichVertex",
+        "SparseGraph",
+        "tree_depth"
     )
 )]
 #[derive(Clone, Debug)]
@@ -165,26 +159,26 @@ pub struct LowestCommonAncestor<'a, D: LcaMonoidDispatch> {
     euler: &'a EulerTourForRichVertex<'a>,
     dst: DisjointSparseTable<LcaMonoid<D>>,
 }
-#[cfg_attr(nightly, codesnip::entry("LowestCommonAncestor"))]
+#[codesnip::entry("LowestCommonAncestor")]
 impl<'a, D: LcaMonoidDispatch> LowestCommonAncestor<'a, D> {
     pub fn lca(&self, u: usize, v: usize) -> usize {
         self.euler.query(u, v, |l, r| self.dst.fold(l, r))
     }
 }
-#[cfg_attr(nightly, codesnip::entry("LowestCommonAncestor"))]
+#[codesnip::entry("LowestCommonAncestor")]
 pub trait LcaMonoidDispatch {
     fn vsize() -> usize;
     fn depth(u: usize) -> u64;
     fn set_depth(depth: Vec<u64>);
 }
-#[cfg_attr(nightly, codesnip::entry("LowestCommonAncestor"))]
+#[codesnip::entry("LowestCommonAncestor")]
 pub struct LcaMonoidDefaultId;
-#[cfg_attr(nightly, codesnip::entry("LowestCommonAncestor"))]
+#[codesnip::entry("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
 pub struct LcaMonoid<D: LcaMonoidDispatch = LcaMonoidDefaultId> {
     _marker: std::marker::PhantomData<fn() -> D>,
 }
-#[cfg_attr(nightly, codesnip::entry("LowestCommonAncestor"))]
+#[codesnip::entry("LowestCommonAncestor")]
 pub mod impl_lcam {
     use super::*;
     thread_local! {

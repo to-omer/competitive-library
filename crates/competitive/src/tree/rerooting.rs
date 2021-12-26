@@ -3,10 +3,7 @@
 use crate::algebra::Monoid;
 use crate::graph::{Adjacency, UndirectedSparseGraph};
 
-#[cfg_attr(
-    nightly,
-    codesnip::entry("ReRooting", include("algebra", "SparseGraph"))
-)]
+#[codesnip::entry("ReRooting", include("algebra", "SparseGraph"))]
 /// dynamic programming on all-rooted trees
 ///
 /// caluculate all subtrees (hanging on the edge) in specific ordering,
@@ -21,7 +18,7 @@ pub struct ReRooting<'a, M: Monoid, F: Fn(&M::T, usize, Option<usize>) -> M::T> 
     /// rooting(data, vid, (Optional)eid): add root node(vid), result subtree is edge(eid)
     rooting: F,
 }
-#[cfg_attr(nightly, codesnip::entry("ReRooting"))]
+#[codesnip::entry("ReRooting")]
 impl<'a, M, F> ReRooting<'a, M, F>
 where
     M: Monoid,

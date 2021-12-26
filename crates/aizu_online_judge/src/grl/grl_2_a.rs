@@ -2,10 +2,7 @@
 pub use competitive::graph::EdgeListGraphScanner;
 use competitive::prelude::*;
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/2/GRL_2_A")
-)]
+#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/2/GRL_2_A")]
 pub fn grl_2_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

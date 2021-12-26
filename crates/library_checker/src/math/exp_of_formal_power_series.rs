@@ -2,10 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{math::Fps998244353, num::mint_basic::MInt998244353};
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://judge.yosupo.jp/problem/exp_of_formal_power_series")
-)]
+#[verify::verify("https://judge.yosupo.jp/problem/exp_of_formal_power_series")]
 pub fn exp_of_formal_power_series(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

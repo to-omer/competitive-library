@@ -5,10 +5,7 @@ pub use competitive::{
     data_structure::{BinaryIndexedTree, SegmentTree},
 };
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://judge.yosupo.jp/problem/point_add_range_sum")
-)]
+#[verify::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
 pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
@@ -32,10 +29,7 @@ pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: im
     }
 }
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://judge.yosupo.jp/problem/point_add_range_sum")
-)]
+#[verify::verify("https://judge.yosupo.jp/problem/point_add_range_sum")]
 pub fn point_add_range_sum_segment_tree(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

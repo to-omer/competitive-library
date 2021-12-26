@@ -1,15 +1,15 @@
-#[cfg_attr(nightly, codesnip::entry("LongestIncreasingSubsequence"))]
+#[codesnip::entry("LongestIncreasingSubsequence")]
 #[derive(Debug, Clone)]
 pub struct LongestIncreasingSubsequence<T: Ord> {
     pub dp: Vec<T>,
 }
-#[cfg_attr(nightly, codesnip::entry("LongestIncreasingSubsequence"))]
+#[codesnip::entry("LongestIncreasingSubsequence")]
 impl<T: Ord> Default for LongestIncreasingSubsequence<T> {
     fn default() -> Self {
         Self { dp: Vec::new() }
     }
 }
-#[cfg_attr(nightly, codesnip::entry("LongestIncreasingSubsequence"))]
+#[codesnip::entry("LongestIncreasingSubsequence")]
 impl<T: Ord> LongestIncreasingSubsequence<T> {
     pub fn new() -> Self {
         Default::default()

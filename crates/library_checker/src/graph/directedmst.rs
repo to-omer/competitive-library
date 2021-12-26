@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{algebra::AdditiveOperation, graph::EdgeListGraphScanner};
 
-#[cfg_attr(nightly, verify::verify("https://judge.yosupo.jp/problem/directedmst"))]
+#[verify::verify("https://judge.yosupo.jp/problem/directedmst")]
 pub fn directedmst(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

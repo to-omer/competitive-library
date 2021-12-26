@@ -1,4 +1,4 @@
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     while b != 0 {
         a %= b;
@@ -7,7 +7,7 @@ pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     a
 }
 
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 pub fn gcd_binary(mut a: u64, mut b: u64) -> u64 {
     if a == 0 {
         return b;
@@ -30,14 +30,14 @@ pub fn gcd_binary(mut a: u64, mut b: u64) -> u64 {
     a << k
 }
 
-#[cfg_attr(nightly, codesnip::entry(include("gcd")))]
+#[codesnip::entry(include("gcd"))]
 pub fn lcm(a: u64, b: u64) -> u64 {
     a / gcd(a, b) * b
 }
 
 // ax + by = gcd(a, b)
 // a, b -> gcd(a, b), x, y
-#[cfg_attr(nightly, codesnip::entry)]
+#[codesnip::entry]
 pub fn extgcd(a: i64, b: i64) -> (i64, i64, i64) {
     if b == 0 {
         (a, 1, 0)
@@ -103,7 +103,7 @@ pub fn extgcd_binary(mut a: i64, mut b: i64) -> (i64, i64, i64) {
     (a << k, s, t)
 }
 
-#[cfg_attr(nightly, codesnip::entry(include("extgcd")))]
+#[codesnip::entry(include("extgcd"))]
 pub fn modinv(a: i64, m: i64) -> i64 {
     (extgcd(a, m).1 % m + m) % m
 }

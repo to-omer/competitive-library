@@ -6,7 +6,7 @@ use crate::{
 };
 
 pub use self::euler_tour::*;
-#[cfg_attr(nightly, codesnip::entry("tree_generator"))]
+#[codesnip::entry("tree_generator")]
 pub use self::generator::*;
 pub use self::heavy_light_decomposition::*;
 pub use self::rerooting::ReRooting;

@@ -1,12 +1,12 @@
 use crate::num::{One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one")))]
+#[codesnip::entry("Matrix", include("zero_one"))]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Matrix<T> {
     pub shape: (usize, usize),
     pub data: Vec<Vec<T>>,
 }
-#[cfg_attr(nightly, codesnip::entry("Matrix"))]
+#[codesnip::entry("Matrix")]
 mod matrix_impls {
     use super::*;
     use std::ops::{Add, Div, Index, IndexMut, Mul, Sub};

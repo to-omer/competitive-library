@@ -1,9 +1,9 @@
-#[cfg_attr(nightly, codesnip::entry("Xorshift"))]
+#[codesnip::entry("Xorshift")]
 #[derive(Clone, Debug)]
 pub struct Xorshift {
     y: u64,
 }
-#[cfg_attr(nightly, codesnip::entry("Xorshift"))]
+#[codesnip::entry("Xorshift")]
 impl Xorshift {
     pub fn new(seed: u64) -> Self {
         Xorshift { y: seed }
@@ -52,7 +52,7 @@ impl Xorshift {
         }
     }
 }
-#[cfg_attr(nightly, codesnip::entry("Xorshift"))]
+#[codesnip::entry("Xorshift")]
 impl Default for Xorshift {
     fn default() -> Self {
         Xorshift::new(0x2b99_2ddf_a232_49d6)
@@ -64,5 +64,5 @@ impl Default for Xorshift {
     codesnip::entry("random_generator", include("Xorshift", "bounded"))
 )]
 mod random_generator;
-#[cfg_attr(nightly, codesnip::entry("random_generator"))]
+#[codesnip::entry("random_generator")]
 pub use random_generator::{NotEmptySegment, RandIter, RandomSpec};

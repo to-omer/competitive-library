@@ -2,10 +2,7 @@
 pub use competitive::graph::{DirectedGraphScanner, StronglyConnectedComponent};
 use competitive::prelude::*;
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/3/GRL_3_C")
-)]
+#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/3/GRL_3_C")]
 pub fn grl_3_c(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

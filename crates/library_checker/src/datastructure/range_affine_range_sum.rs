@@ -6,10 +6,7 @@ pub use competitive::{
     num::{mint_basic::MInt998244353, MInt, One},
 };
 
-#[cfg_attr(
-    nightly,
-    verify::verify("https://judge.yosupo.jp/problem/range_affine_range_sum")
-)]
+#[verify::verify("https://judge.yosupo.jp/problem/range_affine_range_sum")]
 pub fn range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

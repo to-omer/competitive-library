@@ -1,9 +1,9 @@
-#[cfg_attr(nightly, codesnip::entry("GetDistinctMut"))]
+#[codesnip::entry("GetDistinctMut")]
 pub trait GetDistinctMut<I> {
     type Output;
     fn get_distinct_mut(self, index: I) -> Self::Output;
 }
-#[cfg_attr(nightly, codesnip::entry("GetDistinctMut"))]
+#[codesnip::entry("GetDistinctMut")]
 impl<'a, T> GetDistinctMut<(usize, usize)> for &'a mut [T] {
     type Output = (&'a mut T, &'a mut T);
     fn get_distinct_mut(self, (i0, i1): (usize, usize)) -> Self::Output {
@@ -14,7 +14,7 @@ impl<'a, T> GetDistinctMut<(usize, usize)> for &'a mut [T] {
         unsafe { (&mut *ptr.add(i0), &mut *ptr.add(i1)) }
     }
 }
-#[cfg_attr(nightly, codesnip::entry("GetDistinctMut"))]
+#[codesnip::entry("GetDistinctMut")]
 impl<'a, T> GetDistinctMut<(usize, usize, usize)> for &'a mut [T] {
     type Output = (&'a mut T, &'a mut T, &'a mut T);
     fn get_distinct_mut(self, (i0, i1, i2): (usize, usize, usize)) -> Self::Output {

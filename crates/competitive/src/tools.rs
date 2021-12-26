@@ -1,18 +1,18 @@
-#[cfg_attr(nightly, codesnip::entry("AssociatedValue"))]
+#[codesnip::entry("AssociatedValue")]
 pub use self::associated_value::AssociatedValue;
-#[cfg_attr(nightly, codesnip::entry("char_tools"))]
+#[codesnip::entry("char_tools")]
 pub use self::char_tools::CharTools;
-#[cfg_attr(nightly, codesnip::entry("SimuratedAnnealing"))]
+#[codesnip::entry("SimuratedAnnealing")]
 pub use self::heuristics::SimuratedAnnealing;
-#[cfg_attr(nightly, codesnip::entry("_iter_print"))]
+#[codesnip::entry("_iter_print")]
 pub use self::iter_print::IterPrint;
-#[cfg_attr(nightly, codesnip::entry("ord_tools"))]
+#[codesnip::entry("ord_tools")]
 pub use self::ord_tools::PartialOrdExt;
 pub use self::random::*;
-#[cfg_attr(nightly, codesnip::entry("scanner"))]
+#[codesnip::entry("scanner")]
 pub use self::scanner::*;
 pub use self::slice::GetDistinctMut;
-#[cfg_attr(nightly, codesnip::entry("TotalOrd"))]
+#[codesnip::entry("TotalOrd")]
 pub use self::totalord::TotalOrd;
 
 #[cfg_attr(nightly, codesnip::entry)]

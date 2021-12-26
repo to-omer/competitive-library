@@ -1,4 +1,4 @@
-#[cfg_attr(nightly, codesnip::skip)]
+#[codesnip::skip]
 use crate::{
     num::{mint_basic, MInt, MIntBase, MIntConvert, One, Zero},
     tools::AssociatedValue,
