@@ -177,3 +177,25 @@ mod tests {
         assert_eq!(V.rfind_bisect(|&x| x <= 10), Some(&8));
     }
 }
+
+pub fn parallel_binary_search<T, F, G>(mut f: F, q: usize, ok: T, err: T) -> Vec<T>
+where
+    T: Bisect,
+    F: FnMut(&[T]) -> G,
+    G: Fn(usize) -> bool,
+{
+    let mut ok = vec![ok; q];
+    let mut err = vec![err; q];
+    while !ok.iter().zip(&err).all(|(ok, err)| ok.section_end(err)) {
+        let m: Vec<_> = ok.iter().zip(&err).map(|(ok, err)| ok.halve(err)).collect();
+        let g = f(&m);
+        for (i, m) in m.into_iter().enumerate() {
+            if g(i) {
+                ok[i] = m;
+            } else {
+                err[i] = m;
+            }
+        }
+    }
+    ok
+}
