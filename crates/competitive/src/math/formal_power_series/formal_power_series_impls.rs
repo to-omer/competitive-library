@@ -52,6 +52,12 @@ impl<T: Clone, Multiplier> FormalPowerSeries<T, Multiplier> {
             self.clone()
         }
     }
+    pub fn even(&self) -> Self {
+        self.data.iter().cloned().step_by(2).collect()
+    }
+    pub fn odd(&self) -> Self {
+        self.data.iter().cloned().skip(1).step_by(2).collect()
+    }
 }
 
 impl<T, Multiplier> Zero for FormalPowerSeries<T, Multiplier>
@@ -122,11 +128,14 @@ where
             )
             .collect()
     }
-    pub fn even(&self) -> Self {
-        self.data.iter().cloned().step_by(2).collect()
-    }
-    pub fn odd(&self) -> Self {
-        self.data.iter().cloned().skip(1).step_by(2).collect()
+    pub fn eval(&self, x: T) -> T {
+        let mut base = T::one();
+        let mut res = T::zero();
+        for a in &self.data {
+            res += base.clone() * a.clone();
+            base *= x.clone();
+        }
+        res
     }
 }
 
@@ -277,5 +286,31 @@ where
             n /= 2;
         }
         p[0].clone() / q[0].clone()
+    }
+    pub fn multipoint_evaluation(&self, points: &[T]) -> Vec<T> {
+        let n = points.len();
+        if n <= 32 {
+            return points.iter().map(|p| self.eval(p.clone())).collect();
+        }
+        let mut subproduct_tree = Vec::with_capacity(n * 2);
+        subproduct_tree.resize_with(n, Zero::zero);
+        for x in points {
+            subproduct_tree.push(Self::from_vec(vec![-x.clone(), T::one()]));
+        }
+        for i in (1..n).rev() {
+            subproduct_tree[i] = &subproduct_tree[i * 2] * &subproduct_tree[i * 2 + 1];
+        }
+        let mut subremainder_tree = Vec::with_capacity(n);
+        subremainder_tree.resize_with(1, Zero::zero);
+        subremainder_tree.push(self % &subproduct_tree[1]);
+        for i in 2..n {
+            subremainder_tree.push(&subremainder_tree[i / 2] % &subproduct_tree[i]);
+        }
+        let mut res = Vec::with_capacity(n);
+        for i in n..n * 2 {
+            let f = &subremainder_tree[i / 2] % &subproduct_tree[i];
+            res.push((f).data.get(0).cloned().unwrap_or_else(Zero::zero));
+        }
+        res
     }
 }

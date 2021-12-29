@@ -252,7 +252,11 @@ where
 {
     type Output = FormalPowerSeries<T, Multiplier>;
     fn rem(self, rhs: &FormalPowerSeries<T, Multiplier>) -> Self::Output {
-        Rem::rem(self.clone(), rhs.clone())
+        let mut res = self - &(&(self / rhs) * rhs);
+        while res.data.last().map_or(false, |x| x.is_zero()) {
+            res.data.pop();
+        }
+        res
     }
 }
 
