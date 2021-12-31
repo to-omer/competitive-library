@@ -287,6 +287,13 @@ where
         }
         p[0].clone() / q[0].clone()
     }
+    fn middle_product(&self, other: &Self) -> Self {
+        let n = self.length();
+        let mut x = self.clone();
+        x.data.reverse();
+        let res = &x * other;
+        Self::from_vec(res.data[n - 1..].to_vec())
+    }
     pub fn multipoint_evaluation(&self, points: &[T]) -> Vec<T> {
         let n = points.len();
         if n <= 32 {
@@ -300,17 +307,30 @@ where
         for i in (1..n).rev() {
             subproduct_tree[i] = &subproduct_tree[i * 2] * &subproduct_tree[i * 2 + 1];
         }
-        let mut subremainder_tree = Vec::with_capacity(n);
-        subremainder_tree.resize_with(1, Zero::zero);
-        subremainder_tree.push(self % &subproduct_tree[1]);
-        for i in 2..n {
-            subremainder_tree.push(&subremainder_tree[i / 2] % &subproduct_tree[i]);
+        let mut uptree_t = Vec::with_capacity(n * 2);
+        uptree_t.resize_with(1, Zero::zero);
+        let mut v = subproduct_tree[1].clone();
+        v.data.reverse();
+        v.data.resize_with(self.length(), Zero::zero);
+        v = v.inv(self.length()).middle_product(self);
+        v.data.resize_with(n, Zero::zero);
+        v.data.reverse();
+        uptree_t.push(v);
+        for i in 1..n {
+            uptree_t.push(
+                subproduct_tree[i * 2 + 1]
+                    .middle_product(&uptree_t[i])
+                    .prefix(subproduct_tree[i * 2].length()),
+            );
+            uptree_t.push(
+                subproduct_tree[i * 2]
+                    .middle_product(&uptree_t[i])
+                    .prefix(subproduct_tree[i * 2 + 1].length()),
+            );
         }
-        let mut res = Vec::with_capacity(n);
-        for i in n..n * 2 {
-            let f = &subremainder_tree[i / 2] % &subproduct_tree[i];
-            res.push((f).data.get(0).cloned().unwrap_or_else(Zero::zero));
-        }
-        res
+        uptree_t[n..]
+            .iter()
+            .map(|u| u.data.get(0).cloned().unwrap_or_else(Zero::zero))
+            .collect()
     }
 }
