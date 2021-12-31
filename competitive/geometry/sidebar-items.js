@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["EPS",""]],"enum":[["Ccw",""]],"fn":[["closest_pair",""],["convex_diameter",""],["convex_hull",""]],"struct":[["Circle",""],["Line",""],["LineSegment",""],["Real",""]],"type":[["Point",""]]});
+initSidebarItems({"enum":[["Ccw",""]],"fn":[["closest_pair",""],["convex_diameter",""],["convex_hull",""]],"struct":[["Approx",""],["Circle",""],["Line",""],["LineSegment",""]],"trait":[["ApproxOrd",""]],"type":[["Point",""]]});
