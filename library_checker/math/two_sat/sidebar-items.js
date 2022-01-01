@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["two_sat","✅  AC  293ms"]]});
+initSidebarItems({"fn":[["two_sat","✅  AC  327ms"]]});
