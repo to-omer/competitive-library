@@ -1,6 +1,6 @@
 #[codesnip::skip]
 use crate::{
-    math::{convolve_mint, NttModulus, NumberTheoreticTransform},
+    math::{Convolve, ConvolveSteps, MIntConvolve, NttModulus},
     num::{mint_basic, MInt, MIntConvert, One, Zero},
 };
 
@@ -40,7 +40,7 @@ pub trait FormalPowerSeriesCoefficient:
 {
 }
 
-impl<M: MIntConvert<usize>> FormalPowerSeriesCoefficient for MInt<M> {}
+impl<M> FormalPowerSeriesCoefficient for MInt<M> where M: MIntConvert<usize> {}
 
 pub trait FormalPowerSeriesMultiplier: Sized {
     type T;
@@ -52,24 +52,30 @@ pub trait FormalPowerSeriesMultiplier: Sized {
 
 pub struct DefaultFormalPowerSeriesMultiplier<M>(std::marker::PhantomData<M>);
 
-impl<M: MIntConvert<u32>> FormalPowerSeriesMultiplier for DefaultFormalPowerSeriesMultiplier<M> {
+impl<M> FormalPowerSeriesMultiplier for DefaultFormalPowerSeriesMultiplier<M>
+where
+    M: MIntConvert + MIntConvert<u32>,
+{
     type T = MInt<M>;
     fn convolve(
         x: &FormalPowerSeries<Self::T, Self>,
         y: &FormalPowerSeries<Self::T, Self>,
     ) -> FormalPowerSeries<Self::T, Self> {
-        let z = convolve_mint(&x.data, &y.data);
+        let z = MIntConvolve::<M>::convolve(x.data.to_vec(), y.data.to_vec());
         FormalPowerSeries::from_vec(z)
     }
 }
 
-impl<M: NttModulus + MIntConvert<usize>> FormalPowerSeriesMultiplier for M {
+impl<M> FormalPowerSeriesMultiplier for M
+where
+    M: NttModulus,
+{
     type T = MInt<M>;
     fn convolve(
         x: &FormalPowerSeries<Self::T, Self>,
         y: &FormalPowerSeries<Self::T, Self>,
     ) -> FormalPowerSeries<Self::T, Self> {
-        let z = NumberTheoreticTransform::<M>::convolve_ref(&x.data, &y.data);
+        let z = Convolve::<M>::convolve(x.data.to_vec(), y.data.to_vec());
         FormalPowerSeries::from_vec(z)
     }
 }
