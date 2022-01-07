@@ -33,15 +33,12 @@ pub trait ConvolveSteps {
     fn transform(t: Self::T, len: usize) -> Self::F;
     fn inverse_transform(f: Self::F, len: usize) -> Self::T;
     fn multiply(f: &mut Self::F, g: &Self::F);
-    fn fit_constant(t: &mut Self::T, len: usize);
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let mut a = Self::transform(a, len);
         let b = Self::transform(b, len);
         Self::multiply(&mut a, &b);
-        let mut c = Self::inverse_transform(a, len);
-        Self::fit_constant(&mut c, len);
-        c
+        Self::inverse_transform(a, len)
     }
 }
 pub mod number_theoretic_transform_impls {
@@ -198,18 +195,16 @@ pub mod number_theoretic_transform_impls {
         fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
             NumberTheoreticTransform::<M>::intt(&mut f);
             f.truncate(len);
+            let inv = MInt::from(len.max(2).next_power_of_two() as u32).inv();
+            for f in f.iter_mut() {
+                *f *= inv;
+            }
             f
         }
         fn multiply(f: &mut Self::F, g: &Self::F) {
             assert_eq!(f.len(), g.len());
             for (f, g) in f.iter_mut().zip(g.iter()) {
                 *f *= *g;
-            }
-        }
-        fn fit_constant(t: &mut Self::T, len: usize) {
-            let inv = MInt::from(len.max(2).next_power_of_two() as u32).inv();
-            for t in t.iter_mut() {
-                *t *= inv;
             }
         }
     }
@@ -246,21 +241,16 @@ pub mod number_theoretic_transform_impls {
             NumberTheoreticTransform::<N3>::ntt(&mut f.2);
             f
         }
-        fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
-            NumberTheoreticTransform::<N1>::intt(&mut f.0);
-            NumberTheoreticTransform::<N2>::intt(&mut f.1);
-            NumberTheoreticTransform::<N3>::intt(&mut f.2);
-            f.0.truncate(len);
-            f.1.truncate(len);
-            f.2.truncate(len);
+        fn inverse_transform(f: Self::F, len: usize) -> Self::T {
             let t1 = MInt::<N2>::new(N1::get_mod()).inv();
             let m1 = MInt::<M>::from(N1::get_mod());
             let m1_3 = MInt::<N3>::new(N1::get_mod());
             let t2 = (m1_3 * MInt::<N3>::new(N2::get_mod())).inv();
             let m2 = m1 * MInt::<M>::from(N2::get_mod());
-            f.0.into_iter()
-                .zip(f.1.into_iter())
-                .zip(f.2.into_iter())
+            Convolve::<N1>::inverse_transform(f.0, len)
+                .into_iter()
+                .zip(Convolve::<N2>::inverse_transform(f.1, len))
+                .zip(Convolve::<N3>::inverse_transform(f.2, len))
                 .map(|((c1, c2), c3)| {
                     let d1 = c1.inner();
                     let d2 = ((c2 - MInt::<N2>::from(d1)) * t1).inner();
@@ -282,12 +272,6 @@ pub mod number_theoretic_transform_impls {
             }
             for (f, g) in f.2.iter_mut().zip(g.2.iter()) {
                 *f *= *g;
-            }
-        }
-        fn fit_constant(t: &mut Self::T, len: usize) {
-            let inv = MInt::from(len.max(2).next_power_of_two() as u32).inv();
-            for t in t.iter_mut() {
-                *t *= inv;
             }
         }
     }
