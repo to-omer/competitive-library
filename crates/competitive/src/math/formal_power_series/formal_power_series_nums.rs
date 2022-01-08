@@ -6,7 +6,7 @@ use std::ops::{
     ShrAssign, Sub, SubAssign,
 };
 
-impl<T, Multiplier> AddAssign<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> AddAssign<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -17,7 +17,7 @@ where
         self.data[0].add_assign(rhs);
     }
 }
-impl<T, Multiplier> SubAssign<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> SubAssign<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -28,7 +28,7 @@ where
         self.data[0].sub_assign(rhs);
     }
 }
-impl<T, Multiplier> MulAssign<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> MulAssign<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -38,7 +38,7 @@ where
         }
     }
 }
-impl<T, Multiplier> DivAssign<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> DivAssign<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -49,7 +49,7 @@ where
         }
     }
 }
-impl<T, Multiplier> Add<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> Add<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -59,7 +59,7 @@ where
         self
     }
 }
-impl<T, Multiplier> Sub<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> Sub<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -69,7 +69,7 @@ where
         self
     }
 }
-impl<T, Multiplier> Mul<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> Mul<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -79,7 +79,7 @@ where
         self
     }
 }
-impl<T, Multiplier> Div<&T> for FormalPowerSeries<T, Multiplier>
+impl<T, C> Div<&T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -90,7 +90,7 @@ where
     }
 }
 
-impl<T, Multiplier> AddAssign<&Self> for FormalPowerSeries<T, Multiplier>
+impl<T, C> AddAssign<&Self> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -103,7 +103,7 @@ where
         }
     }
 }
-impl<T, Multiplier> SubAssign<&Self> for FormalPowerSeries<T, Multiplier>
+impl<T, C> SubAssign<&Self> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -116,64 +116,67 @@ where
         }
     }
 }
-impl<T, Multiplier> MulAssign<&Self> for FormalPowerSeries<T, Multiplier>
+impl<T, C> MulAssign<&Self> for FormalPowerSeries<T, C>
 where
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    T: Clone,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     fn mul_assign(&mut self, rhs: &Self) {
         *self = Mul::mul(&*self, rhs);
     }
 }
-impl<T, Multiplier> DivAssign<&Self> for FormalPowerSeries<T, Multiplier>
+impl<T, C> DivAssign<&Self> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     fn div_assign(&mut self, rhs: &Self) {
         *self = Div::div(&*self, rhs);
     }
 }
-impl<T, Multiplier> RemAssign<&Self> for FormalPowerSeries<T, Multiplier>
+impl<T, C> RemAssign<&Self> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     fn rem_assign(&mut self, rhs: &Self) {
         self.sub_assign(&(&(&*self / rhs) * rhs));
     }
 }
 
-impl<T, Multiplier> Add for FormalPowerSeries<T, Multiplier>
+impl<T, C> Add for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
     type Output = Self;
-    fn add(self, rhs: Self) -> Self::Output {
-        Add::add(&self, &rhs)
+    fn add(mut self, rhs: Self) -> Self::Output {
+        self.add_assign(&rhs);
+        self
     }
 }
-impl<T, Multiplier> Sub for FormalPowerSeries<T, Multiplier>
+impl<T, C> Sub for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
     type Output = Self;
-    fn sub(self, rhs: Self) -> Self::Output {
-        Sub::sub(&self, &rhs)
+    fn sub(mut self, rhs: Self) -> Self::Output {
+        self.sub_assign(&rhs);
+        self
     }
 }
-impl<T, Multiplier> Mul for FormalPowerSeries<T, Multiplier>
+impl<T, C> Mul for FormalPowerSeries<T, C>
 where
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self::Output {
-        Mul::mul(&self, &rhs)
+        Self::from_vec(C::convolve(self.data, rhs.data))
     }
 }
-impl<T, Multiplier> Div for FormalPowerSeries<T, Multiplier>
+impl<T, C> Div for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     type Output = Self;
     fn div(mut self, mut rhs: Self) -> Self::Output {
@@ -189,78 +192,75 @@ where
         self.data.reverse();
         rhs.data.reverse();
         let n = self.length() - rhs.length() + 1;
-        let mut res = (&self * &rhs.inv(n)).prefix(n);
+        let mut res = (self * rhs.inv(n)).prefix_inplace(n);
         res.data.reverse();
         res
     }
 }
-impl<T, Multiplier> Rem for FormalPowerSeries<T, Multiplier>
+impl<T, C> Rem for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     type Output = Self;
     fn rem(self, rhs: Self) -> Self::Output {
-        Rem::rem(&self, &rhs)
-    }
-}
-impl<T, Multiplier> Add<&FormalPowerSeries<T, Multiplier>> for &FormalPowerSeries<T, Multiplier>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = FormalPowerSeries<T, Multiplier>;
-    fn add(self, rhs: &FormalPowerSeries<T, Multiplier>) -> Self::Output {
-        let mut self_ = self.clone();
-        self_.add_assign(rhs);
-        self_
-    }
-}
-impl<T, Multiplier> Sub<&FormalPowerSeries<T, Multiplier>> for &FormalPowerSeries<T, Multiplier>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = FormalPowerSeries<T, Multiplier>;
-    fn sub(self, rhs: &FormalPowerSeries<T, Multiplier>) -> Self::Output {
-        let mut self_ = self.clone();
-        self_.sub_assign(rhs);
-        self_
-    }
-}
-impl<T, Multiplier> Mul<&FormalPowerSeries<T, Multiplier>> for &FormalPowerSeries<T, Multiplier>
-where
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
-{
-    type Output = FormalPowerSeries<T, Multiplier>;
-    fn mul(self, rhs: &FormalPowerSeries<T, Multiplier>) -> Self::Output {
-        Multiplier::convolve(self, rhs)
-    }
-}
-impl<T, Multiplier> Div<&FormalPowerSeries<T, Multiplier>> for &FormalPowerSeries<T, Multiplier>
-where
-    T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
-{
-    type Output = FormalPowerSeries<T, Multiplier>;
-    fn div(self, rhs: &FormalPowerSeries<T, Multiplier>) -> Self::Output {
-        Div::div(self.clone(), rhs.clone())
-    }
-}
-impl<T, Multiplier> Rem<&FormalPowerSeries<T, Multiplier>> for &FormalPowerSeries<T, Multiplier>
-where
-    T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
-{
-    type Output = FormalPowerSeries<T, Multiplier>;
-    fn rem(self, rhs: &FormalPowerSeries<T, Multiplier>) -> Self::Output {
-        let mut res = self - &(&(self / rhs) * rhs);
+        let mut res = self.clone() - self / rhs.clone() * rhs;
         while res.data.last().map_or(false, |x| x.is_zero()) {
             res.data.pop();
         }
         res
     }
 }
+impl<T, C> Add<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+where
+    T: FormalPowerSeriesCoefficient,
+{
+    type Output = FormalPowerSeries<T, C>;
+    fn add(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+        Add::add(self.clone(), rhs.clone())
+    }
+}
+impl<T, C> Sub<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+where
+    T: FormalPowerSeriesCoefficient,
+{
+    type Output = FormalPowerSeries<T, C>;
+    fn sub(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+        Sub::sub(self.clone(), rhs.clone())
+    }
+}
+impl<T, C> Mul<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+where
+    T: Clone,
+    C: ConvolveSteps<T = Vec<T>>,
+{
+    type Output = FormalPowerSeries<T, C>;
+    fn mul(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+        Mul::mul(self.clone(), rhs.clone())
+    }
+}
+impl<T, C> Div<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+where
+    T: FormalPowerSeriesCoefficient,
+    C: ConvolveSteps<T = Vec<T>>,
+{
+    type Output = FormalPowerSeries<T, C>;
+    fn div(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+        Div::div(self.clone(), rhs.clone())
+    }
+}
+impl<T, C> Rem<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+where
+    T: FormalPowerSeriesCoefficient,
+    C: ConvolveSteps<T = Vec<T>>,
+{
+    type Output = FormalPowerSeries<T, C>;
+    fn rem(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+        Rem::rem(self.clone(), rhs.clone())
+    }
+}
 
-impl<T, Multiplier> Neg for FormalPowerSeries<T, Multiplier>
+impl<T, C> Neg for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -272,17 +272,17 @@ where
         self
     }
 }
-impl<T, Multiplier> Neg for &FormalPowerSeries<T, Multiplier>
+impl<T, C> Neg for &FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    type Output = FormalPowerSeries<T, Multiplier>;
+    type Output = FormalPowerSeries<T, C>;
     fn neg(self) -> Self::Output {
         self.clone().neg()
     }
 }
 
-impl<T, Multiplier> ShrAssign<usize> for FormalPowerSeries<T, Multiplier>
+impl<T, C> ShrAssign<usize> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -297,7 +297,7 @@ where
         }
     }
 }
-impl<T, Multiplier> ShlAssign<usize> for FormalPowerSeries<T, Multiplier>
+impl<T, C> ShlAssign<usize> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -313,7 +313,7 @@ where
     }
 }
 
-impl<T, Multiplier> Shr<usize> for FormalPowerSeries<T, Multiplier>
+impl<T, C> Shr<usize> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -323,7 +323,7 @@ where
         self
     }
 }
-impl<T, Multiplier> Shl<usize> for FormalPowerSeries<T, Multiplier>
+impl<T, C> Shl<usize> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -333,11 +333,11 @@ where
         self
     }
 }
-impl<T, Multiplier> Shr<usize> for &FormalPowerSeries<T, Multiplier>
+impl<T, C> Shr<usize> for &FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    type Output = FormalPowerSeries<T, Multiplier>;
+    type Output = FormalPowerSeries<T, C>;
     fn shr(self, rhs: usize) -> Self::Output {
         if self.length() <= rhs {
             Self::Output::zero()
@@ -350,11 +350,11 @@ where
         }
     }
 }
-impl<T, Multiplier> Shl<usize> for &FormalPowerSeries<T, Multiplier>
+impl<T, C> Shl<usize> for &FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    type Output = FormalPowerSeries<T, Multiplier>;
+    type Output = FormalPowerSeries<T, C>;
     fn shl(self, rhs: usize) -> Self::Output {
         let mut f = Self::Output::zeros(self.length() + rhs);
         for (i, x) in self.data.iter().cloned().enumerate().rev() {

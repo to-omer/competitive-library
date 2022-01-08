@@ -3,8 +3,9 @@ use crate::{
     num::{mint_basic, MInt, MIntBase, MIntConvert, One, Zero},
     tools::AssociatedValue,
 };
+use std::marker::PhantomData;
 
-pub struct NumberTheoreticTransform<M>(std::marker::PhantomData<fn() -> M>);
+pub struct NumberTheoreticTransform<M>(PhantomData<fn() -> M>);
 pub trait NttModulus:
     'static
     + Sized
@@ -15,7 +16,7 @@ pub trait NttModulus:
     fn primitive_root() -> MInt<Self>;
 }
 
-pub struct Convolve<M>(std::marker::PhantomData<fn() -> M>);
+pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<mint_basic::Modulo998244353>;
 pub type MIntConvolve<M> = Convolve<(
     M,

@@ -1,17 +1,17 @@
 #[codesnip::skip]
 use crate::{
-    math::{Convolve, ConvolveSteps, MIntConvolve, NttModulus},
+    math::{Convolve998244353, ConvolveSteps, MIntConvolve},
     num::{mint_basic, MInt, MIntConvert, One, Zero},
 };
 
 #[derive(Debug, Default)]
-pub struct FormalPowerSeries<T, Multiplier> {
+pub struct FormalPowerSeries<T, C> {
     pub data: Vec<T>,
-    _marker: std::marker::PhantomData<Multiplier>,
+    _marker: std::marker::PhantomData<C>,
 }
 
-pub type Fps998244353 = FormalPowerSeries<mint_basic::MInt998244353, mint_basic::Modulo998244353>;
-pub type Fps<M> = FormalPowerSeries<MInt<M>, DefaultFormalPowerSeriesMultiplier<M>>;
+pub type Fps998244353 = FormalPowerSeries<mint_basic::MInt998244353, Convolve998244353>;
+pub type Fps<M> = FormalPowerSeries<MInt<M>, MIntConvolve<M>>;
 
 pub trait FormalPowerSeriesCoefficient:
     Sized
@@ -41,44 +41,6 @@ pub trait FormalPowerSeriesCoefficient:
 }
 
 impl<M> FormalPowerSeriesCoefficient for MInt<M> where M: MIntConvert<usize> {}
-
-pub trait FormalPowerSeriesMultiplier: Sized {
-    type T;
-    fn convolve(
-        x: &FormalPowerSeries<Self::T, Self>,
-        y: &FormalPowerSeries<Self::T, Self>,
-    ) -> FormalPowerSeries<Self::T, Self>;
-}
-
-pub struct DefaultFormalPowerSeriesMultiplier<M>(std::marker::PhantomData<M>);
-
-impl<M> FormalPowerSeriesMultiplier for DefaultFormalPowerSeriesMultiplier<M>
-where
-    M: MIntConvert + MIntConvert<u32>,
-{
-    type T = MInt<M>;
-    fn convolve(
-        x: &FormalPowerSeries<Self::T, Self>,
-        y: &FormalPowerSeries<Self::T, Self>,
-    ) -> FormalPowerSeries<Self::T, Self> {
-        let z = MIntConvolve::<M>::convolve(x.data.to_vec(), y.data.to_vec());
-        FormalPowerSeries::from_vec(z)
-    }
-}
-
-impl<M> FormalPowerSeriesMultiplier for M
-where
-    M: NttModulus,
-{
-    type T = MInt<M>;
-    fn convolve(
-        x: &FormalPowerSeries<Self::T, Self>,
-        y: &FormalPowerSeries<Self::T, Self>,
-    ) -> FormalPowerSeries<Self::T, Self> {
-        let z = Convolve::<M>::convolve(x.data.to_vec(), y.data.to_vec());
-        FormalPowerSeries::from_vec(z)
-    }
-}
 
 pub trait FormalPowerSeriesCoefficientSqrt: FormalPowerSeriesCoefficient {
     fn sqrt_coefficient(&self) -> Option<Self>;

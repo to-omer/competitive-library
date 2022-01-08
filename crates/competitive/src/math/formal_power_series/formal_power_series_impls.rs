@@ -5,7 +5,7 @@ use std::{
     ops::{Index, IndexMut},
 };
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier> {
+impl<T, C> FormalPowerSeries<T, C> {
     pub fn from_vec(data: Vec<T>) -> Self {
         Self {
             data,
@@ -20,19 +20,19 @@ impl<T, Multiplier> FormalPowerSeries<T, Multiplier> {
     }
 }
 
-impl<T: Clone, Multiplier> Clone for FormalPowerSeries<T, Multiplier> {
+impl<T: Clone, C> Clone for FormalPowerSeries<T, C> {
     fn clone(&self) -> Self {
         Self::from_vec(self.data.clone())
     }
 }
-impl<T: PartialEq, Multiplier> PartialEq for FormalPowerSeries<T, Multiplier> {
+impl<T: PartialEq, C> PartialEq for FormalPowerSeries<T, C> {
     fn eq(&self, other: &Self) -> bool {
         self.data.eq(&other.data)
     }
 }
-impl<T: PartialEq, Multiplier> Eq for FormalPowerSeries<T, Multiplier> {}
+impl<T: PartialEq, C> Eq for FormalPowerSeries<T, C> {}
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: Zero,
 {
@@ -44,13 +44,17 @@ where
     }
 }
 
-impl<T: Clone, Multiplier> FormalPowerSeries<T, Multiplier> {
+impl<T: Clone, C> FormalPowerSeries<T, C> {
     pub fn prefix(&self, deg: usize) -> Self {
         if deg < self.length() {
             Self::from_vec(self.data[..deg].to_vec())
         } else {
             self.clone()
         }
+    }
+    pub fn prefix_inplace(mut self, deg: usize) -> Self {
+        self.data.truncate(deg);
+        self
     }
     pub fn even(&self) -> Self {
         self.data.iter().cloned().step_by(2).collect()
@@ -60,7 +64,7 @@ impl<T: Clone, Multiplier> FormalPowerSeries<T, Multiplier> {
     }
 }
 
-impl<T, Multiplier> Zero for FormalPowerSeries<T, Multiplier>
+impl<T, C> Zero for FormalPowerSeries<T, C>
 where
     T: PartialEq,
 {
@@ -68,7 +72,7 @@ where
         Self::from_vec(Vec::new())
     }
 }
-impl<T, Multiplier> One for FormalPowerSeries<T, Multiplier>
+impl<T, C> One for FormalPowerSeries<T, C>
 where
     T: PartialEq + One,
 {
@@ -77,36 +81,36 @@ where
     }
 }
 
-impl<T, Multiplier> FromIterator<T> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> FromIterator<T> for FormalPowerSeries<T, C> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         Self::from_vec(iter.into_iter().collect())
     }
 }
 
-impl<T, Multiplier> Index<usize> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> Index<usize> for FormalPowerSeries<T, C> {
     type Output = T;
     fn index(&self, index: usize) -> &Self::Output {
         &self.data[index]
     }
 }
-impl<T, Multiplier> IndexMut<usize> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> IndexMut<usize> for FormalPowerSeries<T, C> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.data[index]
     }
 }
 
-impl<T, Multiplier> From<T> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> From<T> for FormalPowerSeries<T, C> {
     fn from(x: T) -> Self {
         once(x).collect()
     }
 }
-impl<T, Multiplier> From<Vec<T>> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> From<Vec<T>> for FormalPowerSeries<T, C> {
     fn from(data: Vec<T>) -> Self {
         Self::from_vec(data)
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
@@ -139,20 +143,23 @@ where
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     pub fn inv(&self, deg: usize) -> Self {
         debug_assert!(!self[0].is_zero());
         let mut f = Self::from(T::one() / self[0].clone());
         let mut i = 1;
         while i < deg {
+            // let mut g = self.prefix((i * 2).min(deg));
+            // let mut h = f.clone();
+
             f = (&f + &f - &f * &f * self.prefix(i * 2)).prefix(i * 2);
             i *= 2;
         }
-        f.prefix(deg)
+        f.prefix_inplace(deg)
     }
     pub fn exp(&self, deg: usize) -> Self {
         debug_assert!(self[0].is_zero());
@@ -198,10 +205,10 @@ where
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficientSqrt,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     pub fn sqrt(&self, deg: usize) -> Option<Self> {
         if self[0].is_zero() {
@@ -227,10 +234,10 @@ where
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     pub fn count_subset_sum<F>(&self, deg: usize, mut inverse: F) -> Self
     where
