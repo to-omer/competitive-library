@@ -1,94 +1,111 @@
 #![allow(clippy::suspicious_arithmetic_impl, clippy::suspicious_op_assign_impl)]
 
 use super::*;
-use std::ops::{
-    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Shl, ShlAssign, Shr,
-    ShrAssign, Sub, SubAssign,
+use std::{
+    mem::take,
+    ops::{
+        Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Shl, ShlAssign, Shr,
+        ShrAssign, Sub, SubAssign,
+    },
 };
 
-impl<T, C> AddAssign<&T> for FormalPowerSeries<T, C>
+impl<T, C> AddAssign<T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    fn add_assign(&mut self, rhs: &T) {
+    fn add_assign(&mut self, rhs: T) {
         if self.length() == 0 {
             self.data.push(T::zero());
         }
         self.data[0].add_assign(rhs);
     }
 }
-impl<T, C> SubAssign<&T> for FormalPowerSeries<T, C>
+impl<T, C> SubAssign<T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    fn sub_assign(&mut self, rhs: &T) {
+    fn sub_assign(&mut self, rhs: T) {
         if self.length() == 0 {
             self.data.push(T::zero());
         }
         self.data[0].sub_assign(rhs);
     }
 }
-impl<T, C> MulAssign<&T> for FormalPowerSeries<T, C>
+impl<T, C> MulAssign<T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    fn mul_assign(&mut self, rhs: &T) {
+    fn mul_assign(&mut self, rhs: T) {
         for x in self.data.iter_mut() {
-            x.mul_assign(rhs);
+            x.mul_assign(&rhs);
         }
     }
 }
-impl<T, C> DivAssign<&T> for FormalPowerSeries<T, C>
+impl<T, C> DivAssign<T> for FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    fn div_assign(&mut self, rhs: &T) {
+    fn div_assign(&mut self, rhs: T) {
         let rinv = T::one() / rhs;
         for x in self.data.iter_mut() {
             x.mul_assign(&rinv);
         }
     }
 }
-impl<T, C> Add<&T> for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = Self;
-    fn add(mut self, rhs: &T) -> Self::Output {
-        self.add_assign(rhs);
-        self
-    }
+macro_rules! impl_fps_single_binop {
+    ($imp:ident, $method:ident, $imp_assign:ident, $method_assign:ident) => {
+        impl<T, C> $imp_assign<&T> for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            fn $method_assign(&mut self, rhs: &T) {
+                $imp_assign::$method_assign(self, rhs.clone());
+            }
+        }
+        impl<T, C> $imp<T> for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = Self;
+            fn $method(mut self, rhs: T) -> Self::Output {
+                $imp_assign::$method_assign(&mut self, rhs);
+                self
+            }
+        }
+        impl<T, C> $imp<&T> for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = Self;
+            fn $method(mut self, rhs: &T) -> Self::Output {
+                $imp_assign::$method_assign(&mut self, rhs);
+                self
+            }
+        }
+        impl<T, C> $imp<T> for &FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = FormalPowerSeries<T, C>;
+            fn $method(self, rhs: T) -> Self::Output {
+                $imp::$method(self.clone(), rhs)
+            }
+        }
+        impl<T, C> $imp<&T> for &FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = FormalPowerSeries<T, C>;
+            fn $method(self, rhs: &T) -> Self::Output {
+                $imp::$method(self.clone(), rhs)
+            }
+        }
+    };
 }
-impl<T, C> Sub<&T> for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = Self;
-    fn sub(mut self, rhs: &T) -> Self::Output {
-        self.sub_assign(rhs);
-        self
-    }
-}
-impl<T, C> Mul<&T> for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = Self;
-    fn mul(mut self, rhs: &T) -> Self::Output {
-        self.mul_assign(rhs);
-        self
-    }
-}
-impl<T, C> Div<&T> for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = Self;
-    fn div(mut self, rhs: &T) -> Self::Output {
-        self.div_assign(rhs);
-        self
-    }
-}
+impl_fps_single_binop!(Add, add, AddAssign, add_assign);
+impl_fps_single_binop!(Sub, sub, SubAssign, sub_assign);
+impl_fps_single_binop!(Mul, mul, MulAssign, mul_assign);
+impl_fps_single_binop!(Div, div, DivAssign, div_assign);
 
 impl<T, C> AddAssign<&Self> for FormalPowerSeries<T, C>
 where
@@ -116,54 +133,64 @@ where
         }
     }
 }
-impl<T, C> MulAssign<&Self> for FormalPowerSeries<T, C>
-where
-    T: Clone,
-    C: ConvolveSteps<T = Vec<T>>,
-{
-    fn mul_assign(&mut self, rhs: &Self) {
-        *self = Mul::mul(&*self, rhs);
-    }
-}
-impl<T, C> DivAssign<&Self> for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-    C: ConvolveSteps<T = Vec<T>>,
-{
-    fn div_assign(&mut self, rhs: &Self) {
-        *self = Div::div(&*self, rhs);
-    }
-}
-impl<T, C> RemAssign<&Self> for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-    C: ConvolveSteps<T = Vec<T>>,
-{
-    fn rem_assign(&mut self, rhs: &Self) {
-        self.sub_assign(&(&(&*self / rhs) * rhs));
-    }
-}
 
-impl<T, C> Add for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = Self;
-    fn add(mut self, rhs: Self) -> Self::Output {
-        self.add_assign(&rhs);
-        self
-    }
+macro_rules! impl_fps_binop_addsub {
+    ($imp:ident, $method:ident, $imp_assign:ident, $method_assign:ident) => {
+        impl<T, C> $imp_assign for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            fn $method_assign(&mut self, rhs: Self) {
+                $imp_assign::$method_assign(self, &rhs);
+            }
+        }
+        impl<T, C> $imp for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = Self;
+            fn $method(mut self, rhs: Self) -> Self::Output {
+                $imp_assign::$method_assign(&mut self, &rhs);
+                self
+            }
+        }
+        impl<T, C> $imp<&FormalPowerSeries<T, C>> for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = Self;
+            fn $method(mut self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+                $imp_assign::$method_assign(&mut self, rhs);
+                self
+            }
+        }
+        impl<T, C> $imp<FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = FormalPowerSeries<T, C>;
+            fn $method(self, rhs: FormalPowerSeries<T, C>) -> Self::Output {
+                let mut self_ = self.clone();
+                $imp_assign::$method_assign(&mut self_, &rhs);
+                self_
+            }
+        }
+        impl<T, C> $imp<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+        {
+            type Output = FormalPowerSeries<T, C>;
+            fn $method(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+                let mut self_ = self.clone();
+                $imp_assign::$method_assign(&mut self_, rhs);
+                self_
+            }
+        }
+    };
 }
-impl<T, C> Sub for FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = Self;
-    fn sub(mut self, rhs: Self) -> Self::Output {
-        self.sub_assign(&rhs);
-        self
-    }
-}
+impl_fps_binop_addsub!(Add, add, AddAssign, add_assign);
+impl_fps_binop_addsub!(Sub, sub, SubAssign, sub_assign);
+
 impl<T, C> Mul for FormalPowerSeries<T, C>
 where
     C: ConvolveSteps<T = Vec<T>>,
@@ -211,54 +238,77 @@ where
         res
     }
 }
-impl<T, C> Add<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = FormalPowerSeries<T, C>;
-    fn add(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
-        Add::add(self.clone(), rhs.clone())
-    }
-}
-impl<T, C> Sub<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-{
-    type Output = FormalPowerSeries<T, C>;
-    fn sub(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
-        Sub::sub(self.clone(), rhs.clone())
-    }
-}
-impl<T, C> Mul<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
-where
-    T: Clone,
-    C: ConvolveSteps<T = Vec<T>>,
-{
-    type Output = FormalPowerSeries<T, C>;
-    fn mul(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
-        Mul::mul(self.clone(), rhs.clone())
-    }
-}
-impl<T, C> Div<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
     C: ConvolveSteps<T = Vec<T>>,
 {
-    type Output = FormalPowerSeries<T, C>;
-    fn div(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
-        Div::div(self.clone(), rhs.clone())
+    pub fn div_rem(self, rhs: Self) -> (Self, Self) {
+        let div = self.clone() / rhs.clone();
+        let mut rem = self - div.clone() * rhs;
+        while rem.data.last().map_or(false, |x| x.is_zero()) {
+            rem.data.pop();
+        }
+        (div, rem)
     }
 }
-impl<T, C> Rem<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
-where
-    T: FormalPowerSeriesCoefficient,
-    C: ConvolveSteps<T = Vec<T>>,
-{
-    type Output = FormalPowerSeries<T, C>;
-    fn rem(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
-        Rem::rem(self.clone(), rhs.clone())
-    }
+
+macro_rules! impl_fps_binop_conv {
+    ($imp:ident, $method:ident, $imp_assign:ident, $method_assign:ident) => {
+        impl<T, C> $imp_assign for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+            C: ConvolveSteps<T = Vec<T>>,
+        {
+            fn $method_assign(&mut self, rhs: Self) {
+                *self = $imp::$method(Self::from_vec(take(&mut self.data)), rhs);
+            }
+        }
+        impl<T, C> $imp_assign<&Self> for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+            C: ConvolveSteps<T = Vec<T>>,
+        {
+            fn $method_assign(&mut self, rhs: &Self) {
+                $imp_assign::$method_assign(self, rhs.clone());
+            }
+        }
+        impl<T, C> $imp<&FormalPowerSeries<T, C>> for FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+            C: ConvolveSteps<T = Vec<T>>,
+        {
+            type Output = Self;
+            fn $method(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+                $imp::$method(self, rhs.clone())
+            }
+        }
+        impl<T, C> $imp<FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+            C: ConvolveSteps<T = Vec<T>>,
+        {
+            type Output = FormalPowerSeries<T, C>;
+            fn $method(self, rhs: FormalPowerSeries<T, C>) -> Self::Output {
+                $imp::$method(self.clone(), rhs)
+            }
+        }
+        impl<T, C> $imp<&FormalPowerSeries<T, C>> for &FormalPowerSeries<T, C>
+        where
+            T: FormalPowerSeriesCoefficient,
+            C: ConvolveSteps<T = Vec<T>>,
+        {
+            type Output = FormalPowerSeries<T, C>;
+            fn $method(self, rhs: &FormalPowerSeries<T, C>) -> Self::Output {
+                $imp::$method(self.clone(), rhs.clone())
+            }
+        }
+    };
 }
+impl_fps_binop_conv!(Mul, mul, MulAssign, mul_assign);
+impl_fps_binop_conv!(Div, div, DivAssign, div_assign);
+impl_fps_binop_conv!(Rem, rem, RemAssign, rem_assign);
 
 impl<T, C> Neg for FormalPowerSeries<T, C>
 where
