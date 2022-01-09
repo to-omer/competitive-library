@@ -2,14 +2,16 @@ use super::*;
 use std::{
     iter::repeat_with,
     iter::{once, FromIterator},
+    marker::PhantomData,
     ops::{Index, IndexMut},
+    slice::{Iter, IterMut},
 };
 
 impl<T, C> FormalPowerSeries<T, C> {
     pub fn from_vec(data: Vec<T>) -> Self {
         Self {
             data,
-            _marker: std::marker::PhantomData,
+            _marker: PhantomData,
         }
     }
     pub fn length(&self) -> usize {
@@ -18,19 +20,31 @@ impl<T, C> FormalPowerSeries<T, C> {
     pub fn truncate(&mut self, deg: usize) {
         self.data.truncate(deg)
     }
+    pub fn iter(&self) -> Iter<'_, T> {
+        self.data.iter()
+    }
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        self.data.iter_mut()
+    }
 }
 
-impl<T: Clone, C> Clone for FormalPowerSeries<T, C> {
+impl<T, C> Clone for FormalPowerSeries<T, C>
+where
+    T: Clone,
+{
     fn clone(&self) -> Self {
         Self::from_vec(self.data.clone())
     }
 }
-impl<T: PartialEq, C> PartialEq for FormalPowerSeries<T, C> {
+impl<T, C> PartialEq for FormalPowerSeries<T, C>
+where
+    T: PartialEq,
+{
     fn eq(&self, other: &Self) -> bool {
         self.data.eq(&other.data)
     }
 }
-impl<T: PartialEq, C> Eq for FormalPowerSeries<T, C> {}
+impl<T, C> Eq for FormalPowerSeries<T, C> where T: PartialEq {}
 
 impl<T, C> FormalPowerSeries<T, C>
 where
@@ -44,7 +58,27 @@ where
     }
 }
 
-impl<T: Clone, C> FormalPowerSeries<T, C> {
+impl<T, C> FormalPowerSeries<T, C>
+where
+    T: Zero + PartialEq,
+{
+    pub fn trim_tail_zeros(&mut self) {
+        let mut len = self.length();
+        while len > 0 {
+            if self.data[len - 1].is_zero() {
+                len -= 1;
+            } else {
+                break;
+            }
+        }
+        self.truncate(len);
+    }
+}
+
+impl<T, C> FormalPowerSeries<T, C>
+where
+    T: Clone,
+{
     pub fn prefix(&self, deg: usize) -> Self {
         if deg < self.length() {
             Self::from_vec(self.data[..deg].to_vec())
@@ -57,10 +91,10 @@ impl<T: Clone, C> FormalPowerSeries<T, C> {
         self
     }
     pub fn even(&self) -> Self {
-        self.data.iter().cloned().step_by(2).collect()
+        self.iter().cloned().step_by(2).collect()
     }
     pub fn odd(&self) -> Self {
-        self.data.iter().cloned().skip(1).step_by(2).collect()
+        self.iter().cloned().skip(1).step_by(2).collect()
     }
 }
 
@@ -78,6 +112,14 @@ where
 {
     fn one() -> Self {
         Self::from(T::one())
+    }
+}
+
+impl<T, C> IntoIterator for FormalPowerSeries<T, C> {
+    type Item = T;
+    type IntoIter = std::vec::IntoIter<T>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
     }
 }
 
@@ -115,8 +157,7 @@ where
     T: FormalPowerSeriesCoefficient,
 {
     pub fn diff(&self) -> Self {
-        self.data
-            .iter()
+        self.iter()
             .enumerate()
             .skip(1)
             .map(|(i, x)| x.clone() * T::from(i))
@@ -125,8 +166,7 @@ where
     pub fn integral(&self) -> Self {
         once(T::zero())
             .chain(
-                self.data
-                    .iter()
+                self.iter()
                     .enumerate()
                     .map(|(i, x)| x.clone() / T::from(i + 1)),
             )
@@ -135,7 +175,7 @@ where
     pub fn eval(&self, x: T) -> T {
         let mut base = T::one();
         let mut res = T::zero();
-        for a in &self.data {
+        for a in self.iter() {
             res += base.clone() * a.clone();
             base *= x.clone();
         }
@@ -175,7 +215,7 @@ where
         (self.diff() * self.inv(deg)).integral().prefix(deg)
     }
     pub fn pow(&self, rhs: usize, deg: usize) -> Self {
-        if let Some(k) = self.data.iter().position(|x| !x.is_zero()) {
+        if let Some(k) = self.iter().position(|x| !x.is_zero()) {
             if k * rhs >= deg {
                 Self::zeros(deg)
             } else {
@@ -212,7 +252,7 @@ where
 {
     pub fn sqrt(&self, deg: usize) -> Option<Self> {
         if self[0].is_zero() {
-            if let Some(k) = self.data.iter().position(|x| !x.is_zero()) {
+            if let Some(k) = self.iter().position(|x| !x.is_zero()) {
                 if k % 2 != 0 {
                     return None;
                 } else if deg > k / 2 {
@@ -243,7 +283,7 @@ where
     where
         F: FnMut(usize) -> T,
     {
-        let n = self.data.len();
+        let n = self.length();
         let mut f = Self::zeros(n);
         for i in 1..n {
             if !self[i].is_zero() {
@@ -262,7 +302,7 @@ where
     where
         F: FnMut(usize) -> T,
     {
-        let n = self.data.len();
+        let n = self.length();
         let mut f = Self::zeros(n);
         for i in 1..n {
             if !self[i].is_zero() {
@@ -278,8 +318,7 @@ where
         let mut q = rhs.clone();
         while n > 0 {
             let mut mq = q.clone();
-            mq.data
-                .iter_mut()
+            mq.iter_mut()
                 .skip(1)
                 .step_by(2)
                 .for_each(|x| *x = -x.clone());

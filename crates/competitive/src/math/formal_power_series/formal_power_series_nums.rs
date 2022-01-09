@@ -36,7 +36,7 @@ where
     T: FormalPowerSeriesCoefficient,
 {
     fn mul_assign(&mut self, rhs: T) {
-        for x in self.data.iter_mut() {
+        for x in self.iter_mut() {
             x.mul_assign(&rhs);
         }
     }
@@ -47,7 +47,7 @@ where
 {
     fn div_assign(&mut self, rhs: T) {
         let rinv = T::one() / rhs;
-        for x in self.data.iter_mut() {
+        for x in self.iter_mut() {
             x.mul_assign(&rinv);
         }
     }
@@ -113,9 +113,9 @@ where
 {
     fn add_assign(&mut self, rhs: &Self) {
         if self.length() < rhs.length() {
-            self.data.resize_with(rhs.length(), Zero::zero);
+            self.resize(rhs.length());
         }
-        for (x, y) in self.data.iter_mut().zip(rhs.data.iter()) {
+        for (x, y) in self.iter_mut().zip(rhs.iter()) {
             x.add_assign(y);
         }
     }
@@ -126,9 +126,9 @@ where
 {
     fn sub_assign(&mut self, rhs: &Self) {
         if self.length() < rhs.length() {
-            self.data.resize_with(rhs.length(), Zero::zero);
+            self.resize(rhs.length());
         }
-        for (x, y) in self.data.iter_mut().zip(rhs.data.iter()) {
+        for (x, y) in self.iter_mut().zip(rhs.iter()) {
             x.sub_assign(y);
         }
     }
@@ -207,19 +207,16 @@ where
 {
     type Output = Self;
     fn div(mut self, mut rhs: Self) -> Self::Output {
-        while self.data.last().map_or(false, |x| x.is_zero()) {
-            self.data.pop();
-        }
-        while rhs.data.last().map_or(false, |x| x.is_zero()) {
-            rhs.data.pop();
-        }
+        self.trim_tail_zeros();
+        rhs.trim_tail_zeros();
         if self.length() < rhs.length() {
             return Self::zero();
         }
         self.data.reverse();
         rhs.data.reverse();
         let n = self.length() - rhs.length() + 1;
-        let mut res = (self * rhs.inv(n)).prefix_inplace(n);
+        let mut res = self * rhs.inv(n);
+        res.truncate(n);
         res.data.reverse();
         res
     }
@@ -231,11 +228,9 @@ where
 {
     type Output = Self;
     fn rem(self, rhs: Self) -> Self::Output {
-        let mut res = self.clone() - self / rhs.clone() * rhs;
-        while res.data.last().map_or(false, |x| x.is_zero()) {
-            res.data.pop();
-        }
-        res
+        let mut rem = self.clone() - self / rhs.clone() * rhs;
+        rem.trim_tail_zeros();
+        rem
     }
 }
 
@@ -247,9 +242,7 @@ where
     pub fn div_rem(self, rhs: Self) -> (Self, Self) {
         let div = self.clone() / rhs.clone();
         let mut rem = self - div.clone() * rhs;
-        while rem.data.last().map_or(false, |x| x.is_zero()) {
-            rem.data.pop();
-        }
+        rem.trim_tail_zeros();
         (div, rem)
     }
 }
@@ -316,7 +309,7 @@ where
 {
     type Output = Self;
     fn neg(mut self) -> Self::Output {
-        for x in self.data.iter_mut() {
+        for x in self.iter_mut() {
             *x = -x.clone();
         }
         self
@@ -407,7 +400,7 @@ where
     type Output = FormalPowerSeries<T, C>;
     fn shl(self, rhs: usize) -> Self::Output {
         let mut f = Self::Output::zeros(self.length() + rhs);
-        for (i, x) in self.data.iter().cloned().enumerate().rev() {
+        for (i, x) in self.iter().cloned().enumerate().rev() {
             f[i + rhs] = x;
         }
         f
