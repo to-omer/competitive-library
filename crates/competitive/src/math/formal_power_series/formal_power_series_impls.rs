@@ -75,29 +75,6 @@ where
     }
 }
 
-impl<T, C> FormalPowerSeries<T, C>
-where
-    T: Clone,
-{
-    pub fn prefix(&self, deg: usize) -> Self {
-        if deg < self.length() {
-            Self::from_vec(self.data[..deg].to_vec())
-        } else {
-            self.clone()
-        }
-    }
-    pub fn prefix_inplace(mut self, deg: usize) -> Self {
-        self.data.truncate(deg);
-        self
-    }
-    pub fn even(&self) -> Self {
-        self.iter().cloned().step_by(2).collect()
-    }
-    pub fn odd(&self) -> Self {
-        self.iter().cloned().skip(1).step_by(2).collect()
-    }
-}
-
 impl<T, C> Zero for FormalPowerSeries<T, C>
 where
     T: PartialEq,
@@ -156,21 +133,61 @@ impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    pub fn diff(&self) -> Self {
-        self.iter()
-            .enumerate()
-            .skip(1)
-            .map(|(i, x)| x.clone() * T::from(i))
-            .collect()
+    pub fn prefix_ref(&self, deg: usize) -> Self {
+        if deg < self.length() {
+            Self::from_vec(self.data[..deg].to_vec())
+        } else {
+            self.clone()
+        }
     }
-    pub fn integral(&self) -> Self {
-        once(T::zero())
-            .chain(
-                self.iter()
-                    .enumerate()
-                    .map(|(i, x)| x.clone() / T::from(i + 1)),
-            )
-            .collect()
+    pub fn prefix(mut self, deg: usize) -> Self {
+        self.data.truncate(deg);
+        self
+    }
+    pub fn even(mut self) -> Self {
+        let mut keep = false;
+        self.data.retain(|_| {
+            keep = !keep;
+            keep
+        });
+        self
+    }
+    pub fn odd(mut self) -> Self {
+        let mut keep = true;
+        self.data.retain(|_| {
+            keep = !keep;
+            keep
+        });
+        self
+    }
+    pub fn diff(mut self) -> Self {
+        let mut c = T::one();
+        for x in self.iter_mut().skip(1) {
+            *x *= &c;
+            c += T::one();
+        }
+        if self.length() > 0 {
+            self.data.remove(0);
+        }
+        self
+    }
+    pub fn integral(mut self) -> Self {
+        let n = self.length();
+        self.data.insert(0, Zero::zero());
+        let mut fact = Vec::with_capacity(n + 1);
+        let mut c = T::one();
+        fact.push(c.clone());
+        for _ in 1..n {
+            fact.push(fact.last().cloned().unwrap() * c.clone());
+            c += T::one();
+        }
+        let mut invf = T::one() / (fact.last().cloned().unwrap() * c.clone());
+        for x in self.iter_mut().skip(1).rev() {
+            *x *= invf.clone() * fact.pop().unwrap();
+            invf *= c.clone();
+            c -= T::one();
+        }
+        self
     }
     pub fn eval(&self, x: T) -> T {
         let mut base = T::one();
@@ -193,26 +210,39 @@ where
         let mut f = Self::from(T::one() / self[0].clone());
         let mut i = 1;
         while i < deg {
-            // let mut g = self.prefix((i * 2).min(deg));
-            // let mut h = f.clone();
-
-            f = (&f + &f - &f * &f * self.prefix(i * 2)).prefix(i * 2);
+            let g = self.prefix_ref((i * 2).min(deg));
+            let h = f.clone();
+            let mut g = C::transform(g.data, 2 * i);
+            let h = C::transform(h.data, 2 * i);
+            C::multiply(&mut g, &h);
+            let mut g = Self::from_vec(C::inverse_transform(g, 2 * i));
+            g >>= i;
+            let mut g = C::transform(g.data, 2 * i);
+            C::multiply(&mut g, &h);
+            let g = Self::from_vec(C::inverse_transform(g, 2 * i));
+            f.data.extend((-g).into_iter().take(i));
             i *= 2;
         }
-        f.prefix_inplace(deg)
+        f.truncate(deg);
+        f
     }
     pub fn exp(&self, deg: usize) -> Self {
         debug_assert!(self[0].is_zero());
         let mut f = Self::one();
         let mut i = 1;
         while i < deg {
-            f = (&f * &(self.prefix(i * 2) + &T::one() - f.log(i * 2))).prefix(i * 2);
+            let mut g = -f.log(i * 2);
+            g[0] += T::one();
+            for (g, x) in g.iter_mut().zip(self.iter().take(i * 2)) {
+                *g += x.clone();
+            }
+            f = (f * g).prefix(i * 2);
             i *= 2;
         }
         f.prefix(deg)
     }
     pub fn log(&self, deg: usize) -> Self {
-        (self.diff() * self.inv(deg)).integral().prefix(deg)
+        (self.inv(deg) * self.clone().diff()).integral().prefix(deg)
     }
     pub fn pow(&self, rhs: usize, deg: usize) -> Self {
         if let Some(k) = self.iter().position(|x| !x.is_zero()) {
@@ -264,7 +294,7 @@ where
             let mut f = Self::from(self[0].sqrt_coefficient()?);
             let mut i = 1;
             while i < deg {
-                f = (&f + &(self.prefix(i * 2) * f.inv(i * 2))).prefix(i * 2) * &inv2;
+                f = (&f + &(self.prefix_ref(i * 2) * f.inv(i * 2))).prefix(i * 2) * &inv2;
                 i *= 2;
             }
             f.truncate(deg);
@@ -313,9 +343,9 @@ where
         }
         f.exp(deg)
     }
-    pub fn bostan_mori(&self, rhs: &Self, mut n: usize) -> T {
-        let mut p = self.clone();
-        let mut q = rhs.clone();
+    pub fn bostan_mori(self, rhs: Self, mut n: usize) -> T {
+        let mut p = self;
+        let mut q = rhs;
         while n > 0 {
             let mut mq = q.clone();
             mq.iter_mut()
@@ -323,11 +353,7 @@ where
                 .step_by(2)
                 .for_each(|x| *x = -x.clone());
             let u = p * mq.clone();
-            if n % 2 == 0 {
-                p = u.even();
-            } else {
-                p = u.odd();
-            }
+            p = if n % 2 == 0 { u.even() } else { u.odd() };
             q = (q * mq).even();
             n /= 2;
         }
