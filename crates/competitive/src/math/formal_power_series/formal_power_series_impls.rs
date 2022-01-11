@@ -56,6 +56,14 @@ where
     pub fn resize(&mut self, deg: usize) {
         self.data.resize_with(deg, Zero::zero)
     }
+    pub fn resized(mut self, deg: usize) -> Self {
+        self.resize(deg);
+        self
+    }
+    pub fn reversed(mut self) -> Self {
+        self.data.reverse();
+        self
+    }
 }
 
 impl<T, C> FormalPowerSeries<T, C>
@@ -359,14 +367,13 @@ where
         }
         p[0].clone() / q[0].clone()
     }
-    fn middle_product(&self, other: &Self) -> Self {
+    fn middle_product(self, other: &C::F, deg: usize) -> Self {
         let n = self.length();
-        let mut x = self.clone();
-        x.data.reverse();
-        let res = &x * other;
-        Self::from_vec(res.data[n - 1..].to_vec())
+        let mut s = C::transform(self.reversed().data, deg);
+        C::multiply(&mut s, other);
+        Self::from_vec((C::inverse_transform(s, deg))[n - 1..].to_vec())
     }
-    pub fn multipoint_evaluation(&self, points: &[T]) -> Vec<T> {
+    pub fn multipoint_evaluation(self, points: &[T]) -> Vec<T> {
         let n = points.len();
         if n <= 32 {
             return points.iter().map(|p| self.eval(p.clone())).collect();
@@ -381,24 +388,20 @@ where
         }
         let mut uptree_t = Vec::with_capacity(n * 2);
         uptree_t.resize_with(1, Zero::zero);
-        let mut v = subproduct_tree[1].clone();
-        v.data.reverse();
-        v.data.resize_with(self.length(), Zero::zero);
-        v = v.inv(self.length()).middle_product(self);
-        v.data.resize_with(n, Zero::zero);
-        v.data.reverse();
-        uptree_t.push(v);
+        subproduct_tree.reverse();
+        subproduct_tree.pop();
+        let m = self.length();
+        let v = subproduct_tree.pop().unwrap().reversed().resized(m);
+        let s = C::transform(self.data, m * 2);
+        uptree_t.push(v.inv(m).middle_product(&s, m * 2).resized(n).reversed());
         for i in 1..n {
-            uptree_t.push(
-                subproduct_tree[i * 2 + 1]
-                    .middle_product(&uptree_t[i])
-                    .prefix(subproduct_tree[i * 2].length()),
-            );
-            uptree_t.push(
-                subproduct_tree[i * 2]
-                    .middle_product(&uptree_t[i])
-                    .prefix(subproduct_tree[i * 2 + 1].length()),
-            );
+            let subl = subproduct_tree.pop().unwrap();
+            let subr = subproduct_tree.pop().unwrap();
+            let (dl, dr) = (subl.length(), subr.length());
+            let len = dl.max(dr) + uptree_t[i].length();
+            let s = C::transform(uptree_t[i].data.to_vec(), len);
+            uptree_t.push(subr.middle_product(&s, len).prefix(dl));
+            uptree_t.push(subl.middle_product(&s, len).prefix(dr));
         }
         uptree_t[n..]
             .iter()
