@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["competitive"] = [{"text":"impl&lt;T, C&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html\" title=\"trait core::iter::traits::collect::IntoIterator\">IntoIterator</a> for <a class=\"struct\" href=\"competitive/math/struct.FormalPowerSeries.html\" title=\"struct competitive::math::FormalPowerSeries\">FormalPowerSeries</a>&lt;T, C&gt;","synthetic":false,"types":["competitive::math::formal_power_series::FormalPowerSeries"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
