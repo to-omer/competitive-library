@@ -1,17 +1,17 @@
 #[codesnip::skip]
 use crate::{
-    math::{convolve_mint, NttModulus, NumberTheoreticTransform},
+    math::{Convolve998244353, ConvolveSteps, MIntConvolve},
     num::{mint_basic, MInt, MIntConvert, One, Zero},
 };
 
 #[derive(Debug, Default)]
-pub struct FormalPowerSeries<T, Multiplier> {
+pub struct FormalPowerSeries<T, C> {
     pub data: Vec<T>,
-    _marker: std::marker::PhantomData<Multiplier>,
+    _marker: std::marker::PhantomData<C>,
 }
 
-pub type Fps998244353 = FormalPowerSeries<mint_basic::MInt998244353, mint_basic::Modulo998244353>;
-pub type Fps<M> = FormalPowerSeries<MInt<M>, DefaultFormalPowerSeriesMultiplier<M>>;
+pub type Fps998244353 = FormalPowerSeries<mint_basic::MInt998244353, Convolve998244353>;
+pub type Fps<M> = FormalPowerSeries<MInt<M>, MIntConvolve<M>>;
 
 pub trait FormalPowerSeriesCoefficient:
     Sized
@@ -40,39 +40,7 @@ pub trait FormalPowerSeriesCoefficient:
 {
 }
 
-impl<M: MIntConvert<usize>> FormalPowerSeriesCoefficient for MInt<M> {}
-
-pub trait FormalPowerSeriesMultiplier: Sized {
-    type T;
-    fn convolve(
-        x: &FormalPowerSeries<Self::T, Self>,
-        y: &FormalPowerSeries<Self::T, Self>,
-    ) -> FormalPowerSeries<Self::T, Self>;
-}
-
-pub struct DefaultFormalPowerSeriesMultiplier<M>(std::marker::PhantomData<M>);
-
-impl<M: MIntConvert<u32>> FormalPowerSeriesMultiplier for DefaultFormalPowerSeriesMultiplier<M> {
-    type T = MInt<M>;
-    fn convolve(
-        x: &FormalPowerSeries<Self::T, Self>,
-        y: &FormalPowerSeries<Self::T, Self>,
-    ) -> FormalPowerSeries<Self::T, Self> {
-        let z = convolve_mint(&x.data, &y.data);
-        FormalPowerSeries::from_vec(z)
-    }
-}
-
-impl<M: NttModulus + MIntConvert<usize>> FormalPowerSeriesMultiplier for M {
-    type T = MInt<M>;
-    fn convolve(
-        x: &FormalPowerSeries<Self::T, Self>,
-        y: &FormalPowerSeries<Self::T, Self>,
-    ) -> FormalPowerSeries<Self::T, Self> {
-        let z = NumberTheoreticTransform::<M>::convolve_ref(&x.data, &y.data);
-        FormalPowerSeries::from_vec(z)
-    }
-}
+impl<M> FormalPowerSeriesCoefficient for MInt<M> where M: MIntConvert<usize> {}
 
 pub trait FormalPowerSeriesCoefficientSqrt: FormalPowerSeriesCoefficient {
     fn sqrt_coefficient(&self) -> Option<Self>;

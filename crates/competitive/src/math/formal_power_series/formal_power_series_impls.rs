@@ -2,14 +2,16 @@ use super::*;
 use std::{
     iter::repeat_with,
     iter::{once, FromIterator},
+    marker::PhantomData,
     ops::{Index, IndexMut},
+    slice::{Iter, IterMut},
 };
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier> {
+impl<T, C> FormalPowerSeries<T, C> {
     pub fn from_vec(data: Vec<T>) -> Self {
         Self {
             data,
-            _marker: std::marker::PhantomData,
+            _marker: PhantomData,
         }
     }
     pub fn length(&self) -> usize {
@@ -18,21 +20,33 @@ impl<T, Multiplier> FormalPowerSeries<T, Multiplier> {
     pub fn truncate(&mut self, deg: usize) {
         self.data.truncate(deg)
     }
+    pub fn iter(&self) -> Iter<'_, T> {
+        self.data.iter()
+    }
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        self.data.iter_mut()
+    }
 }
 
-impl<T: Clone, Multiplier> Clone for FormalPowerSeries<T, Multiplier> {
+impl<T, C> Clone for FormalPowerSeries<T, C>
+where
+    T: Clone,
+{
     fn clone(&self) -> Self {
         Self::from_vec(self.data.clone())
     }
 }
-impl<T: PartialEq, Multiplier> PartialEq for FormalPowerSeries<T, Multiplier> {
+impl<T, C> PartialEq for FormalPowerSeries<T, C>
+where
+    T: PartialEq,
+{
     fn eq(&self, other: &Self) -> bool {
         self.data.eq(&other.data)
     }
 }
-impl<T: PartialEq, Multiplier> Eq for FormalPowerSeries<T, Multiplier> {}
+impl<T, C> Eq for FormalPowerSeries<T, C> where T: PartialEq {}
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: Zero,
 {
@@ -42,25 +56,34 @@ where
     pub fn resize(&mut self, deg: usize) {
         self.data.resize_with(deg, Zero::zero)
     }
+    pub fn resized(mut self, deg: usize) -> Self {
+        self.resize(deg);
+        self
+    }
+    pub fn reversed(mut self) -> Self {
+        self.data.reverse();
+        self
+    }
 }
 
-impl<T: Clone, Multiplier> FormalPowerSeries<T, Multiplier> {
-    pub fn prefix(&self, deg: usize) -> Self {
-        if deg < self.length() {
-            Self::from_vec(self.data[..deg].to_vec())
-        } else {
-            self.clone()
+impl<T, C> FormalPowerSeries<T, C>
+where
+    T: Zero + PartialEq,
+{
+    pub fn trim_tail_zeros(&mut self) {
+        let mut len = self.length();
+        while len > 0 {
+            if self.data[len - 1].is_zero() {
+                len -= 1;
+            } else {
+                break;
+            }
         }
-    }
-    pub fn even(&self) -> Self {
-        self.data.iter().cloned().step_by(2).collect()
-    }
-    pub fn odd(&self) -> Self {
-        self.data.iter().cloned().skip(1).step_by(2).collect()
+        self.truncate(len);
     }
 }
 
-impl<T, Multiplier> Zero for FormalPowerSeries<T, Multiplier>
+impl<T, C> Zero for FormalPowerSeries<T, C>
 where
     T: PartialEq,
 {
@@ -68,7 +91,7 @@ where
         Self::from_vec(Vec::new())
     }
 }
-impl<T, Multiplier> One for FormalPowerSeries<T, Multiplier>
+impl<T, C> One for FormalPowerSeries<T, C>
 where
     T: PartialEq + One,
 {
@@ -77,61 +100,107 @@ where
     }
 }
 
-impl<T, Multiplier> FromIterator<T> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> IntoIterator for FormalPowerSeries<T, C> {
+    type Item = T;
+    type IntoIter = std::vec::IntoIter<T>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
+    }
+}
+
+impl<T, C> FromIterator<T> for FormalPowerSeries<T, C> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         Self::from_vec(iter.into_iter().collect())
     }
 }
 
-impl<T, Multiplier> Index<usize> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> Index<usize> for FormalPowerSeries<T, C> {
     type Output = T;
     fn index(&self, index: usize) -> &Self::Output {
         &self.data[index]
     }
 }
-impl<T, Multiplier> IndexMut<usize> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> IndexMut<usize> for FormalPowerSeries<T, C> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.data[index]
     }
 }
 
-impl<T, Multiplier> From<T> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> From<T> for FormalPowerSeries<T, C> {
     fn from(x: T) -> Self {
         once(x).collect()
     }
 }
-impl<T, Multiplier> From<Vec<T>> for FormalPowerSeries<T, Multiplier> {
+impl<T, C> From<Vec<T>> for FormalPowerSeries<T, C> {
     fn from(data: Vec<T>) -> Self {
         Self::from_vec(data)
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
 {
-    pub fn diff(&self) -> Self {
-        self.data
-            .iter()
-            .enumerate()
-            .skip(1)
-            .map(|(i, x)| x.clone() * T::from(i))
-            .collect()
+    pub fn prefix_ref(&self, deg: usize) -> Self {
+        if deg < self.length() {
+            Self::from_vec(self.data[..deg].to_vec())
+        } else {
+            self.clone()
+        }
     }
-    pub fn integral(&self) -> Self {
-        once(T::zero())
-            .chain(
-                self.data
-                    .iter()
-                    .enumerate()
-                    .map(|(i, x)| x.clone() / T::from(i + 1)),
-            )
-            .collect()
+    pub fn prefix(mut self, deg: usize) -> Self {
+        self.data.truncate(deg);
+        self
+    }
+    pub fn even(mut self) -> Self {
+        let mut keep = false;
+        self.data.retain(|_| {
+            keep = !keep;
+            keep
+        });
+        self
+    }
+    pub fn odd(mut self) -> Self {
+        let mut keep = true;
+        self.data.retain(|_| {
+            keep = !keep;
+            keep
+        });
+        self
+    }
+    pub fn diff(mut self) -> Self {
+        let mut c = T::one();
+        for x in self.iter_mut().skip(1) {
+            *x *= &c;
+            c += T::one();
+        }
+        if self.length() > 0 {
+            self.data.remove(0);
+        }
+        self
+    }
+    pub fn integral(mut self) -> Self {
+        let n = self.length();
+        self.data.insert(0, Zero::zero());
+        let mut fact = Vec::with_capacity(n + 1);
+        let mut c = T::one();
+        fact.push(c.clone());
+        for _ in 1..n {
+            fact.push(fact.last().cloned().unwrap() * c.clone());
+            c += T::one();
+        }
+        let mut invf = T::one() / (fact.last().cloned().unwrap() * c.clone());
+        for x in self.iter_mut().skip(1).rev() {
+            *x *= invf.clone() * fact.pop().unwrap();
+            invf *= c.clone();
+            c -= T::one();
+        }
+        self
     }
     pub fn eval(&self, x: T) -> T {
         let mut base = T::one();
         let mut res = T::zero();
-        for a in &self.data {
+        for a in self.iter() {
             res += base.clone() * a.clone();
             base *= x.clone();
         }
@@ -139,36 +208,52 @@ where
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     pub fn inv(&self, deg: usize) -> Self {
         debug_assert!(!self[0].is_zero());
         let mut f = Self::from(T::one() / self[0].clone());
         let mut i = 1;
         while i < deg {
-            f = (&f + &f - &f * &f * self.prefix(i * 2)).prefix(i * 2);
+            let g = self.prefix_ref((i * 2).min(deg));
+            let h = f.clone();
+            let mut g = C::transform(g.data, 2 * i);
+            let h = C::transform(h.data, 2 * i);
+            C::multiply(&mut g, &h);
+            let mut g = Self::from_vec(C::inverse_transform(g, 2 * i));
+            g >>= i;
+            let mut g = C::transform(g.data, 2 * i);
+            C::multiply(&mut g, &h);
+            let g = Self::from_vec(C::inverse_transform(g, 2 * i));
+            f.data.extend((-g).into_iter().take(i));
             i *= 2;
         }
-        f.prefix(deg)
+        f.truncate(deg);
+        f
     }
     pub fn exp(&self, deg: usize) -> Self {
         debug_assert!(self[0].is_zero());
         let mut f = Self::one();
         let mut i = 1;
         while i < deg {
-            f = (&f * &(self.prefix(i * 2) + &T::one() - f.log(i * 2))).prefix(i * 2);
+            let mut g = -f.log(i * 2);
+            g[0] += T::one();
+            for (g, x) in g.iter_mut().zip(self.iter().take(i * 2)) {
+                *g += x.clone();
+            }
+            f = (f * g).prefix(i * 2);
             i *= 2;
         }
         f.prefix(deg)
     }
     pub fn log(&self, deg: usize) -> Self {
-        (self.diff() * self.inv(deg)).integral().prefix(deg)
+        (self.inv(deg) * self.clone().diff()).integral().prefix(deg)
     }
     pub fn pow(&self, rhs: usize, deg: usize) -> Self {
-        if let Some(k) = self.data.iter().position(|x| !x.is_zero()) {
+        if let Some(k) = self.iter().position(|x| !x.is_zero()) {
             if k * rhs >= deg {
                 Self::zeros(deg)
             } else {
@@ -198,14 +283,14 @@ where
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficientSqrt,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     pub fn sqrt(&self, deg: usize) -> Option<Self> {
         if self[0].is_zero() {
-            if let Some(k) = self.data.iter().position(|x| !x.is_zero()) {
+            if let Some(k) = self.iter().position(|x| !x.is_zero()) {
                 if k % 2 != 0 {
                     return None;
                 } else if deg > k / 2 {
@@ -217,7 +302,7 @@ where
             let mut f = Self::from(self[0].sqrt_coefficient()?);
             let mut i = 1;
             while i < deg {
-                f = (&f + &(self.prefix(i * 2) * f.inv(i * 2))).prefix(i * 2) * &inv2;
+                f = (&f + &(self.prefix_ref(i * 2) * f.inv(i * 2))).prefix(i * 2) * &inv2;
                 i *= 2;
             }
             f.truncate(deg);
@@ -227,16 +312,16 @@ where
     }
 }
 
-impl<T, Multiplier> FormalPowerSeries<T, Multiplier>
+impl<T, C> FormalPowerSeries<T, C>
 where
     T: FormalPowerSeriesCoefficient,
-    Multiplier: FormalPowerSeriesMultiplier<T = T>,
+    C: ConvolveSteps<T = Vec<T>>,
 {
     pub fn count_subset_sum<F>(&self, deg: usize, mut inverse: F) -> Self
     where
         F: FnMut(usize) -> T,
     {
-        let n = self.data.len();
+        let n = self.length();
         let mut f = Self::zeros(n);
         for i in 1..n {
             if !self[i].is_zero() {
@@ -255,7 +340,7 @@ where
     where
         F: FnMut(usize) -> T,
     {
-        let n = self.data.len();
+        let n = self.length();
         let mut f = Self::zeros(n);
         for i in 1..n {
             if !self[i].is_zero() {
@@ -266,35 +351,29 @@ where
         }
         f.exp(deg)
     }
-    pub fn bostan_mori(&self, rhs: &Self, mut n: usize) -> T {
-        let mut p = self.clone();
-        let mut q = rhs.clone();
+    pub fn bostan_mori(self, rhs: Self, mut n: usize) -> T {
+        let mut p = self;
+        let mut q = rhs;
         while n > 0 {
             let mut mq = q.clone();
-            mq.data
-                .iter_mut()
+            mq.iter_mut()
                 .skip(1)
                 .step_by(2)
                 .for_each(|x| *x = -x.clone());
             let u = p * mq.clone();
-            if n % 2 == 0 {
-                p = u.even();
-            } else {
-                p = u.odd();
-            }
+            p = if n % 2 == 0 { u.even() } else { u.odd() };
             q = (q * mq).even();
             n /= 2;
         }
         p[0].clone() / q[0].clone()
     }
-    fn middle_product(&self, other: &Self) -> Self {
+    fn middle_product(self, other: &C::F, deg: usize) -> Self {
         let n = self.length();
-        let mut x = self.clone();
-        x.data.reverse();
-        let res = &x * other;
-        Self::from_vec(res.data[n - 1..].to_vec())
+        let mut s = C::transform(self.reversed().data, deg);
+        C::multiply(&mut s, other);
+        Self::from_vec((C::inverse_transform(s, deg))[n - 1..].to_vec())
     }
-    pub fn multipoint_evaluation(&self, points: &[T]) -> Vec<T> {
+    pub fn multipoint_evaluation(self, points: &[T]) -> Vec<T> {
         let n = points.len();
         if n <= 32 {
             return points.iter().map(|p| self.eval(p.clone())).collect();
@@ -309,24 +388,20 @@ where
         }
         let mut uptree_t = Vec::with_capacity(n * 2);
         uptree_t.resize_with(1, Zero::zero);
-        let mut v = subproduct_tree[1].clone();
-        v.data.reverse();
-        v.data.resize_with(self.length(), Zero::zero);
-        v = v.inv(self.length()).middle_product(self);
-        v.data.resize_with(n, Zero::zero);
-        v.data.reverse();
-        uptree_t.push(v);
+        subproduct_tree.reverse();
+        subproduct_tree.pop();
+        let m = self.length();
+        let v = subproduct_tree.pop().unwrap().reversed().resized(m);
+        let s = C::transform(self.data, m * 2);
+        uptree_t.push(v.inv(m).middle_product(&s, m * 2).resized(n).reversed());
         for i in 1..n {
-            uptree_t.push(
-                subproduct_tree[i * 2 + 1]
-                    .middle_product(&uptree_t[i])
-                    .prefix(subproduct_tree[i * 2].length()),
-            );
-            uptree_t.push(
-                subproduct_tree[i * 2]
-                    .middle_product(&uptree_t[i])
-                    .prefix(subproduct_tree[i * 2 + 1].length()),
-            );
+            let subl = subproduct_tree.pop().unwrap();
+            let subr = subproduct_tree.pop().unwrap();
+            let (dl, dr) = (subl.length(), subr.length());
+            let len = dl.max(dr) + uptree_t[i].length();
+            let s = C::transform(uptree_t[i].data.to_vec(), len);
+            uptree_t.push(subr.middle_product(&s, len).prefix(dl));
+            uptree_t.push(subl.middle_product(&s, len).prefix(dr));
         }
         uptree_t[n..]
             .iter()
