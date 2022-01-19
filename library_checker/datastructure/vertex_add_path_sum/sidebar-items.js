@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["vertex_add_path_sum","✅  AC  496ms"]]});
+initSidebarItems({"fn":[["vertex_add_path_sum","✅  AC  426ms"]]});
