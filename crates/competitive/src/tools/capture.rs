@@ -1,7 +1,7 @@
-/// Macro that returns a recursive function that automatically captures references
-/// and semi-automatically captures mutable references.
+/// Macro that returns a recursive function that (semi-)automatically captures.
 ///
 /// # Example
+/// default version
 /// ```
 /// # use competitive::crecurse;
 /// let mut res = 0usize;
@@ -23,11 +23,48 @@
 /// assert_eq!(res, coeff * 10 * 19);
 /// ```
 ///
+/// unsafe version (automatically capture everything)
+/// ```
+/// # use competitive::crecurse;
+/// let mut res = 0usize;
+/// let coeff = 3usize;
+/// crecurse!(
+///     unsafe fn mul(x: usize, y: usize) {
+///         if y > 0 {
+///             if y % 2 == 1 {
+///                 res += coeff * x;
+///             }
+///             mul!(x + x, y / 2);
+///         }
+///     }
+/// )(10, 19);
+/// assert_eq!(res, coeff * 10 * 19);
+/// ```
+///
+/// no overhead version (semi-automatically capture everything)
+/// ```
+/// # use competitive::crecurse;
+/// let mut res = 0usize;
+/// let coeff = 3usize;
+/// crecurse!(
+///     [res: &mut usize, coeff: &usize],
+///     static fn mul(x: usize, y: usize) {
+///         if y > 0 {
+///             if y % 2 == 1 {
+///                 *res += coeff * x;
+///             }
+///             mul!(x + x, y / 2);
+///         }
+///     }
+/// )(10, 19);
+/// assert_eq!(res, coeff * 10 * 19);
+/// ```
+///
 /// # Syntax
 /// ```txt
 /// crecurse!(
 ///     ([($ident: $type),*,?],)?
-///     fn $ident\(($ident: $type),*,?\) (-> $type)? $block
+///     (unsafe|static)? fn $ident\(($ident: $type),*,?\) (-> $type)? $block
 /// )
 /// ```
 #[macro_export]
@@ -36,8 +73,35 @@ macro_rules! crecurse {
         #[allow(unused_macros)]
         macro_rules! $name { ($dol($dol args:expr),*) => { $name($dol($dol args,)* $($cargs,)* ) } }
     };
+
     (
-        @inner [$($cargs:ident: $cargsty:ty),* $(,)?],
+        @static [$(($cargs:ident, $cargsexpr:expr, $cargsty:ty))*] [$(,)?],
+        fn $func:ident ($($args:ident: $argsty:ty),* $(,)?) -> $ret:ty $body:block
+    ) => {{
+        fn $func($($args: $argsty,)* $($cargs: $cargsty,)*) -> $ret {
+            $crate::crecurse!(@macro_def ($) $func $($cargs)*);
+            $body
+        }
+        |$($args: $argsty,)*| -> $ret { $func($($args,)* $($cargsexpr,)*) }
+    }};
+    (@static [$($pcaps:tt)*] [$(,)?], fn $func:ident ($($argstt:tt)*) $($rest:tt)*) => {
+        $crate::crecurse!(@static [$($pcaps)*] [], fn $func ($($argstt)*) -> () $($rest)*)
+    };
+    (@static [$($pcaps:tt)*] [$carg:ident: &mut $cargty:ty, $($caps:tt)*], $($rest:tt)*) => {
+        $crate::crecurse!(@static [$($pcaps)* ($carg, &mut $carg, &mut $cargty)] [$($caps)*], $($rest)*)
+    };
+    (@static [$($pcaps:tt)*] [$carg:ident: &$cargty:ty, $($caps:tt)*], $($rest:tt)*) => {
+        $crate::crecurse!(@static [$($pcaps)* ($carg, &$carg, &$cargty)] [$($caps)*], $($rest)*)
+    };
+    (@static [$($pcaps:tt)*] [$carg:ident: $cargty:ty, $($caps:tt)*], $($rest:tt)*) => {
+        $crate::crecurse!(@static [$($pcaps)* ($carg, $carg, $cargty)] [$($caps)*], $($rest)*)
+    };
+    ($([$($caps:tt)*],)? static fn $func:ident ($($args:ident: $argsty:ty),* $(,)?) $($rest:tt)*) => {
+        $crate::crecurse!(@static [] [$($($caps)*)?,], fn $func ($($args: $argsty),*) $($rest)*)
+    };
+
+    (
+        @default [$($cargs:ident: $cargsty:ty),* $(,)?],
         fn $func:ident ($($args:ident: $argsty:ty),* $(,)?) -> $ret:ty $body:block
     ) => {{
         fn call<F>(f: &F, $($args: $argsty,)* $($cargs: &mut $cargsty,)*) -> $ret
@@ -61,12 +125,49 @@ macro_rules! crecurse {
             )
         }
     }};
-    (@inner [$($caps:tt)*], fn $func:ident ($($argstt:tt)*) $($rest:tt)*) => {
-        $crate::crecurse!(@inner [$($caps)*], fn $func ($($argstt)*) -> () $($rest)*)
+    (@default [$($caps:tt)*], fn $func:ident ($($argstt:tt)*) $($rest:tt)*) => {
+        $crate::crecurse!(@default [$($caps)*], fn $func ($($argstt)*) -> () $($rest)*)
     };
     ($([$($caps:tt)*],)? fn $func:ident ($($args:ident: $argsty:ty),* $(,)?) $($rest:tt)*) => {
-        $crate::crecurse!(@inner [$($($caps)*)?], fn $func ($($args: $argsty),*) $($rest)*)
-    }
+        $crate::crecurse!(@default [$($($caps)*)?], fn $func ($($args: $argsty),*) $($rest)*)
+    };
+
+    (
+        @unsafe [$($cargs:ident: $cargsty:ty),* $(,)?],
+        fn $func:ident ($($args:ident: $argsty:ty),* $(,)?) -> $ret:ty $body:block
+    ) => {{
+        fn call<F>(f: &mut F, $($args: $argsty,)* $($cargs: &mut $cargsty,)*) -> $ret
+        where
+            F: FnMut(&mut dyn FnMut($($argsty,)* $(&mut $cargsty,)*) -> $ret, $($argsty,)* $(&mut $cargsty,)*) -> $ret,
+        {
+            let fp = f as *mut F;
+            (unsafe { &mut *fp })(
+                &mut |$($args: $argsty,)* $($cargs: &mut $cargsty,)*| -> $ret {
+                    call(unsafe { &mut *fp }, $($args,)* $($cargs,)*)
+                },
+                $($args,)* $($cargs,)*
+            )
+        }
+        |$($args: $argsty,)*| -> $ret {
+            call(
+                &mut |$func, $($args: $argsty,)* $($cargs: &mut $cargsty,)*| -> $ret {
+                    $crate::crecurse!(@macro_def ($) $func $($cargs)*);
+                    $body
+                },
+                $($args,)* $(&mut $cargs,)*
+            )
+        }
+    }};
+
+    (@unsafe [$($caps:tt)*], fn $func:ident ($($argstt:tt)*) $($rest:tt)*) => {
+        $crate::crecurse!(@unsafe [$($caps)*], fn $func ($($argstt)*) -> () $($rest)*)
+    };
+    ($([$($caps:tt)*],)? unsafe fn $func:ident ($($args:ident: $argsty:ty),* $(,)?) $($rest:tt)*) => {
+        $crate::crecurse!(@unsafe [$($($caps)*)?], fn $func ($($args: $argsty),*) $($rest)*)
+    };
+    ($($t:tt)*) => {
+        ::std::compile_error!(::std::concat!("invalid input: ", ::std::stringify!($($t)*)))
+    };
 }
 
 /// Automatic memorization for recursive functions.
