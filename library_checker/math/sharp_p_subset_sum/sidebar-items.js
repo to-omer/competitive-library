@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["sharp_p_subset_sum","✅  AC  870ms"]]});
+initSidebarItems({"fn":[["sharp_p_subset_sum","✅  AC  861ms"]]});
