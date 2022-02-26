@@ -104,6 +104,48 @@ impl<M: MIntConvert<usize>> SmallModMemorizedFactorial<M> {
     }
 }
 
+#[codesnip::entry("PowPrec", include("MInt"))]
+#[derive(Debug, Clone)]
+pub struct PowPrec<M: MIntConvert<usize>> {
+    a: MInt<M>,
+    sqn: usize,
+    p0: Vec<MInt<M>>,
+    p1: Vec<MInt<M>>,
+}
+#[codesnip::entry("PowPrec")]
+impl<M: MIntConvert<usize>> PowPrec<M> {
+    pub fn new(a: MInt<M>) -> Self {
+        let sqn = (M::mod_into() as f64).sqrt() as usize + 1;
+        let mut p0 = Vec::with_capacity(sqn);
+        let mut p1 = Vec::with_capacity(sqn);
+        let mut acc = MInt::<M>::one();
+        for _ in 0..sqn {
+            p0.push(acc);
+            acc *= a;
+        }
+        let b = acc;
+        acc = MInt::<M>::one();
+        for _ in 0..sqn {
+            p1.push(acc);
+            acc *= b;
+        }
+        Self { a, sqn, p0, p1 }
+    }
+    pub fn pow(&self, n: usize) -> MInt<M> {
+        let n = n % (M::mod_into() - 1);
+        let (p, q) = (n / self.sqn, n % self.sqn);
+        self.p1[p] * self.p0[q]
+    }
+    pub fn powi(&self, n: isize) -> MInt<M> {
+        let n = n.rem_euclid(M::mod_into() as isize - 1) as usize;
+        let (p, q) = (n / self.sqn, n % self.sqn);
+        self.p1[p] * self.p0[q]
+    }
+    pub fn inv(&self) -> MInt<M> {
+        self.powi(-1)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
