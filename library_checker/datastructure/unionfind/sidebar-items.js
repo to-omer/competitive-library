@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["unionfind","✅  AC  22ms"]]});
+initSidebarItems({"fn":[["unionfind","✅  AC  17ms"]]});
