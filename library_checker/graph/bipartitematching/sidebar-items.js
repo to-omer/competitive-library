@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["bipartitematching","✅  AC  1849ms"]]});
+initSidebarItems({"fn":[["bipartitematching","✅  AC  1529ms"]]});
