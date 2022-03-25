@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["vertex_add_subtree_sum","✅  AC  187ms"]]});
+initSidebarItems({"fn":[["vertex_add_subtree_sum","✅  AC  142ms"]]});
