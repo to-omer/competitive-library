@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["lca_euler_tour","✅  AC  807ms"],["lca_hld","✅  AC  446ms"]]});
+initSidebarItems({"fn":[["lca_euler_tour","✅  AC  611ms"],["lca_hld","✅  AC  440ms"]]});
