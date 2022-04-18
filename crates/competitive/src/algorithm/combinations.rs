@@ -36,10 +36,8 @@ where
         }
     }
 
-    if r <= n.len() {
-        let mut v = Vec::with_capacity(r);
-        product_inner(n, r, &mut v, &mut f);
-    }
+    let mut v = Vec::with_capacity(r);
+    product_inner(n, r, &mut v, &mut f);
 }
 
 /// choose distinct `r` elements from `n` in any order
