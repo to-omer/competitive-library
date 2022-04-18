@@ -619,3 +619,45 @@ fn test_segmented_sieve_primes() {
     }
     assert_eq!(primes(1_000_000), segmented_sieve_primes(1_000_000));
 }
+
+#[codesnip::entry]
+/// [(hcn, #divisor)]
+pub fn highly_composite_number(n: u128) -> Vec<(u128, u128)> {
+    let mut dp = vec![(1u128, 1u128)];
+    let mut acc = 1u128;
+    let mut table = vec![false; 110];
+    for p in 2u128.. {
+        if !table[p as usize] {
+            for i in (p..110).step_by(p as _) {
+                table[i as usize] = true;
+            }
+            acc = acc.saturating_mul(p);
+            if acc > n {
+                break;
+            }
+            let m = dp.len();
+            for i in 0..m {
+                let (mut a, b) = dp[i];
+                for j in 2.. {
+                    a = a.saturating_mul(p);
+                    let nb = b.saturating_mul(j);
+                    if a > n {
+                        break;
+                    }
+                    dp.push((a, nb));
+                }
+            }
+            dp.sort_unstable();
+            let mut ndp = vec![];
+            let mut mx = 0u128;
+            for (a, b) in dp {
+                if b > mx {
+                    mx = b;
+                    ndp.push((a, b));
+                }
+            }
+            dp = ndp;
+        }
+    }
+    dp
+}
