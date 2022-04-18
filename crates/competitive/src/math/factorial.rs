@@ -107,7 +107,6 @@ impl<M: MIntConvert<usize>> SmallModMemorizedFactorial<M> {
 #[codesnip::entry("PowPrec", include("MInt"))]
 #[derive(Debug, Clone)]
 pub struct PowPrec<M: MIntConvert<usize>> {
-    a: MInt<M>,
     sqn: usize,
     p0: Vec<MInt<M>>,
     p1: Vec<MInt<M>>,
@@ -129,7 +128,7 @@ impl<M: MIntConvert<usize>> PowPrec<M> {
             p1.push(acc);
             acc *= b;
         }
-        Self { a, sqn, p0, p1 }
+        Self { sqn, p0, p1 }
     }
     pub fn pow(&self, n: usize) -> MInt<M> {
         let n = n % (M::mod_into() - 1);

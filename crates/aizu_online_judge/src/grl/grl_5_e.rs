@@ -16,8 +16,7 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
     let edges = c
         .take(n)
         .enumerate()
-        .map(|(u, it)| it.into_iter().map(move |v| (u, v)))
-        .flatten()
+        .flat_map(|(u, it)| it.into_iter().map(move |v| (u, v)))
         .collect();
     let mut graph = UndirectedSparseGraph::from_edges(n, edges);
     let hld = HeavyLightDecomposition::new(0, &mut graph);

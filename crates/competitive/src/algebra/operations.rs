@@ -73,7 +73,7 @@ mod first_operation_impl {
         type T = Option<T>;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            x.as_ref().or_else(|| y.as_ref()).cloned()
+            x.as_ref().or(y.as_ref()).cloned()
         }
     }
     impl<T: Clone> Unital for FirstOperation<T> {
@@ -100,7 +100,7 @@ mod last_operation_impl {
         type T = Option<T>;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            y.as_ref().or_else(|| x.as_ref()).cloned()
+            y.as_ref().or(x.as_ref()).cloned()
         }
     }
     impl<T: Clone> Unital for LastOperation<T> {

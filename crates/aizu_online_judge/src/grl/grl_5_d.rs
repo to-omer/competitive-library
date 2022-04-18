@@ -13,8 +13,7 @@ pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
     let edges = c
         .take(n)
         .enumerate()
-        .map(|(u, it)| it.into_iter().map(move |v| (u, v)))
-        .flatten()
+        .flat_map(|(u, it)| it.into_iter().map(move |v| (u, v)))
         .collect();
     let graph = UndirectedSparseGraph::from_edges(n, edges);
     let et = EulerTourForEdge::new(0, &graph);
