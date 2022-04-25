@@ -113,57 +113,57 @@ pub trait Float:
 macro_rules! primitive_float_impls {
     ($({$t:ident $i:ident $u:ident $e:expr})*) => {$(
         impl Float for $t {
-            fn floor(self) -> Self { self.floor() }
-            fn ceil(self) -> Self { self.ceil() }
-            fn round(self) -> Self { self.round() }
-            fn trunc(self) -> Self { self.trunc() }
-            fn fract(self) -> Self { self.fract() }
-            fn abs(self) -> Self { self.abs() }
-            fn signum(self) -> Self { self.signum() }
-            fn copysign(self, sign: Self) -> Self { self.copysign(sign) }
-            fn mul_add(self, a: Self, b: Self) -> Self { self.mul_add(a, b) }
-            fn div_euclid(self, rhs: Self) -> Self { self.div_euclid(rhs) }
-            fn rem_euclid(self, rhs: Self) -> Self { self.rem_euclid(rhs) }
-            fn powi(self, n: i32) -> Self { self.powi(n) }
-            fn powf(self, n: Self) -> Self { self.powf(n) }
-            fn sqrt(self) -> Self { self.sqrt() }
-            fn exp(self) -> Self { self.exp() }
-            fn exp2(self) -> Self { self.exp2() }
-            fn ln(self) -> Self { self.ln() }
-            fn log(self, base: Self) -> Self { self.log(base) }
-            fn log2(self) -> Self { self.log2() }
-            fn log10(self) -> Self { self.log10() }
-            fn cbrt(self) -> Self { self.cbrt() }
-            fn hypot(self, other: Self) -> Self { self.hypot(other) }
-            fn sin(self) -> Self { self.sin() }
-            fn cos(self) -> Self { self.cos() }
-            fn tan(self) -> Self { self.tan() }
-            fn asin(self) -> Self { self.asin() }
-            fn acos(self) -> Self { self.acos() }
-            fn atan(self) -> Self { self.atan() }
-            fn atan2(self, other: Self) -> Self { self.atan2(other) }
-            fn sin_cos(self) -> (Self, Self) { self.sin_cos() }
-            fn exp_m1(self) -> Self { self.exp_m1() }
-            fn ln_1p(self) -> Self { self.ln_1p() }
-            fn sinh(self) -> Self { self.sinh() }
-            fn cosh(self) -> Self { self.cosh() }
-            fn tanh(self) -> Self { self.tanh() }
-            fn asinh(self) -> Self { self.asinh() }
-            fn acosh(self) -> Self { self.acosh() }
-            fn atanh(self) -> Self { self.atanh() }
-            fn is_nan(self) -> bool { self.is_nan() }
-            fn is_infinite(self) -> bool { self.is_infinite() }
-            fn is_finite(self) -> bool { self.is_finite() }
-            fn is_normal(self) -> bool { self.is_normal() }
-            fn classify(self) -> std::num::FpCategory { self.classify() }
-            fn is_sign_positive(self) -> bool { self.is_sign_positive() }
-            fn is_sign_negative(self) -> bool { self.is_sign_negative() }
-            fn recip(self) -> Self { self.recip() }
-            fn to_degrees(self) -> Self { self.to_degrees() }
-            fn to_radians(self) -> Self { self.to_radians() }
-            fn max(self, other: Self) -> Self { self.max(other) }
-            fn min(self, other: Self) -> Self { self.min(other) }
-            fn to_bits(self) -> u64 { self.to_bits().into() }
+            fn floor(self) -> Self { $t::floor(self) }
+            fn ceil(self) -> Self { $t::ceil(self) }
+            fn round(self) -> Self { $t::round(self) }
+            fn trunc(self) -> Self { $t::trunc(self) }
+            fn fract(self) -> Self { $t::fract(self) }
+            fn abs(self) -> Self { $t::abs(self) }
+            fn signum(self) -> Self { $t::signum(self) }
+            fn copysign(self, sign: Self) -> Self { $t::copysign(self, sign) }
+            fn mul_add(self, a: Self, b: Self) -> Self { $t::mul_add(self, a, b) }
+            fn div_euclid(self, rhs: Self) -> Self { $t::div_euclid(self, rhs) }
+            fn rem_euclid(self, rhs: Self) -> Self { $t::rem_euclid(self, rhs) }
+            fn powi(self, n: i32) -> Self { $t::powi(self, n) }
+            fn powf(self, n: Self) -> Self { $t::powf(self, n) }
+            fn sqrt(self) -> Self { $t::sqrt(self) }
+            fn exp(self) -> Self { $t::exp(self) }
+            fn exp2(self) -> Self { $t::exp2(self) }
+            fn ln(self) -> Self { $t::ln(self) }
+            fn log(self, base: Self) -> Self { $t::log(self, base) }
+            fn log2(self) -> Self { $t::log2(self) }
+            fn log10(self) -> Self { $t::log10(self) }
+            fn cbrt(self) -> Self { $t::cbrt(self) }
+            fn hypot(self, other: Self) -> Self { $t::hypot(self, other) }
+            fn sin(self) -> Self { $t::sin(self) }
+            fn cos(self) -> Self { $t::cos(self) }
+            fn tan(self) -> Self { $t::tan(self) }
+            fn asin(self) -> Self { $t::asin(self) }
+            fn acos(self) -> Self { $t::acos(self) }
+            fn atan(self) -> Self { $t::atan(self) }
+            fn atan2(self, other: Self) -> Self { $t::atan2(self, other) }
+            fn sin_cos(self) -> (Self, Self) { $t::sin_cos(self) }
+            fn exp_m1(self) -> Self { $t::exp_m1(self) }
+            fn ln_1p(self) -> Self { $t::ln_1p(self) }
+            fn sinh(self) -> Self { $t::sinh(self) }
+            fn cosh(self) -> Self { $t::cosh(self) }
+            fn tanh(self) -> Self { $t::tanh(self) }
+            fn asinh(self) -> Self { $t::asinh(self) }
+            fn acosh(self) -> Self { $t::acosh(self) }
+            fn atanh(self) -> Self { $t::atanh(self) }
+            fn is_nan(self) -> bool { $t::is_nan(self) }
+            fn is_infinite(self) -> bool { $t::is_infinite(self) }
+            fn is_finite(self) -> bool { $t::is_finite(self) }
+            fn is_normal(self) -> bool { $t::is_normal(self) }
+            fn classify(self) -> std::num::FpCategory { $t::classify(self) }
+            fn is_sign_positive(self) -> bool { $t::is_sign_positive(self) }
+            fn is_sign_negative(self) -> bool { $t::is_sign_negative(self) }
+            fn recip(self) -> Self { $t::recip(self) }
+            fn to_degrees(self) -> Self { $t::to_degrees(self) }
+            fn to_radians(self) -> Self { $t::to_radians(self) }
+            fn max(self, other: Self) -> Self { $t::max(self, other) }
+            fn min(self, other: Self) -> Self { $t::min(self, other) }
+            fn to_bits(self) -> u64 { $t::to_bits(self).into() }
             fn from_bits(v: u64) -> Self { $t::from_bits(v.try_into().unwrap()) }
             fn total_cmp(&self, other: &Self) -> Ordering {
                 let mut left = self.to_bits() as $i;

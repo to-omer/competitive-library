@@ -3,6 +3,7 @@
 use crate::algebra::{Magma, Monoid, Unital};
 use crate::num::{MInt, MIntBase, One, Zero};
 
+#[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep"))]
 pub use self::baby_step_giant_step::BabyStepGiantStep;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
 pub use self::binary_search::*;
@@ -28,6 +29,7 @@ pub use self::ternary_search::*;
 pub use self::xorbasis::XorBasis;
 pub use self::zeta_transform::*;
 
+#[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep", include("algebra")))]
 mod baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry)]
 mod binary_search;

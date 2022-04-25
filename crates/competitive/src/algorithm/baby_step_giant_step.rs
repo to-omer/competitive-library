@@ -1,6 +1,6 @@
+#[codesnip::skip]
 use crate::algebra::Group;
 
-#[codesnip::entry("BabyStepGiantStep", include("algebra"))]
 /// $\min\{1\le i \le n | x^i=a\}$
 #[derive(Debug)]
 pub struct BabyStepGiantStep<G>
