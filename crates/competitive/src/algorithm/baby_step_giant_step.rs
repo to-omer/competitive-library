@@ -1,5 +1,4 @@
-#[codesnip::skip]
-use crate::algebra::Group;
+use super::Group;
 
 /// $\min\{1\le i \le n | x^i=a\}$
 #[derive(Debug)]

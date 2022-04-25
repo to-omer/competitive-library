@@ -1,6 +1,6 @@
 //! algorithm
 
-use crate::algebra::{Magma, Monoid, Unital};
+use crate::algebra::{Group, Magma, Monoid, Unital};
 use crate::num::{MInt, MIntBase, One, Zero};
 
 #[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep"))]
