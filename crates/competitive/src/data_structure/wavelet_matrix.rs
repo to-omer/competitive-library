@@ -89,6 +89,29 @@ impl WaveletMatrix {
         }
         val
     }
+    /// get k-th smallest value out of range
+    pub fn quantile_outer(&self, mut range: Range<usize>, mut k: usize) -> usize {
+        let mut val = 0;
+        let mut orange = 0..self.len;
+        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
+            let z = b.rank0(orange.end) - b.rank0(orange.start) + b.rank0(range.start)
+                - b.rank0(range.end);
+            if z <= k {
+                k -= z;
+                val |= 1 << d;
+                range.start = c + b.rank1(range.start);
+                range.end = c + b.rank1(range.end);
+                orange.start = c + b.rank1(orange.start);
+                orange.end = c + b.rank1(orange.end);
+            } else {
+                range.start = b.rank0(range.start);
+                range.end = b.rank0(range.end);
+                orange.start = b.rank0(orange.start);
+                orange.end = b.rank0(orange.end);
+            }
+        }
+        val
+    }
     /// the number of value less than val in range
     pub fn rank_lessthan(&self, val: usize, mut range: Range<usize>) -> usize {
         let mut res = 0;
@@ -143,6 +166,18 @@ fn test_wavelet_matrix() {
             (0..r - l).map(|k| wm.quantile(l..r, k)).collect::<Vec<_>>(),
             {
                 let mut v: Vec<_> = v[l..r].to_vec();
+                v.sort_unstable();
+                v
+            }
+        );
+
+        assert_eq!(
+            (0..N + l - r)
+                .map(|k| wm.quantile_outer(l..r, k))
+                .collect::<Vec<_>>(),
+            {
+                let mut v: Vec<_> = v.to_vec();
+                v.drain(l..r);
                 v.sort_unstable();
                 v
             }
