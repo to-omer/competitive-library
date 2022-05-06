@@ -673,3 +673,63 @@ mod find_majority_operation_impl {
     }
     impl<T> Associative for FindMajorityOperation<T> {}
 }
+
+mod concatenate_operation {
+    use super::*;
+    use std::marker::PhantomData;
+    pub struct ConcatenateOperation<T> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    impl<T> Magma for ConcatenateOperation<T>
+    where
+        T: Clone,
+    {
+        type T = Vec<T>;
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            x.iter().chain(y.iter()).cloned().collect()
+        }
+    }
+    impl<T> Unital for ConcatenateOperation<T>
+    where
+        T: Clone,
+    {
+        fn unit() -> Self::T {
+            Vec::new()
+        }
+    }
+    impl<T> Associative for ConcatenateOperation<T> {}
+
+    pub struct SortedConcatenateOperation<T> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    impl<T> Magma for SortedConcatenateOperation<T>
+    where
+        T: Clone + Ord,
+    {
+        type T = Vec<T>;
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            let mut xit = x.iter().cloned().peekable();
+            let mut yit = y.iter().cloned().peekable();
+            let mut z = Vec::with_capacity(x.len() + y.len());
+            loop {
+                match (xit.peek(), yit.peek()) {
+                    (None, None) => break,
+                    (Some(_), None) => z.push(xit.next().unwrap()),
+                    (Some(x), Some(y)) if x <= y => z.push(xit.next().unwrap()),
+                    _ => z.push(yit.next().unwrap()),
+                }
+            }
+            z
+        }
+    }
+    impl<T> Unital for SortedConcatenateOperation<T>
+    where
+        T: Clone + Ord,
+    {
+        fn unit() -> Self::T {
+            Vec::new()
+        }
+    }
+    impl<T> Associative for SortedConcatenateOperation<T> {}
+    impl<T> Commutative for SortedConcatenateOperation<T> {}
+}
