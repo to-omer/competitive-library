@@ -29,6 +29,7 @@ where
             self.data.push(T::zero());
         }
         self.data[0].sub_assign(rhs);
+        self.trim_tail_zeros();
     }
 }
 impl<T, C> MulAssign<T> for FormalPowerSeries<T, C>
@@ -131,6 +132,7 @@ where
         for (x, y) in self.iter_mut().zip(rhs.iter()) {
             x.sub_assign(y);
         }
+        self.trim_tail_zeros();
     }
 }
 
