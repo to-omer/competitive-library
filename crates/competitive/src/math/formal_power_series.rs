@@ -1,6 +1,6 @@
 #[codesnip::skip]
 use crate::{
-    math::{Convolve998244353, ConvolveSteps, MIntConvolve},
+    math::{Convolve998244353, ConvolveSteps, MIntConvolve, MemorizedFactorial},
     num::{mint_basic, MInt, MIntConvert, One, Zero},
 };
 
