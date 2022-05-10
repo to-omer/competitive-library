@@ -12,6 +12,6 @@ pub fn scc(reader: impl Read, mut writer: impl Write) {
     let comp = scc.components();
     writeln!(writer, "{}", comp.len()).ok();
     for vs in comp.into_iter() {
-        iter_print!(writer, vs.len(), @iter vs);
+        iter_print!(writer, vs.len(), @it vs);
     }
 }

@@ -10,5 +10,5 @@ pub fn grl_5_b(reader: impl Read, mut writer: impl Write) {
     let re = ReRooting::<MaxOperation<u64>, _>::new(&graph, |d, _vid, eid_opt| {
         d + eid_opt.map_or(0, |eid| w[eid])
     });
-    iter_print!(writer, @sep '\n', @iter re.dp);
+    iter_print!(writer, @sep '\n', @it re.dp);
 }

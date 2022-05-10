@@ -54,14 +54,17 @@ iter_print_tuple_impl!(A a B b C c D d E e F f G g H h I i J j K k);
 /// Print expressions with a separator.
 /// - `iter_print!(writer, args...)`
 /// - `@sep $expr`: set separator (default: `' '`)
+/// - `@ns`: alias for `@sep ""`
+/// - `@lf`: alias for `@sep '\n'`
+/// - `@sp`: alias for `@sep ' '`
 /// - `@fmt $lit => {$($expr),*}`: print `format!($lit, $($expr),*)`
 /// - `@flush`: flush writer (auto insert `!`)
-/// - `@iter $expr`: print iterator
-/// - `@iterns $expr`: print iterator with no separators
-/// - `@iterln $expr`: print iterator with separator `'\n'`
-/// - `@iter2d $expr`: print 2d-iterator
-/// - `@tuple $expr`: print tuple (need to import [`IterPrint`], each elements impls `Display`)
+/// - `@it $expr`: print iterator
+/// - `@it2d $expr`: print 2d-iterator
+/// - `@tup $expr`: print tuple (need to import [`IterPrint`])
+/// - `@ittup $expr`: print iterative tuple (need to import [`IterPrint`])
 /// - `$expr`: print expr
+/// - `{ args... }`: scoped
 /// - `;`: print `'\n'`
 /// - `!`: not print `'\n'` at the end
 #[macro_export]
@@ -78,7 +81,7 @@ macro_rules! iter_print {
     (@@line_feed $writer:expr $(,)?) => {
         ::std::writeln!($writer).expect("io error");
     };
-    (@@iter $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {{
+    (@@it $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {{
         let mut iter = $iter.into_iter();
         if let Some(item) = iter.next() {
             $crate::iter_print!(@@item $writer, $sep, $is_head, item);
@@ -87,48 +90,48 @@ macro_rules! iter_print {
             $crate::iter_print!(@@item $writer, $sep, false, item);
         }
     }};
-    (@@iterns $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {{
+    (@@it2d $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {
         let mut iter = $iter.into_iter();
         if let Some(item) = iter.next() {
-            $crate::iter_print!(@@item $writer, $sep, $is_head, item);
-        }
-        for item in iter {
-            $crate::iter_print!(@@item $writer, $sep, true, item);
-        }
-    }};
-    (@@iterln $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {{
-        let mut iter = $iter.into_iter();
-        if let Some(item) = iter.next() {
-            $crate::iter_print!(@@item $writer, '\n', $is_head, item);
-        }
-        for item in iter {
-            $crate::iter_print!(@@item $writer, '\n', false, item);
-        }
-    }};
-    (@@iter2d $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {
-        let mut iter = $iter.into_iter();
-        if let Some(item) = iter.next() {
-            $crate::iter_print!(@@iter $writer, $sep, $is_head, item);
+            $crate::iter_print!(@@it $writer, $sep, $is_head, item);
         }
         for item in iter {
             $crate::iter_print!(@@line_feed $writer);
-            $crate::iter_print!(@@iter $writer, $sep, true, item);
+            $crate::iter_print!(@@it $writer, $sep, true, item);
         }
     };
-    (@@tuple $writer:expr, $sep:expr, $is_head:expr, $tuple:expr) => {
+    (@@tup $writer:expr, $sep:expr, $is_head:expr, $tuple:expr) => {
         IterPrint::iter_print($tuple, &mut $writer, $sep, $is_head).expect("io error");
     };
+    (@@ittup $writer:expr, $sep:expr, $is_head:expr, $iter:expr) => {
+        let mut iter = $iter.into_iter();
+        if let Some(item) = iter.next() {
+            $crate::iter_print!(@@tup $writer, $sep, $is_head, item);
+        }
+        for item in iter {
+            $crate::iter_print!(@@line_feed $writer);
+            $crate::iter_print!(@@tup $writer, $sep, true, item);
+        }
+    };
     (@@assert_tag item) => {};
-    (@@assert_tag iter) => {};
-    (@@assert_tag iterns) => {};
-    (@@assert_tag iterln) => {};
-    (@@assert_tag iter2d) => {};
-    (@@assert_tag tuple) => {};
+    (@@assert_tag it) => {};
+    (@@assert_tag it2d) => {};
+    (@@assert_tag tup) => {};
+    (@@assert_tag ittup) => {};
     (@@assert_tag $tag:ident) => {
         ::std::compile_error!(::std::concat!("invalid tag in `iter_print!`: `", std::stringify!($tag), "`"));
     };
     (@@inner $writer:expr, $sep:expr, $is_head:expr, @sep $e:expr, $($t:tt)*) => {
         $crate::iter_print!(@@inner $writer, $e, $is_head, $($t)*);
+    };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, @ns $($t:tt)*) => {
+        $crate::iter_print!(@@inner $writer, "", $is_head, $($t)*);
+    };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, @lf $($t:tt)*) => {
+        $crate::iter_print!(@@inner $writer, '\n', $is_head, $($t)*);
+    };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, @sp $($t:tt)*) => {
+        $crate::iter_print!(@@inner $writer, ' ', $is_head, $($t)*);
     };
     (@@inner $writer:expr, $sep:expr, $is_head:expr, @flush $($t:tt)*) => {
         $writer.flush().expect("io error");
@@ -171,6 +174,10 @@ macro_rules! iter_print {
     (@@inner $writer:expr, $sep:expr, $is_head:expr,) => {
         $crate::iter_print!(@@line_feed $writer);
     };
+    (@@inner $writer:expr, $sep:expr, $is_head:expr, { $($t:tt)* } $($rest:tt)*) => {
+        $crate::iter_print!(@@inner $writer, $sep, $is_head, $($t)*, !);
+        $crate::iter_print!(@@inner $writer, $sep, $is_head, $($rest)*);
+    };
     (@@inner $writer:expr, $sep:expr, $is_head:expr, $($t:tt)*) => {
         $crate::iter_print!(@@inner $writer, $sep, $is_head, @item $($t)*);
     };
@@ -188,15 +195,25 @@ mod tests {
     fn test_iter_print() {
         let mut buf = Vec::new();
         iter_print!(
-            buf, 1, 2, @sep '.', 3, 4; 5, 6, @sep ' ', @iter 7..=10;
-            @tuple (1, 2, 3);
-            @flush,
-            4, @fmt "{}?{}" => {5, 6.7}, @iterns 8..=10;
-            @iterln 11..=13,
-            @iter2d (0..3).map(|i| (14..=15).map(move |j| j + 2 * i)),
+            buf, 1, 2, @sep '.', 3, 4; 5, 6, @sp @it 7..=10;
+            @tup (1, 2, 3); @flush 4, @fmt "{}?{}" => {5, 6.7};
+            { @ns @it 8..=10; @lf @it 11..=13 },
+            @it2d (0..3).map(|i| (14..=15).map(move |j| i * 2 + j));
+            @ns @ittup (0..2).map(|i| (i * 2 + 20, i * 2 + 21)),
             @flush,
         );
-        let expected = "1 2.3.4\n5.6 7 8 9 10\n1 2 3\n4 5?6.7 8910\n11\n12\n13 14 15\n16 17\n18 19";
+        let expected = r#"1 2.3.4
+5.6 7 8 9 10
+1 2 3
+4 5?6.7
+8910
+11
+12
+13 14 15
+16 17
+18 19
+2021
+2223"#;
         assert_eq!(expected, String::from_utf8_lossy(&buf));
     }
 }

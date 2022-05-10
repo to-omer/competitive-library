@@ -11,5 +11,5 @@ pub fn convolution_mod(reader: impl Read, mut writer: impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, m, a: [MInt998244353; n], b: [MInt998244353; m]);
     let c = Convolve998244353::convolve(a, b);
-    iter_print!(writer, @iter c);
+    iter_print!(writer, @it c);
 }

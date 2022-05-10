@@ -16,5 +16,5 @@ pub fn dsl_3_d(reader: impl Read, mut writer: impl Write) {
             que.pop();
         }
     }
-    iter_print!(writer, @iter ans);
+    iter_print!(writer, @it ans);
 }

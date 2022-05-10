@@ -10,5 +10,5 @@ pub fn directedmst(reader: impl Read, mut writer: impl Write) {
     let res = graph
         .minimum_spanning_arborescence::<AdditiveOperation<_>, _>(s, |u| w[u])
         .unwrap();
-    iter_print!(writer, res.0; @iter res.1);
+    iter_print!(writer, res.0; @it res.1);
 }

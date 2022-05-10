@@ -9,5 +9,5 @@ pub fn multipoint_evaluation(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, n, m, c: [MInt998244353; n], p: [MInt998244353; m]);
     let f = Fps998244353::from_vec(c);
     let res = f.multipoint_evaluation(&p);
-    iter_print!(writer, @iter res);
+    iter_print!(writer, @it res);
 }

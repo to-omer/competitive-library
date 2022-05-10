@@ -12,5 +12,5 @@ pub fn polynomial_taylor_shift(reader: impl Read, mut writer: impl Write) {
     let f = MemorizedFactorial::new(n);
     let a = Fps998244353::from_vec(a);
     let res = a.taylor_shift(c, &f);
-    iter_print!(writer, @iter res);
+    iter_print!(writer, @it res);
 }

@@ -9,5 +9,5 @@ pub fn pow_of_formal_power_series(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, n, m, a: [MInt998244353; n]);
     let f = Fps998244353::from_vec(a);
     let g = f.pow(m, n);
-    iter_print!(writer, @iter g.data);
+    iter_print!(writer, @it g.data);
 }

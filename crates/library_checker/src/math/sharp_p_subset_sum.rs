@@ -16,5 +16,5 @@ pub fn sharp_p_subset_sum(reader: impl Read, mut writer: impl Write) {
         c[s] += MInt998244353::one();
     }
     let a = Fps998244353::from_vec(c).count_subset_sum(t + 1, |x| f.inv(x));
-    iter_print!(writer, @iter a.data[1..]);
+    iter_print!(writer, @it a.data[1..]);
 }

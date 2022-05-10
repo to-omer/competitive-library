@@ -9,5 +9,5 @@ pub fn suffixarray(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, s: Chars);
     let n = s.len();
     let sa = SuffixArray::new(s);
-    iter_print!(writer, @iter (1..=n).map(|i| sa[i]));
+    iter_print!(writer, @it (1..=n).map(|i| sa[i]));
 }
