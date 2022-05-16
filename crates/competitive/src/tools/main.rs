@@ -17,18 +17,39 @@ use std::{
 
 mod main_macros {
     /// Prepare useful macros.
-    /// - `prepare!();`: default (all input scanner (`sc!`, `sv!`) + buf print (`pp!`))
-    /// - `prepare!(?);`: interactive (line scanner (`scln!`) + buf print (`pp!`))
+    /// - `prepare!();`: default (all input scanner (`sc!`, `sv!`) + buf print (`pp!`, `dg!`))
+    /// - `prepare!(?);`: interactive (line scanner (`scln!`) + buf print (`pp!`, `dg!`))
     #[macro_export]
     macro_rules! prepare {
-        (@normal ($dol:tt)) => {
+        (@output ($dol:tt)) => {
             #[allow(unused_imports)]
             use std::io::Write as _;
             let __out = std::io::stdout();
             #[allow(unused_mut,unused_variables)]
             let mut __out = std::io::BufWriter::new(__out.lock());
             #[allow(unused_macros)]
+            /// [`iter_print!`] for buffered stdout.
             macro_rules! pp { ($dol($dol t:tt)*) => { $dol crate::iter_print!(__out, $dol($dol t)*) } }
+            #[cfg(debug_assertions)]
+            #[allow(unused_macros)]
+            /// [`iter_print!`] for buffered stderr. Do nothing in release mode.
+            macro_rules! dg {
+                ($dol($dol t:tt)*) => {{
+                    #[allow(unused_imports)]
+                    use std::io::Write as _;
+                    let __err = std::io::stderr();
+                    #[allow(unused_mut,unused_variables)]
+                    let mut __err = std::io::BufWriter::new(__err.lock());
+                    $dol crate::iter_print!(__err, $dol($dol t)*);
+                    let _ = __err.flush();
+                }}
+            }
+            #[cfg(not(debug_assertions))]
+            #[allow(unused_macros)]
+            /// [`iter_print!`] for buffered stderr. Do nothing in release mode.
+            macro_rules! dg { ($dol($dol t:tt)*) => {} }
+        };
+        (@normal ($dol:tt)) => {
             let __in_buf = read_stdin_all_unchecked();
             #[allow(unused_mut,unused_variables)]
             let mut __scanner = Scanner::new(&__in_buf);
@@ -38,14 +59,6 @@ mod main_macros {
             macro_rules! sv { ($dol($dol t:tt)*) => { $dol crate::scan_value!(__scanner, $dol($dol t)*) } }
         };
         (@interactive ($dol:tt)) => {
-            #[allow(unused_imports)]
-            use std::io::Write as _;
-            let __out = std::io::stdout();
-            #[allow(unused_mut,unused_variables)]
-            let mut __out = std::io::BufWriter::new(__out.lock());
-            #[allow(unused_macros)]
-            /// - to flush: `pp!(@flush);`
-            macro_rules! pp { ($dol($dol t:tt)*) => { $dol crate::iter_print!(__out, $dol($dol t)*) } }
             #[allow(unused_macros)]
             /// Scan a line, and previous line will be truncated in the next call.
             macro_rules! scln {
@@ -57,7 +70,7 @@ mod main_macros {
                 }
             }
         };
-        () => { $crate::prepare!(@normal ($)) };
-        (?) => { $crate::prepare!(@interactive ($)) };
+        () => { $crate::prepare!(@output ($)); $crate::prepare!(@normal ($)) };
+        (?) => { $crate::prepare!(@output ($)); $crate::prepare!(@interactive ($)) };
     }
 }
