@@ -72,9 +72,18 @@ jobs:
 
     - name: cargo-clippy
       uses: actions-rs/cargo@v1
+      id: clippy
+      if: ${{ !contains(matrix.toolchain, '1.42.0') }}
       with:
         command: clippy
-        args: --workspace --lib --tests --no-deps
+        args: --workspace --lib --tests
+
+    - name: cargo-clippy (for 1.42.0)
+      uses: actions-rs/cargo@v1
+      if: ${{ steps.clippy.conclusion == 'skipped' }}
+      with:
+        command: clippy
+        args: -p competitive -p library_checker -p aizu_online_judge --lib --tests
 
     - name: cargo-build
       uses: actions-rs/cargo@v1
