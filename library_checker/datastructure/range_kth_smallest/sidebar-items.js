@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["range_kth_smallest","✅  AC  324ms"]]});
+initSidebarItems({"fn":[["range_kth_smallest","✅  AC  359ms"]]});
