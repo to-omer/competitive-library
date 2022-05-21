@@ -72,32 +72,21 @@ jobs:
 
     - name: cargo-clippy
       uses: actions-rs/cargo@v1
-      if: ${{ !contains(matrix.toolchain, '1.42.0') }}
       with:
         command: clippy
         args: --workspace --lib --tests
 
     - name: cargo-build
       uses: actions-rs/cargo@v1
-      if: ${{ !contains(matrix.toolchain, '1.42.0') }}
       with:
         command: build
         args: --workspace --lib --tests
 
     - name: cargo-test
       uses: actions-rs/cargo@v1
-      if: ${{ !contains(matrix.toolchain, '1.42.0') }}
       with:
         command: test
         args: --workspace --no-fail-fast
-
-    - name: cargo-clippy,build,test (for 1.42.0)
-      if: ${{ contains(matrix.toolchain, '1.42.0') }}
-      run: |
-        cd ./crates/competitive
-        cargo clippy --lib --tests --no-default-features
-        cargo build --lib --tests --no-default-features
-        cargo test --no-fail-fast --no-default-features
 
     - name: Stop sccache server
       run: sccache --stop-server || true
@@ -302,7 +291,7 @@ jobs:
         CRITERION_HOME: ./../../target/doc/benchmarks
       run: |
         ulimit -s unlimited
-        cargo bench -p competitive --bench criterion
+        cargo bench -p competitive_bench --bench criterion
 
     - name: upload artifacts
       if: ${{ always() }}
