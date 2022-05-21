@@ -72,30 +72,32 @@ jobs:
 
     - name: cargo-clippy
       uses: actions-rs/cargo@v1
-      id: clippy
       if: ${{ !contains(matrix.toolchain, '1.42.0') }}
       with:
         command: clippy
         args: --workspace --lib --tests
 
-    - name: cargo-clippy (for 1.42.0)
-      uses: actions-rs/cargo@v1
-      if: ${{ steps.clippy.conclusion == 'skipped' }}
-      with:
-        command: clippy
-        args: -p competitive -p library_checker -p aizu_online_judge --lib
-
     - name: cargo-build
       uses: actions-rs/cargo@v1
+      if: ${{ !contains(matrix.toolchain, '1.42.0') }}
       with:
         command: build
         args: --workspace --lib --tests
 
     - name: cargo-test
       uses: actions-rs/cargo@v1
+      if: ${{ !contains(matrix.toolchain, '1.42.0') }}
       with:
         command: test
         args: --workspace --no-fail-fast
+
+    - name: cargo-clippy,build,test (for 1.42.0)
+      if: ${{ contains(matrix.toolchain, '1.42.0') }}
+      run: |
+        cd ./crates/competitive
+        cargo clippy --lib --tests
+        cargo build --lib --tests
+        cargo test --no-fail-fast
 
     - name: Stop sccache server
       run: sccache --stop-server || true
