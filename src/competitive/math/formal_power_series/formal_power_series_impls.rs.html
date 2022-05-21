@@ -441,6 +441,34 @@
 <span id="409">409</span>
 <span id="410">410</span>
 <span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">iter::repeat_with</span>,
@@ -850,6 +878,34 @@
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">u</span><span class="op">|</span> <span class="ident">u</span>.<span class="ident">data</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or_else</span>(<span class="ident">Zero::zero</span>))
             .<span class="ident">collect</span>()
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">C</span><span class="op">&gt;</span> <span class="ident">FormalPowerSeries</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">C</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="ident">C</span>: <span class="ident">ConvolveSteps</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+{
+    <span class="doccomment">/// f(x) &lt;- f(x + a)</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">taylor_shift</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="ident">MemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">length</span>();
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
+            <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">i</span>] <span class="kw-2">*</span><span class="op">=</span> <span class="ident">f</span>.<span class="ident">fact</span>[<span class="ident">i</span>];
+        }
+        <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">reverse</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> <span class="op">=</span> <span class="ident">a</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::from_vec</span>(<span class="ident">f</span>.<span class="ident">inv_fact</span>[..<span class="ident">n</span>].<span class="ident">to_vec</span>());
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">n</span> {
+            <span class="ident">g</span>[<span class="ident">i</span>] <span class="kw-2">*</span><span class="op">=</span> <span class="ident">b</span>;
+            <span class="ident">b</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">a</span>;
+        }
+        <span class="self">self</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">g</span>;
+        <span class="self">self</span>.<span class="ident">truncate</span>(<span class="ident">n</span>);
+        <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">reverse</span>();
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
+            <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">i</span>] <span class="kw-2">*</span><span class="op">=</span> <span class="ident">f</span>.<span class="ident">inv_fact</span>[<span class="ident">i</span>];
+        }
+        <span class="self">self</span>
     }
 }
 </code></pre></div>
