@@ -29,14 +29,14 @@ mod heuristics;
 mod iter_print;
 #[cfg_attr(nightly, codesnip::entry("comprehension"))]
 mod iterable;
-#[cfg_attr(nightly, codesnip::entry)]
-mod mlambda;
 #[cfg_attr(
     nightly,
     codesnip::entry("main", inline, include("scanner", "_iter_print"))
 )]
 mod main;
 mod map;
+#[cfg_attr(nightly, codesnip::entry)]
+mod mlambda;
 #[cfg_attr(nightly, codesnip::entry("ord_tools"))]
 mod ord_tools;
 mod random;
