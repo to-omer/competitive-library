@@ -1,5 +1,4 @@
-#[codesnip::skip]
-use crate::num::{One, Zero};
+use super::{One, Zero};
 use std::ops::{Add, Div, Index, IndexMut, Mul, Sub};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -141,7 +140,7 @@ impl<T> Matrix<T>
 where
     T: Copy + PartialEq + Zero + One + Sub<Output = T> + Mul<Output = T> + Div<Output = T>,
 {
-    pub fn row_reduction(&mut self) {
+    pub fn row_reduction(&mut self, normalize: bool) {
         let (n, m) = self.shape;
         let mut c = 0;
         for r in 0..n {
@@ -156,13 +155,18 @@ where
                 c += 1;
             }
             let d = T::one() / self[r][c];
-            for j in c..m {
-                self[r][j] = self[r][j] * d;
+            if normalize {
+                for j in c..m {
+                    self[r][j] = self[r][j] * d;
+                }
             }
             for i in (0..n).filter(|&i| i != r) {
-                let d = self[i][c];
+                let mut e = self[i][c];
+                if !normalize {
+                    e = e * d;
+                }
                 for j in c..m {
-                    self[i][j] = self[i][j] - d * self[r][j];
+                    self[i][j] = self[i][j] - e * self[r][j];
                 }
             }
             c += 1;
@@ -170,10 +174,19 @@ where
     }
     pub fn rank(&mut self) -> usize {
         let n = self.shape.0;
-        self.row_reduction();
+        self.row_reduction(false);
         (0..n)
             .filter(|&i| !self.data[i].iter().all(|x| x.is_zero()))
             .count()
+    }
+    pub fn determinant(&mut self) -> T {
+        assert_eq!(self.shape.0, self.shape.1);
+        self.row_reduction(false);
+        let mut d = T::one();
+        for i in 0..self.shape.0 {
+            d = d * self[i][i];
+        }
+        d
     }
     pub fn solve_system_of_linear_equations(&self, b: &[T]) -> Option<Vec<T>> {
         assert_eq!(self.shape.0, self.shape.1);
@@ -184,7 +197,7 @@ where
             c[i][..n].clone_from_slice(&self[i]);
             c[i][n] = b[i];
         }
-        c.row_reduction();
+        c.row_reduction(true);
         if (0..n).any(|i| c[i][i].is_zero()) {
             None
         } else {
@@ -199,7 +212,7 @@ where
             c[i][..n].clone_from_slice(&self[i]);
             c[i][n + i] = T::one();
         }
-        c.row_reduction();
+        c.row_reduction(true);
         if (0..n).any(|i| c[i][i].is_zero()) {
             None
         } else {
