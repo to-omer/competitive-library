@@ -469,6 +469,24 @@
 <span id="437">437</span>
 <span id="438">438</span>
 <span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">iter::repeat_with</span>,
@@ -878,6 +896,24 @@
             .<span class="ident">iter</span>()
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">u</span><span class="op">|</span> <span class="ident">u</span>.<span class="ident">data</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or_else</span>(<span class="ident">Zero::zero</span>))
             .<span class="ident">collect</span>()
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">product_all</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>, <span class="ident">deg</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span>
+    <span class="kw">where</span>
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="self">Self</span><span class="op">&gt;</span>,
+    {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">heap</span>: <span class="ident">std::collections::BinaryHeap</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">iter</span>
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">f</span><span class="op">|</span> <span class="ident">PartialIgnoredOrd</span>(<span class="ident">std::cmp::Reverse</span>(<span class="ident">f</span>.<span class="ident">length</span>()), <span class="ident">f</span>))
+            .<span class="ident">collect</span>();
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">PartialIgnoredOrd</span>(<span class="kw">_</span>, <span class="ident">x</span>)) <span class="op">=</span> <span class="ident">heap</span>.<span class="ident">pop</span>() {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">PartialIgnoredOrd</span>(<span class="kw">_</span>, <span class="ident">y</span>)) <span class="op">=</span> <span class="ident">heap</span>.<span class="ident">pop</span>() {
+                <span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> (<span class="ident">x</span> <span class="op">*</span> <span class="ident">y</span>).<span class="ident">prefix</span>(<span class="ident">deg</span>);
+                <span class="ident">heap</span>.<span class="ident">push</span>(<span class="ident">PartialIgnoredOrd</span>(<span class="ident">std::cmp::Reverse</span>(<span class="ident">z</span>.<span class="ident">length</span>()), <span class="ident">z</span>));
+            } <span class="kw">else</span> {
+                <span class="kw">return</span> <span class="ident">x</span>;
+            }
+        }
+        <span class="ident"><span class="self">Self</span>::one</span>()
     }
 }
 
