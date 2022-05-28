@@ -8,6 +8,8 @@ pub use self::heuristics::SimuratedAnnealing;
 pub use self::iter_print::IterPrint;
 #[codesnip::entry("ord_tools")]
 pub use self::ord_tools::PartialOrdExt;
+#[codesnip::entry("PartialIgnoredOrd")]
+pub use self::partial_ignored_ord::PartialIgnoredOrd;
 pub use self::random::*;
 #[codesnip::entry("scanner")]
 pub use self::scanner::*;
@@ -39,6 +41,8 @@ mod map;
 mod mlambda;
 #[cfg_attr(nightly, codesnip::entry("ord_tools"))]
 mod ord_tools;
+#[cfg_attr(nightly, codesnip::entry("PartialIgnoredOrd"))]
+mod partial_ignored_ord;
 mod random;
 #[cfg_attr(nightly, codesnip::entry("scanner"))]
 mod scanner;
