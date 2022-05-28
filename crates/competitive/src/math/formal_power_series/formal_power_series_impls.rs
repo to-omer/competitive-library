@@ -408,6 +408,24 @@ where
             .map(|u| u.data.get(0).cloned().unwrap_or_else(Zero::zero))
             .collect()
     }
+    pub fn product_all<I>(iter: I, deg: usize) -> Self
+    where
+        I: IntoIterator<Item = Self>,
+    {
+        let mut heap: std::collections::BinaryHeap<_> = iter
+            .into_iter()
+            .map(|f| PartialIgnoredOrd(std::cmp::Reverse(f.length()), f))
+            .collect();
+        while let Some(PartialIgnoredOrd(_, x)) = heap.pop() {
+            if let Some(PartialIgnoredOrd(_, y)) = heap.pop() {
+                let z = (x * y).prefix(deg);
+                heap.push(PartialIgnoredOrd(std::cmp::Reverse(z.length()), z));
+            } else {
+                return x;
+            }
+        }
+        Self::one()
+    }
 }
 
 impl<M, C> FormalPowerSeries<MInt<M>, C>

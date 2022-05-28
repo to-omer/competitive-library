@@ -2,6 +2,7 @@
 use crate::{
     math::{Convolve998244353, ConvolveSteps, MIntConvolve, MemorizedFactorial},
     num::{mint_basic, MInt, MIntConvert, One, Zero},
+    tools::PartialIgnoredOrd,
 };
 
 #[derive(Debug, Default)]

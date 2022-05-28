@@ -19,7 +19,13 @@ mod fast_fourier_transform;
     codesnip::entry(
         "FormalPowerSeries",
         inline,
-        include("NumberTheoreticTransform", "MInt", "mod_sqrt", "factorial")
+        include(
+            "NumberTheoreticTransform",
+            "MInt",
+            "mod_sqrt",
+            "factorial",
+            "PartialIgnoredOrd"
+        )
     )
 )]
 mod formal_power_series;
