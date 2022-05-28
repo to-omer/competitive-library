@@ -5,6 +5,7 @@ pub use fast_fourier_transform::*;
 pub use formal_power_series::*;
 pub use gcd::*;
 pub use lagrange_interpolation::*;
+#[codesnip::entry("Matrix")]
 pub use matrix::Matrix;
 pub use number_theoretic_transform::*;
 pub use nums::*;
@@ -31,6 +32,7 @@ mod fast_fourier_transform;
 mod formal_power_series;
 mod gcd;
 mod lagrange_interpolation;
+#[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one")))]
 mod matrix;
 mod mod_sqrt;
 #[cfg_attr(
