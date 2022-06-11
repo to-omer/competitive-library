@@ -103,6 +103,25 @@ macro_rules! monoid_fold {
     ($m:ty, $f:expr, $($ff:expr),*) => { <$m as Magma>::operate(&($f), &monoid_fold!($m, $($ff),*)) };
 }
 
+#[macro_export]
+macro_rules! define_monoid {
+    ($Name:ident, $t:ty, |$x:ident, $y:ident| $op:expr, $unit:expr) => {
+        struct $Name;
+        impl Magma for $Name {
+            type T = $t;
+            fn operate($x: &Self::T, $y: &Self::T) -> Self::T {
+                $op
+            }
+        }
+        impl Unital for $Name {
+            fn unit() -> Self::T {
+                $unit
+            }
+        }
+        impl Associative for $Name {}
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
