@@ -318,6 +318,58 @@ where
 }
 
 #[derive(Debug, Clone)]
+pub struct AlphabetMappingAutomaton<A, S, B, F, G, H>
+where
+    A: Automaton,
+    F: Fn() -> S,
+    G: Fn(&S, &B) -> Option<(S, A::Alphabet)>,
+    H: Fn(&S) -> bool,
+{
+    dfa: A,
+    fn_initial: F,
+    fn_next: G,
+    fn_accept: H,
+    _marker: PhantomData<fn() -> (S, B)>,
+}
+impl<A, S, B, F, G, H> AlphabetMappingAutomaton<A, S, B, F, G, H>
+where
+    A: Automaton,
+    F: Fn() -> S,
+    G: Fn(&S, &B) -> Option<(S, A::Alphabet)>,
+    H: Fn(&S) -> bool,
+{
+    pub fn new(dfa: A, fn_initial: F, fn_next: G, fn_accept: H) -> Self {
+        Self {
+            dfa,
+            fn_initial,
+            fn_next,
+            fn_accept,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<A, S, B, F, G, H> Automaton for AlphabetMappingAutomaton<A, S, B, F, G, H>
+where
+    A: Automaton,
+    F: Fn() -> S,
+    G: Fn(&S, &B) -> Option<(S, A::Alphabet)>,
+    H: Fn(&S) -> bool,
+{
+    type Alphabet = B;
+    type State = (A::State, S);
+    fn initial(&self) -> Self::State {
+        (self.dfa.initial(), (self.fn_initial)())
+    }
+    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+        (self.fn_next)(&state.1, alph)
+            .and_then(|(s1, a)| self.dfa.next(&state.0, &a).map(|s0| (s0, s1)))
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        self.dfa.accept(&state.0) && (self.fn_accept)(&state.1)
+    }
+}
+
+#[derive(Debug, Clone)]
 /// DFA to accept Less/Greater than (or equal to) the sequence
 pub struct LexicographicalAutomaton<'a, T> {
     sequence: &'a [T],
@@ -553,39 +605,41 @@ impl_to_digit_sequence!(u8 u16 u32 u64 u128 usize);
 /// - `!> seq`: `RevLexicographicalAutomaton::greater_than(seq)`
 /// - `=> f g h`: `FunctionalAutomaton::new(f, g, h)`
 /// - `=> (A) f g h`: `MappingAutomaton::new(A, f, g, h)`
+/// - `=> f g h (A)`: `AlphabetMappingAutomaton::new(A, f, g, h)`
 /// - `@`: `AlwaysAcceptingAutomaton::new()`
 /// - `(A) * (B)`: `ProductAutomaton(A, B)`
 /// - `(A) & (B)`: `IntersectionAutomaton(A, B)`
 /// - `(A) | (B)`: `UnionAutomaton(A, B)`
 #[macro_export]
 macro_rules! automaton {
-    (@inner ($($t:tt)*))                                    => { $crate::automaton!(@inner $($t)*) };
-    (@inner <= $e:expr)                                     => { LexicographicalAutomaton::less_than_or_equal(&$e) };
-    (@inner >= $e:expr)                                     => { LexicographicalAutomaton::greater_than_or_equal(&$e) };
-    (@inner < $e:expr)                                      => { LexicographicalAutomaton::less_than(&$e) };
-    (@inner > $e:expr)                                      => { LexicographicalAutomaton::greater_than(&$e) };
-    (@inner !<= $e:expr)                                    => { RevLexicographicalAutomaton::less_than_or_equal(&$e) };
-    (@inner !>= $e:expr)                                    => { RevLexicographicalAutomaton::greater_than_or_equal(&$e) };
-    (@inner !< $e:expr)                                     => { RevLexicographicalAutomaton::less_than(&$e) };
-    (@inner !> $e:expr)                                     => { RevLexicographicalAutomaton::greater_than(&$e) };
-    (@inner => ($($t:tt)*) $f:expr, $g:expr, $h:expr $(,)?) => { MappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
-    (@inner => $f:expr, $g:expr, $h:expr $(,)?)             => { FunctionalAutomaton::new($f, $g, $h) };
-    (@inner ($($h:tt)*) $($op:tt ($($t:tt)*))*)             => { $crate::automaton!(@union [] ($($h)*) $($op ($($t)*))*) };
-    (@inner @)                                              => { AlwaysAcceptingAutomaton::new() };
-    (@inner $($t:tt)*)                                      => { $($t)* };
-    (@union [] ($($h:tt)*) $($t:tt)*)                       => { $crate::automaton!(@union [($($h)*)] $($t)*) };
-    (@union [$($h:tt)*] | ($($x:tt)*) $($t:tt)*)            => { UnionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
-    (@union [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)       => { $crate::automaton!(@union [$($h)* $op ($($x)*)] $($t)*) };
-    (@union [$($h:tt)*])                                    => { $crate::automaton!(@inter [] $($h)*) };
-    (@inter [] ($($h:tt)*) $($t:tt)*)                       => { $crate::automaton!(@inter [($($h)*)] $($t)*) };
-    (@inter [$($h:tt)*] & ($($x:tt)*) $($t:tt)*)            => { IntersectionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
-    (@inter [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)       => { $crate::automaton!(@inter [$($h)* $op ($($x)*)] $($t)*) };
-    (@inter [$($h:tt)*])                                    => { $crate::automaton!(@prod [] $($h)*) };
-    (@prod [] ($($h:tt)*) $($t:tt)*)                        => { $crate::automaton!(@prod [($($h)*)] $($t)*) };
-    (@prod [$($h:tt)*] * ($($x:tt)*) $($t:tt)*)             => { ProductAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
-    (@prod [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)        => { $crate::automaton!(@prod [$($h)* $op ($($x)*)] $($t)*) };
-    (@prod [$($h:tt)*])                                     => { $crate::automaton!(@inner $($h)*) };
-    ($($t:tt)*)                                             => { $crate::automaton!(@inner $($t)*) };
+    (@inner ($($t:tt)*))                                     => { $crate::automaton!(@inner $($t)*) };
+    (@inner <= $e:expr)                                      => { LexicographicalAutomaton::less_than_or_equal(&$e) };
+    (@inner >= $e:expr)                                      => { LexicographicalAutomaton::greater_than_or_equal(&$e) };
+    (@inner < $e:expr)                                       => { LexicographicalAutomaton::less_than(&$e) };
+    (@inner > $e:expr)                                       => { LexicographicalAutomaton::greater_than(&$e) };
+    (@inner !<= $e:expr)                                     => { RevLexicographicalAutomaton::less_than_or_equal(&$e) };
+    (@inner !>= $e:expr)                                     => { RevLexicographicalAutomaton::greater_than_or_equal(&$e) };
+    (@inner !< $e:expr)                                      => { RevLexicographicalAutomaton::less_than(&$e) };
+    (@inner !> $e:expr)                                      => { RevLexicographicalAutomaton::greater_than(&$e) };
+    (@inner => $f:expr, $g:expr, $h:expr, ($($t:tt)*) $(,)?) => { AlphabetMappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
+    (@inner => ($($t:tt)*) $f:expr, $g:expr, $h:expr $(,)?)  => { MappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
+    (@inner => $f:expr, $g:expr, $h:expr $(,)?)              => { FunctionalAutomaton::new($f, $g, $h) };
+    (@inner ($($h:tt)*) $($op:tt ($($t:tt)*))*)              => { $crate::automaton!(@union [] ($($h)*) $($op ($($t)*))*) };
+    (@inner @)                                               => { AlwaysAcceptingAutomaton::new() };
+    (@inner $($t:tt)*)                                       => { $($t)* };
+    (@union [] ($($h:tt)*) $($t:tt)*)                        => { $crate::automaton!(@union [($($h)*)] $($t)*) };
+    (@union [$($h:tt)*] | ($($x:tt)*) $($t:tt)*)             => { UnionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
+    (@union [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)        => { $crate::automaton!(@union [$($h)* $op ($($x)*)] $($t)*) };
+    (@union [$($h:tt)*])                                     => { $crate::automaton!(@inter [] $($h)*) };
+    (@inter [] ($($h:tt)*) $($t:tt)*)                        => { $crate::automaton!(@inter [($($h)*)] $($t)*) };
+    (@inter [$($h:tt)*] & ($($x:tt)*) $($t:tt)*)             => { IntersectionAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
+    (@inter [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)        => { $crate::automaton!(@inter [$($h)* $op ($($x)*)] $($t)*) };
+    (@inter [$($h:tt)*])                                     => { $crate::automaton!(@prod [] $($h)*) };
+    (@prod [] ($($h:tt)*) $($t:tt)*)                         => { $crate::automaton!(@prod [($($h)*)] $($t)*) };
+    (@prod [$($h:tt)*] * ($($x:tt)*) $($t:tt)*)              => { ProductAutomaton($crate::automaton!(@inner $($h)*), $crate::automaton!(@inner ($($x)*) $($t)*)) };
+    (@prod [$($h:tt)*] $op:tt ($($x:tt)*) $($t:tt)*)         => { $crate::automaton!(@prod [$($h)* $op ($($x)*)] $($t)*) };
+    (@prod [$($h:tt)*])                                      => { $crate::automaton!(@inner $($h)*) };
+    ($($t:tt)*)                                              => { $crate::automaton!(@inner $($t)*) };
 }
 
 #[cfg(test)]
