@@ -1,5 +1,5 @@
 use std::{
-    collections::BTreeMap,
+    collections::{btree_map, BTreeMap},
     iter::{Extend, FromIterator},
 };
 
@@ -216,6 +216,21 @@ impl<K, V> RangeMap<K, V> {
             f(r, v);
         }
     }
+    pub fn iter(&self) -> btree_map::Iter<'_, (K, K), V> {
+        self.map.iter()
+    }
+    pub fn iter_mut(&mut self) -> btree_map::IterMut<'_, (K, K), V> {
+        self.map.iter_mut()
+    }
+    pub fn keys(&self) -> btree_map::Keys<'_, (K, K), V> {
+        self.map.keys()
+    }
+    pub fn values(&self) -> btree_map::Values<'_, (K, K), V> {
+        self.map.values()
+    }
+    pub fn values_mut(&mut self) -> btree_map::ValuesMut<'_, (K, K), V> {
+        self.map.values_mut()
+    }
 }
 impl<K, V> Extend<((K, K), V)> for RangeMap<K, V>
 where
@@ -345,6 +360,9 @@ impl<T> RangeSet<T> {
         F: FnMut((T, T)),
     {
         self.map.drain_with(range, |r, _| f(r));
+    }
+    pub fn iter(&self) -> btree_map::Keys<'_, (T, T), ()> {
+        self.map.keys()
     }
 }
 impl<K> Extend<(K, K)> for RangeSet<K>
