@@ -2,6 +2,7 @@
 
 use crate::algebra::{AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup, Unital};
 use crate::algorithm::SliceBisectExt;
+use crate::num::Bounded;
 use crate::tools::GetDistinctMut;
 
 #[codesnip::entry("Accumulate")]
@@ -26,6 +27,8 @@ pub use self::kdtree::Static2DTree;
 pub use self::lazy_segment_tree::LazySegmentTree;
 #[codesnip::entry("LazySegmentTreeMap")]
 pub use self::lazy_segment_tree_map::LazySegmentTreeMap;
+#[codesnip::entry("LineSet")]
+pub use self::line_set::LineSet;
 #[codesnip::entry("MergingUnionFind")]
 pub use self::merging_union_find::MergingUnionFind;
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
@@ -76,6 +79,8 @@ mod lazy_segment_tree;
     codesnip::entry("LazySegmentTreeMap", include("MonoidAction"))
 )]
 mod lazy_segment_tree_map;
+#[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
+mod line_set;
 #[cfg_attr(nightly, codesnip::entry("MergingUnionFind"))]
 mod merging_union_find;
 #[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]

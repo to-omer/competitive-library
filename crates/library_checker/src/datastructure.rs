@@ -1,3 +1,4 @@
+pub mod line_add_get_min;
 pub mod point_add_range_sum;
 pub mod point_set_range_composite;
 pub mod queue_operate_all_composite;
