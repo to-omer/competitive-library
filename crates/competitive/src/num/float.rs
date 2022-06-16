@@ -1,4 +1,4 @@
-use super::{One, Zero};
+use super::{Bounded, One, Zero};
 use std::{
     cmp::Ordering,
     convert::TryInto,
@@ -237,6 +237,14 @@ macro_rules! ord_float_impls {
         impl One for $n {
             fn one() -> Self {
                 Self(<$t as One>::one())
+            }
+        }
+        impl Bounded for $n {
+            fn maximum() -> Self {
+                Self(<$t as Bounded>::maximum())
+            }
+            fn minimum() -> Self {
+                Self(<$t as Bounded>::minimum())
             }
         }
         impl Add for $n {

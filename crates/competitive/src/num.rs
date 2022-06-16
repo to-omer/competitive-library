@@ -22,7 +22,7 @@ mod bounded;
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(include("bounded")))]
 mod discrete_steps;
-#[cfg_attr(nightly, codesnip::entry(include("zero_one")))]
+#[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded")))]
 mod float;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded")))]
 mod integer;
