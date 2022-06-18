@@ -6,6 +6,8 @@ pub use self::bounded::Bounded;
 pub use self::complex::Complex;
 #[codesnip::entry("discrete_steps")]
 pub use self::discrete_steps::{DiscreteSteps, RangeBoundsExt};
+#[codesnip::entry("DoubleDouble")]
+pub use self::double_double::DoubleDouble;
 #[codesnip::entry("float")]
 pub use self::float::{Float, Float32, Float64};
 #[codesnip::entry("integer")]
@@ -22,6 +24,8 @@ mod bounded;
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(include("bounded")))]
 mod discrete_steps;
+#[cfg_attr(nightly, codesnip::entry("DoubleDouble", include("bounded")))]
+mod double_double;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded")))]
 mod float;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded")))]
