@@ -17,6 +17,7 @@ pub trait Float:
     + PartialOrd
     + Zero
     + One
+    + Bounded
     + Add<Output = Self>
     + Sub<Output = Self>
     + Mul<Output = Self>
