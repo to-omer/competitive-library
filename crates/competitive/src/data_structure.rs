@@ -1,6 +1,6 @@
 //! data structures
 
-use crate::algebra::{AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup, Unital};
+use crate::algebra::{AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup};
 use crate::algorithm::SliceBisectExt;
 use crate::num::Bounded;
 use crate::tools::GetDistinctMut;

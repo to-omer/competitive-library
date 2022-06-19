@@ -28,6 +28,10 @@ pub trait MonoidAction {
     fn aoperate(x: &Self::AT, y: &Self::AT) -> Self::AT {
         <Self::A as Magma>::operate(x, y)
     }
+    #[inline]
+    fn failed(_x: &Self::MT) -> bool {
+        false
+    }
 }
 
 #[codesnip::entry("monoid_action_impls")]

@@ -1,5 +1,5 @@
-use super::{MonoidAction, Unital};
-use std::collections::HashMap;
+use super::MonoidAction;
+use std::{collections::HashMap, mem::replace};
 
 #[derive(Clone, Debug)]
 pub struct LazySegmentTreeMap<M>
@@ -23,47 +23,58 @@ where
         }
     }
     #[inline]
-    fn propagate(&mut self, k: usize) {
+    fn get_mut(&mut self, k: usize) -> &mut (M::MT, M::AT) {
+        self.seg.entry(k).or_insert((M::munit(), M::aunit()))
+    }
+    #[inline]
+    fn update_at(&mut self, k: usize, x: &M::AT) {
+        let n = self.n;
+        let a = self.get_mut(k);
+        M::act_assign(&mut a.0, x);
+        if k < n {
+            a.1 = M::aoperate(&a.1, x);
+            if M::failed(&a.0) {
+                self.propagate_at(k);
+                self.recalc_at(k);
+            }
+        }
+    }
+    #[inline]
+    fn recalc_at(&mut self, k: usize) {
+        let x = match (self.seg.get(&(2 * k)), self.seg.get(&(2 * k + 1))) {
+            (None, None) => M::munit(),
+            (None, Some((y, _))) => y.clone(),
+            (Some((x, _)), None) => x.clone(),
+            (Some((x, _)), Some((y, _))) => M::moperate(x, y),
+        };
+        self.get_mut(k).0 = x;
+    }
+    #[inline]
+    fn propagate_at(&mut self, k: usize) {
         debug_assert!(k < self.n);
-        let x = self
-            .seg
-            .get(&k)
-            .map(|t| t.1.clone())
-            .unwrap_or_else(M::aunit);
-        if !<M::A as Unital>::is_unit(&x) {
-            let tl = self.seg.entry(2 * k).or_insert((M::munit(), M::aunit()));
-            tl.1 = M::aoperate(&tl.1, &x);
-            let tr = self
-                .seg
-                .entry(2 * k + 1)
-                .or_insert((M::munit(), M::aunit()));
-            tr.1 = M::aoperate(&tr.1, &x);
-            *self.seg.entry(k).or_insert((M::munit(), M::aunit())) = (self.reflect(k), M::aunit());
+        let x = match self.seg.get_mut(&k) {
+            Some((_, x)) => replace(x, M::aunit()),
+            None => M::aunit(),
+        };
+        self.update_at(2 * k, &x);
+        self.update_at(2 * k + 1, &x);
+    }
+    #[inline]
+    fn propagate(&mut self, k: usize, right: bool, nofilt: bool) {
+        let right = right as usize;
+        for i in (1..(k + 1 - right).next_power_of_two().trailing_zeros()).rev() {
+            if nofilt || (k >> i) << i != k {
+                self.propagate_at((k - right) >> i);
+            }
         }
     }
     #[inline]
-    fn thrust(&mut self, k: usize) {
-        for i in (1..(k + 1).next_power_of_two().trailing_zeros()).rev() {
-            self.propagate(k >> i);
-        }
-    }
-    #[inline]
-    fn reflect(&self, k: usize) -> M::MT {
-        let u = (M::munit(), M::aunit());
-        let t = self.seg.get(&k).unwrap_or(&u);
-        if !<M::A as Unital>::is_unit(&t.1) {
-            M::act(&t.0, &t.1)
-        } else {
-            t.0.clone()
-        }
-    }
-    #[inline]
-    fn recalc(&mut self, mut k: usize) {
-        k /= 2;
-        while k > 0 {
-            self.seg.entry(k).or_insert((M::munit(), M::aunit())).0 =
-                M::moperate(&self.reflect(2 * k), &self.reflect(2 * k + 1));
-            k /= 2;
+    fn recalc(&mut self, k: usize, right: bool, nofilt: bool) {
+        let right = right as usize;
+        for i in 1..(k + 1 - right).next_power_of_two().trailing_zeros() {
+            if nofilt || (k >> i) << i != k {
+                self.recalc_at((k - right) >> i);
+            }
         }
     }
     pub fn update(&mut self, l: usize, r: usize, x: M::AT) {
@@ -71,42 +82,44 @@ where
         debug_assert!(r <= self.n);
         let mut a = l + self.n;
         let mut b = r + self.n;
-        self.thrust(a);
-        self.thrust(b - 1);
+        self.propagate(a, false, false);
+        self.propagate(b, true, false);
         while a < b {
             if a & 1 != 0 {
-                let t = self.seg.entry(a).or_insert((M::munit(), M::aunit()));
-                t.1 = M::aoperate(&t.1, &x);
+                self.update_at(a, &x);
                 a += 1;
             }
             if b & 1 != 0 {
                 b -= 1;
-                let t = self.seg.entry(b).or_insert((M::munit(), M::aunit()));
-                t.1 = M::aoperate(&t.1, &x);
+                self.update_at(b, &x);
             }
             a /= 2;
             b /= 2;
         }
-        self.recalc(l + self.n);
-        self.recalc(r + self.n - 1);
+        self.recalc(l + self.n, false, false);
+        self.recalc(r + self.n, true, false);
     }
     pub fn fold(&mut self, l: usize, r: usize) -> M::MT {
         debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut l = l + self.n;
         let mut r = r + self.n;
-        self.thrust(l);
-        self.thrust(r - 1);
+        self.propagate(l, false, true);
+        self.propagate(r, true, true);
         let mut vl = M::munit();
         let mut vr = M::munit();
         while l < r {
             if l & 1 != 0 {
-                vl = M::moperate(&vl, &self.reflect(l));
+                if let Some((x, _)) = self.seg.get(&l) {
+                    vl = M::moperate(&vl, x);
+                }
                 l += 1;
             }
             if r & 1 != 0 {
                 r -= 1;
-                vr = M::moperate(&self.reflect(r), &vr);
+                if let Some((x, _)) = self.seg.get(&r) {
+                    vr = M::moperate(x, &vr);
+                }
             }
             l /= 2;
             r /= 2;
@@ -115,9 +128,9 @@ where
     }
     pub fn set(&mut self, k: usize, x: M::MT) {
         let k = k + self.n;
-        self.thrust(k);
-        *self.seg.entry(k).or_insert((M::munit(), M::aunit())) = (x, M::aunit());
-        self.recalc(k);
+        self.propagate(k, false, true);
+        *self.get_mut(k) = (x, M::aunit());
+        self.recalc(k, false, true);
     }
     pub fn get(&mut self, k: usize) -> M::MT {
         self.fold(k, k + 1)
@@ -130,9 +143,12 @@ where
         P: Fn(&M::MT) -> bool,
     {
         while pos < self.n {
-            self.propagate(pos);
+            self.propagate_at(pos);
             pos <<= 1;
-            let nacc = M::moperate(&acc, &self.reflect(pos));
+            let nacc = match self.seg.get(&pos) {
+                Some((x, _)) => M::moperate(&acc, x),
+                None => acc.clone(),
+            };
             if !p(&nacc) {
                 acc = nacc;
                 pos += 1;
@@ -145,9 +161,12 @@ where
         P: Fn(&M::MT) -> bool,
     {
         while pos < self.n {
-            self.propagate(pos);
+            self.propagate_at(pos);
             pos = pos * 2 + 1;
-            let nacc = M::moperate(&self.reflect(pos), &acc);
+            let nacc = match self.seg.get(&pos) {
+                Some((x, _)) => M::moperate(x, &acc),
+                None => acc.clone(),
+            };
             if !p(&nacc) {
                 acc = nacc;
                 pos -= 1;
@@ -162,13 +181,16 @@ where
     {
         let mut l = l + self.n;
         let r = r + self.n;
-        self.thrust(l);
-        self.thrust(r - 1);
+        self.propagate(l, false, true);
+        self.propagate(r, true, true);
         let mut k = 0usize;
         let mut acc = M::munit();
         while l < r >> k {
             if l & 1 != 0 {
-                let nacc = M::moperate(&acc, &self.reflect(l));
+                let nacc = match self.seg.get(&l) {
+                    Some((x, _)) => M::moperate(&acc, x),
+                    None => acc.clone(),
+                };
                 if p(&nacc) {
                     return Some(self.bisect_perfect(l, acc, p).0);
                 }
@@ -181,7 +203,10 @@ where
         for k in (0..k).rev() {
             let r = r >> k;
             if r & 1 != 0 {
-                let nacc = M::moperate(&acc, &self.reflect(r - 1));
+                let nacc = match self.seg.get(&(r - 1)) {
+                    Some((x, _)) => M::moperate(&acc, x),
+                    None => acc.clone(),
+                };
                 if p(&nacc) {
                     return Some(self.bisect_perfect(r - 1, acc, p).0);
                 }
@@ -197,8 +222,8 @@ where
     {
         let mut l = l + self.n;
         let mut r = r + self.n;
-        self.thrust(l);
-        self.thrust(r - 1);
+        self.propagate(l, false, true);
+        self.propagate(r, true, true);
         let mut c = 0usize;
         let mut k = 0usize;
         let mut acc = M::munit();
@@ -210,7 +235,10 @@ where
             }
             if r & 1 != 0 {
                 r -= 1;
-                let nacc = M::moperate(&self.reflect(r), &acc);
+                let nacc = match self.seg.get(&r) {
+                    Some((x, _)) => M::moperate(x, &acc),
+                    None => acc.clone(),
+                };
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(r, acc, p).0);
                 }
@@ -223,7 +251,10 @@ where
             if c & 1 != 0 {
                 l -= 1 << k;
                 let l = l >> k;
-                let nacc = M::moperate(&self.reflect(l), &acc);
+                let nacc = match self.seg.get(&l) {
+                    Some((x, _)) => M::moperate(x, &acc),
+                    None => acc.clone(),
+                };
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(l, acc, p).0);
                 }
@@ -234,6 +265,7 @@ where
         None
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
