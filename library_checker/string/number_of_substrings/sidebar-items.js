@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["number_of_substrings","✅  AC  1025ms"]]});
+initSidebarItems({"fn":[["number_of_substrings","✅  AC  748ms"]]});
