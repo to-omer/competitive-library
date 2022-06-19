@@ -388,6 +388,10 @@
 <span id="356">356</span>
 <span id="357">357</span>
 <span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::MonoidAction</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">mem::replace</span>};
 
@@ -420,13 +424,17 @@
     <span class="kw">fn</span> <span class="ident">update_at</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">M::AT</span>) {
         <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">n</span>;
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_mut</span>(<span class="ident">k</span>);
-        <span class="ident">M::act_assign</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>.<span class="number">0</span>, <span class="ident">x</span>);
+        <span class="kw">let</span> <span class="ident">nx</span> <span class="op">=</span> <span class="ident">M::act</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="number">0</span>, <span class="ident">x</span>);
         <span class="kw">if</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="ident">n</span> {
             <span class="ident">a</span>.<span class="number">1</span> <span class="op">=</span> <span class="ident">M::aoperate</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="number">1</span>, <span class="ident">x</span>);
-            <span class="kw">if</span> <span class="ident">M::failed</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="number">0</span>) {
-                <span class="self">self</span>.<span class="ident">propagate_at</span>(<span class="ident">k</span>);
-                <span class="self">self</span>.<span class="ident">recalc_at</span>(<span class="ident">k</span>);
-            }
+        }
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nx</span>) <span class="op">=</span> <span class="ident">nx</span> {
+            <span class="ident">a</span>.<span class="number">0</span> <span class="op">=</span> <span class="ident">nx</span>;
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="ident">n</span> {
+            <span class="self">self</span>.<span class="ident">propagate_at</span>(<span class="ident">k</span>);
+            <span class="self">self</span>.<span class="ident">recalc_at</span>(<span class="ident">k</span>);
+        } <span class="kw">else</span> {
+            <span class="macro">panic!</span>(<span class="string">&quot;act failed on leaf&quot;</span>);
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
