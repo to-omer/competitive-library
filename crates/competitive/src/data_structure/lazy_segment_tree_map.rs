@@ -30,13 +30,17 @@ where
     fn update_at(&mut self, k: usize, x: &M::AT) {
         let n = self.n;
         let a = self.get_mut(k);
-        M::act_assign(&mut a.0, x);
+        let nx = M::act(&a.0, x);
         if k < n {
             a.1 = M::aoperate(&a.1, x);
-            if M::failed(&a.0) {
-                self.propagate_at(k);
-                self.recalc_at(k);
-            }
+        }
+        if let Some(nx) = nx {
+            a.0 = nx;
+        } else if k < n {
+            self.propagate_at(k);
+            self.recalc_at(k);
+        } else {
+            panic!("act failed on leaf");
         }
     }
     #[inline]

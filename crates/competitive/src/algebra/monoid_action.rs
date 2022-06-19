@@ -7,11 +7,7 @@ pub trait MonoidAction {
     type AT: Clone;
     type M: Monoid<T = Self::MT>;
     type A: Monoid<T = Self::AT>;
-    fn act(x: &Self::MT, a: &Self::AT) -> Self::MT;
-    #[inline]
-    fn act_assign(x: &mut Self::MT, a: &Self::AT) {
-        *x = Self::act(x, a);
-    }
+    fn act(x: &Self::MT, a: &Self::AT) -> Option<Self::MT>;
     #[inline]
     fn munit() -> Self::MT {
         <Self::M as Unital>::unit()
@@ -27,10 +23,6 @@ pub trait MonoidAction {
     #[inline]
     fn aoperate(x: &Self::AT, y: &Self::AT) -> Self::AT {
         <Self::A as Magma>::operate(x, y)
-    }
-    #[inline]
-    fn failed(_x: &Self::MT) -> bool {
-        false
     }
 }
 
@@ -65,8 +57,8 @@ pub mod monoid_action_impls {
         type AT = T;
         type M = (AdditiveOperation<T>, AdditiveOperation<T>);
         type A = AdditiveOperation<T>;
-        fn act(&(x, y): &Self::MT, &a: &Self::AT) -> Self::MT {
-            (x + a * y, y)
+        fn act(&(x, y): &Self::MT, &a: &Self::AT) -> Option<Self::MT> {
+            Some((x + a * y, y))
         }
     }
 
@@ -80,8 +72,8 @@ pub mod monoid_action_impls {
         type AT = (T, T);
         type M = (AdditiveOperation<T>, AdditiveOperation<T>);
         type A = LinearOperation<T>;
-        fn act(&(x, y): &Self::MT, &(a, b): &Self::AT) -> Self::MT {
-            (a * x + b * y, y)
+        fn act(&(x, y): &Self::MT, &(a, b): &Self::AT) -> Option<Self::MT> {
+            Some((a * x + b * y, y))
         }
     }
 
@@ -95,8 +87,8 @@ pub mod monoid_action_impls {
         type AT = Option<T>;
         type M = (AdditiveOperation<T>, AdditiveOperation<T>);
         type A = LastOperation<T>;
-        fn act(&(x, y): &Self::MT, a: &Self::AT) -> Self::MT {
-            (a.unwrap_or(x) * y, y)
+        fn act(&(x, y): &Self::MT, a: &Self::AT) -> Option<Self::MT> {
+            Some((a.unwrap_or(x) * y, y))
         }
     }
 
@@ -108,8 +100,8 @@ pub mod monoid_action_impls {
         type AT = Option<T>;
         type M = MaxOperation<T>;
         type A = LastOperation<T>;
-        fn act(x: &Self::MT, a: &Self::AT) -> Self::MT {
-            a.as_ref().unwrap_or(x).clone()
+        fn act(x: &Self::MT, a: &Self::AT) -> Option<Self::MT> {
+            Some(a.as_ref().unwrap_or(x).clone())
         }
     }
 
@@ -121,8 +113,8 @@ pub mod monoid_action_impls {
         type AT = Option<T>;
         type M = MinOperation<T>;
         type A = LastOperation<T>;
-        fn act(x: &Self::MT, a: &Self::AT) -> Self::MT {
-            a.as_ref().unwrap_or(x).clone()
+        fn act(x: &Self::MT, a: &Self::AT) -> Option<Self::MT> {
+            Some(a.as_ref().unwrap_or(x).clone())
         }
     }
 
@@ -134,8 +126,8 @@ pub mod monoid_action_impls {
         type AT = T;
         type M = MinOperation<T>;
         type A = AdditiveOperation<T>;
-        fn act(&x: &Self::MT, &a: &Self::AT) -> Self::MT {
-            x + a
+        fn act(&x: &Self::MT, &a: &Self::AT) -> Option<Self::MT> {
+            Some(x + a)
         }
     }
 }
