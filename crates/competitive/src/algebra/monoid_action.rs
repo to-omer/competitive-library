@@ -88,7 +88,7 @@ pub mod monoid_action_impls {
         type M = (AdditiveOperation<T>, AdditiveOperation<T>);
         type A = LastOperation<T>;
         fn act(&(x, y): &Self::MT, a: &Self::AT) -> Option<Self::MT> {
-            Some((a.unwrap_or(x) * y, y))
+            Some((a.map(|a| a * y).unwrap_or(x), y))
         }
     }
 
