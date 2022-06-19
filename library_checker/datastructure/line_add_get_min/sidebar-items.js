@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["line_add_get_min","✅  AC  470ms"]]});
+initSidebarItems({"fn":[["line_add_get_min","✅  AC  401ms"]]});
