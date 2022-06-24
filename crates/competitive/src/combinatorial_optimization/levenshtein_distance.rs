@@ -1,4 +1,3 @@
-#[codesnip::entry("levenshtein_distance")]
 pub fn levenshtein_distance<T: PartialEq>(x: &[T], y: &[T]) -> usize {
     let n = x.len();
     let m = y.len();

@@ -1,10 +1,9 @@
-#[codesnip::entry("LexicographicalSubsequence")]
 #[derive(Debug, Clone)]
 pub struct LexicographicalSubsequence {
     dp: Vec<usize>,
     index: Vec<Vec<usize>>,
 }
-#[codesnip::entry("LexicographicalSubsequence")]
+
 impl LexicographicalSubsequence {
     pub fn new(sequence: &[usize]) -> Self {
         let n = sequence.len();
@@ -20,6 +19,7 @@ impl LexicographicalSubsequence {
         }
         Self { dp, index }
     }
+
     /// empty sequence is included
     pub fn kth_sequence(&self, mut k: usize) -> Option<Vec<usize>> {
         if self.dp[0] <= k {
