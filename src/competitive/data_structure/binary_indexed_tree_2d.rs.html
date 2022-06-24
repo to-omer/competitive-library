@@ -199,16 +199,85 @@
 <span id="167">167</span>
 <span id="168">168</span>
 <span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Group</span>, <span class="ident">Monoid</span>};
+<span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Monoid</span>,
+{
     <span class="ident">h</span>: <span class="ident">usize</span>,
     <span class="ident">w</span>: <span class="ident">usize</span>,
     <span class="ident">bit</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M::T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Monoid</span>,
+{
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span> {
+            <span class="ident">h</span>: <span class="self">self</span>.<span class="ident">h</span>,
+            <span class="ident">w</span>: <span class="self">self</span>.<span class="ident">w</span>,
+            <span class="ident">bit</span>: <span class="self">self</span>.<span class="ident">bit</span>.<span class="ident">clone</span>(),
+        }
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Monoid</span>,
+    <span class="ident">M::T</span>: <span class="ident">Debug</span>,
+{
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+        <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;BinaryIndexedTree2D&quot;</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;h&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">h</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;w&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">w</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;bit&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">bit</span>)
+            .<span class="ident">finish</span>()
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">Monoid</span>,
+{
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">h</span>: <span class="ident">usize</span>, <span class="ident">w</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">bit</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="ident">w</span> <span class="op">+</span> <span class="number">1</span>]; <span class="ident">h</span> <span class="op">+</span> <span class="number">1</span>];
@@ -248,7 +317,10 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">G</span>: <span class="ident">Group</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">G</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">G</span><span class="op">&gt;</span> <span class="ident">BinaryIndexedTree2D</span><span class="op">&lt;</span><span class="ident">G</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">G</span>: <span class="ident">Group</span>,
+{
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="doccomment">/// 0-indexed [i1, i2) x [j1, j2)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i1</span>: <span class="ident">usize</span>, <span class="ident">j1</span>: <span class="ident">usize</span>, <span class="ident">i2</span>: <span class="ident">usize</span>, <span class="ident">j2</span>: <span class="ident">usize</span>) -&gt; <span class="ident">G::T</span> {

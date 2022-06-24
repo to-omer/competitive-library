@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["read_all_unchecked",""]],"struct":[["Chars",""],["Scanner",""],["Usize1",""]],"trait":[["Read","The `Read` trait allows for reading bytes from a source."],["Write","A trait for objects which are byte-oriented sinks."]]});
+initSidebarItems({"enum":[["Chars",""],["Usize1",""]],"fn":[["read_all_unchecked",""]],"struct":[["Scanner",""]],"trait":[["Read","The `Read` trait allows for reading bytes from a source."],["Write","A trait for objects which are byte-oriented sinks."]]});

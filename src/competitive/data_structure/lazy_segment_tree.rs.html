@@ -362,10 +362,41 @@
 <span id="330">330</span>
 <span id="331">331</span>
 <span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::MonoidAction</span>;
-<span class="kw">use</span> <span class="ident">std::mem::replace</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{
+    <span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>},
+    <span class="ident">mem::replace</span>,
+};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LazySegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
@@ -373,6 +404,33 @@
 {
     <span class="ident">n</span>: <span class="ident">usize</span>,
     <span class="ident">seg</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">M::MT</span>, <span class="ident">M::AT</span>)<span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">LazySegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
+    <span class="ident">M::AT</span>: <span class="ident">PartialEq</span>,
+{
+    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span> {
+            <span class="ident">n</span>: <span class="self">self</span>.<span class="ident">n</span>,
+            <span class="ident">seg</span>: <span class="self">self</span>.<span class="ident">seg</span>.<span class="ident">clone</span>(),
+        }
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">LazySegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
+    <span class="ident">M::MT</span>: <span class="ident">Debug</span>,
+    <span class="ident">M::AT</span>: <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Debug</span>,
+{
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+        <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;LazySegmentTree&quot;</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">n</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>)
+            .<span class="ident">finish</span>()
+    }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">LazySegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
