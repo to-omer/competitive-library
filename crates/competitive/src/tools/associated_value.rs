@@ -35,7 +35,7 @@ pub trait AssociatedValue {
 ///
 /// ```
 /// use competitive::tools::AssociatedValue;
-/// struct X;
+/// enum X {}
 /// competitive::impl_assoc_value!(X, usize, 1);
 /// assert_eq!(X::get(), 1);
 /// X::set(10);
@@ -46,7 +46,7 @@ pub trait AssociatedValue {
 ///
 /// ```
 /// use competitive::tools::AssociatedValue;
-/// struct X;
+/// enum X {}
 /// competitive::impl_assoc_value!(X, usize);
 /// assert_eq!(X::get(), Default::default());
 /// ```
@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn test_associated_value() {
-        struct X;
+        enum X {}
         impl_assoc_value!(X, usize);
         X::set(10);
         assert_eq!(X::get(), 10);

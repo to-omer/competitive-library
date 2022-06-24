@@ -8,7 +8,7 @@ pub use fast_fourier_transform_impls::convolve_fft;
 #[codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))]
 pub mod fast_fourier_transform_impls {
     use super::*;
-    struct RotateCache;
+    enum RotateCache {}
     impl RotateCache {
         fn ensure(n: usize) {
             assert_eq!(n.count_ones(), 1, "call with power of two but {}", n);

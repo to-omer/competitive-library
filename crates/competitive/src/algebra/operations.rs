@@ -607,7 +607,7 @@ pub use self::permutation_operation_impl::PermutationOperation;
 #[codesnip::entry("PermutationOperation", include("algebra"))]
 mod permutation_operation_impl {
     use super::*;
-    pub struct PermutationOperation;
+    pub enum PermutationOperation {}
     impl Magma for PermutationOperation {
         type T = Vec<usize>;
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {

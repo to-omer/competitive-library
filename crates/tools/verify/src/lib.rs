@@ -139,7 +139,7 @@ impl Display for Service {
     }
 }
 
-pub struct OjApi {}
+pub enum OjApi {}
 impl OjApi {
     pub fn call_with_args<R: DeserializeOwned, I, S>(args: I) -> OjResult<R>
     where

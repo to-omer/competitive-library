@@ -172,7 +172,7 @@ pub trait LcaMonoidDispatch {
     fn set_depth(depth: Vec<u64>);
 }
 #[codesnip::entry("LowestCommonAncestor")]
-pub struct LcaMonoidDefaultId;
+pub enum LcaMonoidDefaultId {}
 #[codesnip::entry("LowestCommonAncestor")]
 #[derive(Clone, Debug)]
 pub struct LcaMonoid<D: LcaMonoidDispatch = LcaMonoidDefaultId> {

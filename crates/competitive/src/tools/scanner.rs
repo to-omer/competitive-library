@@ -192,7 +192,7 @@ macro_rules! scan {
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct Usize1;
+pub enum Usize1 {}
 impl IterScan for Usize1 {
     type Output = usize;
     #[inline]
@@ -210,7 +210,7 @@ impl MarkedIterScan for CharWithBase {
     }
 }
 #[derive(Debug, Copy, Clone)]
-pub struct Chars;
+pub enum Chars {}
 impl IterScan for Chars {
     type Output = Vec<char>;
     #[inline]
@@ -242,7 +242,7 @@ impl MarkedIterScan for ByteWithBase {
     }
 }
 #[derive(Debug, Copy, Clone)]
-pub struct Bytes;
+pub enum Bytes {}
 impl IterScan for Bytes {
     type Output = Vec<u8>;
     #[inline]
