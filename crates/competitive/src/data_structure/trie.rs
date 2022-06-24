@@ -1,8 +1,10 @@
+#[derive(Debug, Clone)]
 pub struct Trie {
     child: Vec<Vec<usize>>,
     accept: Vec<usize>,
     char_size: usize,
 }
+
 impl Trie {
     pub fn new(char_size: usize) -> Self {
         Self {

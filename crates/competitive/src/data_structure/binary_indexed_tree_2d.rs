@@ -1,13 +1,46 @@
 use super::{Group, Monoid};
+use std::fmt::{self, Debug, Formatter};
 
-#[derive(Clone, Debug)]
-pub struct BinaryIndexedTree2D<M: Monoid> {
+pub struct BinaryIndexedTree2D<M>
+where
+    M: Monoid,
+{
     h: usize,
     w: usize,
     bit: Vec<Vec<M::T>>,
 }
 
-impl<M: Monoid> BinaryIndexedTree2D<M> {
+impl<M> Clone for BinaryIndexedTree2D<M>
+where
+    M: Monoid,
+{
+    fn clone(&self) -> Self {
+        Self {
+            h: self.h,
+            w: self.w,
+            bit: self.bit.clone(),
+        }
+    }
+}
+
+impl<M> Debug for BinaryIndexedTree2D<M>
+where
+    M: Monoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("BinaryIndexedTree2D")
+            .field("h", &self.h)
+            .field("w", &self.w)
+            .field("bit", &self.bit)
+            .finish()
+    }
+}
+
+impl<M> BinaryIndexedTree2D<M>
+where
+    M: Monoid,
+{
     #[inline]
     pub fn new(h: usize, w: usize) -> Self {
         let bit = vec![vec![M::unit(); w + 1]; h + 1];
@@ -47,7 +80,10 @@ impl<M: Monoid> BinaryIndexedTree2D<M> {
     }
 }
 
-impl<G: Group> BinaryIndexedTree2D<G> {
+impl<G> BinaryIndexedTree2D<G>
+where
+    G: Group,
+{
     #[inline]
     /// 0-indexed [i1, i2) x [j1, j2)
     pub fn fold(&self, i1: usize, j1: usize, i2: usize, j2: usize) -> G::T {

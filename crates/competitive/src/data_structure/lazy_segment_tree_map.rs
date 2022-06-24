@@ -1,7 +1,10 @@
 use super::MonoidAction;
-use std::{collections::HashMap, mem::replace};
+use std::{
+    collections::HashMap,
+    fmt::{self, Debug, Formatter},
+    mem::replace,
+};
 
-#[derive(Clone, Debug)]
 pub struct LazySegmentTreeMap<M>
 where
     M: MonoidAction,
@@ -9,6 +12,33 @@ where
 {
     n: usize,
     seg: HashMap<usize, (M::MT, M::AT)>,
+}
+
+impl<M> Clone for LazySegmentTreeMap<M>
+where
+    M: MonoidAction,
+    M::AT: PartialEq,
+{
+    fn clone(&self) -> Self {
+        Self {
+            n: self.n,
+            seg: self.seg.clone(),
+        }
+    }
+}
+
+impl<M> Debug for LazySegmentTreeMap<M>
+where
+    M: MonoidAction,
+    M::MT: Debug,
+    M::AT: PartialEq + Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("LazySegmentTreeMap")
+            .field("n", &self.n)
+            .field("seg", &self.seg)
+            .finish()
+    }
 }
 
 impl<M> LazySegmentTreeMap<M>

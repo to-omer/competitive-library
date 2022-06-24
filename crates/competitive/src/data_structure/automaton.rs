@@ -1,6 +1,12 @@
 use super::Monoid;
 use std::{
-    borrow::Borrow, cmp::Ordering, collections::HashMap, hash::Hash, marker::PhantomData, mem::swap,
+    borrow::Borrow,
+    cmp::Ordering,
+    collections::HashMap,
+    fmt::{self, Debug, Formatter},
+    hash::Hash,
+    marker::PhantomData,
+    mem::swap,
 };
 
 pub trait Automaton {
@@ -36,7 +42,7 @@ where
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Automatondp<M, A>
 where
     M: Monoid,
@@ -47,6 +53,23 @@ where
     pub dp: HashMap<A::State, M::T>,
     ndp: HashMap<A::State, M::T>,
 }
+
+impl<M, A> Debug for Automatondp<M, A>
+where
+    M: Monoid,
+    A: Automaton + Debug,
+    A::State: Eq + Hash + Debug,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Automatondp")
+            .field("dfa", &self.dfa)
+            .field("dp", &self.dp)
+            .field("ndp", &self.ndp)
+            .finish()
+    }
+}
+
 impl<M, A> Automatondp<M, A>
 where
     M: Monoid,

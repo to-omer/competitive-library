@@ -1,12 +1,46 @@
 use super::Group;
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    fmt::{self, Debug, Formatter},
+};
 
-#[derive(Clone, Debug)]
-pub struct WeightedUnionFind<G: Group> {
+pub struct WeightedUnionFind<G>
+where
+    G: Group,
+{
     parents: Vec<isize>,
     diff: Vec<G::T>,
 }
-impl<G: Group> WeightedUnionFind<G> {
+
+impl<G> Clone for WeightedUnionFind<G>
+where
+    G: Group,
+{
+    fn clone(&self) -> Self {
+        Self {
+            parents: self.parents.clone(),
+            diff: self.diff.clone(),
+        }
+    }
+}
+
+impl<G> Debug for WeightedUnionFind<G>
+where
+    G: Group,
+    G::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("WeightedUnionFind")
+            .field("parents", &self.parents)
+            .field("diff", &self.diff)
+            .finish()
+    }
+}
+
+impl<G> WeightedUnionFind<G>
+where
+    G: Group,
+{
     pub fn new(n: usize) -> Self {
         let parents = vec![-1; n];
         let diff = vec![G::unit(); n];

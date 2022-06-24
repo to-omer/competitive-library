@@ -1,13 +1,37 @@
 use super::{Group, Monoid};
-use std::iter::FromIterator;
+use std::{
+    fmt::{self, Debug, Formatter},
+    iter::FromIterator,
+};
 
-#[derive(Debug, Clone)]
 /// Accumlated data
-pub struct Accumulate<M: Monoid> {
+pub struct Accumulate<M>
+where
+    M: Monoid,
+{
     data: Vec<M::T>,
 }
-impl<M: Monoid> FromIterator<M::T> for Accumulate<M> {
-    fn from_iter<T: IntoIterator<Item = M::T>>(iter: T) -> Self {
+
+impl<M> Debug for Accumulate<M>
+where
+    M: Monoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Accumulate")
+            .field("data", &self.data)
+            .finish()
+    }
+}
+
+impl<M> FromIterator<M::T> for Accumulate<M>
+where
+    M: Monoid,
+{
+    fn from_iter<T>(iter: T) -> Self
+    where
+        T: IntoIterator<Item = M::T>,
+    {
         let iter = iter.into_iter();
         let (lower, _) = iter.size_hint();
         let mut data = Vec::with_capacity(lower.saturating_add(1));
@@ -21,7 +45,11 @@ impl<M: Monoid> FromIterator<M::T> for Accumulate<M> {
         Self { data }
     }
 }
-impl<M: Monoid> Accumulate<M> {
+
+impl<M> Accumulate<M>
+where
+    M: Monoid,
+{
     /// Return accumlate of \[0, k\)
     pub fn accumulate(&self, k: usize) -> M::T {
         assert!(
@@ -33,7 +61,11 @@ impl<M: Monoid> Accumulate<M> {
         unsafe { self.data.get_unchecked(k) }.clone()
     }
 }
-impl<G: Group> Accumulate<G> {
+
+impl<G> Accumulate<G>
+where
+    G: Group,
+{
     /// Return fold of \[l, r\)
     pub fn fold(&self, l: usize, r: usize) -> G::T {
         assert!(l <= r, "bad range [{}, {})", l, r);

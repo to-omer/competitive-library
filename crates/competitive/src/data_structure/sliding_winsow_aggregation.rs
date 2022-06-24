@@ -1,12 +1,43 @@
 use super::Monoid;
+use std::fmt::{self, Debug, Formatter};
 
-#[derive(Clone, Debug)]
-pub struct QueueAggregation<M: Monoid> {
+pub struct QueueAggregation<M>
+where
+    M: Monoid,
+{
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
 }
 
-impl<M: Monoid> Default for QueueAggregation<M> {
+impl<M> Clone for QueueAggregation<M>
+where
+    M: Monoid,
+{
+    fn clone(&self) -> Self {
+        Self {
+            front_stack: self.front_stack.clone(),
+            back_stack: self.back_stack.clone(),
+        }
+    }
+}
+
+impl<M> Debug for QueueAggregation<M>
+where
+    M: Monoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("QueueAggregation")
+            .field("front_stack", &self.front_stack)
+            .field("back_stack", &self.back_stack)
+            .finish()
+    }
+}
+
+impl<M> Default for QueueAggregation<M>
+where
+    M: Monoid,
+{
     fn default() -> Self {
         Self {
             front_stack: Vec::new(),
@@ -15,7 +46,10 @@ impl<M: Monoid> Default for QueueAggregation<M> {
     }
 }
 
-impl<M: Monoid> QueueAggregation<M> {
+impl<M> QueueAggregation<M>
+where
+    M: Monoid,
+{
     pub fn new() -> Self {
         Self::default()
     }
@@ -69,13 +103,43 @@ impl<M: Monoid> QueueAggregation<M> {
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct DequeAggregation<M: Monoid> {
+pub struct DequeAggregation<M>
+where
+    M: Monoid,
+{
     front_stack: Vec<(M::T, M::T)>,
     back_stack: Vec<(M::T, M::T)>,
 }
 
-impl<M: Monoid> Default for DequeAggregation<M> {
+impl<M> Clone for DequeAggregation<M>
+where
+    M: Monoid,
+{
+    fn clone(&self) -> Self {
+        Self {
+            front_stack: self.front_stack.clone(),
+            back_stack: self.back_stack.clone(),
+        }
+    }
+}
+
+impl<M> Debug for DequeAggregation<M>
+where
+    M: Monoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("DequeAggregation")
+            .field("front_stack", &self.front_stack)
+            .field("back_stack", &self.back_stack)
+            .finish()
+    }
+}
+
+impl<M> Default for DequeAggregation<M>
+where
+    M: Monoid,
+{
     fn default() -> Self {
         Self {
             front_stack: Vec::new(),
@@ -84,7 +148,10 @@ impl<M: Monoid> Default for DequeAggregation<M> {
     }
 }
 
-impl<M: Monoid> DequeAggregation<M> {
+impl<M> DequeAggregation<M>
+where
+    M: Monoid,
+{
     pub fn new() -> Self {
         Self::default()
     }

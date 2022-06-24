@@ -1,6 +1,6 @@
 use super::{AbelianMonoid, Monoid};
+use std::fmt::{self, Debug, Formatter};
 
-#[derive(Clone, Debug)]
 pub struct SegmentTree<M>
 where
     M: Monoid,
@@ -8,6 +8,32 @@ where
     n: usize,
     seg: Vec<M::T>,
 }
+
+impl<M> Clone for SegmentTree<M>
+where
+    M: Monoid,
+{
+    fn clone(&self) -> Self {
+        Self {
+            n: self.n,
+            seg: self.seg.clone(),
+        }
+    }
+}
+
+impl<M> Debug for SegmentTree<M>
+where
+    M: Monoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SegmentTree")
+            .field("n", &self.n)
+            .field("seg", &self.seg)
+            .finish()
+    }
+}
+
 impl<M> SegmentTree<M>
 where
     M: Monoid,

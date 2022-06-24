@@ -1,11 +1,43 @@
 use super::SemiGroup;
-use std::ops::Index;
+use std::{
+    fmt::{self, Debug, Formatter},
+    ops::Index,
+};
 
-#[derive(Clone, Debug)]
-pub struct DisjointSparseTable<S: SemiGroup> {
+pub struct DisjointSparseTable<S>
+where
+    S: SemiGroup,
+{
     table: Vec<Vec<S::T>>,
 }
-impl<S: SemiGroup> DisjointSparseTable<S> {
+
+impl<S> Clone for DisjointSparseTable<S>
+where
+    S: SemiGroup,
+{
+    fn clone(&self) -> Self {
+        Self {
+            table: self.table.clone(),
+        }
+    }
+}
+
+impl<S> Debug for DisjointSparseTable<S>
+where
+    S: SemiGroup,
+    S::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("DisjointSparseTable")
+            .field("table", &self.table)
+            .finish()
+    }
+}
+
+impl<S> DisjointSparseTable<S>
+where
+    S: SemiGroup,
+{
     pub fn new(v: Vec<S::T>) -> Self {
         let n = v.len();
         let mut table = vec![v];
@@ -51,7 +83,11 @@ impl<S: SemiGroup> DisjointSparseTable<S> {
         self.fold_close(l, r - 1)
     }
 }
-impl<S: SemiGroup> Index<usize> for DisjointSparseTable<S> {
+
+impl<S> Index<usize> for DisjointSparseTable<S>
+where
+    S: SemiGroup,
+{
     type Output = S::T;
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {

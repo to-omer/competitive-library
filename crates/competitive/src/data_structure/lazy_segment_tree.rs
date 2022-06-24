@@ -1,7 +1,9 @@
 use super::MonoidAction;
-use std::mem::replace;
+use std::{
+    fmt::{self, Debug, Formatter},
+    mem::replace,
+};
 
-#[derive(Clone, Debug)]
 pub struct LazySegmentTree<M>
 where
     M: MonoidAction,
@@ -9,6 +11,33 @@ where
 {
     n: usize,
     seg: Vec<(M::MT, M::AT)>,
+}
+
+impl<M> Clone for LazySegmentTree<M>
+where
+    M: MonoidAction,
+    M::AT: PartialEq,
+{
+    fn clone(&self) -> Self {
+        Self {
+            n: self.n,
+            seg: self.seg.clone(),
+        }
+    }
+}
+
+impl<M> Debug for LazySegmentTree<M>
+where
+    M: MonoidAction,
+    M::MT: Debug,
+    M::AT: PartialEq + Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("LazySegmentTree")
+            .field("n", &self.n)
+            .field("seg", &self.seg)
+            .finish()
+    }
 }
 
 impl<M> LazySegmentTree<M>

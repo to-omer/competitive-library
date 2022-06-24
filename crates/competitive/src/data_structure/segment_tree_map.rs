@@ -1,9 +1,11 @@
 #![allow(clippy::or_fun_call)]
 
 use super::{AbelianMonoid, Monoid};
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    fmt::{self, Debug, Formatter},
+};
 
-#[derive(Clone, Debug)]
 pub struct SegmentTreeMap<M>
 where
     M: Monoid,
@@ -11,6 +13,33 @@ where
     n: usize,
     seg: HashMap<usize, M::T>,
     u: M::T,
+}
+
+impl<M> Clone for SegmentTreeMap<M>
+where
+    M: Monoid,
+{
+    fn clone(&self) -> Self {
+        Self {
+            n: self.n,
+            seg: self.seg.clone(),
+            u: self.u.clone(),
+        }
+    }
+}
+
+impl<M> Debug for SegmentTreeMap<M>
+where
+    M: Monoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SegmentTreeMap")
+            .field("n", &self.n)
+            .field("seg", &self.seg)
+            .field("u", &self.u)
+            .finish()
+    }
 }
 
 impl<M> SegmentTreeMap<M>

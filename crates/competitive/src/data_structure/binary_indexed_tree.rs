@@ -1,12 +1,43 @@
 use super::{Group, Monoid};
+use std::fmt::{self, Debug, Formatter};
 
-#[derive(Clone, Debug)]
-pub struct BinaryIndexedTree<M: Monoid> {
+pub struct BinaryIndexedTree<M>
+where
+    M: Monoid,
+{
     n: usize,
     bit: Vec<M::T>,
 }
 
-impl<M: Monoid> BinaryIndexedTree<M> {
+impl<M> Clone for BinaryIndexedTree<M>
+where
+    M: Monoid,
+{
+    fn clone(&self) -> Self {
+        Self {
+            n: self.n,
+            bit: self.bit.clone(),
+        }
+    }
+}
+
+impl<M> Debug for BinaryIndexedTree<M>
+where
+    M: Monoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("BinaryIndexedTree")
+            .field("n", &self.n)
+            .field("bit", &self.bit)
+            .finish()
+    }
+}
+
+impl<M> BinaryIndexedTree<M>
+where
+    M: Monoid,
+{
     #[inline]
     pub fn new(n: usize) -> Self {
         let bit = vec![M::unit(); n + 1];

@@ -1,4 +1,5 @@
 use super::{GetDistinctMut, Monoid, SegmentTree, SliceBisectExt};
+use std::fmt::{self, Debug, Formatter};
 
 pub struct SegmentTree2D<M, X, Y>
 where
@@ -9,6 +10,40 @@ where
     index: Vec<Vec<usize>>,
     segs: Vec<SegmentTree<M>>,
 }
+
+impl<M, X, Y> Clone for SegmentTree2D<M, X, Y>
+where
+    M: Monoid,
+    X: Clone,
+    Y: Clone,
+{
+    fn clone(&self) -> Self {
+        Self {
+            xs: self.xs.clone(),
+            ys: self.ys.clone(),
+            index: self.index.clone(),
+            segs: self.segs.clone(),
+        }
+    }
+}
+
+impl<M, X, Y> Debug for SegmentTree2D<M, X, Y>
+where
+    M: Monoid,
+    M::T: Debug,
+    X: Debug,
+    Y: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SegmentTree2D")
+            .field("xs", &self.xs)
+            .field("ys", &self.ys)
+            .field("index", &self.index)
+            .field("segs", &self.segs)
+            .finish()
+    }
+}
+
 impl<M, X, Y> SegmentTree2D<M, X, Y>
 where
     M: Monoid,
