@@ -4,6 +4,8 @@ use crate::tools::{IterScan, MarkedIterScan};
 
 #[codesnip::entry("AdjacencyListGraph")]
 pub use self::adjacency_list::{AdjacencyListGraph, AdjacencyListGraphScanner};
+#[codesnip::entry("BipartiteMatching")]
+pub use self::bipartite_matching::BipartiteMatching;
 #[codesnip::entry("dulmage_mendelsohn_decomposition")]
 pub use self::dulmage_mendelsohn_decomposition::dulmage_mendelsohn_decomposition;
 #[codesnip::entry("EdgeListGraph")]
@@ -27,11 +29,13 @@ pub use self::two_satisfiability::TwoSatisfiability;
 
 #[cfg_attr(nightly, codesnip::entry("AdjacencyListGraph", include("scanner")))]
 mod adjacency_list;
+#[cfg_attr(nightly, codesnip::entry("BipartiteMatching"))]
+mod bipartite_matching;
 #[cfg_attr(
     nightly,
     codesnip::entry(
         "dulmage_mendelsohn_decomposition",
-        include("Dinic", "StronglyConnectedComponent")
+        include("BipartiteMatching", "StronglyConnectedComponent")
     )
 )]
 mod dulmage_mendelsohn_decomposition;

@@ -1,9 +1,9 @@
 #[doc(no_inline)]
-pub use competitive::graph::DinicBuilder;
+pub use competitive::graph::{BipartiteMatching, DinicBuilder};
 use competitive::prelude::*;
 
 #[verify::verify("https://judge.yosupo.jp/problem/bipartitematching")]
-pub fn bipartitematching(reader: impl Read, mut writer: impl Write) {
+pub fn bipartitematching_dinic(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, l, r, m, ab: [(usize, usize); m]);
@@ -27,5 +27,18 @@ pub fn bipartitematching(reader: impl Read, mut writer: impl Write) {
         if dinic.get_flow(i) > 0 {
             writeln!(writer, "{} {}", a, b).ok();
         }
+    }
+}
+
+#[verify::verify("https://judge.yosupo.jp/problem/bipartitematching")]
+pub fn bipartitematching(reader: impl Read, mut writer: impl Write) {
+    let s = read_all_unchecked(reader);
+    let mut scanner = Scanner::new(&s);
+    scan!(scanner, l, r, m, ab: [(usize, usize); m]);
+    let mut bm = BipartiteMatching::from_edges(l, r, &ab);
+    let matching = bm.maximum_matching();
+    writeln!(writer, "{}", matching.len()).ok();
+    for (x, y) in matching {
+        writeln!(writer, "{} {}", x, y).ok();
     }
 }

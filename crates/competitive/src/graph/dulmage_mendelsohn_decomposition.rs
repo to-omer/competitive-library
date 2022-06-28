@@ -1,32 +1,16 @@
-use super::{Dinic, DirectedSparseGraph, StronglyConnectedComponent};
+use super::{BipartiteMatching, DirectedSparseGraph, StronglyConnectedComponent};
 
 pub fn dulmage_mendelsohn_decomposition(
     l: usize,
     r: usize,
     edges: &[(usize, usize)],
 ) -> Vec<(Vec<usize>, Vec<usize>)> {
-    let m = edges.len();
-    let mut builder = Dinic::builder(l + r + 2, l + r + m);
-    for &(u, v) in edges {
-        builder.add_edge(u, v + l, 1);
-    }
-    for i in 0..l {
-        builder.add_edge(l + r, i, 1);
-    }
-    for j in 0..r {
-        builder.add_edge(j + l, l + r + 1, 1);
-    }
-    let dinic_g = builder.gen_graph();
-    let mut dinic = builder.build(&dinic_g);
-    dinic.maximum_flow(l + r, l + r + 1);
     let mut matching = vec![!0usize; l + r];
     let mut medges: Vec<_> = edges.iter().map(|&(u, v)| (u, v + l)).collect();
-    for (k, &(u, v)) in edges.iter().enumerate() {
-        if dinic.get_flow(k) == 1 {
-            medges.push((v + l, u));
-            matching[u] = v + l;
-            matching[v + l] = u;
-        }
+    for (u, v) in BipartiteMatching::from_edges(l, r, edges).maximum_matching() {
+        medges.push((v + l, u));
+        matching[u] = v + l;
+        matching[v + l] = u;
     }
     let rmedges = medges.iter().map(|&(u, v)| (v, u)).collect();
 
