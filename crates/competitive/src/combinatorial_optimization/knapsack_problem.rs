@@ -245,9 +245,9 @@ pub struct ZeroOneKnapsackPloblemBranchAndBound {
 }
 
 #[derive(Copy, Clone, Default, Debug)]
-pub struct Item {
-    pub value: u64,
-    pub weight: u64,
+struct Item {
+    value: u64,
+    weight: u64,
 }
 impl From<(u64, u64)> for Item {
     fn from(vw: (u64, u64)) -> Self {
