@@ -29,6 +29,7 @@ mod fast_fourier_transform;
         include(
             "NumberTheoreticTransform",
             "MInt",
+            "montgomery",
             "mod_sqrt",
             "factorial",
             "PartialIgnoredOrd",
