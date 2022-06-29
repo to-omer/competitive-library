@@ -1,6 +1,6 @@
 #[codesnip::skip]
 use crate::{
-    num::{mint_basic, MInt, MIntBase, MIntConvert, One, Zero},
+    num::{montgomery, MInt, MIntBase, MIntConvert, One, Zero},
     tools::AssociatedValue,
 };
 use std::marker::PhantomData;
@@ -17,7 +17,7 @@ pub trait NttModulus:
 }
 
 pub struct Convolve<M>(PhantomData<fn() -> M>);
-pub type Convolve998244353 = Convolve<mint_basic::Modulo998244353>;
+pub type Convolve998244353 = Convolve<montgomery::Modulo998244353>;
 pub type MIntConvolve<M> = Convolve<(
     M,
     (
@@ -44,7 +44,7 @@ pub trait ConvolveSteps {
 }
 pub mod number_theoretic_transform_impls {
     use super::*;
-    use mint_basic::Modulo998244353;
+    use montgomery::Modulo998244353;
     macro_rules! impl_ntt_modulus {
         ($([$name:ident, $g:expr]),*) => {
             $(
@@ -281,7 +281,10 @@ pub mod number_theoretic_transform_impls {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::num::mint_basic::{MInt998244353, Modulo1000000009, Modulo998244353};
+    use crate::num::{
+        mint_basic::Modulo1000000009,
+        montgomery::{MInt998244353, Modulo998244353},
+    };
     use crate::tools::Xorshift;
 
     const N: usize = 3_000;

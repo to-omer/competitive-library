@@ -1,7 +1,7 @@
 #[codesnip::skip]
 use crate::{
     math::{berlekamp_massey, Convolve998244353, ConvolveSteps, MIntConvolve, MemorizedFactorial},
-    num::{mint_basic, MInt, MIntConvert, One, Zero},
+    num::{montgomery, MInt, MIntConvert, One, Zero},
     tools::PartialIgnoredOrd,
 };
 
@@ -11,7 +11,7 @@ pub struct FormalPowerSeries<T, C> {
     _marker: std::marker::PhantomData<C>,
 }
 
-pub type Fps998244353 = FormalPowerSeries<mint_basic::MInt998244353, Convolve998244353>;
+pub type Fps998244353 = FormalPowerSeries<montgomery::MInt998244353, Convolve998244353>;
 pub type Fps<M> = FormalPowerSeries<MInt<M>, MIntConvolve<M>>;
 
 pub trait FormalPowerSeriesCoefficient:

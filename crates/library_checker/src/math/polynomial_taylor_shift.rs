@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
-    math::Fps998244353, math::MemorizedFactorial, num::mint_basic::MInt998244353,
+    math::Fps998244353, math::MemorizedFactorial, num::montgomery::MInt998244353,
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/polynomial_taylor_shift")]

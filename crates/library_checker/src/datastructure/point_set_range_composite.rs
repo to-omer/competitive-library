@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{
     algebra::LinearOperation,
     data_structure::SegmentTree,
-    num::{mint_basic::MInt998244353, MInt},
+    num::{montgomery::MInt998244353, MInt},
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/point_set_range_composite")]

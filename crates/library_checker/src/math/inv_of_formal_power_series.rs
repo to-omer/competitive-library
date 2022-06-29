@@ -1,6 +1,6 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
-pub use competitive::{math::Fps998244353, num::mint_basic::MInt998244353};
+pub use competitive::{math::Fps998244353, num::montgomery::MInt998244353};
 
 #[verify::verify("https://judge.yosupo.jp/problem/inv_of_formal_power_series")]
 pub fn inv_of_formal_power_series(reader: impl Read, mut writer: impl Write) {

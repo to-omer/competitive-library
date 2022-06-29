@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     math::{Fps998244353, MemorizedFactorial},
-    num::{mint_basic::MInt998244353, One, Zero},
+    num::{montgomery::MInt998244353, One, Zero},
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/sharp_p_subset_sum")]

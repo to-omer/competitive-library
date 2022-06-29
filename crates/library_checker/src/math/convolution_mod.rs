@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     math::{Convolve998244353, ConvolveSteps},
-    num::{mint_basic::MInt998244353, MInt},
+    num::{montgomery::MInt998244353, MInt},
 };
 
 #[verify::verify("https://judge.yosupo.jp/problem/convolution_mod")]
