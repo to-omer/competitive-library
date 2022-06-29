@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["suffixarray","✅  AC  676ms"]]});
+initSidebarItems({"fn":[["suffixarray","✅  AC  945ms"]]});
