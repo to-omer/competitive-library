@@ -434,13 +434,18 @@ where
         }
         Self::one()
     }
-    pub fn nth_term(a: Vec<T>, n: usize) -> T {
-        if let Some(x) = a.get(n) {
+    pub fn kth_term_of_linearly_recurrence(self, a: Vec<T>, k: usize) -> T {
+        if let Some(x) = a.get(k) {
             return x.clone();
         }
-        let q = Self::from_vec(berlekamp_massey(&a));
-        let p = (Self::from_vec(a).prefix(q.length() - 1) * &q).prefix(q.length() - 1);
-        p.bostan_mori(q, n)
+        let p = (Self::from_vec(a).prefix(self.length() - 1) * &self).prefix(self.length() - 1);
+        p.bostan_mori(self, k)
+    }
+    pub fn kth_term(a: Vec<T>, k: usize) -> T {
+        if let Some(x) = a.get(k) {
+            return x.clone();
+        }
+        Self::from_vec(berlekamp_massey(&a)).kth_term_of_linearly_recurrence(a, k)
     }
 }
 
