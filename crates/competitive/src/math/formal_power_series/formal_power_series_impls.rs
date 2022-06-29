@@ -1,7 +1,7 @@
 use super::*;
 use std::{
     iter::repeat_with,
-    iter::{once, FromIterator},
+    iter::{once, once_with, FromIterator},
     marker::PhantomData,
     ops::{Index, IndexMut},
     slice::{Iter, IterMut},
@@ -253,8 +253,16 @@ where
         (self.inv(deg) * self.clone().diff()).integral().prefix(deg)
     }
     pub fn pow(&self, rhs: usize, deg: usize) -> Self {
+        if rhs == 0 {
+            return Self::from_vec(
+                once_with(T::one)
+                    .chain(repeat_with(T::zero))
+                    .take(deg)
+                    .collect(),
+            );
+        }
         if let Some(k) = self.iter().position(|x| !x.is_zero()) {
-            if k * rhs >= deg {
+            if k >= (deg + rhs - 1) / rhs {
                 Self::zeros(deg)
             } else {
                 let mut x0 = self[k].clone();
