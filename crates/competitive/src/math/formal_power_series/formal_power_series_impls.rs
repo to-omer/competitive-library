@@ -1,7 +1,7 @@
 use super::*;
 use std::{
     iter::repeat_with,
-    iter::{once, once_with, FromIterator},
+    iter::{once, FromIterator},
     marker::PhantomData,
     ops::{Index, IndexMut},
     slice::{Iter, IterMut},
@@ -255,7 +255,7 @@ where
     pub fn pow(&self, rhs: usize, deg: usize) -> Self {
         if rhs == 0 {
             return Self::from_vec(
-                once_with(T::one)
+                once(T::one())
                     .chain(repeat_with(T::zero))
                     .take(deg)
                     .collect(),
@@ -433,6 +433,14 @@ where
             }
         }
         Self::one()
+    }
+    pub fn nth_term(a: Vec<T>, n: usize) -> T {
+        if let Some(x) = a.get(n) {
+            return x.clone();
+        }
+        let q = Self::from_vec(berlekamp_massey(&a));
+        let p = (Self::from_vec(a).prefix(q.length() - 1) * &q).prefix(q.length() - 1);
+        p.bostan_mori(q, n)
     }
 }
 

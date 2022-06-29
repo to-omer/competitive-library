@@ -2,6 +2,8 @@
 
 use crate::num::{One, Zero};
 
+#[codesnip::entry("berlekamp_massey")]
+pub use berlekamp_massey::berlekamp_massey;
 pub use factorial::*;
 pub use fast_fourier_transform::*;
 pub use formal_power_series::*;
@@ -15,6 +17,8 @@ pub use polynomial::*;
 pub use prime::*;
 pub use special_modulo::*;
 
+#[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
+mod berlekamp_massey;
 mod factorial;
 mod fast_fourier_transform;
 #[cfg_attr(
@@ -27,7 +31,8 @@ mod fast_fourier_transform;
             "MInt",
             "mod_sqrt",
             "factorial",
-            "PartialIgnoredOrd"
+            "PartialIgnoredOrd",
+            "berlekamp_massey"
         )
     )
 )]
