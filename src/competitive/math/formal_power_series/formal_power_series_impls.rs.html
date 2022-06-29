@@ -487,6 +487,27 @@
 <span id="455">455</span>
 <span id="456">456</span>
 <span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">iter::repeat_with</span>,
@@ -742,8 +763,16 @@
         (<span class="self">self</span>.<span class="ident">inv</span>(<span class="ident">deg</span>) <span class="op">*</span> <span class="self">self</span>.<span class="ident">clone</span>().<span class="ident">diff</span>()).<span class="ident">integral</span>().<span class="ident">prefix</span>(<span class="ident">deg</span>)
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">usize</span>, <span class="ident">deg</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
+        <span class="kw">if</span> <span class="ident">rhs</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">return</span> <span class="ident"><span class="self">Self</span>::from_vec</span>(
+                <span class="ident">once</span>(<span class="ident">T::one</span>())
+                    .<span class="ident">chain</span>(<span class="ident">repeat_with</span>(<span class="ident">T::zero</span>))
+                    .<span class="ident">take</span>(<span class="ident">deg</span>)
+                    .<span class="ident">collect</span>(),
+            );
+        }
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">k</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="op">!</span><span class="ident">x</span>.<span class="ident">is_zero</span>()) {
-            <span class="kw">if</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">rhs</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">deg</span> {
+            <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span><span class="op">=</span> (<span class="ident">deg</span> <span class="op">+</span> <span class="ident">rhs</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">/</span> <span class="ident">rhs</span> {
                 <span class="ident"><span class="self">Self</span>::zeros</span>(<span class="ident">deg</span>)
             } <span class="kw">else</span> {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x0</span> <span class="op">=</span> <span class="self">self</span>[<span class="ident">k</span>].<span class="ident">clone</span>();
@@ -914,6 +943,19 @@
             }
         }
         <span class="ident"><span class="self">Self</span>::one</span>()
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kth_term_of_linearly_recurrence</span>(<span class="self">self</span>, <span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">T</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="ident">a</span>.<span class="ident">get</span>(<span class="ident">k</span>) {
+            <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">clone</span>();
+        }
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> (<span class="ident"><span class="self">Self</span>::from_vec</span>(<span class="ident">a</span>).<span class="ident">prefix</span>(<span class="self">self</span>.<span class="ident">length</span>() <span class="op">-</span> <span class="number">1</span>) <span class="op">*</span> <span class="kw-2">&amp;</span><span class="self">self</span>).<span class="ident">prefix</span>(<span class="self">self</span>.<span class="ident">length</span>() <span class="op">-</span> <span class="number">1</span>);
+        <span class="ident">p</span>.<span class="ident">bostan_mori</span>(<span class="self">self</span>, <span class="ident">k</span>)
+    }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kth_term</span>(<span class="ident">a</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">T</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="ident">a</span>.<span class="ident">get</span>(<span class="ident">k</span>) {
+            <span class="kw">return</span> <span class="ident">x</span>.<span class="ident">clone</span>();
+        }
+        <span class="ident"><span class="self">Self</span>::from_vec</span>(<span class="ident">berlekamp_massey</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>)).<span class="ident">kth_term_of_linearly_recurrence</span>(<span class="ident">a</span>, <span class="ident">k</span>)
     }
 }
 
