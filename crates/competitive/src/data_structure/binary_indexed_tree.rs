@@ -44,6 +44,20 @@ where
         Self { n, bit }
     }
     #[inline]
+    pub fn from_slice(slice: &[M::T]) -> Self {
+        let n = slice.len();
+        let mut bit = vec![M::unit(); n + 1];
+        for (i, x) in slice.iter().enumerate() {
+            let k = i + 1;
+            M::operate_assign(&mut bit[k], x);
+            let j = k + (k & (!k + 1));
+            if j <= n {
+                bit[j] = M::operate(&bit[j], &bit[k]);
+            }
+        }
+        Self { n, bit }
+    }
+    #[inline]
     /// fold [0, k)
     pub fn accumulate0(&self, mut k: usize) -> M::T {
         debug_assert!(k <= self.n);
@@ -124,8 +138,8 @@ mod tests {
     #[test]
     fn test_binary_indexed_tree() {
         let mut rng = Xorshift::time();
-        let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(N);
-        let mut arr = vec![0; N];
+        let mut arr: Vec<_> = rng.gen_iter(..A).take(N).collect();
+        let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
         for (k, v) in rng.gen_iter((..N, ..A)).take(Q) {
             bit.update(k, v);
             arr[k] += v;
@@ -137,8 +151,8 @@ mod tests {
             assert_eq!(bit.accumulate(i), a);
         }
 
-        let mut bit = BinaryIndexedTree::<MaxOperation<_>>::new(N);
-        let mut arr = vec![0; N];
+        let mut arr: Vec<_> = rng.gen_iter(..A).take(N).collect();
+        let mut bit = BinaryIndexedTree::<MaxOperation<_>>::from_slice(&arr);
         for (k, v) in rng.gen_iter((..N, ..A)).take(Q) {
             bit.update(k, v);
             arr[k] = std::cmp::max(arr[k], v);
@@ -155,18 +169,21 @@ mod tests {
     fn test_group_binary_indexed_tree() {
         const N: usize = 2_000;
         let mut rng = Xorshift::time();
-        let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(N);
-        let mut arr = vec![0; N + 1];
+        let mut arr: Vec<_> = rng.gen_iter(-B..B).take(N).collect();
+        let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
         for (k, v) in rng.gen_iter((..N, -B..B)).take(Q) {
             bit.set(k, v);
-            arr[k + 1] = v;
+            arr[k] = v;
         }
-        for i in 0..N {
+        for i in 0..N - 1 {
             arr[i + 1] += arr[i];
         }
         for i in 0..N {
             for j in i + 1..N + 1 {
-                assert_eq!(bit.fold(i, j), arr[j] - arr[i]);
+                assert_eq!(
+                    bit.fold(i, j),
+                    arr[j - 1] - if i == 0 { 0 } else { arr[i - 1] }
+                );
             }
         }
     }
@@ -174,8 +191,8 @@ mod tests {
     #[test]
     fn test_binary_indexed_tree_lower_bound() {
         let mut rng = Xorshift::time();
-        let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::new(N);
-        let mut arr = vec![0; N];
+        let mut arr: Vec<_> = rng.gen_iter(1..B).take(N).collect();
+        let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
         for (k, v) in rng.gen_iter((..N, 1..B)).take(Q) {
             bit.set(k, v);
             arr[k] = v;
