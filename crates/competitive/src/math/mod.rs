@@ -1,12 +1,13 @@
 //! mathematical datas
 
-use crate::num::{montgomery, MInt, MIntBase, MIntConvert, One, Zero};
+use crate::num::{montgomery, Complex, MInt, MIntBase, MIntConvert, One, Zero};
 use crate::tools::{AssociatedValue, PartialIgnoredOrd};
 
 #[codesnip::entry("berlekamp_massey")]
 pub use berlekamp_massey::berlekamp_massey;
 pub use factorial::*;
-pub use fast_fourier_transform::*;
+#[codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))]
+pub use fast_fourier_transform::convolve_fft;
 #[codesnip::entry("FormalPowerSeries")]
 pub use formal_power_series::{
     FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
