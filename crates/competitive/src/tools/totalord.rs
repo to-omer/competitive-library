@@ -8,15 +8,28 @@
 /// a.sort_by_key(|&x| TotalOrd(x));
 /// ```
 ///
-#[derive(PartialEq)]
 pub struct TotalOrd<T>(pub T);
-impl<T: PartialEq> Eq for TotalOrd<T> {}
-impl<T: PartialOrd> PartialOrd for TotalOrd<T> {
+impl<T> PartialEq for TotalOrd<T>
+where
+    T: PartialEq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+impl<T> Eq for TotalOrd<T> where T: PartialEq {}
+impl<T> PartialOrd for TotalOrd<T>
+where
+    T: PartialOrd,
+{
     fn partial_cmp(&self, other: &TotalOrd<T>) -> Option<std::cmp::Ordering> {
         self.0.partial_cmp(&other.0)
     }
 }
-impl<T: PartialOrd> Ord for TotalOrd<T> {
+impl<T> Ord for TotalOrd<T>
+where
+    T: PartialOrd,
+{
     fn cmp(&self, other: &TotalOrd<T>) -> std::cmp::Ordering {
         self.partial_cmp(other).unwrap()
     }

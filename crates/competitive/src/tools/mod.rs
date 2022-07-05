@@ -15,7 +15,7 @@ pub use self::random::*;
 pub use self::scanner::*;
 pub use self::slice::GetDistinctMut;
 #[codesnip::entry("TotalOrd")]
-pub use self::totalord::TotalOrd;
+pub use self::totalord::{AsTotalOrd, TotalOrd};
 
 #[cfg_attr(nightly, codesnip::entry)]
 mod assign_ops;

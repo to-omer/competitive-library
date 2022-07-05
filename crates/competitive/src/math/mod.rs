@@ -6,7 +6,7 @@ use crate::tools::{AssociatedValue, PartialIgnoredOrd};
 #[codesnip::entry("berlekamp_massey")]
 pub use berlekamp_massey::berlekamp_massey;
 pub use factorial::*;
-#[codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))]
+#[codesnip::entry("fast_fourier_transform")]
 pub use fast_fourier_transform::convolve_fft;
 #[codesnip::entry("FormalPowerSeries")]
 pub use formal_power_series::{
@@ -28,6 +28,10 @@ pub use special_modulo::*;
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
 mod factorial;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))
+)]
 mod fast_fourier_transform;
 #[cfg_attr(
     nightly,

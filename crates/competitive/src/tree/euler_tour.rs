@@ -99,8 +99,8 @@ impl<'a> EulerTourForVertex<'a> {
 #[derive(Clone, Debug)]
 pub struct EulerTourForRichVertex<'a> {
     graph: &'a UndirectedSparseGraph,
-    root: usize,
-    vidx: Vec<(usize, usize)>,
+    pub root: usize,
+    pub vidx: Vec<(usize, usize)>,
     vtrace: Vec<usize>,
 }
 #[codesnip::entry("EulerTourForRichVertex")]
@@ -186,7 +186,7 @@ pub mod impl_lcam {
     }
     impl LcaMonoidDispatch for LcaMonoidDefaultId {
         fn vsize() -> usize {
-            DEPTH.with(|c| unsafe { (&*c.get()).len() })
+            DEPTH.with(|c| unsafe { (*c.get()).len() })
         }
         fn depth(u: usize) -> u64 {
             DEPTH.with(|c| unsafe { (&*c.get())[u] })
