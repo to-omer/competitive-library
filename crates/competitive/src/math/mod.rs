@@ -1,17 +1,24 @@
 //! mathematical datas
 
-use crate::num::{One, Zero};
+use crate::num::{montgomery, MInt, MIntBase, MIntConvert, One, Zero};
+use crate::tools::{AssociatedValue, PartialIgnoredOrd};
 
 #[codesnip::entry("berlekamp_massey")]
 pub use berlekamp_massey::berlekamp_massey;
 pub use factorial::*;
 pub use fast_fourier_transform::*;
-pub use formal_power_series::*;
+#[codesnip::entry("FormalPowerSeries")]
+pub use formal_power_series::{
+    FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
+    Fps998244353,
+};
 pub use gcd::*;
-pub use lagrange_interpolation::*;
+#[codesnip::entry("lagrange_interpolation")]
+pub use lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
 #[codesnip::entry("Matrix")]
 pub use matrix::Matrix;
-pub use number_theoretic_transform::*;
+#[codesnip::entry("NumberTheoreticTransform")]
+pub use number_theoretic_transform::{Convolve, Convolve998244353, ConvolveSteps, MIntConvolve};
 pub use nums::*;
 pub use polynomial::*;
 pub use prime::*;
@@ -25,10 +32,8 @@ mod fast_fourier_transform;
     nightly,
     codesnip::entry(
         "FormalPowerSeries",
-        inline,
         include(
             "NumberTheoreticTransform",
-            "MInt",
             "montgomery",
             "mod_sqrt",
             "factorial",
@@ -39,17 +44,18 @@ mod fast_fourier_transform;
 )]
 mod formal_power_series;
 mod gcd;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("lagrange_interpolation", include("factorial", "MIntBase"))
+)]
 mod lagrange_interpolation;
 #[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one")))]
 mod matrix;
+#[cfg_attr(nightly, codesnip::entry("mod_sqrt", include("MIntBase")))]
 mod mod_sqrt;
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "NumberTheoreticTransform",
-        inline,
-        include("MInt", "montgomery", "AssociatedValue")
-    )
+    codesnip::entry("NumberTheoreticTransform", include("montgomery", "AssociatedValue"))
 )]
 mod number_theoretic_transform;
 mod nums;

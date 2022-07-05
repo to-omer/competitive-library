@@ -239,7 +239,7 @@ mod tests {
                 for _ in 0..Q {
                     let a = $mint::new_unchecked(rng.gen(1..$mint::get_mod()));
                     let x = a.inv();
-                    assert!(x.x < $mint::get_mod());
+                    assert!(x.inner() < $mint::get_mod());
                     assert_eq!(a * x, $mint::one());
                 }
             }

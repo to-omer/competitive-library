@@ -1,7 +1,5 @@
 use super::*;
 
-pub struct Modulo998244353;
-pub type MInt998244353 = MInt<Modulo998244353>;
 impl<M> MIntBase for M
 where
     M: MontgomeryReduction32,
@@ -118,7 +116,10 @@ where
         <Self as MIntBase>::get_mod() as usize
     }
 }
-impl MIntConvert<i32> for Modulo998244353 {
+impl<M> MIntConvert<i32> for M
+where
+    M: MontgomeryReduction32,
+{
     #[inline]
     fn from(x: i32) -> Self::Inner {
         let x = x % <Self as MIntBase>::get_mod() as i32;
@@ -138,7 +139,10 @@ impl MIntConvert<i32> for Modulo998244353 {
         <Self as MIntBase>::get_mod() as i32
     }
 }
-impl MIntConvert<i64> for Modulo998244353 {
+impl<M> MIntConvert<i64> for M
+where
+    M: MontgomeryReduction32,
+{
     #[inline]
     fn from(x: i64) -> Self::Inner {
         let x = x % <Self as MIntBase>::get_mod() as i64;
@@ -158,7 +162,10 @@ impl MIntConvert<i64> for Modulo998244353 {
         <Self as MIntBase>::get_mod() as i64
     }
 }
-impl MIntConvert<isize> for Modulo998244353 {
+impl<M> MIntConvert<isize> for M
+where
+    M: MontgomeryReduction32,
+{
     #[inline]
     fn from(x: isize) -> Self::Inner {
         let x = x % <Self as MIntBase>::get_mod() as isize;
@@ -213,39 +220,73 @@ pub trait MontgomeryReduction32 {
         x
     }
 }
-macro_rules! impl_montgomery_reduction_32 {
-    ($name:ident, $m:expr, $r:expr, $n1:expr, $n2:expr, $n3:expr) => {
-        impl MontgomeryReduction32 for $name {
-            #[inline]
-            fn get_mod() -> u32 {
-                $m
+macro_rules! define_montgomery_reduction_32 {
+    ($([$name:ident, $m:expr, $r:expr, $n1:expr, $n2:expr, $n3:expr, $mint_name:ident $(,)?]),* $(,)?) => {
+        $(
+            pub enum $name {}
+            impl MontgomeryReduction32 for $name {
+                #[inline]
+                fn get_mod() -> u32 {
+                    $m
+                }
+                #[inline]
+                fn r() -> u32 {
+                    $r
+                }
+                #[inline]
+                fn n1() -> u32 {
+                    $n1
+                }
+                #[inline]
+                fn n2() -> u32 {
+                    $n2
+                }
+                #[inline]
+                fn n3() -> u32 {
+                    $n3
+                }
             }
-            #[inline]
-            fn r() -> u32 {
-                $r
-            }
-            #[inline]
-            fn n1() -> u32 {
-                $n1
-            }
-            #[inline]
-            fn n2() -> u32 {
-                $n2
-            }
-            #[inline]
-            fn n3() -> u32 {
-                $n3
-            }
-        }
+            pub type $mint_name = MInt<$name>;
+        )*
     };
 }
-impl_montgomery_reduction_32!(
-    Modulo998244353,
-    998_244_353,
-    998_244_351,
-    301_989_884,
-    932_051_910,
-    679_058_953
+define_montgomery_reduction_32!(
+    [
+        Modulo998244353,
+        998244353,
+        998244351,
+        301989884,
+        932051910,
+        679058953,
+        MInt998244353,
+    ],
+    [
+        Modulo2113929217,
+        2113929217,
+        2113929215,
+        67108862,
+        2111798781,
+        239209529,
+        MInt2113929217,
+    ],
+    [
+        Modulo1811939329,
+        1811939329,
+        1811939327,
+        671088638,
+        959408210,
+        1483943592,
+        MInt1811939329,
+    ],
+    [
+        Modulo2013265921,
+        2013265921,
+        2013265919,
+        268435454,
+        1172168163,
+        317946875,
+        MInt2013265921,
+    ],
 );
 
 // #[test]

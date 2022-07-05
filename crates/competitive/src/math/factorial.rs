@@ -1,13 +1,19 @@
 use crate::num::{MInt, MIntConvert, One, Zero};
 
-#[codesnip::entry("factorial", include("MInt"))]
+#[codesnip::entry("factorial", include("MIntBase"))]
 #[derive(Clone, Debug)]
-pub struct MemorizedFactorial<M: MIntConvert<usize>> {
+pub struct MemorizedFactorial<M>
+where
+    M: MIntConvert<usize>,
+{
     pub fact: Vec<MInt<M>>,
     pub inv_fact: Vec<MInt<M>>,
 }
 #[codesnip::entry("factorial")]
-impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
+impl<M> MemorizedFactorial<M>
+where
+    M: MIntConvert<usize>,
+{
     pub fn new(max_n: usize) -> Self {
         let mut fact = vec![MInt::one(); max_n + 1];
         let mut inv_fact = vec![MInt::one(); max_n + 1];
@@ -55,13 +61,19 @@ impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     }
 }
 
-#[codesnip::entry("SmallModMemorizedFactorial", include("MInt"))]
+#[codesnip::entry("SmallModMemorizedFactorial", include("MIntBase"))]
 #[derive(Clone, Debug)]
-pub struct SmallModMemorizedFactorial<M: MIntConvert<usize>> {
+pub struct SmallModMemorizedFactorial<M>
+where
+    M: MIntConvert<usize>,
+{
     fact: Vec<MInt<M>>,
 }
 #[codesnip::entry("SmallModMemorizedFactorial")]
-impl<M: MIntConvert<usize>> Default for SmallModMemorizedFactorial<M> {
+impl<M> Default for SmallModMemorizedFactorial<M>
+where
+    M: MIntConvert<usize>,
+{
     fn default() -> Self {
         let p = M::mod_into();
         let mut fact = vec![MInt::<M>::one(); p];
@@ -72,7 +84,10 @@ impl<M: MIntConvert<usize>> Default for SmallModMemorizedFactorial<M> {
     }
 }
 #[codesnip::entry("SmallModMemorizedFactorial")]
-impl<M: MIntConvert<usize>> SmallModMemorizedFactorial<M> {
+impl<M> SmallModMemorizedFactorial<M>
+where
+    M: MIntConvert<usize>,
+{
     pub fn new() -> Self {
         Default::default()
     }
@@ -104,15 +119,21 @@ impl<M: MIntConvert<usize>> SmallModMemorizedFactorial<M> {
     }
 }
 
-#[codesnip::entry("PowPrec", include("MInt"))]
+#[codesnip::entry("PowPrec", include("MIntBase"))]
 #[derive(Debug, Clone)]
-pub struct PowPrec<M: MIntConvert<usize>> {
+pub struct PowPrec<M>
+where
+    M: MIntConvert<usize>,
+{
     sqn: usize,
     p0: Vec<MInt<M>>,
     p1: Vec<MInt<M>>,
 }
 #[codesnip::entry("PowPrec")]
-impl<M: MIntConvert<usize>> PowPrec<M> {
+impl<M> PowPrec<M>
+where
+    M: MIntConvert<usize>,
+{
     pub fn new(a: MInt<M>) -> Self {
         let sqn = (M::mod_into() as f64).sqrt() as usize + 1;
         let mut p0 = Vec::with_capacity(sqn);

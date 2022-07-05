@@ -1,7 +1,9 @@
-use crate::math::factorial::MemorizedFactorial;
-use crate::num::{MInt, MIntBase, MIntConvert, One, Zero};
+use super::{MInt, MIntBase, MIntConvert, MemorizedFactorial, One, Zero};
 
-pub fn lagrange_interpolation<M: MIntBase>(x: &[MInt<M>], y: &[MInt<M>], t: MInt<M>) -> MInt<M> {
+pub fn lagrange_interpolation<M>(x: &[MInt<M>], y: &[MInt<M>], t: MInt<M>) -> MInt<M>
+where
+    M: MIntBase,
+{
     let n = x.len();
     debug_assert!(n == y.len());
     x.iter().position(|&x| x == t).map_or_else(
@@ -19,8 +21,10 @@ pub fn lagrange_interpolation<M: MIntBase>(x: &[MInt<M>], y: &[MInt<M>], t: MInt
     )
 }
 
-#[codesnip::entry("lagrange_interpolation", include("factorial", "MInt"))]
-impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
+impl<M> MemorizedFactorial<M>
+where
+    M: MIntConvert<usize>,
+{
     /// Lagrange interpolation with (i, f(i)) (0 <= i <= n)
     pub fn lagrange_interpolation<F>(&self, n: usize, f: F, t: MInt<M>) -> MInt<M>
     where
@@ -43,11 +47,10 @@ impl<M: MIntConvert<usize>> MemorizedFactorial<M> {
     }
 }
 
-#[codesnip::entry(include("MInt"))]
-pub fn lagrange_interpolation_polynomial<M: MIntBase>(
-    x: &[MInt<M>],
-    y: &[MInt<M>],
-) -> Vec<MInt<M>> {
+pub fn lagrange_interpolation_polynomial<M>(x: &[MInt<M>], y: &[MInt<M>]) -> Vec<MInt<M>>
+where
+    M: MIntBase,
+{
     let n = x.len() - 1;
     let mut dp = vec![MInt::zero(); n + 2];
     let mut ndp = vec![MInt::zero(); n + 2];

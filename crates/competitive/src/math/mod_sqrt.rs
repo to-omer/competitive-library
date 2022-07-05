@@ -1,9 +1,15 @@
-use crate::num::{MInt, MIntConvert, One, Zero};
+use super::{MInt, MIntConvert, One, Zero};
+use std::cmp::Ordering;
 
-#[codesnip::entry("mod_sqrt", include("MInt"))]
-impl<M: MIntConvert<u32>> MInt<M> {
+impl<M> MInt<M>
+where
+    M: MIntConvert<u32>,
+{
     pub fn sqrt(self) -> Option<Self> {
-        fn jacobi<M: MIntConvert<u32>>(mut x: u32) -> i8 {
+        fn jacobi<M>(mut x: u32) -> i8
+        where
+            M: MIntConvert<u32>,
+        {
             let mut s = 1i8;
             let mut m = M::mod_into();
             while m > 1 {
@@ -28,13 +34,13 @@ impl<M: MIntConvert<u32>> MInt<M> {
         }
         let j = jacobi::<M>(u32::from(self));
         match j.cmp(&0) {
-            std::cmp::Ordering::Less => {
+            Ordering::Less => {
                 return None;
             }
-            std::cmp::Ordering::Equal => {
+            Ordering::Equal => {
                 return Some(Self::zero());
             }
-            std::cmp::Ordering::Greater => {}
+            Ordering::Greater => {}
         }
         let mut r = 1;
         let (mut f0, d) = loop {
