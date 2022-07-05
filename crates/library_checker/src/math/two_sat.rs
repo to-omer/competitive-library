@@ -12,7 +12,7 @@ pub fn two_sat(reader: impl Read, mut writer: impl Write) {
         _cnf: String,
         n,
         m,
-        ab: [(i64, i64, i64)]
+        ab: [(i32, i32, i32)]
     );
     let mut two_sat = TwoSatisfiability::new(n);
     for (a, b, _) in ab.take(m) {
@@ -25,7 +25,7 @@ pub fn two_sat(reader: impl Read, mut writer: impl Write) {
             write!(
                 writer,
                 " {}",
-                if v { i as i64 + 1 } else { -(i as i64 + 1) }
+                if v { i as i32 + 1 } else { -(i as i32 + 1) }
             )
             .ok();
         }

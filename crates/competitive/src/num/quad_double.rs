@@ -75,7 +75,7 @@ fn three_two_sum(a: f64, b: f64, c: f64) -> (f64, f64) {
 }
 
 fn multiple_three_sum(xs: &[f64]) -> (f64, f64, f64) {
-    let (mut r0, mut r1, mut r2) = (*xs.get(0).unwrap_or(&0.), 0., 0.);
+    let (mut r0, mut r1, mut r2) = (*xs.first().unwrap_or(&0.), 0., 0.);
     for &x in xs.iter() {
         let (s, e) = two_sum(r0, x);
         r0 = s;
@@ -87,7 +87,7 @@ fn multiple_three_sum(xs: &[f64]) -> (f64, f64, f64) {
 }
 
 fn multiple_two_sum(xs: &[f64]) -> (f64, f64) {
-    let (mut r0, mut r1) = (*xs.get(0).unwrap_or(&0.), 0.);
+    let (mut r0, mut r1) = (*xs.first().unwrap_or(&0.), 0.);
     for &x in xs.iter() {
         let (s, e) = two_sum(r0, x);
         r0 = s;

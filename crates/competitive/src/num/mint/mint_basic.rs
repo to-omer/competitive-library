@@ -104,7 +104,7 @@ macro_rules! define_basic_mintbase {
 #[macro_export]
 macro_rules! define_basic_mint32 {
     ($([$name:ident, $m:expr, $mint_name:ident]),*) => {
-        $(crate::define_basic_mintbase!(
+        $(define_basic_mintbase!(
             $name,
             $m,
             u32,

@@ -1,5 +1,5 @@
 use super::{BidirectionalSparseGraph, DirectedSparseGraph, UndirectedSparseGraph};
-use std::fmt::Display;
+use std::{fmt::Display, fmt::Write};
 
 impl DirectedSparseGraph {
     pub fn to_graphvis<N, NA, E, EA>(&self, node_attr: N, edge_attr: E) -> String
@@ -12,11 +12,11 @@ impl DirectedSparseGraph {
         let mut s = String::new();
         s.push_str("digraph G {\n    graph [ splines=false, layout=neato ];\n");
         for u in self.vertices() {
-            s.push_str(&format!("    {} [{}];\n", u, node_attr(u)));
+            writeln!(s, "    {} [{}];", u, node_attr(u)).ok();
         }
         for u in self.vertices() {
             for a in self.adjacencies(u) {
-                s.push_str(&format!("    {} -> {} [{}];\n", u, a.to, edge_attr(a.id)));
+                writeln!(s, "    {} -> {} [{}];", u, a.to, edge_attr(a.id)).ok();
             }
         }
         s.push('}');
@@ -35,10 +35,10 @@ impl UndirectedSparseGraph {
         let mut s = String::new();
         s.push_str("graph G {\n    graph [ splines=false, layout=neato ];\n");
         for u in self.vertices() {
-            s.push_str(&format!("    {} [{}];\n", u, node_attr(u)));
+            writeln!(s, "    {} [{}];", u, node_attr(u)).ok();
         }
         for (i, (u, v)) in self.edges.iter().cloned().enumerate() {
-            s.push_str(&format!("    {} -- {} [{}];\n", u, v, edge_attr(i)));
+            writeln!(s, "    {} -- {} [{}];", u, v, edge_attr(i)).ok();
         }
         s.push('}');
         s
@@ -56,11 +56,11 @@ impl BidirectionalSparseGraph {
         let mut s = String::new();
         s.push_str("digraph G {\n    graph [ splines=false, layout=neato ];\n");
         for u in self.vertices() {
-            s.push_str(&format!("    {} [{}];\n", u, node_attr(u)));
+            writeln!(s, "    {} [{}];", u, node_attr(u)).ok();
         }
         for u in self.vertices() {
             for a in self.adjacencies(u) {
-                s.push_str(&format!("    {} -> {} [{}];\n", u, a.to, edge_attr(a.id)));
+                writeln!(s, "    {} -> {} [{}];", u, a.to, edge_attr(a.id)).ok();
             }
         }
         s.push('}');
