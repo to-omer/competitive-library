@@ -220,6 +220,23 @@
 <span id="188">188</span>
 <span id="189">189</span>
 <span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Group</span>, <span class="ident">Monoid</span>};
 <span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
 
@@ -263,6 +280,20 @@
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">bit</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>];
+        <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">bit</span> }
+    }
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_slice</span>(<span class="ident">slice</span>: <span class="kw-2">&amp;</span>[<span class="ident">M::T</span>]) -&gt; <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>];
+        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">x</span>) <span class="kw">in</span> <span class="ident">slice</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>;
+            <span class="ident">M::operate_assign</span>(<span class="kw-2">&amp;mut</span> <span class="ident">bit</span>[<span class="ident">k</span>], <span class="ident">x</span>);
+            <span class="kw">let</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">k</span> <span class="op">+</span> (<span class="ident">k</span> <span class="op">&amp;</span> (<span class="op">!</span><span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>));
+            <span class="kw">if</span> <span class="ident">j</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">n</span> {
+                <span class="ident">bit</span>[<span class="ident">j</span>] <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">bit</span>[<span class="ident">j</span>], <span class="kw-2">&amp;</span><span class="ident">bit</span>[<span class="ident">k</span>]);
+            }
+        }
         <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">bit</span> }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -346,8 +377,8 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_binary_indexed_tree</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">N</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">N</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(..<span class="ident">A</span>).<span class="ident">take</span>(<span class="ident">N</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">arr</span>);
         <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, ..<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="ident">bit</span>.<span class="ident">update</span>(<span class="ident">k</span>, <span class="ident">v</span>);
             <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">v</span>;
@@ -359,8 +390,8 @@
             <span class="macro">assert_eq!</span>(<span class="ident">bit</span>.<span class="ident">accumulate</span>(<span class="ident">i</span>), <span class="ident">a</span>);
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">MaxOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">N</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">N</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(..<span class="ident">A</span>).<span class="ident">take</span>(<span class="ident">N</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">MaxOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">arr</span>);
         <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, ..<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="ident">bit</span>.<span class="ident">update</span>(<span class="ident">k</span>, <span class="ident">v</span>);
             <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">std::cmp::max</span>(<span class="ident">arr</span>[<span class="ident">k</span>], <span class="ident">v</span>);
@@ -377,18 +408,21 @@
     <span class="kw">fn</span> <span class="ident">test_group_binary_indexed_tree</span>() {
         <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2_000</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">N</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">N</span> <span class="op">+</span> <span class="number">1</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="op">-</span><span class="ident">B</span>..<span class="ident">B</span>).<span class="ident">take</span>(<span class="ident">N</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">arr</span>);
         <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, <span class="op">-</span><span class="ident">B</span>..<span class="ident">B</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="ident">bit</span>.<span class="ident">set</span>(<span class="ident">k</span>, <span class="ident">v</span>);
-            <span class="ident">arr</span>[<span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">v</span>;
+            <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">v</span>;
         }
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> <span class="op">-</span> <span class="number">1</span> {
             <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
         }
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
             <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>..<span class="ident">N</span> <span class="op">+</span> <span class="number">1</span> {
-                <span class="macro">assert_eq!</span>(<span class="ident">bit</span>.<span class="ident">fold</span>(<span class="ident">i</span>, <span class="ident">j</span>), <span class="ident">arr</span>[<span class="ident">j</span>] <span class="op">-</span> <span class="ident">arr</span>[<span class="ident">i</span>]);
+                <span class="macro">assert_eq!</span>(
+                    <span class="ident">bit</span>.<span class="ident">fold</span>(<span class="ident">i</span>, <span class="ident">j</span>),
+                    <span class="ident">arr</span>[<span class="ident">j</span> <span class="op">-</span> <span class="number">1</span>] <span class="op">-</span> <span class="kw">if</span> <span class="ident">i</span> <span class="op">==</span> <span class="number">0</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>] }
+                );
             }
         }
     }
@@ -396,8 +430,8 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_binary_indexed_tree_lower_bound</span>() {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">N</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">N</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="number">1</span>..<span class="ident">B</span>).<span class="ident">take</span>(<span class="ident">N</span>).<span class="ident">collect</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> <span class="op">=</span> <span class="ident">BinaryIndexedTree</span>::<span class="op">&lt;</span><span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">arr</span>);
         <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, <span class="number">1</span>..<span class="ident">B</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="ident">bit</span>.<span class="ident">set</span>(<span class="ident">k</span>, <span class="ident">v</span>);
             <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">v</span>;

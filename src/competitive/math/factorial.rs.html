@@ -223,16 +223,43 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num</span>::{<span class="ident">MInt</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;factorial&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MInt&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;factorial&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="kw">pub</span> <span class="ident">fact</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">inv_fact</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;factorial&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">max_n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fact</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">MInt::one</span>(); <span class="ident">max_n</span> <span class="op">+</span> <span class="number">1</span>];
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inv_fact</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">MInt::one</span>(); <span class="ident">max_n</span> <span class="op">+</span> <span class="number">1</span>];
@@ -280,13 +307,19 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MInt&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="ident">fact</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">M::mod_into</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">fact</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">MInt</span>::<span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="ident">::one</span>(); <span class="ident">p</span>];
@@ -297,7 +330,10 @@
     }
 }
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">SmallModMemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
         <span class="ident">Default::default</span>()
     }
@@ -329,15 +365,21 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PowPrec&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MInt&quot;</span>))]</span>
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PowPrec&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>))]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PowPrec</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PowPrec</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="ident">sqn</span>: <span class="ident">usize</span>,
     <span class="ident">p0</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">p1</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PowPrec&quot;</span>)]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">PowPrec</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">PowPrec</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">a</span>: <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">sqn</span> <span class="op">=</span> (<span class="ident">M::mod_into</span>() <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">p0</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">sqn</span>);

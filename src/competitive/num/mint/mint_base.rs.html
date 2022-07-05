@@ -366,6 +366,45 @@
 <span id="334">334</span>
 <span id="335">335</span>
 <span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -376,6 +415,45 @@
     <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">AddAssign</span>, <span class="ident">Div</span>, <span class="ident">DivAssign</span>, <span class="ident">Mul</span>, <span class="ident">MulAssign</span>, <span class="ident">Neg</span>, <span class="ident">Sub</span>, <span class="ident">SubAssign</span>},
     <span class="ident">str::FromStr</span>,
 };
+
+<span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntBase</span>,
+{
+    <span class="ident">x</span>: <span class="ident">M::Inner</span>,
+    <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">M</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span><span class="op">&gt;</span>: <span class="ident">MIntBase</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">T</span>) -&gt; <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span>) -&gt; <span class="ident">T</span>;
+    <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">T</span>;
+}
+
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntBase</span> {
+    <span class="kw">type</span> <span class="ident">Inner</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Hash</span>;
+    <span class="kw">fn</span> <span class="ident">get_mod</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_zero</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_one</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_add</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_sub</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_mul</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_div</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_neg</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_inv</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">mod_pow</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">x</span>, <span class="kw-2">mut</span> <span class="ident">y</span>, <span class="kw-2">mut</span> <span class="ident">z</span>) <span class="op">=</span> (<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident"><span class="self">Self</span>::mod_one</span>());
+        <span class="kw">while</span> <span class="ident">y</span> <span class="op">&gt;</span> <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">y</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
+                <span class="ident">z</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mod_mul</span>(<span class="ident">z</span>, <span class="ident">x</span>);
+            }
+            <span class="ident">x</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mod_mul</span>(<span class="ident">x</span>, <span class="ident">x</span>);
+            <span class="ident">y</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
+        }
+        <span class="ident">z</span>
+    }
+}
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
 <span class="kw">where</span>

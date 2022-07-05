@@ -88,20 +88,33 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
 </pre><pre class="rust"><code><span class="doccomment">//! mathematical datas</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num</span>::{<span class="ident">One</span>, <span class="ident">Zero</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num</span>::{<span class="ident">montgomery</span>, <span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools</span>::{<span class="ident">AssociatedValue</span>, <span class="ident">PartialIgnoredOrd</span>};
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;berlekamp_massey&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">berlekamp_massey::berlekamp_massey</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">factorial</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">fast_fourier_transform</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">formal_power_series</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;FormalPowerSeries&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">formal_power_series</span>::{
+    <span class="ident">FormalPowerSeries</span>, <span class="ident">FormalPowerSeriesCoefficient</span>, <span class="ident">FormalPowerSeriesCoefficientSqrt</span>, <span class="ident">Fps</span>,
+    <span class="ident">Fps998244353</span>,
+};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">gcd</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">lagrange_interpolation</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;lagrange_interpolation&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">lagrange_interpolation</span>::{<span class="ident">lagrange_interpolation</span>, <span class="ident">lagrange_interpolation_polynomial</span>};
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Matrix&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">matrix::Matrix</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">number_theoretic_transform</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;NumberTheoreticTransform&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">number_theoretic_transform</span>::{<span class="ident">Convolve</span>, <span class="ident">Convolve998244353</span>, <span class="ident">ConvolveSteps</span>, <span class="ident">MIntConvolve</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">nums</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polynomial</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">prime</span>::<span class="kw-2">*</span>;
@@ -115,10 +128,8 @@
     <span class="ident">nightly</span>,
     <span class="ident">codesnip::entry</span>(
         <span class="string">&quot;FormalPowerSeries&quot;</span>,
-        <span class="ident">inline</span>,
         <span class="ident">include</span>(
             <span class="string">&quot;NumberTheoreticTransform&quot;</span>,
-            <span class="string">&quot;MInt&quot;</span>,
             <span class="string">&quot;montgomery&quot;</span>,
             <span class="string">&quot;mod_sqrt&quot;</span>,
             <span class="string">&quot;factorial&quot;</span>,
@@ -129,17 +140,18 @@
 )]</span>
 <span class="kw">mod</span> <span class="ident">formal_power_series</span>;
 <span class="kw">mod</span> <span class="ident">gcd</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(
+    <span class="ident">nightly</span>,
+    <span class="ident">codesnip::entry</span>(<span class="string">&quot;lagrange_interpolation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;factorial&quot;</span>, <span class="string">&quot;MIntBase&quot;</span>))
+)]</span>
 <span class="kw">mod</span> <span class="ident">lagrange_interpolation</span>;
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Matrix&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;zero_one&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">matrix</span>;
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;mod_sqrt&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>)))]</span>
 <span class="kw">mod</span> <span class="ident">mod_sqrt</span>;
 <span class="attribute">#[<span class="ident">cfg_attr</span>(
     <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(
-        <span class="string">&quot;NumberTheoreticTransform&quot;</span>,
-        <span class="ident">inline</span>,
-        <span class="ident">include</span>(<span class="string">&quot;MInt&quot;</span>, <span class="string">&quot;montgomery&quot;</span>, <span class="string">&quot;AssociatedValue&quot;</span>)
-    )
+    <span class="ident">codesnip::entry</span>(<span class="string">&quot;NumberTheoreticTransform&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;montgomery&quot;</span>, <span class="string">&quot;AssociatedValue&quot;</span>))
 )]</span>
 <span class="kw">mod</span> <span class="ident">number_theoretic_transform</span>;
 <span class="kw">mod</span> <span class="ident">nums</span>;

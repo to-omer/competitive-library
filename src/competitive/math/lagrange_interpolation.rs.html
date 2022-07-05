@@ -115,10 +115,15 @@
 <span id="83">83</span>
 <span id="84">84</span>
 <span id="85">85</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::math::factorial::MemorizedFactorial</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num</span>::{<span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">MemorizedFactorial</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntBase</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>], <span class="ident">y</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>], <span class="ident">t</span>: <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) -&gt; <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>], <span class="ident">y</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>], <span class="ident">t</span>: <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) -&gt; <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntBase</span>,
+{
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">len</span>();
     <span class="macro">debug_assert!</span>(<span class="ident">n</span> <span class="op">==</span> <span class="ident">y</span>.<span class="ident">len</span>());
     <span class="ident">x</span>.<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">==</span> <span class="ident">t</span>).<span class="ident">map_or_else</span>(
@@ -136,8 +141,10 @@
     )
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;lagrange_interpolation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;factorial&quot;</span>, <span class="string">&quot;MInt&quot;</span>))]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MemorizedFactorial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+{
     <span class="doccomment">/// Lagrange interpolation with (i, f(i)) (0 &lt;= i &lt;= n)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">F</span>, <span class="ident">t</span>: <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) -&gt; <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
     <span class="kw">where</span>
@@ -160,11 +167,10 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="ident">include</span>(<span class="string">&quot;MInt&quot;</span>))]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation_polynomial</span><span class="op">&lt;</span><span class="ident">M</span>: <span class="ident">MIntBase</span><span class="op">&gt;</span>(
-    <span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>],
-    <span class="ident">y</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>],
-) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation_polynomial</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>], <span class="ident">y</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>]) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">M</span>: <span class="ident">MIntBase</span>,
+{
     <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">x</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>;
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dp</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">MInt::zero</span>(); <span class="ident">n</span> <span class="op">+</span> <span class="number">2</span>];
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ndp</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">MInt::zero</span>(); <span class="ident">n</span> <span class="op">+</span> <span class="number">2</span>];
