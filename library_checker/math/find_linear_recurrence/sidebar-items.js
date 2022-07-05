@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["find_linear_recurrence","✅  AC  97ms"]]});
+initSidebarItems({"fn":[["find_linear_recurrence","✅  AC  140ms"]]});
