@@ -1,7 +1,7 @@
 //! modint
 
 use crate::{
-    num::{One, Zero},
+    num::{BarrettReduction, One, Zero},
     tools::IterScan,
 };
 
@@ -11,7 +11,10 @@ pub use mint_base::{MInt, MIntBase, MIntConvert};
 #[cfg_attr(nightly, codesnip::entry("MIntBase"))]
 mod mint_base;
 
-#[cfg_attr(nightly, codesnip::entry("MInt", include("MIntBase")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("MInt", include("MIntBase", "BarrettReduction"))
+)]
 pub mod mint_basic;
 
 #[cfg_attr(nightly, codesnip::entry("montgomery", include("MIntBase")))]

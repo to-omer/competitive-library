@@ -1,9 +1,10 @@
 use super::*;
+use std::{cell::UnsafeCell, mem::swap};
 
 #[macro_export]
 macro_rules! define_basic_mintbase {
     ($name:ident, $m:expr, $basety:ty, $signedty:ty, $upperty:ty, [$($unsigned:ty),*], [$($signed:ty),*]) => {
-        pub struct $name;
+        pub enum $name {}
         impl MIntBase for $name {
             type Inner = $basety;
             #[inline]
@@ -38,7 +39,8 @@ macro_rules! define_basic_mintbase {
             }
             #[inline]
             fn mod_mul(x: Self::Inner, y: Self::Inner) -> Self::Inner {
-                (x as $upperty * y as $upperty % Self::get_mod() as $upperty) as $basety
+                // (x as $upperty * y as $upperty % Self::get_mod() as $upperty) as $basety
+                $name::rem(x as $upperty * y as $upperty) as $basety
             }
             #[inline]
             fn mod_div(x: Self::Inner, y: Self::Inner) -> Self::Inner {
@@ -60,8 +62,8 @@ macro_rules! define_basic_mintbase {
                     let k = b / a;
                     x -= k * u;
                     b -= k * a;
-                    std::mem::swap(&mut x, &mut u);
-                    std::mem::swap(&mut b, &mut a);
+                    swap(&mut x, &mut u);
+                    swap(&mut b, &mut a);
                 }
                 (if x < 0 { x + p } else { x }) as _
             }
@@ -101,6 +103,7 @@ macro_rules! define_basic_mintbase {
         })*
     };
 }
+
 #[macro_export]
 macro_rules! define_basic_mint32 {
     ($([$name:ident, $m:expr, $mint_name:ident]),*) => {
@@ -113,41 +116,72 @@ macro_rules! define_basic_mint32 {
             [u32, u64, u128, usize],
             [i32, i64, i128, isize]
         );
+        impl $name {
+            fn rem(x: u64) -> u64 {
+                x % $m
+            }
+        }
         pub type $mint_name = MInt<$name>;)*
     };
 }
+
+thread_local!(static DYN_MODULUS_U32: UnsafeCell<BarrettReduction<u64>> = UnsafeCell::new(BarrettReduction::<u64>::new(1_000_000_007)));
+impl DynModuloU32 {
+    pub fn set_mod(m: u32) {
+        DYN_MODULUS_U32
+            .with(|cell| unsafe { *cell.get() = BarrettReduction::<u64>::new(m as u64) });
+    }
+    fn rem(x: u64) -> u64 {
+        DYN_MODULUS_U32.with(|cell| unsafe { (*cell.get()).rem(x) })
+    }
+}
+impl DynMIntU32 {
+    pub fn set_mod(m: u32) {
+        DynModuloU32::set_mod(m)
+    }
+}
+
+thread_local!(static DYN_MODULUS_U64: UnsafeCell<BarrettReduction<u128>> = UnsafeCell::new(BarrettReduction::<u128>::new(1_000_000_007)));
+impl DynModuloU64 {
+    pub fn set_mod(m: u64) {
+        DYN_MODULUS_U64
+            .with(|cell| unsafe { *cell.get() = BarrettReduction::<u128>::new(m as u128) })
+    }
+    fn rem(x: u128) -> u128 {
+        DYN_MODULUS_U64.with(|cell| unsafe { (*cell.get()).rem(x) })
+    }
+}
+impl DynMIntU64 {
+    pub fn set_mod(m: u64) {
+        DynModuloU64::set_mod(m)
+    }
+}
+
 define_basic_mint32!(
     [Modulo998244353, 998_244_353, MInt998244353],
     [Modulo1000000007, 1_000_000_007, MInt1000000007],
-    [Modulo1000000009, 1_000_000_009, MInt1000000009],
-    [
-        DynModuloU32,
-        DYN_MODULUS_U32.with(|cell| unsafe { *cell.get() }),
-        DynMIntU32
-    ]
+    [Modulo1000000009, 1_000_000_009, MInt1000000009]
 );
 
-thread_local!(static DYN_MODULUS_U32: std::cell::UnsafeCell<u32> = std::cell::UnsafeCell::new(1_000_000_007));
-impl DynModuloU32 {
-    pub fn set_mod(m: u32) {
-        DYN_MODULUS_U32.with(|cell| unsafe { *cell.get() = m })
-    }
-}
-thread_local!(static DYN_MODULUS_U64: std::cell::UnsafeCell<u64> = std::cell::UnsafeCell::new(1_000_000_007));
+define_basic_mintbase!(
+    DynModuloU32,
+    DYN_MODULUS_U32.with(|cell| unsafe { (*cell.get()).get_mod() as u32 }),
+    u32,
+    i32,
+    u64,
+    [u32, u64, u128, usize],
+    [i32, i64, i128, isize]
+);
+pub type DynMIntU32 = MInt<DynModuloU32>;
 define_basic_mintbase!(
     DynModuloU64,
-    DYN_MODULUS_U64.with(|cell| unsafe { *cell.get() }),
+    DYN_MODULUS_U64.with(|cell| unsafe { (*cell.get()).get_mod() as u64 }),
     u64,
     i64,
     u128,
     [u64, u128, usize],
     [i64, i128, isize]
 );
-impl DynModuloU64 {
-    pub fn set_mod(m: u64) {
-        DYN_MODULUS_U64.with(|cell| unsafe { *cell.get() = m })
-    }
-}
 pub type DynMIntU64 = MInt<DynModuloU64>;
 
 pub struct Modulo2;
@@ -231,12 +265,13 @@ mod tests {
     use crate::tools::Xorshift;
 
     macro_rules! test_mint {
-        ($test_name:ident $mint:ident) => {
+        ($test_name:ident $mint:ident $($m:expr)?) => {
             #[test]
             fn $test_name() {
                 let mut rng = Xorshift::time();
                 const Q: usize = 10_000;
                 for _ in 0..Q {
+                    $($mint::set_mod(rng.gen(..$m));)?
                     let a = $mint::new_unchecked(rng.gen(1..$mint::get_mod()));
                     let x = a.inv();
                     assert!(x.inner() < $mint::get_mod());

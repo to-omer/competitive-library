@@ -226,17 +226,11 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        num::{
-            mint_basic::{DynMIntU32, DynModuloU32},
-            MIntBase,
-        },
-        rand_value,
-        tools::Xorshift,
-    };
-    impl crate::tools::RandomSpec<DynMIntU32> for DynModuloU32 {
+    use crate::{num::mint_basic::DynMIntU32, rand_value, tools::{Xorshift, RandomSpec}};
+    struct D;
+    impl RandomSpec<DynMIntU32> for D {
         fn rand(&self, rng: &mut Xorshift) -> DynMIntU32 {
-            DynMIntU32::new_unchecked(rng.gen(..DynModuloU32::get_mod()))
+            DynMIntU32::new_unchecked(rng.gen(..DynMIntU32::get_mod()))
         }
     }
 
@@ -247,9 +241,9 @@ mod tests {
         let ps = vec![2, 3, 1_000_000_007];
         for _ in 0..Q {
             let m = ps[rng.gen(..ps.len())];
-            DynModuloU32::set_mod(m);
+            DynMIntU32::set_mod(m);
             let n = rng.gen(2..=30);
-            let mat = Matrix::from_vec(rand_value!(rng, [[DynModuloU32; n]; n]));
+            let mat = Matrix::from_vec(rand_value!(rng, [[D; n]; n]));
             let rank = mat.clone().rank();
             let inv = mat.inverse();
             assert_eq!(rank == n, inv.is_some());
