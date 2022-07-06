@@ -226,7 +226,11 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{num::mint_basic::DynMIntU32, rand_value, tools::{Xorshift, RandomSpec}};
+    use crate::{
+        num::mint_basic::DynMIntU32,
+        rand_value,
+        tools::{RandomSpec, Xorshift},
+    };
     struct D;
     impl RandomSpec<DynMIntU32> for D {
         fn rand(&self, rng: &mut Xorshift) -> DynMIntU32 {
