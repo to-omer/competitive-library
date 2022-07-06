@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["enumerate_primes","✅  AC  2192ms"]]});
+initSidebarItems({"fn":[["enumerate_primes","✅  AC  2095ms"]]});

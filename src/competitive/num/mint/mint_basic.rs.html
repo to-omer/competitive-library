@@ -282,12 +282,48 @@
 <span id="250">250</span>
 <span id="251">251</span>
 <span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cell::UnsafeCell</span>, <span class="ident">mem::swap</span>};
 
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">define_basic_mintbase</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">basety</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">signedty</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upperty</span>:<span class="ident">ty</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">unsigned</span>:<span class="ident">ty</span>),<span class="kw-2">*</span>], [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">signed</span>:<span class="ident">ty</span>),<span class="kw-2">*</span>]) =&gt; {
-        <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>;
+        <span class="kw">pub</span> <span class="kw">enum</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
         <span class="kw">impl</span> <span class="ident">MIntBase</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
             <span class="kw">type</span> <span class="ident">Inner</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">basety</span>;
             <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -322,7 +358,8 @@
             }
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="ident">mod_mul</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-                (<span class="ident">x</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upperty</span> <span class="op">*</span> <span class="ident">y</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upperty</span> <span class="op">%</span> <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upperty</span>) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">basety</span>
+                <span class="comment">// (x as $upperty * y as $upperty % Self::get_mod() as $upperty) as $basety</span>
+                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name::rem</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upperty</span> <span class="op">*</span> <span class="ident">y</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upperty</span>) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">basety</span>
             }
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="ident">mod_div</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
@@ -344,8 +381,8 @@
                     <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">/</span> <span class="ident">a</span>;
                     <span class="ident">x</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">u</span>;
                     <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">a</span>;
-                    <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">u</span>);
-                    <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>, <span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
+                    <span class="ident">swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">u</span>);
+                    <span class="ident">swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>, <span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
                 }
                 (<span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> { <span class="ident">x</span> <span class="op">+</span> <span class="ident">p</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="kw">_</span>
             }
@@ -385,6 +422,7 @@
         })<span class="op">*</span>
     };
 }
+
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">define_basic_mint32</span> {
     ($([<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint_name</span>:<span class="ident">ident</span>]),<span class="kw-2">*</span>) =&gt; {
@@ -397,41 +435,72 @@
             [<span class="ident">u32</span>, <span class="ident">u64</span>, <span class="ident">u128</span>, <span class="ident">usize</span>],
             [<span class="ident">i32</span>, <span class="ident">i64</span>, <span class="ident">i128</span>, <span class="ident">isize</span>]
         );
+        <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
+            <span class="kw">fn</span> <span class="ident">rem</span>(<span class="ident">x</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
+                <span class="ident">x</span> <span class="op">%</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>
+            }
+        }
         <span class="kw">pub</span> <span class="kw">type</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint_name</span> <span class="op">=</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&gt;</span>;)<span class="op">*</span>
     };
 }
+
+<span class="macro">thread_local!</span>(<span class="kw">static</span> <span class="ident">DYN_MODULUS_U32</span>: <span class="ident">UnsafeCell</span><span class="op">&lt;</span><span class="ident">BarrettReduction</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">UnsafeCell::new</span>(<span class="ident">BarrettReduction</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="number">1_000_000_007</span>)));
+<span class="kw">impl</span> <span class="ident">DynModuloU32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_mod</span>(<span class="ident">m</span>: <span class="ident">u32</span>) {
+        <span class="ident">DYN_MODULUS_U32</span>
+            .<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>() <span class="op">=</span> <span class="ident">BarrettReduction</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">m</span> <span class="kw">as</span> <span class="ident">u64</span>) });
+    }
+    <span class="kw">fn</span> <span class="ident">rem</span>(<span class="ident">x</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
+        <span class="ident">DYN_MODULUS_U32</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>()).<span class="ident">rem</span>(<span class="ident">x</span>) })
+    }
+}
+<span class="kw">impl</span> <span class="ident">DynMIntU32</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_mod</span>(<span class="ident">m</span>: <span class="ident">u32</span>) {
+        <span class="ident">DynModuloU32::set_mod</span>(<span class="ident">m</span>)
+    }
+}
+
+<span class="macro">thread_local!</span>(<span class="kw">static</span> <span class="ident">DYN_MODULUS_U64</span>: <span class="ident">UnsafeCell</span><span class="op">&lt;</span><span class="ident">BarrettReduction</span><span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">UnsafeCell::new</span>(<span class="ident">BarrettReduction</span>::<span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="number">1_000_000_007</span>)));
+<span class="kw">impl</span> <span class="ident">DynModuloU64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_mod</span>(<span class="ident">m</span>: <span class="ident">u64</span>) {
+        <span class="ident">DYN_MODULUS_U64</span>
+            .<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>() <span class="op">=</span> <span class="ident">BarrettReduction</span>::<span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">m</span> <span class="kw">as</span> <span class="ident">u128</span>) })
+    }
+    <span class="kw">fn</span> <span class="ident">rem</span>(<span class="ident">x</span>: <span class="ident">u128</span>) -&gt; <span class="ident">u128</span> {
+        <span class="ident">DYN_MODULUS_U64</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>()).<span class="ident">rem</span>(<span class="ident">x</span>) })
+    }
+}
+<span class="kw">impl</span> <span class="ident">DynMIntU64</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_mod</span>(<span class="ident">m</span>: <span class="ident">u64</span>) {
+        <span class="ident">DynModuloU64::set_mod</span>(<span class="ident">m</span>)
+    }
+}
+
 <span class="macro">define_basic_mint32!</span>(
     [<span class="ident">Modulo998244353</span>, <span class="number">998_244_353</span>, <span class="ident">MInt998244353</span>],
     [<span class="ident">Modulo1000000007</span>, <span class="number">1_000_000_007</span>, <span class="ident">MInt1000000007</span>],
-    [<span class="ident">Modulo1000000009</span>, <span class="number">1_000_000_009</span>, <span class="ident">MInt1000000009</span>],
-    [
-        <span class="ident">DynModuloU32</span>,
-        <span class="ident">DYN_MODULUS_U32</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>() }),
-        <span class="ident">DynMIntU32</span>
-    ]
+    [<span class="ident">Modulo1000000009</span>, <span class="number">1_000_000_009</span>, <span class="ident">MInt1000000009</span>]
 );
 
-<span class="macro">thread_local!</span>(<span class="kw">static</span> <span class="ident">DYN_MODULUS_U32</span>: <span class="ident">std::cell::UnsafeCell</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::cell::UnsafeCell::new</span>(<span class="number">1_000_000_007</span>));
-<span class="kw">impl</span> <span class="ident">DynModuloU32</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_mod</span>(<span class="ident">m</span>: <span class="ident">u32</span>) {
-        <span class="ident">DYN_MODULUS_U32</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>() <span class="op">=</span> <span class="ident">m</span> })
-    }
-}
-<span class="macro">thread_local!</span>(<span class="kw">static</span> <span class="ident">DYN_MODULUS_U64</span>: <span class="ident">std::cell::UnsafeCell</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::cell::UnsafeCell::new</span>(<span class="number">1_000_000_007</span>));
+<span class="macro">define_basic_mintbase!</span>(
+    <span class="ident">DynModuloU32</span>,
+    <span class="ident">DYN_MODULUS_U32</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>()).<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">u32</span> }),
+    <span class="ident">u32</span>,
+    <span class="ident">i32</span>,
+    <span class="ident">u64</span>,
+    [<span class="ident">u32</span>, <span class="ident">u64</span>, <span class="ident">u128</span>, <span class="ident">usize</span>],
+    [<span class="ident">i32</span>, <span class="ident">i64</span>, <span class="ident">i128</span>, <span class="ident">isize</span>]
+);
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DynMIntU32</span> <span class="op">=</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">DynModuloU32</span><span class="op">&gt;</span>;
 <span class="macro">define_basic_mintbase!</span>(
     <span class="ident">DynModuloU64</span>,
-    <span class="ident">DYN_MODULUS_U64</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>() }),
+    <span class="ident">DYN_MODULUS_U64</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { (<span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>()).<span class="ident">get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span> }),
     <span class="ident">u64</span>,
     <span class="ident">i64</span>,
     <span class="ident">u128</span>,
     [<span class="ident">u64</span>, <span class="ident">u128</span>, <span class="ident">usize</span>],
     [<span class="ident">i64</span>, <span class="ident">i128</span>, <span class="ident">isize</span>]
 );
-<span class="kw">impl</span> <span class="ident">DynModuloU64</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_mod</span>(<span class="ident">m</span>: <span class="ident">u64</span>) {
-        <span class="ident">DYN_MODULUS_U64</span>.<span class="ident">with</span>(<span class="op">|</span><span class="ident">cell</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="kw-2">*</span><span class="ident">cell</span>.<span class="ident">get</span>() <span class="op">=</span> <span class="ident">m</span> })
-    }
-}
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">DynMIntU64</span> <span class="op">=</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">DynModuloU64</span><span class="op">&gt;</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Modulo2</span>;
@@ -515,12 +584,13 @@
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools::Xorshift</span>;
 
     <span class="macro">macro_rules!</span> <span class="ident">test_mint</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">test_name</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint</span>:<span class="ident">ident</span>) =&gt; {
+        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">test_name</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>:<span class="ident">expr</span>)<span class="question-mark">?</span>) =&gt; {
             <span class="attribute">#[<span class="ident">test</span>]</span>
             <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">test_name</span>() {
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
                 <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10_000</span>;
                 <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
+                    $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint::set_mod</span>(<span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>));)<span class="question-mark">?</span>
                     <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint::new_unchecked</span>(<span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint::get_mod</span>()));
                     <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">inv</span>();
                     <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">inner</span>() <span class="op">&lt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint::get_mod</span>());
