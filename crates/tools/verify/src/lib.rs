@@ -2,6 +2,7 @@ use chrono::{DateTime, FixedOffset, SecondsFormat, Utc};
 use lazy_static::lazy_static;
 use serde::{de::DeserializeOwned, Deserialize};
 use std::{
+    env::current_dir,
     ffi::OsStr,
     fmt::{self, Display, Formatter},
     fs::File,
@@ -228,6 +229,9 @@ pub fn get_workspace_root() -> Option<PathBuf> {
         if let Ok(root) = serde_json::from_slice::<WorkspaceRoot>(&output.stdout) {
             return Some(PathBuf::from(root.workspace_root));
         }
+    } else {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        log::info!("{}", stderr);
     }
     None
 }
@@ -314,7 +318,7 @@ impl<'t> VerifyConfig<'t> {
         let path = if let Some(root) = get_workspace_root() {
             root.join(path)
         } else {
-            path
+            current_dir()?.join(path)
         };
         log::info!("emit results to {}", path.display());
         File::create(path)?.write_all(buf)
