@@ -316,6 +316,7 @@ impl<'t> VerifyConfig<'t> {
         } else {
             path
         };
+        log::info!("emit results to {}", path.display());
         File::create(path)?.write_all(buf)
     }
     pub fn finalize(&self, result: OjResult<VerifyResults>) -> OjResult<()> {
