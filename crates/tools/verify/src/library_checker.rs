@@ -44,6 +44,16 @@ impl Display for CheckerBinaryBroken {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+struct CheckerBinaryNotFound;
+
+impl Error for CheckerBinaryNotFound {}
+impl Display for CheckerBinaryNotFound {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("checker binary not found")
+    }
+}
+
 impl CheckerBinary {
     pub fn check(
         &self,
@@ -187,6 +197,9 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
     let mut checker = problem.problemdir;
     checker.push("checker");
     checker.set_extension(if OS != "windows" { "" } else { "exe" });
+    if !checker.is_file() {
+        return Err(CheckerBinaryNotFound)?;
+    }
 
     Ok((cases, CheckerBinary { checker }))
 }
