@@ -194,9 +194,10 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         .arg(problem.problemdir.join("info.toml"))
         .output()?;
 
-    let mut checker = problem.problemdir;
-    checker.push("checker");
-    checker.set_extension(if OS != "windows" { "" } else { "exe" });
+    let checker = problem
+        .problemdir
+        .join("checker")
+        .with_extension(if OS != "windows" { "" } else { "exe" });
     if !checker.is_file() {
         return Err(CheckerBinaryNotFound)?;
     }
