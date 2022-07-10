@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["line_add_get_min","❌  IE  429ms"]]});
+initSidebarItems({"fn":[["line_add_get_min","❌  IE  378ms"]]});

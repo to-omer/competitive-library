@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["scc","❌  IE  149ms"]]});
+initSidebarItems({"fn":[["scc","❌  IE  242ms"]]});

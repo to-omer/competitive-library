@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["vertex_set_path_composite","❌  IE  206ms"]]});
+initSidebarItems({"fn":[["vertex_set_path_composite","❌  IE  172ms"]]});

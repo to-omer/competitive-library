@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["unionfind","❌  IE  16ms"]]});
+initSidebarItems({"fn":[["unionfind","❌  IE  18ms"]]});

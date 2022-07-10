@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["log_of_formal_power_series","❌  IE  213ms"]]});
+initSidebarItems({"fn":[["log_of_formal_power_series","❌  IE  196ms"]]});

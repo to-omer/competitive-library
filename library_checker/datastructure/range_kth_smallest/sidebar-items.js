@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["range_kth_smallest","❌  IE  260ms"]]});
+initSidebarItems({"fn":[["range_kth_smallest","❌  IE  320ms"]]});

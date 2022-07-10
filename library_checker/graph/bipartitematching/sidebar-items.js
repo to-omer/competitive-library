@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["bipartitematching","❌  IE  87ms"],["bipartitematching_dinic","❌  IE  940ms"]]});
+initSidebarItems({"fn":[["bipartitematching","❌  IE  95ms"],["bipartitematching_dinic","❌  IE  1263ms"]]});
