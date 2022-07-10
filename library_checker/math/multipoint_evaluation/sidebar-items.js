@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["multipoint_evaluation","❌"]]});
+initSidebarItems({"fn":[["multipoint_evaluation","✅  AC  686ms"]]});
