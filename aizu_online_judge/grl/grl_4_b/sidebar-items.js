@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_4_b","✅  AC  3ms"],["judge_grl_4_b",""]]});
+initSidebarItems({"fn":[["grl_4_b","✅  AC  2ms"],["judge_grl_4_b",""]]});
