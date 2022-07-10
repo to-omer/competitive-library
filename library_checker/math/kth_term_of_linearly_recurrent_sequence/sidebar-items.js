@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["kth_term_of_linearly_recurrent_sequence","✅  AC  1525ms"]]});
+initSidebarItems({"fn":[["kth_term_of_linearly_recurrent_sequence","✅  AC  1498ms"]]});
