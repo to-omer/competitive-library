@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["multipoint_evaluation","❌  IE  588ms"]]});
+initSidebarItems({"fn":[["multipoint_evaluation","❌"]]});

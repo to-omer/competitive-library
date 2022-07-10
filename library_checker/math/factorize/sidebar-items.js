@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["factorize","❌  IE  316ms"]]});
+initSidebarItems({"fn":[["factorize","❌"]]});

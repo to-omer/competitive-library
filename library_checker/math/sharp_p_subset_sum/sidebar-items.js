@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["sharp_p_subset_sum","❌  IE  491ms"]]});
+initSidebarItems({"fn":[["sharp_p_subset_sum","❌"]]});

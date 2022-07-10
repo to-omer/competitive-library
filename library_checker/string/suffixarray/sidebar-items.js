@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["suffixarray","❌  IE  1969ms"]]});
+initSidebarItems({"fn":[["suffixarray","❌"]]});

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["convolution_mod","❌  IE  156ms"]]});
+initSidebarItems({"fn":[["convolution_mod","❌"]]});

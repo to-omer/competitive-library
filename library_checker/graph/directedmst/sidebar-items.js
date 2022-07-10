@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["directedmst","❌  IE  136ms"]]});
+initSidebarItems({"fn":[["directedmst","❌"]]});

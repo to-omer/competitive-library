@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["vertex_add_subtree_sum","❌  IE  219ms"]]});
+initSidebarItems({"fn":[["vertex_add_subtree_sum","❌"]]});

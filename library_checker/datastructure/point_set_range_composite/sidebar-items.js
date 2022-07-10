@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["point_set_range_composite","❌  IE  208ms"]]});
+initSidebarItems({"fn":[["point_set_range_composite","❌"]]});

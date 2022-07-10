@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["two_sat","❌  IE  230ms"]]});
+initSidebarItems({"fn":[["two_sat","❌"]]});

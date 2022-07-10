@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["aplusb","❌  IE  0ms"]]});
+initSidebarItems({"fn":[["aplusb","❌"]]});

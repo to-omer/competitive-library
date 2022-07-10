@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["kth_term_of_linearly_recurrent_sequence","❌  IE  1572ms"]]});
+initSidebarItems({"fn":[["kth_term_of_linearly_recurrent_sequence","❌"]]});

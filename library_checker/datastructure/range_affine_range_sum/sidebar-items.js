@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["range_affine_range_sum","❌  IE  811ms"]]});
+initSidebarItems({"fn":[["range_affine_range_sum","❌"]]});
