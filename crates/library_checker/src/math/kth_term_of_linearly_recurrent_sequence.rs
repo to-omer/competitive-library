@@ -5,7 +5,7 @@ pub use competitive::{
     num::{montgomery::MInt998244353, One},
 };
 
-#[verify::verify("https://judge.yosupo.jp/problem/kth_term_of_linearly_recurrent_sequence")]
+#[verify::library_checker("kth_term_of_linearly_recurrent_sequence")]
 pub fn kth_term_of_linearly_recurrent_sequence(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

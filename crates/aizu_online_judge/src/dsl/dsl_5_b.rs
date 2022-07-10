@@ -1,6 +1,6 @@
 use competitive::prelude::*;
 
-#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/5/DSL_5_B")]
+#[verify::aizu_online_judge("DSL_5_B")]
 pub fn dsl_5_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

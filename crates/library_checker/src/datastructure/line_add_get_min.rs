@@ -2,7 +2,7 @@
 pub use competitive::data_structure::LineSet;
 use competitive::prelude::*;
 
-#[verify::verify("https://judge.yosupo.jp/problem/line_add_get_min")]
+#[verify::library_checker("line_add_get_min")]
 pub fn line_add_get_min(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

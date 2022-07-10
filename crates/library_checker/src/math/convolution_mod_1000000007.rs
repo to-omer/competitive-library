@@ -5,7 +5,7 @@ pub use competitive::{
     num::mint_basic::{MInt1000000007, Modulo1000000007},
 };
 
-#[verify::verify("https://judge.yosupo.jp/problem/convolution_mod_1000000007")]
+#[verify::library_checker("convolution_mod_1000000007")]
 pub fn convolution_mod_1000000007(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

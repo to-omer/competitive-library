@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{math::Fps998244353, num::montgomery::MInt998244353};
 
-#[verify::verify("https://judge.yosupo.jp/problem/sqrt_of_formal_power_series")]
+#[verify::library_checker("sqrt_of_formal_power_series")]
 pub fn sqrt_of_formal_power_series(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

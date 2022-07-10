@@ -2,7 +2,7 @@
 pub use competitive::combinatorial_optimization::largest_rectangle_in_grid;
 use competitive::prelude::*;
 
-#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/7/DPL/3/DPL_3_B")]
+#[verify::aizu_online_judge("DPL_3_B")]
 pub fn dpl_3_b(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

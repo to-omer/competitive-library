@@ -2,7 +2,7 @@
 pub use competitive::graph::DirectedGraphScanner;
 use competitive::prelude::*;
 
-#[verify::verify("https://onlinejudge.u-aizu.ac.jp/courses/library/5/GRL/4/GRL_4_A")]
+#[verify::aizu_online_judge("GRL_4_A")]
 pub fn grl_4_a(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

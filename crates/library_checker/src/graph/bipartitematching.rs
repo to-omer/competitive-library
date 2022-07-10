@@ -2,7 +2,7 @@
 pub use competitive::graph::{BipartiteMatching, DinicBuilder};
 use competitive::prelude::*;
 
-#[verify::verify("https://judge.yosupo.jp/problem/bipartitematching")]
+#[verify::library_checker("bipartitematching")]
 pub fn bipartitematching_dinic(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
@@ -30,7 +30,7 @@ pub fn bipartitematching_dinic(reader: impl Read, mut writer: impl Write) {
     }
 }
 
-#[verify::verify("https://judge.yosupo.jp/problem/bipartitematching")]
+#[verify::library_checker("bipartitematching")]
 pub fn bipartitematching(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);

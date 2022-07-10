@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![allow(clippy::crate_in_macro_def)]
 
 #[codesnip::skip]
 use crate::tools::{read_stdin_all_unchecked, Scanner};

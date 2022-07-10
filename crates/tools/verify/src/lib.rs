@@ -1,222 +1,34 @@
+use self::library_checker::CheckerBinary;
 use chrono::{DateTime, FixedOffset, SecondsFormat, Utc};
-use lazy_static::lazy_static;
-use serde::{de::DeserializeOwned, Deserialize};
+use dirs::cache_dir;
+use reqwest::{blocking, Client};
+use serde::Deserialize;
 use std::{
-    env::current_dir,
-    ffi::OsStr,
+    borrow::Borrow,
+    env::{current_dir, temp_dir},
+    error::Error,
     fmt::{self, Display, Formatter},
     fs::File,
-    io::{self, Write},
+    io::{self, Read, Write},
     path::{Path, PathBuf},
     process::Command,
-    sync::Mutex,
     time::{Duration, Instant},
 };
 use tempfile::NamedTempFile;
-pub use verify_attr::verify;
+pub use verify_attr::{aizu_online_judge, library_checker};
 
-lazy_static! {
-    static ref OJ_API_RESOURCE: Mutex<()> = Mutex::new(());
-}
+mod aizu_online_judge;
+mod library_checker;
 
-#[derive(Clone, Debug, Deserialize)]
-pub struct OjApiResponse<R> {
-    pub status: String,
-    pub messages: Vec<String>,
-    pub result: R,
-}
+const APP_NAME: &str = "competitive-library";
 
-impl<R> OjApiResponse<R> {
-    pub fn into_result(self) -> OjResult<R> {
-        if self.status.as_str() == "ok" {
-            Ok(self.result)
-        } else {
-            Err(OjError::StrError(self.messages.join("\n")))
-        }
-    }
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct Problem {
-    pub url: String,
-    pub tests: Vec<TestCase>,
-}
-
-pub fn save_temp_file(buf: &[u8]) -> io::Result<NamedTempFile> {
+fn save_temp_file(buf: &[u8]) -> io::Result<NamedTempFile> {
     let mut file = NamedTempFile::new()?;
     file.write_all(buf)?;
     Ok(file)
 }
 
-#[derive(Clone, Debug, Deserialize)]
-pub struct TestCase {
-    pub name: String,
-    pub input: String,
-    pub output: String,
-}
-impl TestCase {
-    pub fn execute<'a, 'b>(&'a self, buf: &'b mut Vec<u8>, solve: fn(&'a [u8], &'b mut Vec<u8>)) {
-        solve(self.input.as_bytes(), buf);
-    }
-    pub fn judge_with_env(&self, result: &[u8], env: &VerifyEnv) -> VerifyStatus {
-        self.judge_with_env_inner(result, env)
-            .unwrap_or(VerifyStatus::InternalError)
-    }
-    pub fn judge_with_env_inner(&self, result: &[u8], env: &VerifyEnv) -> OjResult<VerifyStatus> {
-        match env {
-            VerifyEnv::LibraryChecker(checker) => {
-                let infile = save_temp_file(self.input.as_bytes())?;
-                let outfile = save_temp_file(self.output.as_bytes())?;
-                let resfile = save_temp_file(result)?;
-                checker.check(infile.path(), outfile.path(), resfile.path())
-            }
-            VerifyEnv::AizuOnlineJudge => Ok((self.output.as_bytes() == result).into()),
-        }
-    }
-    pub fn judge_with_judger<'a, 'b>(
-        &'a self,
-        result: &'b [u8],
-        judger: fn(&'a [u8], &'a [u8], &'b [u8]) -> bool,
-    ) -> VerifyStatus {
-        judger(self.input.as_bytes(), self.output.as_bytes(), result).into()
-    }
-    #[allow(dead_code)]
-    pub fn judge_with_eps(&self, result: &[u8], eps: f64) -> VerifyStatus {
-        match String::from_utf8(result.to_vec()) {
-            Ok(res) => {
-                let (mut it_out, mut it_res) = (
-                    self.output.split_ascii_whitespace(),
-                    res.split_ascii_whitespace(),
-                );
-                loop {
-                    return match (it_out.next(), it_res.next()) {
-                        (Some(x1), Some(x2)) => match (x1.parse::<f64>(), x2.parse::<f64>()) {
-                            (Ok(x1), Ok(x2)) => {
-                                if (x1 - x2).abs() > eps {
-                                    VerifyStatus::WrongAnswer
-                                } else {
-                                    continue;
-                                }
-                            }
-                            _ => VerifyStatus::WrongAnswer,
-                        },
-                        (None, None) => VerifyStatus::Accepted,
-                        _ => VerifyStatus::WrongAnswer,
-                    };
-                }
-            }
-            Err(_) => VerifyStatus::WrongAnswer,
-        }
-    }
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct ServiceResult {
-    pub url: String,
-    pub name: String,
-}
-
-impl ServiceResult {
-    pub fn into_service(self) -> Option<Service> {
-        Some(match self.name.as_str() {
-            "Library Checker" => Service::LibraryChecker,
-            "Aizu Online Judge" => Service::AizuOnlineJudge,
-            _ => None?,
-        })
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Service {
-    LibraryChecker,
-    AizuOnlineJudge,
-}
-impl Display for Service {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match self {
-            Service::LibraryChecker => write!(f, "Library Checker"),
-            Service::AizuOnlineJudge => write!(f, "Aizu Online Judge"),
-        }
-    }
-}
-
-pub enum OjApi {}
-impl OjApi {
-    pub fn call_with_args<R: DeserializeOwned, I, S>(args: I) -> OjResult<R>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<OsStr>,
-    {
-        let output = {
-            let _guard = OJ_API_RESOURCE.lock().unwrap();
-            Command::new(option_env!("ONLINE_JUDGE_TOOLS_API").unwrap_or("oj-api"))
-                .args(args)
-                .output()?
-        };
-        if output.status.success() {
-            let response: OjApiResponse<R> = serde_json::from_slice(&output.stdout)?;
-            response.into_result()
-        } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            log::info!("{}", stderr);
-            Err(OjError::CommandError(stderr.to_string()))
-        }
-    }
-    pub fn get_testcases(url: &str) -> OjResult<Problem> {
-        Self::call_with_args(&["get-problem", "--system", url])
-    }
-    pub fn get_service(url: &str) -> OjResult<Service> {
-        let service: ServiceResult = Self::call_with_args(&["get-service", url])?;
-        service.into_service().ok_or(OjError::UnsupportedService)
-    }
-}
-
-#[derive(Debug)]
-pub struct CheckerBinary {
-    checker: PathBuf,
-}
-impl CheckerBinary {
-    pub fn from_url(url: &str) -> OjResult<Self> {
-        let output = {
-            let _guard = OJ_API_RESOURCE.lock().unwrap();
-            Command::new("python")
-                .args(&[
-                    "-c",
-                    format!(
-                        r#"from onlinejudge import dispatch
-problem = dispatch.problem_from_url('{}')
-try: print(problem._get_problem_directory_path() / 'checker', end='')
-except Exception as e: assert False
-"#,
-                        url
-                    )
-                    .as_str(),
-                ])
-                .output()?
-        };
-        if output.status.success() {
-            let checker = PathBuf::from(String::from_utf8_lossy(&output.stdout).to_string());
-            Ok(Self { checker })
-        } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            log::info!("{}", stderr);
-            Err(OjError::CommandError(stderr.to_string()))
-        }
-    }
-    pub fn check(&self, input: &Path, output: &Path, result: &Path) -> OjResult<VerifyStatus> {
-        let output = Command::new(self.checker.as_os_str())
-            .args(&[input.as_os_str(), result.as_os_str(), output.as_os_str()])
-            .output()?;
-        match output.status.code() {
-            Some(0) => Ok(VerifyStatus::Accepted),
-            Some(1) => Ok(VerifyStatus::WrongAnswer),
-            Some(_) => Ok(VerifyStatus::InternalError),
-            None => Err(OjError::StrError("checker broken".to_string())),
-        }
-    }
-}
-
-pub fn get_workspace_root() -> Option<PathBuf> {
+fn get_workspace_root() -> Option<PathBuf> {
     #[derive(Debug, Clone, Deserialize)]
     struct WorkspaceRoot {
         workspace_root: String,
@@ -236,75 +48,203 @@ pub fn get_workspace_root() -> Option<PathBuf> {
     None
 }
 
-#[derive(Debug, thiserror::Error)]
-pub enum OjError {
-    #[error("io error: {0}")]
-    IoError(#[from] io::Error),
-    #[error("json error: {0}")]
-    JsonError(#[from] serde_json::Error),
-    #[error("utf8 error: {0}")]
-    FromUtf8Error(#[from] std::string::FromUtf8Error),
-    #[error("error: {0}")]
-    StrError(String),
-    #[error("command error: {0}")]
-    CommandError(String),
-    #[error("error: unsupported service")]
-    UnsupportedService,
-    #[error("verify failed: {0}")]
-    VerifyFailed(String),
+fn app_cache_directory() -> PathBuf {
+    let mut path = cache_dir().unwrap_or_else(temp_dir);
+    path.push(APP_NAME);
+    path
 }
 
-pub type OjResult<T> = Result<T, OjError>;
+fn build_client() -> reqwest::Result<blocking::Client> {
+    blocking::Client::builder().user_agent(APP_NAME).build()
+}
+
+fn build_async_client() -> reqwest::Result<Client> {
+    Client::builder().user_agent(APP_NAME).build()
+}
+
+async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
+    let client = build_async_client()?;
+    File::create(&file)?.write_all(client.get(&url).send().await?.bytes().await?.borrow())?;
+    Ok(())
+}
+
+#[derive(Debug, Clone)]
+pub enum Service {
+    LibraryChecker,
+    AizuOnlineJudge,
+}
+
+impl Service {
+    pub fn url(&self, problem: &str) -> String {
+        match self {
+            Service::LibraryChecker => {
+                format!("https://judge.yosupo.jp/problem/{}", problem)
+            }
+            Service::AizuOnlineJudge => {
+                format!("https://onlinejudge.u-aizu.ac.jp/problems/{}", problem)
+            }
+        }
+    }
+}
+
+impl Display for Service {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Service::LibraryChecker => write!(f, "Library Checker"),
+            Service::AizuOnlineJudge => write!(f, "Aizu Online Judge"),
+        }
+    }
+}
+
+pub type Checker = Option<CheckerBinary>;
+
+type BoxResult<T> = Result<T, Box<dyn 'static + std::error::Error>>;
+
+#[derive(Debug, Clone)]
+pub struct Problem {
+    pub service: Service,
+    pub problem: String,
+    pub tests: Vec<TestCase>,
+}
+
+#[derive(Debug, Clone)]
+pub struct TestCase {
+    pub name: String,
+    pub input: PathBuf,
+    pub output: PathBuf,
+}
+
+#[derive(Debug, Clone)]
+pub struct TestCaseRef {
+    pub case: TestCase,
+    pub input: Vec<u8>,
+    pub output: Vec<u8>,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct ProblemNotFound;
+
+impl Error for ProblemNotFound {}
+impl Display for ProblemNotFound {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("problem not found")
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+struct VerifyFailed;
+
+impl Error for VerifyFailed {}
+impl Display for VerifyFailed {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("problem not found")
+    }
+}
+
+impl TestCase {
+    pub fn load_testcase(self) -> io::Result<TestCaseRef> {
+        let mut input = vec![];
+        let mut output = vec![];
+        File::open(&self.input)?.read_to_end(&mut input)?;
+        File::open(&self.output)?.read_to_end(&mut output)?;
+        Ok(TestCaseRef {
+            case: self,
+            input,
+            output,
+        })
+    }
+}
+
+impl TestCaseRef {
+    pub fn judge_with_checker(&self, result: &[u8], checker: &Checker) -> VerifyStatus {
+        self.judge_with_checker_inner(result, checker)
+            .unwrap_or(VerifyStatus::InternalError)
+    }
+    fn judge_with_checker_inner(
+        &self,
+        result: &[u8],
+        checker: &Checker,
+    ) -> BoxResult<VerifyStatus> {
+        match checker {
+            Some(checker) => {
+                let resfile = save_temp_file(result)?;
+                checker.check(&self.case.input, &self.case.output, resfile.path())
+            }
+            None => Ok((self.output == result).into()),
+        }
+    }
+    pub fn judge_with_judger<'a, 'b>(
+        &'a self,
+        result: &'b [u8],
+        judger: fn(&'a [u8], &'a [u8], &'b [u8]) -> bool,
+    ) -> VerifyStatus {
+        judger(&self.input, &self.output, result).into()
+    }
+    #[allow(dead_code)]
+    pub fn judge_with_eps(&self, result: &[u8], eps: f64) -> VerifyStatus {
+        let out = String::from_utf8_lossy(&self.output);
+        let res = String::from_utf8_lossy(result);
+        let (mut it_out, mut it_res) = (out.split_ascii_whitespace(), res.split_ascii_whitespace());
+        loop {
+            return match (it_out.next(), it_res.next()) {
+                (Some(x1), Some(x2)) => match (x1.parse::<f64>(), x2.parse::<f64>()) {
+                    (Ok(x1), Ok(x2)) => {
+                        if (x1 - x2).abs() > eps {
+                            VerifyStatus::WrongAnswer
+                        } else {
+                            continue;
+                        }
+                    }
+                    _ => VerifyStatus::WrongAnswer,
+                },
+                (None, None) => VerifyStatus::Accepted,
+                _ => VerifyStatus::WrongAnswer,
+            };
+        }
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct VerifyConfig<'t> {
-    url: &'static str,
+    service: Service,
+    problem: &'static str,
     cur_file: &'static str,
     fn_name: &'static str,
     target: &'t str,
     start: DateTime<Utc>,
 }
+
 impl<'t> VerifyConfig<'t> {
     pub fn new(
-        url: &'static str,
+        service: Service,
+        problem: &'static str,
         cur_file: &'static str,
         fn_name: &'static str,
         target: &'t str,
     ) -> Self {
         Self {
-            url,
+            service,
+            problem,
             cur_file,
             fn_name,
             target: strip_package(target),
             start: Utc::now(),
         }
     }
-    pub fn gen_env(&self) -> OjResult<VerifyEnv> {
-        let service = OjApi::get_service(self.url)?;
-        log::info!("identify the service as `{}`", service);
-        let env = match service {
-            Service::LibraryChecker => {
-                log::info!("download checker binary");
-                let start = Instant::now();
-                let env = VerifyEnv::LibraryChecker(CheckerBinary::from_url(self.url)?);
-                log::info!(
-                    "success to download checker binary in {:.2}s",
-                    start.elapsed().as_secs_f64()
-                );
-                env
-            }
-            Service::AizuOnlineJudge => VerifyEnv::AizuOnlineJudge,
-        };
-        Ok(env)
-    }
-    pub fn get_testcases(&self) -> OjResult<Problem> {
-        log::info!("download testcases: {}", self.url);
+    pub fn get_testcases_and_checker(&self) -> BoxResult<(Vec<TestCase>, Checker)> {
+        log::info!("download testcases: {} {}", self.service, self.problem);
         let start = Instant::now();
-        let res = OjApi::get_testcases(self.url);
+        let res = match self.service {
+            Service::LibraryChecker => library_checker::get_testcases_and_checker(self.problem)
+                .map(|(cases, checker)| (cases, Some(checker))),
+            Service::AizuOnlineJudge => {
+                aizu_online_judge::get_testcases(self.problem).map(|cases| (cases, None))
+            }
+        };
         match &res {
-            Ok(problem) => log::info!(
+            Ok((cases, _)) => log::info!(
                 "success to download {} testcases in {:.2}s",
-                problem.tests.len(),
+                cases.len(),
                 start.elapsed().as_secs_f64()
             ),
             Err(_) => log::info!("failed to download testcases"),
@@ -323,7 +263,7 @@ impl<'t> VerifyConfig<'t> {
         log::info!("emit results to {}", path.display());
         File::create(path)?.write_all(buf)
     }
-    pub fn finalize(&self, result: OjResult<VerifyResults>) -> OjResult<()> {
+    pub fn finalize(&self, result: BoxResult<VerifyResults>) -> BoxResult<()> {
         if let Ok(results) = &result {
             let mut map = std::collections::BTreeMap::<_, usize>::new();
             for result in results.results.iter() {
@@ -341,11 +281,11 @@ impl<'t> VerifyConfig<'t> {
             if r.is_ac() {
                 Ok(())
             } else {
-                Err(OjError::VerifyFailed(self.fn_name.to_string()))
+                Err(VerifyFailed.into())
             }
         })
     }
-    pub fn gen_md_contents(&self, result: &OjResult<VerifyResults>) -> String {
+    pub fn gen_md_contents(&self, result: &BoxResult<VerifyResults>) -> String {
         let head = result
             .as_ref()
             .map(|r| {
@@ -406,17 +346,11 @@ problem [here]({url})
 <!-- {meta} -->
 "###,
             head = head,
-            url = self.url,
+            url = self.service.url(self.problem),
             detail = detail,
             meta = meta
         )
     }
-}
-
-#[derive(Debug)]
-pub enum VerifyEnv {
-    LibraryChecker(CheckerBinary),
-    AizuOnlineJudge,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

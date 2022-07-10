@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{math::berlekamp_massey, num::montgomery::MInt998244353};
 
-#[verify::verify("https://judge.yosupo.jp/problem/find_linear_recurrence")]
+#[verify::library_checker("find_linear_recurrence")]
 pub fn find_linear_recurrence(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
