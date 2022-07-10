@@ -189,32 +189,16 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
             }
         });
 
-    let output = Command::new("python")
+    Command::new("python")
         .arg(rootdir.join("generate.py"))
         .arg(problem.problemdir.join("info.toml"))
         .output()?;
-    log::info!(
-        "generate.py stdout: {}",
-        String::from_utf8_lossy(&output.stdout)
-    );
-    log::info!(
-        "generate.py stderr: {}",
-        String::from_utf8_lossy(&output.stderr)
-    );
 
     let checker = problem
         .problemdir
         .join("checker")
         .with_extension(if OS != "windows" { "" } else { "exe" });
     if !checker.is_file() {
-        log::info!(
-            "ls: {:?}",
-            read_dir(&problem.problemdir)
-                .unwrap()
-                .flatten()
-                .map(|e| e.path())
-                .collect::<Vec<_>>()
-        );
         return Err(CheckerBinaryNotFound)?;
     }
 
