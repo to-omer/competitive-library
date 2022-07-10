@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["zalgorithm","✅  AC  31ms"]]});
+initSidebarItems({"fn":[["zalgorithm","❌  IE  23ms"]]});

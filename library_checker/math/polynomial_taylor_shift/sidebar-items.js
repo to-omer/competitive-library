@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["polynomial_taylor_shift","✅  AC  150ms"]]});
+initSidebarItems({"fn":[["polynomial_taylor_shift","❌  IE  114ms"]]});
