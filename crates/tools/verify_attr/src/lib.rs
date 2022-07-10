@@ -131,21 +131,27 @@ macro_rules! define_verify {
                                         let name = case.name.to_string();
                                         match case.load_testcase() {
                                             ::std::result::Result::Ok(case) => {
-                                                let start = ::std::time::Instant::now();
-                                                let result = ::std::panic::catch_unwind(|| {
-                                                    let mut buf = ::std::vec::Vec::new();
-                                                    #fn_name(case.input.as_slice(), &mut buf);
-                                                    buf
-                                                });
-                                                let elapsed = start.elapsed();
-                                                let status = match result {
-                                                    ::std::result::Result::Ok(buf) => #inner,
-                                                    ::std::result::Result::Err(err) => ::verify::VerifyStatus::RuntimeError,
-                                                };
-                                                res.push(case.case.name, status, elapsed);
+                                                let mut elapseds = ::std::vec![];
+                                                loop {
+                                                    let start = ::std::time::Instant::now();
+                                                    let result = ::std::panic::catch_unwind(|| {
+                                                        let mut buf = ::std::vec::Vec::new();
+                                                        #fn_name(case.input.as_slice(), &mut buf);
+                                                        buf
+                                                    });
+                                                    elapseds.push(start.elapsed());
+                                                    if elapseds.len() >= 10 {
+                                                        let status = match result {
+                                                            ::std::result::Result::Ok(buf) => #inner,
+                                                            ::std::result::Result::Err(err) => ::verify::VerifyStatus::RuntimeError,
+                                                        };
+                                                        res.push(case.case.name, status, elapseds);
+                                                        break;
+                                                    }
+                                                }
                                             },
                                             ::std::result::Result::Err(err) => {
-                                                res.push(name, ::verify::VerifyStatus::InternalError, ::std::time::Instant::now().elapsed());
+                                                res.push(name, ::verify::VerifyStatus::InternalError, ::std::vec![]);
                                             }
                                         }
                                     }

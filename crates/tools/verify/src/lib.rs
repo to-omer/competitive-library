@@ -297,7 +297,7 @@ impl<'t> VerifyConfig<'t> {
                 } else {
                     "❌" // ❎
                 };
-                format!("{}  {}  {}ms", badge, r.status(), r.elapsed().as_millis())
+                format!("{}  {}  {}ms", badge, r.status(), r.elapsed())
             })
             .unwrap_or_else(|_| "❌".to_string());
         let detail = result
@@ -313,10 +313,8 @@ impl<'t> VerifyConfig<'t> {
                 for r in res.results.iter() {
                     buf.push_str(
                         format!(
-                            "| {} | {} | {} ms |\n",
-                            r.name,
-                            r.status,
-                            r.elapsed.as_millis()
+                            "| {} | {} | {} ± {} ms |\n",
+                            r.name, r.status, r.elapsed_mean, r.elapsed_var
                         )
                         .as_str(),
                     );
@@ -393,22 +391,28 @@ impl Display for VerifyStatus {
 pub struct VerifyResult {
     pub name: String,
     pub status: VerifyStatus,
-    pub elapsed: Duration,
-}
-
-impl VerifyResult {
-    pub fn new(name: String, status: VerifyStatus, elapsed: Duration) -> Self {
-        Self {
-            name,
-            status,
-            elapsed,
-        }
-    }
+    pub elapsed_mean: u128,
+    pub elapsed_var: u128,
 }
 
 #[derive(Debug, Default)]
 pub struct VerifyResults {
     pub results: Vec<VerifyResult>,
+}
+
+fn mean_and_var(elapseds: Vec<Duration>) -> (f64, f64) {
+    if elapseds.is_empty() {
+        return (0., 0.);
+    }
+    let mut m1 = 0f64;
+    let mut m2 = 0f64;
+    for &elapsed in &elapseds {
+        let e = elapsed.as_millis() as f64;
+        m1 += e;
+        m2 += e * e;
+    }
+    let n = elapseds.len() as f64;
+    (m1 / n, (m2 / n - (m1 / n).powi(2)).sqrt())
 }
 
 impl VerifyResults {
@@ -418,9 +422,17 @@ impl VerifyResults {
             results: Vec::new(),
         }
     }
-    pub fn push(&mut self, name: String, status: VerifyStatus, elapsed: Duration) {
-        log::info!(" - {} {} {}ms", name, status, elapsed.as_millis());
-        self.results.push(VerifyResult::new(name, status, elapsed))
+    pub fn push(&mut self, name: String, status: VerifyStatus, elapseds: Vec<Duration>) {
+        let (mean, var) = mean_and_var(elapseds);
+        let mean = mean.round() as u128;
+        let var = var.round() as u128;
+        log::info!(" - {} {} {} ± {} ms", name, status, mean, var);
+        self.results.push(VerifyResult {
+            name,
+            status,
+            elapsed_mean: mean,
+            elapsed_var: var,
+        })
     }
     pub fn status(&self) -> VerifyStatus {
         self.results
@@ -432,12 +444,12 @@ impl VerifyResults {
     pub fn is_ac(&self) -> bool {
         self.status() == VerifyStatus::Accepted
     }
-    pub fn elapsed(&self) -> Duration {
+    pub fn elapsed(&self) -> u128 {
         self.results
             .iter()
-            .map(|res| res.elapsed)
+            .map(|res| res.elapsed_mean)
             .max()
-            .unwrap_or_else(|| Duration::from_secs(0))
+            .unwrap_or_default()
     }
 }
 
