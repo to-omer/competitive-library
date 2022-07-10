@@ -140,7 +140,7 @@ struct VerifyFailed;
 impl Error for VerifyFailed {}
 impl Display for VerifyFailed {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str("problem not found")
+        f.write_str("verify failed")
     }
 }
 
