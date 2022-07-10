@@ -68,25 +68,25 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: fmt
-        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive -p aizu_online_judge -p library_checker' || '--all' }} -- --check
+        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive || '--all' }} -- --check
 
     - name: cargo-clippy
       uses: actions-rs/cargo@v1
       with:
         command: clippy
-        args: --workspace --lib --tests
+        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive || '--workspace' }} --lib --tests
 
     - name: cargo-build
       uses: actions-rs/cargo@v1
       with:
         command: build
-        args: --workspace --lib --tests
+        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive || '--workspace' }} --lib --tests
 
     - name: cargo-test
       uses: actions-rs/cargo@v1
       with:
         command: test
-        args: --workspace --no-fail-fast
+        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive || '--workspace' }} --no-fail-fast
 
     - name: Stop sccache server
       run: sccache --stop-server || true
@@ -193,7 +193,7 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           /home/runner/.cache/sccache
-        key: cargo-${{ runner.os }}-1.42.0-x86_64-unknown-linux-gnu
+        key: cargo-${{ runner.os }}-stable-x86_64-unknown-linux-gnu
         restore-keys: cargo-${{ runner.os }}-
 
     - name: Start sccache server
@@ -207,10 +207,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install online-judge-api-client
 
-    - name: Setup `1.42.0-x86_64-unknown-linux-gnu`
+    - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: 1.42.0-x86_64-unknown-linux-gnu
+        toolchain: stable-x86_64-unknown-linux-gnu
         override: true
         profile: minimal
 
