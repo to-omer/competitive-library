@@ -23,38 +23,10 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       RUST_BACKTRACE: full
-      RUSTC_WRAPPER: sccache
-      SCCACHE_CACHE_SIZE: 1.5G
-      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Install sccache (ubuntu-latest)
-      env:
-        LINK: https://github.com/mozilla/sccache/releases/download
-        SCCACHE_VERSION: v0.2.15
-      run: |
-        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-        mkdir -p $HOME/.local/bin
-        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-        chmod +x $HOME/.local/bin/sccache
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Cache cargo and sccache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          /home/runner/.cache/sccache
-        key: cargo-${{ runner.os }}-${{ matrix.toolchain }}
-        restore-keys: cargo-${{ runner.os }}-
-
-    - name: Start sccache server
-      run: sccache --start-server    
 
     - name: Setup `${{ matrix.toolchain }}`
       uses: actions-rs/toolchain@v1
@@ -63,6 +35,9 @@ jobs:
         override: true
         profile: minimal
         components: rustfmt, clippy
+
+    - name: Cache
+      uses: Swatinem/rust-cache@v1
 
     - name: cargo-fmt
       uses: actions-rs/cargo@v1
@@ -88,47 +63,16 @@ jobs:
         command: test
         args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive' || '--workspace' }} --no-fail-fast
 
-    - name: Stop sccache server
-      run: sccache --stop-server || true
-
 
   snippet:
     name: Snippet
     runs-on: ubuntu-18.04
     env:
       RUST_BACKTRACE: full
-      RUSTC_WRAPPER: sccache
-      SCCACHE_CACHE_SIZE: 1.5G
-      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Install sccache (ubuntu-latest)
-      env:
-        LINK: https://github.com/mozilla/sccache/releases/download
-        SCCACHE_VERSION: v0.2.15
-      run: |
-        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-        mkdir -p $HOME/.local/bin
-        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-        chmod +x $HOME/.local/bin/sccache
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Cache cargo and sccache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          /home/runner/.cache/sccache
-        key: cargo-${{ runner.os }}-stable-x86_64-unknown-linux-gnu
-        restore-keys: cargo-${{ runner.os }}-
-
-    - name: Start sccache server
-      run: sccache --start-server    
 
     - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -137,6 +81,9 @@ jobs:
         override: true
         profile: minimal
         components: rustfmt
+
+    - name: Cache
+      uses: Swatinem/rust-cache@v1
 
     - name: cargo-install codesnip
       uses: actions-rs/cargo@v1
@@ -152,9 +99,6 @@ jobs:
         command: codesnip
         args: --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly verify --verbose
 
-    - name: Stop sccache server
-      run: sccache --stop-server || true
-
 
   verify:
     strategy:
@@ -166,38 +110,10 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       RUST_BACKTRACE: full
-      RUSTC_WRAPPER: sccache
-      SCCACHE_CACHE_SIZE: 1.5G
-      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Install sccache (ubuntu-latest)
-      env:
-        LINK: https://github.com/mozilla/sccache/releases/download
-        SCCACHE_VERSION: v0.2.15
-      run: |
-        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-        mkdir -p $HOME/.local/bin
-        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-        chmod +x $HOME/.local/bin/sccache
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Cache cargo and sccache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          /home/runner/.cache/sccache
-        key: cargo-${{ runner.os }}-stable-x86_64-unknown-linux-gnu
-        restore-keys: cargo-${{ runner.os }}-
-
-    - name: Start sccache server
-      run: sccache --start-server    
 
     - name: Setup Python
       uses: actions/setup-python@v2
@@ -208,6 +124,9 @@ jobs:
         toolchain: stable-x86_64-unknown-linux-gnu
         override: true
         profile: minimal
+
+    - name: Cache
+      uses: Swatinem/rust-cache@v1
 
     - name: cargo-build
       uses: actions-rs/cargo@v1
@@ -230,9 +149,6 @@ jobs:
         name: artifact
         path: artifact/**/*
 
-    - name: Stop sccache server
-      run: sccache --stop-server || true
-
 
   benchmark:
     strategy:
@@ -242,38 +158,10 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       RUST_BACKTRACE: full
-      RUSTC_WRAPPER: sccache
-      SCCACHE_CACHE_SIZE: 1.5G
-      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Install sccache (ubuntu-latest)
-      env:
-        LINK: https://github.com/mozilla/sccache/releases/download
-        SCCACHE_VERSION: v0.2.15
-      run: |
-        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-        mkdir -p $HOME/.local/bin
-        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-        chmod +x $HOME/.local/bin/sccache
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Cache cargo and sccache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          /home/runner/.cache/sccache
-        key: cargo-${{ runner.os }}-stable-x86_64-unknown-linux-gnu
-        restore-keys: cargo-${{ runner.os }}-
-
-    - name: Start sccache server
-      run: sccache --start-server    
 
     - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -281,6 +169,9 @@ jobs:
         toolchain: stable-x86_64-unknown-linux-gnu
         override: true
         profile: minimal
+
+    - name: Cache
+      uses: Swatinem/rust-cache@v1
 
     - name: Install Gnuplot
       continue-on-error: true
@@ -301,9 +192,6 @@ jobs:
         name: benchmarks
         path: target/doc/benchmarks/**/*
 
-    - name: Stop sccache server
-      run: sccache --stop-server || true
-
 
   generate-doc:
     needs: [verify, benchmark]
@@ -313,38 +201,10 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       RUST_BACKTRACE: full
-      RUSTC_WRAPPER: sccache
-      SCCACHE_CACHE_SIZE: 1.5G
-      SCCACHE_DIR: /home/runner/.cache/sccache
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Install sccache (ubuntu-latest)
-      env:
-        LINK: https://github.com/mozilla/sccache/releases/download
-        SCCACHE_VERSION: v0.2.15
-      run: |
-        SCCACHE_FILE=sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl
-        mkdir -p $HOME/.local/bin
-        curl -L "$LINK/$SCCACHE_VERSION/$SCCACHE_FILE.tar.gz" | tar xz
-        mv -f $SCCACHE_FILE/sccache $HOME/.local/bin/sccache
-        chmod +x $HOME/.local/bin/sccache
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Cache cargo and sccache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          /home/runner/.cache/sccache
-        key: cargo-${{ runner.os }}-nightly-x86_64-unknown-linux-gnu
-        restore-keys: cargo-${{ runner.os }}-
-
-    - name: Start sccache server
-      run: sccache --start-server    
 
     - name: Setup `nightly-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -352,6 +212,9 @@ jobs:
         toolchain: nightly-2021-12-02
         target: x86_64-unknown-linux-gnu
         override: true
+
+    - name: Cache
+      uses: Swatinem/rust-cache@v1
 
     - name: Download artifacts
       uses: actions/download-artifact@v2
@@ -386,6 +249,3 @@ jobs:
       with:
         personal_token: ${{ secrets.GH_PAT }}
         publish_dir: ./target/doc
-
-    - name: Stop sccache server
-      run: sccache --stop-server || true
