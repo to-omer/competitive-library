@@ -15,6 +15,7 @@ use std::{
     time::{Duration, Instant},
 };
 use tempfile::NamedTempFile;
+use tokio::io::AsyncWriteExt;
 pub use verify_attr::{aizu_online_judge, library_checker};
 
 mod aizu_online_judge;
@@ -63,8 +64,10 @@ fn build_async_client() -> reqwest::Result<Client> {
 }
 
 async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
+    use tokio::fs::File;
     let client = build_async_client()?;
-    File::create(&file)?.write_all(client.get(&url).send().await?.bytes().await?.borrow())?;
+    let bytes = client.get(&url).send().await?.bytes().await?;
+    File::create(&file).await?.write_all(bytes.borrow()).await?;
     Ok(())
 }
 
