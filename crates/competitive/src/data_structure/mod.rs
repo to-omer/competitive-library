@@ -21,6 +21,8 @@ pub use self::bitset::BitSet;
 pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DisjointSparseTable")]
 pub use self::disjoint_sparse_table::DisjointSparseTable;
+#[codesnip::entry("FibonacciHash")]
+pub use self::fibonacci_hash::{FibHashMap, FibHashSet};
 #[codesnip::entry("Static2DTree")]
 pub use self::kdtree::Static2DTree;
 #[codesnip::entry("LazySegmentTree")]
@@ -70,6 +72,8 @@ mod bitset;
 mod counter;
 #[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
 mod disjoint_sparse_table;
+#[cfg_attr(nightly, codesnip::entry("FibonacciHash"))]
+mod fibonacci_hash;
 #[cfg_attr(nightly, codesnip::entry("Static2DTree"))]
 mod kdtree;
 #[cfg_attr(nightly, codesnip::entry("LazySegmentTree", include("MonoidAction")))]
