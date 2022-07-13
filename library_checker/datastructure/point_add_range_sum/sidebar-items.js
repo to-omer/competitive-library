@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["point_add_range_sum_binary_indexed_tree","✅  AC  105ms"],["point_add_range_sum_segment_tree","✅  AC  116ms"]]});
+initSidebarItems({"fn":[["point_add_range_sum_binary_indexed_tree","✅  AC  77ms"],["point_add_range_sum_segment_tree","✅  AC  100ms"]]});
