@@ -22,7 +22,7 @@ pub trait Associative {}
 /// associative binary operation
 pub trait SemiGroup: Magma + Associative {}
 
-impl<S: Magma + Associative> SemiGroup for S {}
+impl<S> SemiGroup for S where S: Magma + Associative {}
 
 /// $\exists e \in T, \forall a \in T, e \circ a = a \circ e = e$
 pub trait Unital: Magma {
@@ -57,7 +57,7 @@ pub trait Monoid: SemiGroup + Unital {
     }
 }
 
-impl<M: SemiGroup + Unital> Monoid for M {}
+impl<M> Monoid for M where M: SemiGroup + Unital {}
 
 /// $\exists e \in T, \forall a \in T, \exists b,c \in T, b \circ a = a \circ c = e$
 pub trait Invertible: Magma {
@@ -72,7 +72,7 @@ pub trait Invertible: Magma {
 /// associative binary operation and an identity element and inverse elements
 pub trait Group: Monoid + Invertible {}
 
-impl<G: Monoid + Invertible> Group for G {}
+impl<G> Group for G where G: Monoid + Invertible {}
 
 /// $\forall a,\forall b \in T, a \circ b = b \circ a$
 pub trait Commutative {}
@@ -80,12 +80,12 @@ pub trait Commutative {}
 /// commutative monoid
 pub trait AbelianMonoid: Monoid + Commutative {}
 
-impl<M: Monoid + Commutative> AbelianMonoid for M {}
+impl<M> AbelianMonoid for M where M: Monoid + Commutative {}
 
 /// commutative group
 pub trait AbelianGroup: Group + Commutative {}
 
-impl<G: Group + Commutative> AbelianGroup for G {}
+impl<G> AbelianGroup for G where G: Group + Commutative {}
 
 /// $\forall a \in T, a \circ a = a$
 pub trait Idempotent {}
@@ -93,7 +93,7 @@ pub trait Idempotent {}
 /// idempotent monoid
 pub trait IdempotentMonoid: Monoid + Idempotent {}
 
-impl<M: Monoid + Idempotent> IdempotentMonoid for M {}
+impl<M> IdempotentMonoid for M where M: Monoid + Idempotent {}
 
 #[macro_export]
 macro_rules! monoid_fold {
