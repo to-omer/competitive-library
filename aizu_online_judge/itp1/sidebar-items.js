@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["itp1_1_a","Hello World"]]});
+window.SIDEBAR_ITEMS = {"mod":[["itp1_1_a","Hello World"]]};

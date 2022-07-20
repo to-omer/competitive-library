@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["aplusb",""],["many_aplusb",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["aplusb",""],["many_aplusb",""]]};

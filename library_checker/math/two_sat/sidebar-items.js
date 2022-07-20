@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["two_sat","✅  AC  266ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["two_sat","✅  AC  209ms"]]};

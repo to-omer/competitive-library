@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["queue_operate_all_composite","✅  AC  39ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["queue_operate_all_composite","✅  AC  54ms"]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["suffixarray","✅  AC  2060ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["suffixarray","✅  AC  1838ms"]]};

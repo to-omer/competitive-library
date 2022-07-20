@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["grl_5_d","✅  AC  64ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["grl_5_d","✅  AC  49ms"]]};

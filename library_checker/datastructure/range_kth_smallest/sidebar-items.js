@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["range_kth_smallest","✅  AC  347ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["range_kth_smallest","✅  AC  330ms"]]};

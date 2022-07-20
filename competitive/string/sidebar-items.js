@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["KnuthMorrisPratt",""],["MultipleRollingHash",""],["RollingHash",""],["SuffixArray",""],["Zarray",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["KnuthMorrisPratt",""],["MultipleRollingHash",""],["RollingHash",""],["SuffixArray",""],["Zarray",""]]};

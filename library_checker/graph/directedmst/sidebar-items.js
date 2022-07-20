@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["directedmst","✅  AC  175ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["directedmst","✅  AC  197ms"]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["unionfind","✅  AC  20ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["unionfind","✅  AC  19ms"]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["aplusb","✅  AC  0ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["aplusb","✅  AC  0ms"]]};

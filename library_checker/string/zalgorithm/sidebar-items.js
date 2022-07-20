@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["zalgorithm","✅  AC  24ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["zalgorithm","✅  AC  24ms"]]};

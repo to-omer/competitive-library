@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["log_of_formal_power_series","✅  AC  207ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["log_of_formal_power_series","✅  AC  199ms"]]};

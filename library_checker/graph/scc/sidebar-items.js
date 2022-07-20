@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["scc","✅  AC  152ms"]]});
+window.SIDEBAR_ITEMS = {"fn":[["scc","✅  AC  177ms"]]};
