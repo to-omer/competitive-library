@@ -1,4 +1,4 @@
-use super::{Bounded, One, Zero};
+use super::{Bounded, IterScan, One, Zero};
 use std::{
     convert::TryFrom,
     fmt::{self, Display},
@@ -299,6 +299,15 @@ where
         T::fmt(&self.0, f)
     }
 }
+impl<T> IterScan for Saturating<T>
+where
+    T: IterScan<Output = T>,
+{
+    type Output = Self;
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+        T::scan(iter).map(Self)
+    }
+}
 impl_binop!(impl<T> Div div for Saturating<T>);
 impl_binop!(impl<T> Rem rem for Saturating<T>);
 impl_binop!(impl<T> BitAnd bitand for Saturating<T>);
@@ -505,6 +514,15 @@ where
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         T::fmt(&self.0, f)
+    }
+}
+impl<T> IterScan for Wrapping<T>
+where
+    T: IterScan<Output = T>,
+{
+    type Output = Self;
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+        T::scan(iter).map(Self)
     }
 }
 impl_binop!(impl<T> BitAnd bitand for Wrapping<T>);
