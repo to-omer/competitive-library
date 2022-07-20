@@ -6,7 +6,7 @@ use std::{
 
 #[cfg(target_pointer_width = "32")]
 pub type FibonacciHasher = FibonacciHasheru32;
-#[cfg(target_pointer_width = "64")]
+#[cfg(not(target_pointer_width = "32"))]
 pub type FibonacciHasher = FibonacciHasheru64;
 pub type FibHashMap<K, V> = HashMap<K, V, BuildHasherDefault<FibonacciHasher>>;
 pub type FibHashSet<V> = HashSet<V, BuildHasherDefault<FibonacciHasher>>;
