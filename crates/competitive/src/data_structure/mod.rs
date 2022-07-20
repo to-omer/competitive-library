@@ -22,7 +22,7 @@ pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DisjointSparseTable")]
 pub use self::disjoint_sparse_table::DisjointSparseTable;
 #[codesnip::entry("FibonacciHash")]
-pub use self::fibonacci_hash::{FibHashMap, FibHashSet};
+pub use self::fibonacci_hash::{FibHashMap, FibHashSet, FibonacciHasher};
 #[codesnip::entry("Static2DTree")]
 pub use self::kdtree::Static2DTree;
 #[codesnip::entry("LazySegmentTree")]
