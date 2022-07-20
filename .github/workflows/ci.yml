@@ -226,7 +226,7 @@ jobs:
     - name: Setup `nightly-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: nightly-2021-12-02
+        toolchain: nightly
         target: x86_64-unknown-linux-gnu
         override: true
 
@@ -238,6 +238,12 @@ jobs:
 
     - name: Arrange artifacts
       run: cp -r artifact/* .
+
+    - name: cargo-build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --workspace --lib --features verify_doc
 
     - name: cargo-doc
       uses: actions-rs/cargo@v1
