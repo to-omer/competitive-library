@@ -51,6 +51,12 @@ impl<D> SparseGraph<D> {
     pub fn adjacencies(&self, v: usize) -> slice::Iter<'_, Adjacency> {
         self.elist[self.start[v]..self.start[v + 1]].iter()
     }
+    pub fn builder<T>(vsize: usize) -> SparseGraphBuilder<T, D> {
+        SparseGraphBuilder::new(vsize)
+    }
+    pub fn builder_with_esize<T>(vsize: usize, esize: usize) -> SparseGraphBuilder<T, D> {
+        SparseGraphBuilder::new_with_esize(vsize, esize)
+    }
 }
 
 pub trait SparseGraphConstruction: Sized {
@@ -155,7 +161,49 @@ pub type DirectedSparseGraph = SparseGraph<DirectedEdge>;
 pub type UndirectedSparseGraph = SparseGraph<UndirectedEdge>;
 pub type BidirectionalSparseGraph = SparseGraph<BidirectionalEdge>;
 
-pub struct SparseGraphScanner<U: IterScan<Output = usize>, T: IterScan, D> {
+pub struct SparseGraphBuilder<T, D> {
+    vsize: usize,
+    edges: Vec<(usize, usize)>,
+    rest: Vec<T>,
+    _marker: Marker<D>,
+}
+impl<T, D> SparseGraphBuilder<T, D> {
+    pub fn new(vsize: usize) -> Self {
+        Self {
+            vsize,
+            edges: Default::default(),
+            rest: Default::default(),
+            _marker: PhantomData,
+        }
+    }
+    pub fn new_with_esize(vsize: usize, esize: usize) -> Self {
+        Self {
+            vsize,
+            edges: Vec::with_capacity(esize),
+            rest: Vec::with_capacity(esize),
+            _marker: PhantomData,
+        }
+    }
+    pub fn add_edge(&mut self, u: usize, v: usize, w: T) {
+        self.edges.push((u, v));
+        self.rest.push(w);
+    }
+}
+impl<T, D> SparseGraphBuilder<T, D>
+where
+    D: SparseGraphConstruction,
+{
+    pub fn build(self) -> (SparseGraph<D>, Vec<T>) {
+        let graph = SparseGraph::from_edges(self.vsize, self.edges);
+        (graph, self.rest)
+    }
+}
+
+pub struct SparseGraphScanner<U, T, D>
+where
+    U: IterScan<Output = usize>,
+    T: IterScan,
+{
     vsize: usize,
     esize: usize,
     _marker: Marker<(U, T, D)>,
@@ -183,14 +231,11 @@ where
 {
     type Output = (SparseGraph<D>, Vec<<T as IterScan>::Output>);
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
-        let mut edges = Vec::with_capacity(self.esize);
-        let mut rest = Vec::with_capacity(self.esize);
+        let mut builder = SparseGraphBuilder::new_with_esize(self.vsize, self.esize);
         for _ in 0..self.esize {
-            edges.push((U::scan(iter)?, U::scan(iter)?));
-            rest.push(T::scan(iter)?);
+            builder.add_edge(U::scan(iter)?, U::scan(iter)?, T::scan(iter)?);
         }
-        let graph = SparseGraph::from_edges(self.vsize, edges);
-        Some((graph, rest))
+        Some(builder.build())
     }
 }
 
