@@ -10,6 +10,8 @@ use crate::{
 pub use self::adjacency_list::{AdjacencyListGraph, AdjacencyListGraphScanner};
 #[codesnip::entry("BipartiteMatching")]
 pub use self::bipartite_matching::BipartiteMatching;
+#[codesnip::entry("ClosureGraph")]
+pub use self::closure::{ClosureGraph, UsizeGraph};
 #[codesnip::entry("dulmage_mendelsohn_decomposition")]
 pub use self::dulmage_mendelsohn_decomposition::dulmage_mendelsohn_decomposition;
 #[codesnip::entry("EdgeListGraph")]
@@ -39,6 +41,8 @@ pub use self::two_satisfiability::TwoSatisfiability;
 mod adjacency_list;
 #[cfg_attr(nightly, codesnip::entry("BipartiteMatching"))]
 mod bipartite_matching;
+#[cfg_attr(nightly, codesnip::entry("ClosureGraph", include("GraphBase")))]
+mod closure;
 #[cfg_attr(
     nightly,
     codesnip::entry(
@@ -53,7 +57,7 @@ mod edge_list;
 mod graph_base;
 #[cfg_attr(nightly, codesnip::entry("graphvis", include("SparseGraph")))]
 mod graphvis;
-#[cfg_attr(nightly, codesnip::entry("GridGraph"))]
+#[cfg_attr(nightly, codesnip::entry("GridGraph", include("GraphBase")))]
 mod grid;
 #[cfg_attr(nightly, codesnip::entry("LowLink", include("SparseGraph")))]
 mod low_link;
