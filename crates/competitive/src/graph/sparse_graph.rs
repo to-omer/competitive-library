@@ -365,7 +365,7 @@ where
 
 impl<'g, 'a, D: 'g, M, T> AdjacencyView<'g, 'a, M, T> for SparseGraph<D>
 where
-    Self: EdgeView<'g, M, T>,
+    Self: AdjacenciesWithEindex<'g> + EdgeView<'g, M, T>,
     T: Clone,
     M: 'a,
 {

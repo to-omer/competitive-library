@@ -86,7 +86,7 @@ pub struct GridVertices {
 impl Iterator for GridVertices {
     type Item = (usize, usize);
     fn next(&mut self) -> Option<Self::Item> {
-        if self.xrange.is_empty() {
+        if self.xrange.start >= self.xrange.end {
             None
         } else if let Some(ny) = self.yrange.next() {
             Some((self.xrange.start, ny))

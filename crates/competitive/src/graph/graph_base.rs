@@ -47,7 +47,10 @@ pub trait AdjacencyIndexWithValue: AdjacencyIndex {
     type AValue: Clone;
     fn avalue(&self) -> Self::AValue;
 }
-pub trait AdjacenciesWithValue<'g, T>: GraphBase<'g> {
+pub trait AdjacenciesWithValue<'g, T>: GraphBase<'g>
+where
+    T: Clone,
+{
     type AIndex: 'g + AdjacencyIndexWithValue<VIndex = Self::VIndex, AValue = T>;
     type AIter: 'g + Iterator<Item = Self::AIndex>;
     fn adjacencies_with_value(&'g self, vid: Self::VIndex) -> Self::AIter;
@@ -302,6 +305,7 @@ where
 pub struct AdjacencyViewIterFromValue<'g, 'a, G, M, T, U>
 where
     G: AdjacenciesWithValue<'g, T>,
+    T: Clone,
 {
     iter: G::AIter,
     map: &'a M,
@@ -310,6 +314,7 @@ where
 impl<'g, 'a, G, M, T, U> AdjacencyViewIterFromValue<'g, 'a, G, M, T, U>
 where
     G: AdjacenciesWithValue<'g, T>,
+    T: Clone,
 {
     pub fn new(iter: G::AIter, map: &'a M) -> Self {
         Self {
@@ -322,6 +327,7 @@ where
 impl<'g, 'a, G, M, T, U> Iterator for AdjacencyViewIterFromValue<'g, 'a, G, M, T, U>
 where
     G: 'g + AdjacenciesWithValue<'g, T>,
+    T: Clone,
     M: 'a + Fn(T) -> U,
 {
     type Item = VIndexWithValue<G::VIndex, U>;

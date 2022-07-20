@@ -77,7 +77,10 @@ mod project_selection_problem;
     )
 )]
 mod shortest_path;
-#[cfg_attr(nightly, codesnip::entry("SparseGraph", include("scanner")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SparseGraph", include("scanner", "GraphBase"))
+)]
 mod sparse_graph;
 #[cfg_attr(
     nightly,
