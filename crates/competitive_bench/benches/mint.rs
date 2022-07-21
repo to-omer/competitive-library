@@ -29,5 +29,17 @@ pub fn bench_mod_mul(c: &mut Criterion) {
             BatchSize::SmallInput,
         )
     });
+    group.bench_function("barrett_reduction_rem", |b| {
+        let mut rng = Xorshift::default();
+        let br = BarrettReduction::<u64>::new(A as _);
+        b.iter_batched(
+            || {
+                let (a, b) = rng.gen(&spec);
+                (a as u64, b as u64)
+            },
+            |(a, b)| br.rem(a * b) as u32,
+            BatchSize::SmallInput,
+        )
+    });
     group.finish();
 }
