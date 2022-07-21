@@ -73,7 +73,7 @@ mod nums;
 mod polynomial;
 mod prime;
 #[cfg_attr(nightly, codesnip::entry("PrimeList"))]
-pub mod prime_list;
+mod prime_list;
 #[cfg_attr(nightly, codesnip::entry("PrimeTable"))]
 mod prime_table;
 mod special_modulo;
