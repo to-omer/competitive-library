@@ -43,6 +43,9 @@ fn find_factor(n: u64) -> Option<u64> {
 }
 
 pub fn prime_factors_flatten(mut n: u64) -> Vec<u64> {
+    if n == 0 {
+        return vec![];
+    }
     let k = n.trailing_zeros();
     let mut res = vec![2; k as usize];
     n >>= k;
