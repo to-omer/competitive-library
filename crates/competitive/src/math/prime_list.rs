@@ -29,6 +29,28 @@ impl PrimeList {
     pub fn prime_factors(&self, n: u64) -> Vec<(u64, u32)> {
         self.trial_division(n).collect()
     }
+    pub fn count_divisors(&self, n: u64) -> u64 {
+        let mut divisor_cnt = 1u64;
+        for (_, cnt) in self.trial_division(n) {
+            divisor_cnt *= cnt as u64 + 1;
+        }
+        divisor_cnt
+    }
+    pub fn divisors(&self, n: u64) -> Vec<u64> {
+        let mut d = vec![1u64];
+        for (p, c) in self.trial_division(n) {
+            let k = d.len();
+            let mut acc = p;
+            for _ in 0..c {
+                for i in 0..k {
+                    d.push(d[i] * acc);
+                }
+                acc *= p;
+            }
+        }
+        d.sort_unstable();
+        d
+    }
     /// list primes less than or equal to `max_n` by segmented sieve
     fn reserve(&mut self, max_n: u64) {
         if max_n <= self.max_n || max_n < 2 {
@@ -142,67 +164,81 @@ impl Iterator for PrimeListTrialDivision<'_> {
     }
 }
 
-pub fn primes(n: usize) -> Vec<usize> {
-    if n < 2 {
-        return vec![];
-    }
-    let mut res = vec![2];
-    let sqrt_n = (n as f32).sqrt() as usize | 1;
-    let mut seive = vec![true; n / 2];
-    for i in (3..=sqrt_n).step_by(2) {
-        if seive[i / 2 - 1] {
-            res.push(i);
-            for j in (i * i..=n).step_by(i * 2) {
-                seive[j / 2 - 1] = false;
-            }
-        }
-    }
-    for i in (std::cmp::max(3, sqrt_n + 2)..=n).step_by(2) {
-        if seive[i / 2 - 1] {
-            res.push(i);
-        }
-    }
-    res
-}
-
-pub fn segmented_sieve_primes(n: usize) -> Vec<usize> {
-    if n < 2 {
-        return Vec::new();
-    }
-    let seg_size = ((n as f32).sqrt() as usize + 2) >> 1;
-    let mut primes = vec![2];
-    let mut table = vec![true; seg_size];
-    for i in 1..seg_size {
-        if table[i] {
-            let p = i * 2 + 1;
-            primes.push(p);
-            for j in (p * p / 2..seg_size).step_by(p) {
-                table[j] = false;
-            }
-        }
-    }
-    for s in (seg_size..=n / 2).step_by(seg_size) {
-        let m = seg_size.min((n + 1) / 2 - s);
-        table.clear();
-        table.resize(m, true);
-        let plen = primes[1..]
-            .binary_search(&((((s + m) * 2 + 1) as f32).sqrt() as usize + 1))
-            .unwrap_or_else(|x| x);
-        for &p in primes[1..plen + 1].iter() {
-            for k in (((s * 2 + p * 3) / (p * 2) * p * 2 - p) / 2 - s..m).step_by(p) {
-                table[k] = false;
-            }
-        }
-        primes.extend((s..m + s).filter(|k| table[k - s]).map(|k| k * 2 + 1));
-    }
-    primes
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::math::{prime_factors, PrimeTable};
     use crate::tools::Xorshift;
+
+    fn primes(n: usize) -> Vec<usize> {
+        if n < 2 {
+            return vec![];
+        }
+        let mut res = vec![2];
+        let sqrt_n = (n as f32).sqrt() as usize | 1;
+        let mut seive = vec![true; n / 2];
+        for i in (3..=sqrt_n).step_by(2) {
+            if seive[i / 2 - 1] {
+                res.push(i);
+                for j in (i * i..=n).step_by(i * 2) {
+                    seive[j / 2 - 1] = false;
+                }
+            }
+        }
+        for i in (std::cmp::max(3, sqrt_n + 2)..=n).step_by(2) {
+            if seive[i / 2 - 1] {
+                res.push(i);
+            }
+        }
+        res
+    }
+
+    fn segmented_sieve_primes(n: usize) -> Vec<usize> {
+        if n < 2 {
+            return Vec::new();
+        }
+        let seg_size = ((n as f32).sqrt() as usize + 2) >> 1;
+        let mut primes = vec![2];
+        let mut table = vec![true; seg_size];
+        for i in 1..seg_size {
+            if table[i] {
+                let p = i * 2 + 1;
+                primes.push(p);
+                for j in (p * p / 2..seg_size).step_by(p) {
+                    table[j] = false;
+                }
+            }
+        }
+        for s in (seg_size..=n / 2).step_by(seg_size) {
+            let m = seg_size.min((n + 1) / 2 - s);
+            table.clear();
+            table.resize(m, true);
+            let plen = primes[1..]
+                .binary_search(&((((s + m) * 2 + 1) as f32).sqrt() as usize + 1))
+                .unwrap_or_else(|x| x);
+            for &p in primes[1..plen + 1].iter() {
+                for k in (((s * 2 + p * 3) / (p * 2) * p * 2 - p) / 2 - s..m).step_by(p) {
+                    table[k] = false;
+                }
+            }
+            primes.extend((s..m + s).filter(|k| table[k - s]).map(|k| k * 2 + 1));
+        }
+        primes
+    }
+
+    pub fn divisors(n: u64) -> Vec<u64> {
+        let mut res = vec![];
+        for i in 1..(n as f32).sqrt() as u64 + 1 {
+            if n % i == 0 {
+                res.push(i);
+                if i * i != n {
+                    res.push(n / i);
+                }
+            }
+        }
+        res.sort_unstable();
+        res
+    }
 
     #[test]
     fn test_prime_list() {
@@ -251,5 +287,14 @@ mod tests {
             assert_eq!(primes(i), segmented_sieve_primes(i));
         }
         assert_eq!(primes(1_000_000), segmented_sieve_primes(1_000_000));
+    }
+
+    #[test]
+    fn test_divisors() {
+        let mut rng = Xorshift::default();
+        let pl = PrimeList::new(20000);
+        for n in (1..1000).chain(rng.gen_iter(1..=20000000).take(100)) {
+            assert_eq!(pl.divisors(n), divisors(n));
+        }
     }
 }

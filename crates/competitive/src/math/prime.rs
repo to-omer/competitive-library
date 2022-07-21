@@ -45,7 +45,6 @@ fn test_prime_factors() {
     }
 }
 
-#[codesnip::entry]
 pub fn divisors(n: u64) -> Vec<u64> {
     let mut res = vec![];
     for i in 1..(n as f32).sqrt() as u64 + 1 {

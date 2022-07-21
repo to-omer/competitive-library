@@ -62,6 +62,21 @@ impl PrimeTable {
         self.trial_division(n, |_, cnt| divisor_cnt *= cnt + 1);
         divisor_cnt
     }
+    pub fn divisors(&self, n: u32) -> Vec<u32> {
+        let mut d = vec![1u32];
+        self.trial_division(n, |p, c| {
+            let k = d.len();
+            let mut acc = p;
+            for _ in 0..c {
+                for i in 0..k {
+                    d.push(d[i] * acc);
+                }
+                acc *= p;
+            }
+        });
+        d.sort_unstable();
+        d
+    }
 }
 
 #[test]
