@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["log_of_formal_power_series","✅  AC  199ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["log_of_formal_power_series","✅  AC  251ms"]]};
