@@ -6,14 +6,20 @@
 //! - lcm convolution: divisor
 //! - gcd convolution: multiple
 
-use crate::algebra::{Group, Monoid};
+use super::{Group, Monoid};
+use std::marker::PhantomData;
 
-#[codesnip::entry("SubsetTransform", include("algebra"))]
-pub struct SubsetTransform<M: Monoid> {
-    _marker: std::marker::PhantomData<fn() -> M>,
+pub struct SubsetTransform<M>
+where
+    M: Monoid,
+{
+    _marker: PhantomData<fn() -> M>,
 }
-#[codesnip::entry("SubsetTransform")]
-impl<M: Monoid> SubsetTransform<M> {
+
+impl<M> SubsetTransform<M>
+where
+    M: Monoid,
+{
     /// $$g(T) = \sum_{S\subset T}f(S)$$
     pub fn zeta_transform(f: &mut [M::T]) {
         let n = f.len();
@@ -28,8 +34,11 @@ impl<M: Monoid> SubsetTransform<M> {
         }
     }
 }
-#[codesnip::entry("SubsetTransform")]
-impl<G: Group> SubsetTransform<G> {
+
+impl<G> SubsetTransform<G>
+where
+    G: Group,
+{
     /// $$f(T) = \sum_{S\subset T}h(S)$$
     pub fn mobius_transform(f: &mut [G::T]) {
         let n = f.len();
@@ -44,7 +53,10 @@ impl<G: Group> SubsetTransform<G> {
         }
     }
     /// $$h(U) = \sum_{S\cup T=U}f(S)g(T)$$
-    pub fn convolve<M: Monoid<T = G::T>>(mut f: Vec<G::T>, mut g: Vec<G::T>) -> Vec<G::T> {
+    pub fn convolve<M>(mut f: Vec<G::T>, mut g: Vec<G::T>) -> Vec<G::T>
+    where
+        M: Monoid<T = G::T>,
+    {
         Self::zeta_transform(&mut f);
         Self::zeta_transform(&mut g);
         for (a, b) in f.iter_mut().zip(g.iter()) {
@@ -55,12 +67,17 @@ impl<G: Group> SubsetTransform<G> {
     }
 }
 
-#[codesnip::entry("SupersetTransform", include("algebra"))]
-pub struct SupersetTransform<M: Monoid> {
-    _marker: std::marker::PhantomData<fn() -> M>,
+pub struct SupersetTransform<M>
+where
+    M: Monoid,
+{
+    _marker: PhantomData<fn() -> M>,
 }
-#[codesnip::entry("SupersetTransform")]
-impl<M: Monoid> SupersetTransform<M> {
+
+impl<M> SupersetTransform<M>
+where
+    M: Monoid,
+{
     /// $$g(T) = \sum_{S\supset T}f(S)$$
     pub fn zeta_transform(f: &mut [M::T]) {
         let n = f.len();
@@ -75,8 +92,11 @@ impl<M: Monoid> SupersetTransform<M> {
         }
     }
 }
-#[codesnip::entry("SupersetTransform")]
-impl<G: Group> SupersetTransform<G> {
+
+impl<G> SupersetTransform<G>
+where
+    G: Group,
+{
     /// $$f(T) = \sum_{S\supset T}h(S)$$
     pub fn mobius_transform(f: &mut [G::T]) {
         let n = f.len();
@@ -91,7 +111,10 @@ impl<G: Group> SupersetTransform<G> {
         }
     }
     /// $$h(U) = \sum_{S\cap T=U}f(S)g(T)$$
-    pub fn convolve<M: Monoid<T = G::T>>(mut f: Vec<G::T>, mut g: Vec<G::T>) -> Vec<G::T> {
+    pub fn convolve<M>(mut f: Vec<G::T>, mut g: Vec<G::T>) -> Vec<G::T>
+    where
+        M: Monoid<T = G::T>,
+    {
         Self::zeta_transform(&mut f);
         Self::zeta_transform(&mut g);
         for (a, b) in f.iter_mut().zip(g.iter()) {
@@ -102,40 +125,57 @@ impl<G: Group> SupersetTransform<G> {
     }
 }
 
-#[codesnip::entry("DivisorTransform", include("algebra"))]
-pub struct DivisorTransform<M: Monoid> {
-    primes: Vec<usize>,
-    _marker: std::marker::PhantomData<fn() -> M>,
+pub struct DivisorTransform<'p, M>
+where
+    M: Monoid,
+{
+    primes: &'p [u64],
+    _marker: PhantomData<fn() -> M>,
 }
-#[codesnip::entry("DivisorTransform")]
-impl<M: Monoid> DivisorTransform<M> {
-    pub fn new(primes: Vec<usize>) -> Self {
+
+impl<'p, M> DivisorTransform<'p, M>
+where
+    M: Monoid,
+{
+    pub fn new_with_primes(primes: &'p [u64]) -> Self {
         Self {
             primes,
-            _marker: std::marker::PhantomData,
+            _marker: PhantomData,
         }
+    }
+    fn primes_iter(&self, n: usize) -> impl 'p + Iterator<Item = usize> {
+        self.primes
+            .iter()
+            .map(|&p| p as usize)
+            .take_while(move |&p| p < n)
     }
     /// $$g(m) = \sum_{n \mid m}f(n)$$
     pub fn zeta_transform(&self, f: &mut [M::T]) {
-        for &p in self.primes.iter() {
+        for p in self.primes_iter(f.len()) {
             for (i, j) in (0..f.len()).step_by(p).enumerate() {
                 f[j] = M::operate(&f[j], &f[i]);
             }
         }
     }
 }
-#[codesnip::entry("DivisorTransform")]
-impl<G: Group> DivisorTransform<G> {
+
+impl<G> DivisorTransform<'_, G>
+where
+    G: Group,
+{
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {
-        for &p in self.primes.iter() {
+        for p in self.primes_iter(f.len()) {
             for (i, j) in (0..f.len()).step_by(p).enumerate().rev() {
                 f[j] = G::rinv_operate(&f[j], &f[i]);
             }
         }
     }
     /// $$h(k) = \sum_{\mathrm{lcm}(n, m)=k}f(n)g(m)$$
-    pub fn convolve<M: Monoid<T = G::T>>(&self, mut f: Vec<G::T>, mut g: Vec<G::T>) -> Vec<G::T> {
+    pub fn convolve<M>(&self, mut f: Vec<G::T>, mut g: Vec<G::T>) -> Vec<G::T>
+    where
+        M: Monoid<T = G::T>,
+    {
         self.zeta_transform(&mut f);
         self.zeta_transform(&mut g);
         for (a, b) in f.iter_mut().zip(g.iter()) {
@@ -146,33 +186,47 @@ impl<G: Group> DivisorTransform<G> {
     }
 }
 
-#[codesnip::entry("MultipleTransform", include("algebra"))]
-pub struct MultipleTransform<M: Monoid> {
-    primes: Vec<usize>,
-    _marker: std::marker::PhantomData<fn() -> M>,
+pub struct MultipleTransform<'p, M>
+where
+    M: Monoid,
+{
+    primes: &'p [u64],
+    _marker: PhantomData<fn() -> M>,
 }
-#[codesnip::entry("MultipleTransform")]
-impl<M: Monoid> MultipleTransform<M> {
-    pub fn new(primes: Vec<usize>) -> Self {
+
+impl<'p, M> MultipleTransform<'p, M>
+where
+    M: Monoid,
+{
+    pub fn new_with_primes(primes: &'p [u64]) -> Self {
         Self {
             primes,
-            _marker: std::marker::PhantomData,
+            _marker: PhantomData,
         }
+    }
+    fn primes_iter(&self, n: usize) -> impl 'p + Iterator<Item = usize> {
+        self.primes
+            .iter()
+            .map(|&p| p as usize)
+            .take_while(move |&p| p < n)
     }
     /// $$g(m) = \sum_{m \mid n}f(n)$$
     pub fn zeta_transform(&self, f: &mut [M::T]) {
-        for &p in self.primes.iter() {
+        for p in self.primes_iter(f.len()) {
             for (i, j) in (0..f.len()).step_by(p).enumerate().rev() {
                 f[i] = M::operate(&f[i], &f[j]);
             }
         }
     }
 }
-#[codesnip::entry("MultipleTransform")]
-impl<G: Group> MultipleTransform<G> {
+
+impl<G> MultipleTransform<'_, G>
+where
+    G: Group,
+{
     /// $$f(m) = \sum_{m \mid n}h(n)$$
     pub fn mobius_transform(&self, f: &mut [G::T]) {
-        for &p in self.primes.iter() {
+        for p in self.primes_iter(f.len()) {
             for (i, j) in (0..f.len()).step_by(p).enumerate() {
                 f[i] = G::rinv_operate(&f[i], &f[j]);
             }
@@ -195,7 +249,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{AdditiveOperation, MultiplicativeOperation},
-        math::{gcd, lcm, primes},
+        math::{gcd, lcm, PrimeList},
         rand,
         tools::Xorshift,
     };
@@ -269,7 +323,8 @@ mod tests {
     #[test]
     fn test_divisor_transform() {
         let mut rng = Xorshift::time();
-        let divisor = DivisorTransform::<AdditiveOperation<i64>>::new(primes(M));
+        let primes = PrimeList::new(M as u64);
+        let divisor = DivisorTransform::<AdditiveOperation<i64>>::new_with_primes(primes.primes());
 
         rand!(rng, mut f: [-A..A; M]);
         f[0] = 0;
@@ -306,7 +361,8 @@ mod tests {
     #[test]
     fn test_multiple_transform() {
         let mut rng = Xorshift::time();
-        let multiple = MultipleTransform::<AdditiveOperation<_>>::new(primes(M));
+        let primes = PrimeList::new(M as u64);
+        let multiple = MultipleTransform::<AdditiveOperation<_>>::new_with_primes(primes.primes());
 
         rand!(rng, mut f: [-A..A; M]);
         f[0] = 0;

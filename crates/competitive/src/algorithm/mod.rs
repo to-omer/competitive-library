@@ -27,7 +27,10 @@ pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
 pub use self::ternary_search::*;
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
-pub use self::zeta_transform::*;
+#[codesnip::entry("zeta_transform")]
+pub use self::zeta_transform::{
+    DivisorTransform, MultipleTransform, SubsetTransform, SupersetTransform,
+};
 
 #[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep", include("algebra")))]
 mod baby_step_giant_step;
@@ -56,4 +59,5 @@ mod sqrt_decomposition;
 mod ternary_search;
 #[cfg_attr(nightly, codesnip::entry("XorBasis"))]
 mod xorbasis;
+#[cfg_attr(nightly, codesnip::entry("zeta_transform", include("algebra")))]
 mod zeta_transform;

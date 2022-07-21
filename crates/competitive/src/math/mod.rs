@@ -4,26 +4,32 @@ use crate::num::{montgomery, Complex, MInt, MIntBase, MIntConvert, One, Zero};
 use crate::tools::{AssociatedValue, PartialIgnoredOrd};
 
 #[codesnip::entry("berlekamp_massey")]
-pub use berlekamp_massey::berlekamp_massey;
-pub use factorial::*;
+pub use self::berlekamp_massey::berlekamp_massey;
+pub use self::factorial::*;
 #[codesnip::entry("fast_fourier_transform")]
-pub use fast_fourier_transform::convolve_fft;
+pub use self::fast_fourier_transform::convolve_fft;
 #[codesnip::entry("FormalPowerSeries")]
-pub use formal_power_series::{
+pub use self::formal_power_series::{
     FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
     Fps998244353,
 };
-pub use gcd::*;
+pub use self::gcd::*;
 #[codesnip::entry("lagrange_interpolation")]
-pub use lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
+pub use self::lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
 #[codesnip::entry("Matrix")]
-pub use matrix::Matrix;
+pub use self::matrix::Matrix;
 #[codesnip::entry("NumberTheoreticTransform")]
-pub use number_theoretic_transform::{Convolve, Convolve998244353, ConvolveSteps, MIntConvolve};
-pub use nums::*;
-pub use polynomial::*;
-pub use prime::*;
-pub use special_modulo::*;
+pub use self::number_theoretic_transform::{
+    Convolve, Convolve998244353, ConvolveSteps, MIntConvolve,
+};
+pub use self::nums::*;
+pub use self::polynomial::*;
+pub use self::prime::*;
+#[codesnip::entry("PrimeList")]
+pub use self::prime_list::PrimeList;
+#[codesnip::entry("PrimeTable")]
+pub use self::prime_table::PrimeTable;
+pub use self::special_modulo::*;
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
@@ -66,4 +72,8 @@ mod number_theoretic_transform;
 mod nums;
 mod polynomial;
 mod prime;
+#[cfg_attr(nightly, codesnip::entry("PrimeList"))]
+pub mod prime_list;
+#[cfg_attr(nightly, codesnip::entry("PrimeTable"))]
+mod prime_table;
 mod special_modulo;
