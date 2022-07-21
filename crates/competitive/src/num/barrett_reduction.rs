@@ -42,7 +42,13 @@ impl_barrett!(u128, |a, im| {
     let ad = a & MASK64;
     let imu = im >> 64;
     let imd = im & MASK64;
-    (au * imu) + ((au * imd) >> 64) + ((ad * imu) >> 64)
+    let mut res = au * imu;
+    let x = (ad * imd) >> 64;
+    let (x, c) = x.overflowing_add(au * imd);
+    res += c as u128;
+    let (x, c) = x.overflowing_add(ad * imu);
+    res += c as u128;
+    res + (x >> 64)
 });
 
 #[cfg(test)]
@@ -107,6 +113,13 @@ mod tests {
         (
             rng.gen(!0 - 100..=!0u64) as u128 * rng.gen(!0 - 100..=!0u64) as u128,
             rng.gen(!0 - 100..=!0u64) as u128 * rng.gen(!0 - 100..=!0u64) as u128,
+        )
+    });
+
+    test_barrett!(test_barrett_u128_mul, u128, |rng| {
+        (
+            rng.gen(0u64..) as u128 * rng.gen(0u64..) as u128,
+            rng.gen(0u64..) as u128,
         )
     });
 }

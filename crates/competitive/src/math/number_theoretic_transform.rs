@@ -305,7 +305,7 @@ mod tests {
     // #[test]
     #[allow(dead_code)]
     fn find_proth() {
-        use crate::math::{divisors, prime_factors_rho};
+        use crate::math::{divisors, prime_factors_flatten};
         use crate::num::mint_basic::DynMIntU32;
         // p = a * 2^b + 1 (b >= 1, a < 2^b)
         for b in 22..32 {
@@ -317,7 +317,7 @@ mod tests {
                 if p < 1 << 29 {
                     continue;
                 }
-                let f = prime_factors_rho(p);
+                let f = prime_factors_flatten(p);
                 if f.len() == 1 && f[0] == p {
                     DynMIntU32::set_mod(p as u32);
                     for g in (3..).step_by(2) {

@@ -1,6 +1,6 @@
 //! mathematical datas
 
-use crate::num::{montgomery, Complex, MInt, MIntBase, MIntConvert, One, Zero};
+use crate::num::{montgomery, BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Zero};
 use crate::tools::{AssociatedValue, PartialIgnoredOrd};
 
 #[codesnip::entry("berlekamp_massey")]
@@ -18,6 +18,8 @@ pub use self::gcd::*;
 pub use self::lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
 #[codesnip::entry("Matrix")]
 pub use self::matrix::Matrix;
+#[codesnip::entry("miller_rabin")]
+pub use self::miller_rabin::{miller_rabin, miller_rabin_with_br};
 #[codesnip::entry("NumberTheoreticTransform")]
 pub use self::number_theoretic_transform::{
     Convolve, Convolve998244353, ConvolveSteps, MIntConvolve,
@@ -25,6 +27,8 @@ pub use self::number_theoretic_transform::{
 pub use self::nums::*;
 pub use self::polynomial::*;
 pub use self::prime::*;
+#[codesnip::entry("prime_factors")]
+pub use self::prime_factors::{divisors, prime_factors, prime_factors_flatten};
 #[codesnip::entry("PrimeList")]
 pub use self::prime_list::PrimeList;
 #[codesnip::entry("PrimeTable")]
@@ -62,6 +66,8 @@ mod gcd;
 mod lagrange_interpolation;
 #[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one")))]
 mod matrix;
+#[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
+mod miller_rabin;
 #[cfg_attr(nightly, codesnip::entry("mod_sqrt", include("MIntBase")))]
 mod mod_sqrt;
 #[cfg_attr(
@@ -72,6 +78,11 @@ mod number_theoretic_transform;
 mod nums;
 mod polynomial;
 mod prime;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("prime_factors", include("miller_rabin", "gcd_binary"))
+)]
+mod prime_factors;
 #[cfg_attr(nightly, codesnip::entry("PrimeList"))]
 mod prime_list;
 #[cfg_attr(nightly, codesnip::entry("PrimeTable"))]
