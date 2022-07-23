@@ -9,10 +9,9 @@ macro_rules! impl_test_mr {
             }
             let d = n - 1;
             let k = d.trailing_zeros();
-            let d = d >> k;
+            let mut d = d >> k;
             let mut y = {
                 let mut a = a as $upty;
-                let mut d = d as $upty;
                 let mut y: $upty = 1;
                 while d > 0 {
                     if d & 1 == 1 {

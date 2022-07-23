@@ -14,6 +14,11 @@ impl PrimeList {
     pub fn primes(&self) -> &[u64] {
         self.primes.as_slice()
     }
+    pub fn primes_lte(&self, n: u64) -> &[u64] {
+        assert!(n <= self.max_n, "expected `n={} <= {}`", n, self.max_n);
+        let i = self.primes.binary_search(&n).unwrap_or_else(|i| i);
+        &self.primes[..i]
+    }
     pub fn is_prime(&self, n: u64) -> bool {
         assert!(n <= self.max_n, "expected `n={} <= {}`", n, self.max_n);
         self.primes.binary_search(&n).is_ok()
@@ -52,7 +57,7 @@ impl PrimeList {
         d
     }
     /// list primes less than or equal to `max_n` by segmented sieve
-    fn reserve(&mut self, max_n: u64) {
+    pub fn reserve(&mut self, max_n: u64) {
         if max_n <= self.max_n || max_n < 2 {
             return;
         }

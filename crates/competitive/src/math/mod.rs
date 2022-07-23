@@ -1,10 +1,12 @@
 //! mathematical datas
 
 use crate::num::{montgomery, BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Zero};
-use crate::tools::{AssociatedValue, PartialIgnoredOrd};
+use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
+#[codesnip::entry("discrete_logarithm")]
+pub use self::discrete_logarithm::discrete_logarithm_prime_mod;
 pub use self::factorial::*;
 #[codesnip::entry("fast_fourier_transform")]
 pub use self::fast_fourier_transform::convolve_fft;
@@ -33,10 +35,20 @@ pub use self::prime_factors::{divisors, prime_factors, prime_factors_flatten};
 pub use self::prime_list::PrimeList;
 #[codesnip::entry("PrimeTable")]
 pub use self::prime_table::PrimeTable;
+#[codesnip::entry("primitive_root")]
+pub use self::primitive_root::primitive_root;
 pub use self::special_modulo::*;
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "discrete_logarithm",
+        include("BarrettReduction", "primitive_root", "PrimeList", "Xorshift")
+    )
+)]
+mod discrete_logarithm;
 mod factorial;
 #[cfg_attr(
     nightly,
@@ -87,4 +99,6 @@ mod prime_factors;
 mod prime_list;
 #[cfg_attr(nightly, codesnip::entry("PrimeTable"))]
 mod prime_table;
+#[cfg_attr(nightly, codesnip::entry("primitive_root", include("prime_factors")))]
+mod primitive_root;
 mod special_modulo;
