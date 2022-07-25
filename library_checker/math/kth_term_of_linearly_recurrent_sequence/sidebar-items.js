@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["kth_term_of_linearly_recurrent_sequence","✅  AC  1680ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["kth_term_of_linearly_recurrent_sequence","✅  AC  1505ms"]]};
