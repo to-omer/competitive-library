@@ -45,7 +45,14 @@ mod berlekamp_massey;
     nightly,
     codesnip::entry(
         "discrete_logarithm",
-        include("BarrettReduction", "primitive_root", "PrimeList", "Xorshift")
+        include(
+            "BarrettReduction",
+            "lcm",
+            "modinv",
+            "primitive_root",
+            "PrimeList",
+            "Xorshift"
+        )
     )
 )]
 mod discrete_logarithm;

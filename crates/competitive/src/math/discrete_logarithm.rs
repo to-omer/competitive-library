@@ -52,6 +52,7 @@ where
 #[derive(Debug)]
 struct IndexCalculus {
     primes: PrimeList,
+    br_primes: Vec<BarrettReduction<u64>>,
     ic: HashMap<u64, IndexCalculusWithPrimitiveRoot>,
 }
 
@@ -59,55 +60,163 @@ impl IndexCalculus {
     fn new() -> Self {
         Self {
             primes: PrimeList::new(2),
+            br_primes: Default::default(),
             ic: Default::default(),
         }
     }
     fn discrete_logarithm(&mut self, a: u64, b: u64, p: u64) -> Option<(u64, u64)> {
-        let lim = (((p as f64).log2() * (p as f64).log2().log2()).sqrt() / 2. + 1.).exp2() as u64;
+        let lim = ((((p as f64).log2() * (p as f64).log2().log2()).sqrt() / 2.0 + 1.).exp2() * 0.9)
+            as u64;
         self.primes.reserve(lim);
         let primes = self.primes.primes_lte(lim);
+        while self.br_primes.len() < primes.len() {
+            let br = BarrettReduction::<u64>::new(primes[self.br_primes.len()]);
+            self.br_primes.push(br);
+        }
+        let br_primes = &self.br_primes[..primes.len()];
         self.ic
             .entry(p)
-            .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(p, primes))
-            .discrete_logarithm(a, b, primes)
+            .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(p, br_primes))
+            .discrete_logarithm(a, b, br_primes)
     }
 }
 
-fn index_calculus_for_primitive_root(p: u64, ord: u64, g: u64, primes: &[u64]) -> Vec<u64> {
-    let br = BarrettReduction::<u128>::new(ord as u128);
-    let mul = |x: u64, y: u64| br.rem(x as u128 * y as u128) as u64;
+const A: [u32; 150] = [
+    62, 61, 60, 60, 59, 58, 58, 58, 57, 56, 56, 56, 56, 55, 55, 55, 54, 54, 54, 53, 53, 53, 53, 52,
+    52, 52, 52, 52, 52, 51, 50, 50, 50, 50, 49, 49, 49, 48, 48, 48, 48, 48, 47, 47, 47, 47, 47, 47,
+    47, 47, 47, 47, 47, 47, 47, 47, 45, 42, 42, 41, 41, 41, 41, 41, 41, 41, 40, 40, 40, 40, 40, 40,
+    40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 38, 38, 38, 38, 38, 32, 32, 32, 32,
+    32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 31, 31, 31, 31, 31,
+    31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 22, 22, 22, 22,
+    22, 22, 22, 22, 22, 22,
+];
+
+fn factorize_smooth(mut x: u64, row: &mut [u64], br_primes: &[BarrettReduction<u64>]) -> bool {
+    for (j, (&br, r)) in br_primes.iter().zip(row).enumerate() {
+        *r = 0;
+        loop {
+            let (div, rem) = br.div_rem(x);
+            if rem != 0 {
+                break;
+            }
+            *r += 1;
+            x = div;
+        }
+        if j < 150 && x >= (1u64 << A[j]) {
+            break;
+        }
+    }
+    x == 1
+}
+
+#[derive(Debug)]
+struct QdrtPowPrec {
+    br_qdrt: BarrettReduction<u64>,
+    p0: Vec<u64>,
+    p1: Vec<u64>,
+    p2: Vec<u64>,
+    p3: Vec<u64>,
+}
+
+impl QdrtPowPrec {
+    fn new(a: u64, ord: u64, br: &BarrettReduction<u128>) -> Self {
+        let qdrt = (ord as f64).powf(0.25).ceil() as u64;
+        let br_qdrt = BarrettReduction::<u64>::new(qdrt);
+        let mut p0 = Vec::with_capacity(qdrt as usize);
+        let mut p1 = Vec::with_capacity(qdrt as usize);
+        let mut p2 = Vec::with_capacity(qdrt as usize);
+        let mut p3 = Vec::with_capacity(qdrt as usize);
+        let mut acc = 1u64;
+        for _ in 0..qdrt {
+            p0.push(acc);
+            acc = br.rem(acc as u128 * a as u128) as u64;
+        }
+        let a = acc;
+        acc = 1;
+        for _ in 0..qdrt {
+            p1.push(acc);
+            acc = br.rem(acc as u128 * a as u128) as u64;
+        }
+        let a = acc;
+        acc = 1;
+        for _ in 0..qdrt {
+            p2.push(acc);
+            acc = br.rem(acc as u128 * a as u128) as u64;
+        }
+        let a = acc;
+        acc = 1;
+        for _ in 0..qdrt {
+            p3.push(acc);
+            acc = br.rem(acc as u128 * a as u128) as u64;
+        }
+        Self {
+            br_qdrt,
+            p0,
+            p1,
+            p2,
+            p3,
+        }
+    }
+    fn pow(&self, mut k: u64, br: &BarrettReduction<u128>) -> u64 {
+        let (a, b) = self.br_qdrt.div_rem(k);
+        let mut x = self.p0[b as usize];
+        k = a;
+        if k > 0 {
+            let (a, b) = self.br_qdrt.div_rem(k);
+            x = br.rem(x as u128 * self.p1[b as usize] as u128) as u64;
+            k = a;
+        }
+        if k > 0 {
+            let (a, b) = self.br_qdrt.div_rem(k);
+            x = br.rem(x as u128 * self.p2[b as usize] as u128) as u64;
+            k = a;
+        }
+        if k > 0 {
+            let (_, b) = self.br_qdrt.div_rem(k);
+            x = br.rem(x as u128 * self.p3[b as usize] as u128) as u64;
+        }
+        x
+    }
+}
+
+fn index_calculus_for_primitive_root(
+    p: u64,
+    ord: u64,
+    br_primes: &[BarrettReduction<u64>],
+    prec: &QdrtPowPrec,
+) -> Vec<u64> {
+    let br_ord = BarrettReduction::<u128>::new(ord as u128);
+    let mul = |x: u64, y: u64| br_ord.rem(x as u128 * y as u128) as u64;
     let sub = |x: u64, y: u64| if x < y { x + ord - y } else { x - y };
 
-    let pc = primes.len();
+    let pc = br_primes.len();
     let mut mat: Vec<Vec<u64>> = vec![];
     let mut rows: Vec<Vec<u64>> = vec![];
 
-    let mut _stat = (0usize, 0usize, 0usize);
     let mut rng = Xorshift::default();
     let br = BarrettReduction::<u128>::new(p as u128);
 
     for i in 0..pc {
         for ri in 0usize.. {
+            let mut row = vec![0u64; pc + 1];
+            let mut kk = rng.rand(ord - 1) + 1;
+            let mut gkk = prec.pow(kk, &br);
+            let mut k = kk;
+            let mut gk = gkk;
             while ri >= rows.len() {
-                let k = rng.rand(ord - 1) + 1;
-                let gk = pow(g, k, &br);
-
-                _stat.0 += 1;
-                let mut row = vec![0u64; pc + 1];
-                let mut x = gk;
-                for (j, &q) in primes.iter().enumerate() {
-                    if j == 9 && x >= 1_000_000_000_000_000 || j == 29 && x >= 1_000_000_000_000 {
-                        break;
-                    }
-                    while x % q == 0 {
-                        row[j] += 1;
-                        x /= q;
-                    }
-                }
                 row[pc] = k;
-                if x == 1 {
-                    _stat.1 += 1;
+                if factorize_smooth(gk, &mut row, br_primes) {
                     rows.push(row);
+                    break;
+                }
+                if k + kk < ord {
+                    k += kk;
+                    gk = br.rem(gk as u128 * gkk as u128) as u64;
+                } else {
+                    kk = rng.rand(ord - 1) + 1;
+                    gkk = prec.pow(kk, &br);
+                    k = kk;
+                    gk = gkk;
                 }
             }
             let row = &mut rows[ri];
@@ -121,15 +230,12 @@ fn index_calculus_for_primitive_root(p: u64, ord: u64, g: u64, primes: &[u64]) -
                 assert_eq!(row[j], 0);
             }
             if gcd(row[i], ord) == 1 {
-                _stat.2 += 1;
                 let last = rows.len() - 1;
                 rows.swap(ri, last);
                 mat.push(rows.pop().unwrap());
                 break;
             }
         }
-        // eprintln!("_stat = {:?}", _stat);
-        // eprintln!("rows.len() = {:?}", rows.len());
     }
     for i in (0..pc).rev() {
         for j in i + 1..pc {
@@ -144,21 +250,27 @@ fn index_calculus_for_primitive_root(p: u64, ord: u64, g: u64, primes: &[u64]) -
 struct IndexCalculusWithPrimitiveRoot {
     p: u64,
     ord: u64,
-    g: u64,
+    prec: QdrtPowPrec,
     coeff: Vec<u64>,
 }
 
 impl IndexCalculusWithPrimitiveRoot {
-    fn new(p: u64, primes: &[u64]) -> Self {
+    fn new(p: u64, br_primes: &[BarrettReduction<u64>]) -> Self {
         let ord = p - 1;
         let g = primitive_root(p);
-        let coeff = index_calculus_for_primitive_root(p, ord, g, primes);
-        Self { p, ord, g, coeff }
+        let br = BarrettReduction::<u128>::new(p as u128);
+        let prec = QdrtPowPrec::new(g, ord, &br);
+        let coeff = index_calculus_for_primitive_root(p, ord, br_primes, &prec);
+        Self {
+            p,
+            ord,
+            prec,
+            coeff,
+        }
     }
-    fn index_calculus(&self, a: u64, primes: &[u64]) -> Option<u64> {
+    fn index_calculus(&self, a: u64, br_primes: &[BarrettReduction<u64>]) -> Option<u64> {
         let p = self.p;
         let ord = self.ord;
-        let g = self.g;
         let br = BarrettReduction::<u128>::new(p as u128);
         let a = br.rem(a as _) as u64;
         if a == 1 {
@@ -169,36 +281,41 @@ impl IndexCalculusWithPrimitiveRoot {
         }
 
         let mut rng = Xorshift::time();
+        let mut row = vec![0u64; br_primes.len()];
+        let mut kk = rng.rand(ord - 1) + 1;
+        let mut gkk = self.prec.pow(kk, &br);
+        let mut k = kk;
+        let mut gk = br.rem(gkk as u128 * a as u128) as u64;
         loop {
-            let k = rng.rand(ord - 1) + 1;
-            let gk = pow(g, k, &br);
-
-            let mut x = br.rem(gk as u128 * a as u128) as u64;
-            for (j, &q) in primes.iter().enumerate() {
-                if j == 9 && x >= 1_000_000_000_000_000 || j == 29 && x >= 1_000_000_000_000 {
-                    break;
-                }
-                while x % q == 0 {
-                    x /= q;
-                }
-            }
-            if x == 1 {
-                let mut x = br.rem(gk as u128 * a as u128) as u64;
+            if factorize_smooth(gk, &mut row, br_primes) {
                 let mut res = ord - k;
-                for (j, &q) in primes.iter().enumerate() {
-                    while x % q == 0 {
-                        res += self.coeff[j];
+                for (&c, &r) in self.coeff.iter().zip(&row) {
+                    for _ in 0..r {
+                        res += c;
                         if res >= ord {
                             res -= ord;
                         }
-                        x /= q;
                     }
                 }
                 return Some(res);
             }
+            if k + kk < ord {
+                k += kk;
+                gk = br.rem(gk as u128 * gkk as u128) as u64;
+            } else {
+                kk = rng.rand(ord - 1) + 1;
+                gkk = self.prec.pow(kk, &br);
+                k = kk;
+                gk = br.rem(gkk as u128 * a as u128) as u64;
+            }
         }
     }
-    fn discrete_logarithm(&self, a: u64, b: u64, primes: &[u64]) -> Option<(u64, u64)> {
+    fn discrete_logarithm(
+        &self,
+        a: u64,
+        b: u64,
+        br_primes: &[BarrettReduction<u64>],
+    ) -> Option<(u64, u64)> {
         let p = self.p;
         let ord = self.ord;
         let br = BarrettReduction::<u128>::new(p as u128);
@@ -211,8 +328,8 @@ impl IndexCalculusWithPrimitiveRoot {
             return None;
         }
 
-        let x = self.index_calculus(a, primes)?;
-        let y = self.index_calculus(b, primes)?;
+        let x = self.index_calculus(a, br_primes)?;
+        let y = self.index_calculus(b, br_primes)?;
         solve_linear_congruence(x, y, ord)
     }
 }
