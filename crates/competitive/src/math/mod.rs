@@ -6,7 +6,7 @@ use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
 #[codesnip::entry("discrete_logarithm")]
-pub use self::discrete_logarithm::discrete_logarithm_prime_mod;
+pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
 pub use self::factorial::*;
 #[codesnip::entry("fast_fourier_transform")]
 pub use self::fast_fourier_transform::convolve_fft;
@@ -36,7 +36,7 @@ pub use self::prime_list::PrimeList;
 #[codesnip::entry("PrimeTable")]
 pub use self::prime_table::PrimeTable;
 #[codesnip::entry("primitive_root")]
-pub use self::primitive_root::primitive_root;
+pub use self::primitive_root::{check_primitive_root, primitive_root};
 pub use self::special_modulo::*;
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
@@ -92,7 +92,7 @@ mod polynomial;
 mod prime;
 #[cfg_attr(
     nightly,
-    codesnip::entry("prime_factors", include("miller_rabin", "gcd_binary"))
+    codesnip::entry("prime_factors", include("miller_rabin", "gcd"))
 )]
 mod prime_factors;
 #[cfg_attr(nightly, codesnip::entry("PrimeList"))]

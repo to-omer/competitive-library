@@ -299,10 +299,10 @@ fn culculate_montgomery() {
     let n = 1u64 << 32;
     println!("n = {}", n);
     // n^{-1} mod m
-    let ninv = modinv(n as i64, m as i64) as u64;
+    let ninv = modinv(n, m);
     println!("n^{{-1}} = {}", ninv);
     // r = (-m)^{-1} mod n
-    let r = modinv((n - m) as i64, n as i64) as u64;
+    let r = modinv(n - m, n);
     println!("r = {}", r);
     let get_r = || {
         let mut r = 0;

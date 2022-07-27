@@ -1,18 +1,8 @@
-use super::{gcd_binary, primitive_root, BarrettReduction, PrimeList, Xorshift};
-use std::{cell::UnsafeCell, collections::HashMap, mem::swap};
-
-fn inv(x: u64, p: u64) -> u64 {
-    let (mut a, mut b) = (x as i64, p as i64);
-    let (mut u, mut x) = (1, 0);
-    while a != 0 {
-        let k = b / a;
-        x -= k * u;
-        b -= k * a;
-        swap(&mut x, &mut u);
-        swap(&mut b, &mut a);
-    }
-    (if x < 0 { x + p as i64 } else { x }) as u64
-}
+use super::{
+    check_primitive_root, gcd, lcm, modinv, prime_factors, primitive_root, BarrettReduction,
+    PrimeList, Xorshift,
+};
+use std::{cell::UnsafeCell, collections::HashMap};
 
 fn pow(x: u64, mut y: u64, br: &BarrettReduction<u128>) -> u64 {
     let mut x = x as u128;
@@ -25,6 +15,38 @@ fn pow(x: u64, mut y: u64, br: &BarrettReduction<u128>) -> u64 {
         y >>= 1;
     }
     z as u64
+}
+
+fn solve_linear_congruence(a: u64, b: u64, m: u64) -> Option<(u64, u64)> {
+    let g = gcd(a, m);
+    if b % g != 0 {
+        return None;
+    }
+    let (a, b, m) = (a / g, b / g, m / g);
+    Some(((b as u128 * modinv(a, m) as u128 % m as u128) as _, m))
+}
+
+fn solve_linear_congruences<I>(abm: I) -> Option<(u64, u64)>
+where
+    I: IntoIterator<Item = (u64, u64, u64)>,
+{
+    let mut x = 0u64;
+    let mut m0 = 1u64;
+    for (a, b, m) in abm {
+        let mut b = b + m - a * x % m;
+        if b >= m {
+            b -= m;
+        }
+        let a = a * m0;
+        let g = gcd(a, m);
+        if b % g != 0 {
+            return None;
+        }
+        let (a, b, m) = (a / g, b / g, m / g);
+        x += (b as u128 * modinv(a, m) as u128 % m as u128 * m0 as u128) as u64;
+        m0 *= m;
+    }
+    Some((x, m0))
 }
 
 #[derive(Debug)]
@@ -40,7 +62,7 @@ impl IndexCalculus {
             ic: Default::default(),
         }
     }
-    fn discrete_logarithm(&mut self, a: u64, b: u64, p: u64) -> Option<u64> {
+    fn discrete_logarithm(&mut self, a: u64, b: u64, p: u64) -> Option<(u64, u64)> {
         let lim = (((p as f64).log2() * (p as f64).log2().log2()).sqrt() / 2. + 1.).exp2() as u64;
         self.primes.reserve(lim);
         let primes = self.primes.primes_lte(lim);
@@ -51,10 +73,10 @@ impl IndexCalculus {
     }
 }
 
-fn index_calculus_for_primitive_root(p: u64, phi: u64, g: u64, primes: &[u64]) -> Vec<u64> {
-    let br = BarrettReduction::<u128>::new(phi as u128);
+fn index_calculus_for_primitive_root(p: u64, ord: u64, g: u64, primes: &[u64]) -> Vec<u64> {
+    let br = BarrettReduction::<u128>::new(ord as u128);
     let mul = |x: u64, y: u64| br.rem(x as u128 * y as u128) as u64;
-    let sub = |x: u64, y: u64| if x < y { x + phi - y } else { x - y };
+    let sub = |x: u64, y: u64| if x < y { x + ord - y } else { x - y };
 
     let pc = primes.len();
     let mut mat: Vec<Vec<u64>> = vec![];
@@ -67,7 +89,7 @@ fn index_calculus_for_primitive_root(p: u64, phi: u64, g: u64, primes: &[u64]) -
     for i in 0..pc {
         for ri in 0usize.. {
             while ri >= rows.len() {
-                let k = rng.rand(phi - 1) + 1;
+                let k = rng.rand(ord - 1) + 1;
                 let gk = pow(g, k, &br);
 
                 _stat.0 += 1;
@@ -91,14 +113,14 @@ fn index_calculus_for_primitive_root(p: u64, phi: u64, g: u64, primes: &[u64]) -
             let row = &mut rows[ri];
             for j in 0..i {
                 if row[j] != 0 {
-                    let b = mul(inv(mat[j][j], phi), row[j]);
+                    let b = mul(modinv(mat[j][j], ord), row[j]);
                     for (r, a) in row[j..].iter_mut().zip(&mat[j][j..]) {
                         *r = sub(*r, mul(*a, b));
                     }
                 }
                 assert_eq!(row[j], 0);
             }
-            if gcd_binary(row[i], phi) == 1 {
+            if gcd(row[i], ord) == 1 {
                 _stat.2 += 1;
                 let last = rows.len() - 1;
                 rows.swap(ri, last);
@@ -113,7 +135,7 @@ fn index_calculus_for_primitive_root(p: u64, phi: u64, g: u64, primes: &[u64]) -
         for j in i + 1..pc {
             mat[i][pc] = sub(mat[i][pc], mul(mat[i][j], mat[j][pc]));
         }
-        mat[i][pc] = mul(mat[i][pc], inv(mat[i][i], phi));
+        mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
     }
     (0..pc).map(|i| (mat[i][pc])).collect()
 }
@@ -121,21 +143,21 @@ fn index_calculus_for_primitive_root(p: u64, phi: u64, g: u64, primes: &[u64]) -
 #[derive(Debug)]
 struct IndexCalculusWithPrimitiveRoot {
     p: u64,
-    phi: u64,
+    ord: u64,
     g: u64,
     coeff: Vec<u64>,
 }
 
 impl IndexCalculusWithPrimitiveRoot {
     fn new(p: u64, primes: &[u64]) -> Self {
-        let phi = p - 1;
+        let ord = p - 1;
         let g = primitive_root(p);
-        let coeff = index_calculus_for_primitive_root(p, phi, g, primes);
-        Self { p, phi, g, coeff }
+        let coeff = index_calculus_for_primitive_root(p, ord, g, primes);
+        Self { p, ord, g, coeff }
     }
     fn index_calculus(&self, a: u64, primes: &[u64]) -> Option<u64> {
         let p = self.p;
-        let phi = self.phi;
+        let ord = self.ord;
         let g = self.g;
         let br = BarrettReduction::<u128>::new(p as u128);
         let a = br.rem(a as _) as u64;
@@ -148,7 +170,7 @@ impl IndexCalculusWithPrimitiveRoot {
 
         let mut rng = Xorshift::time();
         loop {
-            let k = rng.rand(phi - 1) + 1;
+            let k = rng.rand(ord - 1) + 1;
             let gk = pow(g, k, &br);
 
             let mut x = br.rem(gk as u128 * a as u128) as u64;
@@ -162,12 +184,12 @@ impl IndexCalculusWithPrimitiveRoot {
             }
             if x == 1 {
                 let mut x = br.rem(gk as u128 * a as u128) as u64;
-                let mut res = phi - k;
+                let mut res = ord - k;
                 for (j, &q) in primes.iter().enumerate() {
                     while x % q == 0 {
                         res += self.coeff[j];
-                        if res >= phi {
-                            res -= phi;
+                        if res >= ord {
+                            res -= ord;
                         }
                         x /= q;
                     }
@@ -176,35 +198,22 @@ impl IndexCalculusWithPrimitiveRoot {
             }
         }
     }
-    fn discrete_logarithm(&self, a: u64, b: u64, primes: &[u64]) -> Option<u64> {
+    fn discrete_logarithm(&self, a: u64, b: u64, primes: &[u64]) -> Option<(u64, u64)> {
         let p = self.p;
-        let phi = self.phi;
+        let ord = self.ord;
         let br = BarrettReduction::<u128>::new(p as u128);
         let a = br.rem(a as _) as u64;
         let b = br.rem(b as _) as u64;
-        if b == 1 {
-            return Some(0);
-        }
         if a == 0 {
-            return if b == 0 { Some(1) } else { None };
+            return if b == 0 { Some((1, 1)) } else { None };
         }
         if b == 0 {
             return None;
         }
 
-        if let (Some(x), Some(y)) = (
-            self.index_calculus(a, primes),
-            self.index_calculus(b, primes),
-        ) {
-            let d = gcd_binary(x, phi);
-            if y % d != 0 {
-                return None;
-            }
-            let q = phi / d;
-            Some(((y / d) as u128 * inv(x / d, q) as u128 % q as u128) as u64)
-        } else {
-            None
-        }
+        let x = self.index_calculus(a, primes)?;
+        let y = self.index_calculus(b, primes)?;
+        solve_linear_congruence(x, y, ord)
     }
 }
 
@@ -214,6 +223,145 @@ thread_local!(
 
 pub fn discrete_logarithm_prime_mod(a: u64, b: u64, p: u64) -> Option<u64> {
     IC.with(|ic| unsafe { &mut *ic.get() }.discrete_logarithm(a, b, p))
+        .map(|t| t.0)
+}
+
+/// a^x ≡ b (mod n), a has order p^e
+fn pohlig_hellman_prime_power_order(a: u64, b: u64, n: u64, p: u64, e: u32) -> Option<u64> {
+    let br = BarrettReduction::<u128>::new(n as u128);
+    let mul = |x: u64, y: u64| br.rem(x as u128 * y as u128) as u64;
+    let block_size = (p as f64).sqrt().ceil() as u64;
+    let mut baby = HashMap::<u64, u64>::new();
+    let g = pow(a, p.pow(e - 1), &br);
+    let mut xj = 1;
+    for j in 0..block_size {
+        baby.entry(xj).or_insert(j);
+        xj = mul(xj, g);
+    }
+    let xi = modinv(xj, n);
+    let mut t = 0u64;
+    for k in 0..e {
+        let mut h = pow(mul(modinv(pow(a, t, &br), n), b), p.pow(e - 1 - k), &br);
+        let mut ok = false;
+        for i in (0..block_size * block_size).step_by(block_size as usize) {
+            if let Some(j) = baby.get(&h) {
+                t += (i + j) * p.pow(k);
+                ok = true;
+                break;
+            }
+            h = mul(h, xi);
+        }
+        if !ok {
+            return None;
+        }
+    }
+    Some(t)
+}
+
+/// a^x ≡ b (mod p^e)
+fn discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -> Option<(u64, u64)> {
+    assert_ne!(p, 0);
+    assert_ne!(e, 0);
+    let n = p.pow(e);
+    assert!(a < n);
+    assert!(b < n);
+    assert_eq!(gcd(a, p), 1);
+    if p == 1 {
+        return Some((0, 1));
+    }
+    if a == 0 {
+        return if b == 0 { Some((1, 1)) } else { None };
+    }
+    if b == 0 {
+        return None;
+    }
+    if e == 1 {
+        return IC.with(|ic| unsafe { &mut *ic.get() }.discrete_logarithm(a, b, p));
+    }
+    let br = BarrettReduction::<u128>::new(n as _);
+    if p == 2 {
+        if e >= 3 {
+            if a % 4 == 1 && b % 4 != 1 {
+                return None;
+            }
+            let aa = if a % 4 == 1 { a } else { n - a };
+            let bb = if b % 4 == 1 { b } else { n - b };
+            let g = 5;
+            let ord = n / 4;
+            let x = pohlig_hellman_prime_power_order(g, aa, n, p, e - 2)?;
+            let y = pohlig_hellman_prime_power_order(g, bb, n, p, e - 2)?;
+            let t = solve_linear_congruence(x, y, ord)?;
+            match (a % 4 == 1, b % 4 == 1) {
+                (true, true) => Some(t),
+                (false, true) if t.0 % 2 == 0 => Some((t.0, lcm(t.1, 2))),
+                (false, false) if t.0 % 2 == 1 => Some((t.0, lcm(t.1, 2))),
+                _ => None,
+            }
+        } else if a == 1 {
+            if b == 1 {
+                Some((0, 1))
+            } else {
+                None
+            }
+        } else {
+            assert_eq!(a, 3);
+            if b == 1 {
+                Some((0, 2))
+            } else if b == 3 {
+                Some((1, 2))
+            } else {
+                None
+            }
+        }
+    } else {
+        let ord = n - n / p;
+        let pf_ord = prime_factors(ord);
+        let g = (2..)
+            .find(|&g| check_primitive_root(g, ord, &br, &pf_ord))
+            .unwrap();
+        let mut pf_p = prime_factors(p - 1);
+        pf_p.push((p, e - 1));
+        let mut abm = vec![];
+        for (q, c) in pf_p {
+            let m = q.pow(c);
+            let d = ord / m;
+            let gg = pow(g, d, &br);
+            let aa = pow(a, d, &br);
+            let bb = pow(b, d, &br);
+            let x = pohlig_hellman_prime_power_order(gg, aa, n, q, c)?;
+            let y = pohlig_hellman_prime_power_order(gg, bb, n, q, c)?;
+            abm.push((x, y, m));
+        }
+        solve_linear_congruences(abm)
+    }
+}
+
+/// a^x ≡ b (mod n)
+pub fn discrete_logarithm(a: u64, b: u64, n: u64) -> Option<u64> {
+    let a = a % n;
+    let b = b % n;
+    let d = 2.max(64 - n.leading_zeros() as u64);
+    let mut pw = 1 % n;
+    for i in 0..d {
+        if pw == b {
+            return Some(i);
+        }
+        pw = (pw as u128 * a as u128 % n as u128) as u64;
+    }
+    let g = gcd(pw, n);
+    if b % g != 0 {
+        return None;
+    }
+    let n = n / g;
+    let b = (b as u128 * modinv(pw, n) as u128 % n as u128) as u64;
+    let pf = prime_factors(n);
+    let mut abm = vec![];
+    for (p, e) in pf {
+        let q = p.pow(e);
+        let x = discrete_logarithm_prime_power(a % q, b % q, p, e)?;
+        abm.push((1, x.0, x.1));
+    }
+    solve_linear_congruences(abm).map(|x| x.0 + d)
 }
 
 #[cfg(test)]
@@ -223,29 +371,59 @@ mod tests {
         algebra::MultiplicativeOperation, algorithm::BabyStepGiantStep, num::mint_basic::DynMIntU64,
     };
 
+    fn check(a: u64, b: u64, n: u64, l: Option<u64>, bsgs: bool) {
+        if let Some(l) = l {
+            let pw = pow(a, l, &BarrettReduction::<u128>::new(n as _));
+            assert_eq!(
+                b, pw,
+                "expected {} ^ {} = {} mod {}, but {}",
+                a, l, b, n, pw
+            );
+        }
+        if !bsgs {
+            return;
+        }
+        let res = if b == 1 {
+            Some(0)
+        } else {
+            (|| {
+                let d = 2.max(64 - n.leading_zeros() as u64);
+                let mut pw = 1 % n;
+                for i in 0..d {
+                    if pw == b {
+                        return Some(i);
+                    }
+                    pw = (pw as u128 * a as u128 % n as u128) as u64;
+                }
+                if pw == b {
+                    return Some(d);
+                }
+                let g = gcd(pw, n);
+                if b % g != 0 {
+                    return None;
+                }
+                let n = n / g;
+                DynMIntU64::set_mod(n);
+                let b = (b as u128 * modinv(pw, n) as u128 % n as u128) as u64;
+                BabyStepGiantStep::<MultiplicativeOperation<_>>::new(
+                    n as usize + 1,
+                    DynMIntU64::new(a),
+                )
+                .solve(DynMIntU64::new(b))
+                .map(|x| x as u64 + d)
+            })()
+        };
+        assert_eq!(res, l);
+    }
+
     #[test]
     fn test_ic_small_prime() {
-        let mut ic = IndexCalculus::new();
         let pl = PrimeList::new(30);
         for &p in pl.primes() {
             for a in 1..p {
                 for b in 1..p {
-                    let l = ic.discrete_logarithm(a, b, p);
-                    if let Some(l) = l {
-                        assert_eq!(b, pow(a, l, &BarrettReduction::<u128>::new(p as _)));
-                    }
-                    DynMIntU64::set_mod(p);
-                    let res = if b == 1 {
-                        Some(0)
-                    } else {
-                        BabyStepGiantStep::<MultiplicativeOperation<_>>::new(
-                            p as usize + 1,
-                            DynMIntU64::new(a),
-                        )
-                        .solve(DynMIntU64::new(b))
-                        .map(|x| x as u64)
-                    };
-                    assert_eq!(res, l);
+                    let l = discrete_logarithm_prime_mod(a, b, p);
+                    check(a, b, p, l, true);
                 }
             }
         }
@@ -253,42 +431,98 @@ mod tests {
 
     #[test]
     fn test_ic_medium_prime() {
-        let mut ic = IndexCalculus::new();
+        const Q: usize = 100;
         let mut rng = Xorshift::default();
         for &p in [998_244_353, 1_000_000_007].iter() {
-            for _ in 0..20 {
+            for i in 0..Q {
                 let (a, b) = rng.gen((1..p, 1..p));
-                let l = ic.discrete_logarithm(a, b, p);
-                if let Some(l) = l {
-                    assert_eq!(b, pow(a, l, &BarrettReduction::<u128>::new(p as _)));
-                }
-                DynMIntU64::set_mod(p);
-                let res = if b == 1 {
-                    Some(0)
-                } else {
-                    BabyStepGiantStep::<MultiplicativeOperation<_>>::new(
-                        p as usize + 1,
-                        DynMIntU64::new(a),
-                    )
-                    .solve(DynMIntU64::new(b))
-                    .map(|x| x as u64)
-                };
-                assert_eq!(res, l);
+                let l = discrete_logarithm_prime_mod(a, b, p);
+                check(a, b, p, l, i >= Q - 20);
             }
         }
     }
 
     #[test]
     fn test_ic_large_prime() {
-        let mut ic = IndexCalculus::new();
         let mut rng = Xorshift::default();
         let p = 1_000_000_000_000 - 11;
         for _ in 0..20 {
             let (a, b) = rng.gen((1..p, 1..p));
-            let l = ic.discrete_logarithm(a, b, p);
-            if let Some(l) = l {
-                assert_eq!(b, pow(a, l, &BarrettReduction::<u128>::new(p as _)));
+            let l = discrete_logarithm_prime_mod(a, b, p);
+            check(a, b, p, l, false);
+        }
+    }
+
+    #[test]
+    fn test_pohlig_hellman_prime_power_order() {
+        let p = 2u64;
+        for e in 3..40 {
+            let a = 5;
+            for b in (1..100.min(p.pow(e))).step_by(4) {
+                let l = pohlig_hellman_prime_power_order(a, b, p.pow(e), p, e - 2);
+                check(a, b, p.pow(e), l, false);
             }
+        }
+    }
+
+    #[test]
+    fn test_discrete_logarithm_prime_power_small() {
+        let pl = PrimeList::new(30);
+        for &p in pl.primes() {
+            for e in 1.. {
+                for a in 1..p {
+                    for b in 1..p {
+                        let l = discrete_logarithm_prime_power(a, b, p, e).map(|t| t.0);
+                        check(a, b, p.pow(e), l, true);
+                    }
+                }
+                if p.pow(e) >= 1_000 {
+                    break;
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_discrete_logarithm_small() {
+        for n in 1..50 {
+            for a in 1..n {
+                for b in 1..n {
+                    let l = discrete_logarithm(a, b, n);
+                    check(a, b, n, l, true);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_discrete_logarithm_medium() {
+        const Q: usize = 10_000;
+        let mut rng = Xorshift::default();
+        for i in 0..Q {
+            let n = rng.gen(
+                1..if i < Q - 1 {
+                    1_000_000
+                } else {
+                    1_000_000_000_000
+                },
+            );
+            let a = rng.gen(0..n);
+            let b = rng.gen(0..n);
+            let l = discrete_logarithm(a, b, n);
+            check(a, b, n, l, i >= Q - 200);
+        }
+    }
+
+    #[test]
+    fn test_discrete_logarithm_large() {
+        let mut rng = Xorshift::default();
+        for _ in 0..20 {
+            let n = rng.gen(1..1_000_000_000_000_000_000);
+            let a = rng.gen(0..n);
+            let b = rng.gen(0..n);
+            let l = discrete_logarithm(a, b, n);
+            check(a, b, n, l, false);
         }
     }
 }

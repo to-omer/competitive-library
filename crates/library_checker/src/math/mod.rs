@@ -1,5 +1,6 @@
 pub mod convolution_mod;
 pub mod convolution_mod_1000000007;
+pub mod discrete_logarithm_mod;
 pub mod enumerate_primes;
 pub mod exp_of_formal_power_series;
 pub mod factorize;

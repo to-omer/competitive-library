@@ -43,23 +43,27 @@ pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
 ///
 /// forall (a,b,m), ax = b mod m, where x = y mod z
 #[codesnip::entry(include("gcd", "modinv"))]
-pub fn linear_congruence(abm: impl IntoIterator<Item = (i64, i64, i64)>) -> Option<(i64, i64)> {
-    let mut x = 0i64;
-    let mut m0 = 1i64;
+pub fn linear_congruence<I>(abm: I) -> Option<(u64, u64)>
+where
+    I: IntoIterator<Item = (u64, u64, u64)>,
+{
+    let mut x = 0u64;
+    let mut m0 = 1u64;
     for (a, b, m) in abm {
-        let b = b - a * x;
+        let mut b = b + m - a * x % m;
+        if b >= m {
+            b -= m;
+        }
         let a = a * m0;
-        let g = gcd(a as u64, m as u64) as i64;
+        let g = gcd(a, m);
         if b % g != 0 {
             return None;
         }
-        x += b / g * modinv(a / g, m / g) % (m / g) * m0;
-        m0 *= m / g;
+        let (a, b, m) = (a / g, b / g, m / g);
+        x += b * modinv(a, m) % m * m0;
+        m0 *= m;
     }
     x %= m0;
-    if x < 0 {
-        x += m0;
-    }
     Some((x, m0))
 }
 
@@ -73,7 +77,7 @@ fn test_linear_congruence() {
     for _ in 0..Q {
         let abm: Vec<_> = (0..N)
             .map(|_| {
-                let m = rng.gen(2i64..=20);
+                let m = rng.gen(2u64..=20);
                 (rng.gen(1..m), rng.gen(0..m), m)
             })
             .collect();
@@ -83,9 +87,7 @@ fn test_linear_congruence() {
                 assert!(a * x % m == b);
             }
         } else {
-            let m0 = abm[1..]
-                .iter()
-                .fold(abm[0].2, |x, y| lcm(x as u64, y.2 as u64) as i64);
+            let m0 = abm[1..].iter().fold(abm[0].2, |x, y| lcm(x, y.2));
             let x = (0..m0).find(|&x| abm.iter().cloned().all(|(a, b, m)| a * x % m == b));
             assert_eq!(x, None);
         }

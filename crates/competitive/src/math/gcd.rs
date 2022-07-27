@@ -1,5 +1,4 @@
-#[codesnip::entry]
-pub fn gcd(mut a: u64, mut b: u64) -> u64 {
+pub fn gcd_loop(mut a: u64, mut b: u64) -> u64 {
     while b != 0 {
         a %= b;
         std::mem::swap(&mut a, &mut b);
@@ -8,7 +7,8 @@ pub fn gcd(mut a: u64, mut b: u64) -> u64 {
 }
 
 #[codesnip::entry]
-pub fn gcd_binary(mut a: u64, mut b: u64) -> u64 {
+/// binary gcd
+pub fn gcd(mut a: u64, mut b: u64) -> u64 {
     if a == 0 {
         return b;
     }
@@ -37,17 +37,17 @@ pub fn lcm(a: u64, b: u64) -> u64 {
 
 // ax + by = gcd(a, b)
 // a, b -> gcd(a, b), x, y
-#[codesnip::entry]
-pub fn extgcd(a: i64, b: i64) -> (i64, i64, i64) {
+pub fn extgcd_recurse(a: i64, b: i64) -> (i64, i64, i64) {
     if b == 0 {
         (a, 1, 0)
     } else {
-        let (g, x, y) = extgcd(b, a % b);
+        let (g, x, y) = extgcd_recurse(b, a % b);
         (g, y, x - (a / b) * y)
     }
 }
 
-pub fn extgcd_loop(mut a: i64, mut b: i64) -> (i64, i64, i64) {
+#[codesnip::entry]
+pub fn extgcd(mut a: i64, mut b: i64) -> (i64, i64, i64) {
     let (mut u, mut v, mut x, mut y) = (1, 0, 0, 1);
     while a != 0 {
         let k = b / a;
@@ -103,13 +103,22 @@ pub fn extgcd_binary(mut a: i64, mut b: i64) -> (i64, i64, i64) {
     (a << k, s, t)
 }
 
-#[codesnip::entry(include("extgcd"))]
-pub fn modinv(a: i64, m: i64) -> i64 {
-    (extgcd(a, m).1 % m + m) % m
+pub fn modinv_recurse(a: u64, m: u64) -> u64 {
+    (extgcd_recurse(a as i64, m as i64).1 % m as i64 + m as i64) as u64 % m
 }
 
-pub fn modinv_loop(a: i64, m: i64) -> i64 {
-    (extgcd_loop(a, m).1 % m + m) % m
+#[codesnip::entry(include("extgcd"))]
+pub fn modinv(a: u64, m: u64) -> u64 {
+    let (mut a, mut b) = (a as i64, m as i64);
+    let (mut u, mut x) = (1, 0);
+    while a != 0 {
+        let k = b / a;
+        x -= k * u;
+        b -= k * a;
+        std::mem::swap(&mut x, &mut u);
+        std::mem::swap(&mut b, &mut a);
+    }
+    (if x < 0 { x + m as i64 } else { x }) as _
 }
 
 /// 0 < a < p, gcd(a, p) == 1, p is prime > 2
@@ -149,25 +158,25 @@ pub fn modinv_extgcd_binary(mut a: u64, p: u64) -> u64 {
 mod tests {
     use super::*;
     use crate::tools::Xorshift;
-    const Q: usize = 10_000;
-    const A: i64 = 1_000_000_007;
+    const Q: usize = 100_000;
+    const A: i64 = 1_000_000_007_000_000_007;
 
     #[test]
     fn test_gcd() {
         let mut rng = Xorshift::time();
         for (a, b) in rng.gen_iter((0.., 0..)).take(Q) {
-            assert_eq!(gcd(a, b), gcd_binary(a, b));
+            assert_eq!(gcd_loop(a, b), gcd(a, b));
         }
-        assert_eq!(gcd(0, 0), gcd_binary(0, 0));
-        assert_eq!(gcd(0, 100), gcd_binary(0, 100));
+        assert_eq!(gcd_loop(0, 0), gcd(0, 0));
+        assert_eq!(gcd_loop(0, 100), gcd(0, 100));
     }
 
     #[test]
     fn test_extgcd() {
         let mut rng = Xorshift::time();
         for (a, b) in rng.gen_iter((-A..=A, -A..=A)).take(Q) {
-            let (g, x, y) = extgcd_loop(a, b);
-            assert_eq!(a * x + b * y, g);
+            let (g, x, y) = extgcd(a, b);
+            assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g as i128);
         }
     }
 
@@ -176,7 +185,7 @@ mod tests {
         let mut rng = Xorshift::time();
         for (a, b) in rng.gen_iter((0..=A, 0..=A)).take(Q) {
             let (g, x, y) = extgcd_binary(a, b);
-            assert_eq!(a * x + b * y, g);
+            assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g as i128);
         }
     }
 
@@ -189,9 +198,9 @@ mod tests {
             let g = gcd(a, m);
             let m = m / g;
             let a = a / g;
-            let x = modinv(a as i64, m as i64) as u64;
+            let x = modinv(a, m);
             assert!(x < m);
-            assert_eq!(a * x % m, 1);
+            assert_eq!(a as u128 * x as u128 % m as u128, 1);
         }
     }
 
@@ -207,7 +216,7 @@ mod tests {
             let a = a / g;
             let x = modinv_extgcd_binary(a, m);
             assert!(x < m);
-            assert_eq!(a * x % m, 1);
+            assert_eq!(a as u128 * x as u128 % m as u128, 1);
         }
     }
 }

@@ -1,4 +1,4 @@
-use super::{gcd_binary, miller_rabin_with_br, BarrettReduction};
+use super::{gcd, miller_rabin_with_br, BarrettReduction};
 
 fn find_factor(n: u64) -> Option<u64> {
     let br = BarrettReduction::<u128>::new(n as u128);
@@ -23,7 +23,7 @@ fn find_factor(n: u64) -> Option<u64> {
                     y = f(y);
                     q = mul(q, sub(x, y));
                 }
-                g = gcd_binary(q, n);
+                g = gcd(q, n);
                 k += m;
             }
             r <<= 1;
@@ -32,7 +32,7 @@ fn find_factor(n: u64) -> Option<u64> {
             g = 1;
             while g == 1 {
                 ys = f(ys);
-                g = gcd_binary(sub(x, ys), n);
+                g = gcd(sub(x, ys), n);
             }
         }
         if g < n {
