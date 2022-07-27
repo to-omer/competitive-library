@@ -124,6 +124,13 @@
 <span id="102">102</span>
 <span id="103">103</span>
 <span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
 </pre><pre class="rust"><code><span class="doccomment">//! mathematical datas</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num</span>::{<span class="ident">montgomery</span>, <span class="ident">BarrettReduction</span>, <span class="ident">Complex</span>, <span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
@@ -132,7 +139,7 @@
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;berlekamp_massey&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::berlekamp_massey::berlekamp_massey</span>;
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;discrete_logarithm&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::discrete_logarithm::discrete_logarithm_prime_mod</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::discrete_logarithm</span>::{<span class="ident">discrete_logarithm</span>, <span class="ident">discrete_logarithm_prime_mod</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::factorial</span>::<span class="kw-2">*</span>;
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;fast_fourier_transform&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::fast_fourier_transform::convolve_fft</span>;
@@ -162,7 +169,7 @@
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimeTable&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::prime_table::PrimeTable</span>;
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;primitive_root&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::primitive_root::primitive_root</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::primitive_root</span>::{<span class="ident">check_primitive_root</span>, <span class="ident">primitive_root</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::special_modulo</span>::<span class="kw-2">*</span>;
 
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;berlekamp_massey&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;zero_one&quot;</span>)))]</span>
@@ -171,7 +178,14 @@
     <span class="ident">nightly</span>,
     <span class="ident">codesnip::entry</span>(
         <span class="string">&quot;discrete_logarithm&quot;</span>,
-        <span class="ident">include</span>(<span class="string">&quot;BarrettReduction&quot;</span>, <span class="string">&quot;primitive_root&quot;</span>, <span class="string">&quot;PrimeList&quot;</span>, <span class="string">&quot;Xorshift&quot;</span>)
+        <span class="ident">include</span>(
+            <span class="string">&quot;BarrettReduction&quot;</span>,
+            <span class="string">&quot;lcm&quot;</span>,
+            <span class="string">&quot;modinv&quot;</span>,
+            <span class="string">&quot;primitive_root&quot;</span>,
+            <span class="string">&quot;PrimeList&quot;</span>,
+            <span class="string">&quot;Xorshift&quot;</span>
+        )
     )
 )]</span>
 <span class="kw">mod</span> <span class="ident">discrete_logarithm</span>;
@@ -218,7 +232,7 @@
 <span class="kw">mod</span> <span class="ident">prime</span>;
 <span class="attribute">#[<span class="ident">cfg_attr</span>(
     <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(<span class="string">&quot;prime_factors&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;miller_rabin&quot;</span>, <span class="string">&quot;gcd_binary&quot;</span>))
+    <span class="ident">codesnip::entry</span>(<span class="string">&quot;prime_factors&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;miller_rabin&quot;</span>, <span class="string">&quot;gcd&quot;</span>))
 )]</span>
 <span class="kw">mod</span> <span class="ident">prime_factors</span>;
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimeList&quot;</span>))]</span>
@@ -229,5 +243,5 @@
 <span class="kw">mod</span> <span class="ident">primitive_root</span>;
 <span class="kw">mod</span> <span class="ident">special_modulo</span>;
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (4d6d601c8 2022-07-26)" ></div>
 </body></html>
