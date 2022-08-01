@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["staticrmq_disjoint_sparse_table","✅  AC  162ms"],["staticrmq_segment_tree","✅  AC  159ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["staticrmq_disjoint_sparse_table","✅  AC  167ms"],["staticrmq_segment_tree","✅  AC  132ms"]]};
