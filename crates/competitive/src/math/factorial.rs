@@ -47,10 +47,10 @@ where
     #[inline]
     pub fn homogeneous_product(&self, n: usize, r: usize) -> MInt<M> {
         debug_assert!(n + r < self.fact.len() + 1);
-        if n != 0 && r != 0 {
-            self.combination(n + r - 1, r)
-        } else {
+        if n == 0 && r == 0 {
             MInt::one()
+        } else {
+            self.combination(n + r - 1, r)
         }
     }
     #[inline]
