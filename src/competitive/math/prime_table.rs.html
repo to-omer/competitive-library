@@ -127,22 +127,22 @@
 <span id="111">111</span>
 </pre><pre class="rust"><code><span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimeTable</span> {
-    <span class="ident">table</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+    <span class="ident">table</span>: <span class="ident">Vec</span>&lt;<span class="ident">u32</span>&gt;,
 }
 
 <span class="kw">impl</span> <span class="ident">PrimeTable</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">max_n</span>: <span class="ident">u32</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1</span>; (<span class="ident">max_n</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">/</span> <span class="number">2</span>];
-        <span class="ident">table</span>[<span class="number">0</span>] <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = <span class="macro">vec!</span>[<span class="number">1</span>; (<span class="ident">max_n</span> <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span>) / <span class="number">2</span>];
+        <span class="ident">table</span>[<span class="number">0</span>] = <span class="number">0</span>;
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">3</span>..).<span class="ident">step_by</span>(<span class="number">2</span>) {
-            <span class="kw">let</span> <span class="ident">i2</span> <span class="op">=</span> <span class="ident">i</span> <span class="op">*</span> <span class="ident">i</span>;
-            <span class="kw">if</span> <span class="ident">i2</span> <span class="op">&gt;</span> <span class="ident">max_n</span> {
+            <span class="kw">let</span> <span class="ident">i2</span> = <span class="ident">i</span> * <span class="ident">i</span>;
+            <span class="kw">if</span> <span class="ident">i2</span> &gt; <span class="ident">max_n</span> {
                 <span class="kw">break</span>;
             }
-            <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>] <span class="op">==</span> <span class="number">1</span> {
-                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> (<span class="ident">i2</span>..<span class="op">=</span><span class="ident">max_n</span>).<span class="ident">step_by</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">*</span> <span class="number">2</span>) {
-                    <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">j</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>] <span class="op">==</span> <span class="number">1</span> {
-                        <span class="ident">table</span>[<span class="ident">j</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">i</span>;
+            <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span> &gt;&gt; <span class="number">1</span>] == <span class="number">1</span> {
+                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> (<span class="ident">i2</span>..=<span class="ident">max_n</span>).<span class="ident">step_by</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span> * <span class="number">2</span>) {
+                    <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">j</span> <span class="kw">as</span> <span class="ident">usize</span> &gt;&gt; <span class="number">1</span>] == <span class="number">1</span> {
+                        <span class="ident">table</span>[<span class="ident">j</span> <span class="kw">as</span> <span class="ident">usize</span> &gt;&gt; <span class="number">1</span>] = <span class="ident">i</span>;
                     }
                 }
             }
@@ -150,55 +150,55 @@
         <span class="ident">PrimeTable</span> { <span class="ident">table</span> }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">n</span> <span class="op">==</span> <span class="number">2</span> <span class="op">|</span><span class="op">|</span> <span class="ident">n</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>] <span class="op">==</span> <span class="number">1</span>
+        <span class="ident">n</span> == <span class="number">2</span> || <span class="ident">n</span> % <span class="number">2</span> == <span class="number">1</span> &amp;&amp; <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> &gt;&gt; <span class="number">1</span>] == <span class="number">1</span>
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trial_division</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">n</span>: <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trial_division</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">n</span>: <span class="ident">u32</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>)
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">u32</span>, <span class="ident">u32</span>),
     {
-        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">n</span>.<span class="ident">trailing_zeros</span>();
-        <span class="kw">if</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
+        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">n</span>.<span class="ident">trailing_zeros</span>();
+        <span class="kw">if</span> <span class="ident">k</span> &gt; <span class="number">0</span> {
             <span class="ident">f</span>(<span class="number">2</span>, <span class="ident">k</span>);
         }
-        <span class="ident">n</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">k</span>;
-        <span class="kw">while</span> <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>] <span class="op">&gt;</span> <span class="number">1</span> {
-            <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="ident">p</span>;
-            <span class="kw">while</span> <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>] <span class="op">==</span> <span class="ident">p</span> {
-                <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="ident">p</span>;
-                <span class="ident">cnt</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="ident">n</span> &gt;&gt;= <span class="ident">k</span>;
+        <span class="kw">while</span> <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> &gt;&gt; <span class="number">1</span>] &gt; <span class="number">1</span> {
+            <span class="kw">let</span> <span class="ident">p</span> = <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> &gt;&gt; <span class="number">1</span>];
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cnt</span> = <span class="number">1</span>;
+            <span class="ident">n</span> /= <span class="ident">p</span>;
+            <span class="kw">while</span> <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span> <span class="kw">as</span> <span class="ident">usize</span> &gt;&gt; <span class="number">1</span>] == <span class="ident">p</span> {
+                <span class="ident">n</span> /= <span class="ident">p</span>;
+                <span class="ident">cnt</span> += <span class="number">1</span>;
             }
-            <span class="kw">if</span> <span class="ident">n</span> <span class="op">==</span> <span class="ident">p</span> {
-                <span class="ident">cnt</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="ident">p</span>;
+            <span class="kw">if</span> <span class="ident">n</span> == <span class="ident">p</span> {
+                <span class="ident">cnt</span> += <span class="number">1</span>;
+                <span class="ident">n</span> /= <span class="ident">p</span>;
             }
             <span class="ident">f</span>(<span class="ident">p</span>, <span class="ident">cnt</span>);
         }
-        <span class="kw">if</span> <span class="ident">n</span> <span class="op">&gt;</span> <span class="number">1</span> {
+        <span class="kw">if</span> <span class="ident">n</span> &gt; <span class="number">1</span> {
             <span class="ident">f</span>(<span class="ident">n</span>, <span class="number">1</span>);
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prime_factors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u32</span>, <span class="ident">u32</span>)<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">factors</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-        <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>, <span class="op">|</span><span class="ident">p</span>, <span class="ident">c</span><span class="op">|</span> <span class="ident">factors</span>.<span class="ident">push</span>((<span class="ident">p</span>, <span class="ident">c</span>)));
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prime_factors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">u32</span>, <span class="ident">u32</span>)&gt; {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">factors</span> = <span class="macro">vec!</span>[];
+        <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>, |<span class="ident">p</span>, <span class="ident">c</span>| <span class="ident">factors</span>.<span class="ident">push</span>((<span class="ident">p</span>, <span class="ident">c</span>)));
         <span class="ident">factors</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count_divisors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">divisor_cnt</span> <span class="op">=</span> <span class="number">1</span>;
-        <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>, <span class="op">|</span><span class="kw">_</span>, <span class="ident">cnt</span><span class="op">|</span> <span class="ident">divisor_cnt</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">cnt</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">divisor_cnt</span> = <span class="number">1</span>;
+        <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>, |<span class="kw">_</span>, <span class="ident">cnt</span>| <span class="ident">divisor_cnt</span> <span class="kw-2">*</span>= <span class="ident">cnt</span> + <span class="number">1</span>);
         <span class="ident">divisor_cnt</span>
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">divisors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">d</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">1u32</span>];
-        <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>, <span class="op">|</span><span class="ident">p</span>, <span class="ident">c</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">d</span>.<span class="ident">len</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">p</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">divisors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">u32</span>&gt; {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">d</span> = <span class="macro">vec!</span>[<span class="number">1u32</span>];
+        <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>, |<span class="ident">p</span>, <span class="ident">c</span>| {
+            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">d</span>.<span class="ident">len</span>();
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="ident">p</span>;
             <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">c</span> {
                 <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">k</span> {
-                    <span class="ident">d</span>.<span class="ident">push</span>(<span class="ident">d</span>[<span class="ident">i</span>] <span class="op">*</span> <span class="ident">acc</span>);
+                    <span class="ident">d</span>.<span class="ident">push</span>(<span class="ident">d</span>[<span class="ident">i</span>] * <span class="ident">acc</span>);
                 }
-                <span class="ident">acc</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">p</span>;
+                <span class="ident">acc</span> <span class="kw-2">*</span>= <span class="ident">p</span>;
             }
         });
         <span class="ident">d</span>.<span class="ident">sort_unstable</span>();
@@ -208,33 +208,33 @@
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">test_prime_table</span>() {
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100_000</span>;
-    <span class="kw">let</span> <span class="ident">primes</span> <span class="op">=</span> <span class="ident">PrimeTable::new</span>(<span class="ident">N</span>);
-    <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">primes</span>.<span class="ident">is_prime</span>(<span class="ident">N</span>));
+    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">u32</span> = <span class="number">100_000</span>;
+    <span class="kw">let</span> <span class="ident">primes</span> = <span class="ident">PrimeTable::new</span>(<span class="ident">N</span>);
+    <span class="macro">assert!</span>(!<span class="ident">primes</span>.<span class="ident">is_prime</span>(<span class="ident">N</span>));
     <span class="macro">assert!</span>(<span class="ident">primes</span>.<span class="ident">is_prime</span>(<span class="number">99991</span>));
 
-    <span class="kw">let</span> <span class="ident">factors</span> <span class="op">=</span> <span class="ident">primes</span>.<span class="ident">prime_factors</span>(<span class="number">99991</span>);
+    <span class="kw">let</span> <span class="ident">factors</span> = <span class="ident">primes</span>.<span class="ident">prime_factors</span>(<span class="number">99991</span>);
     <span class="macro">assert_eq!</span>(<span class="ident">factors</span>, <span class="macro">vec!</span>[(<span class="number">99991</span>, <span class="number">1</span>)]);
-    <span class="kw">let</span> <span class="ident">factors</span> <span class="op">=</span> <span class="ident">primes</span>.<span class="ident">prime_factors</span>(<span class="number">2016</span>);
+    <span class="kw">let</span> <span class="ident">factors</span> = <span class="ident">primes</span>.<span class="ident">prime_factors</span>(<span class="number">2016</span>);
     <span class="macro">assert_eq!</span>(<span class="ident">factors</span>, <span class="macro">vec!</span>[(<span class="number">2</span>, <span class="number">5</span>), (<span class="number">3</span>, <span class="number">2</span>), (<span class="number">7</span>, <span class="number">1</span>)]);
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="op">=</span><span class="ident">N</span> {
+    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..=<span class="ident">N</span> {
         <span class="macro">assert_eq!</span>(
             <span class="ident">i</span>,
             <span class="ident">primes</span>
                 .<span class="ident">prime_factors</span>(<span class="ident">i</span>)
                 .<span class="ident">into_iter</span>()
-                .<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">p</span>, <span class="ident">c</span>)<span class="op">|</span> <span class="ident">p</span>.<span class="ident">pow</span>(<span class="ident">c</span> <span class="kw">as</span> <span class="ident">u32</span>))
-                .<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>()
+                .<span class="ident">map</span>(|(<span class="ident">p</span>, <span class="ident">c</span>)| <span class="ident">p</span>.<span class="ident">pow</span>(<span class="ident">c</span> <span class="kw">as</span> <span class="ident">u32</span>))
+                .<span class="ident">product</span>::&lt;<span class="ident">u32</span>&gt;()
         );
         <span class="macro">assert_eq!</span>(
             <span class="ident">primes</span>
                 .<span class="ident">prime_factors</span>(<span class="ident">i</span>)
                 .<span class="ident">into_iter</span>()
-                .<span class="ident">map</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">c</span>)<span class="op">|</span> <span class="ident">c</span> <span class="op">+</span> <span class="number">1</span>)
-                .<span class="ident">product</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>(),
+                .<span class="ident">map</span>(|(<span class="kw">_</span>, <span class="ident">c</span>)| <span class="ident">c</span> + <span class="number">1</span>)
+                .<span class="ident">product</span>::&lt;<span class="ident">u32</span>&gt;(),
             <span class="ident">primes</span>.<span class="ident">count_divisors</span>(<span class="ident">i</span>)
         );
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

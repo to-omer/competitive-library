@@ -82,16 +82,16 @@
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">value</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i64</span>) -&gt; <span class="ident">i64</span> {
-        <span class="self">self</span>.<span class="ident">slope</span> <span class="op">*</span> <span class="ident">x</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">intercept</span>
+        <span class="self">self</span>.<span class="ident">slope</span> * <span class="ident">x</span> + <span class="self">self</span>.<span class="ident">intercept</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l1</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">l2</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        (<span class="ident">l1</span>.<span class="ident">slope</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">slope</span>) <span class="op">*</span> (<span class="ident">l2</span>.<span class="ident">intercept</span> <span class="op">-</span> <span class="ident">l1</span>.<span class="ident">intercept</span>)
-            <span class="op">&gt;</span><span class="op">=</span> (<span class="ident">l1</span>.<span class="ident">intercept</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">intercept</span>) <span class="op">*</span> (<span class="ident">l2</span>.<span class="ident">slope</span> <span class="op">-</span> <span class="ident">l1</span>.<span class="ident">slope</span>)
+        (<span class="ident">l1</span>.<span class="ident">slope</span> - <span class="self">self</span>.<span class="ident">slope</span>) * (<span class="ident">l2</span>.<span class="ident">intercept</span> - <span class="ident">l1</span>.<span class="ident">intercept</span>)
+            &gt;= (<span class="ident">l1</span>.<span class="ident">intercept</span> - <span class="self">self</span>.<span class="ident">intercept</span>) * (<span class="ident">l2</span>.<span class="ident">slope</span> - <span class="ident">l1</span>.<span class="ident">slope</span>)
     }
 }
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConvexHullTrick</span> {
-    <span class="ident">deq</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">ChtLine</span><span class="op">&gt;</span>,
+    <span class="ident">deq</span>: <span class="ident">VecDeque</span>&lt;<span class="ident">ChtLine</span>&gt;,
 }
 <span class="kw">impl</span> <span class="ident">ConvexHullTrick</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
@@ -99,10 +99,10 @@
     }
     <span class="doccomment">/// k-th add_line(a_k, b_k): a_k &gt;= a_{k+1}</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_line</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident">i64</span>, <span class="ident">b</span>: <span class="ident">i64</span>) {
-        <span class="kw">let</span> <span class="ident">line</span> <span class="op">=</span> <span class="ident">ChtLine::new</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+        <span class="kw">let</span> <span class="ident">line</span> = <span class="ident">ChtLine::new</span>(<span class="ident">a</span>, <span class="ident">b</span>);
         <span class="kw">while</span> {
-            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">len</span>();
-            <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">deq</span>[<span class="ident">k</span> <span class="op">-</span> <span class="number">2</span>].<span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">deq</span>[<span class="ident">k</span> <span class="op">-</span> <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="ident">line</span>)
+            <span class="kw">let</span> <span class="ident">k</span> = <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">len</span>();
+            <span class="ident">k</span> &gt; <span class="number">1</span> &amp;&amp; <span class="self">self</span>.<span class="ident">deq</span>[<span class="ident">k</span> - <span class="number">2</span>].<span class="ident">check</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">deq</span>[<span class="ident">k</span> - <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="ident">line</span>)
         } {
             <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">pop_back</span>();
         }
@@ -110,8 +110,8 @@
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">query</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i64</span>) -&gt; <span class="ident">i64</span> {
         <span class="kw">while</span> {
-            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">len</span>();
-            <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">1</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">deq</span>[<span class="number">0</span>].<span class="ident">value</span>(<span class="ident">x</span>) <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">deq</span>[<span class="number">1</span>].<span class="ident">value</span>(<span class="ident">x</span>)
+            <span class="kw">let</span> <span class="ident">k</span> = <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">len</span>();
+            <span class="ident">k</span> &gt; <span class="number">1</span> &amp;&amp; <span class="self">self</span>.<span class="ident">deq</span>[<span class="number">0</span>].<span class="ident">value</span>(<span class="ident">x</span>) &gt;= <span class="self">self</span>.<span class="ident">deq</span>[<span class="number">1</span>].<span class="ident">value</span>(<span class="ident">x</span>)
         } {
             <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">pop_front</span>();
         }
@@ -121,4 +121,4 @@
 
 <span class="comment">// ConvexHullTrick verify: https://atcoder.jp/contests/dp/submissions/11341451</span>
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

@@ -439,14 +439,14 @@
 <span id="423">423</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MIntBase</span> <span class="kw">for</span> <span class="ident">M</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MIntBase</span> <span class="kw">for</span> <span class="ident">M</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MontgomeryReduction32</span>,
 {
-    <span class="kw">type</span> <span class="ident">Inner</span> <span class="op">=</span> <span class="ident">u32</span>;
+    <span class="kw">type</span> <span class="ident">Inner</span> = <span class="ident">u32</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">get_mod</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MontgomeryReduction32</span><span class="op">&gt;</span><span class="ident">::get_mod</span>()
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MontgomeryReduction32</span>&gt;<span class="ident">::get_mod</span>()
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_zero</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
@@ -458,25 +458,25 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_add</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="ident">y</span>;
-        <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::get_mod</span>();
-        <span class="kw">if</span> <span class="ident">z</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">m</span> {
-            <span class="ident">z</span> <span class="op">-</span> <span class="ident">m</span>
+        <span class="kw">let</span> <span class="ident">z</span> = <span class="ident">x</span> + <span class="ident">y</span>;
+        <span class="kw">let</span> <span class="ident">m</span> = <span class="ident"><span class="self">Self</span>::get_mod</span>();
+        <span class="kw">if</span> <span class="ident">z</span> &gt;= <span class="ident">m</span> {
+            <span class="ident">z</span> - <span class="ident">m</span>
         } <span class="kw">else</span> {
             <span class="ident">z</span>
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_sub</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="ident">y</span> {
-            <span class="ident">x</span> <span class="op">+</span> <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="op">-</span> <span class="ident">y</span>
+        <span class="kw">if</span> <span class="ident">x</span> &lt; <span class="ident">y</span> {
+            <span class="ident">x</span> + <span class="ident"><span class="self">Self</span>::get_mod</span>() - <span class="ident">y</span>
         } <span class="kw">else</span> {
-            <span class="ident">x</span> <span class="op">-</span> <span class="ident">y</span>
+            <span class="ident">x</span> - <span class="ident">y</span>
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_mul</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident">y</span> <span class="kw">as</span> <span class="ident">u64</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_div</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
@@ -484,33 +484,33 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_neg</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">x</span> == <span class="number">0</span> {
             <span class="number">0</span>
         } <span class="kw">else</span> {
-            <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="op">-</span> <span class="ident">x</span>
+            <span class="ident"><span class="self">Self</span>::get_mod</span>() - <span class="ident">x</span>
         }
     }
     <span class="kw">fn</span> <span class="ident">mod_inv</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) <span class="op">=</span> (<span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">p</span>);
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) <span class="op">=</span> (<span class="number">1</span>, <span class="number">0</span>);
-        <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">/</span> <span class="ident">a</span>;
-            <span class="ident">x</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">u</span>;
-            <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">a</span>;
+        <span class="kw">let</span> <span class="ident">p</span> = <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) = (<span class="ident">x</span> <span class="kw">as</span> <span class="ident">i32</span>, <span class="ident">p</span>);
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) = (<span class="number">1</span>, <span class="number">0</span>);
+        <span class="kw">while</span> <span class="ident">a</span> != <span class="number">0</span> {
+            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">b</span> / <span class="ident">a</span>;
+            <span class="ident">x</span> -= <span class="ident">k</span> * <span class="ident">u</span>;
+            <span class="ident">b</span> -= <span class="ident">k</span> * <span class="ident">a</span>;
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">u</span>);
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>, <span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
         }
-        <span class="ident"><span class="self">Self</span>::reduce</span>((<span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> { <span class="ident">x</span> <span class="op">+</span> <span class="ident">p</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::n3</span>() <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>((<span class="kw">if</span> <span class="ident">x</span> &lt; <span class="number">0</span> { <span class="ident">x</span> + <span class="ident">p</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident"><span class="self">Self</span>::n3</span>() <span class="kw">as</span> <span class="ident">u64</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">M</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MIntConvert</span>&lt;<span class="ident">u32</span>&gt; <span class="kw">for</span> <span class="ident">M</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MontgomeryReduction32</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">u32</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident">u32</span> {
@@ -518,16 +518,16 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">u32</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">u32</span>
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">u32</span>
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">M</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MIntConvert</span>&lt;<span class="ident">u64</span>&gt; <span class="kw">for</span> <span class="ident">M</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MontgomeryReduction32</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">u64</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="op">%</span> <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> % <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident">u64</span> {
@@ -535,16 +535,16 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">u64</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span>
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span>
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">M</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MIntConvert</span>&lt;<span class="ident">usize</span>&gt; <span class="kw">for</span> <span class="ident">M</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MontgomeryReduction32</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">%</span> <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> % <span class="ident"><span class="self">Self</span>::get_mod</span>() <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident">usize</span> {
@@ -552,22 +552,22 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">usize</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">usize</span>
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">usize</span>
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">M</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MIntConvert</span>&lt;<span class="ident">i32</span>&gt; <span class="kw">for</span> <span class="ident">M</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MontgomeryReduction32</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">i32</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">%</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> {
-            (<span class="ident">x</span> <span class="op">+</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="ident">u64</span>
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">x</span> % &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="kw">if</span> <span class="ident">x</span> &lt; <span class="number">0</span> {
+            (<span class="ident">x</span> + &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>) <span class="kw">as</span> <span class="ident">u64</span>
         } <span class="kw">else</span> {
             <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span>
         };
-        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident">i32</span> {
@@ -575,22 +575,22 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">i32</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i32</span>
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">M</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MIntConvert</span>&lt;<span class="ident">i64</span>&gt; <span class="kw">for</span> <span class="ident">M</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MontgomeryReduction32</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">i64</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">%</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i64</span>;
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> {
-            (<span class="ident">x</span> <span class="op">+</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i64</span>) <span class="kw">as</span> <span class="ident">u64</span>
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">x</span> % &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i64</span>;
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="kw">if</span> <span class="ident">x</span> &lt; <span class="number">0</span> {
+            (<span class="ident">x</span> + &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i64</span>) <span class="kw">as</span> <span class="ident">u64</span>
         } <span class="kw">else</span> {
             <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span>
         };
-        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident">i64</span> {
@@ -598,22 +598,22 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">i64</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i64</span>
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">i64</span>
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">isize</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">M</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MIntConvert</span>&lt;<span class="ident">isize</span>&gt; <span class="kw">for</span> <span class="ident">M</span>
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MontgomeryReduction32</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">isize</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">%</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">isize</span>;
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> {
-            (<span class="ident">x</span> <span class="op">+</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">isize</span>) <span class="kw">as</span> <span class="ident">u64</span>
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">x</span> % &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">isize</span>;
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="kw">if</span> <span class="ident">x</span> &lt; <span class="number">0</span> {
+            (<span class="ident">x</span> + &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">isize</span>) <span class="kw">as</span> <span class="ident">u64</span>
         } <span class="kw">else</span> {
             <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span>
         };
-        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
+        <span class="ident"><span class="self">Self</span>::reduce</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident"><span class="self">Self</span>::n2</span>() <span class="kw">as</span> <span class="ident">u64</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident">isize</span> {
@@ -621,7 +621,7 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">isize</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">isize</span>
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::get_mod</span>() <span class="kw">as</span> <span class="ident">isize</span>
     }
 }
 <span class="doccomment">/// m is prime, n = 2^32</span>
@@ -630,15 +630,15 @@
     <span class="kw">fn</span> <span class="ident">get_mod</span>() -&gt; <span class="ident">u32</span>;
     <span class="doccomment">/// (-m)^{-1} mod n</span>
     <span class="kw">fn</span> <span class="ident">r</span>() -&gt; <span class="ident">u32</span> {
-        <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::get_mod</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">let</span> <span class="ident">m</span> = <span class="ident"><span class="self">Self</span>::get_mod</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> = <span class="number">0</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> = <span class="number">0</span>;
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">32</span> {
-            <span class="kw">if</span> <span class="ident">t</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="ident">t</span> <span class="op">+</span><span class="op">=</span> <span class="ident">m</span>;
-                <span class="ident">r</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">i</span>;
+            <span class="kw">if</span> <span class="ident">t</span> % <span class="number">2</span> == <span class="number">0</span> {
+                <span class="ident">t</span> += <span class="ident">m</span>;
+                <span class="ident">r</span> += <span class="number">1</span> &lt;&lt; <span class="ident">i</span>;
             }
-            <span class="ident">t</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+            <span class="ident">t</span> /= <span class="number">2</span>;
         }
         <span class="ident">r</span>
     }
@@ -650,17 +650,17 @@
     <span class="kw">fn</span> <span class="ident">n3</span>() -&gt; <span class="ident">u32</span>;
     <span class="doccomment">/// n^{-1}x = (x + (xr mod n)m) / n</span>
     <span class="kw">fn</span> <span class="ident">reduce</span>(<span class="ident">x</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u32</span> {
-        <span class="kw">let</span> <span class="ident">m</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::get_mod</span>();
-        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::r</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> <span class="op">=</span> ((<span class="ident">x</span> <span class="op">+</span> <span class="ident">r</span>.<span class="ident">wrapping_mul</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="kw">as</span> <span class="ident">u64</span> <span class="op">*</span> <span class="ident">m</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">32</span>) <span class="kw">as</span> <span class="ident">u32</span>;
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">m</span> {
-            <span class="ident">x</span> <span class="op">-</span><span class="op">=</span> <span class="ident">m</span>;
+        <span class="kw">let</span> <span class="ident">m</span>: <span class="ident">u32</span> = <span class="ident"><span class="self">Self</span>::get_mod</span>();
+        <span class="kw">let</span> <span class="ident">r</span> = <span class="ident"><span class="self">Self</span>::r</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = ((<span class="ident">x</span> + <span class="ident">r</span>.<span class="ident">wrapping_mul</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>) <span class="kw">as</span> <span class="ident">u64</span> * <span class="ident">m</span> <span class="kw">as</span> <span class="ident">u64</span>) &gt;&gt; <span class="number">32</span>) <span class="kw">as</span> <span class="ident">u32</span>;
+        <span class="kw">if</span> <span class="ident">x</span> &gt;= <span class="ident">m</span> {
+            <span class="ident">x</span> -= <span class="ident">m</span>;
         }
         <span class="ident">x</span>
     }
 }
 <span class="macro">macro_rules!</span> <span class="ident">define_montgomery_reduction_32</span> {
-    ($([<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n2</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n3</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint_name</span>:<span class="ident">ident</span> $(,)<span class="question-mark">?</span>]),<span class="op">*</span> $(,)<span class="question-mark">?</span>) =&gt; {
+    ($([<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">m</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n1</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n2</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n3</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint_name</span>:<span class="ident">ident</span> $(,)<span class="question-mark">?</span>]),* $(,)<span class="question-mark">?</span>) =&gt; {
         $(
             <span class="kw">pub</span> <span class="kw">enum</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {}
             <span class="kw">impl</span> <span class="ident">MontgomeryReduction32</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
@@ -685,8 +685,8 @@
                     <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n3</span>
                 }
             }
-            <span class="kw">pub</span> <span class="kw">type</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint_name</span> <span class="op">=</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span><span class="op">&gt;</span>;
-        )<span class="op">*</span>
+            <span class="kw">pub</span> <span class="kw">type</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">mint_name</span> = <span class="ident">MInt</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>&gt;;
+        )*
     };
 }
 <span class="macro">define_montgomery_reduction_32!</span>(
@@ -733,40 +733,40 @@
 <span class="attribute">#[<span class="ident">codesnip::skip</span>]</span>
 <span class="kw">fn</span> <span class="ident">culculate_montgomery</span>() {
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::math::modinv</span>;
-    <span class="kw">let</span> <span class="ident">m</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">998_244_353</span>;
+    <span class="kw">let</span> <span class="ident">m</span>: <span class="ident">u64</span> = <span class="number">998_244_353</span>;
     <span class="macro">println!</span>(<span class="string">&quot;m = {}&quot;</span>, <span class="ident">m</span>);
-    <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="number">1u64</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">32</span>;
+    <span class="kw">let</span> <span class="ident">n</span> = <span class="number">1u64</span> &lt;&lt; <span class="number">32</span>;
     <span class="macro">println!</span>(<span class="string">&quot;n = {}&quot;</span>, <span class="ident">n</span>);
     <span class="comment">// n^{-1} mod m</span>
-    <span class="kw">let</span> <span class="ident">ninv</span> <span class="op">=</span> <span class="ident">modinv</span>(<span class="ident">n</span>, <span class="ident">m</span>);
+    <span class="kw">let</span> <span class="ident">ninv</span> = <span class="ident">modinv</span>(<span class="ident">n</span>, <span class="ident">m</span>);
     <span class="macro">println!</span>(<span class="string">&quot;n^{{-1}} = {}&quot;</span>, <span class="ident">ninv</span>);
     <span class="comment">// r = (-m)^{-1} mod n</span>
-    <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">modinv</span>(<span class="ident">n</span> <span class="op">-</span> <span class="ident">m</span>, <span class="ident">n</span>);
+    <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">modinv</span>(<span class="ident">n</span> - <span class="ident">m</span>, <span class="ident">n</span>);
     <span class="macro">println!</span>(<span class="string">&quot;r = {}&quot;</span>, <span class="ident">r</span>);
-    <span class="kw">let</span> <span class="ident">get_r</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">while</span> <span class="ident">n</span> <span class="op">&gt;</span> <span class="number">1</span> {
-            <span class="kw">if</span> <span class="ident">t</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="ident">t</span> <span class="op">+</span><span class="op">=</span> <span class="ident">m</span>;
-                <span class="ident">r</span> <span class="op">+</span><span class="op">=</span> <span class="ident">i</span>;
+    <span class="kw">let</span> <span class="ident">get_r</span> = || {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> = <span class="number">0</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> = <span class="ident">n</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> = <span class="number">1</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">t</span> = <span class="number">0</span>;
+        <span class="kw">while</span> <span class="ident">n</span> &gt; <span class="number">1</span> {
+            <span class="kw">if</span> <span class="ident">t</span> % <span class="number">2</span> == <span class="number">0</span> {
+                <span class="ident">t</span> += <span class="ident">m</span>;
+                <span class="ident">r</span> += <span class="ident">i</span>;
             }
-            <span class="ident">t</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-            <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-            <span class="ident">i</span> <span class="kw-2">*</span><span class="op">=</span> <span class="number">2</span>;
+            <span class="ident">t</span> /= <span class="number">2</span>;
+            <span class="ident">n</span> /= <span class="number">2</span>;
+            <span class="ident">i</span> <span class="kw-2">*</span>= <span class="number">2</span>;
         }
         <span class="ident">r</span>
     };
-    <span class="macro">assert_eq!</span>((<span class="ident">get_r</span>() <span class="op">*</span> <span class="ident">m</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">&amp;</span> (<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>), <span class="number">0</span>);
-    <span class="macro">assert_eq!</span>((<span class="ident">r</span> <span class="op">*</span> <span class="ident">m</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">&amp;</span> (<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>), <span class="number">0</span>);
+    <span class="macro">assert_eq!</span>((<span class="ident">get_r</span>() * <span class="ident">m</span> + <span class="number">1</span>) &amp; (<span class="ident">n</span> - <span class="number">1</span>), <span class="number">0</span>);
+    <span class="macro">assert_eq!</span>((<span class="ident">r</span> * <span class="ident">m</span> + <span class="number">1</span>) &amp; (<span class="ident">n</span> - <span class="number">1</span>), <span class="number">0</span>);
     <span class="macro">assert_eq!</span>(<span class="ident">r</span>, <span class="ident">get_r</span>());
-    <span class="kw">let</span> <span class="ident">n1</span> <span class="op">=</span> <span class="ident">n</span> <span class="op">%</span> <span class="ident">m</span>;
+    <span class="kw">let</span> <span class="ident">n1</span> = <span class="ident">n</span> % <span class="ident">m</span>;
     <span class="macro">println!</span>(<span class="string">&quot;n^1 = {}&quot;</span>, <span class="ident">n1</span>);
-    <span class="kw">let</span> <span class="ident">n2</span> <span class="op">=</span> <span class="ident">n1</span> <span class="op">*</span> <span class="ident">n1</span> <span class="op">%</span> <span class="ident">m</span>;
+    <span class="kw">let</span> <span class="ident">n2</span> = <span class="ident">n1</span> * <span class="ident">n1</span> % <span class="ident">m</span>;
     <span class="macro">println!</span>(<span class="string">&quot;n^2 = {}&quot;</span>, <span class="ident">n2</span>);
-    <span class="kw">let</span> <span class="ident">n3</span> <span class="op">=</span> <span class="ident">n1</span> <span class="op">*</span> <span class="ident">n2</span> <span class="op">%</span> <span class="ident">m</span>;
+    <span class="kw">let</span> <span class="ident">n3</span> = <span class="ident">n1</span> * <span class="ident">n2</span> % <span class="ident">m</span>;
     <span class="macro">println!</span>(<span class="string">&quot;n^3 = {}&quot;</span>, <span class="ident">n3</span>);
     <span class="comment">// (x + (xr mod n)m) / n</span>
     <span class="comment">// r &lt; n</span>
@@ -785,8 +785,8 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_mint998244353</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
-        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1000</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
+        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">1000</span>;
         <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">MInt998244353::zero</span>().<span class="ident">inner</span>());
         <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">MInt998244353::one</span>().<span class="ident">inner</span>());
         <span class="macro">assert_eq!</span>(
@@ -799,31 +799,31 @@
         );
         <span class="macro">assert_eq!</span>(<span class="ident">Modulo998244353::reduce</span>(<span class="ident">Modulo998244353::n1</span>() <span class="kw">as</span> <span class="ident">u64</span>), <span class="number">1</span>);
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353::get_mod</span>());
+            <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353::get_mod</span>());
             <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="ident">MInt998244353::new</span>(<span class="ident">x</span>).<span class="ident">inner</span>());
-            <span class="macro">assert_eq!</span>((<span class="op">-</span><span class="ident">M::new</span>(<span class="ident">x</span>)).<span class="ident">inner</span>(), (<span class="op">-</span><span class="ident">MInt998244353::new</span>(<span class="ident">x</span>)).<span class="ident">inner</span>());
+            <span class="macro">assert_eq!</span>((-<span class="ident">M::new</span>(<span class="ident">x</span>)).<span class="ident">inner</span>(), (-<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>)).<span class="ident">inner</span>());
             <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="ident">MInt998244353::new</span>(<span class="ident">x</span>).<span class="ident">inv</span>().<span class="ident">inv</span>().<span class="ident">inner</span>());
             <span class="macro">assert_eq!</span>(<span class="ident">M::new</span>(<span class="ident">x</span>).<span class="ident">inv</span>().<span class="ident">inner</span>(), <span class="ident">MInt998244353::new</span>(<span class="ident">x</span>).<span class="ident">inv</span>().<span class="ident">inner</span>());
         }
 
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353::get_mod</span>());
-            <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353::get_mod</span>());
+            <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353::get_mod</span>());
+            <span class="kw">let</span> <span class="ident">y</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">MInt998244353::get_mod</span>());
             <span class="macro">assert_eq!</span>(
-                (<span class="ident">M::new</span>(<span class="ident">x</span>) <span class="op">+</span> <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
-                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) <span class="op">+</span> <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
+                (<span class="ident">M::new</span>(<span class="ident">x</span>) + <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
+                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) + <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
             );
             <span class="macro">assert_eq!</span>(
-                (<span class="ident">M::new</span>(<span class="ident">x</span>) <span class="op">-</span> <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
-                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) <span class="op">-</span> <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
+                (<span class="ident">M::new</span>(<span class="ident">x</span>) - <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
+                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) - <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
             );
             <span class="macro">assert_eq!</span>(
-                (<span class="ident">M::new</span>(<span class="ident">x</span>) <span class="op">*</span> <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
-                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) <span class="op">*</span> <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
+                (<span class="ident">M::new</span>(<span class="ident">x</span>) * <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
+                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) * <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
             );
             <span class="macro">assert_eq!</span>(
-                (<span class="ident">M::new</span>(<span class="ident">x</span>) <span class="op">/</span> <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
-                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) <span class="op">/</span> <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
+                (<span class="ident">M::new</span>(<span class="ident">x</span>) / <span class="ident">M::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>(),
+                (<span class="ident">MInt998244353::new</span>(<span class="ident">x</span>) / <span class="ident">MInt998244353::new</span>(<span class="ident">y</span>)).<span class="ident">inner</span>()
             );
             <span class="macro">assert_eq!</span>(
                 <span class="ident">M::new</span>(<span class="ident">x</span>).<span class="ident">pow</span>(<span class="ident">y</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">inner</span>(),
@@ -832,7 +832,7 @@
         }
 
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">rand64</span>();
+            <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">rng</span>.<span class="ident">rand64</span>();
             <span class="macro">assert_eq!</span>(
                 <span class="ident">M::from</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">inner</span>(),
                 <span class="ident">MInt998244353::from</span>(<span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">inner</span>()
@@ -861,4 +861,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

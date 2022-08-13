@@ -113,7 +113,7 @@
     <span class="kw">pub</span> <span class="ident">now</span>: <span class="ident">std::time::Instant</span>,
     <span class="kw">pub</span> <span class="ident">time</span>: <span class="ident">f64</span>,
     <span class="kw">pub</span> <span class="ident">temperture</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">log_table</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">log_table</span>: <span class="ident">Vec</span>&lt;<span class="ident">f64</span>&gt;,
     <span class="kw">pub</span> <span class="ident">rand</span>: <span class="ident">Xorshift</span>,
 
     <span class="kw">pub</span> <span class="ident">is_maximize</span>: <span class="ident">bool</span>,
@@ -124,9 +124,9 @@
 }
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SimuratedAnnealing</span> {
     <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">std::time::Instant::now</span>();
-        <span class="kw">let</span> <span class="ident">log_table</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span>)
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> ((<span class="ident">i</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">f64</span> <span class="op">/</span> (<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span> <span class="op">*</span> <span class="number">2</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">ln</span>())
+        <span class="kw">let</span> <span class="ident">now</span> = <span class="ident">std::time::Instant::now</span>();
+        <span class="kw">let</span> <span class="ident">log_table</span> = (<span class="number">0</span>..<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span>)
+            .<span class="ident">map</span>(|<span class="ident">i</span>| ((<span class="ident">i</span> * <span class="number">2</span> + <span class="number">1</span>) <span class="kw">as</span> <span class="ident">f64</span> / (<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span> * <span class="number">2</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">ln</span>())
             .<span class="ident">collect</span>();
         <span class="self">Self</span> {
             <span class="ident">iter_count</span>: <span class="number">0</span>,
@@ -144,57 +144,57 @@
     }
 }
 <span class="kw">impl</span> <span class="ident">SimuratedAnnealing</span> {
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG_TABLE_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0x10000</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">0xbeef_cafe</span>;
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG_TABLE_SIZE</span>: <span class="ident">usize</span> = <span class="number">0x10000</span>;
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u64</span> = <span class="number">0xbeef_cafe</span>;
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
         <span class="ident">Default::default</span>()
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimize</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">is_maximize</span> <span class="op">=</span> <span class="bool-val">false</span>;
+        <span class="self">self</span>.<span class="ident">is_maximize</span> = <span class="bool-val">false</span>;
         <span class="self">self</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_start_temp</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">start_temp</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
         <span class="macro">assert_eq!</span>(<span class="self">self</span>.<span class="ident">iter_count</span>, <span class="number">0</span>);
-        <span class="self">self</span>.<span class="ident">start_temp</span> <span class="op">=</span> <span class="ident">start_temp</span>;
-        <span class="self">self</span>.<span class="ident">temperture</span> <span class="op">=</span> <span class="ident">start_temp</span>;
+        <span class="self">self</span>.<span class="ident">start_temp</span> = <span class="ident">start_temp</span>;
+        <span class="self">self</span>.<span class="ident">temperture</span> = <span class="ident">start_temp</span>;
         <span class="self">self</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_end_temp</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">end_temp</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">end_temp</span> <span class="op">=</span> <span class="ident">end_temp</span>;
+        <span class="self">self</span>.<span class="ident">end_temp</span> = <span class="ident">end_temp</span>;
         <span class="self">self</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_time_limit</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">time_limit</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">time_limit</span> <span class="op">=</span> <span class="ident">time_limit</span>;
+        <span class="self">self</span>.<span class="ident">time_limit</span> = <span class="ident">time_limit</span>;
         <span class="self">self</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_update_interval</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">update_interval</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="macro">assert!</span>(<span class="ident">update_interval</span> <span class="op">&gt;</span> <span class="number">0</span>);
-        <span class="self">self</span>.<span class="ident">update_interval</span> <span class="op">=</span> <span class="ident">update_interval</span>;
+        <span class="macro">assert!</span>(<span class="ident">update_interval</span> &gt; <span class="number">0</span>);
+        <span class="self">self</span>.<span class="ident">update_interval</span> = <span class="ident">update_interval</span>;
         <span class="self">self</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_accepted</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">current_score</span>: <span class="ident">f64</span>, <span class="ident">next_score</span>: <span class="ident">f64</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">let</span> <span class="ident">diff</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_maximize</span> {
-            <span class="ident">next_score</span> <span class="op">-</span> <span class="ident">current_score</span>
+        <span class="kw">let</span> <span class="ident">diff</span> = <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_maximize</span> {
+            <span class="ident">next_score</span> - <span class="ident">current_score</span>
         } <span class="kw">else</span> {
-            <span class="ident">current_score</span> <span class="op">-</span> <span class="ident">next_score</span>
+            <span class="ident">current_score</span> - <span class="ident">next_score</span>
         };
-        <span class="ident">diff</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0.</span>
-            <span class="op">|</span><span class="op">|</span> <span class="ident">diff</span>
-                <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">log_table</span>[<span class="self">self</span>.<span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span>]
-                    <span class="op">*</span> <span class="self">self</span>.<span class="ident">temperture</span>
+        <span class="ident">diff</span> &gt;= <span class="number">0.</span>
+            || <span class="ident">diff</span>
+                &gt; <span class="self">self</span>.<span class="ident">log_table</span>[<span class="self">self</span>.<span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span>]
+                    * <span class="self">self</span>.<span class="ident">temperture</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_end</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">iter_count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">iter_count</span> <span class="op">%</span> <span class="self">self</span>.<span class="ident">update_interval</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="self">self</span>.<span class="ident">time</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">now</span>.<span class="ident">elapsed</span>().<span class="ident">as_secs_f64</span>();
-            <span class="kw">let</span> <span class="ident">temp_ratio</span> <span class="op">=</span> (<span class="self">self</span>.<span class="ident">end_temp</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">start_temp</span>) <span class="op">/</span> <span class="self">self</span>.<span class="ident">time_limit</span>;
-            <span class="self">self</span>.<span class="ident">temperture</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">start_temp</span> <span class="op">+</span> <span class="ident">temp_ratio</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">time</span>;
-            <span class="self">self</span>.<span class="ident">time</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">time_limit</span>
+        <span class="self">self</span>.<span class="ident">iter_count</span> += <span class="number">1</span>;
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">iter_count</span> % <span class="self">self</span>.<span class="ident">update_interval</span> == <span class="number">0</span> {
+            <span class="self">self</span>.<span class="ident">time</span> = <span class="self">self</span>.<span class="ident">now</span>.<span class="ident">elapsed</span>().<span class="ident">as_secs_f64</span>();
+            <span class="kw">let</span> <span class="ident">temp_ratio</span> = (<span class="self">self</span>.<span class="ident">end_temp</span> - <span class="self">self</span>.<span class="ident">start_temp</span>) / <span class="self">self</span>.<span class="ident">time_limit</span>;
+            <span class="self">self</span>.<span class="ident">temperture</span> = <span class="self">self</span>.<span class="ident">start_temp</span> + <span class="ident">temp_ratio</span> * <span class="self">self</span>.<span class="ident">time</span>;
+            <span class="self">self</span>.<span class="ident">time</span> &gt;= <span class="self">self</span>.<span class="ident">time_limit</span>
         } <span class="kw">else</span> {
             <span class="bool-val">false</span>
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

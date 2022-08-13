@@ -401,22 +401,22 @@
 };
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
     <span class="ident">x</span>: <span class="ident">M::Inner</span>,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">M</span><span class="op">&gt;</span>,
+    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">M</span>&gt;,
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span><span class="op">&gt;</span>: <span class="ident">MIntBase</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">T</span>) -&gt; <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span>;
-    <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span><span class="op">&gt;</span><span class="ident">::Inner</span>) -&gt; <span class="ident">T</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntConvert</span>&lt;<span class="ident">T</span> = &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::Inner</span>&gt;: <span class="ident">MIntBase</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">T</span>) -&gt; &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::Inner</span>;
+    <span class="kw">fn</span> <span class="ident">into</span>(<span class="ident">x</span>: &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">MIntBase</span>&gt;<span class="ident">::Inner</span>) -&gt; <span class="ident">T</span>;
     <span class="kw">fn</span> <span class="ident">mod_into</span>() -&gt; <span class="ident">T</span>;
 }
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MIntBase</span> {
-    <span class="kw">type</span> <span class="ident">Inner</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Hash</span>;
+    <span class="kw">type</span> <span class="ident">Inner</span>: <span class="ident">Sized</span> + <span class="ident">Copy</span> + <span class="ident">Eq</span> + <span class="ident">Debug</span> + <span class="ident">Hash</span>;
     <span class="kw">fn</span> <span class="ident">get_mod</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
     <span class="kw">fn</span> <span class="ident">mod_zero</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
     <span class="kw">fn</span> <span class="ident">mod_one</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
@@ -427,32 +427,32 @@
     <span class="kw">fn</span> <span class="ident">mod_neg</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
     <span class="kw">fn</span> <span class="ident">mod_inv</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span>;
     <span class="kw">fn</span> <span class="ident">mod_pow</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">x</span>, <span class="kw-2">mut</span> <span class="ident">y</span>, <span class="kw-2">mut</span> <span class="ident">z</span>) <span class="op">=</span> (<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident"><span class="self">Self</span>::mod_one</span>());
-        <span class="kw">while</span> <span class="ident">y</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="kw">if</span> <span class="ident">y</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
-                <span class="ident">z</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mod_mul</span>(<span class="ident">z</span>, <span class="ident">x</span>);
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">x</span>, <span class="kw-2">mut</span> <span class="ident">y</span>, <span class="kw-2">mut</span> <span class="ident">z</span>) = (<span class="ident">x</span>, <span class="ident">y</span>, <span class="ident"><span class="self">Self</span>::mod_one</span>());
+        <span class="kw">while</span> <span class="ident">y</span> &gt; <span class="number">0</span> {
+            <span class="kw">if</span> <span class="ident">y</span> &amp; <span class="number">1</span> == <span class="number">1</span> {
+                <span class="ident">z</span> = <span class="ident"><span class="self">Self</span>::mod_mul</span>(<span class="ident">z</span>, <span class="ident">x</span>);
             }
-            <span class="ident">x</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::mod_mul</span>(<span class="ident">x</span>, <span class="ident">x</span>);
-            <span class="ident">y</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">x</span> = <span class="ident"><span class="self">Self</span>::mod_mul</span>(<span class="ident">x</span>, <span class="ident">x</span>);
+            <span class="ident">y</span> &gt;&gt;= <span class="number">1</span>;
         }
         <span class="ident">z</span>
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntConvert</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">x</span>: <span class="ident">M::Inner</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="op">&lt;</span><span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">M::Inner</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">x</span>))
+        <span class="ident"><span class="self">Self</span>::new_unchecked</span>(&lt;<span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span>&lt;<span class="ident">M::Inner</span>&gt;&gt;<span class="ident">::from</span>(<span class="ident">x</span>))
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inner</span>(<span class="self">self</span>) -&gt; <span class="ident">M::Inner</span> {
-        <span class="op">&lt;</span><span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="ident">M::Inner</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::into</span>(<span class="self">self</span>.<span class="ident">x</span>)
+        &lt;<span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span>&lt;<span class="ident">M::Inner</span>&gt;&gt;<span class="ident">::into</span>(<span class="self">self</span>.<span class="ident">x</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
@@ -477,7 +477,7 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
@@ -489,25 +489,25 @@
         }
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Copy</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MIntBase</span> {}
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Copy</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt; <span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MIntBase</span> {}
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="ident">fmt::Result</span> {
         <span class="ident">Debug::fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">x</span>, <span class="ident">f</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Zero</span><span class="op">&gt;</span><span class="ident">::zero</span>()
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">Zero</span>&gt;<span class="ident">::zero</span>()
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
@@ -516,40 +516,40 @@
         <span class="ident">PartialEq::eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">x</span>, <span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">x</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MIntBase</span> {}
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Hash</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt; <span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MIntBase</span> {}
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Hash</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">hash</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">Hasher</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">H</span>) {
+    <span class="kw">fn</span> <span class="ident">hash</span>&lt;<span class="ident">H</span>: <span class="ident">Hasher</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">H</span>) {
         <span class="ident">Hash::hash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">x</span>, <span class="ident">state</span>)
     }
 }
 <span class="macro">macro_rules!</span> <span class="ident">impl_mint_from</span> {
     ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>),<span class="kw-2">*</span>) =&gt; {
-        $(<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+        $(<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">From</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
         <span class="kw">where</span>
-            <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
+            <span class="ident">M</span>: <span class="ident">MIntConvert</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;,
         {
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) -&gt; <span class="self">Self</span> {
-                <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="op">&lt;</span><span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">x</span>))
+                <span class="ident"><span class="self">Self</span>::new_unchecked</span>(&lt;<span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::from</span>(<span class="ident">x</span>))
             }
         }
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
+        <span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">From</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
         <span class="kw">where</span>
-            <span class="ident">M</span>: <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span>,
+            <span class="ident">M</span>: <span class="ident">MIntConvert</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;,
         {
             <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="op">&lt;</span><span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::into</span>(<span class="ident">x</span>.<span class="ident">x</span>)
+            <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
+                &lt;<span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::into</span>(<span class="ident">x</span>.<span class="ident">x</span>)
             }
-        })<span class="op">*</span>
+        })*
     };
 }
 <span class="macro">impl_mint_from!</span>(<span class="ident">u8</span>, <span class="ident">u16</span>, <span class="ident">u32</span>, <span class="ident">u64</span>, <span class="ident">u128</span>, <span class="ident">usize</span>, <span class="ident">i8</span>, <span class="ident">i16</span>, <span class="ident">i32</span>, <span class="ident">i64</span>, <span class="ident">i128</span>, <span class="ident">isize</span>);
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Zero</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Zero</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
@@ -558,7 +558,7 @@
         <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="ident">M::mod_zero</span>())
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">One</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">One</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
@@ -568,188 +568,188 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Add</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Add</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="self">Self</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
         <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="ident">M::mod_add</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="ident">rhs</span>.<span class="ident">x</span>))
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Sub</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Sub</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="self">Self</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
         <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="ident">M::mod_sub</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="ident">rhs</span>.<span class="ident">x</span>))
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Mul</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Mul</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="self">Self</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
         <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="ident">M::mod_mul</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="ident">rhs</span>.<span class="ident">x</span>))
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Div</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Div</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="self">Self</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">div</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
         <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="ident">M::mod_div</span>(<span class="self">self</span>.<span class="ident">x</span>, <span class="ident">rhs</span>.<span class="ident">x</span>))
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Neg</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Neg</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="self">Self</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">neg</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
         <span class="ident"><span class="self">Self</span>::new_unchecked</span>(<span class="ident">M::mod_neg</span>(<span class="self">self</span>.<span class="ident">x</span>))
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Sum</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Sum</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">sum</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">iter</span>.<span class="ident">fold</span>(<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Zero</span><span class="op">&gt;</span><span class="ident">::zero</span>(), <span class="ident">Add::add</span>)
+    <span class="kw">fn</span> <span class="ident">sum</span>&lt;<span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="self">Self</span>&gt;&gt;(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident">iter</span>.<span class="ident">fold</span>(&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">Zero</span>&gt;<span class="ident">::zero</span>(), <span class="ident">Add::add</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Product</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Product</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">product</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">iter</span>.<span class="ident">fold</span>(<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">One</span><span class="op">&gt;</span><span class="ident">::one</span>(), <span class="ident">Mul::mul</span>)
+    <span class="kw">fn</span> <span class="ident">product</span>&lt;<span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="self">Self</span>&gt;&gt;(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident">iter</span>.<span class="ident">fold</span>(&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">One</span>&gt;<span class="ident">::one</span>(), <span class="ident">Mul::mul</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">M</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Sum</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">M</span>: <span class="lifetime">&#39;a</span>&gt; <span class="ident">Sum</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt; <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">sum</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">iter</span>.<span class="ident">fold</span>(<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Zero</span><span class="op">&gt;</span><span class="ident">::zero</span>(), <span class="ident">Add::add</span>)
+    <span class="kw">fn</span> <span class="ident">sum</span>&lt;<span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>&gt;&gt;(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident">iter</span>.<span class="ident">fold</span>(&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">Zero</span>&gt;<span class="ident">::zero</span>(), <span class="ident">Add::add</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">M</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Product</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">M</span>: <span class="lifetime">&#39;a</span>&gt; <span class="ident">Product</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt; <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntBase</span>,
 {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">product</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">iter</span>.<span class="ident">fold</span>(<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">One</span><span class="op">&gt;</span><span class="ident">::one</span>(), <span class="ident">Mul::mul</span>)
+    <span class="kw">fn</span> <span class="ident">product</span>&lt;<span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>&gt;&gt;(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident">iter</span>.<span class="ident">fold</span>(&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">One</span>&gt;<span class="ident">::one</span>(), <span class="ident">Mul::mul</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntConvert</span>,
     <span class="ident">M::Inner</span>: <span class="ident">Display</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">fmt::Error</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="ident">fmt::Error</span>&gt; {
         <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">inner</span>())
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">FromStr</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">FromStr</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntConvert</span>,
     <span class="ident">M::Inner</span>: <span class="ident">FromStr</span>,
 {
-    <span class="kw">type</span> <span class="prelude-val">Err</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">M::Inner</span> <span class="kw">as</span> <span class="ident">FromStr</span><span class="op">&gt;</span><span class="ident">::Err</span>;
+    <span class="kw">type</span> <span class="prelude-val">Err</span> = &lt;<span class="ident">M::Inner</span> <span class="kw">as</span> <span class="ident">FromStr</span>&gt;<span class="ident">::Err</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Err</span><span class="op">&gt;</span> {
-        <span class="ident">s</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">M::Inner</span><span class="op">&gt;</span>().<span class="ident">map</span>(<span class="ident"><span class="self">Self</span>::new</span>)
+    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Err</span>&gt; {
+        <span class="ident">s</span>.<span class="ident">parse</span>::&lt;<span class="ident">M::Inner</span>&gt;().<span class="ident">map</span>(<span class="ident"><span class="self">Self</span>::new</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">IterScan</span> <span class="kw">for</span> <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">IterScan</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">MIntConvert</span>,
     <span class="ident">M::Inner</span>: <span class="ident">FromStr</span>,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="self">Self</span>;
+    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">scan</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Output</span><span class="op">&gt;</span> {
-        <span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>.<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>().<span class="ident">ok</span>()
+    <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
+        <span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>.<span class="ident">parse</span>::&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;().<span class="ident">ok</span>()
     }
 }
 <span class="macro">macro_rules!</span> <span class="ident">impl_mint_ref_binop</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) =&gt; {
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
+        <span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
         <span class="kw">where</span>
             <span class="ident">M</span>: <span class="ident">MIntBase</span>,
         {
-            <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Output</span>;
+            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::Output</span>;
             <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) -&gt; <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Output</span> {
+            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::Output</span> {
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="kw-2">*</span><span class="self">self</span>, <span class="ident">other</span>)
             }
         }
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
+        <span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
         <span class="kw">where</span>
             <span class="ident">M</span>: <span class="ident">MIntBase</span>,
         {
-            <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Output</span>;
+            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::Output</span>;
             <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) -&gt; <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Output</span> {
+            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::Output</span> {
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="kw-2">*</span><span class="ident">other</span>)
             }
         }
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
+        <span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
         <span class="kw">where</span>
             <span class="ident">M</span>: <span class="ident">MIntBase</span>,
         {
-            <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Output</span>;
+            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::Output</span>;
             <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) -&gt; <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Output</span> {
+            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;<span class="ident">::Output</span> {
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="kw-2">*</span><span class="self">self</span>, <span class="kw-2">*</span><span class="ident">other</span>)
             }
         }
     };
 }
-<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Add</span>, <span class="ident">add</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>);
-<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Sub</span>, <span class="ident">sub</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>);
-<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Mul</span>, <span class="ident">mul</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>);
-<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Div</span>, <span class="ident">div</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>);
+<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Add</span>, <span class="ident">add</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;);
+<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Sub</span>, <span class="ident">sub</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;);
+<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Mul</span>, <span class="ident">mul</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;);
+<span class="macro">impl_mint_ref_binop!</span>(<span class="ident">Div</span>, <span class="ident">div</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;);
 <span class="macro">macro_rules!</span> <span class="ident">impl_mint_ref_unop</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) =&gt; {
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
+        <span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
         <span class="kw">where</span>
             <span class="ident">M</span>: <span class="ident">MIntBase</span>,
         {
-            <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&gt;</span><span class="ident">::Output</span>;
+            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&gt;<span class="ident">::Output</span>;
             <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>) -&gt; <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&gt;</span><span class="ident">::Output</span> {
+            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&gt;<span class="ident">::Output</span> {
                 <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="kw-2">*</span><span class="self">self</span>)
             }
         }
     };
 }
-<span class="macro">impl_mint_ref_unop!</span>(<span class="ident">Neg</span>, <span class="ident">neg</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>);
+<span class="macro">impl_mint_ref_unop!</span>(<span class="ident">Neg</span>, <span class="ident">neg</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;);
 <span class="macro">macro_rules!</span> <span class="ident">impl_mint_ref_op_assign</span> {
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>:<span class="ident">ident</span>) =&gt; {
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
+        <span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
         <span class="kw">where</span>
             <span class="ident">M</span>: <span class="ident">MIntBase</span>,
         {
             <span class="attribute">#[<span class="ident">inline</span>]</span>
             <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) {
-                <span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>(<span class="kw-2">*</span><span class="self">self</span>, <span class="ident">rhs</span>);
+                <span class="kw-2">*</span><span class="self">self</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>(<span class="kw-2">*</span><span class="self">self</span>, <span class="ident">rhs</span>);
             }
         }
-        <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
+        <span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
         <span class="kw">where</span>
             <span class="ident">M</span>: <span class="ident">MIntBase</span>,
         {
@@ -760,9 +760,9 @@
         }
     };
 }
-<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">AddAssign</span>, <span class="ident">add_assign</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">Add</span>, <span class="ident">add</span>);
-<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">SubAssign</span>, <span class="ident">sub_assign</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">Sub</span>, <span class="ident">sub</span>);
-<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">MulAssign</span>, <span class="ident">mul_assign</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">Mul</span>, <span class="ident">mul</span>);
-<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">DivAssign</span>, <span class="ident">div_assign</span>, <span class="ident">MInt</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>, <span class="ident">Div</span>, <span class="ident">div</span>);
+<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">AddAssign</span>, <span class="ident">add_assign</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;, <span class="ident">Add</span>, <span class="ident">add</span>);
+<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">SubAssign</span>, <span class="ident">sub_assign</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;, <span class="ident">Sub</span>, <span class="ident">sub</span>);
+<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">MulAssign</span>, <span class="ident">mul_assign</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;, <span class="ident">Mul</span>, <span class="ident">mul</span>);
+<span class="macro">impl_mint_ref_op_assign!</span>(<span class="ident">DivAssign</span>, <span class="ident">div_assign</span>, <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;, <span class="ident">Div</span>, <span class="ident">div</span>);
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

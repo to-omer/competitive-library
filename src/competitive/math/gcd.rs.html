@@ -237,8 +237,8 @@
 <span id="221">221</span>
 <span id="222">222</span>
 </pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gcd_loop</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">u64</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    <span class="kw">while</span> <span class="ident">b</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-        <span class="ident">a</span> <span class="op">%</span><span class="op">=</span> <span class="ident">b</span>;
+    <span class="kw">while</span> <span class="ident">b</span> != <span class="number">0</span> {
+        <span class="ident">a</span> %= <span class="ident">b</span>;
         <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;mut</span> <span class="ident">b</span>);
     }
     <span class="ident">a</span>
@@ -247,51 +247,51 @@
 <span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
 <span class="doccomment">/// binary gcd</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gcd</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">u64</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    <span class="kw">if</span> <span class="ident">a</span> <span class="op">==</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">a</span> == <span class="number">0</span> {
         <span class="kw">return</span> <span class="ident">b</span>;
     }
-    <span class="kw">if</span> <span class="ident">b</span> <span class="op">==</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">b</span> == <span class="number">0</span> {
         <span class="kw">return</span> <span class="ident">a</span>;
     }
-    <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">trailing_zeros</span>();
-    <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">trailing_zeros</span>();
-    <span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">u</span>;
-    <span class="ident">b</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">v</span>;
-    <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">std::cmp::min</span>(<span class="ident">u</span>, <span class="ident">v</span>);
-    <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="ident">b</span> {
-        <span class="kw">if</span> <span class="ident">a</span> <span class="op">&lt;</span> <span class="ident">b</span> {
+    <span class="kw">let</span> <span class="ident">u</span> = <span class="ident">a</span>.<span class="ident">trailing_zeros</span>();
+    <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">b</span>.<span class="ident">trailing_zeros</span>();
+    <span class="ident">a</span> &gt;&gt;= <span class="ident">u</span>;
+    <span class="ident">b</span> &gt;&gt;= <span class="ident">v</span>;
+    <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">std::cmp::min</span>(<span class="ident">u</span>, <span class="ident">v</span>);
+    <span class="kw">while</span> <span class="ident">a</span> != <span class="ident">b</span> {
+        <span class="kw">if</span> <span class="ident">a</span> &lt; <span class="ident">b</span> {
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;mut</span> <span class="ident">b</span>);
         }
-        <span class="ident">a</span> <span class="op">-</span><span class="op">=</span> <span class="ident">b</span>;
-        <span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">a</span>.<span class="ident">trailing_zeros</span>();
+        <span class="ident">a</span> -= <span class="ident">b</span>;
+        <span class="ident">a</span> &gt;&gt;= <span class="ident">a</span>.<span class="ident">trailing_zeros</span>();
     }
-    <span class="ident">a</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span>
+    <span class="ident">a</span> &lt;&lt; <span class="ident">k</span>
 }
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="ident">include</span>(<span class="string">&quot;gcd&quot;</span>))]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lcm</span>(<span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">b</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    <span class="ident">a</span> <span class="op">/</span> <span class="ident">gcd</span>(<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">*</span> <span class="ident">b</span>
+    <span class="ident">a</span> / <span class="ident">gcd</span>(<span class="ident">a</span>, <span class="ident">b</span>) * <span class="ident">b</span>
 }
 
 <span class="comment">// ax + by = gcd(a, b)</span>
 <span class="comment">// a, b -&gt; gcd(a, b), x, y</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extgcd_recurse</span>(<span class="ident">a</span>: <span class="ident">i64</span>, <span class="ident">b</span>: <span class="ident">i64</span>) -&gt; (<span class="ident">i64</span>, <span class="ident">i64</span>, <span class="ident">i64</span>) {
-    <span class="kw">if</span> <span class="ident">b</span> <span class="op">==</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">b</span> == <span class="number">0</span> {
         (<span class="ident">a</span>, <span class="number">1</span>, <span class="number">0</span>)
     } <span class="kw">else</span> {
-        <span class="kw">let</span> (<span class="ident">g</span>, <span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">extgcd_recurse</span>(<span class="ident">b</span>, <span class="ident">a</span> <span class="op">%</span> <span class="ident">b</span>);
-        (<span class="ident">g</span>, <span class="ident">y</span>, <span class="ident">x</span> <span class="op">-</span> (<span class="ident">a</span> <span class="op">/</span> <span class="ident">b</span>) <span class="op">*</span> <span class="ident">y</span>)
+        <span class="kw">let</span> (<span class="ident">g</span>, <span class="ident">x</span>, <span class="ident">y</span>) = <span class="ident">extgcd_recurse</span>(<span class="ident">b</span>, <span class="ident">a</span> % <span class="ident">b</span>);
+        (<span class="ident">g</span>, <span class="ident">y</span>, <span class="ident">x</span> - (<span class="ident">a</span> / <span class="ident">b</span>) * <span class="ident">y</span>)
     }
 }
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extgcd</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">i64</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">i64</span>) -&gt; (<span class="ident">i64</span>, <span class="ident">i64</span>, <span class="ident">i64</span>) {
-    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">v</span>, <span class="kw-2">mut</span> <span class="ident">x</span>, <span class="kw-2">mut</span> <span class="ident">y</span>) <span class="op">=</span> (<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
-    <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">/</span> <span class="ident">a</span>;
-        <span class="ident">x</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">u</span>;
-        <span class="ident">y</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">v</span>;
-        <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">a</span>;
+    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">v</span>, <span class="kw-2">mut</span> <span class="ident">x</span>, <span class="kw-2">mut</span> <span class="ident">y</span>) = (<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
+    <span class="kw">while</span> <span class="ident">a</span> != <span class="number">0</span> {
+        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">b</span> / <span class="ident">a</span>;
+        <span class="ident">x</span> -= <span class="ident">k</span> * <span class="ident">u</span>;
+        <span class="ident">y</span> -= <span class="ident">k</span> * <span class="ident">v</span>;
+        <span class="ident">b</span> -= <span class="ident">k</span> * <span class="ident">a</span>;
         <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">u</span>);
         <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">y</span>, <span class="kw-2">&amp;mut</span> <span class="ident">v</span>);
         <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>, <span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
@@ -300,93 +300,93 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">extgcd_binary</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">i64</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">i64</span>) -&gt; (<span class="ident">i64</span>, <span class="ident">i64</span>, <span class="ident">i64</span>) {
-    <span class="kw">if</span> <span class="ident">b</span> <span class="op">==</span> <span class="number">0</span> {
+    <span class="kw">if</span> <span class="ident">b</span> == <span class="number">0</span> {
         <span class="kw">return</span> (<span class="ident">a</span>, <span class="number">1</span>, <span class="number">0</span>);
-    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">a</span> <span class="op">==</span> <span class="number">0</span> {
+    } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">a</span> == <span class="number">0</span> {
         <span class="kw">return</span> (<span class="ident">b</span>, <span class="number">1</span>, <span class="number">0</span>);
     }
-    <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> (<span class="ident">a</span> <span class="op">|</span> <span class="ident">b</span>).<span class="ident">trailing_zeros</span>();
-    <span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">k</span>;
-    <span class="ident">b</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">k</span>;
-    <span class="kw">let</span> (<span class="ident">c</span>, <span class="ident">d</span>) <span class="op">=</span> (<span class="ident">a</span>, <span class="ident">b</span>);
-    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">v</span>, <span class="kw-2">mut</span> <span class="ident">s</span>, <span class="kw-2">mut</span> <span class="ident">t</span>) <span class="op">=</span> (<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
-    <span class="kw">while</span> <span class="ident">a</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">0</span> {
-        <span class="ident">a</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-        <span class="kw">if</span> <span class="ident">u</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> <span class="op">|</span><span class="op">|</span> <span class="ident">v</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
-            <span class="ident">u</span> <span class="op">+</span><span class="op">=</span> <span class="ident">d</span>;
-            <span class="ident">v</span> <span class="op">-</span><span class="op">=</span> <span class="ident">c</span>;
+    <span class="kw">let</span> <span class="ident">k</span> = (<span class="ident">a</span> | <span class="ident">b</span>).<span class="ident">trailing_zeros</span>();
+    <span class="ident">a</span> &gt;&gt;= <span class="ident">k</span>;
+    <span class="ident">b</span> &gt;&gt;= <span class="ident">k</span>;
+    <span class="kw">let</span> (<span class="ident">c</span>, <span class="ident">d</span>) = (<span class="ident">a</span>, <span class="ident">b</span>);
+    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">v</span>, <span class="kw-2">mut</span> <span class="ident">s</span>, <span class="kw-2">mut</span> <span class="ident">t</span>) = (<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
+    <span class="kw">while</span> <span class="ident">a</span> &amp; <span class="number">1</span> == <span class="number">0</span> {
+        <span class="ident">a</span> /= <span class="number">2</span>;
+        <span class="kw">if</span> <span class="ident">u</span> &amp; <span class="number">1</span> == <span class="number">1</span> || <span class="ident">v</span> &amp; <span class="number">1</span> == <span class="number">1</span> {
+            <span class="ident">u</span> += <span class="ident">d</span>;
+            <span class="ident">v</span> -= <span class="ident">c</span>;
         }
-        <span class="ident">u</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-        <span class="ident">v</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+        <span class="ident">u</span> /= <span class="number">2</span>;
+        <span class="ident">v</span> /= <span class="number">2</span>;
     }
-    <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="ident">b</span> {
-        <span class="kw">if</span> <span class="ident">b</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="ident">b</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-            <span class="kw">if</span> <span class="ident">s</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> <span class="op">|</span><span class="op">|</span> <span class="ident">t</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
-                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">d</span>;
-                <span class="ident">t</span> <span class="op">-</span><span class="op">=</span> <span class="ident">c</span>;
+    <span class="kw">while</span> <span class="ident">a</span> != <span class="ident">b</span> {
+        <span class="kw">if</span> <span class="ident">b</span> &amp; <span class="number">1</span> == <span class="number">0</span> {
+            <span class="ident">b</span> /= <span class="number">2</span>;
+            <span class="kw">if</span> <span class="ident">s</span> &amp; <span class="number">1</span> == <span class="number">1</span> || <span class="ident">t</span> &amp; <span class="number">1</span> == <span class="number">1</span> {
+                <span class="ident">s</span> += <span class="ident">d</span>;
+                <span class="ident">t</span> -= <span class="ident">c</span>;
             }
-            <span class="ident">s</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-            <span class="ident">t</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">b</span> <span class="op">&lt;</span> <span class="ident">a</span> {
+            <span class="ident">s</span> /= <span class="number">2</span>;
+            <span class="ident">t</span> /= <span class="number">2</span>;
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">b</span> &lt; <span class="ident">a</span> {
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;mut</span> <span class="ident">b</span>);
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">u</span>, <span class="kw-2">&amp;mut</span> <span class="ident">s</span>);
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">v</span>, <span class="kw-2">&amp;mut</span> <span class="ident">t</span>);
         } <span class="kw">else</span> {
-            <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">a</span>;
-            <span class="ident">s</span> <span class="op">-</span><span class="op">=</span> <span class="ident">u</span>;
-            <span class="ident">t</span> <span class="op">-</span><span class="op">=</span> <span class="ident">v</span>;
+            <span class="ident">b</span> -= <span class="ident">a</span>;
+            <span class="ident">s</span> -= <span class="ident">u</span>;
+            <span class="ident">t</span> -= <span class="ident">v</span>;
         }
     }
-    (<span class="ident">a</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span>, <span class="ident">s</span>, <span class="ident">t</span>)
+    (<span class="ident">a</span> &lt;&lt; <span class="ident">k</span>, <span class="ident">s</span>, <span class="ident">t</span>)
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">modinv_recurse</span>(<span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">m</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    (<span class="ident">extgcd_recurse</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span>).<span class="number">1</span> <span class="op">%</span> <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span> <span class="op">+</span> <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span>) <span class="kw">as</span> <span class="ident">u64</span> <span class="op">%</span> <span class="ident">m</span>
+    (<span class="ident">extgcd_recurse</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span>).<span class="number">1</span> % <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span> + <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span>) <span class="kw">as</span> <span class="ident">u64</span> % <span class="ident">m</span>
 }
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="ident">include</span>(<span class="string">&quot;extgcd&quot;</span>))]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">modinv</span>(<span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">m</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) <span class="op">=</span> (<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span>);
-    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) <span class="op">=</span> (<span class="number">1</span>, <span class="number">0</span>);
-    <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">/</span> <span class="ident">a</span>;
-        <span class="ident">x</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">u</span>;
-        <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">a</span>;
+    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) = (<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span>);
+    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) = (<span class="number">1</span>, <span class="number">0</span>);
+    <span class="kw">while</span> <span class="ident">a</span> != <span class="number">0</span> {
+        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">b</span> / <span class="ident">a</span>;
+        <span class="ident">x</span> -= <span class="ident">k</span> * <span class="ident">u</span>;
+        <span class="ident">b</span> -= <span class="ident">k</span> * <span class="ident">a</span>;
         <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">u</span>);
         <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>, <span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
     }
-    (<span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> { <span class="ident">x</span> <span class="op">+</span> <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="kw">_</span>
+    (<span class="kw">if</span> <span class="ident">x</span> &lt; <span class="number">0</span> { <span class="ident">x</span> + <span class="ident">m</span> <span class="kw">as</span> <span class="ident">i64</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="kw">_</span>
 }
 
 <span class="doccomment">/// 0 &lt; a &lt; p, gcd(a, p) == 1, p is prime &gt; 2</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">modinv_extgcd_binary</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">u64</span>, <span class="ident">p</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">b</span>, <span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">s</span>) <span class="op">=</span> (<span class="ident">p</span>, <span class="number">1</span>, <span class="number">0</span>);
-    <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">trailing_zeros</span>();
-    <span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">k</span>;
+    <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">b</span>, <span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">s</span>) = (<span class="ident">p</span>, <span class="number">1</span>, <span class="number">0</span>);
+    <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">a</span>.<span class="ident">trailing_zeros</span>();
+    <span class="ident">a</span> &gt;&gt;= <span class="ident">k</span>;
     <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">k</span> {
-        <span class="kw">if</span> <span class="ident">u</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
-            <span class="ident">u</span> <span class="op">+</span><span class="op">=</span> <span class="ident">p</span>;
+        <span class="kw">if</span> <span class="ident">u</span> &amp; <span class="number">1</span> == <span class="number">1</span> {
+            <span class="ident">u</span> += <span class="ident">p</span>;
         }
-        <span class="ident">u</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+        <span class="ident">u</span> /= <span class="number">2</span>;
     }
-    <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="ident">b</span> {
-        <span class="kw">if</span> <span class="ident">b</span> <span class="op">&lt;</span> <span class="ident">a</span> {
+    <span class="kw">while</span> <span class="ident">a</span> != <span class="ident">b</span> {
+        <span class="kw">if</span> <span class="ident">b</span> &lt; <span class="ident">a</span> {
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;mut</span> <span class="ident">b</span>);
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">u</span>, <span class="kw-2">&amp;mut</span> <span class="ident">s</span>);
         }
-        <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">a</span>;
-        <span class="kw">if</span> <span class="ident">s</span> <span class="op">&lt;</span> <span class="ident">u</span> {
-            <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">p</span>;
+        <span class="ident">b</span> -= <span class="ident">a</span>;
+        <span class="kw">if</span> <span class="ident">s</span> &lt; <span class="ident">u</span> {
+            <span class="ident">s</span> += <span class="ident">p</span>;
         }
-        <span class="ident">s</span> <span class="op">-</span><span class="op">=</span> <span class="ident">u</span>;
-        <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">trailing_zeros</span>();
-        <span class="ident">b</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="ident">k</span>;
+        <span class="ident">s</span> -= <span class="ident">u</span>;
+        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">b</span>.<span class="ident">trailing_zeros</span>();
+        <span class="ident">b</span> &gt;&gt;= <span class="ident">k</span>;
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">k</span> {
-            <span class="kw">if</span> <span class="ident">s</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">==</span> <span class="number">1</span> {
-                <span class="ident">s</span> <span class="op">+</span><span class="op">=</span> <span class="ident">p</span>;
+            <span class="kw">if</span> <span class="ident">s</span> &amp; <span class="number">1</span> == <span class="number">1</span> {
+                <span class="ident">s</span> += <span class="ident">p</span>;
             }
-            <span class="ident">s</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+            <span class="ident">s</span> /= <span class="number">2</span>;
         }
     }
     <span class="ident">s</span>
@@ -396,12 +396,12 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools::Xorshift</span>;
-    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">100_000</span>;
-    <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">1_000_000_007_000_000_007</span>;
+    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">100_000</span>;
+    <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">i64</span> = <span class="number">1_000_000_007_000_000_007</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_gcd</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
         <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((<span class="number">0</span>.., <span class="number">0</span>..)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="macro">assert_eq!</span>(<span class="ident">gcd_loop</span>(<span class="ident">a</span>, <span class="ident">b</span>), <span class="ident">gcd</span>(<span class="ident">a</span>, <span class="ident">b</span>));
         }
@@ -411,52 +411,52 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_extgcd</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
-        <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((<span class="op">-</span><span class="ident">A</span>..<span class="op">=</span><span class="ident">A</span>, <span class="op">-</span><span class="ident">A</span>..<span class="op">=</span><span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
-            <span class="kw">let</span> (<span class="ident">g</span>, <span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">extgcd</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i128</span> <span class="op">*</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i128</span> <span class="op">+</span> <span class="ident">b</span> <span class="kw">as</span> <span class="ident">i128</span> <span class="op">*</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i128</span>, <span class="ident">g</span> <span class="kw">as</span> <span class="ident">i128</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
+        <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((-<span class="ident">A</span>..=<span class="ident">A</span>, -<span class="ident">A</span>..=<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
+            <span class="kw">let</span> (<span class="ident">g</span>, <span class="ident">x</span>, <span class="ident">y</span>) = <span class="ident">extgcd</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i128</span> * <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i128</span> + <span class="ident">b</span> <span class="kw">as</span> <span class="ident">i128</span> * <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i128</span>, <span class="ident">g</span> <span class="kw">as</span> <span class="ident">i128</span>);
         }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_extgcd_binary</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
-        <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((<span class="number">0</span>..<span class="op">=</span><span class="ident">A</span>, <span class="number">0</span>..<span class="op">=</span><span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
-            <span class="kw">let</span> (<span class="ident">g</span>, <span class="ident">x</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">extgcd_binary</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i128</span> <span class="op">*</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i128</span> <span class="op">+</span> <span class="ident">b</span> <span class="kw">as</span> <span class="ident">i128</span> <span class="op">*</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i128</span>, <span class="ident">g</span> <span class="kw">as</span> <span class="ident">i128</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
+        <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((<span class="number">0</span>..=<span class="ident">A</span>, <span class="number">0</span>..=<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
+            <span class="kw">let</span> (<span class="ident">g</span>, <span class="ident">x</span>, <span class="ident">y</span>) = <span class="ident">extgcd_binary</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">i128</span> * <span class="ident">x</span> <span class="kw">as</span> <span class="ident">i128</span> + <span class="ident">b</span> <span class="kw">as</span> <span class="ident">i128</span> * <span class="ident">y</span> <span class="kw">as</span> <span class="ident">i128</span>, <span class="ident">g</span> <span class="kw">as</span> <span class="ident">i128</span>);
         }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_modinv</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="op">=</span><span class="ident">A</span> <span class="kw">as</span> <span class="ident">u64</span>);
-            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="ident">m</span>);
-            <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">gcd</span>(<span class="ident">a</span>, <span class="ident">m</span>);
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">m</span> <span class="op">/</span> <span class="ident">g</span>;
-            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">a</span> <span class="op">/</span> <span class="ident">g</span>;
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">modinv</span>(<span class="ident">a</span>, <span class="ident">m</span>);
-            <span class="macro">assert!</span>(<span class="ident">x</span> <span class="op">&lt;</span> <span class="ident">m</span>);
-            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">u128</span> <span class="op">*</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span> <span class="op">%</span> <span class="ident">m</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="number">1</span>);
+            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..=<span class="ident">A</span> <span class="kw">as</span> <span class="ident">u64</span>);
+            <span class="kw">let</span> <span class="ident">a</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="ident">m</span>);
+            <span class="kw">let</span> <span class="ident">g</span> = <span class="ident">gcd</span>(<span class="ident">a</span>, <span class="ident">m</span>);
+            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">m</span> / <span class="ident">g</span>;
+            <span class="kw">let</span> <span class="ident">a</span> = <span class="ident">a</span> / <span class="ident">g</span>;
+            <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">modinv</span>(<span class="ident">a</span>, <span class="ident">m</span>);
+            <span class="macro">assert!</span>(<span class="ident">x</span> &lt; <span class="ident">m</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">u128</span> * <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span> % <span class="ident">m</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="number">1</span>);
         }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_modinv_extgcd_binary</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="op">=</span><span class="ident">A</span> <span class="kw">as</span> <span class="ident">u64</span>);
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">m</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">m</span>.<span class="ident">trailing_zeros</span>();
-            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="ident">m</span>);
-            <span class="kw">let</span> <span class="ident">g</span> <span class="op">=</span> <span class="ident">gcd</span>(<span class="ident">a</span>, <span class="ident">m</span>);
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">m</span> <span class="op">/</span> <span class="ident">g</span>;
-            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">a</span> <span class="op">/</span> <span class="ident">g</span>;
-            <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">modinv_extgcd_binary</span>(<span class="ident">a</span>, <span class="ident">m</span>);
-            <span class="macro">assert!</span>(<span class="ident">x</span> <span class="op">&lt;</span> <span class="ident">m</span>);
-            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">u128</span> <span class="op">*</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span> <span class="op">%</span> <span class="ident">m</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="number">1</span>);
+            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..=<span class="ident">A</span> <span class="kw">as</span> <span class="ident">u64</span>);
+            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">m</span> &gt;&gt; <span class="ident">m</span>.<span class="ident">trailing_zeros</span>();
+            <span class="kw">let</span> <span class="ident">a</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..<span class="ident">m</span>);
+            <span class="kw">let</span> <span class="ident">g</span> = <span class="ident">gcd</span>(<span class="ident">a</span>, <span class="ident">m</span>);
+            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">m</span> / <span class="ident">g</span>;
+            <span class="kw">let</span> <span class="ident">a</span> = <span class="ident">a</span> / <span class="ident">g</span>;
+            <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">modinv_extgcd_binary</span>(<span class="ident">a</span>, <span class="ident">m</span>);
+            <span class="macro">assert!</span>(<span class="ident">x</span> &lt; <span class="ident">m</span>);
+            <span class="macro">assert_eq!</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">u128</span> * <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span> % <span class="ident">m</span> <span class="kw">as</span> <span class="ident">u128</span>, <span class="number">1</span>);
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

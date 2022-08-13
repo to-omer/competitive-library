@@ -310,20 +310,20 @@
 };
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ShortestPathSemiRing</span> {
-    <span class="kw">type</span> <span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Ord</span>;
+    <span class="kw">type</span> <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span>;
     <span class="kw">fn</span> <span class="ident">source</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span>;
     <span class="kw">fn</span> <span class="ident">inf</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span>;
     <span class="kw">fn</span> <span class="ident">mul</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span>;
     <span class="kw">fn</span> <span class="ident">add_assign</span>(<span class="ident">x</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident">bool</span>;
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StandardSp</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">M</span><span class="op">&gt;</span>);
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">ShortestPathSemiRing</span> <span class="kw">for</span> <span class="ident">StandardSp</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StandardSp</span>&lt;<span class="ident">M</span>&gt;(<span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">M</span>&gt;);
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">ShortestPathSemiRing</span> <span class="kw">for</span> <span class="ident">StandardSp</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Monoid</span>,
-    <span class="ident">M::T</span>: <span class="ident">Bounded</span> <span class="op">+</span> <span class="ident">Ord</span>,
+    <span class="ident">M::T</span>: <span class="ident">Bounded</span> + <span class="ident">Ord</span>,
 {
-    <span class="kw">type</span> <span class="ident">T</span> <span class="op">=</span> <span class="ident">M::T</span>;
+    <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">M::T</span>;
     <span class="kw">fn</span> <span class="ident">source</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
         <span class="ident">M::unit</span>()
     }
@@ -334,8 +334,8 @@
         <span class="ident">M::operate</span>(<span class="ident">x</span>, <span class="ident">y</span>)
     }
     <span class="kw">fn</span> <span class="ident">add_assign</span>(<span class="ident">x</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">x</span> <span class="op">&gt;</span> <span class="ident">y</span> {
-            <span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">clone</span>();
+        <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">x</span> &gt; <span class="ident">y</span> {
+            <span class="kw-2">*</span><span class="ident">x</span> = <span class="ident">y</span>.<span class="ident">clone</span>();
             <span class="bool-val">true</span>
         } <span class="kw">else</span> {
             <span class="bool-val">false</span>
@@ -343,13 +343,13 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OptionSp</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">M</span><span class="op">&gt;</span>);
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">ShortestPathSemiRing</span> <span class="kw">for</span> <span class="ident">OptionSp</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OptionSp</span>&lt;<span class="ident">M</span>&gt;(<span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">M</span>&gt;);
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">ShortestPathSemiRing</span> <span class="kw">for</span> <span class="ident">OptionSp</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Monoid</span>,
     <span class="ident">M::T</span>: <span class="ident">Ord</span>,
 {
-    <span class="kw">type</span> <span class="ident">T</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">M::T</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">T</span> = <span class="prelude-ty">Option</span>&lt;<span class="ident">M::T</span>&gt;;
     <span class="kw">fn</span> <span class="ident">source</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
         <span class="prelude-val">Some</span>(<span class="ident">M::unit</span>())
     }
@@ -363,16 +363,16 @@
         }
     }
     <span class="kw">fn</span> <span class="ident">add_assign</span>(<span class="ident">x</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">y</span>) <span class="op">=</span> <span class="ident">y</span> {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="ident">x</span> {
-                <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">x</span> <span class="op">&gt;</span> <span class="ident">y</span> {
-                    <span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">clone</span>();
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">y</span>) = <span class="ident">y</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) = <span class="ident">x</span> {
+                <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">x</span> &gt; <span class="ident">y</span> {
+                    <span class="kw-2">*</span><span class="ident">x</span> = <span class="ident">y</span>.<span class="ident">clone</span>();
                     <span class="bool-val">true</span>
                 } <span class="kw">else</span> {
                     <span class="bool-val">false</span>
                 }
             } <span class="kw">else</span> {
-                <span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">y</span>.<span class="ident">clone</span>());
+                <span class="kw-2">*</span><span class="ident">x</span> = <span class="prelude-val">Some</span>(<span class="ident">y</span>.<span class="ident">clone</span>());
                 <span class="bool-val">true</span>
             }
         } <span class="kw">else</span> {
@@ -381,14 +381,14 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PathFoldingSp</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; (<span class="ident">M</span>, <span class="ident">S</span>)<span class="op">&gt;</span>);
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="ident">ShortestPathSemiRing</span> <span class="kw">for</span> <span class="ident">PathFoldingSp</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">S</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PathFoldingSp</span>&lt;<span class="ident">M</span>, <span class="ident">S</span>&gt;(<span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; (<span class="ident">M</span>, <span class="ident">S</span>)&gt;);
+<span class="kw">impl</span>&lt;<span class="ident">M</span>, <span class="ident">S</span>&gt; <span class="ident">ShortestPathSemiRing</span> <span class="kw">for</span> <span class="ident">PathFoldingSp</span>&lt;<span class="ident">M</span>, <span class="ident">S</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Monoid</span>,
-    <span class="ident">M::T</span>: <span class="ident">Bounded</span> <span class="op">+</span> <span class="ident">Ord</span>,
+    <span class="ident">M::T</span>: <span class="ident">Bounded</span> + <span class="ident">Ord</span>,
     <span class="ident">S</span>: <span class="ident">SemiRing</span>,
 {
-    <span class="kw">type</span> <span class="ident">T</span> <span class="op">=</span> <span class="ident">PartialIgnoredOrd</span><span class="op">&lt;</span><span class="ident">M::T</span>, <span class="ident">S::T</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">PartialIgnoredOrd</span>&lt;<span class="ident">M::T</span>, <span class="ident">S::T</span>&gt;;
     <span class="kw">fn</span> <span class="ident">source</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
         <span class="ident">PartialIgnoredOrd</span>(<span class="ident">M::unit</span>(), <span class="ident">S::one</span>())
     }
@@ -401,11 +401,11 @@
     <span class="kw">fn</span> <span class="ident">add_assign</span>(<span class="ident">x</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">match</span> <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">0</span>) {
             <span class="ident">Ordering::Equal</span> =&gt; {
-                <span class="ident">x</span>.<span class="number">1</span> <span class="op">=</span> <span class="ident">S::add</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">1</span>);
+                <span class="ident">x</span>.<span class="number">1</span> = <span class="ident">S::add</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">1</span>);
                 <span class="bool-val">false</span>
             }
             <span class="ident">Ordering::Greater</span> =&gt; {
-                <span class="kw-2">*</span><span class="ident">x</span> <span class="op">=</span> <span class="ident">y</span>.<span class="ident">clone</span>();
+                <span class="kw-2">*</span><span class="ident">x</span> = <span class="ident">y</span>.<span class="ident">clone</span>();
                 <span class="bool-val">true</span>
             }
             <span class="kw">_</span> =&gt; <span class="bool-val">false</span>,
@@ -413,42 +413,42 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ShortestPathExt</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span>: <span class="ident">GraphBase</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">bfs_distance_ss</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span>(
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ShortestPathExt</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">fn</span> <span class="ident">bfs_distance_ss</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>,
         <span class="ident">source</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
-    ) -&gt; <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span>
+    ) -&gt; &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AdjacencyView</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span><span class="op">&gt;</span>,
+        <span class="self">Self</span>: <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt; + <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span>&gt;,
         <span class="ident">S</span>: <span class="ident">ShortestPathSemiRing</span>,
     {
-        <span class="self">self</span>.<span class="ident">bfs_distance_ms</span>::<span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">once</span>(<span class="ident">source</span>), <span class="ident">weight</span>)
+        <span class="self">self</span>.<span class="ident">bfs_distance_ms</span>::&lt;<span class="ident">S</span>, <span class="ident">M</span>, <span class="kw">_</span>&gt;(<span class="ident">once</span>(<span class="ident">source</span>), <span class="ident">weight</span>)
     }
-    <span class="kw">fn</span> <span class="ident">bfs_distance_ms</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>, <span class="ident">I</span><span class="op">&gt;</span>(
+    <span class="kw">fn</span> <span class="ident">bfs_distance_ms</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>, <span class="ident">I</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>,
         <span class="ident">sources</span>: <span class="ident">I</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
-    ) -&gt; <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span>
+    ) -&gt; &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AdjacencyView</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span><span class="op">&gt;</span>,
+        <span class="self">Self</span>: <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt; + <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span>&gt;,
         <span class="ident">S</span>: <span class="ident">ShortestPathSemiRing</span>,
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::VIndex</span><span class="op">&gt;</span>,
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::VIndex</span>&gt;,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> <span class="op">=</span> <span class="ident">VecDeque::new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> = <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> = <span class="ident">VecDeque::new</span>();
         <span class="kw">for</span> <span class="ident">source</span> <span class="kw">in</span> <span class="ident">sources</span>.<span class="ident">into_iter</span>() {
-            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">source</span>) <span class="op">=</span> <span class="ident">S::source</span>();
+            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">source</span>) = <span class="ident">S::source</span>();
             <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">source</span>);
         }
-        <span class="kw">let</span> <span class="ident">zero</span> <span class="op">=</span> <span class="ident">S::source</span>();
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
+        <span class="kw">let</span> <span class="ident">zero</span> = <span class="ident">S::source</span>();
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">aviews</span>(<span class="ident">weight</span>, <span class="ident">u</span>) {
-                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">vindex</span>();
-                <span class="kw">let</span> <span class="ident">w</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">avalue</span>();
-                <span class="kw">let</span> <span class="ident">nd</span> <span class="op">=</span> <span class="ident">S::mul</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>), <span class="kw-2">&amp;</span><span class="ident">w</span>);
+                <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">a</span>.<span class="ident">vindex</span>();
+                <span class="kw">let</span> <span class="ident">w</span> = <span class="ident">a</span>.<span class="ident">avalue</span>();
+                <span class="kw">let</span> <span class="ident">nd</span> = <span class="ident">S::mul</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>), <span class="kw-2">&amp;</span><span class="ident">w</span>);
                 <span class="kw">if</span> <span class="ident">S::add_assign</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">v</span>), <span class="kw-2">&amp;</span><span class="ident">nd</span>) {
-                    <span class="kw">if</span> <span class="ident">w</span> <span class="op">==</span> <span class="ident">zero</span> {
+                    <span class="kw">if</span> <span class="ident">w</span> == <span class="ident">zero</span> {
                         <span class="ident">deq</span>.<span class="ident">push_front</span>(<span class="ident">v</span>);
                     } <span class="kw">else</span> {
                         <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">v</span>);
@@ -458,40 +458,40 @@
         }
         <span class="ident">cost</span>
     }
-    <span class="kw">fn</span> <span class="ident">dijkstra_ss</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span>(
+    <span class="kw">fn</span> <span class="ident">dijkstra_ss</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>,
         <span class="ident">source</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
-    ) -&gt; <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span>
+    ) -&gt; &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AdjacencyView</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span><span class="op">&gt;</span>,
+        <span class="self">Self</span>: <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt; + <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span>&gt;,
         <span class="ident">S</span>: <span class="ident">ShortestPathSemiRing</span>,
     {
-        <span class="self">self</span>.<span class="ident">dijkstra_ms</span>::<span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">once</span>(<span class="ident">source</span>), <span class="ident">weight</span>)
+        <span class="self">self</span>.<span class="ident">dijkstra_ms</span>::&lt;<span class="ident">S</span>, <span class="ident">M</span>, <span class="kw">_</span>&gt;(<span class="ident">once</span>(<span class="ident">source</span>), <span class="ident">weight</span>)
     }
-    <span class="kw">fn</span> <span class="ident">dijkstra_ms</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>, <span class="ident">I</span><span class="op">&gt;</span>(
+    <span class="kw">fn</span> <span class="ident">dijkstra_ms</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>, <span class="ident">I</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>,
         <span class="ident">sources</span>: <span class="ident">I</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
-    ) -&gt; <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span>
+    ) -&gt; &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AdjacencyView</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span><span class="op">&gt;</span>,
+        <span class="self">Self</span>: <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt; + <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span>&gt;,
         <span class="ident">S</span>: <span class="ident">ShortestPathSemiRing</span>,
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::VIndex</span><span class="op">&gt;</span>,
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::VIndex</span>&gt;,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">heap</span> <span class="op">=</span> <span class="ident">BinaryHeap::new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> = <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">heap</span> = <span class="ident">BinaryHeap::new</span>();
         <span class="kw">for</span> <span class="ident">source</span> <span class="kw">in</span> <span class="ident">sources</span>.<span class="ident">into_iter</span>() {
-            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">source</span>) <span class="op">=</span> <span class="ident">S::source</span>();
+            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">source</span>) = <span class="ident">S::source</span>();
             <span class="ident">heap</span>.<span class="ident">push</span>(<span class="ident">PartialIgnoredOrd</span>(<span class="ident">Reverse</span>(<span class="ident">S::source</span>()), <span class="ident">source</span>));
         }
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">PartialIgnoredOrd</span>(<span class="ident">Reverse</span>(<span class="ident">d</span>), <span class="ident">u</span>)) <span class="op">=</span> <span class="ident">heap</span>.<span class="ident">pop</span>() {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>) <span class="op">!</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">d</span> {
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">PartialIgnoredOrd</span>(<span class="ident">Reverse</span>(<span class="ident">d</span>), <span class="ident">u</span>)) = <span class="ident">heap</span>.<span class="ident">pop</span>() {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>) != <span class="kw-2">&amp;</span><span class="ident">d</span> {
                 <span class="kw">continue</span>;
             }
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">aviews</span>(<span class="ident">weight</span>, <span class="ident">u</span>) {
-                <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">vindex</span>();
-                <span class="kw">let</span> <span class="ident">nd</span> <span class="op">=</span> <span class="ident">S::mul</span>(<span class="kw-2">&amp;</span><span class="ident">d</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">avalue</span>());
+                <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">a</span>.<span class="ident">vindex</span>();
+                <span class="kw">let</span> <span class="ident">nd</span> = <span class="ident">S::mul</span>(<span class="kw-2">&amp;</span><span class="ident">d</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">avalue</span>());
                 <span class="kw">if</span> <span class="ident">S::add_assign</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">v</span>), <span class="kw-2">&amp;</span><span class="ident">nd</span>) {
                     <span class="ident">heap</span>.<span class="ident">push</span>(<span class="ident">PartialIgnoredOrd</span>(<span class="ident">Reverse</span>(<span class="ident">nd</span>), <span class="ident">v</span>));
                 }
@@ -499,52 +499,52 @@
         }
         <span class="ident">cost</span>
     }
-    <span class="kw">fn</span> <span class="ident">bellman_ford_ss</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span>(
+    <span class="kw">fn</span> <span class="ident">bellman_ford_ss</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>,
         <span class="ident">source</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
         <span class="ident">check</span>: <span class="ident">bool</span>,
-    ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span><span class="op">&gt;</span>
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>&gt;
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">Vertices</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AdjacencyView</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">VertexSize</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span>,
+        <span class="self">Self</span>: <span class="ident">Vertices</span>&lt;<span class="lifetime">&#39;g</span>&gt; + <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt; + <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span>&gt; + <span class="ident">VertexSize</span>&lt;<span class="lifetime">&#39;g</span>&gt;,
         <span class="ident">S</span>: <span class="ident">ShortestPathSemiRing</span>,
     {
-        <span class="self">self</span>.<span class="ident">bellman_ford_ms</span>::<span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">M</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">once</span>(<span class="ident">source</span>), <span class="ident">weight</span>, <span class="ident">check</span>)
+        <span class="self">self</span>.<span class="ident">bellman_ford_ms</span>::&lt;<span class="ident">S</span>, <span class="ident">M</span>, <span class="kw">_</span>&gt;(<span class="ident">once</span>(<span class="ident">source</span>), <span class="ident">weight</span>, <span class="ident">check</span>)
     }
-    <span class="kw">fn</span> <span class="ident">bellman_ford_ms</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>, <span class="ident">I</span><span class="op">&gt;</span>(
+    <span class="kw">fn</span> <span class="ident">bellman_ford_ms</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>, <span class="ident">I</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>,
         <span class="ident">sources</span>: <span class="ident">I</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
         <span class="ident">check</span>: <span class="ident">bool</span>,
-    ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span><span class="op">&gt;</span>
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>&gt;
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">Vertices</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AdjacencyView</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">VertexSize</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span>,
+        <span class="self">Self</span>: <span class="ident">Vertices</span>&lt;<span class="lifetime">&#39;g</span>&gt; + <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt; + <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span>&gt; + <span class="ident">VertexSize</span>&lt;<span class="lifetime">&#39;g</span>&gt;,
         <span class="ident">S</span>: <span class="ident">ShortestPathSemiRing</span>,
-        <span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::VIndex</span><span class="op">&gt;</span>,
+        <span class="ident">I</span>: <span class="ident">IntoIterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::VIndex</span>&gt;,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> = <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>);
         <span class="kw">for</span> <span class="ident">source</span> <span class="kw">in</span> <span class="ident">sources</span>.<span class="ident">into_iter</span>() {
-            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">source</span>) <span class="op">=</span> <span class="ident">S::source</span>();
+            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">source</span>) = <span class="ident">S::source</span>();
         }
-        <span class="kw">let</span> <span class="ident">vsize</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vsize</span>();
+        <span class="kw">let</span> <span class="ident">vsize</span> = <span class="self">self</span>.<span class="ident">vsize</span>();
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">vsize</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">updated</span> <span class="op">=</span> <span class="bool-val">false</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">updated</span> = <span class="bool-val">false</span>;
             <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
                 <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">aviews</span>(<span class="ident">weight</span>, <span class="ident">u</span>) {
-                    <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">vindex</span>();
-                    <span class="kw">let</span> <span class="ident">nd</span> <span class="op">=</span> <span class="ident">S::mul</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>), <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">avalue</span>());
-                    <span class="ident">updated</span> <span class="op">|</span><span class="op">=</span> <span class="ident">S::add_assign</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">v</span>), <span class="kw-2">&amp;</span><span class="ident">nd</span>);
+                    <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">a</span>.<span class="ident">vindex</span>();
+                    <span class="kw">let</span> <span class="ident">nd</span> = <span class="ident">S::mul</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>), <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">avalue</span>());
+                    <span class="ident">updated</span> |= <span class="ident">S::add_assign</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">v</span>), <span class="kw-2">&amp;</span><span class="ident">nd</span>);
                 }
             }
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">updated</span> {
+            <span class="kw">if</span> !<span class="ident">updated</span> {
                 <span class="kw">break</span>;
             }
         }
         <span class="kw">if</span> <span class="ident">check</span> {
             <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
                 <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">aviews</span>(<span class="ident">weight</span>, <span class="ident">u</span>) {
-                    <span class="kw">let</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">vindex</span>();
-                    <span class="kw">let</span> <span class="ident">nd</span> <span class="op">=</span> <span class="ident">S::mul</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>), <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">avalue</span>());
+                    <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">a</span>.<span class="ident">vindex</span>();
+                    <span class="kw">let</span> <span class="ident">nd</span> = <span class="ident">S::mul</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">u</span>), <span class="kw-2">&amp;</span><span class="ident">a</span>.<span class="ident">avalue</span>());
                     <span class="kw">if</span> <span class="ident">S::add_assign</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">v</span>), <span class="kw-2">&amp;</span><span class="ident">nd</span>) {
                         <span class="kw">return</span> <span class="prelude-val">None</span>;
                     }
@@ -553,33 +553,33 @@
         }
         <span class="prelude-val">Some</span>(<span class="ident">cost</span>)
     }
-    <span class="kw">fn</span> <span class="ident">warshall_floyd_ap</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span><span class="op">&gt;</span>(
+    <span class="kw">fn</span> <span class="ident">warshall_floyd_ap</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">S</span>, <span class="ident">M</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>,
         <span class="ident">weight</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
-    ) -&gt; <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span>
+    ) -&gt; &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>&gt;&gt;<span class="ident">::Vmap</span>
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">Vertices</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span>
-            <span class="op">+</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span>
-            <span class="op">+</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span><span class="op">&gt;</span>
-            <span class="op">+</span> <span class="ident">AdjacencyView</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span><span class="op">&gt;</span>,
-        <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">S::T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Vmap</span>: <span class="ident">Clone</span>,
+        <span class="self">Self</span>: <span class="ident">Vertices</span>&lt;<span class="lifetime">&#39;g</span>&gt;
+            + <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;
+            + <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>&gt;
+            + <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">S::T</span>&gt;,
+        &lt;<span class="self">Self</span> <span class="kw">as</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">S::T</span>&gt;&gt;<span class="ident">::Vmap</span>: <span class="ident">Clone</span>,
         <span class="ident">S</span>: <span class="ident">ShortestPathSemiRing</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>));
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> = <span class="self">self</span>.<span class="ident">construct_vmap</span>(|| <span class="self">self</span>.<span class="ident">construct_vmap</span>(<span class="ident">S::inf</span>));
         <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
-            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">u</span>), <span class="ident">u</span>) <span class="op">=</span> <span class="ident">S::source</span>();
+            <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">u</span>), <span class="ident">u</span>) = <span class="ident">S::source</span>();
         }
         <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">aviews</span>(<span class="ident">weight</span>, <span class="ident">u</span>) {
-                <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">u</span>), <span class="ident">a</span>.<span class="ident">vindex</span>()) <span class="op">=</span> <span class="ident">a</span>.<span class="ident">avalue</span>();
+                <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">u</span>), <span class="ident">a</span>.<span class="ident">vindex</span>()) = <span class="ident">a</span>.<span class="ident">avalue</span>();
             }
         }
         <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
                 <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
-                    <span class="kw">let</span> <span class="ident">d1</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">i</span>), <span class="ident">k</span>);
-                    <span class="kw">let</span> <span class="ident">d2</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">k</span>), <span class="ident">j</span>);
-                    <span class="kw">let</span> <span class="ident">nd</span> <span class="op">=</span> <span class="ident">S::mul</span>(<span class="ident">d1</span>, <span class="ident">d2</span>);
+                    <span class="kw">let</span> <span class="ident">d1</span> = <span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">i</span>), <span class="ident">k</span>);
+                    <span class="kw">let</span> <span class="ident">d2</span> = <span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="self">self</span>.<span class="ident">vmap_get</span>(<span class="kw-2">&amp;</span><span class="ident">cost</span>, <span class="ident">k</span>), <span class="ident">j</span>);
+                    <span class="kw">let</span> <span class="ident">nd</span> = <span class="ident">S::mul</span>(<span class="ident">d1</span>, <span class="ident">d2</span>);
                     <span class="ident">S::add_assign</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="kw-2">&amp;mut</span> <span class="ident">cost</span>, <span class="ident">i</span>), <span class="ident">j</span>), <span class="kw-2">&amp;</span><span class="ident">nd</span>);
                 }
             }
@@ -587,6 +587,6 @@
         <span class="ident">cost</span>
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span>, <span class="ident">G</span><span class="op">&gt;</span> <span class="ident">ShortestPathExt</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">G</span> <span class="kw">where</span> <span class="ident">G</span>: <span class="ident">GraphBase</span><span class="op">&lt;</span><span class="lifetime">&#39;g</span><span class="op">&gt;</span> {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">G</span>&gt; <span class="ident">ShortestPathExt</span>&lt;<span class="lifetime">&#39;g</span>&gt; <span class="kw">for</span> <span class="ident">G</span> <span class="kw">where</span> <span class="ident">G</span>: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {}
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

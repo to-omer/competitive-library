@@ -127,35 +127,35 @@
 <span id="111">111</span>
 <span id="112">112</span>
 </pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">euler_phi</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">n</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">n</span>;
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span> {
-        <span class="kw">if</span> <span class="ident">n</span> <span class="op">%</span> <span class="ident">i</span> <span class="op">==</span> <span class="number">0</span> {
-            <span class="ident">res</span> <span class="op">=</span> <span class="ident">res</span> <span class="op">/</span> <span class="ident">i</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>);
-            <span class="kw">while</span> <span class="ident">n</span> <span class="op">%</span> <span class="ident">i</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="ident">i</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> = <span class="ident">n</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="ident">n</span>;
+    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span> {
+        <span class="kw">if</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
+            <span class="ident">res</span> = <span class="ident">res</span> / <span class="ident">i</span> * (<span class="ident">i</span> - <span class="number">1</span>);
+            <span class="kw">while</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
+                <span class="ident">n</span> /= <span class="ident">i</span>;
             }
         }
     }
-    <span class="kw">if</span> <span class="ident">n</span> <span class="op">!</span><span class="op">=</span> <span class="number">1</span> {
-        <span class="ident">res</span> <span class="op">=</span> <span class="ident">res</span> <span class="op">/</span> <span class="ident">n</span> <span class="op">*</span> (<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>);
+    <span class="kw">if</span> <span class="ident">n</span> != <span class="number">1</span> {
+        <span class="ident">res</span> = <span class="ident">res</span> / <span class="ident">n</span> * (<span class="ident">n</span> - <span class="number">1</span>);
     }
     <span class="ident">res</span>
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EulerPhiTable</span> {
-    <span class="ident">table</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="ident">table</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
 }
 <span class="kw">impl</span> <span class="ident">EulerPhiTable</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">max_n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> <span class="op">=</span> (<span class="number">0</span>..<span class="ident">max_n</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..<span class="ident">max_n</span> <span class="op">+</span> <span class="number">1</span> {
-            <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">i</span>] <span class="op">==</span> <span class="ident">i</span> {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> <span class="op">=</span> <span class="ident">i</span>;
-                <span class="kw">while</span> <span class="ident">j</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">max_n</span> {
-                    <span class="ident">table</span>[<span class="ident">j</span>] <span class="op">=</span> <span class="ident">table</span>[<span class="ident">j</span>] <span class="op">/</span> <span class="ident">i</span> <span class="op">*</span> (<span class="ident">i</span> <span class="op">-</span> <span class="number">1</span>);
-                    <span class="ident">j</span> <span class="op">+</span><span class="op">=</span> <span class="ident">i</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = (<span class="number">0</span>..<span class="ident">max_n</span> + <span class="number">1</span>).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..<span class="ident">max_n</span> + <span class="number">1</span> {
+            <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">i</span>] == <span class="ident">i</span> {
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> = <span class="ident">i</span>;
+                <span class="kw">while</span> <span class="ident">j</span> &lt;= <span class="ident">max_n</span> {
+                    <span class="ident">table</span>[<span class="ident">j</span>] = <span class="ident">table</span>[<span class="ident">j</span>] / <span class="ident">i</span> * (<span class="ident">i</span> - <span class="number">1</span>);
+                    <span class="ident">j</span> += <span class="ident">i</span>;
                 }
             }
         }
@@ -168,28 +168,28 @@
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
 <span class="doccomment">/// g(d) = Sigma mu(d) * f(n/d)</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">moebius</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">std::collections::HashMap</span><span class="op">&lt;</span><span class="ident">usize</span>, <span class="ident">i64</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">std::collections::HashMap::new</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">primes</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">n</span>;
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span> <span class="number">1</span> {
-        <span class="kw">if</span> <span class="ident">n</span> <span class="op">%</span> <span class="ident">i</span> <span class="op">==</span> <span class="number">0</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">moebius</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">std::collections::HashMap</span>&lt;<span class="ident">usize</span>, <span class="ident">i64</span>&gt; {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="ident">std::collections::HashMap::new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">primes</span> = <span class="macro">vec!</span>[];
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> = <span class="ident">n</span>;
+    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span> {
+        <span class="kw">if</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
             <span class="ident">primes</span>.<span class="ident">push</span>(<span class="ident">i</span>);
-            <span class="kw">while</span> <span class="ident">n</span> <span class="op">%</span> <span class="ident">i</span> <span class="op">==</span> <span class="number">0</span> {
-                <span class="ident">n</span> <span class="op">/</span><span class="op">=</span> <span class="ident">i</span>;
+            <span class="kw">while</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
+                <span class="ident">n</span> /= <span class="ident">i</span>;
             }
         }
     }
-    <span class="kw">if</span> <span class="ident">n</span> <span class="op">!</span><span class="op">=</span> <span class="number">1</span> {
+    <span class="kw">if</span> <span class="ident">n</span> != <span class="number">1</span> {
         <span class="ident">primes</span>.<span class="ident">push</span>(<span class="ident">n</span>);
     }
-    <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">primes</span>.<span class="ident">len</span>();
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">m</span> {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">mu</span>, <span class="kw-2">mut</span> <span class="ident">d</span>) <span class="op">=</span> (<span class="number">1</span>, <span class="number">1</span>);
+    <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">primes</span>.<span class="ident">len</span>();
+    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">1</span> &lt;&lt; <span class="ident">m</span> {
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">mu</span>, <span class="kw-2">mut</span> <span class="ident">d</span>) = (<span class="number">1</span>, <span class="number">1</span>);
         <span class="kw">for</span> (<span class="ident">j</span>, <span class="ident">p</span>) <span class="kw">in</span> <span class="ident">primes</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">i</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">j</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">mu</span> <span class="kw-2">*</span><span class="op">=</span> <span class="op">-</span><span class="number">1</span>;
-                <span class="ident">d</span> <span class="kw-2">*</span><span class="op">=</span> <span class="ident">p</span>;
+            <span class="kw">if</span> <span class="ident">i</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">j</span> != <span class="number">0</span> {
+                <span class="ident">mu</span> <span class="kw-2">*</span>= -<span class="number">1</span>;
+                <span class="ident">d</span> <span class="kw-2">*</span>= <span class="ident">p</span>;
             }
         }
         <span class="ident">res</span>.<span class="ident">insert</span>(<span class="ident">d</span>, <span class="ident">mu</span>);
@@ -199,44 +199,44 @@
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
 <span class="doccomment">/// [(hcn, #divisor)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">highly_composite_number</span>(<span class="ident">n</span>: <span class="ident">u128</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">u128</span>, <span class="ident">u128</span>)<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dp</span> <span class="op">=</span> <span class="macro">vec!</span>[(<span class="number">1u128</span>, <span class="number">1u128</span>)];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="number">1u128</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="number">110</span>];
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">highly_composite_number</span>(<span class="ident">n</span>: <span class="ident">u128</span>) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">u128</span>, <span class="ident">u128</span>)&gt; {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dp</span> = <span class="macro">vec!</span>[(<span class="number">1u128</span>, <span class="number">1u128</span>)];
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="number">1u128</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="number">110</span>];
     <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="number">2u128</span>.. {
-        <span class="kw">if</span> <span class="op">!</span><span class="ident">table</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>] {
+        <span class="kw">if</span> !<span class="ident">table</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>] {
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="ident">p</span>..<span class="number">110</span>).<span class="ident">step_by</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span>) {
-                <span class="ident">table</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>] <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="ident">table</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>] = <span class="bool-val">true</span>;
             }
-            <span class="ident">acc</span> <span class="op">=</span> <span class="ident">acc</span>.<span class="ident">saturating_mul</span>(<span class="ident">p</span>);
-            <span class="kw">if</span> <span class="ident">acc</span> <span class="op">&gt;</span> <span class="ident">n</span> {
+            <span class="ident">acc</span> = <span class="ident">acc</span>.<span class="ident">saturating_mul</span>(<span class="ident">p</span>);
+            <span class="kw">if</span> <span class="ident">acc</span> &gt; <span class="ident">n</span> {
                 <span class="kw">break</span>;
             }
-            <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">dp</span>.<span class="ident">len</span>();
+            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">dp</span>.<span class="ident">len</span>();
             <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">m</span> {
-                <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">dp</span>[<span class="ident">i</span>];
+                <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="ident">b</span>) = <span class="ident">dp</span>[<span class="ident">i</span>];
                 <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">2</span>.. {
-                    <span class="ident">a</span> <span class="op">=</span> <span class="ident">a</span>.<span class="ident">saturating_mul</span>(<span class="ident">p</span>);
-                    <span class="kw">let</span> <span class="ident">nb</span> <span class="op">=</span> <span class="ident">b</span>.<span class="ident">saturating_mul</span>(<span class="ident">j</span>);
-                    <span class="kw">if</span> <span class="ident">a</span> <span class="op">&gt;</span> <span class="ident">n</span> {
+                    <span class="ident">a</span> = <span class="ident">a</span>.<span class="ident">saturating_mul</span>(<span class="ident">p</span>);
+                    <span class="kw">let</span> <span class="ident">nb</span> = <span class="ident">b</span>.<span class="ident">saturating_mul</span>(<span class="ident">j</span>);
+                    <span class="kw">if</span> <span class="ident">a</span> &gt; <span class="ident">n</span> {
                         <span class="kw">break</span>;
                     }
                     <span class="ident">dp</span>.<span class="ident">push</span>((<span class="ident">a</span>, <span class="ident">nb</span>));
                 }
             }
             <span class="ident">dp</span>.<span class="ident">sort_unstable</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ndp</span> <span class="op">=</span> <span class="macro">vec!</span>[];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mx</span> <span class="op">=</span> <span class="number">0u128</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ndp</span> = <span class="macro">vec!</span>[];
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mx</span> = <span class="number">0u128</span>;
             <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">dp</span> {
-                <span class="kw">if</span> <span class="ident">b</span> <span class="op">&gt;</span> <span class="ident">mx</span> {
-                    <span class="ident">mx</span> <span class="op">=</span> <span class="ident">b</span>;
+                <span class="kw">if</span> <span class="ident">b</span> &gt; <span class="ident">mx</span> {
+                    <span class="ident">mx</span> = <span class="ident">b</span>;
                     <span class="ident">ndp</span>.<span class="ident">push</span>((<span class="ident">a</span>, <span class="ident">b</span>));
                 }
             }
-            <span class="ident">dp</span> <span class="op">=</span> <span class="ident">ndp</span>;
+            <span class="ident">dp</span> = <span class="ident">ndp</span>;
         }
     }
     <span class="ident">dp</span>
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

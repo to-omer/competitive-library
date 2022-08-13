@@ -154,24 +154,24 @@
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MonoidAction</span> {
     <span class="kw">type</span> <span class="ident">MT</span>: <span class="ident">Clone</span>;
     <span class="kw">type</span> <span class="ident">AT</span>: <span class="ident">Clone</span>;
-    <span class="kw">type</span> <span class="ident">M</span>: <span class="ident">Monoid</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">A</span>: <span class="ident">Monoid</span><span class="op">&lt;</span><span class="ident">T</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::AT</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">act</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">M</span>: <span class="ident">Monoid</span>&lt;<span class="ident">T</span> = <span class="ident"><span class="self">Self</span>::MT</span>&gt;;
+    <span class="kw">type</span> <span class="ident">A</span>: <span class="ident">Monoid</span>&lt;<span class="ident">T</span> = <span class="ident"><span class="self">Self</span>::AT</span>&gt;;
+    <span class="kw">fn</span> <span class="ident">act</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::MT</span>&gt;;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">munit</span>() -&gt; <span class="ident"><span class="self">Self</span>::MT</span> {
-        <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::M</span> <span class="kw">as</span> <span class="ident">Unital</span><span class="op">&gt;</span><span class="ident">::unit</span>()
+        &lt;<span class="ident"><span class="self">Self</span>::M</span> <span class="kw">as</span> <span class="ident">Unital</span>&gt;<span class="ident">::unit</span>()
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">aunit</span>() -&gt; <span class="ident"><span class="self">Self</span>::AT</span> {
-        <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::A</span> <span class="kw">as</span> <span class="ident">Unital</span><span class="op">&gt;</span><span class="ident">::unit</span>()
+        &lt;<span class="ident"><span class="self">Self</span>::A</span> <span class="kw">as</span> <span class="ident">Unital</span>&gt;<span class="ident">::unit</span>()
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">moperate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>) -&gt; <span class="ident"><span class="self">Self</span>::MT</span> {
-        <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::M</span> <span class="kw">as</span> <span class="ident">Magma</span><span class="op">&gt;</span><span class="ident">::operate</span>(<span class="ident">x</span>, <span class="ident">y</span>)
+        &lt;<span class="ident"><span class="self">Self</span>::M</span> <span class="kw">as</span> <span class="ident">Magma</span>&gt;<span class="ident">::operate</span>(<span class="ident">x</span>, <span class="ident">y</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">aoperate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="ident"><span class="self">Self</span>::AT</span> {
-        <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::A</span> <span class="kw">as</span> <span class="ident">Magma</span><span class="op">&gt;</span><span class="ident">::operate</span>(<span class="ident">x</span>, <span class="ident">y</span>)
+        &lt;<span class="ident"><span class="self">Self</span>::A</span> <span class="kw">as</span> <span class="ident">Magma</span>&gt;<span class="ident">::operate</span>(<span class="ident">x</span>, <span class="ident">y</span>)
     }
 }
 
@@ -198,87 +198,87 @@
         <span class="ident">marker::PhantomData</span>,
         <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">Mul</span>},
     };
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeAdd</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeSumRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> (<span class="ident">T</span>, <span class="ident">T</span>);
-        <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="ident">T</span>;
-        <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> (<span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
-        <span class="kw">type</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span>(<span class="ident">x</span>, <span class="ident">y</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span> {
-            <span class="prelude-val">Some</span>((<span class="ident">x</span> <span class="op">+</span> <span class="ident">a</span> <span class="op">*</span> <span class="ident">y</span>, <span class="ident">y</span>))
+    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Copy</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeSumRangeAdd</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="kw">type</span> <span class="ident">MT</span> = (<span class="ident">T</span>, <span class="ident">T</span>);
+        <span class="kw">type</span> <span class="ident">AT</span> = <span class="ident">T</span>;
+        <span class="kw">type</span> <span class="ident">M</span> = (<span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;);
+        <span class="kw">type</span> <span class="ident">A</span> = <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span>(<span class="ident">x</span>, <span class="ident">y</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::MT</span>&gt; {
+            <span class="prelude-val">Some</span>((<span class="ident">x</span> + <span class="ident">a</span> * <span class="ident">y</span>, <span class="ident">y</span>))
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeLinear</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeLinear</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">One</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span>
-        <span class="kw">for</span> <span class="ident">RangeSumRangeLinear</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Copy</span> + <span class="ident">Zero</span> + <span class="ident">One</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">MonoidAction</span>
+        <span class="kw">for</span> <span class="ident">RangeSumRangeLinear</span>&lt;<span class="ident">T</span>&gt;
     {
-        <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> (<span class="ident">T</span>, <span class="ident">T</span>);
-        <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> (<span class="ident">T</span>, <span class="ident">T</span>);
-        <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> (<span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
-        <span class="kw">type</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">LinearOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span>(<span class="ident">x</span>, <span class="ident">y</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="kw-2">&amp;</span>(<span class="ident">a</span>, <span class="ident">b</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span> {
-            <span class="prelude-val">Some</span>((<span class="ident">a</span> <span class="op">*</span> <span class="ident">x</span> <span class="op">+</span> <span class="ident">b</span> <span class="op">*</span> <span class="ident">y</span>, <span class="ident">y</span>))
+        <span class="kw">type</span> <span class="ident">MT</span> = (<span class="ident">T</span>, <span class="ident">T</span>);
+        <span class="kw">type</span> <span class="ident">AT</span> = (<span class="ident">T</span>, <span class="ident">T</span>);
+        <span class="kw">type</span> <span class="ident">M</span> = (<span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;);
+        <span class="kw">type</span> <span class="ident">A</span> = <span class="ident">LinearOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span>(<span class="ident">x</span>, <span class="ident">y</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="kw-2">&amp;</span>(<span class="ident">a</span>, <span class="ident">b</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::MT</span>&gt; {
+            <span class="prelude-val">Some</span>((<span class="ident">a</span> * <span class="ident">x</span> + <span class="ident">b</span> * <span class="ident">y</span>, <span class="ident">y</span>))
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeSumRangeUpdate</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Mul</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">PartialEq</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span>
-        <span class="kw">for</span> <span class="ident">RangeSumRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Copy</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">PartialEq</span>&gt; <span class="ident">MonoidAction</span>
+        <span class="kw">for</span> <span class="ident">RangeSumRangeUpdate</span>&lt;<span class="ident">T</span>&gt;
     {
-        <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> (<span class="ident">T</span>, <span class="ident">T</span>);
-        <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> (<span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
-        <span class="kw">type</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">LastOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span>(<span class="ident">x</span>, <span class="ident">y</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span> {
-            <span class="prelude-val">Some</span>((<span class="ident">a</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span> <span class="op">*</span> <span class="ident">y</span>).<span class="ident">unwrap_or</span>(<span class="ident">x</span>), <span class="ident">y</span>))
+        <span class="kw">type</span> <span class="ident">MT</span> = (<span class="ident">T</span>, <span class="ident">T</span>);
+        <span class="kw">type</span> <span class="ident">AT</span> = <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">type</span> <span class="ident">M</span> = (<span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;);
+        <span class="kw">type</span> <span class="ident">A</span> = <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span>(<span class="ident">x</span>, <span class="ident">y</span>): <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::MT</span>&gt; {
+            <span class="prelude-val">Some</span>((<span class="ident">a</span>.<span class="ident">map</span>(|<span class="ident">a</span>| <span class="ident">a</span> * <span class="ident">y</span>).<span class="ident">unwrap_or</span>(<span class="ident">x</span>), <span class="ident">y</span>))
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMaxRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMaxRangeUpdate</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Bounded</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMaxRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> <span class="ident">T</span>;
-        <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">MaxOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">type</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">LastOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">fn</span> <span class="ident">act</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span> {
+    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">PartialEq</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMaxRangeUpdate</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="kw">type</span> <span class="ident">MT</span> = <span class="ident">T</span>;
+        <span class="kw">type</span> <span class="ident">AT</span> = <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">type</span> <span class="ident">M</span> = <span class="ident">MaxOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">type</span> <span class="ident">A</span> = <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">fn</span> <span class="ident">act</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::MT</span>&gt; {
             <span class="prelude-val">Some</span>(<span class="ident">a</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap_or</span>(<span class="ident">x</span>).<span class="ident">clone</span>())
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMinRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMinRangeUpdate</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Bounded</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMinRangeUpdate</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> <span class="ident">T</span>;
-        <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">MinOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">type</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">LastOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">fn</span> <span class="ident">act</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span> {
+    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">PartialEq</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMinRangeUpdate</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="kw">type</span> <span class="ident">MT</span> = <span class="ident">T</span>;
+        <span class="kw">type</span> <span class="ident">AT</span> = <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">type</span> <span class="ident">M</span> = <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">type</span> <span class="ident">A</span> = <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">fn</span> <span class="ident">act</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::MT</span>&gt; {
             <span class="prelude-val">Some</span>(<span class="ident">a</span>.<span class="ident">as_ref</span>().<span class="ident">unwrap_or</span>(<span class="ident">x</span>).<span class="ident">clone</span>())
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMinRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">T</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeMinRangeAdd</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
     }
-    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Bounded</span> <span class="op">+</span> <span class="ident">Zero</span> <span class="op">+</span> <span class="ident">Add</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMinRangeAdd</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">type</span> <span class="ident">MT</span> <span class="op">=</span> <span class="ident">T</span>;
-        <span class="kw">type</span> <span class="ident">AT</span> <span class="op">=</span> <span class="ident">T</span>;
-        <span class="kw">type</span> <span class="ident">M</span> <span class="op">=</span> <span class="ident">MinOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">type</span> <span class="ident">A</span> <span class="op">=</span> <span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::MT</span><span class="op">&gt;</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">x</span> <span class="op">+</span> <span class="ident">a</span>)
+    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Copy</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">MonoidAction</span> <span class="kw">for</span> <span class="ident">RangeMinRangeAdd</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="kw">type</span> <span class="ident">MT</span> = <span class="ident">T</span>;
+        <span class="kw">type</span> <span class="ident">AT</span> = <span class="ident">T</span>;
+        <span class="kw">type</span> <span class="ident">M</span> = <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">type</span> <span class="ident">A</span> = <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;;
+        <span class="kw">fn</span> <span class="ident">act</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::MT</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AT</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::MT</span>&gt; {
+            <span class="prelude-val">Some</span>(<span class="ident">x</span> + <span class="ident">a</span>)
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

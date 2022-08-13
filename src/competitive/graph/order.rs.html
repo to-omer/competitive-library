@@ -110,18 +110,18 @@
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::SparseGraph</span>;
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;bfs_order&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">SparseGraph</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bfs_order</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
-        <span class="ident">visited</span>[<span class="ident">root</span>] <span class="op">=</span> <span class="bool-val">true</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> <span class="op">=</span> <span class="ident">std::collections::VecDeque::new</span>();
+<span class="kw">impl</span>&lt;<span class="ident">D</span>&gt; <span class="ident">SparseGraph</span>&lt;<span class="ident">D</span>&gt; {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bfs_order</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> = <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
+        <span class="ident">visited</span>[<span class="ident">root</span>] = <span class="bool-val">true</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> = <span class="ident">std::collections::VecDeque::new</span>();
         <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">root</span>);
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
             <span class="ident">ord</span>.<span class="ident">push</span>(<span class="ident">u</span>);
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">rev</span>() {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
-                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="kw">if</span> !<span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
+                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] = <span class="bool-val">true</span>;
                     <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">a</span>.<span class="ident">to</span>);
                 }
             }
@@ -131,17 +131,17 @@
 }
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;dfs_order&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">SparseGraph</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dfs_order</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
-        <span class="ident">visited</span>[<span class="ident">root</span>] <span class="op">=</span> <span class="bool-val">true</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stack</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">root</span>];
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="ident">stack</span>.<span class="ident">pop</span>() {
+<span class="kw">impl</span>&lt;<span class="ident">D</span>&gt; <span class="ident">SparseGraph</span>&lt;<span class="ident">D</span>&gt; {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dfs_order</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> = <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
+        <span class="ident">visited</span>[<span class="ident">root</span>] = <span class="bool-val">true</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stack</span> = <span class="macro">vec!</span>[<span class="ident">root</span>];
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="ident">stack</span>.<span class="ident">pop</span>() {
             <span class="ident">ord</span>.<span class="ident">push</span>(<span class="ident">u</span>);
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">rev</span>() {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
-                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="kw">if</span> !<span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
+                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] = <span class="bool-val">true</span>;
                     <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">a</span>.<span class="ident">to</span>);
                 }
             }
@@ -151,17 +151,17 @@
 }
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;dfs_tree&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">SparseGraph</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dfs_tree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
-        <span class="ident">visited</span>[<span class="ident">root</span>] <span class="op">=</span> <span class="bool-val">true</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stack</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">root</span>];
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="ident">stack</span>.<span class="ident">pop</span>() {
+<span class="kw">impl</span>&lt;<span class="ident">D</span>&gt; <span class="ident">SparseGraph</span>&lt;<span class="ident">D</span>&gt; {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dfs_tree</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">root</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">bool</span>&gt; {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">edges_size</span>()];
+        <span class="ident">visited</span>[<span class="ident">root</span>] = <span class="bool-val">true</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stack</span> = <span class="macro">vec!</span>[<span class="ident">root</span>];
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="ident">stack</span>.<span class="ident">pop</span>() {
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">rev</span>() {
-                <span class="kw">if</span> <span class="op">!</span><span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
-                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="bool-val">true</span>;
-                    <span class="ident">used</span>[<span class="ident">a</span>.<span class="ident">id</span>] <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="kw">if</span> !<span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
+                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] = <span class="bool-val">true</span>;
+                    <span class="ident">used</span>[<span class="ident">a</span>.<span class="ident">id</span>] = <span class="bool-val">true</span>;
                     <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">a</span>.<span class="ident">to</span>);
                 }
             }
@@ -171,28 +171,28 @@
 }
 
 <span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;for_each_connected_components&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> <span class="ident">SparseGraph</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
+<span class="kw">impl</span>&lt;<span class="ident">D</span>&gt; <span class="ident">SparseGraph</span>&lt;<span class="ident">D</span>&gt; {
     <span class="doccomment">/// f: |g, root, ord: [vertex, parent]| {}</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">for_each_connected_components</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">for_each_connected_components</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>)
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">usize</span>, <span class="kw-2">&amp;</span>[(<span class="ident">usize</span>, <span class="ident">usize</span>)]),
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ord</span> = <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">vertices_size</span>());
         <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">visited</span>[<span class="ident">u</span>] {
-                <span class="ident">visited</span>[<span class="ident">u</span>] <span class="op">=</span> <span class="bool-val">true</span>;
-                <span class="ident">ord</span>.<span class="ident">push</span>((<span class="ident">u</span>, <span class="op">!</span><span class="number">0</span>));
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-                <span class="kw">while</span> <span class="ident">i</span> <span class="op">&lt;</span> <span class="ident">ord</span>.<span class="ident">len</span>() {
-                    <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">ord</span>[<span class="ident">i</span>].<span class="number">0</span>;
+            <span class="kw">if</span> !<span class="ident">visited</span>[<span class="ident">u</span>] {
+                <span class="ident">visited</span>[<span class="ident">u</span>] = <span class="bool-val">true</span>;
+                <span class="ident">ord</span>.<span class="ident">push</span>((<span class="ident">u</span>, !<span class="number">0</span>));
+                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> = <span class="number">0</span>;
+                <span class="kw">while</span> <span class="ident">i</span> &lt; <span class="ident">ord</span>.<span class="ident">len</span>() {
+                    <span class="kw">let</span> <span class="ident">u</span> = <span class="ident">ord</span>[<span class="ident">i</span>].<span class="number">0</span>;
                     <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">rev</span>() {
-                        <span class="kw">if</span> <span class="op">!</span><span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
-                            <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="bool-val">true</span>;
+                        <span class="kw">if</span> !<span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
+                            <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] = <span class="bool-val">true</span>;
                             <span class="ident">ord</span>.<span class="ident">push</span>((<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>));
                         }
                     }
-                    <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                    <span class="ident">i</span> += <span class="number">1</span>;
                 }
                 <span class="ident">f</span>(<span class="self">self</span>, <span class="ident">u</span>, <span class="kw-2">&amp;</span><span class="ident">ord</span>);
                 <span class="ident">ord</span>.<span class="ident">clear</span>();
@@ -201,4 +201,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

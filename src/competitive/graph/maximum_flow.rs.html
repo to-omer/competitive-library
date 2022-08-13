@@ -165,15 +165,15 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DinicBuilder</span> {
     <span class="ident">vsize</span>: <span class="ident">usize</span>,
-    <span class="ident">edges</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>)<span class="op">&gt;</span>,
-    <span class="ident">capacities</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
+    <span class="ident">edges</span>: <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt;,
+    <span class="ident">capacities</span>: <span class="ident">Vec</span>&lt;<span class="ident">u64</span>&gt;,
 }
 <span class="kw">impl</span> <span class="ident">DinicBuilder</span> {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>, <span class="ident">esize_expect</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">vsize</span>,
             <span class="ident">edges</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">esize_expect</span>),
-            <span class="ident">capacities</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">esize_expect</span> <span class="op">*</span> <span class="number">2</span>),
+            <span class="ident">capacities</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">esize_expect</span> * <span class="number">2</span>),
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_edge</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">from</span>: <span class="ident">usize</span>, <span class="ident">to</span>: <span class="ident">usize</span>, <span class="ident">cap</span>: <span class="ident">u64</span>) {
@@ -182,13 +182,13 @@
         <span class="self">self</span>.<span class="ident">capacities</span>.<span class="ident">push</span>(<span class="number">0</span>);
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gen_graph</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">BidirectionalSparseGraph</span> {
-        <span class="kw">let</span> <span class="ident">edges</span> <span class="op">=</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">edges</span>);
+        <span class="kw">let</span> <span class="ident">edges</span> = <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">edges</span>);
         <span class="ident">BidirectionalSparseGraph::from_edges</span>(<span class="self">self</span>.<span class="ident">vsize</span>, <span class="ident">edges</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">BidirectionalSparseGraph</span>) -&gt; <span class="ident">Dinic</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>, <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="ident">BidirectionalSparseGraph</span>) -&gt; <span class="ident">Dinic</span>&lt;<span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">let</span> <span class="ident">DinicBuilder</span> {
             <span class="ident">vsize</span>, <span class="ident">capacities</span>, ..
-        } <span class="op">=</span> <span class="self">self</span>;
+        } = <span class="self">self</span>;
         <span class="ident">Dinic</span> {
             <span class="ident">graph</span>,
             <span class="ident">capacities</span>,
@@ -198,8 +198,8 @@
         }
     }
 }
-<span class="kw">impl</span> <span class="ident">Extend</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">u64</span>)<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DinicBuilder</span> {
-    <span class="kw">fn</span> <span class="ident">extend</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">u64</span>)<span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">T</span>) {
+<span class="kw">impl</span> <span class="ident">Extend</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">u64</span>)&gt; <span class="kw">for</span> <span class="ident">DinicBuilder</span> {
+    <span class="kw">fn</span> <span class="ident">extend</span>&lt;<span class="ident">T</span>: <span class="ident">IntoIterator</span>&lt;<span class="ident">Item</span> = (<span class="ident">usize</span>, <span class="ident">usize</span>, <span class="ident">u64</span>)&gt;&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">iter</span>: <span class="ident">T</span>) {
         <span class="kw">for</span> (<span class="ident">from</span>, <span class="ident">to</span>, <span class="ident">cap</span>) <span class="kw">in</span> <span class="ident">iter</span> {
             <span class="self">self</span>.<span class="ident">add_edge</span>(<span class="ident">from</span>, <span class="ident">to</span>, <span class="ident">cap</span>)
         }
@@ -207,14 +207,14 @@
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Dinic</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Dinic</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BidirectionalSparseGraph</span>,
-    <span class="ident">capacities</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>,
-    <span class="ident">iter</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">level</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">deq</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="ident">capacities</span>: <span class="ident">Vec</span>&lt;<span class="ident">u64</span>&gt;,
+    <span class="ident">iter</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
+    <span class="ident">level</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
+    <span class="ident">deq</span>: <span class="ident">VecDeque</span>&lt;<span class="ident">usize</span>&gt;,
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Dinic</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">Dinic</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">builder</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>, <span class="ident">esize_expect</span>: <span class="ident">usize</span>) -&gt; <span class="ident">DinicBuilder</span> {
         <span class="ident">DinicBuilder::new</span>(<span class="ident">vsize</span>, <span class="ident">esize_expect</span>)
     }
@@ -222,57 +222,57 @@
         <span class="kw">use</span> <span class="ident">std::usize::MAX</span>;
         <span class="self">self</span>.<span class="ident">level</span>.<span class="ident">clear</span>();
         <span class="self">self</span>.<span class="ident">level</span>.<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>(), <span class="ident">MAX</span>);
-        <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">s</span>] <span class="op">=</span> <span class="number">0</span>;
+        <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">s</span>] = <span class="number">0</span>;
         <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">clear</span>();
         <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">s</span>);
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">pop_front</span>() {
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">pop_front</span>() {
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">==</span> <span class="ident">MAX</span> {
-                    <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">u</span>] <span class="op">+</span> <span class="number">1</span>;
-                    <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> <span class="op">==</span> <span class="ident">t</span> {
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] &gt; <span class="number">0</span> &amp;&amp; <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">a</span>.<span class="ident">to</span>] == <span class="ident">MAX</span> {
+                    <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">a</span>.<span class="ident">to</span>] = <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">u</span>] + <span class="number">1</span>;
+                    <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> == <span class="ident">t</span> {
                         <span class="kw">return</span> <span class="bool-val">false</span>;
                     }
                     <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">a</span>.<span class="ident">to</span>);
                 }
             }
         }
-        <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">t</span>] <span class="op">==</span> <span class="ident">MAX</span>
+        <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">t</span>] == <span class="ident">MAX</span>
     }
     <span class="kw">fn</span> <span class="ident">dfs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">upper</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-        <span class="kw">if</span> <span class="ident">u</span> <span class="op">==</span> <span class="ident">s</span> {
+        <span class="kw">if</span> <span class="ident">u</span> == <span class="ident">s</span> {
             <span class="kw">return</span> <span class="ident">upper</span>;
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="number">0</span>;
         <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">skip</span>(<span class="self">self</span>.<span class="ident">iter</span>[<span class="ident">u</span>]) {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">u</span>] <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span> <span class="op">^</span> <span class="number">1</span>] <span class="op">&gt;</span> <span class="number">0</span> {
-                <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">s</span>, <span class="ident">a</span>.<span class="ident">to</span>, (<span class="ident">upper</span> <span class="op">-</span> <span class="ident">res</span>).<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span> <span class="op">^</span> <span class="number">1</span>]));
-                <span class="kw">if</span> <span class="ident">d</span> <span class="op">&gt;</span> <span class="number">0</span> {
-                    <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span> <span class="op">^</span> <span class="number">1</span>] <span class="op">-</span><span class="op">=</span> <span class="ident">d</span>;
-                    <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">d</span>;
-                    <span class="ident">res</span> <span class="op">+</span><span class="op">=</span> <span class="ident">d</span>;
-                    <span class="kw">if</span> <span class="ident">upper</span> <span class="op">==</span> <span class="ident">res</span> {
+            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">u</span>] &gt; <span class="self">self</span>.<span class="ident">level</span>[<span class="ident">a</span>.<span class="ident">to</span>] &amp;&amp; <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span> ^ <span class="number">1</span>] &gt; <span class="number">0</span> {
+                <span class="kw">let</span> <span class="ident">d</span> = <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">s</span>, <span class="ident">a</span>.<span class="ident">to</span>, (<span class="ident">upper</span> - <span class="ident">res</span>).<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span> ^ <span class="number">1</span>]));
+                <span class="kw">if</span> <span class="ident">d</span> &gt; <span class="number">0</span> {
+                    <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span> ^ <span class="number">1</span>] -= <span class="ident">d</span>;
+                    <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] += <span class="ident">d</span>;
+                    <span class="ident">res</span> += <span class="ident">d</span>;
+                    <span class="kw">if</span> <span class="ident">upper</span> == <span class="ident">res</span> {
                         <span class="kw">break</span>;
                     }
                 }
             }
-            <span class="self">self</span>.<span class="ident">iter</span>[<span class="ident">u</span>] <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="self">self</span>.<span class="ident">iter</span>[<span class="ident">u</span>] += <span class="number">1</span>;
         }
         <span class="ident">res</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maximum_flow_limited</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>, <span class="ident">limit</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flow</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">while</span> <span class="ident">flow</span> <span class="op">&lt;</span> <span class="ident">limit</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">flow</span> = <span class="number">0</span>;
+        <span class="kw">while</span> <span class="ident">flow</span> &lt; <span class="ident">limit</span> {
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">bfs</span>(<span class="ident">s</span>, <span class="ident">t</span>) {
                 <span class="kw">break</span>;
             }
             <span class="self">self</span>.<span class="ident">iter</span>.<span class="ident">clear</span>();
             <span class="self">self</span>.<span class="ident">iter</span>.<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>(), <span class="number">0</span>);
-            <span class="kw">while</span> <span class="ident">flow</span> <span class="op">&lt;</span> <span class="ident">limit</span> {
-                <span class="kw">let</span> <span class="ident">f</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">limit</span> <span class="op">-</span> <span class="ident">flow</span>);
-                <span class="kw">if</span> <span class="ident">f</span> <span class="op">==</span> <span class="number">0</span> {
+            <span class="kw">while</span> <span class="ident">flow</span> &lt; <span class="ident">limit</span> {
+                <span class="kw">let</span> <span class="ident">f</span> = <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">limit</span> - <span class="ident">flow</span>);
+                <span class="kw">if</span> <span class="ident">f</span> == <span class="number">0</span> {
                     <span class="kw">break</span>;
                 }
-                <span class="ident">flow</span> <span class="op">+</span><span class="op">=</span> <span class="ident">f</span>;
+                <span class="ident">flow</span> += <span class="ident">f</span>;
             }
         }
         <span class="ident">flow</span>
@@ -280,15 +280,15 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maximum_flow</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>, <span class="ident">t</span>: <span class="ident">usize</span>) -&gt; <span class="ident">u64</span> {
         <span class="self">self</span>.<span class="ident">maximum_flow_limited</span>(<span class="ident">s</span>, <span class="ident">t</span>, <span class="ident">std::u64::MAX</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_cut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>()];
-        <span class="ident">visited</span>[<span class="ident">s</span>] <span class="op">=</span> <span class="bool-val">true</span>;
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_cut</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">bool</span>&gt; {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>()];
+        <span class="ident">visited</span>[<span class="ident">s</span>] = <span class="bool-val">true</span>;
         <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">clear</span>();
         <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">s</span>);
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">pop_front</span>() {
+        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">pop_front</span>() {
             <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] <span class="op">&gt;</span> <span class="number">0</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
-                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">a</span>.<span class="ident">id</span>] &gt; <span class="number">0</span> &amp;&amp; !<span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
+                    <span class="ident">visited</span>[<span class="ident">a</span>.<span class="ident">to</span>] = <span class="bool-val">true</span>;
                     <span class="self">self</span>.<span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">a</span>.<span class="ident">to</span>);
                 }
             }
@@ -296,13 +296,13 @@
         <span class="ident">visited</span>
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_flow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">eid</span>: <span class="ident">usize</span>) -&gt; <span class="ident">u64</span> {
-        <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">eid</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>]
+        <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">eid</span> * <span class="number">2</span> + <span class="number">1</span>]
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_edge</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">eid</span>: <span class="ident">usize</span>, <span class="ident">cap</span>: <span class="ident">u64</span>, <span class="ident">flow</span>: <span class="ident">u64</span>) {
-        <span class="macro">assert!</span>(<span class="ident">flow</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">cap</span>);
-        <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">eid</span> <span class="op">*</span> <span class="number">2</span>] <span class="op">=</span> <span class="ident">cap</span> <span class="op">-</span> <span class="ident">flow</span>;
-        <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">eid</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">flow</span>;
+        <span class="macro">assert!</span>(<span class="ident">flow</span> &lt;= <span class="ident">cap</span>);
+        <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">eid</span> * <span class="number">2</span>] = <span class="ident">cap</span> - <span class="ident">flow</span>;
+        <span class="self">self</span>.<span class="ident">capacities</span>[<span class="ident">eid</span> * <span class="number">2</span> + <span class="number">1</span>] = <span class="ident">flow</span>;
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

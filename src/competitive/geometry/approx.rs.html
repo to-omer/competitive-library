@@ -113,40 +113,40 @@
             <span class="kw">fn</span> <span class="ident">approx_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">Ordering</span> {
                 <span class="self">self</span>.<span class="ident">cmp</span>(<span class="ident">other</span>)
             }
-        })<span class="op">*</span>
+        })*
     };
 }
 <span class="macro">impl_approx_zero_for_int!</span>(<span class="ident">u8</span> <span class="ident">u16</span> <span class="ident">u32</span> <span class="ident">u64</span> <span class="ident">u128</span> <span class="ident">usize</span> <span class="ident">i8</span> <span class="ident">i16</span> <span class="ident">i32</span> <span class="ident">i64</span> <span class="ident">i128</span> <span class="ident">isize</span>);
 <span class="kw">impl</span> <span class="ident">ApproxOrd</span> <span class="kw">for</span> <span class="ident">f32</span> {
     <span class="kw">fn</span> <span class="ident">approx_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">const</span> <span class="ident">EPS_F32</span>: <span class="ident">f32</span> <span class="op">=</span> <span class="number">1e-8</span>;
-        (<span class="self">self</span> <span class="op">-</span> <span class="ident">other</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">EPS_F32</span>
+        <span class="kw">const</span> <span class="ident">EPS_F32</span>: <span class="ident">f32</span> = <span class="number">1e-8</span>;
+        (<span class="self">self</span> - <span class="ident">other</span>).<span class="ident">abs</span>() &lt; <span class="ident">EPS_F32</span>
     }
     <span class="kw">fn</span> <span class="ident">approx_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">Ordering</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">approx_eq</span>(<span class="ident">other</span>) {
             <span class="ident">Ordering::Equal</span>
         } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-            <span class="ident">left</span> <span class="op">^</span><span class="op">=</span> (((<span class="ident">left</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">31</span>) <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i32</span>;
-            <span class="ident">right</span> <span class="op">^</span><span class="op">=</span> (((<span class="ident">right</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">31</span>) <span class="kw">as</span> <span class="ident">u32</span>) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> = <span class="self">self</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right</span> = <span class="ident">other</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="ident">left</span> ^= (((<span class="ident">left</span> &gt;&gt; <span class="number">31</span>) <span class="kw">as</span> <span class="ident">u32</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i32</span>;
+            <span class="ident">right</span> ^= (((<span class="ident">right</span> &gt;&gt; <span class="number">31</span>) <span class="kw">as</span> <span class="ident">u32</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i32</span>;
             <span class="ident">left</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">right</span>)
         }
     }
 }
 <span class="kw">impl</span> <span class="ident">ApproxOrd</span> <span class="kw">for</span> <span class="ident">f64</span> {
     <span class="kw">fn</span> <span class="ident">approx_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">const</span> <span class="ident">EPS_F64</span>: <span class="ident">f64</span> <span class="op">=</span> <span class="number">1e-8</span>;
-        (<span class="self">self</span> <span class="op">-</span> <span class="ident">other</span>).<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">EPS_F64</span>
+        <span class="kw">const</span> <span class="ident">EPS_F64</span>: <span class="ident">f64</span> = <span class="number">1e-8</span>;
+        (<span class="self">self</span> - <span class="ident">other</span>).<span class="ident">abs</span>() &lt; <span class="ident">EPS_F64</span>
     }
     <span class="kw">fn</span> <span class="ident">approx_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">Ordering</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">approx_eq</span>(<span class="ident">other</span>) {
             <span class="ident">Ordering::Equal</span>
         } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i64</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right</span> <span class="op">=</span> <span class="ident">other</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i64</span>;
-            <span class="ident">left</span> <span class="op">^</span><span class="op">=</span> (((<span class="ident">left</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">63</span>) <span class="kw">as</span> <span class="ident">u64</span>) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i64</span>;
-            <span class="ident">right</span> <span class="op">^</span><span class="op">=</span> (((<span class="ident">right</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">63</span>) <span class="kw">as</span> <span class="ident">u64</span>) <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i64</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> = <span class="self">self</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i64</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right</span> = <span class="ident">other</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i64</span>;
+            <span class="ident">left</span> ^= (((<span class="ident">left</span> &gt;&gt; <span class="number">63</span>) <span class="kw">as</span> <span class="ident">u64</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i64</span>;
+            <span class="ident">right</span> ^= (((<span class="ident">right</span> &gt;&gt; <span class="number">63</span>) <span class="kw">as</span> <span class="ident">u64</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i64</span>;
             <span class="ident">left</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">right</span>)
         }
     }
@@ -154,10 +154,10 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">transparent</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Approx</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="kw">pub</span> <span class="ident">T</span>)
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Approx</span>&lt;<span class="ident">T</span>&gt;(<span class="kw">pub</span> <span class="ident">T</span>)
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">ApproxOrd</span>;
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Approx</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Approx</span>&lt;<span class="ident">T</span>&gt;
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">ApproxOrd</span>,
 {
@@ -165,16 +165,16 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">approx_eq</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="number">0</span>)
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">Approx</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">ApproxOrd</span> {}
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">Approx</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">Approx</span>&lt;<span class="ident">T</span>&gt; <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">ApproxOrd</span> {}
+<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">Approx</span>&lt;<span class="ident">T</span>&gt;
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">ApproxOrd</span>,
 {
-    <span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Ordering</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">Ordering</span>&gt; {
         <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.<span class="ident">approx_cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="number">0</span>))
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">Approx</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">Approx</span>&lt;<span class="ident">T</span>&gt;
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">ApproxOrd</span>,
 {
@@ -183,4 +183,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

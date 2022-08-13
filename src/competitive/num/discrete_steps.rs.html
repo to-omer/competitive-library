@@ -306,21 +306,21 @@
     <span class="ident">ops</span>::{<span class="ident">Bound</span>, <span class="ident">Range</span>, <span class="ident">RangeBounds</span>, <span class="ident">RangeInclusive</span>},
 };
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DiscreteSteps</span><span class="op">&lt;</span><span class="ident">Delta</span><span class="op">&gt;</span>: <span class="ident">Clone</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">DiscreteSteps</span>&lt;<span class="ident">Delta</span>&gt;: <span class="ident">Clone</span> {
     <span class="kw">fn</span> <span class="ident">delta</span>() -&gt; <span class="ident">Delta</span>;
-    <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Delta</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="ident">Delta</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="ident">Delta</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+    <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">Delta</span>&gt;;
+    <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="ident">Delta</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="ident">Delta</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;;
     <span class="kw">fn</span> <span class="ident">forward</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="ident">Delta</span>) -&gt; <span class="self">Self</span> {
         <span class="ident"><span class="self">Self</span>::forward_checked</span>(<span class="ident">start</span>, <span class="ident">delta</span>).<span class="ident">expect</span>(<span class="string">&quot;overflow in `DiscreteSteps::forward`&quot;</span>)
     }
     <span class="kw">fn</span> <span class="ident">backward</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="ident">Delta</span>) -&gt; <span class="self">Self</span> {
         <span class="ident"><span class="self">Self</span>::backward_checked</span>(<span class="ident">start</span>, <span class="ident">delta</span>).<span class="ident">expect</span>(<span class="string">&quot;overflow in `DiscreteSteps::backward`&quot;</span>)
     }
-    <span class="kw">fn</span> <span class="ident">forward_delta_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">forward_delta_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="ident"><span class="self">Self</span>::forward_checked</span>(<span class="ident">start</span>, <span class="ident"><span class="self">Self</span>::delta</span>())
     }
-    <span class="kw">fn</span> <span class="ident">backward_delta_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">backward_delta_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="ident"><span class="self">Self</span>::backward_checked</span>(<span class="ident">start</span>, <span class="ident"><span class="self">Self</span>::delta</span>())
     }
     <span class="kw">fn</span> <span class="ident">forward_delta</span>(<span class="ident">start</span>: <span class="self">Self</span>) -&gt; <span class="self">Self</span> {
@@ -347,79 +347,79 @@
     };
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_source</span>:<span class="ident">ident</span>; $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_narrower</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_narrower</span>:<span class="ident">ident</span>),<span class="kw-2">*</span>; $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_wider</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_wider</span>:<span class="ident">ident</span>),<span class="kw-2">*</span>) =&gt; {
         $(
-            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_narrower</span> {
+            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_narrower</span> {
                 <span class="macro">impl_discrete_steps_integer!</span>(@<span class="ident">common</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>);
-                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> <span class="op">&lt;</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">end</span> {
-                        <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">end</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">start</span>) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>)
+                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; {
+                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> &lt;= <span class="kw-2">*</span><span class="ident">end</span> {
+                        <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">end</span> - <span class="kw-2">*</span><span class="ident">start</span>) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>)
                     } <span class="kw">else</span> {
                         <span class="prelude-val">None</span>
                     }
                 }
-                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-                    <span class="ident"><span class="self">Self</span>::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">delta</span><span class="op">|</span> <span class="ident">start</span>.<span class="ident">checked_add</span>(<span class="ident">delta</span>))
+                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                    <span class="ident"><span class="self">Self</span>::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(|<span class="ident">delta</span>| <span class="ident">start</span>.<span class="ident">checked_add</span>(<span class="ident">delta</span>))
                 }
-                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-                    <span class="ident"><span class="self">Self</span>::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">delta</span><span class="op">|</span> <span class="ident">start</span>.<span class="ident">checked_sub</span>(<span class="ident">delta</span>))
+                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                    <span class="ident"><span class="self">Self</span>::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(|<span class="ident">delta</span>| <span class="ident">start</span>.<span class="ident">checked_sub</span>(<span class="ident">delta</span>))
                 }
             }
-            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_narrower</span> {
+            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_narrower</span> {
                 <span class="macro">impl_discrete_steps_integer!</span>(@<span class="ident">common</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>);
-                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> <span class="op">&lt;</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">end</span> {
+                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; {
+                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> &lt;= <span class="kw-2">*</span><span class="ident">end</span> {
                         <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">end</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_source</span>).<span class="ident">wrapping_sub</span>(<span class="kw-2">*</span><span class="ident">start</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_source</span>) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>)
                     } <span class="kw">else</span> {
                         <span class="prelude-val">None</span>
                     }
                 }
-                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_narrower::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">delta</span><span class="op">|</span> {
-                        <span class="kw">let</span> <span class="ident">wrapped</span> <span class="op">=</span> <span class="ident">start</span>.<span class="ident">wrapping_add</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>);
-                        <span class="kw">if</span> <span class="ident">wrapped</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">start</span> { <span class="prelude-val">Some</span>(<span class="ident">wrapped</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> }
+                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_narrower::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(|<span class="ident">delta</span>| {
+                        <span class="kw">let</span> <span class="ident">wrapped</span> = <span class="ident">start</span>.<span class="ident">wrapping_add</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>);
+                        <span class="kw">if</span> <span class="ident">wrapped</span> &gt;= <span class="ident">start</span> { <span class="prelude-val">Some</span>(<span class="ident">wrapped</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> }
                     })
                 }
-                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_narrower::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">delta</span><span class="op">|</span> {
-                        <span class="kw">let</span> <span class="ident">wrapped</span> <span class="op">=</span> <span class="ident">start</span>.<span class="ident">wrapping_sub</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>);
-                        <span class="kw">if</span> <span class="ident">wrapped</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">start</span> { <span class="prelude-val">Some</span>(<span class="ident">wrapped</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> }
+                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_narrower::try_from</span>(<span class="ident">delta</span>).<span class="ident">ok</span>().<span class="ident">and_then</span>(|<span class="ident">delta</span>| {
+                        <span class="kw">let</span> <span class="ident">wrapped</span> = <span class="ident">start</span>.<span class="ident">wrapping_sub</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>);
+                        <span class="kw">if</span> <span class="ident">wrapped</span> &lt;= <span class="ident">start</span> { <span class="prelude-val">Some</span>(<span class="ident">wrapped</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> }
                     })
                 }
             }
-        )<span class="op">*</span>
+        )*
         $(
-            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_wider</span> {
+            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_wider</span> {
                 <span class="macro">impl_discrete_steps_integer!</span>(@<span class="ident">common</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>);
-                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> <span class="op">&lt;</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">end</span> {
-                        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source::try_from</span>(<span class="kw-2">*</span><span class="ident">end</span> <span class="op">-</span> <span class="kw-2">*</span><span class="ident">start</span>).<span class="ident">ok</span>()
+                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; {
+                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> &lt;= <span class="kw-2">*</span><span class="ident">end</span> {
+                        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source::try_from</span>(<span class="kw-2">*</span><span class="ident">end</span> - <span class="kw-2">*</span><span class="ident">start</span>).<span class="ident">ok</span>()
                     } <span class="kw">else</span> {
                         <span class="prelude-val">None</span>
                     }
                 }
-                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
                     <span class="ident">start</span>.<span class="ident">checked_add</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>)
                 }
-                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
                     <span class="ident">start</span>.<span class="ident">checked_sub</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>)
                 }
             }
-            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_wider</span> {
+            <span class="kw">impl</span> <span class="ident">DiscreteSteps</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i_wider</span> {
                 <span class="macro">impl_discrete_steps_integer!</span>(@<span class="ident">common</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>);
-                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span><span class="op">&gt;</span> {
-                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> <span class="op">&lt;</span><span class="op">=</span> <span class="kw-2">*</span><span class="ident">end</span> {
-                        <span class="ident">end</span>.<span class="ident">checked_sub</span>(<span class="kw-2">*</span><span class="ident">start</span>).<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">result</span><span class="op">|</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source::try_from</span>(<span class="ident">result</span>).<span class="ident">ok</span>())
+                <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>&gt; {
+                    <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> &lt;= <span class="kw-2">*</span><span class="ident">end</span> {
+                        <span class="ident">end</span>.<span class="ident">checked_sub</span>(<span class="kw-2">*</span><span class="ident">start</span>).<span class="ident">and_then</span>(|<span class="ident">result</span>| <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source::try_from</span>(<span class="ident">result</span>).<span class="ident">ok</span>())
                     } <span class="kw">else</span> {
                         <span class="prelude-val">None</span>
                     }
                 }
-                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">forward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
                     <span class="ident">start</span>.<span class="ident">checked_add</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>)
                 }
-                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">backward_checked</span>(<span class="ident">start</span>: <span class="self">Self</span>, <span class="ident">delta</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u_source</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
                     <span class="ident">start</span>.<span class="ident">checked_sub</span>(<span class="ident">delta</span> <span class="kw">as</span> <span class="self">Self</span>)
                 }
             }
-        )<span class="op">*</span>
+        )*
     };
 }
 <span class="macro">impl_discrete_steps_integer!</span>(<span class="ident">u16</span> <span class="ident">i16</span>; <span class="ident">u8</span> <span class="ident">i8</span>, <span class="ident">u16</span> <span class="ident">i16</span>, <span class="ident">usize</span> <span class="ident">isize</span>; <span class="ident">u32</span> <span class="ident">i32</span>, <span class="ident">u64</span> <span class="ident">i64</span>, <span class="ident">u128</span> <span class="ident">i128</span>);
@@ -433,17 +433,17 @@
 <span class="comment">// #[cfg(target_pointer_width = &quot;64&quot;)]</span>
 <span class="macro">impl_discrete_steps_integer!</span>(<span class="ident">usize</span> <span class="ident">isize</span>; <span class="ident">u8</span> <span class="ident">i8</span>, <span class="ident">u16</span> <span class="ident">i16</span>, <span class="ident">u32</span> <span class="ident">i32</span>, <span class="ident">u64</span> <span class="ident">i64</span>, <span class="ident">usize</span> <span class="ident">isize</span>; <span class="ident">u128</span> <span class="ident">i128</span>);
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RangeBoundsExt</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">start_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">start_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">end_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">end_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RangeBoundsExt</span>&lt;<span class="ident">T</span>&gt; {
+    <span class="kw">fn</span> <span class="ident">start_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
+    <span class="kw">fn</span> <span class="ident">start_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
+    <span class="kw">fn</span> <span class="ident">end_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
+    <span class="kw">fn</span> <span class="ident">end_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
     <span class="kw">fn</span> <span class="ident">start_bound_included</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">T</span>;
     <span class="kw">fn</span> <span class="ident">start_bound_excluded</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">T</span>;
     <span class="kw">fn</span> <span class="ident">end_bound_included</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">T</span>;
     <span class="kw">fn</span> <span class="ident">end_bound_excluded</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">T</span>;
 
-    <span class="kw">fn</span> <span class="ident">to_range_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Range</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_range_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">Range</span>&lt;<span class="ident">T</span>&gt;&gt; {
         <span class="kw">match</span> (
             <span class="self">self</span>.<span class="ident">start_bound_included_checked</span>(),
             <span class="self">self</span>.<span class="ident">end_bound_excluded_checked</span>(),
@@ -452,54 +452,54 @@
             <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
         }
     }
-    <span class="kw">fn</span> <span class="ident">to_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Range</span>&lt;<span class="ident">T</span>&gt; {
         <span class="self">self</span>.<span class="ident">start_bound_included</span>()..<span class="self">self</span>.<span class="ident">end_bound_excluded</span>()
     }
-    <span class="kw">fn</span> <span class="ident">to_range_inclusive_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">to_range_inclusive_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">RangeInclusive</span>&lt;<span class="ident">T</span>&gt;&gt; {
         <span class="kw">match</span> (
             <span class="self">self</span>.<span class="ident">start_bound_included_checked</span>(),
             <span class="self">self</span>.<span class="ident">end_bound_included_checked</span>(),
         ) {
-            (<span class="prelude-val">Some</span>(<span class="ident">start</span>), <span class="prelude-val">Some</span>(<span class="ident">end</span>)) =&gt; <span class="prelude-val">Some</span>(<span class="ident">start</span>..<span class="op">=</span><span class="ident">end</span>),
+            (<span class="prelude-val">Some</span>(<span class="ident">start</span>), <span class="prelude-val">Some</span>(<span class="ident">end</span>)) =&gt; <span class="prelude-val">Some</span>(<span class="ident">start</span>..=<span class="ident">end</span>),
             <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
         }
     }
-    <span class="kw">fn</span> <span class="ident">to_range_inclusive</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">start_bound_included</span>()..<span class="op">=</span><span class="self">self</span>.<span class="ident">end_bound_included</span>()
+    <span class="kw">fn</span> <span class="ident">to_range_inclusive</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RangeInclusive</span>&lt;<span class="ident">T</span>&gt; {
+        <span class="self">self</span>.<span class="ident">start_bound_included</span>()..=<span class="self">self</span>.<span class="ident">end_bound_included</span>()
     }
 }
 
 <span class="macro">macro_rules!</span> <span class="ident">impl_range_bounds_ext</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>:<span class="ident">ident</span> =&gt; $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>:<span class="ident">ident</span>)<span class="op">+</span>);<span class="op">*</span> $(;)<span class="question-mark">?</span>) =&gt; {
+    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>:<span class="ident">ident</span> =&gt; $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>:<span class="ident">ident</span>)+);* $(;)<span class="question-mark">?</span>) =&gt; {
         $($(
-            <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> <span class="ident">RangeBoundsExt</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">R</span>
+            <span class="kw">impl</span>&lt;<span class="ident">R</span>&gt; <span class="ident">RangeBoundsExt</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>&gt; <span class="kw">for</span> <span class="ident">R</span>
             <span class="kw">where</span>
-                <span class="ident">R</span>: <span class="ident">RangeBounds</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span><span class="op">&gt;</span>,
+                <span class="ident">R</span>: <span class="ident">RangeBounds</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>&gt;,
             {
-                <span class="kw">fn</span> <span class="ident">start_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">start_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>&gt; {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">start_bound</span>() {
                         <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">x</span>),
-                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::forward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::forward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Unbounded</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">Bounded::minimum</span>()),
                     }
                 }
-                <span class="kw">fn</span> <span class="ident">start_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">start_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>&gt; {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">start_bound</span>() {
-                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::backward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::backward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Unbounded</span> =&gt; <span class="prelude-val">None</span>,
                     }
                 }
-                <span class="kw">fn</span> <span class="ident">end_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">end_bound_included_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>&gt; {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">end_bound</span>() {
                         <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">x</span>),
-                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::backward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::backward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Unbounded</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">Bounded::maximum</span>()),
                     }
                 }
-                <span class="kw">fn</span> <span class="ident">end_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span><span class="op">&gt;</span> {
+                <span class="kw">fn</span> <span class="ident">end_bound_excluded_checked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span>&gt; {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">end_bound</span>() {
-                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::forward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::forward_delta_checked</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Unbounded</span> =&gt; <span class="prelude-val">None</span>,
                     }
@@ -507,33 +507,33 @@
                 <span class="kw">fn</span> <span class="ident">start_bound_included</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">start_bound</span>() {
                         <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="kw-2">*</span><span class="ident">x</span>,
-                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::forward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::forward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Unbounded</span> =&gt; <span class="ident">Bounded::minimum</span>(),
                     }
                 }
                 <span class="kw">fn</span> <span class="ident">start_bound_excluded</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">start_bound</span>() {
-                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::backward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::backward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="kw-2">*</span><span class="ident">x</span>,
-                        <span class="ident">Bound::Unbounded</span> =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::backward_delta</span>(<span class="ident">Bounded::minimum</span>()),
+                        <span class="ident">Bound::Unbounded</span> =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::backward_delta</span>(<span class="ident">Bounded::minimum</span>()),
                     }
                 }
                 <span class="kw">fn</span> <span class="ident">end_bound_included</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">end_bound</span>() {
                         <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="kw-2">*</span><span class="ident">x</span>,
-                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::backward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::backward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Unbounded</span> =&gt; <span class="ident">Bounded::maximum</span>(),
                     }
                 }
                 <span class="kw">fn</span> <span class="ident">end_bound_excluded</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">target</span> {
                     <span class="kw">match</span> <span class="self">self</span>.<span class="ident">end_bound</span>() {
-                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::forward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
+                        <span class="ident">Bound::Included</span>(<span class="ident">x</span>) =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::forward_delta</span>(<span class="kw-2">*</span><span class="ident">x</span>),
                         <span class="ident">Bound::Excluded</span>(<span class="ident">x</span>) =&gt; <span class="kw-2">*</span><span class="ident">x</span>,
-                        <span class="ident">Bound::Unbounded</span> =&gt; <span class="ident">DiscreteSteps</span>::<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span><span class="op">&gt;</span><span class="ident">::forward_delta</span>(<span class="ident">Bounded::maximum</span>()),
+                        <span class="ident">Bound::Unbounded</span> =&gt; <span class="ident">DiscreteSteps</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">source</span>&gt;<span class="ident">::forward_delta</span>(<span class="ident">Bounded::maximum</span>()),
                     }
                 }
             }
-        )<span class="op">+</span>)<span class="op">*</span>
+        )+)*
     };
 }
 <span class="macro">impl_range_bounds_ext!</span>(
@@ -563,7 +563,7 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_end_bound_included</span>() {
         <span class="macro">assert_eq!</span>((<span class="number">2</span>..<span class="number">3</span>).<span class="ident">end_bound_included</span>(), <span class="number">2</span>);
-        <span class="macro">assert_eq!</span>((<span class="number">2usize</span>..).<span class="ident">end_bound_included</span>(), <span class="op">!</span><span class="number">0usize</span>);
+        <span class="macro">assert_eq!</span>((<span class="number">2usize</span>..).<span class="ident">end_bound_included</span>(), !<span class="number">0usize</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -575,16 +575,16 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_to_range</span>() {
         <span class="macro">assert_eq!</span>((<span class="number">2</span>..<span class="number">3</span>).<span class="ident">to_range</span>(), <span class="number">2</span>..<span class="number">3</span>);
-        <span class="macro">assert_eq!</span>((<span class="number">2</span>..<span class="op">=</span><span class="number">3</span>).<span class="ident">to_range</span>(), <span class="number">2</span>..<span class="number">4</span>);
+        <span class="macro">assert_eq!</span>((<span class="number">2</span>..=<span class="number">3</span>).<span class="ident">to_range</span>(), <span class="number">2</span>..<span class="number">4</span>);
         <span class="macro">assert_eq!</span>((..<span class="number">3usize</span>).<span class="ident">to_range</span>(), <span class="number">0</span>..<span class="number">3</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_to_range_inclusive</span>() {
-        <span class="macro">assert_eq!</span>((<span class="number">2</span>..<span class="number">3</span>).<span class="ident">to_range_inclusive</span>(), <span class="number">2</span>..<span class="op">=</span><span class="number">2</span>);
-        <span class="macro">assert_eq!</span>((<span class="number">2</span>..<span class="op">=</span><span class="number">3</span>).<span class="ident">to_range_inclusive</span>(), <span class="number">2</span>..<span class="op">=</span><span class="number">3</span>);
-        <span class="macro">assert_eq!</span>((..<span class="number">3usize</span>).<span class="ident">to_range_inclusive</span>(), <span class="number">0</span>..<span class="op">=</span><span class="number">2</span>);
+        <span class="macro">assert_eq!</span>((<span class="number">2</span>..<span class="number">3</span>).<span class="ident">to_range_inclusive</span>(), <span class="number">2</span>..=<span class="number">2</span>);
+        <span class="macro">assert_eq!</span>((<span class="number">2</span>..=<span class="number">3</span>).<span class="ident">to_range_inclusive</span>(), <span class="number">2</span>..=<span class="number">3</span>);
+        <span class="macro">assert_eq!</span>((..<span class="number">3usize</span>).<span class="ident">to_range_inclusive</span>(), <span class="number">0</span>..=<span class="number">2</span>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

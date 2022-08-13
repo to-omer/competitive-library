@@ -76,55 +76,55 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// if |T| is finite then P = f, g, g, ...</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RhoPath</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="ident">f</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">g</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RhoPath</span>&lt;<span class="ident">T</span>&gt; {
+    <span class="kw">pub</span> <span class="ident">f</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;,
+    <span class="kw">pub</span> <span class="ident">g</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;,
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">RhoPath</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">RhoPath</span>&lt;<span class="ident">T</span>&gt; {
     <span class="doccomment">/// build rho path</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">init</span>: <span class="ident">T</span>, <span class="ident">next</span>: <span class="ident">F</span>) -&gt; <span class="self">Self</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>&lt;<span class="ident">F</span>&gt;(<span class="ident">init</span>: <span class="ident">T</span>, <span class="ident">next</span>: <span class="ident">F</span>) -&gt; <span class="self">Self</span>
     <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Eq</span> <span class="op">+</span> <span class="ident">Hash</span>,
+        <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Eq</span> + <span class="ident">Hash</span>,
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">T</span>) -&gt; <span class="ident">T</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">init</span>.<span class="ident">clone</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> = <span class="macro">vec!</span>[<span class="ident">init</span>.<span class="ident">clone</span>()];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">visited</span> = <span class="ident">HashMap::new</span>();
         <span class="ident">visited</span>.<span class="ident">insert</span>(<span class="ident">init</span>, <span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">loop_start</span> <span class="op">=</span> <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="ident">next_val</span> <span class="op">=</span> <span class="ident">next</span>(<span class="ident">path</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>());
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">idx</span>) <span class="op">=</span> <span class="ident">visited</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">next_val</span>) {
+        <span class="kw">let</span> <span class="ident">loop_start</span> = <span class="kw">loop</span> {
+            <span class="kw">let</span> <span class="ident">next_val</span> = <span class="ident">next</span>(<span class="ident">path</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>());
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">idx</span>) = <span class="ident">visited</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">next_val</span>) {
                 <span class="kw">break</span> <span class="ident">idx</span>;
             }
-            <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">len</span>();
+            <span class="kw">let</span> <span class="ident">cnt</span> = <span class="ident">path</span>.<span class="ident">len</span>();
             <span class="ident">path</span>.<span class="ident">push</span>(<span class="ident">next_val</span>.<span class="ident">clone</span>());
             <span class="ident">visited</span>.<span class="ident">insert</span>(<span class="ident">next_val</span>, <span class="ident">cnt</span>);
         };
-        <span class="kw">let</span> <span class="ident">looped</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">split_off</span>(<span class="ident">loop_start</span>);
+        <span class="kw">let</span> <span class="ident">looped</span> = <span class="ident">path</span>.<span class="ident">split_off</span>(<span class="ident">loop_start</span>);
         <span class="self">Self</span> { <span class="ident">f</span>: <span class="ident">path</span>, <span class="ident">g</span>: <span class="ident">looped</span> }
     }
     <span class="doccomment">/// rho path that index of rho path</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_rho</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">init</span>: <span class="ident">usize</span>, <span class="ident">next</span>: <span class="ident">F</span>) -&gt; <span class="ident">RhoPath</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_rho</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">init</span>: <span class="ident">usize</span>, <span class="ident">next</span>: <span class="ident">F</span>) -&gt; <span class="ident">RhoPath</span>&lt;<span class="ident">usize</span>&gt;
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">usize</span>) -&gt; <span class="ident">usize</span>,
     {
-        <span class="kw">let</span> (<span class="ident">n</span>, <span class="ident">m</span>) <span class="op">=</span> (<span class="self">self</span>.<span class="ident">f</span>.<span class="ident">len</span>(), <span class="self">self</span>.<span class="ident">g</span>.<span class="ident">len</span>());
-        <span class="ident">RhoPath::build</span>(<span class="ident">init</span>, <span class="op">|</span><span class="ident">x</span><span class="op">|</span> {
-            <span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">next</span>(<span class="ident">x</span>);
-            <span class="kw">if</span> <span class="ident">y</span> <span class="op">&lt;</span> <span class="ident">n</span> {
+        <span class="kw">let</span> (<span class="ident">n</span>, <span class="ident">m</span>) = (<span class="self">self</span>.<span class="ident">f</span>.<span class="ident">len</span>(), <span class="self">self</span>.<span class="ident">g</span>.<span class="ident">len</span>());
+        <span class="ident">RhoPath::build</span>(<span class="ident">init</span>, |<span class="ident">x</span>| {
+            <span class="kw">let</span> <span class="ident">y</span> = <span class="ident">next</span>(<span class="ident">x</span>);
+            <span class="kw">if</span> <span class="ident">y</span> &lt; <span class="ident">n</span> {
                 <span class="ident">y</span>
             } <span class="kw">else</span> {
-                (<span class="ident">y</span> <span class="op">-</span> <span class="ident">n</span>) <span class="op">%</span> <span class="ident">m</span> <span class="op">+</span> <span class="ident">n</span>
+                (<span class="ident">y</span> - <span class="ident">n</span>) % <span class="ident">m</span> + <span class="ident">n</span>
             }
         })
     }
     <span class="doccomment">/// get i-th value of rho path</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">T</span> {
-        <span class="kw">if</span> <span class="ident">index</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">f</span>.<span class="ident">len</span>() {
+        <span class="kw">if</span> <span class="ident">index</span> &lt; <span class="self">self</span>.<span class="ident">f</span>.<span class="ident">len</span>() {
             <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">f</span>[<span class="ident">index</span>]
         } <span class="kw">else</span> {
-            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">g</span>[(<span class="ident">index</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">f</span>.<span class="ident">len</span>()) <span class="op">%</span> <span class="self">self</span>.<span class="ident">g</span>.<span class="ident">len</span>()]
+            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">g</span>[(<span class="ident">index</span> - <span class="self">self</span>.<span class="ident">f</span>.<span class="ident">len</span>()) % <span class="self">self</span>.<span class="ident">g</span>.<span class="ident">len</span>()]
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

@@ -265,10 +265,10 @@
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Mersenne61</span>;
 <span class="kw">impl</span> <span class="ident">Mersenne61</span> {
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u64</span> <span class="op">=</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">61</span>) <span class="op">-</span> <span class="number">1</span>;
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u64</span> = (<span class="number">1</span> &lt;&lt; <span class="number">61</span>) - <span class="number">1</span>;
 }
 <span class="kw">impl</span> <span class="ident">MIntBase</span> <span class="kw">for</span> <span class="ident">Mersenne61</span> {
-    <span class="kw">type</span> <span class="ident">Inner</span> <span class="op">=</span> <span class="ident">u64</span>;
+    <span class="kw">type</span> <span class="ident">Inner</span> = <span class="ident">u64</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">get_mod</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
         <span class="ident"><span class="self">Self</span>::MOD</span>
@@ -283,24 +283,24 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_add</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="ident">y</span>;
-        <span class="kw">if</span> <span class="ident">z</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MOD</span> {
-            <span class="ident">z</span> <span class="op">-</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MOD</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> = <span class="ident">x</span> + <span class="ident">y</span>;
+        <span class="kw">if</span> <span class="ident">z</span> &gt;= <span class="ident"><span class="self">Self</span>::MOD</span> {
+            <span class="ident">z</span> -= <span class="ident"><span class="self">Self</span>::MOD</span>
         }
         <span class="ident">z</span>
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_sub</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="ident">y</span> {
-            <span class="ident">x</span> <span class="op">+</span> <span class="ident"><span class="self">Self</span>::MOD</span> <span class="op">-</span> <span class="ident">y</span>
+        <span class="kw">if</span> <span class="ident">x</span> &lt; <span class="ident">y</span> {
+            <span class="ident">x</span> + <span class="ident"><span class="self">Self</span>::MOD</span> - <span class="ident">y</span>
         } <span class="kw">else</span> {
-            <span class="ident">x</span> <span class="op">-</span> <span class="ident">y</span>
+            <span class="ident">x</span> - <span class="ident">y</span>
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_mul</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span> <span class="op">*</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">u128</span>;
-        <span class="ident"><span class="self">Self</span>::mod_add</span>((<span class="ident">z</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">61</span>) <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">z</span> <span class="kw">as</span> <span class="ident">u64</span> <span class="op">&amp;</span> <span class="ident"><span class="self">Self</span>::MOD</span>)
+        <span class="kw">let</span> <span class="ident">z</span> = <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u128</span> * <span class="ident">y</span> <span class="kw">as</span> <span class="ident">u128</span>;
+        <span class="ident"><span class="self">Self</span>::mod_add</span>((<span class="ident">z</span> &gt;&gt; <span class="number">61</span>) <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">z</span> <span class="kw">as</span> <span class="ident">u64</span> &amp; <span class="ident"><span class="self">Self</span>::MOD</span>)
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_div</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
@@ -308,46 +308,46 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_neg</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">x</span> == <span class="number">0</span> {
             <span class="number">0</span>
         } <span class="kw">else</span> {
-            <span class="ident"><span class="self">Self</span>::MOD</span> <span class="op">-</span> <span class="ident">x</span>
+            <span class="ident"><span class="self">Self</span>::MOD</span> - <span class="ident">x</span>
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_inv</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::MOD</span> <span class="kw">as</span> <span class="ident">i64</span>;
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) <span class="op">=</span> (<span class="ident">x</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">p</span>);
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) <span class="op">=</span> (<span class="number">1</span>, <span class="number">0</span>);
-        <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">/</span> <span class="ident">a</span>;
-            <span class="ident">x</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">u</span>;
-            <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">a</span>;
+        <span class="kw">let</span> <span class="ident">p</span> = <span class="ident"><span class="self">Self</span>::MOD</span> <span class="kw">as</span> <span class="ident">i64</span>;
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) = (<span class="ident">x</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">p</span>);
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) = (<span class="number">1</span>, <span class="number">0</span>);
+        <span class="kw">while</span> <span class="ident">a</span> != <span class="number">0</span> {
+            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">b</span> / <span class="ident">a</span>;
+            <span class="ident">x</span> -= <span class="ident">k</span> * <span class="ident">u</span>;
+            <span class="ident">b</span> -= <span class="ident">k</span> * <span class="ident">a</span>;
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">u</span>);
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>, <span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
         }
-        (<span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> { <span class="ident">x</span> <span class="op">+</span> <span class="ident">p</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="kw">_</span>
+        (<span class="kw">if</span> <span class="ident">x</span> &lt; <span class="number">0</span> { <span class="ident">x</span> + <span class="ident">p</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="kw">_</span>
     }
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Mersenne127</span>;
 <span class="kw">impl</span> <span class="ident">Mersenne127</span> {
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u128</span> <span class="op">=</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">127</span>) <span class="op">-</span> <span class="number">1</span>;
-    <span class="kw">const</span> <span class="ident">MASK63</span>: <span class="ident">u128</span> <span class="op">=</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">63</span>) <span class="op">-</span> <span class="number">1</span>;
-    <span class="kw">const</span> <span class="ident">MASK64</span>: <span class="ident">u128</span> <span class="op">=</span> (<span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">64</span>) <span class="op">-</span> <span class="number">1</span>;
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u128</span> = (<span class="number">1</span> &lt;&lt; <span class="number">127</span>) - <span class="number">1</span>;
+    <span class="kw">const</span> <span class="ident">MASK63</span>: <span class="ident">u128</span> = (<span class="number">1</span> &lt;&lt; <span class="number">63</span>) - <span class="number">1</span>;
+    <span class="kw">const</span> <span class="ident">MASK64</span>: <span class="ident">u128</span> = (<span class="number">1</span> &lt;&lt; <span class="number">64</span>) - <span class="number">1</span>;
     <span class="comment">// a: [0, 2^128-1)</span>
     <span class="comment">// Return a mod p: [0, 2^127)</span>
     <span class="kw">fn</span> <span class="ident">reduce128</span>(<span class="ident">a</span>: <span class="ident">u128</span>) -&gt; <span class="ident">u128</span> {
-        <span class="kw">if</span> <span class="ident">a</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">127</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">a</span> &gt;&gt; <span class="number">127</span> == <span class="number">0</span> {
             <span class="ident">a</span>
         } <span class="kw">else</span> {
-            (<span class="ident"><span class="self">Self</span>::MOD</span> <span class="op">+</span> <span class="number">2u128</span>).<span class="ident">wrapping_add</span>(<span class="ident">a</span>)
+            (<span class="ident"><span class="self">Self</span>::MOD</span> + <span class="number">2u128</span>).<span class="ident">wrapping_add</span>(<span class="ident">a</span>)
         }
     }
     <span class="comment">// a: [0, 2^127)</span>
     <span class="comment">// Return a mod p: [0, 2^127-1)</span>
     <span class="kw">fn</span> <span class="ident">reduce127</span>(<span class="ident">a</span>: <span class="ident">u128</span>) -&gt; <span class="ident">u128</span> {
-        <span class="kw">if</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MOD</span> {
+        <span class="kw">if</span> <span class="ident">a</span> != <span class="ident"><span class="self">Self</span>::MOD</span> {
             <span class="ident">a</span>
         } <span class="kw">else</span> {
             <span class="number">0</span>
@@ -355,7 +355,7 @@
     }
 }
 <span class="kw">impl</span> <span class="ident">MIntBase</span> <span class="kw">for</span> <span class="ident">Mersenne127</span> {
-    <span class="kw">type</span> <span class="ident">Inner</span> <span class="op">=</span> <span class="ident">u128</span>;
+    <span class="kw">type</span> <span class="ident">Inner</span> = <span class="ident">u128</span>;
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">get_mod</span>() -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
         <span class="ident"><span class="self">Self</span>::MOD</span>
@@ -370,18 +370,18 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_add</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">+</span> <span class="ident">y</span>;
-        <span class="kw">if</span> <span class="ident">z</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MOD</span> {
-            <span class="ident">z</span> <span class="op">-</span><span class="op">=</span> <span class="ident"><span class="self">Self</span>::MOD</span>
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> = <span class="ident">x</span> + <span class="ident">y</span>;
+        <span class="kw">if</span> <span class="ident">z</span> &gt;= <span class="ident"><span class="self">Self</span>::MOD</span> {
+            <span class="ident">z</span> -= <span class="ident"><span class="self">Self</span>::MOD</span>
         }
         <span class="ident">z</span>
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_sub</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="ident">y</span> {
-            <span class="ident">x</span> <span class="op">+</span> <span class="ident"><span class="self">Self</span>::MOD</span> <span class="op">-</span> <span class="ident">y</span>
+        <span class="kw">if</span> <span class="ident">x</span> &lt; <span class="ident">y</span> {
+            <span class="ident">x</span> + <span class="ident"><span class="self">Self</span>::MOD</span> - <span class="ident">y</span>
         } <span class="kw">else</span> {
-            <span class="ident">x</span> <span class="op">-</span> <span class="ident">y</span>
+            <span class="ident">x</span> - <span class="ident">y</span>
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -391,18 +391,18 @@
         <span class="comment">// y = yu * 2^64 + yd</span>
         <span class="comment">// x * y = (xu * 2^64 + xd) * (yu * 2^64 + yd)</span>
         <span class="comment">//       = xu * yu * 2^128 + (xu * yd + xd * yu) * 2^64 + xd * yd</span>
-        <span class="kw">let</span> <span class="ident">xu</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">64</span>;
-        <span class="kw">let</span> <span class="ident">xd</span> <span class="op">=</span> <span class="ident">x</span> <span class="op">&amp;</span> <span class="ident"><span class="self">Self</span>::MASK64</span>;
-        <span class="kw">let</span> <span class="ident">yu</span> <span class="op">=</span> <span class="ident">y</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">64</span>;
-        <span class="kw">let</span> <span class="ident">yd</span> <span class="op">=</span> <span class="ident">y</span> <span class="op">&amp;</span> <span class="ident"><span class="self">Self</span>::MASK64</span>;
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">xu</span> <span class="op">*</span> <span class="ident">yu</span> <span class="op">*</span> <span class="number">2</span>;
-        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> <span class="ident">xd</span> <span class="op">*</span> <span class="ident">yu</span> <span class="op">+</span> <span class="ident">xu</span> <span class="op">*</span> <span class="ident">yd</span>;
-        <span class="kw">let</span> <span class="ident">q</span> <span class="op">=</span> (<span class="ident">q</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="number">63</span>) <span class="op">+</span> ((<span class="ident">q</span> <span class="op">&amp;</span> <span class="ident"><span class="self">Self</span>::MASK63</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">64</span>);
-        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">xd</span> <span class="op">*</span> <span class="ident">yd</span>;
-        <span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">x</span>) <span class="op">=</span> <span class="ident">p</span>.<span class="ident">overflowing_add</span>(<span class="ident">q</span>);
-        <span class="kw">let</span> (<span class="ident">t</span>, <span class="ident">y</span>) <span class="op">=</span> <span class="ident">s</span>.<span class="ident">overflowing_add</span>(<span class="ident">r</span>);
-        <span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span> <span class="op">+</span> <span class="ident">y</span> <span class="kw">as</span> <span class="ident">u32</span>;
-        <span class="ident"><span class="self">Self</span>::reduce127</span>(<span class="ident"><span class="self">Self</span>::reduce128</span>(<span class="ident">t</span> <span class="op">+</span> (<span class="ident">z</span> <span class="op">+</span> <span class="ident">z</span>) <span class="kw">as</span> <span class="ident">u128</span>))
+        <span class="kw">let</span> <span class="ident">xu</span> = <span class="ident">x</span> &gt;&gt; <span class="number">64</span>;
+        <span class="kw">let</span> <span class="ident">xd</span> = <span class="ident">x</span> &amp; <span class="ident"><span class="self">Self</span>::MASK64</span>;
+        <span class="kw">let</span> <span class="ident">yu</span> = <span class="ident">y</span> &gt;&gt; <span class="number">64</span>;
+        <span class="kw">let</span> <span class="ident">yd</span> = <span class="ident">y</span> &amp; <span class="ident"><span class="self">Self</span>::MASK64</span>;
+        <span class="kw">let</span> <span class="ident">p</span> = <span class="ident">xu</span> * <span class="ident">yu</span> * <span class="number">2</span>;
+        <span class="kw">let</span> <span class="ident">q</span> = <span class="ident">xd</span> * <span class="ident">yu</span> + <span class="ident">xu</span> * <span class="ident">yd</span>;
+        <span class="kw">let</span> <span class="ident">q</span> = (<span class="ident">q</span> &gt;&gt; <span class="number">63</span>) + ((<span class="ident">q</span> &amp; <span class="ident"><span class="self">Self</span>::MASK63</span>) &lt;&lt; <span class="number">64</span>);
+        <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">xd</span> * <span class="ident">yd</span>;
+        <span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">x</span>) = <span class="ident">p</span>.<span class="ident">overflowing_add</span>(<span class="ident">q</span>);
+        <span class="kw">let</span> (<span class="ident">t</span>, <span class="ident">y</span>) = <span class="ident">s</span>.<span class="ident">overflowing_add</span>(<span class="ident">r</span>);
+        <span class="kw">let</span> <span class="ident">z</span> = <span class="ident">x</span> <span class="kw">as</span> <span class="ident">u32</span> + <span class="ident">y</span> <span class="kw">as</span> <span class="ident">u32</span>;
+        <span class="ident"><span class="self">Self</span>::reduce127</span>(<span class="ident"><span class="self">Self</span>::reduce128</span>(<span class="ident">t</span> + (<span class="ident">z</span> + <span class="ident">z</span>) <span class="kw">as</span> <span class="ident">u128</span>))
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_div</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>, <span class="ident">y</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
@@ -410,25 +410,25 @@
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_neg</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">if</span> <span class="ident">x</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="kw">if</span> <span class="ident">x</span> == <span class="number">0</span> {
             <span class="number">0</span>
         } <span class="kw">else</span> {
-            <span class="ident"><span class="self">Self</span>::MOD</span> <span class="op">-</span> <span class="ident">x</span>
+            <span class="ident"><span class="self">Self</span>::MOD</span> - <span class="ident">x</span>
         }
     }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">mod_inv</span>(<span class="ident">x</span>: <span class="ident"><span class="self">Self</span>::Inner</span>) -&gt; <span class="ident"><span class="self">Self</span>::Inner</span> {
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::MOD</span> <span class="kw">as</span> <span class="ident">i64</span>;
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) <span class="op">=</span> (<span class="ident">x</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">p</span>);
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) <span class="op">=</span> (<span class="number">1</span>, <span class="number">0</span>);
-        <span class="kw">while</span> <span class="ident">a</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">b</span> <span class="op">/</span> <span class="ident">a</span>;
-            <span class="ident">x</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">u</span>;
-            <span class="ident">b</span> <span class="op">-</span><span class="op">=</span> <span class="ident">k</span> <span class="op">*</span> <span class="ident">a</span>;
+        <span class="kw">let</span> <span class="ident">p</span> = <span class="ident"><span class="self">Self</span>::MOD</span> <span class="kw">as</span> <span class="ident">i64</span>;
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="kw-2">mut</span> <span class="ident">b</span>) = (<span class="ident">x</span> <span class="kw">as</span> <span class="ident">i64</span>, <span class="ident">p</span>);
+        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">u</span>, <span class="kw-2">mut</span> <span class="ident">x</span>) = (<span class="number">1</span>, <span class="number">0</span>);
+        <span class="kw">while</span> <span class="ident">a</span> != <span class="number">0</span> {
+            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">b</span> / <span class="ident">a</span>;
+            <span class="ident">x</span> -= <span class="ident">k</span> * <span class="ident">u</span>;
+            <span class="ident">b</span> -= <span class="ident">k</span> * <span class="ident">a</span>;
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">u</span>);
             <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">b</span>, <span class="kw-2">&amp;mut</span> <span class="ident">a</span>);
         }
-        (<span class="kw">if</span> <span class="ident">x</span> <span class="op">&lt;</span> <span class="number">0</span> { <span class="ident">x</span> <span class="op">+</span> <span class="ident">p</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="kw">_</span>
+        (<span class="kw">if</span> <span class="ident">x</span> &lt; <span class="number">0</span> { <span class="ident">x</span> + <span class="ident">p</span> } <span class="kw">else</span> { <span class="ident">x</span> }) <span class="kw">as</span> <span class="kw">_</span>
     }
 }
 
@@ -439,74 +439,74 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_mersenne61</span>() {
-        <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="ident">Mersenne61::MOD</span>;
+        <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u64</span> = <span class="ident">Mersenne61::MOD</span>;
         <span class="kw">fn</span> <span class="ident">binary_mul_mod</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">u64</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="number">0u64</span>;
-            <span class="kw">while</span> <span class="ident">b</span> <span class="op">&gt;</span> <span class="number">0</span> {
-                <span class="kw">if</span> <span class="ident">b</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">1</span> {
-                    <span class="ident">c</span> <span class="op">=</span> (<span class="ident">c</span> <span class="op">+</span> <span class="ident">a</span>) <span class="op">%</span> <span class="ident">MOD</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> = <span class="number">0u64</span>;
+            <span class="kw">while</span> <span class="ident">b</span> &gt; <span class="number">0</span> {
+                <span class="kw">if</span> <span class="ident">b</span> % <span class="number">2</span> == <span class="number">1</span> {
+                    <span class="ident">c</span> = (<span class="ident">c</span> + <span class="ident">a</span>) % <span class="ident">MOD</span>;
                 }
-                <span class="ident">a</span> <span class="op">=</span> (<span class="ident">a</span> <span class="op">+</span> <span class="ident">a</span>) <span class="op">%</span> <span class="ident">MOD</span>;
-                <span class="ident">b</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+                <span class="ident">a</span> = (<span class="ident">a</span> + <span class="ident">a</span>) % <span class="ident">MOD</span>;
+                <span class="ident">b</span> /= <span class="number">2</span>;
             }
             <span class="ident">c</span>
         }
         <span class="macro">assert_eq!</span>(<span class="ident">binary_mul_mod</span>(<span class="number">10</span>, <span class="number">9</span>), <span class="number">90</span>);
-        <span class="kw">let</span> <span class="ident">max</span> <span class="op">=</span> <span class="ident">MOD</span> <span class="op">-</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">max</span> = <span class="ident">MOD</span> - <span class="number">1</span>;
         <span class="macro">assert_eq!</span>(<span class="ident">binary_mul_mod</span>(<span class="ident">max</span>, <span class="ident">max</span>), <span class="ident">Mersenne61::mod_mul</span>(<span class="ident">max</span>, <span class="ident">max</span>));
 
-        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">100_000</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::default</span>();
+        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">100_000</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="op">=</span> <span class="ident">rng</span>.<span class="ident">gen</span>((..<span class="ident">Mersenne61::get_mod</span>(), ..<span class="ident">Mersenne61::get_mod</span>()));
-            <span class="kw">let</span> <span class="ident">bc</span> <span class="op">=</span> <span class="ident">binary_mul_mod</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-            <span class="kw">let</span> <span class="ident">mc</span> <span class="op">=</span> <span class="ident">Mersenne61::mod_mul</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+            <span class="kw">let</span> (<span class="ident">a</span>, <span class="ident">b</span>) = <span class="ident">rng</span>.<span class="ident">gen</span>((..<span class="ident">Mersenne61::get_mod</span>(), ..<span class="ident">Mersenne61::get_mod</span>()));
+            <span class="kw">let</span> <span class="ident">bc</span> = <span class="ident">binary_mul_mod</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+            <span class="kw">let</span> <span class="ident">mc</span> = <span class="ident">Mersenne61::mod_mul</span>(<span class="ident">a</span>, <span class="ident">b</span>);
             <span class="macro">assert_eq!</span>(<span class="ident">bc</span>, <span class="ident">mc</span>);
         }
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_reduce128</span>() {
-        <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u128</span> <span class="op">=</span> <span class="ident">Mersenne127::MOD</span>;
-        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> <span class="op">-</span> <span class="number">1</span>), <span class="ident">MOD</span> <span class="op">-</span> <span class="number">1</span>);
+        <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u128</span> = <span class="ident">Mersenne127::MOD</span>;
+        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> - <span class="number">1</span>), <span class="ident">MOD</span> - <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span>), <span class="ident">MOD</span>);
 
-        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> <span class="op">+</span> <span class="number">1</span>), <span class="number">1</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> <span class="op">+</span> <span class="number">2</span>), <span class="number">2</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> <span class="op">+</span> <span class="number">3</span>), <span class="number">3</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> <span class="op">+</span> <span class="ident">MOD</span>), <span class="ident">MOD</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> + <span class="number">1</span>), <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> + <span class="number">2</span>), <span class="number">2</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> + <span class="number">3</span>), <span class="number">3</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> + <span class="ident">MOD</span>), <span class="ident">MOD</span>);
 
-        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> <span class="op">+</span> <span class="ident">MOD</span> <span class="op">+</span> <span class="number">1</span>), <span class="ident">MOD</span> <span class="op">+</span> <span class="number">1</span>); <span class="comment">// only MOD + MOD + 1 greater than MOD</span>
+        <span class="macro">assert_eq!</span>(<span class="ident">Mersenne127::reduce128</span>(<span class="ident">MOD</span> + <span class="ident">MOD</span> + <span class="number">1</span>), <span class="ident">MOD</span> + <span class="number">1</span>); <span class="comment">// only MOD + MOD + 1 greater than MOD</span>
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_mersenne127</span>() {
-        <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u128</span> <span class="op">=</span> <span class="ident">Mersenne127::MOD</span>;
+        <span class="kw">const</span> <span class="ident">MOD</span>: <span class="ident">u128</span> = <span class="ident">Mersenne127::MOD</span>;
         <span class="kw">fn</span> <span class="ident">binary_mul_mod</span>(<span class="kw-2">mut</span> <span class="ident">a</span>: <span class="ident">u128</span>, <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">u128</span>) -&gt; <span class="ident">u128</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="number">0u128</span>;
-            <span class="kw">while</span> <span class="ident">b</span> <span class="op">&gt;</span> <span class="number">0</span> {
-                <span class="kw">if</span> <span class="ident">b</span> <span class="op">%</span> <span class="number">2</span> <span class="op">==</span> <span class="number">1</span> {
-                    <span class="ident">c</span> <span class="op">=</span> (<span class="ident">c</span> <span class="op">+</span> <span class="ident">a</span>) <span class="op">%</span> <span class="ident">MOD</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> = <span class="number">0u128</span>;
+            <span class="kw">while</span> <span class="ident">b</span> &gt; <span class="number">0</span> {
+                <span class="kw">if</span> <span class="ident">b</span> % <span class="number">2</span> == <span class="number">1</span> {
+                    <span class="ident">c</span> = (<span class="ident">c</span> + <span class="ident">a</span>) % <span class="ident">MOD</span>;
                 }
-                <span class="ident">a</span> <span class="op">=</span> (<span class="ident">a</span> <span class="op">+</span> <span class="ident">a</span>) <span class="op">%</span> <span class="ident">MOD</span>;
-                <span class="ident">b</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+                <span class="ident">a</span> = (<span class="ident">a</span> + <span class="ident">a</span>) % <span class="ident">MOD</span>;
+                <span class="ident">b</span> /= <span class="number">2</span>;
             }
             <span class="ident">c</span>
         }
         <span class="macro">assert_eq!</span>(<span class="ident">binary_mul_mod</span>(<span class="number">10</span>, <span class="number">9</span>), <span class="number">90</span>);
-        <span class="kw">let</span> <span class="ident">max</span> <span class="op">=</span> <span class="ident">MOD</span> <span class="op">-</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="ident">max</span> = <span class="ident">MOD</span> - <span class="number">1</span>;
         <span class="macro">assert_eq!</span>(<span class="ident">binary_mul_mod</span>(<span class="ident">max</span>, <span class="ident">max</span>), <span class="ident">Mersenne127::mod_mul</span>(<span class="ident">max</span>, <span class="ident">max</span>));
 
-        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">100_000</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::default</span>();
+        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">100_000</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
         <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> ((<span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">64</span> <span class="op">|</span> <span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">%</span> <span class="ident">MOD</span>;
-            <span class="kw">let</span> <span class="ident">b</span> <span class="op">=</span> ((<span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">&lt;</span><span class="op">&lt;</span> <span class="number">64</span> <span class="op">|</span> <span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">%</span> <span class="ident">MOD</span>;
-            <span class="kw">let</span> <span class="ident">bc</span> <span class="op">=</span> <span class="ident">binary_mul_mod</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-            <span class="kw">let</span> <span class="ident">mc</span> <span class="op">=</span> <span class="ident">Mersenne127::mod_mul</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+            <span class="kw">let</span> <span class="ident">a</span> = ((<span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) &lt;&lt; <span class="number">64</span> | <span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) % <span class="ident">MOD</span>;
+            <span class="kw">let</span> <span class="ident">b</span> = ((<span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) &lt;&lt; <span class="number">64</span> | <span class="ident">rng</span>.<span class="ident">rand64</span>() <span class="kw">as</span> <span class="ident">u128</span>) % <span class="ident">MOD</span>;
+            <span class="kw">let</span> <span class="ident">bc</span> = <span class="ident">binary_mul_mod</span>(<span class="ident">a</span>, <span class="ident">b</span>);
+            <span class="kw">let</span> <span class="ident">mc</span> = <span class="ident">Mersenne127::mod_mul</span>(<span class="ident">a</span>, <span class="ident">b</span>);
             <span class="macro">assert_eq!</span>(<span class="ident">bc</span>, <span class="ident">mc</span>);
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

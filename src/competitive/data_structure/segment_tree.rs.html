@@ -292,15 +292,15 @@
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">AbelianMonoid</span>, <span class="ident">Monoid</span>};
 <span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>};
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SegmentTree</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Monoid</span>,
 {
     <span class="ident">n</span>: <span class="ident">usize</span>,
-    <span class="ident">seg</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M::T</span><span class="op">&gt;</span>,
+    <span class="ident">seg</span>: <span class="ident">Vec</span>&lt;<span class="ident">M::T</span>&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">SegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">SegmentTree</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Monoid</span>,
 {
@@ -312,12 +312,12 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">SegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">SegmentTree</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Monoid</span>,
     <span class="ident">M::T</span>: <span class="ident">Debug</span>,
 {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="ident">fmt::Result</span> {
         <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;SegmentTree&quot;</span>)
             .<span class="ident">field</span>(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">n</span>)
             .<span class="ident">field</span>(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>)
@@ -325,169 +325,169 @@
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">SegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">SegmentTree</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">Monoid</span>,
 {
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">seg</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="number">2</span> <span class="op">*</span> <span class="ident">n</span>];
+        <span class="kw">let</span> <span class="ident">seg</span> = <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="number">2</span> * <span class="ident">n</span>];
         <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">seg</span> }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">v</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">M::T</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">v</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="number">2</span> <span class="op">*</span> <span class="ident">n</span>];
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">v</span>: <span class="ident">Vec</span>&lt;<span class="ident">M::T</span>&gt;) -&gt; <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">v</span>.<span class="ident">len</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> = <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="number">2</span> * <span class="ident">n</span>];
         <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">x</span>) <span class="kw">in</span> <span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
-            <span class="ident">seg</span>[<span class="ident">n</span> <span class="op">+</span> <span class="ident">i</span>] <span class="op">=</span> <span class="ident">x</span>;
+            <span class="ident">seg</span>[<span class="ident">n</span> + <span class="ident">i</span>] = <span class="ident">x</span>;
         }
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="ident">n</span>).<span class="ident">rev</span>() {
-            <span class="ident">seg</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">seg</span>[<span class="number">2</span> <span class="op">*</span> <span class="ident">i</span>], <span class="kw-2">&amp;</span><span class="ident">seg</span>[<span class="number">2</span> <span class="op">*</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>]);
+            <span class="ident">seg</span>[<span class="ident">i</span>] = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">i</span>], <span class="kw-2">&amp;</span><span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">i</span> + <span class="number">1</span>]);
         }
         <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">seg</span> }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">M::T</span>) {
-        <span class="macro">debug_assert!</span>(<span class="ident">k</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">k</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">x</span>;
-        <span class="ident">k</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-        <span class="kw">while</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> <span class="op">*</span> <span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> <span class="op">*</span> <span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>]);
-            <span class="ident">k</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+        <span class="macro">debug_assert!</span>(<span class="ident">k</span> &lt; <span class="self">self</span>.<span class="ident">n</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="ident">k</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] = <span class="ident">x</span>;
+        <span class="ident">k</span> /= <span class="number">2</span>;
+        <span class="kw">while</span> <span class="ident">k</span> &gt; <span class="number">0</span> {
+            <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">k</span> + <span class="number">1</span>]);
+            <span class="ident">k</span> /= <span class="number">2</span>;
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">M::T</span>) {
-        <span class="macro">debug_assert!</span>(<span class="ident">k</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> <span class="op">=</span> <span class="ident">k</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="ident">x</span>);
-        <span class="ident">k</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-        <span class="kw">while</span> <span class="ident">k</span> <span class="op">&gt;</span> <span class="number">0</span> {
-            <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> <span class="op">*</span> <span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> <span class="op">*</span> <span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>]);
-            <span class="ident">k</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+        <span class="macro">debug_assert!</span>(<span class="ident">k</span> &lt; <span class="self">self</span>.<span class="ident">n</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="ident">k</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="ident">x</span>);
+        <span class="ident">k</span> /= <span class="number">2</span>;
+        <span class="kw">while</span> <span class="ident">k</span> &gt; <span class="number">0</span> {
+            <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">k</span> + <span class="number">1</span>]);
+            <span class="ident">k</span> /= <span class="number">2</span>;
         }
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::T</span> {
-        <span class="macro">debug_assert!</span>(<span class="ident">k</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span>);
-        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>].<span class="ident">clone</span>()
+        <span class="macro">debug_assert!</span>(<span class="ident">k</span> &lt; <span class="self">self</span>.<span class="ident">n</span>);
+        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span> + <span class="self">self</span>.<span class="ident">n</span>].<span class="ident">clone</span>()
     }
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::T</span> {
-        <span class="macro">debug_assert!</span>(<span class="ident">r</span> <span class="op">&lt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">n</span>);
-        <span class="macro">debug_assert!</span>(<span class="ident">l</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">r</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">l</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vl</span> <span class="op">=</span> <span class="ident">M::unit</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vr</span> <span class="op">=</span> <span class="ident">M::unit</span>();
-        <span class="kw">while</span> <span class="ident">l</span> <span class="op">&lt;</span> <span class="ident">r</span> {
-            <span class="kw">if</span> <span class="ident">l</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">vl</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">vl</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>]);
-                <span class="ident">l</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="macro">debug_assert!</span>(<span class="ident">r</span> &lt;= <span class="self">self</span>.<span class="ident">n</span>);
+        <span class="macro">debug_assert!</span>(<span class="ident">l</span> &lt;= <span class="ident">r</span>);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> = <span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> = <span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vl</span> = <span class="ident">M::unit</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vr</span> = <span class="ident">M::unit</span>();
+        <span class="kw">while</span> <span class="ident">l</span> &lt; <span class="ident">r</span> {
+            <span class="kw">if</span> <span class="ident">l</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
+                <span class="ident">vl</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">vl</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>]);
+                <span class="ident">l</span> += <span class="number">1</span>;
             }
-            <span class="kw">if</span> <span class="ident">r</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">r</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="ident">vr</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span>], <span class="kw-2">&amp;</span><span class="ident">vr</span>);
+            <span class="kw">if</span> <span class="ident">r</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
+                <span class="ident">r</span> -= <span class="number">1</span>;
+                <span class="ident">vr</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span>], <span class="kw-2">&amp;</span><span class="ident">vr</span>);
             }
-            <span class="ident">l</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
-            <span class="ident">r</span> <span class="op">/</span><span class="op">=</span> <span class="number">2</span>;
+            <span class="ident">l</span> /= <span class="number">2</span>;
+            <span class="ident">r</span> /= <span class="number">2</span>;
         }
         <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">vl</span>, <span class="kw-2">&amp;</span><span class="ident">vr</span>)
     }
-    <span class="kw">fn</span> <span class="ident">bisect_perfect</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::T</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::T</span>)
+    <span class="kw">fn</span> <span class="ident">bisect_perfect</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::T</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::T</span>)
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::T</span>) -&gt; <span class="ident">bool</span>,
     {
-        <span class="kw">while</span> <span class="ident">pos</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span> {
-            <span class="ident">pos</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">nacc</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">pos</span>]);
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                <span class="ident">acc</span> <span class="op">=</span> <span class="ident">nacc</span>;
-                <span class="ident">pos</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="kw">while</span> <span class="ident">pos</span> &lt; <span class="self">self</span>.<span class="ident">n</span> {
+            <span class="ident">pos</span> &lt;&lt;= <span class="number">1</span>;
+            <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">pos</span>]);
+            <span class="kw">if</span> !<span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
+                <span class="ident">acc</span> = <span class="ident">nacc</span>;
+                <span class="ident">pos</span> += <span class="number">1</span>;
             }
         }
-        (<span class="ident">pos</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
+        (<span class="ident">pos</span> - <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
     }
-    <span class="kw">fn</span> <span class="ident">rbisect_perfect</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::T</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::T</span>)
+    <span class="kw">fn</span> <span class="ident">rbisect_perfect</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::T</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::T</span>)
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::T</span>) -&gt; <span class="ident">bool</span>,
     {
-        <span class="kw">while</span> <span class="ident">pos</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">n</span> {
-            <span class="ident">pos</span> <span class="op">=</span> <span class="ident">pos</span> <span class="op">*</span> <span class="number">2</span> <span class="op">+</span> <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">nacc</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">pos</span>], <span class="kw-2">&amp;</span><span class="ident">acc</span>);
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                <span class="ident">acc</span> <span class="op">=</span> <span class="ident">nacc</span>;
-                <span class="ident">pos</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="kw">while</span> <span class="ident">pos</span> &lt; <span class="self">self</span>.<span class="ident">n</span> {
+            <span class="ident">pos</span> = <span class="ident">pos</span> * <span class="number">2</span> + <span class="number">1</span>;
+            <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">pos</span>], <span class="kw-2">&amp;</span><span class="ident">acc</span>);
+            <span class="kw">if</span> !<span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
+                <span class="ident">acc</span> = <span class="ident">nacc</span>;
+                <span class="ident">pos</span> -= <span class="number">1</span>;
             }
         }
-        (<span class="ident">pos</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
+        (<span class="ident">pos</span> - <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
     }
     <span class="doccomment">/// Returns the first index that satisfies a accumlative predicate.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">position_acc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">position_acc</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::T</span>) -&gt; <span class="ident">bool</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">l</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">0usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">M::unit</span>();
-        <span class="kw">while</span> <span class="ident">l</span> <span class="op">&lt;</span> <span class="ident">r</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">k</span> {
-            <span class="kw">if</span> <span class="ident">l</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="kw">let</span> <span class="ident">nacc</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> = <span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="number">0usize</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="ident">M::unit</span>();
+        <span class="kw">while</span> <span class="ident">l</span> &lt; <span class="ident">r</span> &gt;&gt; <span class="ident">k</span> {
+            <span class="kw">if</span> <span class="ident">l</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
+                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>]);
                 <span class="kw">if</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
                     <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">bisect_perfect</span>(<span class="ident">l</span>, <span class="ident">acc</span>, <span class="ident">f</span>).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> <span class="op">=</span> <span class="ident">nacc</span>;
-                <span class="ident">l</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                <span class="ident">acc</span> = <span class="ident">nacc</span>;
+                <span class="ident">l</span> += <span class="number">1</span>;
             }
-            <span class="ident">l</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">k</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">l</span> &gt;&gt;= <span class="number">1</span>;
+            <span class="ident">k</span> += <span class="number">1</span>;
         }
         <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">k</span>;
-            <span class="kw">if</span> <span class="ident">r</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="kw">let</span> <span class="ident">nacc</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>]);
+            <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">r</span> &gt;&gt; <span class="ident">k</span>;
+            <span class="kw">if</span> <span class="ident">r</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
+                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span> - <span class="number">1</span>]);
                 <span class="kw">if</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">bisect_perfect</span>(<span class="ident">r</span> <span class="op">-</span> <span class="number">1</span>, <span class="ident">acc</span>, <span class="ident">f</span>).<span class="number">0</span>);
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">bisect_perfect</span>(<span class="ident">r</span> - <span class="number">1</span>, <span class="ident">acc</span>, <span class="ident">f</span>).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> <span class="op">=</span> <span class="ident">nacc</span>;
+                <span class="ident">acc</span> = <span class="ident">nacc</span>;
             }
         }
         <span class="prelude-val">None</span>
     }
     <span class="doccomment">/// Returns the last index that satisfies a accumlative predicate.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rposition_acc</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rposition_acc</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;
     <span class="kw">where</span>
         <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::T</span>) -&gt; <span class="ident">bool</span>,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">l</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">r</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> <span class="op">=</span> <span class="number">0usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> <span class="op">=</span> <span class="number">0usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">M::unit</span>();
-        <span class="kw">while</span> <span class="ident">l</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">k</span> <span class="op">&lt;</span> <span class="ident">r</span> {
-            <span class="ident">c</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="kw">if</span> <span class="ident">l</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">l</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span>;
-                <span class="ident">c</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> = <span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> = <span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> = <span class="number">0usize</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="number">0usize</span>;
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="ident">M::unit</span>();
+        <span class="kw">while</span> <span class="ident">l</span> &gt;&gt; <span class="ident">k</span> &lt; <span class="ident">r</span> {
+            <span class="ident">c</span> &lt;&lt;= <span class="number">1</span>;
+            <span class="kw">if</span> <span class="ident">l</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">k</span> != <span class="number">0</span> {
+                <span class="ident">l</span> += <span class="number">1</span> &lt;&lt; <span class="ident">k</span>;
+                <span class="ident">c</span> += <span class="number">1</span>;
             }
-            <span class="kw">if</span> <span class="ident">r</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">r</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span>;
-                <span class="kw">let</span> <span class="ident">nacc</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span>], <span class="kw-2">&amp;</span><span class="ident">acc</span>);
+            <span class="kw">if</span> <span class="ident">r</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
+                <span class="ident">r</span> -= <span class="number">1</span>;
+                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span>], <span class="kw-2">&amp;</span><span class="ident">acc</span>);
                 <span class="kw">if</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
                     <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">rbisect_perfect</span>(<span class="ident">r</span>, <span class="ident">acc</span>, <span class="ident">f</span>).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> <span class="op">=</span> <span class="ident">nacc</span>;
+                <span class="ident">acc</span> = <span class="ident">nacc</span>;
             }
-            <span class="ident">r</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
-            <span class="ident">k</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">r</span> &gt;&gt;= <span class="number">1</span>;
+            <span class="ident">k</span> += <span class="number">1</span>;
         }
         <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">c</span> <span class="op">&amp;</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="ident">l</span> <span class="op">-</span><span class="op">=</span> <span class="number">1</span> <span class="op">&lt;</span><span class="op">&lt;</span> <span class="ident">k</span>;
-                <span class="kw">let</span> <span class="ident">l</span> <span class="op">=</span> <span class="ident">l</span> <span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">k</span>;
-                <span class="kw">let</span> <span class="ident">nacc</span> <span class="op">=</span> <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>], <span class="kw-2">&amp;</span><span class="ident">acc</span>);
+            <span class="kw">if</span> <span class="ident">c</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
+                <span class="ident">l</span> -= <span class="number">1</span> &lt;&lt; <span class="ident">k</span>;
+                <span class="kw">let</span> <span class="ident">l</span> = <span class="ident">l</span> &gt;&gt; <span class="ident">k</span>;
+                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>], <span class="kw-2">&amp;</span><span class="ident">acc</span>);
                 <span class="kw">if</span> <span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
                     <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">rbisect_perfect</span>(<span class="ident">l</span>, <span class="ident">acc</span>, <span class="ident">f</span>).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> <span class="op">=</span> <span class="ident">nacc</span>;
+                <span class="ident">acc</span> = <span class="ident">nacc</span>;
             }
-            <span class="ident">c</span> <span class="op">&gt;</span><span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>;
+            <span class="ident">c</span> &gt;&gt;= <span class="number">1</span>;
         }
         <span class="prelude-val">None</span>
     }
@@ -495,7 +495,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="self">self</span>.<span class="ident">n</span>..]
     }
 }
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">SegmentTree</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>
+<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">SegmentTree</span>&lt;<span class="ident">M</span>&gt;
 <span class="kw">where</span>
     <span class="ident">M</span>: <span class="ident">AbelianMonoid</span>,
 {
@@ -514,55 +514,55 @@
         <span class="ident">tools</span>::{<span class="ident">NotEmptySegment</span> <span class="kw">as</span> <span class="ident">Nes</span>, <span class="ident">Xorshift</span>},
     };
 
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1_000</span>;
-    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10_000</span>;
-    <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">i64</span> <span class="op">=</span> <span class="number">1_000_000_000</span>;
+    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">1_000</span>;
+    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">10_000</span>;
+    <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">i64</span> = <span class="number">1_000_000_000</span>;
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">test_segment_tree</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">Xorshift::time</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">N</span> <span class="op">+</span> <span class="number">1</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> <span class="op">=</span> <span class="ident">SegmentTree</span>::<span class="op">&lt;</span><span class="ident">AdditiveOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::new</span>(<span class="ident">N</span>);
-        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, <span class="number">1</span>..<span class="op">=</span><span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">arr</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">N</span> + <span class="number">1</span>];
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> = <span class="ident">SegmentTree</span>::&lt;<span class="ident">AdditiveOperation</span>&lt;<span class="kw">_</span>&gt;&gt;<span class="ident">::new</span>(<span class="ident">N</span>);
+        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, <span class="number">1</span>..=<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="ident">seg</span>.<span class="ident">set</span>(<span class="ident">k</span>, <span class="ident">v</span>);
-            <span class="ident">arr</span>[<span class="ident">k</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">=</span> <span class="ident">v</span>;
+            <span class="ident">arr</span>[<span class="ident">k</span> + <span class="number">1</span>] = <span class="ident">v</span>;
         }
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="ident">arr</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span><span class="op">=</span> <span class="ident">arr</span>[<span class="ident">i</span>];
+            <span class="ident">arr</span>[<span class="ident">i</span> + <span class="number">1</span>] += <span class="ident">arr</span>[<span class="ident">i</span>];
         }
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>..<span class="ident">N</span> <span class="op">+</span> <span class="number">1</span> {
-                <span class="macro">assert_eq!</span>(<span class="ident">seg</span>.<span class="ident">fold</span>(<span class="ident">i</span>, <span class="ident">j</span>), <span class="ident">arr</span>[<span class="ident">j</span>] <span class="op">-</span> <span class="ident">arr</span>[<span class="ident">i</span>]);
+            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="ident">i</span> + <span class="number">1</span>..<span class="ident">N</span> + <span class="number">1</span> {
+                <span class="macro">assert_eq!</span>(<span class="ident">seg</span>.<span class="ident">fold</span>(<span class="ident">i</span>, <span class="ident">j</span>), <span class="ident">arr</span>[<span class="ident">j</span>] - <span class="ident">arr</span>[<span class="ident">i</span>]);
             }
         }
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="number">1</span>..<span class="op">=</span><span class="ident">A</span> <span class="op">*</span> <span class="ident">N</span> <span class="kw">as</span> <span class="ident">i64</span>).<span class="ident">take</span>(<span class="ident">Q</span>) {
+        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="number">1</span>..=<span class="ident">A</span> * <span class="ident">N</span> <span class="kw">as</span> <span class="ident">i64</span>).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="macro">assert_eq!</span>(
-                <span class="ident">seg</span>.<span class="ident">position_acc</span>(<span class="number">0</span>, <span class="ident">N</span>, <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">v</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">x</span>).<span class="ident">unwrap_or</span>(<span class="ident">N</span>),
-                <span class="ident">arr</span>[<span class="number">1</span>..].<span class="ident">position_bisect</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">v</span>)
+                <span class="ident">seg</span>.<span class="ident">position_acc</span>(<span class="number">0</span>, <span class="ident">N</span>, |<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">v</span> &lt;= <span class="ident">x</span>).<span class="ident">unwrap_or</span>(<span class="ident">N</span>),
+                <span class="ident">arr</span>[<span class="number">1</span>..].<span class="ident">position_bisect</span>(|<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">x</span> &gt;= <span class="ident">v</span>)
             );
         }
-        <span class="kw">for</span> ((<span class="ident">l</span>, <span class="ident">r</span>), <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((<span class="ident">Nes</span>(<span class="ident">N</span>), <span class="number">1</span>..<span class="op">=</span><span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
+        <span class="kw">for</span> ((<span class="ident">l</span>, <span class="ident">r</span>), <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((<span class="ident">Nes</span>(<span class="ident">N</span>), <span class="number">1</span>..=<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="macro">assert_eq!</span>(
-                <span class="ident">seg</span>.<span class="ident">position_acc</span>(<span class="ident">l</span>, <span class="ident">r</span>, <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">v</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">x</span>).<span class="ident">unwrap_or</span>(<span class="ident">r</span>),
-                <span class="ident">arr</span>[<span class="ident">l</span> <span class="op">+</span> <span class="number">1</span>..<span class="ident">r</span> <span class="op">+</span> <span class="number">1</span>].<span class="ident">position_bisect</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">-</span> <span class="ident">arr</span>[<span class="ident">l</span>] <span class="op">&gt;</span><span class="op">=</span> <span class="ident">v</span>) <span class="op">+</span> <span class="ident">l</span>
+                <span class="ident">seg</span>.<span class="ident">position_acc</span>(<span class="ident">l</span>, <span class="ident">r</span>, |<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">v</span> &lt;= <span class="ident">x</span>).<span class="ident">unwrap_or</span>(<span class="ident">r</span>),
+                <span class="ident">arr</span>[<span class="ident">l</span> + <span class="number">1</span>..<span class="ident">r</span> + <span class="number">1</span>].<span class="ident">position_bisect</span>(|<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">x</span> - <span class="ident">arr</span>[<span class="ident">l</span>] &gt;= <span class="ident">v</span>) + <span class="ident">l</span>
             );
             <span class="macro">assert_eq!</span>(
-                <span class="ident">seg</span>.<span class="ident">rposition_acc</span>(<span class="ident">l</span>, <span class="ident">r</span>, <span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">v</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">x</span>).<span class="ident">map_or</span>(<span class="ident">l</span>, <span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>),
-                <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">rposition_bisect</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">arr</span>[<span class="ident">r</span>] <span class="op">-</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">v</span>) <span class="op">+</span> <span class="ident">l</span>
+                <span class="ident">seg</span>.<span class="ident">rposition_acc</span>(<span class="ident">l</span>, <span class="ident">r</span>, |<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">v</span> &lt;= <span class="ident">x</span>).<span class="ident">map_or</span>(<span class="ident">l</span>, |<span class="ident">i</span>| <span class="ident">i</span> + <span class="number">1</span>),
+                <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">rposition_bisect</span>(|<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">arr</span>[<span class="ident">r</span>] - <span class="ident">x</span> &gt;= <span class="ident">v</span>) + <span class="ident">l</span>
             );
         }
 
-        <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="kw-2">mut</span> <span class="ident">arr</span>: [<span class="op">-</span><span class="ident">A</span>..<span class="op">=</span><span class="ident">A</span>; <span class="ident">N</span>]);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> <span class="op">=</span> <span class="ident">SegmentTree</span>::<span class="op">&lt;</span><span class="ident">MaxOperation</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::from_vec</span>(<span class="ident">arr</span>.<span class="ident">clone</span>());
-        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, <span class="op">-</span><span class="ident">A</span>..<span class="op">=</span><span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
+        <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="kw-2">mut</span> <span class="ident">arr</span>: [-<span class="ident">A</span>..=<span class="ident">A</span>; <span class="ident">N</span>]);
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> = <span class="ident">SegmentTree</span>::&lt;<span class="ident">MaxOperation</span>&lt;<span class="kw">_</span>&gt;&gt;<span class="ident">::from_vec</span>(<span class="ident">arr</span>.<span class="ident">clone</span>());
+        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((..<span class="ident">N</span>, -<span class="ident">A</span>..=<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
             <span class="ident">seg</span>.<span class="ident">set</span>(<span class="ident">k</span>, <span class="ident">v</span>);
-            <span class="ident">arr</span>[<span class="ident">k</span>] <span class="op">=</span> <span class="ident">v</span>;
+            <span class="ident">arr</span>[<span class="ident">k</span>] = <span class="ident">v</span>;
         }
         <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="ident">Nes</span>(<span class="ident">N</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
-            <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">max</span>().<span class="ident">cloned</span>().<span class="ident">unwrap_or_default</span>();
+            <span class="kw">let</span> <span class="ident">res</span> = <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">max</span>().<span class="ident">cloned</span>().<span class="ident">unwrap_or_default</span>();
             <span class="macro">assert_eq!</span>(<span class="ident">seg</span>.<span class="ident">fold</span>(<span class="ident">l</span>, <span class="ident">r</span>), <span class="ident">res</span>);
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>

@@ -116,8 +116,8 @@
 <span id="100">100</span>
 </pre><pre class="rust"><code><span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SlopeTrick</span> {
-    <span class="ident">left</span>: <span class="ident">std::collections::BinaryHeap</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>,
-    <span class="ident">right</span>: <span class="ident">std::collections::BinaryHeap</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>,
+    <span class="ident">left</span>: <span class="ident">std::collections::BinaryHeap</span>&lt;<span class="ident">i64</span>&gt;,
+    <span class="ident">right</span>: <span class="ident">std::collections::BinaryHeap</span>&lt;<span class="ident">i64</span>&gt;,
     <span class="ident">addl</span>: <span class="ident">i64</span>,
     <span class="ident">addr</span>: <span class="ident">i64</span>,
     <span class="ident">minval</span>: <span class="ident">i64</span>,
@@ -131,57 +131,57 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// f(x) = max(n(x-a), n(a-x))</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">valley</span>(<span class="ident">a</span>: <span class="ident">i64</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span>: <span class="self">Self</span> <span class="op">=</span> <span class="ident">Default::default</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span>: <span class="self">Self</span> = <span class="ident">Default::default</span>();
         <span class="ident">self_</span>.<span class="ident">left</span>.<span class="ident">extend</span>(<span class="ident">std::iter::repeat</span>(<span class="ident">a</span>).<span class="ident">take</span>(<span class="ident">n</span>));
         <span class="ident">self_</span>.<span class="ident">right</span>.<span class="ident">extend</span>(<span class="ident">std::iter::repeat</span>(<span class="ident">a</span>).<span class="ident">take</span>(<span class="ident">n</span>));
         <span class="ident">self_</span>
     }
     <span class="kw">fn</span> <span class="ident">push_left</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i64</span>) {
-        <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">push</span>(<span class="ident">x</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">addl</span>);
+        <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">push</span>(<span class="ident">x</span> - <span class="self">self</span>.<span class="ident">addl</span>);
     }
     <span class="kw">fn</span> <span class="ident">push_right</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">i64</span>) {
-        <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">push</span>(<span class="op">-</span>(<span class="ident">x</span> <span class="op">-</span> <span class="self">self</span>.<span class="ident">addr</span>));
+        <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">push</span>(-(<span class="ident">x</span> - <span class="self">self</span>.<span class="ident">addr</span>));
     }
-    <span class="kw">fn</span> <span class="ident">peek_left</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">peek</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">addl</span>)
+    <span class="kw">fn</span> <span class="ident">peek_left</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">i64</span>&gt; {
+        <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">peek</span>().<span class="ident">map</span>(|<span class="ident">x</span>| <span class="ident">x</span> + <span class="self">self</span>.<span class="ident">addl</span>)
     }
-    <span class="kw">fn</span> <span class="ident">peek_right</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">peek</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="op">-</span><span class="ident">x</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">addr</span>)
+    <span class="kw">fn</span> <span class="ident">peek_right</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">i64</span>&gt; {
+        <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">peek</span>().<span class="ident">map</span>(|<span class="ident">x</span>| -<span class="ident">x</span> + <span class="self">self</span>.<span class="ident">addr</span>)
     }
-    <span class="kw">fn</span> <span class="ident">pop_left</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">pop</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">addl</span>)
+    <span class="kw">fn</span> <span class="ident">pop_left</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">i64</span>&gt; {
+        <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">pop</span>().<span class="ident">map</span>(|<span class="ident">x</span>| <span class="ident">x</span> + <span class="self">self</span>.<span class="ident">addl</span>)
     }
-    <span class="kw">fn</span> <span class="ident">pop_right</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">pop</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="op">-</span><span class="ident">x</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">addr</span>)
+    <span class="kw">fn</span> <span class="ident">pop_right</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">i64</span>&gt; {
+        <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">pop</span>().<span class="ident">map</span>(|<span class="ident">x</span>| -<span class="ident">x</span> + <span class="self">self</span>.<span class="ident">addr</span>)
     }
     <span class="doccomment">/// min f(x)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i64</span> {
         <span class="self">self</span>.<span class="ident">minval</span>
     }
     <span class="doccomment">/// argmin_x f(x)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">min_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">min_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<span class="prelude-ty">Option</span>&lt;<span class="ident">i64</span>&gt;, <span class="prelude-ty">Option</span>&lt;<span class="ident">i64</span>&gt;) {
         (<span class="self">self</span>.<span class="ident">peek_left</span>(), <span class="self">self</span>.<span class="ident">peek_right</span>())
     }
     <span class="doccomment">/// f(x) += a</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_const</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident">i64</span>) {
-        <span class="self">self</span>.<span class="ident">minval</span> <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>;
+        <span class="self">self</span>.<span class="ident">minval</span> += <span class="ident">a</span>;
     }
     <span class="doccomment">/// f(x) += max(0, (x-a))</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_ramp</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident">i64</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">peek_left</span>() {
-            <span class="self">self</span>.<span class="ident">minval</span> <span class="op">+</span><span class="op">=</span> (<span class="ident">x</span> <span class="op">-</span> <span class="ident">a</span>).<span class="ident">max</span>(<span class="number">0</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) = <span class="self">self</span>.<span class="ident">peek_left</span>() {
+            <span class="self">self</span>.<span class="ident">minval</span> += (<span class="ident">x</span> - <span class="ident">a</span>).<span class="ident">max</span>(<span class="number">0</span>);
         }
         <span class="self">self</span>.<span class="ident">push_left</span>(<span class="ident">a</span>);
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_left</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="self">self</span>.<span class="ident">pop_left</span>().<span class="ident">unwrap</span>();
         <span class="self">self</span>.<span class="ident">push_right</span>(<span class="ident">x</span>);
     }
     <span class="doccomment">/// f(x) += max(0, (a-x))</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_pmar</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident">i64</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">peek_right</span>() {
-            <span class="self">self</span>.<span class="ident">minval</span> <span class="op">+</span><span class="op">=</span> (<span class="ident">a</span> <span class="op">-</span> <span class="ident">x</span>).<span class="ident">max</span>(<span class="number">0</span>);
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) = <span class="self">self</span>.<span class="ident">peek_right</span>() {
+            <span class="self">self</span>.<span class="ident">minval</span> += (<span class="ident">a</span> - <span class="ident">x</span>).<span class="ident">max</span>(<span class="number">0</span>);
         }
         <span class="self">self</span>.<span class="ident">push_right</span>(<span class="ident">a</span>);
-        <span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pop_right</span>().<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">x</span> = <span class="self">self</span>.<span class="ident">pop_right</span>().<span class="ident">unwrap</span>();
         <span class="self">self</span>.<span class="ident">push_left</span>(<span class="ident">x</span>);
     }
     <span class="doccomment">/// f(x) += |x-a|</span>
@@ -194,14 +194,14 @@
     <span class="doccomment">/// f&#39;(x) := min f(y) (y &gt;= x)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_left</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">left</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">addl</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="self">self</span>.<span class="ident">addl</span> = <span class="number">0</span>;
     }
     <span class="doccomment">/// left to right accumulated minimum</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// f&#39;(x) := min f(y) (y &lt;= x)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_right</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">right</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">addr</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="self">self</span>.<span class="ident">addr</span> = <span class="number">0</span>;
     }
     <span class="doccomment">/// f&#39;(x) := f(x-a)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shift</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident">i64</span>) {
@@ -209,10 +209,10 @@
     }
     <span class="doccomment">/// f&#39;(x) := min f(y) (x-a &lt;= y &lt;= x-b)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">slide_minimum</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">a</span>: <span class="ident">i64</span>, <span class="ident">b</span>: <span class="ident">i64</span>) {
-        <span class="macro">assert!</span>(<span class="ident">a</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">b</span>);
-        <span class="self">self</span>.<span class="ident">addl</span> <span class="op">+</span><span class="op">=</span> <span class="ident">a</span>;
-        <span class="self">self</span>.<span class="ident">addr</span> <span class="op">+</span><span class="op">=</span> <span class="ident">b</span>;
+        <span class="macro">assert!</span>(<span class="ident">a</span> &lt;= <span class="ident">b</span>);
+        <span class="self">self</span>.<span class="ident">addl</span> += <span class="ident">a</span>;
+        <span class="self">self</span>.<span class="ident">addr</span> += <span class="ident">b</span>;
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f03ce3096 2022-08-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
