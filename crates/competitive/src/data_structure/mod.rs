@@ -7,6 +7,8 @@ use crate::tools::GetDistinctMut;
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::Accumulate;
+#[codesnip::entry("Allocator")]
+pub use self::allocator::{Allocator, MemoryPool};
 #[codesnip::entry("automaton")]
 pub use self::automaton::*;
 #[codesnip::entry("BinaryIndexedTree")]
@@ -47,6 +49,7 @@ pub use self::segment_tree_map::SegmentTreeMap;
 pub use self::sliding_winsow_aggregation::{DequeAggregation, QueueAggregation};
 #[codesnip::entry("slope_trick")]
 pub use self::slope_trick::SlopeTrick;
+pub use self::splay_tree::SplayMap;
 #[codesnip::entry("Trie")]
 pub use self::trie::Trie;
 #[codesnip::entry("UnionFind")]
@@ -58,6 +61,8 @@ pub use self::weighted_union_find::WeightedUnionFind;
 
 #[cfg_attr(nightly, codesnip::entry("Accumulate", include("algebra")))]
 mod accumulate;
+#[cfg_attr(nightly, codesnip::entry("Allocator"))]
+mod allocator;
 #[cfg_attr(nightly, codesnip::entry("automaton", include("algebra")))]
 mod automaton;
 #[cfg_attr(nightly, codesnip::entry("BinaryIndexedTree", include("algebra")))]
@@ -110,6 +115,7 @@ mod segment_tree_map;
 mod sliding_winsow_aggregation;
 #[cfg_attr(nightly, codesnip::entry("slope_trick"))]
 mod slope_trick;
+mod splay_tree;
 #[cfg_attr(nightly, codesnip::entry("Trie"))]
 mod trie;
 #[cfg_attr(nightly, codesnip::entry("UnionFind"))]
