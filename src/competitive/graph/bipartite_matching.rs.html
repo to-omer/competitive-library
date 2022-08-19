@@ -386,377 +386,377 @@
 <span id="370">370</span>
 <span id="371">371</span>
 <span id="372">372</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::VecDeque</span>, <span class="ident">mem::swap</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::VecDeque, mem::swap};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BipartiteMatching</span> {
-    <span class="ident">left_size</span>: <span class="ident">usize</span>,
-    <span class="ident">right_size</span>: <span class="ident">usize</span>,
-    <span class="ident">left_graph</span>: <span class="ident">Vec</span>&lt;<span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;&gt;,
-    <span class="ident">left_match</span>: <span class="ident">Vec</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;&gt;,
-    <span class="ident">right_match</span>: <span class="ident">Vec</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;&gt;,
-    <span class="ident">matching_size</span>: <span class="ident">usize</span>,
+<span class="attribute">#[derive(Debug, Clone)]</span>
+<span class="kw">pub struct </span>BipartiteMatching {
+    left_size: usize,
+    right_size: usize,
+    left_graph: Vec&lt;Vec&lt;usize&gt;&gt;,
+    left_match: Vec&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
+    right_match: Vec&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
+    matching_size: usize,
 }
 
-<span class="kw">impl</span> <span class="ident">BipartiteMatching</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">left_size</span>: <span class="ident">usize</span>, <span class="ident">right_size</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">left_size</span>,
-            <span class="ident">right_size</span>,
-            <span class="ident">left_graph</span>: <span class="macro">vec!</span>[<span class="macro">vec!</span>[]; <span class="ident">left_size</span>],
-            <span class="ident">left_match</span>: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; <span class="ident">left_size</span>],
-            <span class="ident">right_match</span>: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; <span class="ident">right_size</span>],
-            <span class="ident">matching_size</span>: <span class="number">0</span>,
+<span class="kw">impl </span>BipartiteMatching {
+    <span class="kw">pub fn </span>new(left_size: usize, right_size: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            left_size,
+            right_size,
+            left_graph: <span class="macro">vec!</span>[<span class="macro">vec!</span>[]; left_size],
+            left_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; left_size],
+            right_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; right_size],
+            matching_size: <span class="number">0</span>,
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add_edge</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) {
-        <span class="macro">assert!</span>(<span class="ident">l</span> &lt; <span class="self">self</span>.<span class="ident">left_size</span>);
-        <span class="macro">assert!</span>(<span class="ident">r</span> &lt; <span class="self">self</span>.<span class="ident">right_size</span>);
-        <span class="self">self</span>.<span class="ident">left_graph</span>[<span class="ident">l</span>].<span class="ident">push</span>(<span class="ident">r</span>);
-        <span class="self">self</span>.<span class="ident">matching_size</span> = !<span class="number">0</span>;
+    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: usize, r: usize) {
+        <span class="macro">assert!</span>(l &lt; <span class="self">self</span>.left_size);
+        <span class="macro">assert!</span>(r &lt; <span class="self">self</span>.right_size);
+        <span class="self">self</span>.left_graph[l].push(r);
+        <span class="self">self</span>.matching_size = !<span class="number">0</span>;
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_edges</span>(<span class="ident">left_size</span>: <span class="ident">usize</span>, <span class="ident">right_size</span>: <span class="ident">usize</span>, <span class="ident">lr</span>: <span class="kw-2">&amp;</span>[(<span class="ident">usize</span>, <span class="ident">usize</span>)]) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deg</span> = <span class="macro">vec!</span>[<span class="number">0usize</span>; <span class="ident">left_size</span>];
-        <span class="kw">for</span> <span class="kw-2">&amp;</span>(<span class="ident">l</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">lr</span> {
-            <span class="ident">deg</span>[<span class="ident">l</span>] += <span class="number">1</span>;
+    <span class="kw">pub fn </span>from_edges(left_size: usize, right_size: usize, lr: <span class="kw-2">&amp;</span>[(usize, usize)]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>deg = <span class="macro">vec!</span>[<span class="number">0usize</span>; left_size];
+        <span class="kw">for </span><span class="kw-2">&amp;</span>(l, <span class="kw">_</span>) <span class="kw">in </span>lr {
+            deg[l] += <span class="number">1</span>;
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left_graph</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">deg</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">Vec::with_capacity</span>).<span class="ident">collect</span>();
-        <span class="kw">for</span> <span class="kw-2">&amp;</span>(<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="ident">lr</span> {
-            <span class="macro">assert!</span>(<span class="ident">l</span> &lt; <span class="ident">left_size</span>);
-            <span class="macro">assert!</span>(<span class="ident">r</span> &lt; <span class="ident">right_size</span>);
-            <span class="ident">left_graph</span>[<span class="ident">l</span>].<span class="ident">push</span>(<span class="ident">r</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>left_graph: Vec&lt;<span class="kw">_</span>&gt; = deg.into_iter().map(Vec::with_capacity).collect();
+        <span class="kw">for </span><span class="kw-2">&amp;</span>(l, r) <span class="kw">in </span>lr {
+            <span class="macro">assert!</span>(l &lt; left_size);
+            <span class="macro">assert!</span>(r &lt; right_size);
+            left_graph[l].push(r);
         }
-        <span class="self">Self</span> {
-            <span class="ident">left_size</span>,
-            <span class="ident">right_size</span>,
-            <span class="ident">left_graph</span>,
-            <span class="ident">left_match</span>: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; <span class="ident">left_size</span>],
-            <span class="ident">right_match</span>: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; <span class="ident">right_size</span>],
-            <span class="ident">matching_size</span>: !<span class="number">0</span>,
+        <span class="self">Self </span>{
+            left_size,
+            right_size,
+            left_graph,
+            left_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; left_size],
+            right_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; right_size],
+            matching_size: !<span class="number">0</span>,
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hopcroft_karp</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">fn</span> <span class="ident">bfs</span>(<span class="ident">bm</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BipartiteMatching</span>, <span class="ident">deq</span>: <span class="kw-2">&amp;mut</span> <span class="ident">VecDeque</span>&lt;<span class="ident">usize</span>&gt;, <span class="ident">level</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">usize</span>]) {
-            <span class="ident">deq</span>.<span class="ident">clear</span>();
-            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="ident">bm</span>.<span class="ident">left_match</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">is_none</span>() {
-                    <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">i</span>);
-                    <span class="ident">level</span>[<span class="ident">i</span>] = <span class="number">0</span>;
+    <span class="kw">pub fn </span>hopcroft_karp(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">fn </span>bfs(bm: <span class="kw-2">&amp;mut </span>BipartiteMatching, deq: <span class="kw-2">&amp;mut </span>VecDeque&lt;usize&gt;, level: <span class="kw-2">&amp;mut </span>[usize]) {
+            deq.clear();
+            <span class="kw">for </span>(i, r) <span class="kw">in </span>bm.left_match.iter().enumerate() {
+                <span class="kw">if </span>r.is_none() {
+                    deq.push_back(i);
+                    level[i] = <span class="number">0</span>;
                 }
             }
-            <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">l</span>) = <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
-                <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">r</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">bm</span>.<span class="ident">left_graph</span>[<span class="ident">l</span>] {
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nl</span>) = <span class="ident">bm</span>.<span class="ident">right_match</span>[<span class="ident">r</span>] {
-                        <span class="kw">if</span> <span class="ident">level</span>[<span class="ident">nl</span>] == !<span class="number">0</span> {
-                            <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">nl</span>);
-                            <span class="ident">level</span>[<span class="ident">nl</span>] = <span class="ident">level</span>[<span class="ident">l</span>] + <span class="number">1</span>;
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(l) = deq.pop_front() {
+                <span class="kw">for </span><span class="kw-2">&amp;</span>r <span class="kw">in </span><span class="kw-2">&amp;</span>bm.left_graph[l] {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(nl) = bm.right_match[r] {
+                        <span class="kw">if </span>level[nl] == !<span class="number">0 </span>{
+                            deq.push_back(nl);
+                            level[nl] = level[l] + <span class="number">1</span>;
                         }
                     }
                 }
             }
         }
-        <span class="kw">fn</span> <span class="ident">dfs</span>(
-            <span class="ident">bm</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BipartiteMatching</span>,
-            <span class="ident">l</span>: <span class="ident">usize</span>,
-            <span class="ident">level</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">usize</span>],
-            <span class="ident">used</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">bool</span>],
-        ) -&gt; <span class="ident">bool</span> {
-            <span class="ident">used</span>[<span class="ident">l</span>] = <span class="bool-val">true</span>;
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">bm</span>.<span class="ident">left_graph</span>[<span class="ident">l</span>].<span class="ident">len</span>() {
-                <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">bm</span>.<span class="ident">left_graph</span>[<span class="ident">l</span>][<span class="ident">i</span>];
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nl</span>) = <span class="ident">bm</span>.<span class="ident">right_match</span>[<span class="ident">r</span>] {
-                    <span class="kw">if</span> <span class="ident">used</span>[<span class="ident">nl</span>] || <span class="ident">level</span>[<span class="ident">l</span>] + <span class="number">1</span> != <span class="ident">level</span>[<span class="ident">nl</span>] || !<span class="ident">dfs</span>(<span class="ident">bm</span>, <span class="ident">nl</span>, <span class="ident">level</span>, <span class="ident">used</span>) {
+        <span class="kw">fn </span>dfs(
+            bm: <span class="kw-2">&amp;mut </span>BipartiteMatching,
+            l: usize,
+            level: <span class="kw-2">&amp;mut </span>[usize],
+            used: <span class="kw-2">&amp;mut </span>[bool],
+        ) -&gt; bool {
+            used[l] = <span class="bool-val">true</span>;
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..bm.left_graph[l].len() {
+                <span class="kw">let </span>r = bm.left_graph[l][i];
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(nl) = bm.right_match[r] {
+                    <span class="kw">if </span>used[nl] || level[l] + <span class="number">1 </span>!= level[nl] || !dfs(bm, nl, level, used) {
                         <span class="kw">continue</span>;
                     }
                 }
-                <span class="ident">bm</span>.<span class="ident">right_match</span>[<span class="ident">r</span>] = <span class="prelude-val">Some</span>(<span class="ident">l</span>);
-                <span class="ident">bm</span>.<span class="ident">left_match</span>[<span class="ident">l</span>] = <span class="prelude-val">Some</span>(<span class="ident">r</span>);
-                <span class="kw">return</span> <span class="bool-val">true</span>;
+                bm.right_match[r] = <span class="prelude-val">Some</span>(l);
+                bm.left_match[l] = <span class="prelude-val">Some</span>(r);
+                <span class="kw">return </span><span class="bool-val">true</span>;
             }
-            <span class="bool-val">false</span>
-        }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">matching_size</span> != !<span class="number">0</span> {
+            <span class="bool-val">false
+        </span>}
+        <span class="kw">if </span><span class="self">self</span>.matching_size != !<span class="number">0 </span>{
             <span class="kw">return</span>;
         }
-        <span class="self">self</span>.<span class="ident">matching_size</span> = <span class="self">self</span>.<span class="ident">left_match</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(|<span class="ident">r</span>| <span class="ident">r</span>.<span class="ident">is_some</span>()).<span class="ident">count</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">used</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">left_size</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">level</span> = <span class="macro">vec!</span>[!<span class="number">0</span>; <span class="self">self</span>.<span class="ident">left_size</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> = <span class="ident">VecDeque::with_capacity</span>(<span class="self">self</span>.<span class="ident">left_size</span>);
-        <span class="kw">loop</span> {
-            <span class="ident">bfs</span>(<span class="self">self</span>, <span class="kw-2">&amp;mut</span> <span class="ident">deq</span>, <span class="kw-2">&amp;mut</span> <span class="ident">level</span>);
-            <span class="kw">let</span> <span class="ident">prev_size</span> = <span class="self">self</span>.<span class="ident">matching_size</span>;
-            <span class="kw">for</span> <span class="ident">l</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">left_size</span> {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">left_match</span>[<span class="ident">l</span>].<span class="ident">is_none</span>() {
-                    <span class="self">self</span>.<span class="ident">matching_size</span> += <span class="ident">dfs</span>(<span class="self">self</span>, <span class="ident">l</span>, <span class="kw-2">&amp;mut</span> <span class="ident">level</span>, <span class="kw-2">&amp;mut</span> <span class="ident">used</span>) <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="self">self</span>.matching_size = <span class="self">self</span>.left_match.iter().filter(|r| r.is_some()).count();
+        <span class="kw">let </span><span class="kw-2">mut </span>used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>level = <span class="macro">vec!</span>[!<span class="number">0</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<span class="self">self</span>.left_size);
+        <span class="kw">loop </span>{
+            bfs(<span class="self">self</span>, <span class="kw-2">&amp;mut </span>deq, <span class="kw-2">&amp;mut </span>level);
+            <span class="kw">let </span>prev_size = <span class="self">self</span>.matching_size;
+            <span class="kw">for </span>l <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.left_size {
+                <span class="kw">if </span><span class="self">self</span>.left_match[l].is_none() {
+                    <span class="self">self</span>.matching_size += dfs(<span class="self">self</span>, l, <span class="kw-2">&amp;mut </span>level, <span class="kw-2">&amp;mut </span>used) <span class="kw">as </span>usize;
                 }
             }
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">matching_size</span> == <span class="ident">prev_size</span> {
+            <span class="kw">if </span><span class="self">self</span>.matching_size == prev_size {
                 <span class="kw">break</span>;
             }
-            <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">level</span>.<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">item</span> = !<span class="number">0</span>;
+            <span class="kw">for </span>item <span class="kw">in </span>level.iter_mut() {
+                <span class="kw-2">*</span>item = !<span class="number">0</span>;
             }
-            <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">used</span>.<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">item</span> = <span class="bool-val">false</span>;
+            <span class="kw">for </span>item <span class="kw">in </span>used.iter_mut() {
+                <span class="kw-2">*</span>item = <span class="bool-val">false</span>;
             }
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kuhn_multi_start_bfs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">matching_size</span> != !<span class="number">0</span> {
+    <span class="kw">pub fn </span>kuhn_multi_start_bfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">if </span><span class="self">self</span>.matching_size != !<span class="number">0 </span>{
             <span class="kw">return</span>;
         }
-        <span class="self">self</span>.<span class="ident">matching_size</span> = <span class="self">self</span>.<span class="ident">left_match</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(|<span class="ident">r</span>| <span class="ident">r</span>.<span class="ident">is_some</span>()).<span class="ident">count</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> = <span class="ident">VecDeque::with_capacity</span>(<span class="self">self</span>.<span class="ident">left_size</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev</span> = <span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="self">self</span>.<span class="ident">left_size</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">root</span> = <span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="self">self</span>.<span class="ident">left_size</span>];
-        <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">changed</span> = <span class="bool-val">false</span>;
-            <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">left_match</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">is_none</span>() {
-                    <span class="ident">root</span>[<span class="ident">l</span>] = <span class="ident">l</span>;
-                    <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">l</span>);
+        <span class="self">self</span>.matching_size = <span class="self">self</span>.left_match.iter().filter(|r| r.is_some()).count();
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<span class="self">self</span>.left_size);
+        <span class="kw">let </span><span class="kw-2">mut </span>prev = <span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="self">self</span>.left_size];
+        <span class="kw">loop </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>changed = <span class="bool-val">false</span>;
+            <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.left_match.iter().enumerate() {
+                <span class="kw">if </span>r.is_none() {
+                    root[l] = l;
+                    deq.push_back(l);
                 }
             }
-            <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">l</span>) = <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">left_match</span>[<span class="ident">root</span>[<span class="ident">l</span>]].<span class="ident">is_some</span>() {
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>l) = deq.pop_front() {
+                <span class="kw">if </span><span class="self">self</span>.left_match[root[l]].is_some() {
                     <span class="kw">continue</span>;
                 }
-                <span class="kw">for</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">left_graph</span>[<span class="ident">l</span>].<span class="ident">iter</span>().<span class="ident">cloned</span>() {
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nl</span>) = <span class="self">self</span>.<span class="ident">right_match</span>[<span class="ident">r</span>] {
-                        <span class="kw">if</span> <span class="ident">prev</span>[<span class="ident">nl</span>] == !<span class="number">0</span> {
-                            <span class="ident">prev</span>[<span class="ident">nl</span>] = <span class="ident">l</span>;
-                            <span class="ident">root</span>[<span class="ident">nl</span>] = <span class="ident">root</span>[<span class="ident">l</span>];
-                            <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">nl</span>);
+                <span class="kw">for </span><span class="kw-2">mut </span>r <span class="kw">in </span><span class="self">self</span>.left_graph[l].iter().cloned() {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(nl) = <span class="self">self</span>.right_match[r] {
+                        <span class="kw">if </span>prev[nl] == !<span class="number">0 </span>{
+                            prev[nl] = l;
+                            root[nl] = root[l];
+                            deq.push_back(nl);
                         }
-                    } <span class="kw">else</span> {
-                        <span class="kw">loop</span> {
-                            <span class="self">self</span>.<span class="ident">right_match</span>[<span class="ident">r</span>] = <span class="prelude-val">Some</span>(<span class="ident">l</span>);
-                            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nr</span>) = <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">left_match</span>[<span class="ident">l</span>] {
-                                <span class="ident">swap</span>(<span class="ident">nr</span>, <span class="kw-2">&amp;mut</span> <span class="ident">r</span>);
-                                <span class="ident">l</span> = <span class="ident">prev</span>[<span class="ident">l</span>];
-                            } <span class="kw">else</span> {
-                                <span class="self">self</span>.<span class="ident">left_match</span>[<span class="ident">l</span>] = <span class="prelude-val">Some</span>(<span class="ident">r</span>);
+                    } <span class="kw">else </span>{
+                        <span class="kw">loop </span>{
+                            <span class="self">self</span>.right_match[r] = <span class="prelude-val">Some</span>(l);
+                            <span class="kw">if let </span><span class="prelude-val">Some</span>(nr) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.left_match[l] {
+                                swap(nr, <span class="kw-2">&amp;mut </span>r);
+                                l = prev[l];
+                            } <span class="kw">else </span>{
+                                <span class="self">self</span>.left_match[l] = <span class="prelude-val">Some</span>(r);
                                 <span class="kw">break</span>;
                             }
                         }
-                        <span class="ident">changed</span> = <span class="bool-val">true</span>;
-                        <span class="self">self</span>.<span class="ident">matching_size</span> += <span class="number">1</span>;
+                        changed = <span class="bool-val">true</span>;
+                        <span class="self">self</span>.matching_size += <span class="number">1</span>;
                         <span class="kw">break</span>;
                     }
                 }
             }
-            <span class="kw">if</span> !<span class="ident">changed</span> {
+            <span class="kw">if </span>!changed {
                 <span class="kw">break</span>;
             }
-            <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">prev</span>.<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">item</span> = !<span class="number">0</span>;
+            <span class="kw">for </span>item <span class="kw">in </span>prev.iter_mut() {
+                <span class="kw-2">*</span>item = !<span class="number">0</span>;
             }
-            <span class="kw">for</span> <span class="ident">item</span> <span class="kw">in</span> <span class="ident">root</span>.<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">item</span> = !<span class="number">0</span>;
+            <span class="kw">for </span>item <span class="kw">in </span>root.iter_mut() {
+                <span class="kw-2">*</span>item = !<span class="number">0</span>;
             }
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maximum_matching</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt; {
-        <span class="self">self</span>.<span class="ident">kuhn_multi_start_bfs</span>();
-        <span class="self">self</span>.<span class="ident">left_match</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">enumerate</span>()
-            .<span class="ident">filter_map</span>(|(<span class="ident">l</span>, <span class="ident">r</span>)| <span class="ident">r</span>.<span class="ident">map</span>(|<span class="ident">r</span>| (<span class="ident">l</span>, <span class="ident">r</span>)))
-            .<span class="ident">collect</span>()
+    <span class="kw">pub fn </span>maximum_matching(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(usize, usize)&gt; {
+        <span class="self">self</span>.kuhn_multi_start_bfs();
+        <span class="self">self</span>.left_match
+            .iter()
+            .enumerate()
+            .filter_map(|(l, r)| r.map(|r| (l, r)))
+            .collect()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_edge_cover</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt; {
-        <span class="self">self</span>.<span class="ident">kuhn_multi_start_bfs</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">left_size</span> + <span class="self">self</span>.<span class="ident">right_size</span> - <span class="self">self</span>.<span class="ident">matching_size</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left_used</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.<span class="ident">left_match</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">Option::is_some</span>).<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right_used</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.<span class="ident">right_match</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="ident">Option::is_some</span>).<span class="ident">collect</span>();
-        <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">lg</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">left_graph</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">r</span>) = <span class="self">self</span>.<span class="ident">left_match</span>[<span class="ident">l</span>] {
-                <span class="ident">res</span>.<span class="ident">push</span>((<span class="ident">l</span>, <span class="ident">r</span>));
+    <span class="kw">pub fn </span>minimum_edge_cover(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(usize, usize)&gt; {
+        <span class="self">self</span>.kuhn_multi_start_bfs();
+        <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::with_capacity(<span class="self">self</span>.left_size + <span class="self">self</span>.right_size - <span class="self">self</span>.matching_size);
+        <span class="kw">let </span><span class="kw-2">mut </span>left_used: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.left_match.iter().map(Option::is_some).collect();
+        <span class="kw">let </span><span class="kw-2">mut </span>right_used: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.right_match.iter().map(Option::is_some).collect();
+        <span class="kw">for </span>(l, lg) <span class="kw">in </span><span class="self">self</span>.left_graph.iter().enumerate() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = <span class="self">self</span>.left_match[l] {
+                res.push((l, r));
             }
-            <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">r</span> <span class="kw">in</span> <span class="ident">lg</span> {
-                <span class="kw">if</span> !<span class="ident">left_used</span>[<span class="ident">l</span>] || !<span class="ident">right_used</span>[<span class="ident">r</span>] {
-                    <span class="ident">left_used</span>[<span class="ident">l</span>] = <span class="bool-val">true</span>;
-                    <span class="ident">right_used</span>[<span class="ident">r</span>] = <span class="bool-val">true</span>;
-                    <span class="ident">res</span>.<span class="ident">push</span>((<span class="ident">l</span>, <span class="ident">r</span>));
+            <span class="kw">for </span><span class="kw-2">&amp;</span>r <span class="kw">in </span>lg {
+                <span class="kw">if </span>!left_used[l] || !right_used[r] {
+                    left_used[l] = <span class="bool-val">true</span>;
+                    right_used[r] = <span class="bool-val">true</span>;
+                    res.push((l, r));
                 }
             }
         }
-        <span class="ident">res</span>
+        res
     }
-    <span class="kw">fn</span> <span class="ident">reachable</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; (<span class="ident">Vec</span>&lt;<span class="ident">bool</span>&gt;, <span class="ident">Vec</span>&lt;<span class="ident">bool</span>&gt;) {
-        <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-        <span class="kw">enum</span> <span class="ident">Either</span> {
-            <span class="ident">Left</span>(<span class="ident">usize</span>),
-            <span class="ident">Right</span>(<span class="ident">usize</span>),
+    <span class="kw">fn </span>reachable(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;bool&gt;, Vec&lt;bool&gt;) {
+        <span class="attribute">#[derive(Clone, Copy)]</span>
+        <span class="kw">enum </span>Either {
+            Left(usize),
+            Right(usize),
         }
-        <span class="self">self</span>.<span class="ident">kuhn_multi_start_bfs</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left_used</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">left_size</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right_used</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.<span class="ident">right_size</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> = <span class="ident">VecDeque::new</span>();
-        <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">left_match</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">is_none</span>() {
-                <span class="ident">left_used</span>[<span class="ident">l</span>] = <span class="bool-val">true</span>;
-                <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">Either::Left</span>(<span class="ident">l</span>));
+        <span class="self">self</span>.kuhn_multi_start_bfs();
+        <span class="kw">let </span><span class="kw-2">mut </span>left_used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>right_used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.right_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::new();
+        <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.left_match.iter().enumerate() {
+            <span class="kw">if </span>r.is_none() {
+                left_used[l] = <span class="bool-val">true</span>;
+                deq.push_back(Either::Left(l));
             }
         }
-        <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">Either::Left</span>(<span class="ident">l</span>)) =&gt; {
-                    <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">r</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">left_graph</span>[<span class="ident">l</span>] {
-                        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">left_match</span>[<span class="ident">l</span>] != <span class="prelude-val">Some</span>(<span class="ident">r</span>) &amp;&amp; !<span class="ident">right_used</span>[<span class="ident">r</span>] {
-                            <span class="ident">right_used</span>[<span class="ident">r</span>] = <span class="bool-val">true</span>;
-                            <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">Either::Right</span>(<span class="ident">r</span>));
+        <span class="kw">loop </span>{
+            <span class="kw">match </span>deq.pop_front() {
+                <span class="prelude-val">Some</span>(Either::Left(l)) =&gt; {
+                    <span class="kw">for </span><span class="kw-2">&amp;</span>r <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.left_graph[l] {
+                        <span class="kw">if </span><span class="self">self</span>.left_match[l] != <span class="prelude-val">Some</span>(r) &amp;&amp; !right_used[r] {
+                            right_used[r] = <span class="bool-val">true</span>;
+                            deq.push_back(Either::Right(r));
                         }
                     }
                 }
-                <span class="prelude-val">Some</span>(<span class="ident">Either::Right</span>(<span class="ident">r</span>)) =&gt; {
-                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">l</span>) = <span class="self">self</span>.<span class="ident">right_match</span>[<span class="ident">r</span>] {
-                        <span class="kw">if</span> !<span class="ident">left_used</span>[<span class="ident">l</span>] {
-                            <span class="ident">left_used</span>[<span class="ident">l</span>] = <span class="bool-val">true</span>;
-                            <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">Either::Left</span>(<span class="ident">l</span>));
+                <span class="prelude-val">Some</span>(Either::Right(r)) =&gt; {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(l) = <span class="self">self</span>.right_match[r] {
+                        <span class="kw">if </span>!left_used[l] {
+                            left_used[l] = <span class="bool-val">true</span>;
+                            deq.push_back(Either::Left(l));
                         }
                     }
                 }
-                <span class="prelude-val">None</span> =&gt; <span class="kw">break</span>,
+                <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
             }
         }
-        (<span class="ident">left_used</span>, <span class="ident">right_used</span>)
+        (left_used, right_used)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimum_vertex_cover</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; (<span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;, <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;) {
-        <span class="kw">let</span> (<span class="ident">left_used</span>, <span class="ident">right_used</span>) = <span class="self">self</span>.<span class="ident">reachable</span>();
+    <span class="kw">pub fn </span>minimum_vertex_cover(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;usize&gt;, Vec&lt;usize&gt;) {
+        <span class="kw">let </span>(left_used, right_used) = <span class="self">self</span>.reachable();
         (
-            <span class="ident">left_used</span>
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">enumerate</span>()
-                .<span class="ident">filter_map</span>(|(<span class="ident">l</span>, <span class="ident">b</span>)| <span class="kw">if</span> !<span class="ident">b</span> { <span class="prelude-val">Some</span>(<span class="ident">l</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
-                .<span class="ident">collect</span>(),
-            <span class="ident">right_used</span>
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">enumerate</span>()
-                .<span class="ident">filter_map</span>(|(<span class="ident">r</span>, <span class="ident">b</span>)| <span class="kw">if</span> <span class="ident">b</span> { <span class="prelude-val">Some</span>(<span class="ident">r</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
-                .<span class="ident">collect</span>(),
+            left_used
+                .into_iter()
+                .enumerate()
+                .filter_map(|(l, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(l) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .collect(),
+            right_used
+                .into_iter()
+                .enumerate()
+                .filter_map(|(r, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(r) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .collect(),
         )
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">maximum_independent_set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; (<span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;, <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;) {
-        <span class="kw">let</span> (<span class="ident">left_used</span>, <span class="ident">right_used</span>) = <span class="self">self</span>.<span class="ident">reachable</span>();
+    <span class="kw">pub fn </span>maximum_independent_set(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;usize&gt;, Vec&lt;usize&gt;) {
+        <span class="kw">let </span>(left_used, right_used) = <span class="self">self</span>.reachable();
         (
-            <span class="ident">left_used</span>
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">enumerate</span>()
-                .<span class="ident">filter_map</span>(|(<span class="ident">l</span>, <span class="ident">b</span>)| <span class="kw">if</span> <span class="ident">b</span> { <span class="prelude-val">Some</span>(<span class="ident">l</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
-                .<span class="ident">collect</span>(),
-            <span class="ident">right_used</span>
-                .<span class="ident">into_iter</span>()
-                .<span class="ident">enumerate</span>()
-                .<span class="ident">filter_map</span>(|(<span class="ident">r</span>, <span class="ident">b</span>)| <span class="kw">if</span> !<span class="ident">b</span> { <span class="prelude-val">Some</span>(<span class="ident">r</span>) } <span class="kw">else</span> { <span class="prelude-val">None</span> })
-                .<span class="ident">collect</span>(),
+            left_used
+                .into_iter()
+                .enumerate()
+                .filter_map(|(l, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(l) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .collect(),
+            right_used
+                .into_iter()
+                .enumerate()
+                .filter_map(|(r, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(r) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .collect(),
         )
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">chmax</span>, <span class="ident">chmin</span>, <span class="ident">data_structure::UnionFind</span>, <span class="ident">rand</span>, <span class="ident">tools::Xorshift</span>};
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{chmax, chmin, data_structure::UnionFind, rand, tools::Xorshift};
 
-    <span class="kw">fn</span> <span class="ident">gen_graph</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">m</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">uf</span> = <span class="ident">UnionFind::new</span>(<span class="ident">n</span> + <span class="ident">m</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lr</span> = <span class="macro">vec!</span>[];
-        <span class="kw">while</span> <span class="ident">uf</span>.<span class="ident">size</span>(<span class="number">0</span>) &lt; <span class="ident">n</span> + <span class="ident">m</span> {
-            <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">l</span>: (<span class="number">0</span>..<span class="ident">n</span>), <span class="ident">r</span>: (<span class="number">0</span>..<span class="ident">m</span>));
-            <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="ident">l</span>, <span class="ident">r</span> + <span class="ident">n</span>);
-            <span class="ident">lr</span>.<span class="ident">push</span>((<span class="ident">l</span>, <span class="ident">r</span>));
+    <span class="kw">fn </span>gen_graph(n: usize, m: usize) -&gt; Vec&lt;(usize, usize)&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(n + m);
+        <span class="kw">let </span><span class="kw-2">mut </span>lr = <span class="macro">vec!</span>[];
+        <span class="kw">while </span>uf.size(<span class="number">0</span>) &lt; n + m {
+            <span class="macro">rand!</span>(rng, l: (<span class="number">0</span>..n), r: (<span class="number">0</span>..m));
+            uf.unite(l, r + n);
+            lr.push((l, r));
         }
-        <span class="ident">lr</span>.<span class="ident">sort_unstable</span>();
-        <span class="ident">lr</span>.<span class="ident">dedup</span>();
-        <span class="ident">lr</span>
+        lr.sort_unstable();
+        lr.dedup();
+        lr
     }
 
-    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">100</span>;
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">8</span>;
-    <span class="kw">const</span> <span class="ident">M</span>: <span class="ident">usize</span> = <span class="number">8</span>;
+    <span class="kw">const </span>Q: usize = <span class="number">100</span>;
+    <span class="kw">const </span>N: usize = <span class="number">8</span>;
+    <span class="kw">const </span>M: usize = <span class="number">8</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_minimum_edge_cover</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">n</span>: (<span class="number">4</span>..=<span class="ident">N</span>), <span class="ident">m</span>: (<span class="number">4</span>..=<span class="ident">M</span>));
-            <span class="kw">let</span> <span class="ident">lr</span> = <span class="ident">gen_graph</span>(<span class="ident">n</span>, <span class="ident">m</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dp</span> = <span class="macro">vec!</span>[<span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="number">1</span> &lt;&lt; <span class="ident">m</span>]; <span class="number">1</span> &lt;&lt; <span class="ident">n</span>];
-            <span class="ident">dp</span>[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span>;
-            <span class="kw">for</span> <span class="ident">bitl</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="number">1</span> &lt;&lt; <span class="ident">n</span> {
-                <span class="kw">for</span> <span class="ident">bitr</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="number">1</span> &lt;&lt; <span class="ident">m</span> {
-                    <span class="kw">if</span> <span class="ident">dp</span>[<span class="ident">bitl</span>][<span class="ident">bitr</span>] == !<span class="number">0</span> {
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_minimum_edge_cover() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">for _ in </span><span class="number">0</span>..Q {
+            <span class="macro">rand!</span>(rng, n: (<span class="number">4</span>..=N), m: (<span class="number">4</span>..=M));
+            <span class="kw">let </span>lr = gen_graph(n, m);
+            <span class="kw">let </span><span class="kw-2">mut </span>dp = <span class="macro">vec!</span>[<span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="number">1 </span>&lt;&lt; m]; <span class="number">1 </span>&lt;&lt; n];
+            dp[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span>;
+            <span class="kw">for </span>bitl <span class="kw">in </span><span class="number">0usize</span>..<span class="number">1 </span>&lt;&lt; n {
+                <span class="kw">for </span>bitr <span class="kw">in </span><span class="number">0usize</span>..<span class="number">1 </span>&lt;&lt; m {
+                    <span class="kw">if </span>dp[bitl][bitr] == !<span class="number">0 </span>{
                         <span class="kw">continue</span>;
                     }
-                    <span class="kw">for</span> <span class="kw-2">&amp;</span>(<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">lr</span> {
-                        <span class="macro">chmin!</span>(<span class="ident">dp</span>[<span class="ident">bitl</span> | <span class="number">1</span> &lt;&lt; <span class="ident">l</span>][<span class="ident">bitr</span> | <span class="number">1</span> &lt;&lt; <span class="ident">r</span>], <span class="ident">dp</span>[<span class="ident">bitl</span>][<span class="ident">bitr</span>] + <span class="number">1</span>);
+                    <span class="kw">for </span><span class="kw-2">&amp;</span>(l, r) <span class="kw">in </span><span class="kw-2">&amp;</span>lr {
+                        <span class="macro">chmin!</span>(dp[bitl | <span class="number">1 </span>&lt;&lt; l][bitr | <span class="number">1 </span>&lt;&lt; r], dp[bitl][bitr] + <span class="number">1</span>);
                     }
                 }
             }
-            <span class="kw">let</span> <span class="ident">cover</span> = <span class="ident">BipartiteMatching::from_edges</span>(<span class="ident">n</span>, <span class="ident">m</span>, <span class="kw-2">&amp;</span><span class="ident">lr</span>).<span class="ident">minimum_edge_cover</span>();
-            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span><span class="ident">dp</span>.<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">last</span>().<span class="ident">unwrap</span>(), <span class="ident">cover</span>.<span class="ident">len</span>());
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left_used</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="ident">n</span>];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right_used</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="ident">m</span>];
-            <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="ident">cover</span> {
-                <span class="ident">left_used</span>[<span class="ident">l</span>] = <span class="bool-val">true</span>;
-                <span class="ident">right_used</span>[<span class="ident">r</span>] = <span class="bool-val">true</span>;
+            <span class="kw">let </span>cover = BipartiteMatching::from_edges(n, m, <span class="kw-2">&amp;</span>lr).minimum_edge_cover();
+            <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>dp.last().unwrap().last().unwrap(), cover.len());
+            <span class="kw">let </span><span class="kw-2">mut </span>left_used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; n];
+            <span class="kw">let </span><span class="kw-2">mut </span>right_used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; m];
+            <span class="kw">for </span>(l, r) <span class="kw">in </span>cover {
+                left_used[l] = <span class="bool-val">true</span>;
+                right_used[r] = <span class="bool-val">true</span>;
             }
-            <span class="macro">assert!</span>(<span class="ident">left_used</span>.<span class="ident">iter</span>().<span class="ident">all</span>(|<span class="kw-2">&amp;</span><span class="ident">b</span>| <span class="ident">b</span>));
-            <span class="macro">assert!</span>(<span class="ident">right_used</span>.<span class="ident">iter</span>().<span class="ident">all</span>(|<span class="kw-2">&amp;</span><span class="ident">b</span>| <span class="ident">b</span>));
+            <span class="macro">assert!</span>(left_used.iter().all(|<span class="kw-2">&amp;</span>b| b));
+            <span class="macro">assert!</span>(right_used.iter().all(|<span class="kw-2">&amp;</span>b| b));
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_minimum_vertex_cover</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">n</span>: (<span class="number">4</span>..=<span class="ident">N</span>), <span class="ident">m</span>: (<span class="number">4</span>..=<span class="ident">M</span>));
-            <span class="kw">let</span> <span class="ident">lr</span> = <span class="ident">gen_graph</span>(<span class="ident">n</span>, <span class="ident">m</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ans</span> = !<span class="number">0usize</span>;
-            <span class="kw">for</span> <span class="ident">bitl</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="number">1</span> &lt;&lt; <span class="ident">n</span> {
-                <span class="kw">for</span> <span class="ident">bitr</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="number">1</span> &lt;&lt; <span class="ident">m</span> {
-                    <span class="kw">if</span> <span class="ident">lr</span>
-                        .<span class="ident">iter</span>()
-                        .<span class="ident">all</span>(|<span class="kw-2">&amp;</span>(<span class="ident">l</span>, <span class="ident">r</span>)| <span class="ident">bitl</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">l</span> != <span class="number">0</span> || <span class="ident">bitr</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">r</span> != <span class="number">0</span>)
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_minimum_vertex_cover() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">for _ in </span><span class="number">0</span>..Q {
+            <span class="macro">rand!</span>(rng, n: (<span class="number">4</span>..=N), m: (<span class="number">4</span>..=M));
+            <span class="kw">let </span>lr = gen_graph(n, m);
+            <span class="kw">let </span><span class="kw-2">mut </span>ans = !<span class="number">0usize</span>;
+            <span class="kw">for </span>bitl <span class="kw">in </span><span class="number">0usize</span>..<span class="number">1 </span>&lt;&lt; n {
+                <span class="kw">for </span>bitr <span class="kw">in </span><span class="number">0usize</span>..<span class="number">1 </span>&lt;&lt; m {
+                    <span class="kw">if </span>lr
+                        .iter()
+                        .all(|<span class="kw-2">&amp;</span>(l, r)| bitl &amp; <span class="number">1 </span>&lt;&lt; l != <span class="number">0 </span>|| bitr &amp; <span class="number">1 </span>&lt;&lt; r != <span class="number">0</span>)
                     {
-                        <span class="macro">chmin!</span>(<span class="ident">ans</span>, (<span class="ident">bitl</span>.<span class="ident">count_ones</span>() + <span class="ident">bitr</span>.<span class="ident">count_ones</span>()) <span class="kw">as</span> <span class="ident">usize</span>);
+                        <span class="macro">chmin!</span>(ans, (bitl.count_ones() + bitr.count_ones()) <span class="kw">as </span>usize);
                     }
                 }
             }
-            <span class="kw">let</span> <span class="ident">set</span> = <span class="ident">BipartiteMatching::from_edges</span>(<span class="ident">n</span>, <span class="ident">m</span>, <span class="kw-2">&amp;</span><span class="ident">lr</span>).<span class="ident">minimum_vertex_cover</span>();
-            <span class="macro">assert_eq!</span>(<span class="ident">ans</span>, <span class="ident">set</span>.<span class="number">0</span>.<span class="ident">len</span>() + <span class="ident">set</span>.<span class="number">1</span>.<span class="ident">len</span>());
-            <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="ident">lr</span> {
-                <span class="macro">assert!</span>(<span class="ident">set</span>.<span class="number">0</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">l</span>) || <span class="ident">set</span>.<span class="number">1</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>));
+            <span class="kw">let </span>set = BipartiteMatching::from_edges(n, m, <span class="kw-2">&amp;</span>lr).minimum_vertex_cover();
+            <span class="macro">assert_eq!</span>(ans, set.<span class="number">0</span>.len() + set.<span class="number">1</span>.len());
+            <span class="kw">for </span>(l, r) <span class="kw">in </span>lr {
+                <span class="macro">assert!</span>(set.<span class="number">0</span>.contains(<span class="kw-2">&amp;</span>l) || set.<span class="number">1</span>.contains(<span class="kw-2">&amp;</span>r));
             }
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_maximum_independent_set</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">n</span>: (<span class="number">4</span>..=<span class="ident">N</span>), <span class="ident">m</span>: (<span class="number">4</span>..=<span class="ident">M</span>));
-            <span class="kw">let</span> <span class="ident">lr</span> = <span class="ident">gen_graph</span>(<span class="ident">n</span>, <span class="ident">m</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ans</span> = <span class="number">0usize</span>;
-            <span class="kw">for</span> <span class="ident">bitl</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="number">1</span> &lt;&lt; <span class="ident">n</span> {
-                <span class="kw">for</span> <span class="ident">bitr</span> <span class="kw">in</span> <span class="number">0usize</span>..<span class="number">1</span> &lt;&lt; <span class="ident">m</span> {
-                    <span class="kw">if</span> <span class="ident">lr</span>
-                        .<span class="ident">iter</span>()
-                        .<span class="ident">all</span>(|<span class="kw-2">&amp;</span>(<span class="ident">l</span>, <span class="ident">r</span>)| <span class="ident">bitl</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">l</span> == <span class="number">0</span> || <span class="ident">bitr</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">r</span> == <span class="number">0</span>)
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_maximum_independent_set() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">for _ in </span><span class="number">0</span>..Q {
+            <span class="macro">rand!</span>(rng, n: (<span class="number">4</span>..=N), m: (<span class="number">4</span>..=M));
+            <span class="kw">let </span>lr = gen_graph(n, m);
+            <span class="kw">let </span><span class="kw-2">mut </span>ans = <span class="number">0usize</span>;
+            <span class="kw">for </span>bitl <span class="kw">in </span><span class="number">0usize</span>..<span class="number">1 </span>&lt;&lt; n {
+                <span class="kw">for </span>bitr <span class="kw">in </span><span class="number">0usize</span>..<span class="number">1 </span>&lt;&lt; m {
+                    <span class="kw">if </span>lr
+                        .iter()
+                        .all(|<span class="kw-2">&amp;</span>(l, r)| bitl &amp; <span class="number">1 </span>&lt;&lt; l == <span class="number">0 </span>|| bitr &amp; <span class="number">1 </span>&lt;&lt; r == <span class="number">0</span>)
                     {
-                        <span class="macro">chmax!</span>(<span class="ident">ans</span>, (<span class="ident">bitl</span>.<span class="ident">count_ones</span>() + <span class="ident">bitr</span>.<span class="ident">count_ones</span>()) <span class="kw">as</span> <span class="ident">usize</span>);
+                        <span class="macro">chmax!</span>(ans, (bitl.count_ones() + bitr.count_ones()) <span class="kw">as </span>usize);
                     }
                 }
             }
-            <span class="kw">let</span> <span class="ident">set</span> = <span class="ident">BipartiteMatching::from_edges</span>(<span class="ident">n</span>, <span class="ident">m</span>, <span class="kw-2">&amp;</span><span class="ident">lr</span>).<span class="ident">maximum_independent_set</span>();
-            <span class="macro">assert_eq!</span>(<span class="ident">ans</span>, <span class="ident">set</span>.<span class="number">0</span>.<span class="ident">len</span>() + <span class="ident">set</span>.<span class="number">1</span>.<span class="ident">len</span>());
-            <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="ident">lr</span> {
-                <span class="macro">assert!</span>(!<span class="ident">set</span>.<span class="number">0</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">l</span>) || !<span class="ident">set</span>.<span class="number">1</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">r</span>));
+            <span class="kw">let </span>set = BipartiteMatching::from_edges(n, m, <span class="kw-2">&amp;</span>lr).maximum_independent_set();
+            <span class="macro">assert_eq!</span>(ans, set.<span class="number">0</span>.len() + set.<span class="number">1</span>.len());
+            <span class="kw">for </span>(l, r) <span class="kw">in </span>lr {
+                <span class="macro">assert!</span>(!set.<span class="number">0</span>.contains(<span class="kw-2">&amp;</span>l) || !set.<span class="number">1</span>.contains(<span class="kw-2">&amp;</span>r));
             }
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

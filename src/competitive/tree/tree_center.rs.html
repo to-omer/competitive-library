@@ -141,132 +141,132 @@
 <span id="125">125</span>
 <span id="126">126</span>
 <span id="127">127</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::graph::UndirectedSparseGraph</span>;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::graph::UndirectedSparseGraph;
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;tree_center&quot;</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TreeCenter</span> {
-    <span class="ident">One</span>(<span class="ident">usize</span>),
-    <span class="ident">Two</span>(<span class="ident">usize</span>, <span class="ident">usize</span>),
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_center&quot;</span>)]</span>
+<span class="attribute">#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]</span>
+<span class="kw">pub enum </span>TreeCenter {
+    One(usize),
+    Two(usize, usize),
 }
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;tree_center&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
-<span class="kw">impl</span> <span class="ident">UndirectedSparseGraph</span> {
-    <span class="doccomment">/// tree center</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tree_center</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TreeCenter</span> {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">vertices_size</span>();
-        <span class="macro">assert_ne!</span>(<span class="ident">n</span>, <span class="number">0</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deq</span> = <span class="ident">std::collections::VecDeque::with_capacity</span>(<span class="ident">n</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deg</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.<span class="ident">vertices</span>().<span class="ident">map</span>(|<span class="ident">u</span>| <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">len</span>()).<span class="ident">collect</span>();
-        <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>() {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">len</span>() &lt;= <span class="number">1</span> {
-                <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">u</span>);
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_center&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]</span>
+<span class="kw">impl </span>UndirectedSparseGraph {
+    <span class="doccomment">/// tree center
+    </span><span class="kw">pub fn </span>tree_center(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TreeCenter {
+        <span class="kw">let </span>n = <span class="self">self</span>.vertices_size();
+        <span class="macro">assert_ne!</span>(n, <span class="number">0</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = std::collections::VecDeque::with_capacity(n);
+        <span class="kw">let </span><span class="kw-2">mut </span>deg: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.vertices().map(|u| <span class="self">self</span>.adjacencies(u).len()).collect();
+        <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
+            <span class="kw">if </span><span class="self">self</span>.adjacencies(u).len() &lt;= <span class="number">1 </span>{
+                deq.push_back(u);
             }
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cnt</span> = <span class="ident">deq</span>.<span class="ident">len</span>();
-        <span class="kw">if</span> <span class="ident">cnt</span> &lt; <span class="ident">n</span> {
-            <span class="ident">k</span> = <span class="ident">deq</span>.<span class="ident">len</span>();
-            <span class="lifetime">&#39;outer</span>: <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="ident">deq</span>.<span class="ident">pop_front</span>() {
-                <span class="ident">k</span> -= <span class="number">1</span>;
-                <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
-                    <span class="ident">deg</span>[<span class="ident">a</span>.<span class="ident">to</span>] -= <span class="number">1</span>;
-                    <span class="kw">if</span> <span class="ident">deg</span>[<span class="ident">a</span>.<span class="ident">to</span>] == <span class="number">1</span> {
-                        <span class="ident">deq</span>.<span class="ident">push_back</span>(<span class="ident">a</span>.<span class="ident">to</span>);
-                        <span class="ident">cnt</span> += <span class="number">1</span>;
-                        <span class="kw">if</span> <span class="ident">cnt</span> == <span class="ident">n</span> {
-                            <span class="kw">break</span> <span class="lifetime">&#39;outer</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>cnt = deq.len();
+        <span class="kw">if </span>cnt &lt; n {
+            k = deq.len();
+            <span class="lifetime">&#39;outer</span>: <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = deq.pop_front() {
+                k -= <span class="number">1</span>;
+                <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.adjacencies(u) {
+                    deg[a.to] -= <span class="number">1</span>;
+                    <span class="kw">if </span>deg[a.to] == <span class="number">1 </span>{
+                        deq.push_back(a.to);
+                        cnt += <span class="number">1</span>;
+                        <span class="kw">if </span>cnt == n {
+                            <span class="kw">break </span><span class="lifetime">&#39;outer</span>;
                         }
                     }
                 }
-                <span class="kw">if</span> <span class="ident">k</span> == <span class="number">0</span> {
-                    <span class="ident">k</span> = <span class="ident">deq</span>.<span class="ident">len</span>();
+                <span class="kw">if </span>k == <span class="number">0 </span>{
+                    k = deq.len();
                 }
             }
         }
-        <span class="kw">if</span> <span class="ident">deq</span>.<span class="ident">len</span>() == <span class="ident">k</span> + <span class="number">1</span> {
-            <span class="ident">TreeCenter::One</span>(<span class="kw-2">*</span><span class="ident">deq</span>.<span class="ident">back</span>().<span class="ident">unwrap</span>())
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">u</span> = <span class="ident">deq</span>.<span class="ident">pop_back</span>().<span class="ident">unwrap</span>();
-            <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">deq</span>.<span class="ident">pop_back</span>().<span class="ident">unwrap</span>();
-            <span class="kw">if</span> <span class="ident">u</span> &lt; <span class="ident">v</span> {
-                <span class="ident">TreeCenter::Two</span>(<span class="ident">u</span>, <span class="ident">v</span>)
-            } <span class="kw">else</span> {
-                <span class="ident">TreeCenter::Two</span>(<span class="ident">v</span>, <span class="ident">u</span>)
+        <span class="kw">if </span>deq.len() == k + <span class="number">1 </span>{
+            TreeCenter::One(<span class="kw-2">*</span>deq.back().unwrap())
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>u = deq.pop_back().unwrap();
+            <span class="kw">let </span>v = deq.pop_back().unwrap();
+            <span class="kw">if </span>u &lt; v {
+                TreeCenter::Two(u, v)
+            } <span class="kw">else </span>{
+                TreeCenter::Two(v, u)
             }
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">graph::UndirectedSparseGraph</span>, <span class="ident">tools::Xorshift</span>, <span class="ident">tree::MixedTree</span>};
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{graph::UndirectedSparseGraph, tools::Xorshift, tree::MixedTree};
 
-    <span class="kw">impl</span> <span class="ident">UndirectedSparseGraph</span> {
-        <span class="kw">fn</span> <span class="ident">naive_tree_center</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TreeCenter</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">md</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>
-                .<span class="ident">vertices</span>()
-                .<span class="ident">map</span>(|<span class="ident">u</span>| (<span class="self">self</span>.<span class="ident">tree_depth</span>(<span class="ident">u</span>).<span class="ident">into_iter</span>().<span class="ident">max</span>().<span class="ident">unwrap_or_default</span>(), <span class="ident">u</span>))
-                .<span class="ident">collect</span>();
-            <span class="ident">md</span>.<span class="ident">sort_unstable</span>();
-            <span class="kw">if</span> <span class="ident">md</span>.<span class="ident">len</span>() == <span class="number">1</span> {
-                <span class="ident">TreeCenter::One</span>(<span class="ident">md</span>[<span class="number">0</span>].<span class="number">1</span>)
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">md</span>.<span class="ident">len</span>() &gt;= <span class="number">2</span> {
-                <span class="kw">if</span> <span class="ident">md</span>[<span class="number">0</span>].<span class="number">0</span> == <span class="ident">md</span>[<span class="number">1</span>].<span class="number">0</span> {
-                    <span class="ident">TreeCenter::Two</span>(<span class="ident">md</span>[<span class="number">0</span>].<span class="number">1</span>, <span class="ident">md</span>[<span class="number">1</span>].<span class="number">1</span>)
-                } <span class="kw">else</span> {
-                    <span class="ident">TreeCenter::One</span>(<span class="ident">md</span>[<span class="number">0</span>].<span class="number">1</span>)
+    <span class="kw">impl </span>UndirectedSparseGraph {
+        <span class="kw">fn </span>naive_tree_center(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TreeCenter {
+            <span class="kw">let </span><span class="kw-2">mut </span>md: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self
+                </span>.vertices()
+                .map(|u| (<span class="self">self</span>.tree_depth(u).into_iter().max().unwrap_or_default(), u))
+                .collect();
+            md.sort_unstable();
+            <span class="kw">if </span>md.len() == <span class="number">1 </span>{
+                TreeCenter::One(md[<span class="number">0</span>].<span class="number">1</span>)
+            } <span class="kw">else if </span>md.len() &gt;= <span class="number">2 </span>{
+                <span class="kw">if </span>md[<span class="number">0</span>].<span class="number">0 </span>== md[<span class="number">1</span>].<span class="number">0 </span>{
+                    TreeCenter::Two(md[<span class="number">0</span>].<span class="number">1</span>, md[<span class="number">1</span>].<span class="number">1</span>)
+                } <span class="kw">else </span>{
+                    TreeCenter::One(md[<span class="number">0</span>].<span class="number">1</span>)
                 }
-            } <span class="kw">else</span> {
+            } <span class="kw">else </span>{
                 <span class="macro">panic!</span>(<span class="string">&quot;vertex size should be larger than one.&quot;</span>);
             }
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_center_handmaid</span>() {
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_center_handmaid() {
         <span class="macro">assert_eq!</span>(
-            <span class="ident">UndirectedSparseGraph::from_edges</span>(<span class="number">1</span>, <span class="macro">vec!</span>[]).<span class="ident">tree_center</span>(),
-            <span class="ident">TreeCenter::One</span>(<span class="number">0</span>)
+            UndirectedSparseGraph::from_edges(<span class="number">1</span>, <span class="macro">vec!</span>[]).tree_center(),
+            TreeCenter::One(<span class="number">0</span>)
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">UndirectedSparseGraph::from_edges</span>(<span class="number">2</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>)]).<span class="ident">tree_center</span>(),
-            <span class="ident">TreeCenter::Two</span>(<span class="number">0</span>, <span class="number">1</span>)
+            UndirectedSparseGraph::from_edges(<span class="number">2</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>)]).tree_center(),
+            TreeCenter::Two(<span class="number">0</span>, <span class="number">1</span>)
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">UndirectedSparseGraph::from_edges</span>(<span class="number">3</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">0</span>, <span class="number">2</span>)]).<span class="ident">tree_center</span>(),
-            <span class="ident">TreeCenter::One</span>(<span class="number">0</span>)
+            UndirectedSparseGraph::from_edges(<span class="number">3</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">0</span>, <span class="number">2</span>)]).tree_center(),
+            TreeCenter::One(<span class="number">0</span>)
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">UndirectedSparseGraph::from_edges</span>(<span class="number">4</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">3</span>)]).<span class="ident">tree_center</span>(),
-            <span class="ident">TreeCenter::One</span>(<span class="number">1</span>)
+            UndirectedSparseGraph::from_edges(<span class="number">4</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">3</span>)]).tree_center(),
+            TreeCenter::One(<span class="number">1</span>)
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">UndirectedSparseGraph::from_edges</span>(<span class="number">5</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">3</span>), (<span class="number">3</span>, <span class="number">4</span>)])
-                .<span class="ident">tree_center</span>(),
-            <span class="ident">TreeCenter::Two</span>(<span class="number">1</span>, <span class="number">3</span>)
+            UndirectedSparseGraph::from_edges(<span class="number">5</span>, <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">3</span>), (<span class="number">3</span>, <span class="number">4</span>)])
+                .tree_center(),
+            TreeCenter::Two(<span class="number">1</span>, <span class="number">3</span>)
         );
         <span class="macro">assert_eq!</span>(
-            <span class="ident">UndirectedSparseGraph::from_edges</span>(
+            UndirectedSparseGraph::from_edges(
                 <span class="number">7</span>,
                 <span class="macro">vec!</span>[(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">2</span>, <span class="number">3</span>), (<span class="number">3</span>, <span class="number">4</span>), (<span class="number">4</span>, <span class="number">5</span>), (<span class="number">5</span>, <span class="number">6</span>)]
             )
-            .<span class="ident">tree_center</span>(),
-            <span class="ident">TreeCenter::One</span>(<span class="number">3</span>)
+            .tree_center(),
+            TreeCenter::One(<span class="number">3</span>)
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_center_random</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">200</span>;
-        <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">200</span>;
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="number">1</span>..=<span class="ident">N</span>);
-            <span class="kw">let</span> <span class="ident">g</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="ident">MixedTree</span>(<span class="ident">n</span>));
-            <span class="macro">assert_eq!</span>(<span class="ident">g</span>.<span class="ident">tree_center</span>(), <span class="ident">g</span>.<span class="ident">naive_tree_center</span>());
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_center_random() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">const </span>N: usize = <span class="number">200</span>;
+        <span class="kw">const </span>Q: usize = <span class="number">200</span>;
+        <span class="kw">for _ in </span><span class="number">0</span>..Q {
+            <span class="kw">let </span>n = rng.gen(<span class="number">1</span>..=N);
+            <span class="kw">let </span>g = rng.gen(MixedTree(n));
+            <span class="macro">assert_eq!</span>(g.tree_center(), g.naive_tree_center());
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

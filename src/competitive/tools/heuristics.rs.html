@@ -105,96 +105,96 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Xorshift</span>;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Xorshift;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SimuratedAnnealing</span> {
-    <span class="kw">pub</span> <span class="ident">iter_count</span>: <span class="ident">usize</span>,
-    <span class="kw">pub</span> <span class="ident">now</span>: <span class="ident">std::time::Instant</span>,
-    <span class="kw">pub</span> <span class="ident">time</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">temperture</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">log_table</span>: <span class="ident">Vec</span>&lt;<span class="ident">f64</span>&gt;,
-    <span class="kw">pub</span> <span class="ident">rand</span>: <span class="ident">Xorshift</span>,
+<span class="attribute">#[derive(Debug)]</span>
+<span class="kw">pub struct </span>SimuratedAnnealing {
+    <span class="kw">pub </span>iter_count: usize,
+    <span class="kw">pub </span>now: std::time::Instant,
+    <span class="kw">pub </span>time: f64,
+    <span class="kw">pub </span>temperture: f64,
+    <span class="kw">pub </span>log_table: Vec&lt;f64&gt;,
+    <span class="kw">pub </span>rand: Xorshift,
 
-    <span class="kw">pub</span> <span class="ident">is_maximize</span>: <span class="ident">bool</span>,
-    <span class="kw">pub</span> <span class="ident">start_temp</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">end_temp</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">time_limit</span>: <span class="ident">f64</span>,
-    <span class="kw">pub</span> <span class="ident">update_interval</span>: <span class="ident">usize</span>,
+    <span class="kw">pub </span>is_maximize: bool,
+    <span class="kw">pub </span>start_temp: f64,
+    <span class="kw">pub </span>end_temp: f64,
+    <span class="kw">pub </span>time_limit: f64,
+    <span class="kw">pub </span>update_interval: usize,
 }
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">SimuratedAnnealing</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">now</span> = <span class="ident">std::time::Instant::now</span>();
-        <span class="kw">let</span> <span class="ident">log_table</span> = (<span class="number">0</span>..<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span>)
-            .<span class="ident">map</span>(|<span class="ident">i</span>| ((<span class="ident">i</span> * <span class="number">2</span> + <span class="number">1</span>) <span class="kw">as</span> <span class="ident">f64</span> / (<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span> * <span class="number">2</span>) <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">ln</span>())
-            .<span class="ident">collect</span>();
-        <span class="self">Self</span> {
-            <span class="ident">iter_count</span>: <span class="number">0</span>,
-            <span class="ident">now</span>,
-            <span class="ident">time</span>: <span class="number">0.</span>,
-            <span class="ident">temperture</span>: <span class="number">3e3</span>,
-            <span class="ident">log_table</span>,
-            <span class="ident">rand</span>: <span class="ident">Xorshift::new</span>(<span class="ident"><span class="self">Self</span>::SEED</span>),
-            <span class="ident">is_maximize</span>: <span class="bool-val">true</span>,
-            <span class="ident">start_temp</span>: <span class="number">3e3</span>,
-            <span class="ident">end_temp</span>: <span class="number">1e-8</span>,
-            <span class="ident">time_limit</span>: <span class="number">1.99</span>,
-            <span class="ident">update_interval</span>: <span class="number">0xff</span>,
+<span class="kw">impl </span>Default <span class="kw">for </span>SimuratedAnnealing {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>now = std::time::Instant::now();
+        <span class="kw">let </span>log_table = (<span class="number">0</span>..<span class="self">Self</span>::LOG_TABLE_SIZE)
+            .map(|i| ((i * <span class="number">2 </span>+ <span class="number">1</span>) <span class="kw">as </span>f64 / (<span class="self">Self</span>::LOG_TABLE_SIZE * <span class="number">2</span>) <span class="kw">as </span>f64).ln())
+            .collect();
+        <span class="self">Self </span>{
+            iter_count: <span class="number">0</span>,
+            now,
+            time: <span class="number">0.</span>,
+            temperture: <span class="number">3e3</span>,
+            log_table,
+            rand: Xorshift::new(<span class="self">Self</span>::SEED),
+            is_maximize: <span class="bool-val">true</span>,
+            start_temp: <span class="number">3e3</span>,
+            end_temp: <span class="number">1e-8</span>,
+            time_limit: <span class="number">1.99</span>,
+            update_interval: <span class="number">0xff</span>,
         }
     }
 }
-<span class="kw">impl</span> <span class="ident">SimuratedAnnealing</span> {
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">LOG_TABLE_SIZE</span>: <span class="ident">usize</span> = <span class="number">0x10000</span>;
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SEED</span>: <span class="ident">u64</span> = <span class="number">0xbeef_cafe</span>;
+<span class="kw">impl </span>SimuratedAnnealing {
+    <span class="kw">pub const </span>LOG_TABLE_SIZE: usize = <span class="number">0x10000</span>;
+    <span class="kw">pub const </span>SEED: u64 = <span class="number">0xbeef_cafe</span>;
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">Default::default</span>()
+    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+        Default::default()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimize</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">is_maximize</span> = <span class="bool-val">false</span>;
-        <span class="self">self</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_start_temp</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">start_temp</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="macro">assert_eq!</span>(<span class="self">self</span>.<span class="ident">iter_count</span>, <span class="number">0</span>);
-        <span class="self">self</span>.<span class="ident">start_temp</span> = <span class="ident">start_temp</span>;
-        <span class="self">self</span>.<span class="ident">temperture</span> = <span class="ident">start_temp</span>;
-        <span class="self">self</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_end_temp</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">end_temp</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">end_temp</span> = <span class="ident">end_temp</span>;
-        <span class="self">self</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_time_limit</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">time_limit</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">time_limit</span> = <span class="ident">time_limit</span>;
-        <span class="self">self</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_update_interval</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">update_interval</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="macro">assert!</span>(<span class="ident">update_interval</span> &gt; <span class="number">0</span>);
-        <span class="self">self</span>.<span class="ident">update_interval</span> = <span class="ident">update_interval</span>;
-        <span class="self">self</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_accepted</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">current_score</span>: <span class="ident">f64</span>, <span class="ident">next_score</span>: <span class="ident">f64</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">let</span> <span class="ident">diff</span> = <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_maximize</span> {
-            <span class="ident">next_score</span> - <span class="ident">current_score</span>
-        } <span class="kw">else</span> {
-            <span class="ident">current_score</span> - <span class="ident">next_score</span>
+    <span class="kw">pub fn </span>minimize(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.is_maximize = <span class="bool-val">false</span>;
+        <span class="self">self
+    </span>}
+    <span class="kw">pub fn </span>set_start_temp(<span class="kw-2">mut </span><span class="self">self</span>, start_temp: f64) -&gt; <span class="self">Self </span>{
+        <span class="macro">assert_eq!</span>(<span class="self">self</span>.iter_count, <span class="number">0</span>);
+        <span class="self">self</span>.start_temp = start_temp;
+        <span class="self">self</span>.temperture = start_temp;
+        <span class="self">self
+    </span>}
+    <span class="kw">pub fn </span>set_end_temp(<span class="kw-2">mut </span><span class="self">self</span>, end_temp: f64) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.end_temp = end_temp;
+        <span class="self">self
+    </span>}
+    <span class="kw">pub fn </span>set_time_limit(<span class="kw-2">mut </span><span class="self">self</span>, time_limit: f64) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.time_limit = time_limit;
+        <span class="self">self
+    </span>}
+    <span class="kw">pub fn </span>set_update_interval(<span class="kw-2">mut </span><span class="self">self</span>, update_interval: usize) -&gt; <span class="self">Self </span>{
+        <span class="macro">assert!</span>(update_interval &gt; <span class="number">0</span>);
+        <span class="self">self</span>.update_interval = update_interval;
+        <span class="self">self
+    </span>}
+    <span class="kw">pub fn </span>is_accepted(<span class="kw-2">&amp;mut </span><span class="self">self</span>, current_score: f64, next_score: f64) -&gt; bool {
+        <span class="kw">let </span>diff = <span class="kw">if </span><span class="self">self</span>.is_maximize {
+            next_score - current_score
+        } <span class="kw">else </span>{
+            current_score - next_score
         };
-        <span class="ident">diff</span> &gt;= <span class="number">0.</span>
-            || <span class="ident">diff</span>
-                &gt; <span class="self">self</span>.<span class="ident">log_table</span>[<span class="self">self</span>.<span class="ident">rand</span>.<span class="ident">rand</span>(<span class="ident"><span class="self">Self</span>::LOG_TABLE_SIZE</span> <span class="kw">as</span> <span class="ident">u64</span>) <span class="kw">as</span> <span class="ident">usize</span>]
-                    * <span class="self">self</span>.<span class="ident">temperture</span>
+        diff &gt;= <span class="number">0.
+            </span>|| diff
+                &gt; <span class="self">self</span>.log_table[<span class="self">self</span>.rand.rand(<span class="self">Self</span>::LOG_TABLE_SIZE <span class="kw">as </span>u64) <span class="kw">as </span>usize]
+                    * <span class="self">self</span>.temperture
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_end</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">iter_count</span> += <span class="number">1</span>;
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">iter_count</span> % <span class="self">self</span>.<span class="ident">update_interval</span> == <span class="number">0</span> {
-            <span class="self">self</span>.<span class="ident">time</span> = <span class="self">self</span>.<span class="ident">now</span>.<span class="ident">elapsed</span>().<span class="ident">as_secs_f64</span>();
-            <span class="kw">let</span> <span class="ident">temp_ratio</span> = (<span class="self">self</span>.<span class="ident">end_temp</span> - <span class="self">self</span>.<span class="ident">start_temp</span>) / <span class="self">self</span>.<span class="ident">time_limit</span>;
-            <span class="self">self</span>.<span class="ident">temperture</span> = <span class="self">self</span>.<span class="ident">start_temp</span> + <span class="ident">temp_ratio</span> * <span class="self">self</span>.<span class="ident">time</span>;
-            <span class="self">self</span>.<span class="ident">time</span> &gt;= <span class="self">self</span>.<span class="ident">time_limit</span>
-        } <span class="kw">else</span> {
-            <span class="bool-val">false</span>
-        }
+    <span class="kw">pub fn </span>is_end(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.iter_count += <span class="number">1</span>;
+        <span class="kw">if </span><span class="self">self</span>.iter_count % <span class="self">self</span>.update_interval == <span class="number">0 </span>{
+            <span class="self">self</span>.time = <span class="self">self</span>.now.elapsed().as_secs_f64();
+            <span class="kw">let </span>temp_ratio = (<span class="self">self</span>.end_temp - <span class="self">self</span>.start_temp) / <span class="self">self</span>.time_limit;
+            <span class="self">self</span>.temperture = <span class="self">self</span>.start_temp + temp_ratio * <span class="self">self</span>.time;
+            <span class="self">self</span>.time &gt;= <span class="self">self</span>.time_limit
+        } <span class="kw">else </span>{
+            <span class="bool-val">false
+        </span>}
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

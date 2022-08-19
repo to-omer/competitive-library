@@ -52,43 +52,43 @@
 <span id="36">36</span>
 <span id="37">37</span>
 <span id="38">38</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Point</span>, <span class="ident">TotalOrd</span>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{Point, TotalOrd};
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">closest_pair</span>(<span class="ident">a</span>: <span class="ident">Vec</span>&lt;<span class="ident">Point</span>&gt;) -&gt; <span class="ident">f64</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> = <span class="ident">a</span>;
-    <span class="ident">a</span>.<span class="ident">sort_by_key</span>(|<span class="kw-2">&amp;</span><span class="ident">p</span>| <span class="ident">TotalOrd</span>(<span class="ident">p</span>.<span class="ident">re</span>));
-    <span class="ident">closest_pair_inner</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>[..])
+<span class="kw">pub fn </span>closest_pair(a: Vec&lt;Point&gt;) -&gt; f64 {
+    <span class="kw">let </span><span class="kw-2">mut </span>a = a;
+    a.sort_by_key(|<span class="kw-2">&amp;</span>p| TotalOrd(p.re));
+    closest_pair_inner(<span class="kw-2">&amp;mut </span>a[..])
 }
-<span class="kw">fn</span> <span class="ident">closest_pair_inner</span>(<span class="ident">a</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">Point</span>]) -&gt; <span class="ident">f64</span> {
-    <span class="kw">use</span> <span class="ident">std::cmp::min</span>;
-    <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">a</span>.<span class="ident">len</span>();
-    <span class="kw">if</span> <span class="ident">n</span> &lt;= <span class="number">1</span> {
-        <span class="kw">return</span> <span class="ident">std::f64::INFINITY</span>;
+<span class="kw">fn </span>closest_pair_inner(a: <span class="kw-2">&amp;mut </span>[Point]) -&gt; f64 {
+    <span class="kw">use </span>std::cmp::min;
+    <span class="kw">let </span>n = a.len();
+    <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+        <span class="kw">return </span>std::f64::INFINITY;
     }
-    <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">n</span> / <span class="number">2</span>;
-    <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">a</span>[<span class="ident">m</span>].<span class="ident">re</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">d</span> = <span class="ident">min</span>(
-        <span class="ident">TotalOrd</span>(<span class="ident">closest_pair_inner</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>[<span class="number">0</span>..<span class="ident">m</span>])),
-        <span class="ident">TotalOrd</span>(<span class="ident">closest_pair_inner</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>[<span class="ident">m</span>..<span class="ident">n</span>])),
+    <span class="kw">let </span>m = n / <span class="number">2</span>;
+    <span class="kw">let </span>x = a[m].re;
+    <span class="kw">let </span><span class="kw-2">mut </span>d = min(
+        TotalOrd(closest_pair_inner(<span class="kw-2">&amp;mut </span>a[<span class="number">0</span>..m])),
+        TotalOrd(closest_pair_inner(<span class="kw-2">&amp;mut </span>a[m..n])),
     )
     .<span class="number">0</span>;
-    <span class="ident">a</span>.<span class="ident">sort_by_key</span>(|<span class="kw-2">&amp;</span><span class="ident">p</span>| <span class="ident">TotalOrd</span>(<span class="ident">p</span>.<span class="ident">im</span>));
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span>: <span class="ident">Vec</span>&lt;<span class="ident">Point</span>&gt; = <span class="macro">vec!</span>[];
-    <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">a</span>.<span class="ident">iter</span>() {
-        <span class="kw">if</span> (<span class="ident">a</span>.<span class="ident">re</span> - <span class="ident">x</span>).<span class="ident">abs</span>() &gt;= <span class="ident">d</span> {
+    a.sort_by_key(|<span class="kw-2">&amp;</span>p| TotalOrd(p.im));
+    <span class="kw">let </span><span class="kw-2">mut </span>b: Vec&lt;Point&gt; = <span class="macro">vec!</span>[];
+    <span class="kw">for </span>a <span class="kw">in </span>a.iter() {
+        <span class="kw">if </span>(a.re - x).abs() &gt;= d {
             <span class="kw">continue</span>;
         }
-        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">b</span>.<span class="ident">len</span>();
-        <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">k</span> {
-            <span class="kw">let</span> <span class="ident">p</span> = <span class="kw-2">*</span><span class="ident">a</span> - <span class="ident">b</span>[<span class="ident">k</span> - <span class="ident">j</span> - <span class="number">1</span>];
-            <span class="kw">if</span> <span class="ident">p</span>.<span class="ident">im</span> &gt;= <span class="ident">d</span> {
+        <span class="kw">let </span>k = b.len();
+        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..k {
+            <span class="kw">let </span>p = <span class="kw-2">*</span>a - b[k - j - <span class="number">1</span>];
+            <span class="kw">if </span>p.im &gt;= d {
                 <span class="kw">break</span>;
             }
-            <span class="ident">d</span> = <span class="ident">min</span>(<span class="ident">TotalOrd</span>(<span class="ident">d</span>), <span class="ident">TotalOrd</span>(<span class="ident">p</span>.<span class="ident">abs</span>())).<span class="number">0</span>;
+            d = min(TotalOrd(d), TotalOrd(p.abs())).<span class="number">0</span>;
         }
-        <span class="ident">b</span>.<span class="ident">push</span>(<span class="kw-2">*</span><span class="ident">a</span>);
+        b.push(<span class="kw-2">*</span>a);
     }
-    <span class="ident">d</span>
+    d
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

@@ -241,232 +241,232 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
-</pre><pre class="rust"><code><span class="doccomment">/// Macro that returns a recursive function that (semi-)automatically captures.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Example</span>
-<span class="doccomment">/// default version</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # use competitive::crecurse;</span>
-<span class="doccomment">/// let mut res = 0usize;</span>
-<span class="doccomment">/// let coeff = 3usize;</span>
-<span class="doccomment">/// crecurse!(</span>
-<span class="doccomment">///     // (1) semi-automatically capture mutable reference (res: &amp;mut usize)</span>
-<span class="doccomment">///     [res: usize],</span>
-<span class="doccomment">///     fn mul(x: usize, y: usize) {</span>
-<span class="doccomment">///         if y &gt; 0 {</span>
-<span class="doccomment">///             if y % 2 == 1 {</span>
-<span class="doccomment">///                 // (2) automatically capture reference (coeff: &amp;usize)</span>
-<span class="doccomment">///                 *res += coeff * x;</span>
-<span class="doccomment">///             }</span>
-<span class="doccomment">///             // (3) call macro to recurse</span>
-<span class="doccomment">///             mul!(x + x, y / 2);</span>
-<span class="doccomment">///         }</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// )(10, 19); // (4) macro returns captured version of the recursive function</span>
-<span class="doccomment">/// assert_eq!(res, coeff * 10 * 19);</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// unsafe version (automatically capture everything)</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # use competitive::crecurse;</span>
-<span class="doccomment">/// let mut res = 0usize;</span>
-<span class="doccomment">/// let coeff = 3usize;</span>
-<span class="doccomment">/// crecurse!(</span>
-<span class="doccomment">///     unsafe fn mul(x: usize, y: usize) {</span>
-<span class="doccomment">///         if y &gt; 0 {</span>
-<span class="doccomment">///             if y % 2 == 1 {</span>
-<span class="doccomment">///                 res += coeff * x;</span>
-<span class="doccomment">///             }</span>
-<span class="doccomment">///             mul!(x + x, y / 2);</span>
-<span class="doccomment">///         }</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// )(10, 19);</span>
-<span class="doccomment">/// assert_eq!(res, coeff * 10 * 19);</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// no overhead version (semi-automatically capture everything)</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # use competitive::crecurse;</span>
-<span class="doccomment">/// let mut res = 0usize;</span>
-<span class="doccomment">/// let coeff = 3usize;</span>
-<span class="doccomment">/// crecurse!(</span>
-<span class="doccomment">///     [res: &amp;mut usize, coeff: &amp;usize],</span>
-<span class="doccomment">///     static fn mul(x: usize, y: usize) {</span>
-<span class="doccomment">///         if y &gt; 0 {</span>
-<span class="doccomment">///             if y % 2 == 1 {</span>
-<span class="doccomment">///                 *res += coeff * x;</span>
-<span class="doccomment">///             }</span>
-<span class="doccomment">///             mul!(x + x, y / 2);</span>
-<span class="doccomment">///         }</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// )(10, 19);</span>
-<span class="doccomment">/// assert_eq!(res, coeff * 10 * 19);</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Syntax</span>
-<span class="doccomment">/// ```txt</span>
-<span class="doccomment">/// crecurse!(</span>
-<span class="doccomment">///     ([($ident: $type),*,?],)?</span>
-<span class="doccomment">///     (unsafe|static)? fn $ident\(($ident: $type),*,?\) (-&gt; $type)? $block</span>
-<span class="doccomment">/// )</span>
-<span class="doccomment">/// ```</span>
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">crecurse</span> {
-    (@<span class="ident">macro_def</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dol</span>:<span class="ident">tt</span>) <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_macros</span>)]</span>
-        <span class="macro">macro_rules!</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> { (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dol</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dol</span> <span class="ident">args</span>:<span class="ident">expr</span>),<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dol</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">dol</span> <span class="ident">args</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>,)* ) } }
+</pre><pre class="rust"><code><span class="doccomment">/// Macro that returns a recursive function that (semi-)automatically captures.
+///
+/// # Example
+/// default version
+/// ```
+/// # use competitive::crecurse;
+/// let mut res = 0usize;
+/// let coeff = 3usize;
+/// crecurse!(
+///     // (1) semi-automatically capture mutable reference (res: &amp;mut usize)
+///     [res: usize],
+///     fn mul(x: usize, y: usize) {
+///         if y &gt; 0 {
+///             if y % 2 == 1 {
+///                 // (2) automatically capture reference (coeff: &amp;usize)
+///                 *res += coeff * x;
+///             }
+///             // (3) call macro to recurse
+///             mul!(x + x, y / 2);
+///         }
+///     }
+/// )(10, 19); // (4) macro returns captured version of the recursive function
+/// assert_eq!(res, coeff * 10 * 19);
+/// ```
+///
+/// unsafe version (automatically capture everything)
+/// ```
+/// # use competitive::crecurse;
+/// let mut res = 0usize;
+/// let coeff = 3usize;
+/// crecurse!(
+///     unsafe fn mul(x: usize, y: usize) {
+///         if y &gt; 0 {
+///             if y % 2 == 1 {
+///                 res += coeff * x;
+///             }
+///             mul!(x + x, y / 2);
+///         }
+///     }
+/// )(10, 19);
+/// assert_eq!(res, coeff * 10 * 19);
+/// ```
+///
+/// no overhead version (semi-automatically capture everything)
+/// ```
+/// # use competitive::crecurse;
+/// let mut res = 0usize;
+/// let coeff = 3usize;
+/// crecurse!(
+///     [res: &amp;mut usize, coeff: &amp;usize],
+///     static fn mul(x: usize, y: usize) {
+///         if y &gt; 0 {
+///             if y % 2 == 1 {
+///                 *res += coeff * x;
+///             }
+///             mul!(x + x, y / 2);
+///         }
+///     }
+/// )(10, 19);
+/// assert_eq!(res, coeff * 10 * 19);
+/// ```
+///
+/// # Syntax
+/// ```txt
+/// crecurse!(
+///     ([($ident: $type),*,?],)?
+///     (unsafe|static)? fn $ident\(($ident: $type),*,?\) (-&gt; $type)? $block
+/// )
+/// ```
+</span><span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> crecurse {
+    (@macro_def (<span class="macro-nonterminal">$dol</span>:tt) <span class="macro-nonterminal">$name</span>:ident $(<span class="macro-nonterminal">$cargs</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="attribute">#[allow(unused_macros)]</span>
+        <span class="macro">macro_rules!</span> <span class="macro-nonterminal">$name </span>{ (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>args:expr),<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$name</span>(<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>args,)* $(<span class="macro-nonterminal">$cargs</span>,)* ) } }
     };
 
     (
-        @<span class="kw">static</span> [$((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsexpr</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>:<span class="ident">ty</span>))<span class="kw-2">*</span>] [$(,)<span class="question-mark">?</span>],
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>:<span class="ident">ty</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>:<span class="ident">block</span>
+        @<span class="kw">static </span>[$((<span class="macro-nonterminal">$cargs</span>:ident, <span class="macro-nonterminal">$cargsexpr</span>:expr, <span class="macro-nonterminal">$cargsty</span>:ty))<span class="kw-2">*</span>] [$(,)<span class="question-mark">?</span>],
+        <span class="kw">fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$ret</span>:ty <span class="macro-nonterminal">$body</span>:block
     ) =&gt; {{
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-            <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">macro_def</span> ($) <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>)<span class="kw-2">*</span>);
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>
-        }
-        |$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsexpr</span>,)<span class="kw-2">*</span>) }
+        <span class="kw">fn </span><span class="macro-nonterminal">$func</span>($(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)* $(<span class="macro-nonterminal">$cargs</span>: <span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret </span>{
+            <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">macro_def </span>($) <span class="macro-nonterminal">$func </span>$(<span class="macro-nonterminal">$cargs</span>)<span class="kw-2">*</span>);
+            <span class="macro-nonterminal">$body
+        </span>}
+        |$(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$ret </span>{ <span class="macro-nonterminal">$func</span>($(<span class="macro-nonterminal">$args</span>,)* $(<span class="macro-nonterminal">$cargsexpr</span>,)<span class="kw-2">*</span>) }
     }};
-    (@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(,)<span class="question-mark">?</span>], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argstt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>)<span class="kw-2">*</span>] [], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argstt</span>)<span class="kw-2">*</span>) -&gt; () $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>:tt)<span class="kw-2">*</span>] [$(,)<span class="question-mark">?</span>], <span class="kw">fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$argstt</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>)<span class="kw-2">*</span>] [], <span class="kw">fn </span><span class="macro-nonterminal">$func </span>($(<span class="macro-nonterminal">$argstt</span>)<span class="kw-2">*</span>) -&gt; () $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    (@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>:<span class="ident">ident</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargty</span>:<span class="ident">ty</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>)* (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>, <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>, <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargty</span>)] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>:tt)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$carg</span>:ident: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargty</span>:ty, $(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>)* (<span class="macro-nonterminal">$carg</span>, <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$carg</span>, <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargty</span>)] [$(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    (@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>:<span class="ident">ident</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargty</span>:<span class="ident">ty</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>)* (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>, <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>, <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargty</span>)] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>:tt)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$carg</span>:ident: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$cargty</span>:ty, $(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>)* (<span class="macro-nonterminal">$carg</span>, <span class="kw-2">&amp;</span><span class="macro-nonterminal">$carg</span>, <span class="kw-2">&amp;</span><span class="macro-nonterminal">$cargty</span>)] [$(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    (@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargty</span>:<span class="ident">ty</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">pcaps</span>)* (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">carg</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargty</span>)] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>:tt)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$carg</span>:ident: <span class="macro-nonterminal">$cargty</span>:ty, $(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static </span>[$(<span class="macro-nonterminal">$pcaps</span>)* (<span class="macro-nonterminal">$carg</span>, <span class="macro-nonterminal">$carg</span>, <span class="macro-nonterminal">$cargty</span>)] [$(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>], $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    ($([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>],)<span class="question-mark">?</span> <span class="kw">static</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static</span> [] [$($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>,], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>),<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    ($([$(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>],)<span class="question-mark">? </span><span class="kw">static fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">static </span>[] [$($(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>,], <span class="kw">fn </span><span class="macro-nonterminal">$func </span>($(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>),<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
 
     (
-        @<span class="ident">default</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>],
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>:<span class="ident">ty</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>:<span class="ident">block</span>
+        @default [$(<span class="macro-nonterminal">$cargs</span>:ident: <span class="macro-nonterminal">$cargsty</span>:ty),* $(,)<span class="question-mark">?</span>],
+        <span class="kw">fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$ret</span>:ty <span class="macro-nonterminal">$body</span>:block
     ) =&gt; {{
-        <span class="kw">fn</span> <span class="ident">call</span>&lt;<span class="ident">F</span>&gt;(<span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>
-        <span class="kw">where</span>
-            <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>,
+        <span class="kw">fn </span>call&lt;F&gt;(f: <span class="kw-2">&amp;</span>F, $(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)* $(<span class="macro-nonterminal">$cargs</span>: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret
+        </span><span class="kw">where
+            </span>F: Fn(<span class="kw-2">&amp;</span><span class="kw">dyn </span>Fn($(<span class="macro-nonterminal">$argsty</span>,)* $(<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret</span>, $(<span class="macro-nonterminal">$argsty</span>,)* $(<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret</span>,
         {
-            <span class="ident">f</span>(
-                <span class="kw-2">&amp;</span>|$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-                    <span class="ident">call</span>(<span class="ident">f</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>,)<span class="kw-2">*</span>)
+            f(
+                <span class="kw-2">&amp;</span>|$(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)* $(<span class="macro-nonterminal">$cargs</span>: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$ret </span>{
+                    call(f, $(<span class="macro-nonterminal">$args</span>,)* $(<span class="macro-nonterminal">$cargs</span>,)<span class="kw-2">*</span>)
                 },
-                $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>,)*
+                $(<span class="macro-nonterminal">$args</span>,)* $(<span class="macro-nonterminal">$cargs</span>,)*
             )
         }
-        |$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-            <span class="ident">call</span>(
-                <span class="kw-2">&amp;</span>|<span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">macro_def</span> ($) <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>)<span class="kw-2">*</span>);
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>
-                },
-                $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)* $(<span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>,)*
+        |$(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$ret </span>{
+            call(
+                <span class="kw-2">&amp;</span>|<span class="macro-nonterminal">$func</span>, $(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)* $(<span class="macro-nonterminal">$cargs</span>: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$ret </span>{
+                    <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">macro_def </span>($) <span class="macro-nonterminal">$func </span>$(<span class="macro-nonterminal">$cargs</span>)<span class="kw-2">*</span>);
+                    <span class="macro-nonterminal">$body
+                </span>},
+                $(<span class="macro-nonterminal">$args</span>,)* $(<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargs</span>,)*
             )
         }
     }};
-    (@<span class="ident">default</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argstt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">default</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argstt</span>)<span class="kw-2">*</span>) -&gt; () $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (@default [$(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>], <span class="kw">fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$argstt</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">default </span>[$(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>], <span class="kw">fn </span><span class="macro-nonterminal">$func </span>($(<span class="macro-nonterminal">$argstt</span>)<span class="kw-2">*</span>) -&gt; () $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    ($([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>],)<span class="question-mark">?</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">default</span> [$($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>),<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    ($([$(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>],)<span class="question-mark">? </span><span class="kw">fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">default </span>[$($(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>], <span class="kw">fn </span><span class="macro-nonterminal">$func </span>($(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>),<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
 
     (
-        @<span class="kw">unsafe</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>],
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>:<span class="ident">ty</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>:<span class="ident">block</span>
+        @<span class="kw">unsafe </span>[$(<span class="macro-nonterminal">$cargs</span>:ident: <span class="macro-nonterminal">$cargsty</span>:ty),* $(,)<span class="question-mark">?</span>],
+        <span class="kw">fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$ret</span>:ty <span class="macro-nonterminal">$body</span>:block
     ) =&gt; {{
-        <span class="kw">fn</span> <span class="ident">call</span>&lt;<span class="ident">F</span>&gt;(<span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">F</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>
-        <span class="kw">where</span>
-            <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;mut</span> <span class="kw">dyn</span> <span class="ident">FnMut</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>,
+        <span class="kw">fn </span>call&lt;F&gt;(f: <span class="kw-2">&amp;mut </span>F, $(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)* $(<span class="macro-nonterminal">$cargs</span>: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret
+        </span><span class="kw">where
+            </span>F: FnMut(<span class="kw-2">&amp;mut </span><span class="kw">dyn </span>FnMut($(<span class="macro-nonterminal">$argsty</span>,)* $(<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret</span>, $(<span class="macro-nonterminal">$argsty</span>,)* $(<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret</span>,
         {
-            <span class="kw">let</span> <span class="ident">fp</span> = <span class="ident">f</span> <span class="kw">as</span> <span class="kw-2">*mut</span> <span class="ident">F</span>;
-            (<span class="kw">unsafe</span> { <span class="kw-2">&amp;mut</span> <span class="kw-2">*</span><span class="ident">fp</span> })(
-                <span class="kw-2">&amp;mut</span> |$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-                    <span class="ident">call</span>(<span class="kw">unsafe</span> { <span class="kw-2">&amp;mut</span> <span class="kw-2">*</span><span class="ident">fp</span> }, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>,)<span class="kw-2">*</span>)
+            <span class="kw">let </span>fp = f <span class="kw">as </span><span class="kw-2">*mut </span>F;
+            (<span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>fp })(
+                <span class="kw-2">&amp;mut </span>|$(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)* $(<span class="macro-nonterminal">$cargs</span>: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$ret </span>{
+                    call(<span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span>fp }, $(<span class="macro-nonterminal">$args</span>,)* $(<span class="macro-nonterminal">$cargs</span>,)<span class="kw-2">*</span>)
                 },
-                $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>,)*
+                $(<span class="macro-nonterminal">$args</span>,)* $(<span class="macro-nonterminal">$cargs</span>,)*
             )
         }
-        |$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-            <span class="ident">call</span>(
-                <span class="kw-2">&amp;mut</span> |<span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)* $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>: <span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">macro_def</span> ($) <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>)<span class="kw-2">*</span>);
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>
-                },
-                $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)* $(<span class="kw-2">&amp;mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">cargs</span>,)*
+        |$(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$ret </span>{
+            call(
+                <span class="kw-2">&amp;mut </span>|<span class="macro-nonterminal">$func</span>, $(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>,)* $(<span class="macro-nonterminal">$cargs</span>: <span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargsty</span>,)<span class="kw-2">*</span>| -&gt; <span class="macro-nonterminal">$ret </span>{
+                    <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="macro-nonterminal">macro_def </span>($) <span class="macro-nonterminal">$func </span>$(<span class="macro-nonterminal">$cargs</span>)<span class="kw-2">*</span>);
+                    <span class="macro-nonterminal">$body
+                </span>},
+                $(<span class="macro-nonterminal">$args</span>,)* $(<span class="kw-2">&amp;mut </span><span class="macro-nonterminal">$cargs</span>,)*
             )
         }
     }};
 
-    (@<span class="kw">unsafe</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argstt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">unsafe</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argstt</span>)<span class="kw-2">*</span>) -&gt; () $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (@<span class="kw">unsafe </span>[$(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>], <span class="kw">fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$argstt</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">unsafe </span>[$(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>], <span class="kw">fn </span><span class="macro-nonterminal">$func </span>($(<span class="macro-nonterminal">$argstt</span>)<span class="kw-2">*</span>) -&gt; () $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    ($([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>],)<span class="question-mark">?</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">unsafe</span> [$($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">caps</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>], <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">func</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>),<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    ($([$(<span class="macro-nonterminal">$caps</span>:tt)<span class="kw-2">*</span>],)<span class="question-mark">? </span><span class="kw">unsafe fn </span><span class="macro-nonterminal">$func</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(@<span class="kw">unsafe </span>[$($(<span class="macro-nonterminal">$caps</span>)<span class="kw-2">*</span>)<span class="question-mark">?</span>], <span class="kw">fn </span><span class="macro-nonterminal">$func </span>($(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>),<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro">::std::compile_error!</span>(<span class="macro">::std::concat!</span>(<span class="string">&quot;invalid input: &quot;</span>, <span class="macro">::std::stringify!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>)))
+    ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">::std::compile_error!</span>(<span class="macro">::std::concat!</span>(<span class="string">&quot;invalid input: &quot;</span>, <span class="macro">::std::stringify!</span>($(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)))
     };
 }
 
-<span class="doccomment">/// Automatic memorization for recursive functions.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// This macro binds memorized version of the recursive functions to a local variable.</span>
-<span class="doccomment">/// The specification of the function declaration part is the same as [`crecurse`].</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// [`crecurse`]: crate::crecurse</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Example</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # use competitive::memorize;</span>
-<span class="doccomment">/// memorize!(</span>
-<span class="doccomment">///     fn comb(n: usize, r: usize) -&gt; usize {</span>
-<span class="doccomment">///         if r &gt; n {</span>
-<span class="doccomment">///             0</span>
-<span class="doccomment">///         } else if r == 0 || r == n {</span>
-<span class="doccomment">///             1</span>
-<span class="doccomment">///         } else {</span>
-<span class="doccomment">///             comb!(n - 1, r) + comb!(n - 1, r - 1)</span>
-<span class="doccomment">///         }</span>
-<span class="doccomment">///     }</span>
-<span class="doccomment">/// );</span>
-<span class="doccomment">/// assert_eq!(comb(30, 12), 86493225);</span>
-<span class="doccomment">/// ```</span>
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">memorize</span> {
+<span class="doccomment">/// Automatic memorization for recursive functions.
+///
+/// This macro binds memorized version of the recursive functions to a local variable.
+/// The specification of the function declaration part is the same as [`crecurse`].
+///
+/// [`crecurse`]: crate::crecurse
+///
+/// # Example
+/// ```
+/// # use competitive::memorize;
+/// memorize!(
+///     fn comb(n: usize, r: usize) -&gt; usize {
+///         if r &gt; n {
+///             0
+///         } else if r == 0 || r == n {
+///             1
+///         } else {
+///             comb!(n - 1, r) + comb!(n - 1, r - 1)
+///         }
+///     }
+/// );
+/// assert_eq!(comb(30, 12), 86493225);
+/// ```
+</span><span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> memorize {
     (
-        @<span class="ident">inner</span> [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">Map</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">init</span>:<span class="ident">expr</span>]
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>:<span class="ident">ty</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>:<span class="ident">block</span>
+        @inner [<span class="macro-nonterminal">$map</span>:ident, <span class="macro-nonterminal">$Map</span>:ty, <span class="macro-nonterminal">$init</span>:expr]
+        <span class="kw">fn </span><span class="macro-nonterminal">$name</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$ret</span>:ty <span class="macro-nonterminal">$body</span>:block
     ) =&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">Map</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">init</span>;
-        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_mut</span>)]</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> = <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(
-            [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">Map</span>],
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>),<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">value</span>) = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)<span class="kw-2">*</span>)).<span class="ident">cloned</span>() {
-                    <span class="ident">value</span>
-                } <span class="kw">else</span> {
-                    <span class="kw">let</span> <span class="ident">value</span> = (|| <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>)();
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>.<span class="ident">insert</span>(($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>,)<span class="kw-2">*</span>), <span class="ident">value</span>.<span class="ident">clone</span>());
-                    <span class="ident">value</span>
+        <span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$map</span>: <span class="macro-nonterminal">$Map </span>= <span class="macro-nonterminal">$init</span>;
+        <span class="attribute">#[allow(unused_mut)]</span>
+        <span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$name </span>= <span class="macro-nonterminal">$</span><span class="macro">crate::crecurse!</span>(
+            [<span class="macro-nonterminal">$map</span>: <span class="macro-nonterminal">$Map</span>],
+            <span class="kw">fn </span><span class="macro-nonterminal">$name </span>($(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>),<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret </span>{
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = <span class="macro-nonterminal">$map</span>.get(<span class="kw-2">&amp;</span>($(<span class="macro-nonterminal">$args</span>,)<span class="kw-2">*</span>)).cloned() {
+                    value
+                } <span class="kw">else </span>{
+                    <span class="kw">let </span>value = (|| <span class="macro-nonterminal">$body</span>)();
+                    <span class="macro-nonterminal">$map</span>.insert(($(<span class="macro-nonterminal">$args</span>,)<span class="kw-2">*</span>), value.clone());
+                    value
                 }
             }
         );
     };
-    (<span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">ident</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>:<span class="ident">ty</span>),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>:<span class="ident">ty</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>:<span class="ident">block</span>) =&gt; {
+    (<span class="kw">fn </span><span class="macro-nonterminal">$name</span>:ident ($(<span class="macro-nonterminal">$args</span>:ident: <span class="macro-nonterminal">$argsty</span>:ty),* $(,)<span class="question-mark">?</span>) -&gt; <span class="macro-nonterminal">$ret</span>:ty <span class="macro-nonterminal">$body</span>:block) =&gt; {
         <span class="macro-nonterminal">$</span><span class="macro">crate::memorize!</span>(
-            @<span class="macro-nonterminal">inner</span> [
-                <span class="ident">__memorize_map</span>,
-                <span class="ident">::std::collections::HashMap</span>&lt;($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>,)<span class="kw-2">*</span>), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span>&gt;,
-                <span class="ident">::std::default::Default::default</span>()
+            @<span class="macro-nonterminal">inner </span>[
+                __memorize_map,
+                ::std::collections::HashMap&lt;($(<span class="macro-nonterminal">$argsty</span>,)<span class="kw-2">*</span>), <span class="macro-nonterminal">$ret</span>&gt;,
+                ::std::default::Default::default()
             ]
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">argsty</span>),<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ret</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">body</span>
-        );
+            <span class="kw">fn </span><span class="macro-nonterminal">$name </span>($(<span class="macro-nonterminal">$args</span>: <span class="macro-nonterminal">$argsty</span>),<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret $body
+        </span>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

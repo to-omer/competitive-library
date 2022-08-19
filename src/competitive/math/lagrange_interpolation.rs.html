@@ -102,93 +102,93 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">MemorizedFactorial</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{MInt, MIntBase, MIntConvert, MemorizedFactorial, One, Zero};
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation</span>&lt;<span class="ident">M</span>&gt;(<span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;], <span class="ident">y</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;], <span class="ident">t</span>: <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;) -&gt; <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MIntBase</span>,
+<span class="kw">pub fn </span>lagrange_interpolation&lt;M&gt;(x: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], t: MInt&lt;M&gt;) -&gt; MInt&lt;M&gt;
+<span class="kw">where
+    </span>M: MIntBase,
 {
-    <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">x</span>.<span class="ident">len</span>();
-    <span class="macro">debug_assert!</span>(<span class="ident">n</span> == <span class="ident">y</span>.<span class="ident">len</span>());
-    <span class="ident">x</span>.<span class="ident">iter</span>().<span class="ident">position</span>(|<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">x</span> == <span class="ident">t</span>).<span class="ident">map_or_else</span>(
+    <span class="kw">let </span>n = x.len();
+    <span class="macro">debug_assert!</span>(n == y.len());
+    x.iter().position(|<span class="kw-2">&amp;</span>x| x == t).map_or_else(
         || {
-            (<span class="number">0</span>..<span class="ident">n</span>)
-                .<span class="ident">map</span>(|<span class="ident">i</span>| {
-                    <span class="ident">y</span>[<span class="ident">i</span>] * (<span class="number">0</span>..<span class="ident">n</span>)
-                        .<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">j</span>| <span class="ident">j</span> != <span class="ident">i</span>)
-                        .<span class="ident">map</span>(|<span class="ident">j</span>| (<span class="ident">t</span> - <span class="ident">x</span>[<span class="ident">j</span>]) / (<span class="ident">x</span>[<span class="ident">i</span>] - <span class="ident">x</span>[<span class="ident">j</span>]))
-                        .<span class="ident">product</span>::&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;()
+            (<span class="number">0</span>..n)
+                .map(|i| {
+                    y[i] * (<span class="number">0</span>..n)
+                        .filter(|<span class="kw-2">&amp;</span>j| j != i)
+                        .map(|j| (t - x[j]) / (x[i] - x[j]))
+                        .product::&lt;MInt&lt;M&gt;&gt;()
                 })
-                .<span class="ident">sum</span>()
+                .sum()
         },
-        |<span class="ident">i</span>| <span class="ident">y</span>[<span class="ident">i</span>],
+        |i| y[i],
     )
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">MemorizedFactorial</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MIntConvert</span>&lt;<span class="ident">usize</span>&gt;,
+<span class="kw">impl</span>&lt;M&gt; MemorizedFactorial&lt;M&gt;
+<span class="kw">where
+    </span>M: MIntConvert&lt;usize&gt;,
 {
-    <span class="doccomment">/// Lagrange interpolation with (i, f(i)) (0 &lt;= i &lt;= n)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">f</span>: <span class="ident">F</span>, <span class="ident">t</span>: <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;) -&gt; <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;) -&gt; <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;,
+    <span class="doccomment">/// Lagrange interpolation with (i, f(i)) (0 &lt;= i &lt;= n)
+    </span><span class="kw">pub fn </span>lagrange_interpolation&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, f: F, t: MInt&lt;M&gt;) -&gt; MInt&lt;M&gt;
+    <span class="kw">where
+        </span>F: Fn(MInt&lt;M&gt;) -&gt; MInt&lt;M&gt;,
     {
-        <span class="macro">debug_assert!</span>(<span class="number">0</span> &lt; <span class="ident">n</span> &amp;&amp; <span class="ident">n</span> &lt; <span class="ident">M::mod_into</span>() + <span class="number">1</span>);
-        <span class="kw">if</span> <span class="ident">usize::from</span>(<span class="ident">t</span>) &lt;= <span class="ident">n</span> {
-            <span class="kw">return</span> <span class="ident">f</span>(<span class="ident">t</span>);
+        <span class="macro">debug_assert!</span>(<span class="number">0 </span>&lt; n &amp;&amp; n &lt; M::mod_into() + <span class="number">1</span>);
+        <span class="kw">if </span>usize::from(t) &lt;= n {
+            <span class="kw">return </span>f(t);
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> = <span class="macro">vec!</span>[<span class="ident">MInt::one</span>(); <span class="ident">n</span> + <span class="number">1</span>];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
-            <span class="ident">left</span>[<span class="ident">i</span> + <span class="number">1</span>] = <span class="ident">left</span>[<span class="ident">i</span>] * (<span class="ident">t</span> - <span class="ident">MInt::from</span>(<span class="ident">i</span>));
+        <span class="kw">let </span><span class="kw-2">mut </span>left = <span class="macro">vec!</span>[MInt::one(); n + <span class="number">1</span>];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+            left[i + <span class="number">1</span>] = left[i] * (t - MInt::from(i));
         }
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">res</span>, <span class="kw-2">mut</span> <span class="ident">right</span>) = (<span class="ident">MInt::zero</span>(), <span class="ident">MInt::one</span>());
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">0</span>..=<span class="ident">n</span>).<span class="ident">rev</span>() {
-            <span class="ident">res</span> += <span class="ident">f</span>(<span class="ident">MInt::from</span>(<span class="ident">i</span>)) * <span class="ident">left</span>[<span class="ident">i</span>] * <span class="ident">right</span> * <span class="self">self</span>.<span class="ident">inv_fact</span>[<span class="ident">i</span>] * <span class="self">self</span>.<span class="ident">inv_fact</span>[<span class="ident">n</span> - <span class="ident">i</span>];
-            <span class="ident">right</span> <span class="kw-2">*</span>= <span class="ident">MInt::from</span>(<span class="ident">i</span>) - <span class="ident">t</span>;
+        <span class="kw">let </span>(<span class="kw-2">mut </span>res, <span class="kw-2">mut </span>right) = (MInt::zero(), MInt::one());
+        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..=n).rev() {
+            res += f(MInt::from(i)) * left[i] * right * <span class="self">self</span>.inv_fact[i] * <span class="self">self</span>.inv_fact[n - i];
+            right <span class="kw-2">*</span>= MInt::from(i) - t;
         }
-        <span class="ident">res</span>
+        res
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lagrange_interpolation_polynomial</span>&lt;<span class="ident">M</span>&gt;(<span class="ident">x</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;], <span class="ident">y</span>: <span class="kw-2">&amp;</span>[<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;]) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MIntBase</span>,
+<span class="kw">pub fn </span>lagrange_interpolation_polynomial&lt;M&gt;(x: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
+<span class="kw">where
+    </span>M: MIntBase,
 {
-    <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">x</span>.<span class="ident">len</span>() - <span class="number">1</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dp</span> = <span class="macro">vec!</span>[<span class="ident">MInt::zero</span>(); <span class="ident">n</span> + <span class="number">2</span>];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ndp</span> = <span class="macro">vec!</span>[<span class="ident">MInt::zero</span>(); <span class="ident">n</span> + <span class="number">2</span>];
-    <span class="ident">dp</span>[<span class="number">0</span>] = -<span class="ident">x</span>[<span class="number">0</span>];
-    <span class="ident">dp</span>[<span class="number">1</span>] = <span class="ident">MInt::one</span>();
-    <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">x</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
-        <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..=<span class="ident">n</span> + <span class="number">1</span> {
-            <span class="ident">ndp</span>[<span class="ident">j</span>] = -<span class="ident">dp</span>[<span class="ident">j</span>] * <span class="ident">x</span> + <span class="kw">if</span> <span class="ident">j</span> &gt;= <span class="number">1</span> { <span class="ident">dp</span>[<span class="ident">j</span> - <span class="number">1</span>] } <span class="kw">else</span> { <span class="ident">MInt::zero</span>() };
+    <span class="kw">let </span>n = x.len() - <span class="number">1</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>dp = <span class="macro">vec!</span>[MInt::zero(); n + <span class="number">2</span>];
+    <span class="kw">let </span><span class="kw-2">mut </span>ndp = <span class="macro">vec!</span>[MInt::zero(); n + <span class="number">2</span>];
+    dp[<span class="number">0</span>] = -x[<span class="number">0</span>];
+    dp[<span class="number">1</span>] = MInt::one();
+    <span class="kw">for </span>x <span class="kw">in </span>x.iter().skip(<span class="number">1</span>) {
+        <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..=n + <span class="number">1 </span>{
+            ndp[j] = -dp[j] * x + <span class="kw">if </span>j &gt;= <span class="number">1 </span>{ dp[j - <span class="number">1</span>] } <span class="kw">else </span>{ MInt::zero() };
         }
-        <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">dp</span>, <span class="kw-2">&amp;mut</span> <span class="ident">ndp</span>);
+        std::mem::swap(<span class="kw-2">&amp;mut </span>dp, <span class="kw-2">&amp;mut </span>ndp);
     }
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="macro">vec!</span>[<span class="ident">MInt::zero</span>(); <span class="ident">n</span> + <span class="number">1</span>];
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..=<span class="ident">n</span> {
-        <span class="kw">let</span> <span class="ident">t</span> = <span class="ident">y</span>[<span class="ident">i</span>]
-            / (<span class="number">0</span>..=<span class="ident">n</span>)
-                .<span class="ident">map</span>(|<span class="ident">j</span>| <span class="kw">if</span> <span class="ident">i</span> != <span class="ident">j</span> { <span class="ident">x</span>[<span class="ident">i</span>] - <span class="ident">x</span>[<span class="ident">j</span>] } <span class="kw">else</span> { <span class="ident">MInt::one</span>() })
-                .<span class="ident">product</span>::&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;();
-        <span class="kw">if</span> <span class="ident">t</span>.<span class="ident">is_zero</span>() {
+    <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[MInt::zero(); n + <span class="number">1</span>];
+    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=n {
+        <span class="kw">let </span>t = y[i]
+            / (<span class="number">0</span>..=n)
+                .map(|j| <span class="kw">if </span>i != j { x[i] - x[j] } <span class="kw">else </span>{ MInt::one() })
+                .product::&lt;MInt&lt;M&gt;&gt;();
+        <span class="kw">if </span>t.is_zero() {
             <span class="kw">continue</span>;
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">x</span>[<span class="ident">i</span>].<span class="ident">is_zero</span>() {
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..=<span class="ident">n</span> {
-                <span class="ident">res</span>[<span class="ident">j</span>] += <span class="ident">dp</span>[<span class="ident">j</span> + <span class="number">1</span>] * <span class="ident">t</span>;
+        } <span class="kw">else if </span>x[i].is_zero() {
+            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..=n {
+                res[j] += dp[j + <span class="number">1</span>] * t;
             }
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">xinv</span> = <span class="ident">x</span>[<span class="ident">i</span>].<span class="ident">inv</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pre</span> = <span class="ident">MInt::zero</span>();
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..=<span class="ident">n</span> {
-                <span class="kw">let</span> <span class="ident">d</span> = -(<span class="ident">dp</span>[<span class="ident">j</span>] - <span class="ident">pre</span>) * <span class="ident">xinv</span>;
-                <span class="ident">res</span>[<span class="ident">j</span>] += <span class="ident">d</span> * <span class="ident">t</span>;
-                <span class="ident">pre</span> = <span class="ident">d</span>;
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>xinv = x[i].inv();
+            <span class="kw">let </span><span class="kw-2">mut </span>pre = MInt::zero();
+            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..=n {
+                <span class="kw">let </span>d = -(dp[j] - pre) * xinv;
+                res[j] += d * t;
+                pre = d;
             }
         }
     }
-    <span class="ident">res</span>
+    res
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

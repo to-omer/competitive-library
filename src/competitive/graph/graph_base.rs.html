@@ -353,344 +353,344 @@
 <span id="337">337</span>
 <span id="338">338</span>
 <span id="339">339</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::marker::PhantomData;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">VIndex</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>;
+<span class="kw">pub trait </span>GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>VIndex: Copy + Eq;
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EIndexedGraph</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">EIndex</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>;
-}
-
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">VertexSize</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">vsize</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>) -&gt; <span class="ident">usize</span>;
-}
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EdgeSize</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">esize</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>) -&gt; <span class="ident">usize</span>;
+<span class="kw">pub trait </span>EIndexedGraph&lt;<span class="lifetime">&#39;g</span>&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>EIndex: Copy + Eq;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Vertices</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">VIter</span>: <span class="lifetime">&#39;g</span> + <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::VIndex</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">vertices</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIter</span>;
+<span class="kw">pub trait </span>VertexSize&lt;<span class="lifetime">&#39;g</span>&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">fn </span>vsize(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>) -&gt; usize;
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Edges</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">EIndexedGraph</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">EIter</span>: <span class="lifetime">&#39;g</span> + <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::EIndex</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">edges</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::EIter</span>;
+<span class="kw">pub trait </span>EdgeSize&lt;<span class="lifetime">&#39;g</span>&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">fn </span>esize(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>) -&gt; usize;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AdjacencyIndex</span> {
-    <span class="kw">type</span> <span class="ident">VIndex</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>;
-    <span class="kw">fn</span> <span class="ident">vindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIndex</span>;
+<span class="kw">pub trait </span>Vertices&lt;<span class="lifetime">&#39;g</span>&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>VIter: <span class="lifetime">&#39;g </span>+ Iterator&lt;Item = <span class="self">Self</span>::VIndex&gt;;
+    <span class="kw">fn </span>vertices(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIter;
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Adjacencies</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">AIndex</span>: <span class="lifetime">&#39;g</span> + <span class="ident">AdjacencyIndex</span>&lt;<span class="ident">VIndex</span> = <span class="ident"><span class="self">Self</span>::VIndex</span>&gt;;
-    <span class="kw">type</span> <span class="ident">AIter</span>: <span class="lifetime">&#39;g</span> + <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::AIndex</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">adjacencies</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="ident"><span class="self">Self</span>::AIter</span>;
-}
-
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AdjacenciesWithEindex</span>&lt;<span class="lifetime">&#39;g</span>&gt;: <span class="ident">EIndexedGraph</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">AIndex</span>: <span class="lifetime">&#39;g</span> + <span class="ident">AdjacencyIndexWithEindex</span>&lt;<span class="ident">VIndex</span> = <span class="ident"><span class="self">Self</span>::VIndex</span>, <span class="ident">EIndex</span> = <span class="ident"><span class="self">Self</span>::EIndex</span>&gt;;
-    <span class="kw">type</span> <span class="ident">AIter</span>: <span class="lifetime">&#39;g</span> + <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::AIndex</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">adjacencies_with_eindex</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="ident"><span class="self">Self</span>::AIter</span>;
-}
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AdjacencyIndexWithEindex</span>: <span class="ident">AdjacencyIndex</span> {
-    <span class="kw">type</span> <span class="ident">EIndex</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>;
-    <span class="kw">fn</span> <span class="ident">eindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::EIndex</span>;
+<span class="kw">pub trait </span>Edges&lt;<span class="lifetime">&#39;g</span>&gt;: EIndexedGraph&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>EIter: <span class="lifetime">&#39;g </span>+ Iterator&lt;Item = <span class="self">Self</span>::EIndex&gt;;
+    <span class="kw">fn </span>edges(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::EIter;
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AdjacencyIndexWithValue</span>: <span class="ident">AdjacencyIndex</span> {
-    <span class="kw">type</span> <span class="ident">AValue</span>: <span class="ident">Clone</span>;
-    <span class="kw">fn</span> <span class="ident">avalue</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::AValue</span>;
+<span class="kw">pub trait </span>AdjacencyIndex {
+    <span class="kw">type </span>VIndex: Copy + Eq;
+    <span class="kw">fn </span>vindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIndex;
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AdjacenciesWithValue</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">T</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Clone</span>,
-{
-    <span class="kw">type</span> <span class="ident">AIndex</span>: <span class="lifetime">&#39;g</span> + <span class="ident">AdjacencyIndexWithValue</span>&lt;<span class="ident">VIndex</span> = <span class="ident"><span class="self">Self</span>::VIndex</span>, <span class="ident">AValue</span> = <span class="ident">T</span>&gt;;
-    <span class="kw">type</span> <span class="ident">AIter</span>: <span class="lifetime">&#39;g</span> + <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::AIndex</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">adjacencies_with_value</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="ident"><span class="self">Self</span>::AIter</span>;
+<span class="kw">pub trait </span>Adjacencies&lt;<span class="lifetime">&#39;g</span>&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>AIndex: <span class="lifetime">&#39;g </span>+ AdjacencyIndex&lt;VIndex = <span class="self">Self</span>::VIndex&gt;;
+    <span class="kw">type </span>AIter: <span class="lifetime">&#39;g </span>+ Iterator&lt;Item = <span class="self">Self</span>::AIndex&gt;;
+    <span class="kw">fn </span>adjacencies(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>, vid: <span class="self">Self</span>::VIndex) -&gt; <span class="self">Self</span>::AIter;
 }
 
-<span class="kw">impl</span> <span class="ident">AdjacencyIndex</span> <span class="kw">for</span> <span class="ident">usize</span> {
-    <span class="kw">type</span> <span class="ident">VIndex</span> = <span class="ident">usize</span>;
-    <span class="kw">fn</span> <span class="ident">vindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIndex</span> {
-        <span class="kw-2">*</span><span class="self">self</span>
-    }
+<span class="kw">pub trait </span>AdjacenciesWithEindex&lt;<span class="lifetime">&#39;g</span>&gt;: EIndexedGraph&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>AIndex: <span class="lifetime">&#39;g </span>+ AdjacencyIndexWithEindex&lt;VIndex = <span class="self">Self</span>::VIndex, EIndex = <span class="self">Self</span>::EIndex&gt;;
+    <span class="kw">type </span>AIter: <span class="lifetime">&#39;g </span>+ Iterator&lt;Item = <span class="self">Self</span>::AIndex&gt;;
+    <span class="kw">fn </span>adjacencies_with_eindex(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>, vid: <span class="self">Self</span>::VIndex) -&gt; <span class="self">Self</span>::AIter;
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt; <span class="ident">AdjacencyIndex</span> <span class="kw">for</span> (<span class="ident">V</span>, <span class="ident">E</span>)
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>,
-    <span class="ident">E</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>,
-{
-    <span class="kw">type</span> <span class="ident">VIndex</span> = <span class="ident">V</span>;
-    <span class="kw">fn</span> <span class="ident">vindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIndex</span> {
-        <span class="self">self</span>.<span class="number">0</span>
-    }
-}
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt; <span class="ident">AdjacencyIndexWithEindex</span> <span class="kw">for</span> (<span class="ident">V</span>, <span class="ident">E</span>)
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>,
-    <span class="ident">E</span>: <span class="ident">Copy</span> + <span class="ident">Eq</span>,
-{
-    <span class="kw">type</span> <span class="ident">EIndex</span> = <span class="ident">E</span>;
-    <span class="kw">fn</span> <span class="ident">eindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::EIndex</span> {
-        <span class="self">self</span>.<span class="number">1</span>
-    }
+<span class="kw">pub trait </span>AdjacencyIndexWithEindex: AdjacencyIndex {
+    <span class="kw">type </span>EIndex: Copy + Eq;
+    <span class="kw">fn </span>eindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::EIndex;
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VIndex</span>&lt;<span class="ident">V</span>&gt;(<span class="ident">V</span>);
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VIndexWithEIndex</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt;(<span class="ident">V</span>, <span class="ident">E</span>);
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VIndexWithValue</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt;(<span class="ident">V</span>, <span class="ident">T</span>);
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">VIndexWithEIndexValue</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt;(<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>);
+<span class="kw">pub trait </span>AdjacencyIndexWithValue: AdjacencyIndex {
+    <span class="kw">type </span>AValue: Clone;
+    <span class="kw">fn </span>avalue(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::AValue;
+}
+<span class="kw">pub trait </span>AdjacenciesWithValue&lt;<span class="lifetime">&#39;g</span>, T&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt;
+<span class="kw">where
+    </span>T: Clone,
+{
+    <span class="kw">type </span>AIndex: <span class="lifetime">&#39;g </span>+ AdjacencyIndexWithValue&lt;VIndex = <span class="self">Self</span>::VIndex, AValue = T&gt;;
+    <span class="kw">type </span>AIter: <span class="lifetime">&#39;g </span>+ Iterator&lt;Item = <span class="self">Self</span>::AIndex&gt;;
+    <span class="kw">fn </span>adjacencies_with_value(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>, vid: <span class="self">Self</span>::VIndex) -&gt; <span class="self">Self</span>::AIter;
+}
 
-<span class="kw">impl</span>&lt;<span class="ident">V</span>&gt; <span class="ident">AdjacencyIndex</span> <span class="kw">for</span> <span class="ident">VIndex</span>&lt;<span class="ident">V</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
+<span class="kw">impl </span>AdjacencyIndex <span class="kw">for </span>usize {
+    <span class="kw">type </span>VIndex = usize;
+    <span class="kw">fn </span>vindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIndex {
+        <span class="kw-2">*</span><span class="self">self
+    </span>}
+}
+<span class="kw">impl</span>&lt;V, E&gt; AdjacencyIndex <span class="kw">for </span>(V, E)
+<span class="kw">where
+    </span>V: Copy + Eq,
+    E: Copy + Eq,
 {
-    <span class="kw">type</span> <span class="ident">VIndex</span> = <span class="ident">V</span>;
-    <span class="kw">fn</span> <span class="ident">vindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIndex</span> {
-        <span class="self">self</span>.<span class="number">0</span>
-    }
+    <span class="kw">type </span>VIndex = V;
+    <span class="kw">fn </span>vindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIndex {
+        <span class="self">self</span>.<span class="number">0
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt; <span class="ident">AdjacencyIndex</span> <span class="kw">for</span> <span class="ident">VIndexWithEIndex</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
+<span class="kw">impl</span>&lt;V, E&gt; AdjacencyIndexWithEindex <span class="kw">for </span>(V, E)
+<span class="kw">where
+    </span>V: Copy + Eq,
+    E: Copy + Eq,
 {
-    <span class="kw">type</span> <span class="ident">VIndex</span> = <span class="ident">V</span>;
-    <span class="kw">fn</span> <span class="ident">vindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIndex</span> {
-        <span class="self">self</span>.<span class="number">0</span>
-    }
+    <span class="kw">type </span>EIndex = E;
+    <span class="kw">fn </span>eindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::EIndex {
+        <span class="self">self</span>.<span class="number">1
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt; <span class="ident">AdjacencyIndexWithEindex</span> <span class="kw">for</span> <span class="ident">VIndexWithEIndex</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
-    <span class="ident">E</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
+
+<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="kw">pub struct </span>VIndex&lt;V&gt;(V);
+<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="kw">pub struct </span>VIndexWithEIndex&lt;V, E&gt;(V, E);
+<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="kw">pub struct </span>VIndexWithValue&lt;V, T&gt;(V, T);
+<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="kw">pub struct </span>VIndexWithEIndexValue&lt;V, E, T&gt;(V, E, T);
+
+<span class="kw">impl</span>&lt;V&gt; AdjacencyIndex <span class="kw">for </span>VIndex&lt;V&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
 {
-    <span class="kw">type</span> <span class="ident">EIndex</span> = <span class="ident">E</span>;
-    <span class="kw">fn</span> <span class="ident">eindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::EIndex</span> {
-        <span class="self">self</span>.<span class="number">1</span>
-    }
+    <span class="kw">type </span>VIndex = V;
+    <span class="kw">fn </span>vindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIndex {
+        <span class="self">self</span>.<span class="number">0
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt; <span class="ident">AdjacencyIndex</span> <span class="kw">for</span> <span class="ident">VIndexWithValue</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
+<span class="kw">impl</span>&lt;V, E&gt; AdjacencyIndex <span class="kw">for </span>VIndexWithEIndex&lt;V, E&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
 {
-    <span class="kw">type</span> <span class="ident">VIndex</span> = <span class="ident">V</span>;
-    <span class="kw">fn</span> <span class="ident">vindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIndex</span> {
-        <span class="self">self</span>.<span class="number">0</span>
-    }
+    <span class="kw">type </span>VIndex = V;
+    <span class="kw">fn </span>vindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIndex {
+        <span class="self">self</span>.<span class="number">0
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt; <span class="ident">AdjacencyIndexWithValue</span> <span class="kw">for</span> <span class="ident">VIndexWithValue</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
-    <span class="ident">T</span>: <span class="ident">Clone</span>,
+<span class="kw">impl</span>&lt;V, E&gt; AdjacencyIndexWithEindex <span class="kw">for </span>VIndexWithEIndex&lt;V, E&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
+    E: Eq + Copy,
 {
-    <span class="kw">type</span> <span class="ident">AValue</span> = <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">avalue</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::AValue</span> {
-        <span class="self">self</span>.<span class="number">1</span>.<span class="ident">clone</span>()
-    }
+    <span class="kw">type </span>EIndex = E;
+    <span class="kw">fn </span>eindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::EIndex {
+        <span class="self">self</span>.<span class="number">1
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt; <span class="ident">AdjacencyIndex</span> <span class="kw">for</span> <span class="ident">VIndexWithEIndexValue</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
+<span class="kw">impl</span>&lt;V, T&gt; AdjacencyIndex <span class="kw">for </span>VIndexWithValue&lt;V, T&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
 {
-    <span class="kw">type</span> <span class="ident">VIndex</span> = <span class="ident">V</span>;
-    <span class="kw">fn</span> <span class="ident">vindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::VIndex</span> {
-        <span class="self">self</span>.<span class="number">0</span>
-    }
+    <span class="kw">type </span>VIndex = V;
+    <span class="kw">fn </span>vindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIndex {
+        <span class="self">self</span>.<span class="number">0
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt; <span class="ident">AdjacencyIndexWithEindex</span> <span class="kw">for</span> <span class="ident">VIndexWithEIndexValue</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
-    <span class="ident">E</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
+<span class="kw">impl</span>&lt;V, T&gt; AdjacencyIndexWithValue <span class="kw">for </span>VIndexWithValue&lt;V, T&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
+    T: Clone,
 {
-    <span class="kw">type</span> <span class="ident">EIndex</span> = <span class="ident">E</span>;
-    <span class="kw">fn</span> <span class="ident">eindex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::EIndex</span> {
-        <span class="self">self</span>.<span class="number">1</span>
+    <span class="kw">type </span>AValue = T;
+    <span class="kw">fn </span>avalue(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::AValue {
+        <span class="self">self</span>.<span class="number">1</span>.clone()
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt; <span class="ident">AdjacencyIndexWithValue</span> <span class="kw">for</span> <span class="ident">VIndexWithEIndexValue</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">V</span>: <span class="ident">Eq</span> + <span class="ident">Copy</span>,
-    <span class="ident">T</span>: <span class="ident">Clone</span>,
+<span class="kw">impl</span>&lt;V, E, T&gt; AdjacencyIndex <span class="kw">for </span>VIndexWithEIndexValue&lt;V, E, T&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
 {
-    <span class="kw">type</span> <span class="ident">AValue</span> = <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">avalue</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::AValue</span> {
-        <span class="self">self</span>.<span class="number">2</span>.<span class="ident">clone</span>()
+    <span class="kw">type </span>VIndex = V;
+    <span class="kw">fn </span>vindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::VIndex {
+        <span class="self">self</span>.<span class="number">0
+    </span>}
+}
+<span class="kw">impl</span>&lt;V, E, T&gt; AdjacencyIndexWithEindex <span class="kw">for </span>VIndexWithEIndexValue&lt;V, E, T&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
+    E: Eq + Copy,
+{
+    <span class="kw">type </span>EIndex = E;
+    <span class="kw">fn </span>eindex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::EIndex {
+        <span class="self">self</span>.<span class="number">1
+    </span>}
+}
+<span class="kw">impl</span>&lt;V, E, T&gt; AdjacencyIndexWithValue <span class="kw">for </span>VIndexWithEIndexValue&lt;V, E, T&gt;
+<span class="kw">where
+    </span>V: Eq + Copy,
+    T: Clone,
+{
+    <span class="kw">type </span>AValue = T;
+    <span class="kw">fn </span>avalue(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::AValue {
+        <span class="self">self</span>.<span class="number">2</span>.clone()
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>&gt; <span class="ident">From</span>&lt;<span class="ident">V</span>&gt; <span class="kw">for</span> <span class="ident">VIndex</span>&lt;<span class="ident">V</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">vid</span>: <span class="ident">V</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">VIndex</span>(<span class="ident">vid</span>)
+<span class="kw">impl</span>&lt;V&gt; From&lt;V&gt; <span class="kw">for </span>VIndex&lt;V&gt; {
+    <span class="kw">fn </span>from(vid: V) -&gt; <span class="self">Self </span>{
+        VIndex(vid)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt; <span class="ident">From</span>&lt;(<span class="ident">V</span>, <span class="ident">E</span>)&gt; <span class="kw">for</span> <span class="ident">VIndexWithEIndex</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">vid</span>, <span class="ident">eid</span>): (<span class="ident">V</span>, <span class="ident">E</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">VIndexWithEIndex</span>(<span class="ident">vid</span>, <span class="ident">eid</span>)
+<span class="kw">impl</span>&lt;V, E&gt; From&lt;(V, E)&gt; <span class="kw">for </span>VIndexWithEIndex&lt;V, E&gt; {
+    <span class="kw">fn </span>from((vid, eid): (V, E)) -&gt; <span class="self">Self </span>{
+        VIndexWithEIndex(vid, eid)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt; <span class="ident">From</span>&lt;(<span class="ident">V</span>, <span class="ident">T</span>)&gt; <span class="kw">for</span> <span class="ident">VIndexWithValue</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">vid</span>, <span class="ident">value</span>): (<span class="ident">V</span>, <span class="ident">T</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">VIndexWithValue</span>(<span class="ident">vid</span>, <span class="ident">value</span>)
+<span class="kw">impl</span>&lt;V, T&gt; From&lt;(V, T)&gt; <span class="kw">for </span>VIndexWithValue&lt;V, T&gt; {
+    <span class="kw">fn </span>from((vid, value): (V, T)) -&gt; <span class="self">Self </span>{
+        VIndexWithValue(vid, value)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt; <span class="ident">From</span>&lt;(<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>)&gt; <span class="kw">for</span> <span class="ident">VIndexWithEIndexValue</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">from</span>((<span class="ident">vid</span>, <span class="ident">eid</span>, <span class="ident">value</span>): (<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>)) -&gt; <span class="self">Self</span> {
-        <span class="ident">VIndexWithEIndexValue</span>(<span class="ident">vid</span>, <span class="ident">eid</span>, <span class="ident">value</span>)
+<span class="kw">impl</span>&lt;V, E, T&gt; From&lt;(V, E, T)&gt; <span class="kw">for </span>VIndexWithEIndexValue&lt;V, E, T&gt; {
+    <span class="kw">fn </span>from((vid, eid, value): (V, E, T)) -&gt; <span class="self">Self </span>{
+        VIndexWithEIndexValue(vid, eid, value)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt; <span class="ident">VIndexWithValue</span>&lt;<span class="ident">V</span>, <span class="ident">T</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map</span>&lt;<span class="ident">U</span>, <span class="ident">F</span>&gt;(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">VIndexWithValue</span>&lt;<span class="ident">V</span>, <span class="ident">U</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">T</span>) -&gt; <span class="ident">U</span>,
+<span class="kw">impl</span>&lt;V, T&gt; VIndexWithValue&lt;V, T&gt; {
+    <span class="kw">pub fn </span>map&lt;U, F&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: F) -&gt; VIndexWithValue&lt;V, U&gt;
+    <span class="kw">where
+        </span>F: FnMut(T) -&gt; U,
     {
-        <span class="ident">VIndexWithValue</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">f</span>(<span class="self">self</span>.<span class="number">1</span>))
+        VIndexWithValue(<span class="self">self</span>.<span class="number">0</span>, f(<span class="self">self</span>.<span class="number">1</span>))
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt; <span class="ident">VIndexWithEIndexValue</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">T</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map</span>&lt;<span class="ident">U</span>, <span class="ident">F</span>&gt;(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident">VIndexWithEIndexValue</span>&lt;<span class="ident">V</span>, <span class="ident">E</span>, <span class="ident">U</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">T</span>) -&gt; <span class="ident">U</span>,
+<span class="kw">impl</span>&lt;V, E, T&gt; VIndexWithEIndexValue&lt;V, E, T&gt; {
+    <span class="kw">pub fn </span>map&lt;U, F&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: F) -&gt; VIndexWithEIndexValue&lt;V, E, U&gt;
+    <span class="kw">where
+        </span>F: FnMut(T) -&gt; U,
     {
-        <span class="ident">VIndexWithEIndexValue</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, <span class="ident">f</span>(<span class="self">self</span>.<span class="number">2</span>))
+        VIndexWithEIndexValue(<span class="self">self</span>.<span class="number">0</span>, <span class="self">self</span>.<span class="number">1</span>, f(<span class="self">self</span>.<span class="number">2</span>))
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">VertexMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">T</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">Vmap</span>;
-    <span class="kw">fn</span> <span class="ident">construct_vmap</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Vmap</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnMut</span>() -&gt; <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">vmap_get</span>&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Vmap</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">vmap_get_mut</span>&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident"><span class="self">Self</span>::Vmap</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">vmap_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::Vmap</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>, <span class="ident">x</span>: <span class="ident">T</span>) {
-        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">vmap_get_mut</span>(<span class="ident">map</span>, <span class="ident">vid</span>) = <span class="ident">x</span>;
+<span class="kw">pub trait </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, T&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>Vmap;
+    <span class="kw">fn </span>construct_vmap&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: F) -&gt; <span class="self">Self</span>::Vmap
+    <span class="kw">where
+        </span>F: FnMut() -&gt; T;
+    <span class="kw">fn </span>vmap_get&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Vmap, vid: <span class="self">Self</span>::VIndex) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T;
+    <span class="kw">fn </span>vmap_get_mut&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">Self</span>::Vmap, vid: <span class="self">Self</span>::VIndex) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T;
+    <span class="kw">fn </span>vmap_set(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Vmap, vid: <span class="self">Self</span>::VIndex, x: T) {
+        <span class="kw-2">*</span><span class="self">self</span>.vmap_get_mut(map, vid) = x;
     }
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">VertexView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="question-mark">?</span><span class="ident">Sized</span>,
+<span class="kw">pub trait </span>VertexView&lt;<span class="lifetime">&#39;g</span>, M, T&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt;
+<span class="kw">where
+    </span>M: <span class="question-mark">?</span>Sized,
 {
-    <span class="kw">fn</span> <span class="ident">vview</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="ident">M</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="ident">T</span>;
+    <span class="kw">fn </span>vview(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>M, vid: <span class="self">Self</span>::VIndex) -&gt; T;
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EdgeMap</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">T</span>&gt;: <span class="ident">EIndexedGraph</span>&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">type</span> <span class="ident">Emap</span>;
-    <span class="kw">fn</span> <span class="ident">construct_emap</span>&lt;<span class="ident">F</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="ident"><span class="self">Self</span>::Emap</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnMut</span>() -&gt; <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">emap_get</span>&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident"><span class="self">Self</span>::Emap</span>, <span class="ident">eid</span>: <span class="ident"><span class="self">Self</span>::EIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">emap_get_mut</span>&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident"><span class="self">Self</span>::Emap</span>, <span class="ident">eid</span>: <span class="ident"><span class="self">Self</span>::EIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">emap_set</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::Emap</span>, <span class="ident">eid</span>: <span class="ident"><span class="self">Self</span>::EIndex</span>, <span class="ident">x</span>: <span class="ident">T</span>) {
-        <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">emap_get_mut</span>(<span class="ident">map</span>, <span class="ident">eid</span>) = <span class="ident">x</span>;
+<span class="kw">pub trait </span>EdgeMap&lt;<span class="lifetime">&#39;g</span>, T&gt;: EIndexedGraph&lt;<span class="lifetime">&#39;g</span>&gt; {
+    <span class="kw">type </span>Emap;
+    <span class="kw">fn </span>construct_emap&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: F) -&gt; <span class="self">Self</span>::Emap
+    <span class="kw">where
+        </span>F: FnMut() -&gt; T;
+    <span class="kw">fn </span>emap_get&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>::Emap, eid: <span class="self">Self</span>::EIndex) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T;
+    <span class="kw">fn </span>emap_get_mut&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">Self</span>::Emap, eid: <span class="self">Self</span>::EIndex) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>T;
+    <span class="kw">fn </span>emap_set(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Emap, eid: <span class="self">Self</span>::EIndex, x: T) {
+        <span class="kw-2">*</span><span class="self">self</span>.emap_get_mut(map, eid) = x;
     }
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">EdgeView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt;: <span class="ident">EIndexedGraph</span>&lt;<span class="lifetime">&#39;g</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="question-mark">?</span><span class="ident">Sized</span>,
+<span class="kw">pub trait </span>EdgeView&lt;<span class="lifetime">&#39;g</span>, M, T&gt;: EIndexedGraph&lt;<span class="lifetime">&#39;g</span>&gt;
+<span class="kw">where
+    </span>M: <span class="question-mark">?</span>Sized,
 {
-    <span class="kw">fn</span> <span class="ident">eview</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="ident">M</span>, <span class="ident">eid</span>: <span class="ident"><span class="self">Self</span>::EIndex</span>) -&gt; <span class="ident">T</span>;
+    <span class="kw">fn </span>eview(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>M, eid: <span class="self">Self</span>::EIndex) -&gt; T;
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">G</span>, <span class="ident">F</span>, <span class="ident">T</span>&gt; <span class="ident">VertexView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">F</span>, <span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">G</span>
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt;,
-    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="ident">T</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, G, F, T&gt; VertexView&lt;<span class="lifetime">&#39;g</span>, F, T&gt; <span class="kw">for </span>G
+<span class="kw">where
+    </span>G: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt;,
+    F: Fn(<span class="self">Self</span>::VIndex) -&gt; T,
 {
-    <span class="kw">fn</span> <span class="ident">vview</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="ident">T</span> {
-        (<span class="ident">map</span>)(<span class="ident">vid</span>)
+    <span class="kw">fn </span>vview(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>F, vid: <span class="self">Self</span>::VIndex) -&gt; T {
+        (map)(vid)
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">G</span>, <span class="ident">F</span>, <span class="ident">T</span>&gt; <span class="ident">EdgeView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">F</span>, <span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">G</span>
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">EIndexedGraph</span>&lt;<span class="lifetime">&#39;g</span>&gt;,
-    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="ident"><span class="self">Self</span>::EIndex</span>) -&gt; <span class="ident">T</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, G, F, T&gt; EdgeView&lt;<span class="lifetime">&#39;g</span>, F, T&gt; <span class="kw">for </span>G
+<span class="kw">where
+    </span>G: EIndexedGraph&lt;<span class="lifetime">&#39;g</span>&gt;,
+    F: Fn(<span class="self">Self</span>::EIndex) -&gt; T,
 {
-    <span class="kw">fn</span> <span class="ident">eview</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="ident">F</span>, <span class="ident">eid</span>: <span class="ident"><span class="self">Self</span>::EIndex</span>) -&gt; <span class="ident">T</span> {
-        (<span class="ident">map</span>)(<span class="ident">eid</span>)
+    <span class="kw">fn </span>eview(<span class="kw-2">&amp;</span><span class="self">self</span>, map: <span class="kw-2">&amp;</span>F, eid: <span class="self">Self</span>::EIndex) -&gt; T {
+        (map)(eid)
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AdjacencyView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt;: <span class="ident">GraphBase</span>&lt;<span class="lifetime">&#39;g</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="question-mark">?</span><span class="ident">Sized</span>,
+<span class="kw">pub trait </span>AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, T&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt;
+<span class="kw">where
+    </span>M: <span class="question-mark">?</span>Sized,
 {
-    <span class="kw">type</span> <span class="ident">AViewIter</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">VIndexWithValue</span>&lt;<span class="ident"><span class="self">Self</span>::VIndex</span>, <span class="ident">T</span>&gt;&gt;;
-    <span class="kw">fn</span> <span class="ident">aviews</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="self">self</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>, <span class="ident">vid</span>: <span class="ident"><span class="self">Self</span>::VIndex</span>) -&gt; <span class="ident"><span class="self">Self</span>::AViewIter</span>;
+    <span class="kw">type </span>AViewIter: Iterator&lt;Item = VIndexWithValue&lt;<span class="self">Self</span>::VIndex, T&gt;&gt;;
+    <span class="kw">fn </span>aviews(<span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>, map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M, vid: <span class="self">Self</span>::VIndex) -&gt; <span class="self">Self</span>::AViewIter;
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AdjacencyViewIterFromEindex</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">AdjacenciesWithEindex</span>&lt;<span class="lifetime">&#39;g</span>&gt;,
+<span class="kw">pub struct </span>AdjacencyViewIterFromEindex&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T&gt;
+<span class="kw">where
+    </span>G: AdjacenciesWithEindex&lt;<span class="lifetime">&#39;g</span>&gt;,
 {
-    <span class="ident">iter</span>: <span class="ident">G::AIter</span>,
-    <span class="ident">g</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="ident">G</span>,
-    <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+    iter: G::AIter,
+    g: <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span>G,
+    map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
+    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt; <span class="ident">AdjacencyViewIterFromEindex</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">AdjacenciesWithEindex</span>&lt;<span class="lifetime">&#39;g</span>&gt;,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T&gt; AdjacencyViewIterFromEindex&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T&gt;
+<span class="kw">where
+    </span>G: AdjacenciesWithEindex&lt;<span class="lifetime">&#39;g</span>&gt;,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">iter</span>: <span class="ident">G::AIter</span>, <span class="ident">g</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;g</span> <span class="ident">G</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">iter</span>,
-            <span class="ident">g</span>,
-            <span class="ident">map</span>,
-            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>,
+    <span class="kw">pub fn </span>new(iter: G::AIter, g: <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span>G, map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            iter,
+            g,
+            map,
+            _marker: PhantomData,
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt; <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">AdjacencyViewIterFromEindex</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="lifetime">&#39;g</span> + <span class="ident">AdjacenciesWithEindex</span>&lt;<span class="lifetime">&#39;g</span>&gt; + <span class="ident">EdgeView</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">M</span>, <span class="ident">T</span>&gt;,
-    <span class="ident">M</span>: <span class="lifetime">&#39;a</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T&gt; Iterator <span class="kw">for </span>AdjacencyViewIterFromEindex&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T&gt;
+<span class="kw">where
+    </span>G: <span class="lifetime">&#39;g </span>+ AdjacenciesWithEindex&lt;<span class="lifetime">&#39;g</span>&gt; + EdgeView&lt;<span class="lifetime">&#39;g</span>, M, T&gt;,
+    M: <span class="lifetime">&#39;a</span>,
 {
-    <span class="kw">type</span> <span class="ident">Item</span> = <span class="ident">VIndexWithValue</span>&lt;<span class="ident">G::VIndex</span>, <span class="ident">T</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Item</span>&gt; {
-        <span class="self">self</span>.<span class="ident">iter</span>
-            .<span class="ident">next</span>()
-            .<span class="ident">map</span>(|<span class="ident">adj</span>| (<span class="ident">adj</span>.<span class="ident">vindex</span>(), <span class="self">self</span>.<span class="ident">g</span>.<span class="ident">eview</span>(<span class="self">self</span>.<span class="ident">map</span>, <span class="ident">adj</span>.<span class="ident">eindex</span>())).<span class="ident">into</span>())
+    <span class="kw">type </span>Item = VIndexWithValue&lt;G::VIndex, T&gt;;
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.iter
+            .next()
+            .map(|adj| (adj.vindex(), <span class="self">self</span>.g.eview(<span class="self">self</span>.map, adj.eindex())).into())
     }
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AdjacencyViewIterFromValue</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>, <span class="ident">U</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">AdjacenciesWithValue</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">T</span>&gt;,
-    <span class="ident">T</span>: <span class="ident">Clone</span>,
+<span class="kw">pub struct </span>AdjacencyViewIterFromValue&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T, U&gt;
+<span class="kw">where
+    </span>G: AdjacenciesWithValue&lt;<span class="lifetime">&#39;g</span>, T&gt;,
+    T: Clone,
 {
-    <span class="ident">iter</span>: <span class="ident">G::AIter</span>,
-    <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">U</span>&gt;,
+    iter: G::AIter,
+    map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
+    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; U&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>, <span class="ident">U</span>&gt; <span class="ident">AdjacencyViewIterFromValue</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>, <span class="ident">U</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">AdjacenciesWithValue</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">T</span>&gt;,
-    <span class="ident">T</span>: <span class="ident">Clone</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T, U&gt; AdjacencyViewIterFromValue&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T, U&gt;
+<span class="kw">where
+    </span>G: AdjacenciesWithValue&lt;<span class="lifetime">&#39;g</span>, T&gt;,
+    T: Clone,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">iter</span>: <span class="ident">G::AIter</span>, <span class="ident">map</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">iter</span>,
-            <span class="ident">map</span>,
-            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>,
+    <span class="kw">pub fn </span>new(iter: G::AIter, map: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            iter,
+            map,
+            _marker: PhantomData,
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>, <span class="ident">U</span>&gt; <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">AdjacencyViewIterFromValue</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, <span class="ident">G</span>, <span class="ident">M</span>, <span class="ident">T</span>, <span class="ident">U</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="lifetime">&#39;g</span> + <span class="ident">AdjacenciesWithValue</span>&lt;<span class="lifetime">&#39;g</span>, <span class="ident">T</span>&gt;,
-    <span class="ident">T</span>: <span class="ident">Clone</span>,
-    <span class="ident">M</span>: <span class="lifetime">&#39;a</span> + <span class="ident">Fn</span>(<span class="ident">T</span>) -&gt; <span class="ident">U</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T, U&gt; Iterator <span class="kw">for </span>AdjacencyViewIterFromValue&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, G, M, T, U&gt;
+<span class="kw">where
+    </span>G: <span class="lifetime">&#39;g </span>+ AdjacenciesWithValue&lt;<span class="lifetime">&#39;g</span>, T&gt;,
+    T: Clone,
+    M: <span class="lifetime">&#39;a </span>+ Fn(T) -&gt; U,
 {
-    <span class="kw">type</span> <span class="ident">Item</span> = <span class="ident">VIndexWithValue</span>&lt;<span class="ident">G::VIndex</span>, <span class="ident">U</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Item</span>&gt; {
-        <span class="self">self</span>.<span class="ident">iter</span>
-            .<span class="ident">next</span>()
-            .<span class="ident">map</span>(|<span class="ident">adj</span>| (<span class="ident">adj</span>.<span class="ident">vindex</span>(), (<span class="self">self</span>.<span class="ident">map</span>)(<span class="ident">adj</span>.<span class="ident">avalue</span>())).<span class="ident">into</span>())
+    <span class="kw">type </span>Item = VIndexWithValue&lt;G::VIndex, U&gt;;
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.iter
+            .next()
+            .map(|adj| (adj.vindex(), (<span class="self">self</span>.map)(adj.avalue())).into())
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

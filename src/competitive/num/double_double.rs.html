@@ -250,241 +250,241 @@
 <span id="234">234</span>
 <span id="235">235</span>
 <span id="236">236</span>
-</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::suspicious_arithmetic_impl</span>)]</span>
+</pre><pre class="rust"><code><span class="attribute">#![allow(clippy::suspicious_arithmetic_impl)]</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Bounded</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">cmp::Ordering</span>,
-    <span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Display</span>},
-    <span class="ident">num::ParseFloatError</span>,
-    <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">Div</span>, <span class="ident">Mul</span>, <span class="ident">Neg</span>, <span class="ident">Sub</span>},
-    <span class="ident">str::FromStr</span>,
+<span class="kw">use </span><span class="kw">super</span>::Bounded;
+<span class="kw">use </span>std::{
+    cmp::Ordering,
+    fmt::{<span class="self">self</span>, Display},
+    num::ParseFloatError,
+    ops::{Add, Div, Mul, Neg, Sub},
+    str::FromStr,
 };
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DoubleDouble</span>(<span class="ident">f64</span>, <span class="ident">f64</span>);
+<span class="attribute">#[derive(Clone, Copy, Debug, Default, PartialEq)]</span>
+<span class="kw">pub struct </span>DoubleDouble(f64, f64);
 
-<span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {}
-<span class="kw">impl</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">Ordering</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">total_cmp</span>(<span class="ident">x</span>: <span class="ident">f64</span>, <span class="ident">y</span>: <span class="ident">f64</span>) -&gt; <span class="ident">Ordering</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> = <span class="ident">x</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i64</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right</span> = <span class="ident">y</span>.<span class="ident">to_bits</span>() <span class="kw">as</span> <span class="ident">i64</span>;
-            <span class="ident">left</span> ^= (((<span class="ident">left</span> &gt;&gt; <span class="number">63</span>) <span class="kw">as</span> <span class="ident">u64</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i64</span>;
-            <span class="ident">right</span> ^= (((<span class="ident">right</span> &gt;&gt; <span class="number">63</span>) <span class="kw">as</span> <span class="ident">u64</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as</span> <span class="ident">i64</span>;
-            <span class="ident">left</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">right</span>)
+<span class="kw">impl </span>Eq <span class="kw">for </span>DoubleDouble {}
+<span class="kw">impl </span>PartialOrd <span class="kw">for </span>DoubleDouble {
+    <span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
+        <span class="kw">fn </span>total_cmp(x: f64, y: f64) -&gt; Ordering {
+            <span class="kw">let </span><span class="kw-2">mut </span>left = x.to_bits() <span class="kw">as </span>i64;
+            <span class="kw">let </span><span class="kw-2">mut </span>right = y.to_bits() <span class="kw">as </span>i64;
+            left ^= (((left &gt;&gt; <span class="number">63</span>) <span class="kw">as </span>u64) &gt;&gt; <span class="number">1</span>) <span class="kw">as </span>i64;
+            right ^= (((right &gt;&gt; <span class="number">63</span>) <span class="kw">as </span>u64) &gt;&gt; <span class="number">1</span>) <span class="kw">as </span>i64;
+            left.cmp(<span class="kw-2">&amp;</span>right)
         }
-        <span class="prelude-val">Some</span>(<span class="ident">total_cmp</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">other</span>.<span class="number">0</span>).<span class="ident">then_with</span>(|| <span class="ident">total_cmp</span>(<span class="self">self</span>.<span class="number">1</span>, <span class="ident">other</span>.<span class="number">1</span>)))
+        <span class="prelude-val">Some</span>(total_cmp(<span class="self">self</span>.<span class="number">0</span>, other.<span class="number">0</span>).then_with(|| total_cmp(<span class="self">self</span>.<span class="number">1</span>, other.<span class="number">1</span>)))
     }
 }
-<span class="kw">impl</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">Ordering</span> {
-        <span class="self">self</span>.<span class="ident">partial_cmp</span>(<span class="ident">other</span>).<span class="ident">unwrap</span>()
+<span class="kw">impl </span>Ord <span class="kw">for </span>DoubleDouble {
+    <span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; Ordering {
+        <span class="self">self</span>.partial_cmp(other).unwrap()
     }
 }
-<span class="kw">impl</span> <span class="ident">Bounded</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">fn</span> <span class="ident">maximum</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">DoubleDouble::from</span>(&lt;<span class="ident">f64</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::maximum</span>())
+<span class="kw">impl </span>Bounded <span class="kw">for </span>DoubleDouble {
+    <span class="kw">fn </span>maximum() -&gt; <span class="self">Self </span>{
+        DoubleDouble::from(&lt;f64 <span class="kw">as </span>Bounded&gt;::maximum())
     }
-    <span class="kw">fn</span> <span class="ident">minimum</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">DoubleDouble::from</span>(&lt;<span class="ident">f64</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>())
+    <span class="kw">fn </span>minimum() -&gt; <span class="self">Self </span>{
+        DoubleDouble::from(&lt;f64 <span class="kw">as </span>Bounded&gt;::minimum())
     }
 }
 
-<span class="kw">impl</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">fn</span> <span class="ident">renormalize</span>(<span class="ident">a0</span>: <span class="ident">f64</span>, <span class="ident">a1</span>: <span class="ident">f64</span>, <span class="ident">a2</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">t2</span>) = <span class="ident">quick_two_sum</span>(<span class="ident">a1</span>, <span class="ident">a2</span>);
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">s</span>, <span class="ident">t1</span>) = <span class="ident">quick_two_sum</span>(<span class="ident">a0</span>, <span class="ident">s</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> = (<span class="ident">s</span>, <span class="ident">t1</span>);
-        <span class="kw">if</span> <span class="ident">t1</span> != <span class="number">0.</span> {
-            <span class="ident">b</span>.<span class="number">0</span> = <span class="ident">s</span>;
-            <span class="ident">s</span> = <span class="ident">t1</span>;
+<span class="kw">impl </span>DoubleDouble {
+    <span class="kw">fn </span>renormalize(a0: f64, a1: f64, a2: f64) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>(s, t2) = quick_two_sum(a1, a2);
+        <span class="kw">let </span>(<span class="kw-2">mut </span>s, t1) = quick_two_sum(a0, s);
+        <span class="kw">let </span><span class="kw-2">mut </span>b = (s, t1);
+        <span class="kw">if </span>t1 != <span class="number">0. </span>{
+            b.<span class="number">0 </span>= s;
+            s = t1;
         }
-        <span class="kw">let</span> (<span class="ident">s</span>, <span class="ident">e</span>) = <span class="ident">quick_two_sum</span>(<span class="ident">s</span>, <span class="ident">t2</span>);
-        <span class="kw">if</span> <span class="ident">e</span> != <span class="number">0.</span> {
-            <span class="kw">if</span> <span class="ident">t1</span> != <span class="number">0.</span> {
-                <span class="ident">b</span>.<span class="number">1</span> = <span class="ident">s</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">b</span>.<span class="number">0</span> = <span class="ident">s</span>;
+        <span class="kw">let </span>(s, e) = quick_two_sum(s, t2);
+        <span class="kw">if </span>e != <span class="number">0. </span>{
+            <span class="kw">if </span>t1 != <span class="number">0. </span>{
+                b.<span class="number">1 </span>= s;
+            } <span class="kw">else </span>{
+                b.<span class="number">0 </span>= s;
             }
         }
-        <span class="self">Self</span>(<span class="ident">b</span>.<span class="number">0</span>, <span class="ident">b</span>.<span class="number">1</span>)
+        <span class="self">Self</span>(b.<span class="number">0</span>, b.<span class="number">1</span>)
     }
 }
 
-<span class="kw">fn</span> <span class="ident">quick_two_sum</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) -&gt; (<span class="ident">f64</span>, <span class="ident">f64</span>) {
-    <span class="kw">let</span> <span class="ident">s</span> = <span class="ident">a</span> + <span class="ident">b</span>;
-    <span class="kw">let</span> <span class="ident">e</span> = <span class="ident">b</span> - (<span class="ident">s</span> - <span class="ident">a</span>);
-    (<span class="ident">s</span>, <span class="ident">e</span>)
+<span class="kw">fn </span>quick_two_sum(a: f64, b: f64) -&gt; (f64, f64) {
+    <span class="kw">let </span>s = a + b;
+    <span class="kw">let </span>e = b - (s - a);
+    (s, e)
 }
 
-<span class="kw">fn</span> <span class="ident">two_sum</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) -&gt; (<span class="ident">f64</span>, <span class="ident">f64</span>) {
-    <span class="kw">let</span> <span class="ident">s</span> = <span class="ident">a</span> + <span class="ident">b</span>;
-    <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">s</span> - <span class="ident">a</span>;
-    <span class="kw">let</span> <span class="ident">e</span> = (<span class="ident">a</span> - (<span class="ident">s</span> - <span class="ident">v</span>)) + (<span class="ident">b</span> - <span class="ident">v</span>);
-    (<span class="ident">s</span>, <span class="ident">e</span>)
+<span class="kw">fn </span>two_sum(a: f64, b: f64) -&gt; (f64, f64) {
+    <span class="kw">let </span>s = a + b;
+    <span class="kw">let </span>v = s - a;
+    <span class="kw">let </span>e = (a - (s - v)) + (b - v);
+    (s, e)
 }
 
-<span class="kw">fn</span> <span class="ident">split</span>(<span class="ident">a</span>: <span class="ident">f64</span>) -&gt; (<span class="ident">f64</span>, <span class="ident">f64</span>) {
-    <span class="kw">let</span> <span class="ident">t</span> = <span class="number">134_217_729.</span> * <span class="ident">a</span>; <span class="comment">// 134217729 = 2 ** 27 + 1</span>
-    <span class="kw">let</span> <span class="ident">ahi</span> = <span class="ident">t</span> - (<span class="ident">t</span> - <span class="ident">a</span>);
-    <span class="kw">let</span> <span class="ident">alo</span> = <span class="ident">a</span> - <span class="ident">ahi</span>;
-    (<span class="ident">ahi</span>, <span class="ident">alo</span>)
+<span class="kw">fn </span>split(a: f64) -&gt; (f64, f64) {
+    <span class="kw">let </span>t = <span class="number">134_217_729. </span>* a; <span class="comment">// 134217729 = 2 ** 27 + 1
+    </span><span class="kw">let </span>ahi = t - (t - a);
+    <span class="kw">let </span>alo = a - ahi;
+    (ahi, alo)
 }
 
-<span class="kw">fn</span> <span class="ident">two_prod</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>) -&gt; (<span class="ident">f64</span>, <span class="ident">f64</span>) {
-    <span class="kw">let</span> <span class="ident">p</span> = <span class="ident">a</span> * <span class="ident">b</span>;
-    <span class="kw">let</span> (<span class="ident">ahi</span>, <span class="ident">alo</span>) = <span class="ident">split</span>(<span class="ident">a</span>);
-    <span class="kw">let</span> (<span class="ident">bhi</span>, <span class="ident">blo</span>) = <span class="ident">split</span>(<span class="ident">b</span>);
-    <span class="kw">let</span> <span class="ident">e</span> = ((<span class="ident">ahi</span> * <span class="ident">bhi</span> - <span class="ident">p</span>) + <span class="ident">ahi</span> * <span class="ident">blo</span> + <span class="ident">alo</span> * <span class="ident">bhi</span>) + <span class="ident">alo</span> * <span class="ident">blo</span>;
-    (<span class="ident">p</span>, <span class="ident">e</span>)
+<span class="kw">fn </span>two_prod(a: f64, b: f64) -&gt; (f64, f64) {
+    <span class="kw">let </span>p = a * b;
+    <span class="kw">let </span>(ahi, alo) = split(a);
+    <span class="kw">let </span>(bhi, blo) = split(b);
+    <span class="kw">let </span>e = ((ahi * bhi - p) + ahi * blo + alo * bhi) + alo * blo;
+    (p, e)
 }
 
-<span class="kw">fn</span> <span class="ident">three_two_sum</span>(<span class="ident">a</span>: <span class="ident">f64</span>, <span class="ident">b</span>: <span class="ident">f64</span>, <span class="ident">c</span>: <span class="ident">f64</span>) -&gt; (<span class="ident">f64</span>, <span class="ident">f64</span>) {
-    <span class="kw">let</span> (<span class="ident">u</span>, <span class="ident">v</span>) = <span class="ident">two_sum</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-    <span class="kw">let</span> (<span class="ident">r0</span>, <span class="ident">w</span>) = <span class="ident">two_sum</span>(<span class="ident">u</span>, <span class="ident">c</span>);
-    <span class="kw">let</span> <span class="ident">r1</span> = <span class="ident">v</span> + <span class="ident">w</span>;
-    (<span class="ident">r0</span>, <span class="ident">r1</span>)
+<span class="kw">fn </span>three_two_sum(a: f64, b: f64, c: f64) -&gt; (f64, f64) {
+    <span class="kw">let </span>(u, v) = two_sum(a, b);
+    <span class="kw">let </span>(r0, w) = two_sum(u, c);
+    <span class="kw">let </span>r1 = v + w;
+    (r0, r1)
 }
 
-<span class="kw">impl</span> <span class="ident">Add</span>&lt;<span class="ident">f64</span>&gt; <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">f64</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> (<span class="ident">t0</span>, <span class="ident">e</span>) = <span class="ident">two_sum</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">rhs</span>);
-        <span class="kw">let</span> (<span class="ident">t1</span>, <span class="ident">t2</span>) = <span class="ident">two_sum</span>(<span class="self">self</span>.<span class="number">1</span>, <span class="ident">e</span>);
-        <span class="ident"><span class="self">Self</span>::renormalize</span>(<span class="ident">t0</span>, <span class="ident">t1</span>, <span class="ident">t2</span>)
+<span class="kw">impl </span>Add&lt;f64&gt; <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: f64) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>(t0, e) = two_sum(<span class="self">self</span>.<span class="number">0</span>, rhs);
+        <span class="kw">let </span>(t1, t2) = two_sum(<span class="self">self</span>.<span class="number">1</span>, e);
+        <span class="self">Self</span>::renormalize(t0, t1, t2)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Add</span>&lt;<span class="ident">DoubleDouble</span>&gt; <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> (<span class="ident">t0</span>, <span class="ident">e</span>) = <span class="ident">two_sum</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">rhs</span>.<span class="number">0</span>);
-        <span class="kw">let</span> (<span class="ident">t1</span>, <span class="ident">t2</span>) = <span class="ident">three_two_sum</span>(<span class="self">self</span>.<span class="number">1</span>, <span class="ident">rhs</span>.<span class="number">1</span>, <span class="ident">e</span>);
-        <span class="ident"><span class="self">Self</span>::renormalize</span>(<span class="ident">t0</span>, <span class="ident">t1</span>, <span class="ident">t2</span>)
+<span class="kw">impl </span>Add&lt;DoubleDouble&gt; <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>(t0, e) = two_sum(<span class="self">self</span>.<span class="number">0</span>, rhs.<span class="number">0</span>);
+        <span class="kw">let </span>(t1, t2) = three_two_sum(<span class="self">self</span>.<span class="number">1</span>, rhs.<span class="number">1</span>, e);
+        <span class="self">Self</span>::renormalize(t0, t1, t2)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Sub</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="self">self</span> + -<span class="ident">rhs</span>
+<span class="kw">impl </span>Sub <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self </span>+ -rhs
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Neg</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
+<span class="kw">impl </span>Neg <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self</span>(-<span class="self">self</span>.<span class="number">0</span>, -<span class="self">self</span>.<span class="number">1</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Mul</span>&lt;<span class="ident">f64</span>&gt; <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">f64</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> (<span class="ident">t0</span>, <span class="ident">e0</span>) = <span class="ident">two_prod</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">rhs</span>);
-        <span class="kw">let</span> <span class="ident">p1</span> = <span class="self">self</span>.<span class="number">1</span> * <span class="ident">rhs</span>;
-        <span class="kw">let</span> (<span class="ident">t1</span>, <span class="ident">t2</span>) = <span class="ident">two_sum</span>(<span class="ident">p1</span>, <span class="ident">e0</span>);
-        <span class="ident"><span class="self">Self</span>::renormalize</span>(<span class="ident">t0</span>, <span class="ident">t1</span>, <span class="ident">t2</span>)
+<span class="kw">impl </span>Mul&lt;f64&gt; <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: f64) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>(t0, e0) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs);
+        <span class="kw">let </span>p1 = <span class="self">self</span>.<span class="number">1 </span>* rhs;
+        <span class="kw">let </span>(t1, t2) = two_sum(p1, e0);
+        <span class="self">Self</span>::renormalize(t0, t1, t2)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Mul</span>&lt;<span class="ident">DoubleDouble</span>&gt; <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> (<span class="ident">t0</span>, <span class="ident">q00</span>) = <span class="ident">two_prod</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">rhs</span>.<span class="number">0</span>);
-        <span class="kw">let</span> (<span class="ident">p01</span>, <span class="ident">q01</span>) = <span class="ident">two_prod</span>(<span class="self">self</span>.<span class="number">0</span>, <span class="ident">rhs</span>.<span class="number">1</span>);
-        <span class="kw">let</span> (<span class="ident">p10</span>, <span class="ident">q10</span>) = <span class="ident">two_prod</span>(<span class="self">self</span>.<span class="number">1</span>, <span class="ident">rhs</span>.<span class="number">0</span>);
-        <span class="kw">let</span> <span class="ident">p11</span> = <span class="self">self</span>.<span class="number">1</span> * <span class="ident">rhs</span>.<span class="number">1</span>;
-        <span class="kw">let</span> (<span class="ident">t1</span>, <span class="ident">e1</span>) = <span class="ident">three_two_sum</span>(<span class="ident">q00</span>, <span class="ident">p01</span>, <span class="ident">p10</span>);
-        <span class="kw">let</span> <span class="ident">t2</span> = <span class="ident">e1</span> + <span class="ident">q01</span> + <span class="ident">q10</span> + <span class="ident">p11</span>;
-        <span class="ident"><span class="self">Self</span>::renormalize</span>(<span class="ident">t0</span>, <span class="ident">t1</span>, <span class="ident">t2</span>)
+<span class="kw">impl </span>Mul&lt;DoubleDouble&gt; <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>(t0, q00) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs.<span class="number">0</span>);
+        <span class="kw">let </span>(p01, q01) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs.<span class="number">1</span>);
+        <span class="kw">let </span>(p10, q10) = two_prod(<span class="self">self</span>.<span class="number">1</span>, rhs.<span class="number">0</span>);
+        <span class="kw">let </span>p11 = <span class="self">self</span>.<span class="number">1 </span>* rhs.<span class="number">1</span>;
+        <span class="kw">let </span>(t1, e1) = three_two_sum(q00, p01, p10);
+        <span class="kw">let </span>t2 = e1 + q01 + q10 + p11;
+        <span class="self">Self</span>::renormalize(t0, t1, t2)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Div</span>&lt;<span class="ident">DoubleDouble</span>&gt; <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">div</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> <span class="ident">q0</span> = <span class="self">self</span>.<span class="number">0</span> / <span class="ident">rhs</span>.<span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">r</span> = <span class="self">self</span> - <span class="ident">rhs</span> * <span class="ident">q0</span>;
-        <span class="kw">let</span> <span class="ident">q1</span> = <span class="ident">r</span>.<span class="number">0</span> / <span class="ident">rhs</span>.<span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">r</span> - <span class="ident">rhs</span> * <span class="ident">q1</span>;
-        <span class="kw">let</span> <span class="ident">q2</span> = <span class="ident">r</span>.<span class="number">0</span> / <span class="ident">rhs</span>.<span class="number">0</span>;
-        <span class="ident"><span class="self">Self</span>::renormalize</span>(<span class="ident">q0</span>, <span class="ident">q1</span>, <span class="ident">q2</span>)
+<span class="kw">impl </span>Div&lt;DoubleDouble&gt; <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>div(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>q0 = <span class="self">self</span>.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
+        <span class="kw">let </span>r = <span class="self">self </span>- rhs * q0;
+        <span class="kw">let </span>q1 = r.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
+        <span class="kw">let </span>r = r - rhs * q1;
+        <span class="kw">let </span>q2 = r.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
+        <span class="self">Self</span>::renormalize(q0, q1, q2)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span>&lt;<span class="ident">DoubleDouble</span>&gt; <span class="kw">for</span> <span class="ident">f64</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">DoubleDouble</span>) -&gt; <span class="ident">f64</span> {
-        <span class="ident">x</span>.<span class="number">1</span> + <span class="ident">x</span>.<span class="number">0</span>
-    }
+<span class="kw">impl </span>From&lt;DoubleDouble&gt; <span class="kw">for </span>f64 {
+    <span class="kw">fn </span>from(x: DoubleDouble) -&gt; f64 {
+        x.<span class="number">1 </span>+ x.<span class="number">0
+    </span>}
 }
 
-<span class="kw">impl</span> <span class="ident">From</span>&lt;<span class="ident">DoubleDouble</span>&gt; <span class="kw">for</span> <span class="ident">i64</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="kw-2">mut</span> <span class="ident">x</span>: <span class="ident">DoubleDouble</span>) -&gt; <span class="ident">i64</span> {
-        <span class="kw">let</span> <span class="ident">is_neg</span> = <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">is_sign_negative</span>();
-        <span class="kw">if</span> <span class="ident">is_neg</span> {
-            <span class="ident">x</span> = -<span class="ident">x</span>;
+<span class="kw">impl </span>From&lt;DoubleDouble&gt; <span class="kw">for </span>i64 {
+    <span class="kw">fn </span>from(<span class="kw-2">mut </span>x: DoubleDouble) -&gt; i64 {
+        <span class="kw">let </span>is_neg = x.<span class="number">0</span>.is_sign_negative();
+        <span class="kw">if </span>is_neg {
+            x = -x;
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> = <span class="number">0i64</span>;
-        <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="number">64</span>).<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">t</span> = (<span class="ident">k</span> <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">exp2</span>();
-            <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span> &gt;= <span class="ident">t</span> {
-                <span class="ident">x</span> = <span class="ident">x</span> + -<span class="ident">t</span>;
-                <span class="ident">i</span> += <span class="number">1</span> &lt;&lt; <span class="ident">k</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0i64</span>;
+        <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">1</span>..<span class="number">64</span>).rev() {
+            <span class="kw">let </span>t = (k <span class="kw">as </span>f64).exp2();
+            <span class="kw">if </span>x.<span class="number">0 </span>&gt;= t {
+                x = x + -t;
+                i += <span class="number">1 </span>&lt;&lt; k;
             }
         }
-        <span class="ident">i</span> += <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">round</span>() <span class="kw">as</span> <span class="ident">i64</span>;
-        <span class="kw">if</span> <span class="ident">is_neg</span> {
-            <span class="ident">i</span> = -<span class="ident">i</span>;
+        i += x.<span class="number">0</span>.round() <span class="kw">as </span>i64;
+        <span class="kw">if </span>is_neg {
+            i = -i;
         }
-        <span class="ident">i</span>
+        i
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span>&lt;<span class="ident">f64</span>&gt; <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">x</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span>(<span class="ident">x</span>, <span class="number">0.</span>)
+<span class="kw">impl </span>From&lt;f64&gt; <span class="kw">for </span>DoubleDouble {
+    <span class="kw">fn </span>from(x: f64) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(x, <span class="number">0.</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">1</span> + <span class="self">self</span>.<span class="number">0</span>)
+<span class="kw">impl </span>Display <span class="kw">for </span>DoubleDouble {
+    <span class="kw">fn </span>fmt&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">1 </span>+ <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">FromStr</span> <span class="kw">for</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">type</span> <span class="prelude-val">Err</span> = <span class="ident">ParseFloatError</span>;
-    <span class="kw">fn</span> <span class="ident">from_str</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Err</span>&gt; {
-        <span class="ident">s</span>.<span class="ident">parse</span>::&lt;<span class="ident">f64</span>&gt;().<span class="ident">map</span>(<span class="ident"><span class="self">Self</span>::from</span>)
+<span class="kw">impl </span>FromStr <span class="kw">for </span>DoubleDouble {
+    <span class="kw">type </span><span class="prelude-val">Err </span>= ParseFloatError;
+    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+        s.parse::&lt;f64&gt;().map(<span class="self">Self</span>::from)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">DoubleDouble</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_zero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="number">0</span> == <span class="number">0.</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sqrt</span>(<span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_zero</span>() {
-            <span class="kw">return</span> <span class="ident"><span class="self">Self</span>::from</span>(<span class="number">0.</span>);
+<span class="kw">impl </span>DoubleDouble {
+    <span class="kw">pub fn </span>is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.<span class="number">0 </span>== <span class="number">0.
+    </span>}
+    <span class="kw">pub fn </span>sqrt(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="kw">if </span><span class="self">self</span>.is_zero() {
+            <span class="kw">return </span><span class="self">Self</span>::from(<span class="number">0.</span>);
         }
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident"><span class="self">Self</span>::from</span>(<span class="number">1.</span> / <span class="self">self</span>.<span class="number">0</span>.<span class="ident">sqrt</span>());
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">x</span> + <span class="ident">x</span> * (<span class="ident"><span class="self">Self</span>::from</span>(<span class="number">1.</span>) - <span class="self">self</span> * <span class="ident">x</span> * <span class="ident">x</span>).<span class="ident">div2</span>(<span class="number">2.</span>);
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">x</span> + <span class="ident">x</span> * (<span class="ident"><span class="self">Self</span>::from</span>(<span class="number">1.</span>) - <span class="self">self</span> * <span class="ident">x</span> * <span class="ident">x</span>).<span class="ident">div2</span>(<span class="number">2.</span>);
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">x</span> + <span class="ident">x</span> * (<span class="ident"><span class="self">Self</span>::from</span>(<span class="number">1.</span>) - <span class="self">self</span> * <span class="ident">x</span> * <span class="ident">x</span>).<span class="ident">div2</span>(<span class="number">2.</span>);
-        <span class="ident">x</span> * <span class="self">self</span>
+        <span class="kw">let </span>x = <span class="self">Self</span>::from(<span class="number">1. </span>/ <span class="self">self</span>.<span class="number">0</span>.sqrt());
+        <span class="kw">let </span>x = x + x * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self">self </span>* x * x).div2(<span class="number">2.</span>);
+        <span class="kw">let </span>x = x + x * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self">self </span>* x * x).div2(<span class="number">2.</span>);
+        <span class="kw">let </span>x = x + x * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self">self </span>* x * x).div2(<span class="number">2.</span>);
+        x * <span class="self">self
+    </span>}
+    <span class="kw">pub fn </span>abs(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="kw">if </span><span class="self">self</span>.<span class="number">0</span>.is_sign_negative() {
+            -<span class="self">self
+        </span>} <span class="kw">else </span>{
+            <span class="self">self
+        </span>}
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">abs</span>(<span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">is_sign_negative</span>() {
-            -<span class="self">self</span>
-        } <span class="kw">else</span> {
-            <span class="self">self</span>
-        }
-    }
-    <span class="kw">fn</span> <span class="ident">div2</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span>(<span class="self">self</span>.<span class="number">0</span> / <span class="ident">rhs</span>, <span class="self">self</span>.<span class="number">1</span> / <span class="ident">rhs</span>)
+    <span class="kw">fn </span>div2(<span class="self">self</span>, rhs: f64) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(<span class="self">self</span>.<span class="number">0 </span>/ rhs, <span class="self">self</span>.<span class="number">1 </span>/ rhs)
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

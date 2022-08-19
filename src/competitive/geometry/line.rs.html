@@ -117,108 +117,108 @@
 <span id="101">101</span>
 <span id="102">102</span>
 <span id="103">103</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Approx</span>, <span class="ident">Ccw</span>, <span class="ident">Point</span>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{Approx, Ccw, Point};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Line</span> {
-    <span class="ident">p1</span>: <span class="ident">Point</span>,
-    <span class="ident">p2</span>: <span class="ident">Point</span>,
+<span class="attribute">#[derive(Clone, Debug, PartialEq)]</span>
+<span class="kw">pub struct </span>Line {
+    p1: Point,
+    p2: Point,
 }
-<span class="kw">impl</span> <span class="ident">Line</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">p1</span>: <span class="ident">Point</span>, <span class="ident">p2</span>: <span class="ident">Point</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Line</span> { <span class="ident">p1</span>, <span class="ident">p2</span> }
+<span class="kw">impl </span>Line {
+    <span class="kw">pub fn </span>new(p1: Point, p2: Point) -&gt; <span class="self">Self </span>{
+        Line { p1, p2 }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dir</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Point</span> {
-        <span class="self">self</span>.<span class="ident">p2</span> - <span class="self">self</span>.<span class="ident">p1</span>
+    <span class="kw">pub fn </span>dir(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Point {
+        <span class="self">self</span>.p2 - <span class="self">self</span>.p1
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ccw</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">Ccw</span> {
-        <span class="ident">Ccw::ccw</span>(<span class="self">self</span>.<span class="ident">p1</span>, <span class="self">self</span>.<span class="ident">p2</span>, <span class="ident">p</span>)
+    <span class="kw">pub fn </span>ccw(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; Ccw {
+        Ccw::ccw(<span class="self">self</span>.p1, <span class="self">self</span>.p2, p)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">projection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">Point</span> {
-        <span class="kw">let</span> <span class="ident">e</span> = <span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">unit</span>();
-        <span class="self">self</span>.<span class="ident">p1</span> + <span class="ident">e</span> * (<span class="ident">p</span> - <span class="self">self</span>.<span class="ident">p1</span>).<span class="ident">dot</span>(<span class="ident">e</span>)
+    <span class="kw">pub fn </span>projection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; Point {
+        <span class="kw">let </span>e = <span class="self">self</span>.dir().unit();
+        <span class="self">self</span>.p1 + e * (p - <span class="self">self</span>.p1).dot(e)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reflection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">Point</span> {
-        <span class="ident">p</span> + (<span class="self">self</span>.<span class="ident">projection</span>(<span class="ident">p</span>) - <span class="ident">p</span>) * <span class="number">2.0</span>
+    <span class="kw">pub fn </span>reflection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; Point {
+        p + (<span class="self">self</span>.projection(p) - p) * <span class="number">2.0
+    </span>}
+    <span class="kw">pub fn </span>distance_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; f64 {
+        (p / <span class="self">self</span>.dir().unit()).re
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">distance_point</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">f64</span> {
-        (<span class="ident">p</span> / <span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">unit</span>()).<span class="ident">re</span>
+    <span class="kw">pub fn </span>is_parallel(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        Approx(<span class="self">self</span>.dir().cross(other.dir())) == Approx(<span class="number">0.</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_parallel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">Approx</span>(<span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">cross</span>(<span class="ident">other</span>.<span class="ident">dir</span>())) == <span class="ident">Approx</span>(<span class="number">0.</span>)
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_orthogonal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">Approx</span>(<span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">dot</span>(<span class="ident">other</span>.<span class="ident">dir</span>())) == <span class="ident">Approx</span>(<span class="number">0.</span>)
+    <span class="kw">pub fn </span>is_orthogonal(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        Approx(<span class="self">self</span>.dir().dot(other.dir())) == Approx(<span class="number">0.</span>)
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LineSegment</span> {
-    <span class="ident">p1</span>: <span class="ident">Point</span>,
-    <span class="ident">p2</span>: <span class="ident">Point</span>,
+<span class="attribute">#[derive(Clone, Debug, PartialEq)]</span>
+<span class="kw">pub struct </span>LineSegment {
+    p1: Point,
+    p2: Point,
 }
-<span class="kw">impl</span> <span class="ident">LineSegment</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">p1</span>: <span class="ident">Point</span>, <span class="ident">p2</span>: <span class="ident">Point</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">LineSegment</span> { <span class="ident">p1</span>, <span class="ident">p2</span> }
+<span class="kw">impl </span>LineSegment {
+    <span class="kw">pub fn </span>new(p1: Point, p2: Point) -&gt; <span class="self">Self </span>{
+        LineSegment { p1, p2 }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dir</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Point</span> {
-        <span class="self">self</span>.<span class="ident">p2</span> - <span class="self">self</span>.<span class="ident">p1</span>
+    <span class="kw">pub fn </span>dir(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Point {
+        <span class="self">self</span>.p2 - <span class="self">self</span>.p1
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ccw</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">Ccw</span> {
-        <span class="ident">Ccw::ccw</span>(<span class="self">self</span>.<span class="ident">p1</span>, <span class="self">self</span>.<span class="ident">p2</span>, <span class="ident">p</span>)
+    <span class="kw">pub fn </span>ccw(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; Ccw {
+        Ccw::ccw(<span class="self">self</span>.p1, <span class="self">self</span>.p2, p)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">projection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">Point</span> {
-        <span class="kw">let</span> <span class="ident">e</span> = <span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">unit</span>();
-        <span class="self">self</span>.<span class="ident">p1</span> + <span class="ident">e</span> * (<span class="ident">p</span> - <span class="self">self</span>.<span class="ident">p1</span>).<span class="ident">dot</span>(<span class="ident">e</span>)
+    <span class="kw">pub fn </span>projection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; Point {
+        <span class="kw">let </span>e = <span class="self">self</span>.dir().unit();
+        <span class="self">self</span>.p1 + e * (p - <span class="self">self</span>.p1).dot(e)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reflection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">Point</span> {
-        <span class="ident">p</span> + (<span class="self">self</span>.<span class="ident">projection</span>(<span class="ident">p</span>) - <span class="ident">p</span>) * <span class="number">2.0</span>
+    <span class="kw">pub fn </span>reflection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; Point {
+        p + (<span class="self">self</span>.projection(p) - p) * <span class="number">2.0
+    </span>}
+    <span class="kw">pub fn </span>is_parallel(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        Approx(<span class="self">self</span>.dir().cross(other.dir())) == Approx(<span class="number">0.</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_parallel</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">Approx</span>(<span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">cross</span>(<span class="ident">other</span>.<span class="ident">dir</span>())) == <span class="ident">Approx</span>(<span class="number">0.</span>)
+    <span class="kw">pub fn </span>is_orthogonal(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        Approx(<span class="self">self</span>.dir().dot(other.dir())) == Approx(<span class="number">0.</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_orthogonal</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">Approx</span>(<span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">dot</span>(<span class="ident">other</span>.<span class="ident">dir</span>())) == <span class="ident">Approx</span>(<span class="number">0.</span>)
+    <span class="kw">pub fn </span>intersect(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="self">self</span>.ccw(other.p1) <span class="kw">as </span>i8 * <span class="self">self</span>.ccw(other.p2) <span class="kw">as </span>i8 &lt;= <span class="number">0
+            </span>&amp;&amp; other.ccw(<span class="self">self</span>.p1) <span class="kw">as </span>i8 * other.ccw(<span class="self">self</span>.p2) <span class="kw">as </span>i8 &lt;= <span class="number">0
+    </span>}
+    <span class="kw">pub fn </span>intersect_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; bool {
+        <span class="self">self</span>.ccw(p) == Ccw::OnSegment
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">intersect</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">ccw</span>(<span class="ident">other</span>.<span class="ident">p1</span>) <span class="kw">as</span> <span class="ident">i8</span> * <span class="self">self</span>.<span class="ident">ccw</span>(<span class="ident">other</span>.<span class="ident">p2</span>) <span class="kw">as</span> <span class="ident">i8</span> &lt;= <span class="number">0</span>
-            &amp;&amp; <span class="ident">other</span>.<span class="ident">ccw</span>(<span class="self">self</span>.<span class="ident">p1</span>) <span class="kw">as</span> <span class="ident">i8</span> * <span class="ident">other</span>.<span class="ident">ccw</span>(<span class="self">self</span>.<span class="ident">p2</span>) <span class="kw">as</span> <span class="ident">i8</span> &lt;= <span class="number">0</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">intersect_point</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">ccw</span>(<span class="ident">p</span>) == <span class="ident">Ccw::OnSegment</span>
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cross_point</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">Point</span>&gt; {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">intersect</span>(<span class="ident">other</span>) {
-            <span class="kw">let</span> <span class="ident">a</span> = <span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">cross</span>(<span class="ident">other</span>.<span class="ident">dir</span>());
-            <span class="kw">let</span> <span class="ident">b</span> = <span class="self">self</span>.<span class="ident">dir</span>().<span class="ident">cross</span>(<span class="self">self</span>.<span class="ident">p2</span> - <span class="ident">other</span>.<span class="ident">p1</span>);
-            <span class="kw">if</span> <span class="ident">Approx</span>(<span class="ident">a</span>.<span class="ident">abs</span>()) == <span class="ident">Approx</span>(<span class="number">0.</span>) &amp;&amp; <span class="ident">Approx</span>(<span class="ident">b</span>.<span class="ident">abs</span>()) == <span class="ident">Approx</span>(<span class="number">0.</span>) {
-                <span class="prelude-val">Some</span>(<span class="ident">other</span>.<span class="ident">p1</span>)
-            } <span class="kw">else</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">other</span>.<span class="ident">p1</span> + (<span class="ident">other</span>.<span class="ident">dir</span>() * <span class="ident">b</span> / <span class="ident">a</span>))
+    <span class="kw">pub fn </span>cross_point(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Point&gt; {
+        <span class="kw">if </span><span class="self">self</span>.intersect(other) {
+            <span class="kw">let </span>a = <span class="self">self</span>.dir().cross(other.dir());
+            <span class="kw">let </span>b = <span class="self">self</span>.dir().cross(<span class="self">self</span>.p2 - other.p1);
+            <span class="kw">if </span>Approx(a.abs()) == Approx(<span class="number">0.</span>) &amp;&amp; Approx(b.abs()) == Approx(<span class="number">0.</span>) {
+                <span class="prelude-val">Some</span>(other.p1)
+            } <span class="kw">else </span>{
+                <span class="prelude-val">Some</span>(other.p1 + (other.dir() * b / a))
             }
-        } <span class="kw">else</span> {
-            <span class="prelude-val">None</span>
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+    <span class="kw">pub fn </span>distance_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; f64 {
+        <span class="kw">let </span>r = <span class="self">self</span>.projection(p);
+        <span class="kw">if </span><span class="self">self</span>.intersect_point(r) {
+            (r - p).abs()
+        } <span class="kw">else </span>{
+            (<span class="self">self</span>.p1 - p).abs().min((<span class="self">self</span>.p2 - p).abs())
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">distance_point</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">f64</span> {
-        <span class="kw">let</span> <span class="ident">r</span> = <span class="self">self</span>.<span class="ident">projection</span>(<span class="ident">p</span>);
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">intersect_point</span>(<span class="ident">r</span>) {
-            (<span class="ident">r</span> - <span class="ident">p</span>).<span class="ident">abs</span>()
-        } <span class="kw">else</span> {
-            (<span class="self">self</span>.<span class="ident">p1</span> - <span class="ident">p</span>).<span class="ident">abs</span>().<span class="ident">min</span>((<span class="self">self</span>.<span class="ident">p2</span> - <span class="ident">p</span>).<span class="ident">abs</span>())
-        }
-    }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">distance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">f64</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">intersect</span>(<span class="ident">other</span>) {
-            <span class="number">0.</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">d1</span> = <span class="self">self</span>.<span class="ident">distance_point</span>(<span class="ident">other</span>.<span class="ident">p1</span>);
-            <span class="kw">let</span> <span class="ident">d2</span> = <span class="self">self</span>.<span class="ident">distance_point</span>(<span class="ident">other</span>.<span class="ident">p2</span>);
-            <span class="kw">let</span> <span class="ident">d3</span> = <span class="ident">other</span>.<span class="ident">distance_point</span>(<span class="self">self</span>.<span class="ident">p1</span>);
-            <span class="kw">let</span> <span class="ident">d4</span> = <span class="ident">other</span>.<span class="ident">distance_point</span>(<span class="self">self</span>.<span class="ident">p2</span>);
-            <span class="ident">d1</span>.<span class="ident">min</span>(<span class="ident">d2</span>).<span class="ident">min</span>(<span class="ident">d3</span>).<span class="ident">min</span>(<span class="ident">d4</span>)
+    <span class="kw">pub fn </span>distance(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; f64 {
+        <span class="kw">if </span><span class="self">self</span>.intersect(other) {
+            <span class="number">0.
+        </span>} <span class="kw">else </span>{
+            <span class="kw">let </span>d1 = <span class="self">self</span>.distance_point(other.p1);
+            <span class="kw">let </span>d2 = <span class="self">self</span>.distance_point(other.p2);
+            <span class="kw">let </span>d3 = other.distance_point(<span class="self">self</span>.p1);
+            <span class="kw">let </span>d4 = other.distance_point(<span class="self">self</span>.p2);
+            d1.min(d2).min(d3).min(d4)
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

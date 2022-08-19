@@ -64,55 +64,55 @@
 <span id="48">48</span>
 <span id="49">49</span>
 <span id="50">50</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::UndirectedSparseGraph</span>;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::UndirectedSparseGraph;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LowLink</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">UndirectedSparseGraph</span>,
-    <span class="kw">pub</span> <span class="ident">low</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
-    <span class="kw">pub</span> <span class="ident">ord</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
-    <span class="kw">pub</span> <span class="ident">articulation</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
-    <span class="kw">pub</span> <span class="ident">bridge</span>: <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt;,
+<span class="kw">pub struct </span>LowLink&lt;<span class="lifetime">&#39;a</span>&gt; {
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>UndirectedSparseGraph,
+    <span class="kw">pub </span>low: Vec&lt;usize&gt;,
+    <span class="kw">pub </span>ord: Vec&lt;usize&gt;,
+    <span class="kw">pub </span>articulation: Vec&lt;usize&gt;,
+    <span class="kw">pub </span>bridge: Vec&lt;(usize, usize)&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">LowLink</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">UndirectedSparseGraph</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span> = <span class="self">Self</span> {
-            <span class="ident">graph</span>,
-            <span class="ident">low</span>: <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
-            <span class="ident">ord</span>: <span class="macro">vec!</span>[<span class="ident">std::usize::MAX</span>; <span class="ident">graph</span>.<span class="ident">vertices_size</span>()],
-            <span class="ident">articulation</span>: <span class="macro">vec!</span>[],
-            <span class="ident">bridge</span>: <span class="macro">vec!</span>[],
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; LowLink&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>UndirectedSparseGraph) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
+            graph,
+            low: <span class="macro">vec!</span>[<span class="number">0</span>; graph.vertices_size()],
+            ord: <span class="macro">vec!</span>[std::usize::MAX; graph.vertices_size()],
+            articulation: <span class="macro">vec!</span>[],
+            bridge: <span class="macro">vec!</span>[],
         };
-        <span class="kw">for</span> <span class="ident">u</span> <span class="kw">in</span> <span class="ident">graph</span>.<span class="ident">vertices</span>() {
-            <span class="kw">if</span> <span class="ident">self_</span>.<span class="ident">ord</span>[<span class="ident">u</span>] == <span class="ident">std::usize::MAX</span> {
-                <span class="ident">self_</span>.<span class="ident">dfs</span>(<span class="ident">u</span>, <span class="ident">graph</span>.<span class="ident">vertices_size</span>(), <span class="kw-2">&amp;mut</span> <span class="number">0</span>);
+        <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
+            <span class="kw">if </span>self_.ord[u] == std::usize::MAX {
+                self_.dfs(u, graph.vertices_size(), <span class="kw-2">&amp;mut </span><span class="number">0</span>);
             }
         }
-        <span class="ident">self_</span>
+        self_
     }
-    <span class="kw">fn</span> <span class="ident">dfs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>, <span class="ident">now_ord</span>: <span class="kw-2">&amp;mut</span> <span class="ident">usize</span>) {
-        <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>] = <span class="kw-2">*</span><span class="ident">now_ord</span>;
-        <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">u</span>] = <span class="kw-2">*</span><span class="ident">now_ord</span>;
-        <span class="kw-2">*</span><span class="ident">now_ord</span> += <span class="number">1</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">is_articulation</span> = <span class="bool-val">false</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cnt</span> = <span class="number">0</span>;
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">a</span>.<span class="ident">to</span>] == <span class="ident">std::usize::MAX</span> {
-                <span class="ident">cnt</span> += <span class="number">1</span>;
-                <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>, <span class="ident">now_ord</span>);
-                <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>] = <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>].<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">low</span>[<span class="ident">a</span>.<span class="ident">to</span>]);
-                <span class="ident">is_articulation</span> |= <span class="ident">p</span> &lt; <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>() &amp;&amp; <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">u</span>] &lt;= <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">a</span>.<span class="ident">to</span>];
-                <span class="kw">if</span> <span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">u</span>] &lt; <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">a</span>.<span class="ident">to</span>] {
-                    <span class="self">self</span>.<span class="ident">bridge</span>.<span class="ident">push</span>((<span class="ident">u</span>.<span class="ident">min</span>(<span class="ident">a</span>.<span class="ident">to</span>), <span class="ident">u</span>.<span class="ident">max</span>(<span class="ident">a</span>.<span class="ident">to</span>)));
+    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, p: usize, now_ord: <span class="kw-2">&amp;mut </span>usize) {
+        <span class="self">self</span>.low[u] = <span class="kw-2">*</span>now_ord;
+        <span class="self">self</span>.ord[u] = <span class="kw-2">*</span>now_ord;
+        <span class="kw-2">*</span>now_ord += <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>is_articulation = <span class="bool-val">false</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>cnt = <span class="number">0</span>;
+        <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
+            <span class="kw">if </span><span class="self">self</span>.ord[a.to] == std::usize::MAX {
+                cnt += <span class="number">1</span>;
+                <span class="self">self</span>.dfs(a.to, u, now_ord);
+                <span class="self">self</span>.low[u] = <span class="self">self</span>.low[u].min(<span class="self">self</span>.low[a.to]);
+                is_articulation |= p &lt; <span class="self">self</span>.graph.vertices_size() &amp;&amp; <span class="self">self</span>.ord[u] &lt;= <span class="self">self</span>.low[a.to];
+                <span class="kw">if </span><span class="self">self</span>.ord[u] &lt; <span class="self">self</span>.low[a.to] {
+                    <span class="self">self</span>.bridge.push((u.min(a.to), u.max(a.to)));
                 }
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> != <span class="ident">p</span> {
-                <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>] = <span class="self">self</span>.<span class="ident">low</span>[<span class="ident">u</span>].<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">ord</span>[<span class="ident">a</span>.<span class="ident">to</span>]);
+            } <span class="kw">else if </span>a.to != p {
+                <span class="self">self</span>.low[u] = <span class="self">self</span>.low[u].min(<span class="self">self</span>.ord[a.to]);
             }
         }
-        <span class="ident">is_articulation</span> |= <span class="ident">p</span> == <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">vertices_size</span>() &amp;&amp; <span class="ident">cnt</span> &gt; <span class="number">1</span>;
-        <span class="kw">if</span> <span class="ident">is_articulation</span> {
-            <span class="self">self</span>.<span class="ident">articulation</span>.<span class="ident">push</span>(<span class="ident">u</span>);
+        is_articulation |= p == <span class="self">self</span>.graph.vertices_size() &amp;&amp; cnt &gt; <span class="number">1</span>;
+        <span class="kw">if </span>is_articulation {
+            <span class="self">self</span>.articulation.push(u);
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

@@ -298,289 +298,289 @@
 <span id="282">282</span>
 <span id="283">283</span>
 <span id="284">284</span>
-</pre><pre class="rust"><code><span class="attribute">#[<span class="ident">codesnip::skip</span>]</span>
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num::Bounded</span>;
+</pre><pre class="rust"><code><span class="attribute">#[codesnip::skip]</span>
+<span class="kw">use </span><span class="kw">crate</span>::num::Bounded;
 
-<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">marker::PhantomData</span>,
-    <span class="ident">ops</span>::{<span class="ident">Range</span>, <span class="ident">RangeFrom</span>, <span class="ident">RangeInclusive</span>, <span class="ident">RangeTo</span>, <span class="ident">RangeToInclusive</span>},
+<span class="kw">use super</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::{
+    marker::PhantomData,
+    ops::{Range, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive},
 };
 
-<span class="doccomment">/// Trait for spec of generating random value.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;: <span class="ident">Sized</span> {
-    <span class="doccomment">/// Return a random value.</span>
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span>;
-    <span class="doccomment">/// Return an iterator that generates random values.</span>
-    <span class="kw">fn</span> <span class="ident">rand_iter</span>(<span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">RandIter</span>&lt;<span class="lifetime">&#39;_</span>, <span class="ident">T</span>, <span class="self">Self</span>&gt; {
-        <span class="ident">RandIter</span> {
-            <span class="ident">spec</span>: <span class="self">self</span>,
-            <span class="ident">rng</span>,
-            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>,
+<span class="doccomment">/// Trait for spec of generating random value.
+</span><span class="kw">pub trait </span>RandomSpec&lt;T&gt;: Sized {
+    <span class="doccomment">/// Return a random value.
+    </span><span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T;
+    <span class="doccomment">/// Return an iterator that generates random values.
+    </span><span class="kw">fn </span>rand_iter(<span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; RandIter&lt;<span class="lifetime">&#39;_</span>, T, <span class="self">Self</span>&gt; {
+        RandIter {
+            spec: <span class="self">self</span>,
+            rng,
+            _marker: PhantomData,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Xorshift</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gen</span>&lt;<span class="ident">T</span>, <span class="ident">R</span>: <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">spec</span>: <span class="ident">R</span>) -&gt; <span class="ident">T</span> {
-        <span class="ident">spec</span>.<span class="ident">rand</span>(<span class="self">self</span>)
+<span class="kw">impl </span>Xorshift {
+    <span class="kw">pub fn </span>gen&lt;T, R: RandomSpec&lt;T&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, spec: R) -&gt; T {
+        spec.rand(<span class="self">self</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">gen_iter</span>&lt;<span class="ident">T</span>, <span class="ident">R</span>: <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">spec</span>: <span class="ident">R</span>) -&gt; <span class="ident">RandIter</span>&lt;<span class="lifetime">&#39;_</span>, <span class="ident">T</span>, <span class="ident">R</span>&gt; {
-        <span class="ident">spec</span>.<span class="ident">rand_iter</span>(<span class="self">self</span>)
-    }
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RandIter</span>&lt;<span class="lifetime">&#39;r</span>, <span class="ident">T</span>, <span class="ident">R</span>: <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt; {
-    <span class="ident">spec</span>: <span class="ident">R</span>,
-    <span class="ident">rng</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="kw-2">mut</span> <span class="ident">Xorshift</span>,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
-}
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">R</span>: <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt; <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">RandIter</span>&lt;<span class="lifetime">&#39;_</span>, <span class="ident">T</span>, <span class="ident">R</span>&gt; {
-    <span class="kw">type</span> <span class="ident">Item</span> = <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Item</span>&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">spec</span>.<span class="ident">rand</span>(<span class="self">self</span>.<span class="ident">rng</span>))
+    <span class="kw">pub fn </span>gen_iter&lt;T, R: RandomSpec&lt;T&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, spec: R) -&gt; RandIter&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {
+        spec.rand_iter(<span class="self">self</span>)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">NotEmptyStep64</span>&gt; <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">Range</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span> {
-        <span class="kw">let</span> <span class="ident">count</span> = &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::steps_between</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">start</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">end</span>);
-        <span class="macro">assert_ne!</span>(<span class="ident">count</span>, <span class="number">0</span>, <span class="string">&quot;empty range in `RandomSpec&lt;T&gt; for Range&lt;T&gt;`&quot;</span>);
-        <span class="kw">let</span> <span class="ident">count</span> = <span class="ident">randint_uniform</span>(<span class="ident">rng</span>, <span class="ident">count</span>);
-        &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::forward_unchecked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">start</span>, <span class="ident">count</span>)
+<span class="attribute">#[derive(Debug)]</span>
+<span class="kw">pub struct </span>RandIter&lt;<span class="lifetime">&#39;r</span>, T, R: RandomSpec&lt;T&gt;&gt; {
+    spec: R,
+    rng: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="kw-2">mut </span>Xorshift,
+    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+}
+<span class="kw">impl</span>&lt;T, R: RandomSpec&lt;T&gt;&gt; Iterator <span class="kw">for </span>RandIter&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {
+    <span class="kw">type </span>Item = T;
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="prelude-val">Some</span>(<span class="self">self</span>.spec.rand(<span class="self">self</span>.rng))
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">NotEmptyStep64</span> + <span class="ident">Bounded</span>&gt; <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">RangeFrom</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span> {
-        <span class="kw">let</span> <span class="ident">count</span> = &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::steps_between</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">start</span>, <span class="kw-2">&amp;</span>&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::maximum</span>())
-            .<span class="ident">wrapping_add</span>(<span class="number">1</span>);
-        <span class="kw">let</span> <span class="ident">count</span> = <span class="ident">randint_uniform</span>(<span class="ident">rng</span>, <span class="ident">count</span>);
-        &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::forward_unchecked</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">start</span>, <span class="ident">count</span>)
+
+<span class="kw">impl</span>&lt;T: NotEmptyStep64&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>Range&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span><span class="self">self</span>.start, <span class="kw-2">&amp;</span><span class="self">self</span>.end);
+        <span class="macro">assert_ne!</span>(count, <span class="number">0</span>, <span class="string">&quot;empty range in `RandomSpec&lt;T&gt; for Range&lt;T&gt;`&quot;</span>);
+        <span class="kw">let </span>count = randint_uniform(rng, count);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span><span class="self">self</span>.start, count)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">NotEmptyStep64</span>&gt; <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">RangeInclusive</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span> {
-        <span class="kw">let</span> <span class="ident">count</span> = &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::steps_between</span>(<span class="self">self</span>.<span class="ident">start</span>(), <span class="self">self</span>.<span class="ident">end</span>()).<span class="ident">wrapping_add</span>(<span class="number">1</span>);
-        <span class="kw">let</span> <span class="ident">count</span> = <span class="ident">randint_uniform</span>(<span class="ident">rng</span>, <span class="ident">count</span>);
-        &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::forward_unchecked</span>(<span class="self">self</span>.<span class="ident">start</span>(), <span class="ident">count</span>)
+<span class="kw">impl</span>&lt;T: NotEmptyStep64 + Bounded&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeFrom&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span><span class="self">self</span>.start, <span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::maximum())
+            .wrapping_add(<span class="number">1</span>);
+        <span class="kw">let </span>count = randint_uniform(rng, count);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span><span class="self">self</span>.start, count)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">NotEmptyStep64</span> + <span class="ident">Bounded</span>&gt; <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">RangeTo</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span> {
-        <span class="kw">let</span> <span class="ident">count</span> = &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::steps_between</span>(<span class="kw-2">&amp;</span>&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">end</span>);
-        <span class="macro">assert_ne!</span>(<span class="ident">count</span>, <span class="number">0</span>, <span class="string">&quot;empty range in `RandomSpec&lt;T&gt; for RangeTo&lt;T&gt;`&quot;</span>);
-        <span class="kw">let</span> <span class="ident">count</span> = <span class="ident">randint_uniform</span>(<span class="ident">rng</span>, <span class="ident">count</span>);
-        &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::forward_unchecked</span>(<span class="kw-2">&amp;</span>&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>(), <span class="ident">count</span>)
+<span class="kw">impl</span>&lt;T: NotEmptyStep64&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeInclusive&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="self">self</span>.start(), <span class="self">self</span>.end()).wrapping_add(<span class="number">1</span>);
+        <span class="kw">let </span>count = randint_uniform(rng, count);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="self">self</span>.start(), count)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">NotEmptyStep64</span> + <span class="ident">Bounded</span>&gt; <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">RangeToInclusive</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span> {
-        <span class="kw">let</span> <span class="ident">count</span> = &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::steps_between</span>(<span class="kw-2">&amp;</span>&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>(), <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">end</span>)
-            .<span class="ident">wrapping_add</span>(<span class="number">1</span>);
-        <span class="kw">let</span> <span class="ident">count</span> = <span class="ident">randint_uniform</span>(<span class="ident">rng</span>, <span class="ident">count</span>);
-        &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">NotEmptyStep64</span>&gt;<span class="ident">::forward_unchecked</span>(<span class="kw-2">&amp;</span>&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>(), <span class="ident">count</span>)
+<span class="kw">impl</span>&lt;T: NotEmptyStep64 + Bounded&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeTo&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <span class="kw-2">&amp;</span><span class="self">self</span>.end);
+        <span class="macro">assert_ne!</span>(count, <span class="number">0</span>, <span class="string">&quot;empty range in `RandomSpec&lt;T&gt; for RangeTo&lt;T&gt;`&quot;</span>);
+        <span class="kw">let </span>count = randint_uniform(rng, count);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), count)
     }
 }
-<span class="macro">macro_rules!</span> <span class="ident">random_spec_tuple_impls</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">R</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>),<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">R</span>),<span class="kw-2">*</span>&gt; <span class="ident">RandomSpec</span>&lt;($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>)&gt; <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">R</span>,)<span class="kw-2">*</span>)
-        <span class="kw">where</span>
-            $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">R</span>: <span class="ident">RandomSpec</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;),*
+<span class="kw">impl</span>&lt;T: NotEmptyStep64 + Bounded&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeToInclusive&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <span class="kw-2">&amp;</span><span class="self">self</span>.end)
+            .wrapping_add(<span class="number">1</span>);
+        <span class="kw">let </span>count = randint_uniform(rng, count);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), count)
+    }
+}
+<span class="macro">macro_rules!</span> random_spec_tuple_impls {
+    ($(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$R</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$v</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>),<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$R</span>),<span class="kw-2">*</span>&gt; RandomSpec&lt;($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>)&gt; <span class="kw">for </span>($(<span class="macro-nonterminal">$R</span>,)<span class="kw-2">*</span>)
+        <span class="kw">where
+            </span>$(<span class="macro-nonterminal">$R</span>: RandomSpec&lt;<span class="macro-nonterminal">$T</span>&gt;),*
         {
-            <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {
-                <span class="kw">let</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v</span>,)<span class="kw-2">*</span>) = <span class="self">self</span>;
-                ($((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">v</span>).<span class="ident">rand</span>(<span class="ident">rng</span>),)<span class="kw-2">*</span>)
+            <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; ($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {
+                <span class="kw">let </span>($(<span class="macro-nonterminal">$v</span>,)<span class="kw-2">*</span>) = <span class="self">self</span>;
+                ($((<span class="macro-nonterminal">$v</span>).rand(rng),)<span class="kw-2">*</span>)
             }
         }
     };
 }
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span>, <span class="ident">RA</span>, <span class="ident">a</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span>, <span class="ident">RA</span> <span class="ident">RB</span>, <span class="ident">a</span> <span class="ident">b</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span> <span class="ident">RD</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span> <span class="ident">d</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span> <span class="ident">RD</span> <span class="ident">RE</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span> <span class="ident">d</span> <span class="ident">e</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span> <span class="ident">RD</span> <span class="ident">RE</span> <span class="ident">RF</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span> <span class="ident">d</span> <span class="ident">e</span> <span class="ident">f</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span> <span class="ident">G</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span> <span class="ident">RD</span> <span class="ident">RE</span> <span class="ident">RF</span> <span class="ident">RG</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span> <span class="ident">d</span> <span class="ident">e</span> <span class="ident">f</span> <span class="ident">g</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span> <span class="ident">G</span> <span class="ident">H</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span> <span class="ident">RD</span> <span class="ident">RE</span> <span class="ident">RF</span> <span class="ident">RG</span> <span class="ident">RH</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span> <span class="ident">d</span> <span class="ident">e</span> <span class="ident">f</span> <span class="ident">g</span> <span class="ident">h</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span> <span class="ident">G</span> <span class="ident">H</span> <span class="ident">I</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span> <span class="ident">RD</span> <span class="ident">RE</span> <span class="ident">RF</span> <span class="ident">RG</span> <span class="ident">RH</span> <span class="ident">RI</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span> <span class="ident">d</span> <span class="ident">e</span> <span class="ident">f</span> <span class="ident">g</span> <span class="ident">h</span> <span class="ident">i</span>);
-<span class="macro">random_spec_tuple_impls!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span> <span class="ident">G</span> <span class="ident">H</span> <span class="ident">I</span> <span class="ident">J</span>, <span class="ident">RA</span> <span class="ident">RB</span> <span class="ident">RC</span> <span class="ident">RD</span> <span class="ident">RE</span> <span class="ident">RF</span> <span class="ident">RG</span> <span class="ident">RH</span> <span class="ident">RI</span> <span class="ident">RJ</span>, <span class="ident">a</span> <span class="ident">b</span> <span class="ident">c</span> <span class="ident">d</span> <span class="ident">e</span> <span class="ident">f</span> <span class="ident">g</span> <span class="ident">h</span> <span class="ident">i</span> <span class="ident">j</span>);
+<span class="macro">random_spec_tuple_impls!</span>(A, RA, a);
+<span class="macro">random_spec_tuple_impls!</span>(A B, RA RB, a b);
+<span class="macro">random_spec_tuple_impls!</span>(A B C, RA RB RC, a b c);
+<span class="macro">random_spec_tuple_impls!</span>(A B C D, RA RB RC RD, a b c d);
+<span class="macro">random_spec_tuple_impls!</span>(A B C D E, RA RB RC RD RE, a b c d e);
+<span class="macro">random_spec_tuple_impls!</span>(A B C D E F, RA RB RC RD RE RF, a b c d e f);
+<span class="macro">random_spec_tuple_impls!</span>(A B C D E F G, RA RB RC RD RE RF RG, a b c d e f g);
+<span class="macro">random_spec_tuple_impls!</span>(A B C D E F G H, RA RB RC RD RE RF RG RH, a b c d e f g h);
+<span class="macro">random_spec_tuple_impls!</span>(A B C D E F G H I, RA RB RC RD RE RF RG RH RI, a b c d e f g h i);
+<span class="macro">random_spec_tuple_impls!</span>(A B C D E F G H I J, RA RB RC RD RE RF RG RH RI RJ, a b c d e f g h i j);
 
-<span class="macro">macro_rules!</span> <span class="ident">random_spec_primitive_impls</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) =&gt; {
-        $(<span class="kw">impl</span> <span class="ident">RandomSpec</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-            <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">_rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="kw-2">*</span><span class="self">self</span>
-            }
+<span class="macro">macro_rules!</span> random_spec_primitive_impls {
+    ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
+        $(<span class="kw">impl </span>RandomSpec&lt;<span class="macro-nonterminal">$t</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+            <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, _rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; <span class="macro-nonterminal">$t </span>{
+                <span class="kw-2">*</span><span class="self">self
+            </span>}
         })*
     };
 }
-<span class="macro">random_spec_primitive_impls!</span>(() <span class="ident">u8</span> <span class="ident">u16</span> <span class="ident">u32</span> <span class="ident">u64</span> <span class="ident">u128</span> <span class="ident">usize</span> <span class="ident">i8</span> <span class="ident">i16</span> <span class="ident">i32</span> <span class="ident">i64</span> <span class="ident">i128</span> <span class="ident">isize</span> <span class="ident">bool</span> <span class="ident">char</span>);
+<span class="macro">random_spec_primitive_impls!</span>(() u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize bool char);
 
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">R</span>: <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt; <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">R</span> {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span> {
-        &lt;<span class="ident">R</span> <span class="kw">as</span> <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt;<span class="ident">::rand</span>(<span class="self">self</span>, <span class="ident">rng</span>)
+<span class="kw">impl</span>&lt;T, R: RandomSpec&lt;T&gt;&gt; RandomSpec&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>R {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T {
+        &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<span class="self">self</span>, rng)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">R</span>: <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt; <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;mut</span> <span class="ident">R</span> {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; <span class="ident">T</span> {
-        &lt;<span class="ident">R</span> <span class="kw">as</span> <span class="ident">RandomSpec</span>&lt;<span class="ident">T</span>&gt;&gt;<span class="ident">::rand</span>(<span class="self">self</span>, <span class="ident">rng</span>)
+<span class="kw">impl</span>&lt;T, R: RandomSpec&lt;T&gt;&gt; RandomSpec&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;mut </span>R {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; T {
+        &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<span class="self">self</span>, rng)
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NotEmptyStep64</span>: <span class="ident">Clone</span> + <span class="ident">PartialOrd</span> {
-    <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">u64</span>;
-    <span class="kw">fn</span> <span class="ident">forward_unchecked</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">count</span>: <span class="ident">u64</span>) -&gt; <span class="self">Self</span>;
+<span class="kw">pub trait </span>NotEmptyStep64: Clone + PartialOrd {
+    <span class="kw">fn </span>steps_between(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, end: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; u64;
+    <span class="kw">fn </span>forward_unchecked(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, count: u64) -&gt; <span class="self">Self</span>;
 }
 
-<span class="macro">macro_rules!</span> <span class="ident">step64_impls</span> {
-    ([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">u</span>:<span class="ident">ty</span>),<span class="kw-2">*</span>],[$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>:<span class="ident">ty</span>),<span class="kw-2">*</span>]) =&gt; {
-        $(<span class="kw">impl</span> <span class="ident">NotEmptyStep64</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">u</span> {
-            <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">u64</span> {
-                <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> &lt;= <span class="kw-2">*</span><span class="ident">end</span> {
-                    (<span class="kw-2">*</span><span class="ident">end</span> - <span class="kw-2">*</span><span class="ident">start</span>) <span class="kw">as</span> <span class="ident">u64</span>
-                } <span class="kw">else</span> {
+<span class="macro">macro_rules!</span> step64_impls {
+    ([$(<span class="macro-nonterminal">$u</span>:ty),<span class="kw-2">*</span>],[$(<span class="macro-nonterminal">$i</span>:ty),<span class="kw-2">*</span>]) =&gt; {
+        $(<span class="kw">impl </span>NotEmptyStep64 <span class="kw">for </span><span class="macro-nonterminal">$u </span>{
+            <span class="kw">fn </span>steps_between(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, end: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; u64 {
+                <span class="kw">if </span><span class="kw-2">*</span>start &lt;= <span class="kw-2">*</span>end {
+                    (<span class="kw-2">*</span>end - <span class="kw-2">*</span>start) <span class="kw">as </span>u64
+                } <span class="kw">else </span>{
                     <span class="macro">panic!</span>(<span class="string">&quot;empty range in `NotEmptyStep64`&quot;</span>);
                 }
             }
-            <span class="kw">fn</span> <span class="ident">forward_unchecked</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">count</span>: <span class="ident">u64</span>) -&gt; <span class="self">Self</span> {
-                <span class="ident">start</span> + <span class="ident">count</span> <span class="kw">as</span> <span class="self">Self</span>
-            }
+            <span class="kw">fn </span>forward_unchecked(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, count: u64) -&gt; <span class="self">Self </span>{
+                start + count <span class="kw">as </span><span class="self">Self
+            </span>}
         })*
-        $(<span class="kw">impl</span> <span class="ident">NotEmptyStep64</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span> {
-            <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">u64</span> {
-                <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">start</span> &lt;= <span class="kw-2">*</span><span class="ident">end</span> {
-                    ((<span class="kw-2">*</span><span class="ident">end</span> <span class="kw">as</span> <span class="ident">i64</span>).<span class="ident">wrapping_sub</span>(<span class="kw-2">*</span><span class="ident">start</span> <span class="kw">as</span> <span class="ident">i64</span>)) <span class="kw">as</span> <span class="ident">u64</span>
-                } <span class="kw">else</span> {
+        $(<span class="kw">impl </span>NotEmptyStep64 <span class="kw">for </span><span class="macro-nonterminal">$i </span>{
+            <span class="kw">fn </span>steps_between(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, end: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; u64 {
+                <span class="kw">if </span><span class="kw-2">*</span>start &lt;= <span class="kw-2">*</span>end {
+                    ((<span class="kw-2">*</span>end <span class="kw">as </span>i64).wrapping_sub(<span class="kw-2">*</span>start <span class="kw">as </span>i64)) <span class="kw">as </span>u64
+                } <span class="kw">else </span>{
                     <span class="macro">panic!</span>(<span class="string">&quot;empty range in `NotEmptyStep64`&quot;</span>);
                 }
             }
-            <span class="kw">fn</span> <span class="ident">forward_unchecked</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">count</span>: <span class="ident">u64</span>) -&gt; <span class="self">Self</span> {
-                <span class="ident">start</span> + <span class="ident">count</span> <span class="kw">as</span> <span class="self">Self</span>
-            }
+            <span class="kw">fn </span>forward_unchecked(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, count: u64) -&gt; <span class="self">Self </span>{
+                start + count <span class="kw">as </span><span class="self">Self
+            </span>}
         })*
     };
 }
-<span class="macro">step64_impls!</span>([<span class="ident">u8</span>, <span class="ident">u16</span>, <span class="ident">u32</span>, <span class="ident">u64</span>, <span class="ident">usize</span>], [<span class="ident">i8</span>, <span class="ident">i16</span>, <span class="ident">i32</span>, <span class="ident">i64</span>, <span class="ident">isize</span>]);
-<span class="kw">impl</span> <span class="ident">NotEmptyStep64</span> <span class="kw">for</span> <span class="ident">char</span> {
-    <span class="kw">fn</span> <span class="ident">steps_between</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">end</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">u64</span> {
-        <span class="kw">let</span> <span class="ident">start</span> = <span class="kw-2">*</span><span class="ident">start</span> <span class="kw">as</span> <span class="ident">u8</span>;
-        <span class="kw">let</span> <span class="ident">end</span> = <span class="kw-2">*</span><span class="ident">end</span> <span class="kw">as</span> <span class="ident">u8</span>;
-        <span class="kw">if</span> <span class="ident">start</span> &lt;= <span class="ident">end</span> {
-            (<span class="ident">end</span> - <span class="ident">start</span>) <span class="kw">as</span> <span class="ident">u64</span>
-        } <span class="kw">else</span> {
+<span class="macro">step64_impls!</span>([u8, u16, u32, u64, usize], [i8, i16, i32, i64, isize]);
+<span class="kw">impl </span>NotEmptyStep64 <span class="kw">for </span>char {
+    <span class="kw">fn </span>steps_between(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, end: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; u64 {
+        <span class="kw">let </span>start = <span class="kw-2">*</span>start <span class="kw">as </span>u8;
+        <span class="kw">let </span>end = <span class="kw-2">*</span>end <span class="kw">as </span>u8;
+        <span class="kw">if </span>start &lt;= end {
+            (end - start) <span class="kw">as </span>u64
+        } <span class="kw">else </span>{
             <span class="macro">panic!</span>(<span class="string">&quot;empty range in `NotEmptyStep64`&quot;</span>);
         }
     }
-    <span class="kw">fn</span> <span class="ident">forward_unchecked</span>(<span class="ident">start</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>, <span class="ident">count</span>: <span class="ident">u64</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">NotEmptyStep64::forward_unchecked</span>(<span class="kw-2">&amp;</span>(<span class="kw-2">*</span><span class="ident">start</span> <span class="kw">as</span> <span class="ident">u8</span>), <span class="ident">count</span>) <span class="kw">as</span> <span class="ident">char</span>
+    <span class="kw">fn </span>forward_unchecked(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, count: u64) -&gt; <span class="self">Self </span>{
+        NotEmptyStep64::forward_unchecked(<span class="kw-2">&amp;</span>(<span class="kw-2">*</span>start <span class="kw">as </span>u8), count) <span class="kw">as </span>char
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="doccomment">/// Left-close Right-open No Empty Segment</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NotEmptySegment</span>&lt;<span class="ident">T</span>&gt;(<span class="kw">pub</span> <span class="ident">T</span>);
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">RandomSpec</span>&lt;<span class="ident">usize</span>&gt;&gt; <span class="ident">RandomSpec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt; <span class="kw">for</span> <span class="ident">NotEmptySegment</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">fn</span> <span class="ident">rand</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">u64</span>;
-        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">randint_uniform</span>(<span class="ident">rng</span>, <span class="ident">n</span>);
-        <span class="kw">let</span> <span class="ident">l</span> = <span class="ident">randint_uniform</span>(<span class="ident">rng</span>, <span class="ident">n</span> - <span class="ident">k</span>) <span class="kw">as</span> <span class="ident">usize</span>;
-        (<span class="ident">l</span>, <span class="ident">l</span> + <span class="ident">k</span> <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span>)
+<span class="attribute">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="doccomment">/// Left-close Right-open No Empty Segment
+</span><span class="kw">pub struct </span>NotEmptySegment&lt;T&gt;(<span class="kw">pub </span>T);
+<span class="kw">impl</span>&lt;T: RandomSpec&lt;usize&gt;&gt; RandomSpec&lt;(usize, usize)&gt; <span class="kw">for </span>NotEmptySegment&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; (usize, usize) {
+        <span class="kw">let </span>n = rng.gen(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>) <span class="kw">as </span>u64;
+        <span class="kw">let </span>k = randint_uniform(rng, n);
+        <span class="kw">let </span>l = randint_uniform(rng, n - k) <span class="kw">as </span>usize;
+        (l, l + k <span class="kw">as </span>usize + <span class="number">1</span>)
     }
 }
 
-<span class="attribute">#[<span class="ident">inline</span>]</span>
-<span class="kw">fn</span> <span class="ident">randint_uniform</span>(<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xorshift</span>, <span class="ident">k</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> = <span class="ident">rng</span>.<span class="ident">rand64</span>();
-    <span class="kw">if</span> <span class="ident">k</span> &gt; <span class="number">0</span> {
-        <span class="ident">v</span> %= <span class="ident">k</span>;
+<span class="attribute">#[inline]</span>
+<span class="kw">fn </span>randint_uniform(rng: <span class="kw-2">&amp;mut </span>Xorshift, k: u64) -&gt; u64 {
+    <span class="kw">let </span><span class="kw-2">mut </span>v = rng.rand64();
+    <span class="kw">if </span>k &gt; <span class="number">0 </span>{
+        v %= k;
     }
-    <span class="ident">v</span>
+    v
 }
 
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="doccomment">/// Return a random value using [`RandomSpec`].</span>
-<span class="macro">macro_rules!</span> <span class="ident">rand_value</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>),<span class="kw-2">*</span>)) =&gt; {
-        ($(<span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>)),<span class="kw-2">*</span>)
+<span class="attribute">#[macro_export]</span>
+<span class="doccomment">/// Return a random value using [`RandomSpec`].
+</span><span class="macro">macro_rules!</span> rand_value {
+    (<span class="macro-nonterminal">$rng</span>:expr, ($(<span class="macro-nonterminal">$e</span>:expr),<span class="kw-2">*</span>)) =&gt; {
+        ($(<span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, <span class="macro-nonterminal">$e</span>)),<span class="kw-2">*</span>)
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>),<span class="kw-2">*</span>)) =&gt; {
-        ($(<span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)),<span class="kw-2">*</span>)
+    (<span class="macro-nonterminal">$rng</span>:expr, ($(<span class="macro-nonterminal">$t</span>:tt),<span class="kw-2">*</span>)) =&gt; {
+        ($(<span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, <span class="macro-nonterminal">$t</span>)),<span class="kw-2">*</span>)
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>:<span class="ident">expr</span>]) =&gt; {
-        <span class="ident">::std::iter::repeat_with</span>(|| <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)).<span class="ident">take</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;()
+    (<span class="macro-nonterminal">$rng</span>:expr, [<span class="macro-nonterminal">$t</span>:tt; <span class="macro-nonterminal">$len</span>:expr]) =&gt; {
+        ::std::iter::repeat_with(|| <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, <span class="macro-nonterminal">$t</span>)).take(<span class="macro-nonterminal">$len</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">s</span>:<span class="ident">expr</span>; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>:<span class="ident">expr</span>]) =&gt; {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>).<span class="ident">gen_iter</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">s</span>).<span class="ident">take</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;()
+    (<span class="macro-nonterminal">$rng</span>:expr, [<span class="macro-nonterminal">$s</span>:expr; <span class="macro-nonterminal">$len</span>:expr]) =&gt; {
+        (<span class="macro-nonterminal">$rng</span>).gen_iter(<span class="macro-nonterminal">$s</span>).take(<span class="macro-nonterminal">$len</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>]) =&gt; {
-        <span class="ident">::std::iter::repeat_with</span>(|| <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>))
+    (<span class="macro-nonterminal">$rng</span>:expr, [$(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>]) =&gt; {
+        ::std::iter::repeat_with(|| <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>))
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, {<span class="macro-nonterminal">$</span><span class="macro-nonterminal">s</span>:<span class="ident">expr</span>}) =&gt; {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>).<span class="ident">gen</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">s</span>)
+    (<span class="macro-nonterminal">$rng</span>:expr, {<span class="macro-nonterminal">$s</span>:expr}) =&gt; {
+        (<span class="macro-nonterminal">$rng</span>).gen(<span class="macro-nonterminal">$s</span>)
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">s</span>:<span class="ident">expr</span>) =&gt; {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>).<span class="ident">gen</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">s</span>)
+    (<span class="macro-nonterminal">$rng</span>:expr, <span class="macro-nonterminal">$s</span>:expr) =&gt; {
+        (<span class="macro-nonterminal">$rng</span>).gen(<span class="macro-nonterminal">$s</span>)
     };
 }
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="doccomment">/// Declare random values using [`RandomSpec`].</span>
-<span class="macro">macro_rules!</span> <span class="ident">rand</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>) =&gt; {};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>,) =&gt; {};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span>:<span class="ident">tt</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>) =&gt; {
-        <span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span> = <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>);
+<span class="attribute">#[macro_export]</span>
+<span class="doccomment">/// Declare random values using [`RandomSpec`].
+</span><span class="macro">macro_rules!</span> rand {
+    (<span class="macro-nonterminal">$rng</span>:expr) =&gt; {};
+    (<span class="macro-nonterminal">$rng</span>:expr,) =&gt; {};
+    (<span class="macro-nonterminal">$rng</span>:expr, <span class="macro-nonterminal">$var</span>:tt: <span class="macro-nonterminal">$t</span>:tt) =&gt; {
+        <span class="kw">let </span><span class="macro-nonterminal">$var </span>= <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, <span class="macro-nonterminal">$t</span>);
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span>:<span class="ident">tt</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>) =&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span> = <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>);
+    (<span class="macro-nonterminal">$rng</span>:expr, <span class="kw-2">mut </span><span class="macro-nonterminal">$var</span>:tt: <span class="macro-nonterminal">$t</span>:tt) =&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$var </span>= <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, <span class="macro-nonterminal">$t</span>);
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span>:<span class="ident">tt</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span> = <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>);
-        <span class="macro">rand!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (<span class="macro-nonterminal">$rng</span>:expr, <span class="macro-nonterminal">$var</span>:tt: <span class="macro-nonterminal">$t</span>:tt, $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">let </span><span class="macro-nonterminal">$var </span>= <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, <span class="macro-nonterminal">$t</span>);
+        <span class="macro">rand!</span>(<span class="macro-nonterminal">$rng</span>, $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>:<span class="ident">expr</span>, <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span>:<span class="ident">tt</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span> = <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>);
-        <span class="macro">rand!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rng</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>)
+    (<span class="macro-nonterminal">$rng</span>:expr, <span class="kw-2">mut </span><span class="macro-nonterminal">$var</span>:tt: <span class="macro-nonterminal">$t</span>:tt, $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span><span class="macro-nonterminal">$var </span>= <span class="macro-nonterminal">$</span><span class="macro">crate::rand_value!</span>(<span class="macro-nonterminal">$rng</span>, <span class="macro-nonterminal">$t</span>);
+        <span class="macro">rand!</span>(<span class="macro-nonterminal">$rng</span>, $(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>)
     };
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_random_segment</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100_000</span> {
-            <span class="kw">let</span> <span class="ident">n</span> = (<span class="number">0</span>..<span class="number">1_000_000</span>).<span class="ident">rand</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>) + <span class="number">1</span>;
-            <span class="kw">let</span> (<span class="ident">l</span>, <span class="ident">r</span>) = <span class="ident">NotEmptySegment</span>(<span class="ident">n</span>).<span class="ident">rand</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>);
-            <span class="macro">assert!</span>(<span class="ident">l</span> &lt; <span class="ident">r</span>);
-            <span class="macro">assert!</span>(<span class="ident">r</span> &lt;= <span class="ident">n</span>);
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_random_segment() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100_000 </span>{
+            <span class="kw">let </span>n = (<span class="number">0</span>..<span class="number">1_000_000</span>).rand(<span class="kw-2">&amp;mut </span>rng) + <span class="number">1</span>;
+            <span class="kw">let </span>(l, r) = NotEmptySegment(n).rand(<span class="kw-2">&amp;mut </span>rng);
+            <span class="macro">assert!</span>(l &lt; r);
+            <span class="macro">assert!</span>(r &lt;= n);
         }
 
-        <span class="kw">const</span> <span class="ident">N_SMALL</span>: <span class="ident">usize</span> = <span class="number">100</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">set</span> = <span class="ident">std::collections::HashSet::new</span>();
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100_000</span> {
-            <span class="kw">let</span> (<span class="ident">l</span>, <span class="ident">r</span>) = <span class="ident">NotEmptySegment</span>(<span class="ident">N_SMALL</span>).<span class="ident">rand</span>(<span class="kw-2">&amp;mut</span> <span class="ident">rng</span>);
-            <span class="macro">assert!</span>(<span class="ident">l</span> &lt; <span class="ident">r</span>);
-            <span class="macro">assert!</span>(<span class="ident">r</span> &lt;= <span class="ident">N_SMALL</span>);
-            <span class="ident">set</span>.<span class="ident">insert</span>((<span class="ident">l</span>, <span class="ident">r</span>));
+        <span class="kw">const </span>N_SMALL: usize = <span class="number">100</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>set = std::collections::HashSet::new();
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100_000 </span>{
+            <span class="kw">let </span>(l, r) = NotEmptySegment(N_SMALL).rand(<span class="kw-2">&amp;mut </span>rng);
+            <span class="macro">assert!</span>(l &lt; r);
+            <span class="macro">assert!</span>(r &lt;= N_SMALL);
+            set.insert((l, r));
         }
-        <span class="macro">assert!</span>(<span class="ident">set</span>.<span class="ident">len</span>() == <span class="ident">N_SMALL</span> * (<span class="ident">N_SMALL</span> + <span class="number">1</span>) / <span class="number">2</span>);
+        <span class="macro">assert!</span>(set.len() == N_SMALL * (N_SMALL + <span class="number">1</span>) / <span class="number">2</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_rand_macro</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_rand_macro() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
         <span class="macro">rand!</span>(
-            <span class="kw-2">&amp;mut</span> <span class="ident">rng</span>,
-            <span class="ident">_x</span>: (..<span class="number">10</span>),
-            <span class="ident">_lr</span>: (<span class="ident">NotEmptySegment</span>(<span class="number">10</span>)),
-            <span class="ident">_a</span>: [..<span class="number">10</span>; <span class="number">10</span>],
-            <span class="ident">_t</span>: (..<span class="number">10</span>,),
-            <span class="ident">_r</span>: (<span class="kw-2">&amp;</span>(..<span class="number">10</span>),<span class="kw-2">&amp;mut</span> (..<span class="number">10</span>)),
-            <span class="ident">_p</span>: [(<span class="number">1</span>..=<span class="number">10</span>,<span class="number">2</span>..=<span class="number">10</span>); <span class="number">2</span>]
+            <span class="kw-2">&amp;mut </span>rng,
+            _x: (..<span class="number">10</span>),
+            _lr: (NotEmptySegment(<span class="number">10</span>)),
+            _a: [..<span class="number">10</span>; <span class="number">10</span>],
+            _t: (..<span class="number">10</span>,),
+            _r: (<span class="kw-2">&amp;</span>(..<span class="number">10</span>),<span class="kw-2">&amp;mut </span>(..<span class="number">10</span>)),
+            _p: [(<span class="number">1</span>..=<span class="number">10</span>,<span class="number">2</span>..=<span class="number">10</span>); <span class="number">2</span>]
         );
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

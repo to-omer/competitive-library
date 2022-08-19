@@ -125,116 +125,116 @@
 <span id="109">109</span>
 <span id="110">110</span>
 <span id="111">111</span>
-</pre><pre class="rust"><code><span class="doccomment">//! mathematical datas</span>
+</pre><pre class="rust"><code><span class="doccomment">//! mathematical datas
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num</span>::{<span class="ident">montgomery</span>, <span class="ident">BarrettReduction</span>, <span class="ident">Complex</span>, <span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools</span>::{<span class="ident">AssociatedValue</span>, <span class="ident">PartialIgnoredOrd</span>, <span class="ident">Xorshift</span>};
+</span><span class="kw">use </span><span class="kw">crate</span>::num::{montgomery, BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Zero};
+<span class="kw">use </span><span class="kw">crate</span>::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;berlekamp_massey&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::berlekamp_massey::berlekamp_massey</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;discrete_logarithm&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::discrete_logarithm</span>::{<span class="ident">discrete_logarithm</span>, <span class="ident">discrete_logarithm_prime_mod</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::factorial</span>::<span class="kw-2">*</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;fast_fourier_transform&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::fast_fourier_transform::convolve_fft</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;FormalPowerSeries&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::formal_power_series</span>::{
-    <span class="ident">FormalPowerSeries</span>, <span class="ident">FormalPowerSeriesCoefficient</span>, <span class="ident">FormalPowerSeriesCoefficientSqrt</span>, <span class="ident">Fps</span>,
-    <span class="ident">Fps998244353</span>,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;berlekamp_massey&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::berlekamp_massey::berlekamp_massey;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;discrete_logarithm&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
+<span class="kw">pub use </span><span class="self">self</span>::factorial::<span class="kw-2">*</span>;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;fast_fourier_transform&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::fast_fourier_transform::convolve_fft;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;FormalPowerSeries&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::formal_power_series::{
+    FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
+    Fps998244353,
 };
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::gcd</span>::<span class="kw-2">*</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;lagrange_interpolation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::lagrange_interpolation</span>::{<span class="ident">lagrange_interpolation</span>, <span class="ident">lagrange_interpolation_polynomial</span>};
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Matrix&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::matrix::Matrix</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;miller_rabin&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::miller_rabin</span>::{<span class="ident">miller_rabin</span>, <span class="ident">miller_rabin_with_br</span>};
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;NumberTheoreticTransform&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::number_theoretic_transform</span>::{
-    <span class="ident">Convolve</span>, <span class="ident">Convolve998244353</span>, <span class="ident">ConvolveSteps</span>, <span class="ident">MIntConvolve</span>,
+<span class="kw">pub use </span><span class="self">self</span>::gcd::<span class="kw-2">*</span>;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;lagrange_interpolation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Matrix&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::matrix::Matrix;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;miller_rabin&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::miller_rabin::{miller_rabin, miller_rabin_with_br};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;NumberTheoreticTransform&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::number_theoretic_transform::{
+    Convolve, Convolve998244353, ConvolveSteps, MIntConvolve,
 };
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::nums</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::polynomial</span>::<span class="kw-2">*</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::prime</span>::<span class="kw-2">*</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;prime_factors&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::prime_factors</span>::{<span class="ident">divisors</span>, <span class="ident">prime_factors</span>, <span class="ident">prime_factors_flatten</span>};
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimeList&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::prime_list::PrimeList</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimeTable&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::prime_table::PrimeTable</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;primitive_root&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::primitive_root</span>::{<span class="ident">check_primitive_root</span>, <span class="ident">primitive_root</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::special_modulo</span>::<span class="kw-2">*</span>;
+<span class="kw">pub use </span><span class="self">self</span>::nums::<span class="kw-2">*</span>;
+<span class="kw">pub use </span><span class="self">self</span>::polynomial::<span class="kw-2">*</span>;
+<span class="kw">pub use </span><span class="self">self</span>::prime::<span class="kw-2">*</span>;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;prime_factors&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::prime_factors::{divisors, prime_factors, prime_factors_flatten};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;PrimeList&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::prime_list::PrimeList;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;PrimeTable&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::prime_table::PrimeTable;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;primitive_root&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::primitive_root::{check_primitive_root, primitive_root};
+<span class="kw">pub use </span><span class="self">self</span>::special_modulo::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;berlekamp_massey&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;zero_one&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">berlekamp_massey</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(
-    <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;berlekamp_massey&quot;</span>, include(<span class="string">&quot;zero_one&quot;</span>)))]</span>
+<span class="kw">mod </span>berlekamp_massey;
+<span class="attribute">#[cfg_attr(
+    nightly,
+    codesnip::entry(
         <span class="string">&quot;discrete_logarithm&quot;</span>,
-        <span class="ident">include</span>(
+        include(
             <span class="string">&quot;BarrettReduction&quot;</span>,
             <span class="string">&quot;lcm&quot;</span>,
             <span class="string">&quot;modinv&quot;</span>,
             <span class="string">&quot;primitive_root&quot;</span>,
             <span class="string">&quot;PrimeList&quot;</span>,
-            <span class="string">&quot;Xorshift&quot;</span>
-        )
+            <span class="string">&quot;Xorshift&quot;
+        </span>)
     )
 )]</span>
-<span class="kw">mod</span> <span class="ident">discrete_logarithm</span>;
-<span class="kw">mod</span> <span class="ident">factorial</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(
-    <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(<span class="string">&quot;fast_fourier_transform&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;Complex&quot;</span>, <span class="string">&quot;AssociatedValue&quot;</span>))
+<span class="kw">mod </span>discrete_logarithm;
+<span class="kw">mod </span>factorial;
+<span class="attribute">#[cfg_attr(
+    nightly,
+    codesnip::entry(<span class="string">&quot;fast_fourier_transform&quot;</span>, include(<span class="string">&quot;Complex&quot;</span>, <span class="string">&quot;AssociatedValue&quot;</span>))
 )]</span>
-<span class="kw">mod</span> <span class="ident">fast_fourier_transform</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(
-    <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(
+<span class="kw">mod </span>fast_fourier_transform;
+<span class="attribute">#[cfg_attr(
+    nightly,
+    codesnip::entry(
         <span class="string">&quot;FormalPowerSeries&quot;</span>,
-        <span class="ident">include</span>(
+        include(
             <span class="string">&quot;NumberTheoreticTransform&quot;</span>,
             <span class="string">&quot;montgomery&quot;</span>,
             <span class="string">&quot;mod_sqrt&quot;</span>,
             <span class="string">&quot;factorial&quot;</span>,
             <span class="string">&quot;PartialIgnoredOrd&quot;</span>,
-            <span class="string">&quot;berlekamp_massey&quot;</span>
-        )
+            <span class="string">&quot;berlekamp_massey&quot;
+        </span>)
     )
 )]</span>
-<span class="kw">mod</span> <span class="ident">formal_power_series</span>;
-<span class="kw">mod</span> <span class="ident">gcd</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(
-    <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(<span class="string">&quot;lagrange_interpolation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;factorial&quot;</span>, <span class="string">&quot;MIntBase&quot;</span>))
+<span class="kw">mod </span>formal_power_series;
+<span class="kw">mod </span>gcd;
+<span class="attribute">#[cfg_attr(
+    nightly,
+    codesnip::entry(<span class="string">&quot;lagrange_interpolation&quot;</span>, include(<span class="string">&quot;factorial&quot;</span>, <span class="string">&quot;MIntBase&quot;</span>))
 )]</span>
-<span class="kw">mod</span> <span class="ident">lagrange_interpolation</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Matrix&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;zero_one&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">matrix</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;miller_rabin&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;BarrettReduction&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">miller_rabin</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;mod_sqrt&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;MIntBase&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">mod_sqrt</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(
-    <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(<span class="string">&quot;NumberTheoreticTransform&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;montgomery&quot;</span>, <span class="string">&quot;AssociatedValue&quot;</span>))
+<span class="kw">mod </span>lagrange_interpolation;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;Matrix&quot;</span>, include(<span class="string">&quot;zero_one&quot;</span>)))]</span>
+<span class="kw">mod </span>matrix;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;miller_rabin&quot;</span>, include(<span class="string">&quot;BarrettReduction&quot;</span>)))]</span>
+<span class="kw">mod </span>miller_rabin;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;mod_sqrt&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>)))]</span>
+<span class="kw">mod </span>mod_sqrt;
+<span class="attribute">#[cfg_attr(
+    nightly,
+    codesnip::entry(<span class="string">&quot;NumberTheoreticTransform&quot;</span>, include(<span class="string">&quot;montgomery&quot;</span>, <span class="string">&quot;AssociatedValue&quot;</span>))
 )]</span>
-<span class="kw">mod</span> <span class="ident">number_theoretic_transform</span>;
-<span class="kw">mod</span> <span class="ident">nums</span>;
-<span class="kw">mod</span> <span class="ident">polynomial</span>;
-<span class="kw">mod</span> <span class="ident">prime</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(
-    <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(<span class="string">&quot;prime_factors&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;miller_rabin&quot;</span>, <span class="string">&quot;gcd&quot;</span>))
+<span class="kw">mod </span>number_theoretic_transform;
+<span class="kw">mod </span>nums;
+<span class="kw">mod </span>polynomial;
+<span class="kw">mod </span>prime;
+<span class="attribute">#[cfg_attr(
+    nightly,
+    codesnip::entry(<span class="string">&quot;prime_factors&quot;</span>, include(<span class="string">&quot;miller_rabin&quot;</span>, <span class="string">&quot;gcd&quot;</span>))
 )]</span>
-<span class="kw">mod</span> <span class="ident">prime_factors</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimeList&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">prime_list</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;PrimeTable&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">prime_table</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;primitive_root&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;prime_factors&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">primitive_root</span>;
-<span class="kw">mod</span> <span class="ident">special_modulo</span>;
+<span class="kw">mod </span>prime_factors;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;PrimeList&quot;</span>))]</span>
+<span class="kw">mod </span>prime_list;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;PrimeTable&quot;</span>))]</span>
+<span class="kw">mod </span>prime_table;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;primitive_root&quot;</span>, include(<span class="string">&quot;prime_factors&quot;</span>)))]</span>
+<span class="kw">mod </span>primitive_root;
+<span class="kw">mod </span>special_modulo;
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

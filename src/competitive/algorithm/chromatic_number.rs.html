@@ -47,38 +47,38 @@
 <span id="31">31</span>
 <span id="32">32</span>
 <span id="33">33</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">binary_search</span>, <span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{binary_search, MInt, MIntBase, One, Zero};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">IndependentSubSet</span>&lt;<span class="ident">M</span>: <span class="ident">MIntBase</span>&gt; {
-    <span class="kw">pub</span> <span class="ident">n</span>: <span class="ident">usize</span>,
-    <span class="kw">pub</span> <span class="ident">ind</span>: <span class="ident">Vec</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;,
+<span class="attribute">#[derive(Debug, Clone)]</span>
+<span class="kw">pub struct </span>IndependentSubSet&lt;M: MIntBase&gt; {
+    <span class="kw">pub </span>n: usize,
+    <span class="kw">pub </span>ind: Vec&lt;MInt&lt;M&gt;&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">MIntBase</span>&gt; <span class="ident">IndependentSubSet</span>&lt;<span class="ident">M</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_adj_graph</span>(<span class="ident">g</span>: <span class="kw-2">&amp;</span>[<span class="ident">usize</span>]) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">g</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ind</span> = <span class="ident">Vec::with_capacity</span>(<span class="number">1</span> &lt;&lt; <span class="ident">n</span>);
-        <span class="ident">ind</span>.<span class="ident">push</span>(<span class="ident">MInt::one</span>());
-        <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> <span class="number">1usize</span>..<span class="number">1</span> &lt;&lt; <span class="ident">n</span> {
-            <span class="kw">let</span> <span class="ident">v</span> = <span class="ident">s</span>.<span class="ident">trailing_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="ident">ind</span>.<span class="ident">push</span>(<span class="ident">ind</span>[<span class="ident">s</span> - (<span class="number">1</span> &lt;&lt; <span class="ident">v</span>)] + <span class="ident">ind</span>[<span class="ident">s</span> &amp; !(<span class="ident">g</span>[<span class="ident">v</span>] | <span class="number">1</span> &lt;&lt; <span class="ident">v</span>)]);
+<span class="kw">impl</span>&lt;M: MIntBase&gt; IndependentSubSet&lt;M&gt; {
+    <span class="kw">pub fn </span>from_adj_graph(g: <span class="kw-2">&amp;</span>[usize]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>n = g.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>ind = Vec::with_capacity(<span class="number">1 </span>&lt;&lt; n);
+        ind.push(MInt::one());
+        <span class="kw">for </span>s <span class="kw">in </span><span class="number">1usize</span>..<span class="number">1 </span>&lt;&lt; n {
+            <span class="kw">let </span>v = s.trailing_zeros() <span class="kw">as </span>usize;
+            ind.push(ind[s - (<span class="number">1 </span>&lt;&lt; v)] + ind[s &amp; !(g[v] | <span class="number">1 </span>&lt;&lt; v)]);
         }
-        <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">ind</span> }
+        <span class="self">Self </span>{ n, ind }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">k_colorable</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-        !<span class="self">self</span>
-            .<span class="ident">ind</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(|<span class="ident">d</span>| <span class="ident">d</span>.<span class="ident">pow</span>(<span class="ident">k</span>))
-            .<span class="ident">enumerate</span>()
-            .<span class="ident">map</span>(|(<span class="ident">s</span>, <span class="ident">d</span>)| <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">count_ones</span>() % <span class="number">2</span> == <span class="number">0</span> { <span class="ident">d</span> } <span class="kw">else</span> { -<span class="ident">d</span> })
-            .<span class="ident">sum</span>::&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;()
-            .<span class="ident">is_zero</span>()
+    <span class="kw">pub fn </span>k_colorable(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; bool {
+        !<span class="self">self
+            </span>.ind
+            .iter()
+            .map(|d| d.pow(k))
+            .enumerate()
+            .map(|(s, d)| <span class="kw">if </span>s.count_ones() % <span class="number">2 </span>== <span class="number">0 </span>{ d } <span class="kw">else </span>{ -d })
+            .sum::&lt;MInt&lt;M&gt;&gt;()
+            .is_zero()
     }
-    <span class="doccomment">/// The smallest number of colors needed to color a graph.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">chromatic_number</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="ident">binary_search</span>(|<span class="kw-2">&amp;</span><span class="ident">k</span>| <span class="self">self</span>.<span class="ident">k_colorable</span>(<span class="ident">k</span>), <span class="self">self</span>.<span class="ident">n</span>, <span class="number">0</span>)
+    <span class="doccomment">/// The smallest number of colors needed to color a graph.
+    </span><span class="kw">pub fn </span>chromatic_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        binary_search(|<span class="kw-2">&amp;</span>k| <span class="self">self</span>.k_colorable(k), <span class="self">self</span>.n, <span class="number">0</span>)
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

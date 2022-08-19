@@ -45,41 +45,41 @@ therefore, using something that implements <a href="https://doc.rust-lang.org/ni
 <h2 id="examples"><a href="#examples">Examples</a></h2>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = [<span class="number">0</span>; <span class="number">10</span>];
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0</span>; <span class="number">10</span>];
 
-    <span class="comment">// read up to 10 bytes</span>
-    <span class="ident">f</span>.<span class="ident">read</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    <span class="comment">// read up to 10 bytes
+    </span>f.read(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = <span class="ident">Vec::new</span>();
-    <span class="comment">// read the whole file</span>
-    <span class="ident">f</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = Vec::new();
+    <span class="comment">// read the whole file
+    </span>f.read_to_end(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
 
-    <span class="comment">// read into a String, so that you don&#39;t need to do the conversion.</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = <span class="ident">String::new</span>();
-    <span class="ident">f</span>.<span class="ident">read_to_string</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    <span class="comment">// read into a String, so that you don&#39;t need to do the conversion.
+    </span><span class="kw">let </span><span class="kw-2">mut </span>buffer = String::new();
+    f.read_to_string(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
 
-    <span class="comment">// and more! See the other methods for more details.</span>
-    <span class="prelude-val">Ok</span>(())
+    <span class="comment">// and more! See the other methods for more details.
+    </span><span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 <p>Read from <a href="https://doc.rust-lang.org/nightly/std/primitive.str.html"><code>&amp;str</code></a> because <a href="https://doc.rust-lang.org/nightly/std/primitive.slice.html" title="slice"><code>&amp;[u8]</code></a> implements <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> = <span class="string">&quot;This string will be read&quot;</span>.<span class="ident">as_bytes</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = [<span class="number">0</span>; <span class="number">10</span>];
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>b = <span class="string">&quot;This string will be read&quot;</span>.as_bytes();
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0</span>; <span class="number">10</span>];
 
-    <span class="comment">// read up to 10 bytes</span>
-    <span class="ident">b</span>.<span class="ident">read</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    <span class="comment">// read up to 10 bytes
+    </span>b.read(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
 
-    <span class="comment">// etc... it works exactly as a File does!</span>
-    <span class="prelude-val">Ok</span>(())
+    <span class="comment">// etc... it works exactly as a File does!
+    </span><span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 </div></details><h2 id="required-methods" class="small-section-header">Required Methods<a href="#required-methods" class="anchor"></a></h2><div class="methods"><details class="rustdoc-toggle" open><summary><div id="tymethod.read" class="method has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#626">source</a></div><h4 class="code-header">fn <a href="#tymethod.read" class="fnname">read</a>(&amp;mut self, buf: &amp;mut [<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>&gt;</h4></div></summary><div class="docblock"><p>Pull some bytes from this source into the specified buffer, returning
 how many bytes were read.</p>
@@ -128,18 +128,18 @@ operation should be retried if there is nothing else to do.</p>
 <h5 id="examples-1"><a href="#examples-1">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = [<span class="number">0</span>; <span class="number">10</span>];
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0</span>; <span class="number">10</span>];
 
-    <span class="comment">// read up to 10 bytes</span>
-    <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">f</span>.<span class="ident">read</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>[..])<span class="question-mark">?</span>;
+    <span class="comment">// read up to 10 bytes
+    </span><span class="kw">let </span>n = f.read(<span class="kw-2">&amp;mut </span>buffer[..])<span class="question-mark">?</span>;
 
-    <span class="macro">println!</span>(<span class="string">&quot;The bytes: {:?}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">buffer</span>[..<span class="ident">n</span>]);
+    <span class="macro">println!</span>(<span class="string">&quot;The bytes: {:?}&quot;</span>, <span class="kw-2">&amp;</span>buffer[..n]);
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 </div></details></div><h2 id="provided-methods" class="small-section-header">Provided Methods<a href="#provided-methods" class="anchor"></a></h2><div class="methods"><details class="rustdoc-toggle" open><summary><div id="method.read_vectored" class="method has-srclink"><div class="rightside"><span class="since" title="Stable since Rust version 1.36.0">1.36.0</span> · <a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#638">source</a></div><h4 class="code-header">fn <a href="#method.read_vectored" class="fnname">read_vectored</a>(&amp;mut self, bufs: &amp;mut [<a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.IoSliceMut.html" title="struct std::io::IoSliceMut">IoSliceMut</a>&lt;'_&gt;]) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>&gt;</h4></div></summary><div class="docblock"><p>Like <code>read</code>, except that it reads into a slice of buffers.</p>
@@ -171,16 +171,16 @@ returns. Any bytes which have already been read will be appended to
 <h5 id="examples-2"><a href="#examples-2">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = <span class="ident">Vec::new</span>();
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = Vec::new();
 
-    <span class="comment">// read the whole file</span>
-    <span class="ident">f</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    <span class="comment">// read the whole file
+    </span>f.read_to_end(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 <p>(See also the <a href="https://doc.rust-lang.org/nightly/std/fs/fn.read.html"><code>std::fs::read</code></a> convenience function for reading from a
@@ -195,15 +195,15 @@ returned and <code>buf</code> is unchanged.</p>
 <h5 id="examples-3"><a href="#examples-3">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = <span class="ident">String::new</span>();
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = String::new();
 
-    <span class="ident">f</span>.<span class="ident">read_to_string</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    f.read_to_string(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 <p>(See also the <a href="https://doc.rust-lang.org/nightly/std/fs/fn.read_to_string.html"><code>std::fs::read_to_string</code></a> convenience function for
@@ -232,16 +232,16 @@ completely fill the buffer.</p>
 <h5 id="examples-4"><a href="#examples-4">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = [<span class="number">0</span>; <span class="number">10</span>];
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0</span>; <span class="number">10</span>];
 
-    <span class="comment">// read exactly 10 bytes</span>
-    <span class="ident">f</span>.<span class="ident">read_exact</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    <span class="comment">// read exactly 10 bytes
+    </span>f.read_exact(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 </div></details><details class="rustdoc-toggle" open><summary><div id="method.read_buf" class="method has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#811">source</a></div><h4 class="code-header">fn <a href="#method.read_buf" class="fnname">read_buf</a>(&amp;mut self, buf: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/readbuf/struct.ReadBuf.html" title="struct std::io::readbuf::ReadBuf">ReadBuf</a>&lt;'_&gt;) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>&gt;</h4></div></summary><span class="item-info"><div class="stab unstable"><span class="emoji">🔬</span> This is a nightly-only experimental API. (<code>read_buf</code>)</div></span><div class="docblock"><p>Pull some bytes from this source into the specified buffer.</p>
@@ -257,25 +257,25 @@ current reader.</p>
 <h5 id="examples-5"><a href="#examples-5">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::Read</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::Read;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = <span class="ident">Vec::new</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">other_buffer</span> = <span class="ident">Vec::new</span>();
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = Vec::new();
+    <span class="kw">let </span><span class="kw-2">mut </span>other_buffer = Vec::new();
 
     {
-        <span class="kw">let</span> <span class="ident">reference</span> = <span class="ident">f</span>.<span class="ident">by_ref</span>();
+        <span class="kw">let </span>reference = f.by_ref();
 
-        <span class="comment">// read at most 5 bytes</span>
-        <span class="ident">reference</span>.<span class="ident">take</span>(<span class="number">5</span>).<span class="ident">read_to_end</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+        <span class="comment">// read at most 5 bytes
+        </span>reference.take(<span class="number">5</span>).read_to_end(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
 
-    } <span class="comment">// drop our &amp;mut reference so we can use f again</span>
+    } <span class="comment">// drop our &amp;mut reference so we can use f again
 
-    <span class="comment">// original file still usable, read the rest</span>
-    <span class="ident">f</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;mut</span> <span class="ident">other_buffer</span>)<span class="question-mark">?</span>;
+    // original file still usable, read the rest
+    </span>f.read_to_end(<span class="kw-2">&amp;mut </span>other_buffer)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 </div></details><details class="rustdoc-toggle" open><summary><div id="method.bytes" class="method has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#910-912">source</a></div><h4 class="code-header">fn <a href="#method.bytes" class="fnname">bytes</a>(self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Bytes.html" title="struct std::io::Bytes">Bytes</a>&lt;Self&gt;</h4></div></summary><div class="docblock"><p>Transforms this <code>Read</code> instance to an <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html" title="Iterator"><code>Iterator</code></a> over its bytes.</p>
@@ -286,15 +286,15 @@ otherwise. EOF is mapped to returning <a href="https://doc.rust-lang.org/nightly
 <h5 id="examples-6"><a href="#examples-6">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html" title="fs::File"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
 
-    <span class="kw">for</span> <span class="ident">byte</span> <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">bytes</span>() {
-        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">byte</span>.<span class="ident">unwrap</span>());
+    <span class="kw">for </span>byte <span class="kw">in </span>f.bytes() {
+        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, byte.unwrap());
     }
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
@@ -305,20 +305,20 @@ output of <code>next</code>.</p>
 <h5 id="examples-7"><a href="#examples-7">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="ident">f1</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">f2</span> = <span class="ident">File::open</span>(<span class="string">&quot;bar.txt&quot;</span>)<span class="question-mark">?</span>;
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>f1 = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>f2 = File::open(<span class="string">&quot;bar.txt&quot;</span>)<span class="question-mark">?</span>;
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">handle</span> = <span class="ident">f1</span>.<span class="ident">chain</span>(<span class="ident">f2</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = <span class="ident">String::new</span>();
+    <span class="kw">let </span><span class="kw-2">mut </span>handle = f1.chain(f2);
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = String::new();
 
-    <span class="comment">// read the value into a String. We could use any Read method here,</span>
-    <span class="comment">// this is just one example.</span>
-    <span class="ident">handle</span>.<span class="ident">read_to_string</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    <span class="comment">// read the value into a String. We could use any Read method here,
+    // this is just one example.
+    </span>handle.read_to_string(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 </div></details><details class="rustdoc-toggle" open><summary><div id="method.take" class="method has-srclink"><div class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#987-989">source</a></div><h4 class="code-header">fn <a href="#method.take" class="fnname">take</a>(self, limit: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Take.html" title="struct std::io::Take">Take</a>&lt;Self&gt;<span class="notable-traits"><span class="notable-traits-tooltip">ⓘ<span class="notable-traits-tooltiptext"><span class="docblock"><span class="notable">Notable traits for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Take.html" title="struct std::io::Take">Take</a>&lt;T&gt;</span><code class="content"><span class="where fmt-newline">impl&lt;T&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Take.html" title="struct std::io::Take">Take</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,&nbsp;</span></span></code></span></span></span></span></h4></div></summary><div class="docblock"><p>Creates an adapter which will read at most <code>limit</code> bytes from it.</p>
@@ -329,22 +329,22 @@ calls to <a href="trait.Read.html#tymethod.read"><code>read()</code></a> may suc
 <h5 id="examples-8"><a href="#examples-8">Examples</a></h5>
 <p><a href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html"><code>File</code></a>s implement <code>Read</code>:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::io</span>;
-<span class="kw">use</span> <span class="ident">std::io::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::io;
+<span class="kw">use </span>std::io::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::fs::File;
 
-<span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">io::Result</span>&lt;()&gt; {
-    <span class="kw">let</span> <span class="ident">f</span> = <span class="ident">File::open</span>(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> = [<span class="number">0</span>; <span class="number">5</span>];
+<span class="kw">fn </span>main() -&gt; io::Result&lt;()&gt; {
+    <span class="kw">let </span>f = File::open(<span class="string">&quot;foo.txt&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0</span>; <span class="number">5</span>];
 
-    <span class="comment">// read at most five bytes</span>
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">handle</span> = <span class="ident">f</span>.<span class="ident">take</span>(<span class="number">5</span>);
+    <span class="comment">// read at most five bytes
+    </span><span class="kw">let </span><span class="kw-2">mut </span>handle = f.take(<span class="number">5</span>);
 
-    <span class="ident">handle</span>.<span class="ident">read</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)<span class="question-mark">?</span>;
+    handle.read(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }</code></pre></div>
 </div></details></div><h2 id="implementors" class="small-section-header">Implementors<a href="#implementors" class="anchor"></a></h2><div class="item-list" id="implementors-list"><section id="impl-Read-for-%26File" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/fs.rs.html#753">source</a></span><a href="#impl-Read-for-%26File" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html" title="struct std::fs::File">File</a></h3></section><section id="impl-Read-for-%26TcpStream" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/net/tcp.rs.html#651">source</a></span><a href="#impl-Read-for-%26TcpStream" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/net/tcp/struct.TcpStream.html" title="struct std::net::tcp::TcpStream">TcpStream</a></h3></section><section id="impl-Read-for-%26%5Bu8%5D" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/impls.rs.html#232">source</a></span><a href="#impl-Read-for-%26%5Bu8%5D" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for &amp;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]</h3></section><div class="docblock"><p>Read is implemented for <code>&amp;[u8]</code> by copying from the slice.</p>
 <p>Note that reading updates the slice to point to the yet unread part.
 The slice will be empty when EOF is reached.</p>
 </div><section id="impl-Read-for-File" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/fs.rs.html#697">source</a></span><a href="#impl-Read-for-File" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/fs/struct.File.html" title="struct std::fs::File">File</a></h3></section><section id="impl-Read-for-Stdin" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/stdio.rs.html#418">source</a></span><a href="#impl-Read-for-Stdin" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/stdio/struct.Stdin.html" title="struct std::io::stdio::Stdin">Stdin</a></h3></section><section id="impl-Read-for-StdinLock%3C%27_%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/stdio.rs.html#449">source</a></span><a href="#impl-Read-for-StdinLock%3C%27_%3E" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/stdio/struct.StdinLock.html" title="struct std::io::stdio::StdinLock">StdinLock</a>&lt;'_&gt;</h3></section><section id="impl-Read-for-Empty" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/util.rs.html#43">source</a></span><a href="#impl-Read-for-Empty" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/util/struct.Empty.html" title="struct std::io::util::Empty">Empty</a></h3></section><section id="impl-Read-for-Repeat" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/util.rs.html#124">source</a></span><a href="#impl-Read-for-Repeat" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/util/struct.Repeat.html" title="struct std::io::util::Repeat">Repeat</a></h3></section><section id="impl-Read-for-TcpStream" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/net/tcp.rs.html#617">source</a></span><a href="#impl-Read-for-TcpStream" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/net/tcp/struct.TcpStream.html" title="struct std::net::tcp::TcpStream">TcpStream</a></h3></section><section id="impl-Read-for-UnixStream" class="impl has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.10.0">1.10.0</span> · <a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/os/unix/net/stream.rs.html#594">source</a></span><a href="#impl-Read-for-UnixStream" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/os/unix/net/stream/struct.UnixStream.html" title="struct std::os::unix::net::stream::UnixStream">UnixStream</a></h3></section><section id="impl-Read-for-ChildStderr" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/process.rs.html#413">source</a></span><a href="#impl-Read-for-ChildStderr" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/process/struct.ChildStderr.html" title="struct std::process::ChildStderr">ChildStderr</a></h3></section><section id="impl-Read-for-ChildStdout" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/process.rs.html#352">source</a></span><a href="#impl-Read-for-ChildStdout" class="anchor"></a><h3 class="code-header in-band">impl <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/process/struct.ChildStdout.html" title="struct std::process::ChildStdout">ChildStdout</a></h3></section><section id="impl-Read-for-%26%27a%20UnixStream" class="impl has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.10.0">1.10.0</span> · <a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/os/unix/net/stream.rs.html#610">source</a></span><a href="#impl-Read-for-%26%27a%20UnixStream" class="anchor"></a><h3 class="code-header in-band">impl&lt;'a&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for &amp;'a <a class="struct" href="https://doc.rust-lang.org/nightly/std/os/unix/net/stream/struct.UnixStream.html" title="struct std::os::unix::net::stream::UnixStream">UnixStream</a></h3></section><section id="impl-Read-for-VecDeque%3Cu8%2C%20A%3E" class="impl has-srclink"><span class="rightside"><span class="since" title="Stable since Rust version 1.63.0">1.63.0</span> · <a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/impls.rs.html#417">source</a></span><a href="#impl-Read-for-VecDeque%3Cu8%2C%20A%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;A&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html" title="struct alloc::collections::vec_deque::VecDeque">VecDeque</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>, A&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;A: <a class="trait" href="https://doc.rust-lang.org/nightly/core/alloc/trait.Allocator.html" title="trait core::alloc::Allocator">Allocator</a>,&nbsp;</span></h3></section><div class="docblock"><p>Read is implemented for <code>VecDeque&lt;u8&gt;</code> by consuming bytes from the front of the <code>VecDeque</code>.</p>
-</div><section id="impl-Read-for-%26mut%20R" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/impls.rs.html#17">source</a></span><a href="#impl-Read-for-%26mut%20R" class="anchor"></a><h3 class="code-header in-band">impl&lt;R&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>R <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;R: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></section><section id="impl-Read-for-Box%3CR%2C%20Global%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/impls.rs.html#121">source</a></span><a href="#impl-Read-for-Box%3CR%2C%20Global%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;R&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;R, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/alloc/struct.Global.html" title="struct alloc::alloc::Global">Global</a>&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;R: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></section><section id="impl-Read-for-BufReader%3CR%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/buffered/bufreader.rs.html#252">source</a></span><a href="#impl-Read-for-BufReader%3CR%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;R&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/buffered/bufreader/struct.BufReader.html" title="struct std::io::buffered::bufreader::BufReader">BufReader</a>&lt;R&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;R: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,&nbsp;</span></h3></section><section id="impl-Read-for-Cursor%3CT%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/cursor.rs.html#316">source</a></span><a href="#impl-Read-for-Cursor%3CT%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/cursor/struct.Cursor.html" title="struct std::io::cursor::Cursor">Cursor</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]&gt;,&nbsp;</span></h3></section><section id="impl-Read-for-Take%3CT%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#2571">source</a></span><a href="#impl-Read-for-Take%3CT%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Take.html" title="struct std::io::Take">Take</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,&nbsp;</span></h3></section><section id="impl-Read-for-Chain%3CT%2C%20U%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#2362">source</a></span><a href="#impl-Read-for-Chain%3CT%2C%20U%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T, U&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Chain.html" title="struct std::io::Chain">Chain</a>&lt;T, U&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,&nbsp;</span></h3></section></div><script type="text/javascript" src="../../implementors/std/io/trait.Read.js" data-ignore-extern-crates="std,alloc" async></script></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</div><section id="impl-Read-for-%26mut%20R" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/impls.rs.html#17">source</a></span><a href="#impl-Read-for-%26mut%20R" class="anchor"></a><h3 class="code-header in-band">impl&lt;R&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>R <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;R: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></section><section id="impl-Read-for-Box%3CR%2C%20Global%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/impls.rs.html#121">source</a></span><a href="#impl-Read-for-Box%3CR%2C%20Global%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;R&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;R, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/alloc/struct.Global.html" title="struct alloc::alloc::Global">Global</a>&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;R: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,&nbsp;</span></h3></section><section id="impl-Read-for-BufReader%3CR%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/buffered/bufreader.rs.html#252">source</a></span><a href="#impl-Read-for-BufReader%3CR%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;R&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/buffered/bufreader/struct.BufReader.html" title="struct std::io::buffered::bufreader::BufReader">BufReader</a>&lt;R&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;R: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,&nbsp;</span></h3></section><section id="impl-Read-for-Cursor%3CT%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/cursor.rs.html#316">source</a></span><a href="#impl-Read-for-Cursor%3CT%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/cursor/struct.Cursor.html" title="struct std::io::cursor::Cursor">Cursor</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]&gt;,&nbsp;</span></h3></section><section id="impl-Read-for-Take%3CT%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#2571">source</a></span><a href="#impl-Read-for-Take%3CT%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Take.html" title="struct std::io::Take">Take</a>&lt;T&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,&nbsp;</span></h3></section><section id="impl-Read-for-Chain%3CT%2C%20U%3E" class="impl has-srclink"><span class="rightside"><a class="srclink" href="https://doc.rust-lang.org/nightly/src/std/io/mod.rs.html#2362">source</a></span><a href="#impl-Read-for-Chain%3CT%2C%20U%3E" class="anchor"></a><h3 class="code-header in-band">impl&lt;T, U&gt; <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a> for <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/struct.Chain.html" title="struct std::io::Chain">Chain</a>&lt;T, U&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;T: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;U: <a class="trait" href="trait.Read.html" title="trait competitive::prelude::Read">Read</a>,&nbsp;</span></h3></section></div><script type="text/javascript" src="../../implementors/std/io/trait.Read.js" data-ignore-extern-crates="std,alloc" async></script></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

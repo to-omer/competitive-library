@@ -39,30 +39,30 @@
 <span id="23">23</span>
 <span id="24">24</span>
 <span id="25">25</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">competitive::prelude</span>::<span class="kw-2">*</span>;
-<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">no_inline</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">competitive</span>::{<span class="ident">algebra::AdditiveOperation</span>, <span class="ident">graph::DinicBuilder</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>competitive::prelude::<span class="kw-2">*</span>;
+<span class="attribute">#[doc(no_inline)]</span>
+<span class="kw">pub use </span>competitive::{algebra::AdditiveOperation, graph::DinicBuilder};
 
-<span class="attribute">#[<span class="ident">verify::aizu_online_judge</span>(<span class="string">&quot;GRL_7_A&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">grl_7_a</span>(<span class="ident">reader</span>: <span class="kw">impl</span> <span class="ident">Read</span>, <span class="kw-2">mut</span> <span class="ident">writer</span>: <span class="kw">impl</span> <span class="ident">Write</span>) {
-    <span class="kw">let</span> <span class="ident">s</span> = <span class="ident">read_all_unchecked</span>(<span class="ident">reader</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scanner</span> = <span class="ident">Scanner::new</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>);
-    <span class="macro">scan!</span>(<span class="ident">scanner</span>, <span class="ident">xs</span>, <span class="ident">ys</span>, <span class="ident">es</span>, <span class="ident">edges</span>: [(<span class="ident">usize</span>, <span class="ident">usize</span>)]);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> = <span class="ident">DinicBuilder::new</span>(<span class="ident">xs</span> + <span class="ident">ys</span> + <span class="number">2</span>, <span class="ident">xs</span> + <span class="ident">ys</span> + <span class="ident">es</span>);
-    <span class="kw">let</span> <span class="ident">s</span> = <span class="ident">xs</span> + <span class="ident">ys</span>;
-    <span class="kw">let</span> <span class="ident">t</span> = <span class="ident">s</span> + <span class="number">1</span>;
-    <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">xs</span> {
-        <span class="ident">builder</span>.<span class="ident">add_edge</span>(<span class="ident">s</span>, <span class="ident">x</span>, <span class="number">1</span>);
+<span class="attribute">#[verify::aizu_online_judge(<span class="string">&quot;GRL_7_A&quot;</span>)]</span>
+<span class="kw">pub fn </span>grl_7_a(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+    <span class="kw">let </span>s = read_all_unchecked(reader);
+    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+    <span class="macro">scan!</span>(scanner, xs, ys, es, edges: [(usize, usize)]);
+    <span class="kw">let </span><span class="kw-2">mut </span>builder = DinicBuilder::new(xs + ys + <span class="number">2</span>, xs + ys + es);
+    <span class="kw">let </span>s = xs + ys;
+    <span class="kw">let </span>t = s + <span class="number">1</span>;
+    <span class="kw">for </span>x <span class="kw">in </span><span class="number">0</span>..xs {
+        builder.add_edge(s, x, <span class="number">1</span>);
     }
-    <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">ys</span> {
-        <span class="ident">builder</span>.<span class="ident">add_edge</span>(<span class="ident">y</span> + <span class="ident">xs</span>, <span class="ident">t</span>, <span class="number">1</span>);
+    <span class="kw">for </span>y <span class="kw">in </span><span class="number">0</span>..ys {
+        builder.add_edge(y + xs, t, <span class="number">1</span>);
     }
-    <span class="kw">for</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="kw">in</span> <span class="ident">edges</span>.<span class="ident">take</span>(<span class="ident">es</span>) {
-        <span class="ident">builder</span>.<span class="ident">add_edge</span>(<span class="ident">x</span>, <span class="ident">y</span> + <span class="ident">xs</span>, <span class="number">1</span>);
+    <span class="kw">for </span>(x, y) <span class="kw">in </span>edges.take(es) {
+        builder.add_edge(x, y + xs, <span class="number">1</span>);
     }
-    <span class="kw">let</span> <span class="ident">graph</span> = <span class="ident">builder</span>.<span class="ident">gen_graph</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dinic</span> = <span class="ident">builder</span>.<span class="ident">build</span>(<span class="kw-2">&amp;</span><span class="ident">graph</span>);
-    <span class="macro">writeln!</span>(<span class="ident">writer</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">dinic</span>.<span class="ident">maximum_flow</span>(<span class="ident">s</span>, <span class="ident">t</span>)).<span class="ident">ok</span>();
+    <span class="kw">let </span>graph = builder.gen_graph();
+    <span class="kw">let </span><span class="kw-2">mut </span>dinic = builder.build(<span class="kw-2">&amp;</span>graph);
+    <span class="macro">writeln!</span>(writer, <span class="string">&quot;{}&quot;</span>, dinic.maximum_flow(s, t)).ok();
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="aizu_online_judge" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="aizu_online_judge" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

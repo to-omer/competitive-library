@@ -152,73 +152,73 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
-</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::unreadable_literal</span>)]</span>
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::BarrettReduction</span>;
+</pre><pre class="rust"><code><span class="attribute">#![allow(clippy::unreadable_literal)]</span>
+<span class="kw">use </span><span class="kw">super</span>::BarrettReduction;
 
-<span class="macro">macro_rules!</span> <span class="ident">impl_test_mr</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span>:<span class="ident">ty</span>) =&gt; {
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>(<span class="ident">n</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>, <span class="ident">br</span>: <span class="kw-2">&amp;</span><span class="ident">BarrettReduction</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span>&gt;, <span class="ident">a</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>) -&gt; <span class="ident">bool</span> {
-            <span class="kw">if</span> <span class="ident">br</span>.<span class="ident">rem</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span>) == <span class="number">0</span> {
-                <span class="kw">return</span> <span class="bool-val">true</span>;
+<span class="macro">macro_rules!</span> impl_test_mr {
+    (<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$ty</span>:ty, <span class="macro-nonterminal">$upty</span>:ty) =&gt; {
+        <span class="kw">fn </span><span class="macro-nonterminal">$name</span>(n: <span class="macro-nonterminal">$ty</span>, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;<span class="macro-nonterminal">$upty</span>&gt;, a: <span class="macro-nonterminal">$ty</span>) -&gt; bool {
+            <span class="kw">if </span>br.rem(a <span class="kw">as </span><span class="macro-nonterminal">$upty</span>) == <span class="number">0 </span>{
+                <span class="kw">return </span><span class="bool-val">true</span>;
             }
-            <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">n</span> - <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">d</span>.<span class="ident">trailing_zeros</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">d</span> = <span class="ident">d</span> &gt;&gt; <span class="ident">k</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y</span> = {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> = <span class="ident">a</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span>;
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span> = <span class="number">1</span>;
-                <span class="kw">while</span> <span class="ident">d</span> &gt; <span class="number">0</span> {
-                    <span class="kw">if</span> <span class="ident">d</span> &amp; <span class="number">1</span> == <span class="number">1</span> {
-                        <span class="ident">y</span> = <span class="ident">br</span>.<span class="ident">rem</span>(<span class="ident">y</span> * <span class="ident">a</span>);
+            <span class="kw">let </span>d = n - <span class="number">1</span>;
+            <span class="kw">let </span>k = d.trailing_zeros();
+            <span class="kw">let </span><span class="kw-2">mut </span>d = d &gt;&gt; k;
+            <span class="kw">let </span><span class="kw-2">mut </span>y = {
+                <span class="kw">let </span><span class="kw-2">mut </span>a = a <span class="kw">as </span><span class="macro-nonterminal">$upty</span>;
+                <span class="kw">let </span><span class="kw-2">mut </span>y: <span class="macro-nonterminal">$upty </span>= <span class="number">1</span>;
+                <span class="kw">while </span>d &gt; <span class="number">0 </span>{
+                    <span class="kw">if </span>d &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+                        y = br.rem(y * a);
                     }
-                    <span class="ident">a</span> = <span class="ident">br</span>.<span class="ident">rem</span>(<span class="ident">a</span> * <span class="ident">a</span>);
-                    <span class="ident">d</span> &gt;&gt;= <span class="number">1</span>;
+                    a = br.rem(a * a);
+                    d &gt;&gt;= <span class="number">1</span>;
                 }
-                <span class="ident">y</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>
-            };
-            <span class="kw">if</span> <span class="ident">y</span> == <span class="number">1</span> || <span class="ident">y</span> == <span class="ident">n</span> - <span class="number">1</span> {
-                <span class="bool-val">true</span>
-            } <span class="kw">else</span> {
-                <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">k</span> - <span class="number">1</span> {
-                    <span class="ident">y</span> = <span class="ident">br</span>.<span class="ident">rem</span>(<span class="ident">y</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span> * <span class="ident">y</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span>) <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>;
-                    <span class="kw">if</span> <span class="ident">y</span> == <span class="ident">n</span> - <span class="number">1</span> {
-                        <span class="kw">return</span> <span class="bool-val">true</span>;
+                y <span class="kw">as </span><span class="macro-nonterminal">$ty
+            </span>};
+            <span class="kw">if </span>y == <span class="number">1 </span>|| y == n - <span class="number">1 </span>{
+                <span class="bool-val">true
+            </span>} <span class="kw">else </span>{
+                <span class="kw">for _ in </span><span class="number">0</span>..k - <span class="number">1 </span>{
+                    y = br.rem(y <span class="kw">as </span><span class="macro-nonterminal">$upty </span>* y <span class="kw">as </span><span class="macro-nonterminal">$upty</span>) <span class="kw">as </span><span class="macro-nonterminal">$ty</span>;
+                    <span class="kw">if </span>y == n - <span class="number">1 </span>{
+                        <span class="kw">return </span><span class="bool-val">true</span>;
                     }
                 }
-                <span class="bool-val">false</span>
-            }
+                <span class="bool-val">false
+            </span>}
         }
     };
 }
-<span class="macro">impl_test_mr!</span>(<span class="ident">test_mr32</span>, <span class="ident">u32</span>, <span class="ident">u64</span>);
-<span class="macro">impl_test_mr!</span>(<span class="ident">test_mr64</span>, <span class="ident">u64</span>, <span class="ident">u128</span>);
+<span class="macro">impl_test_mr!</span>(test_mr32, u32, u64);
+<span class="macro">impl_test_mr!</span>(test_mr64, u64, u128);
 
-<span class="doccomment">/// http://miller-rabin.appspot.com/</span>
-<span class="macro">macro_rules!</span> <span class="ident">impl_mr</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">test</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span>:<span class="ident">ty</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">th</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>:<span class="ident">expr</span>),+]),+], |<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">br</span>:<span class="ident">ident</span>|<span class="macro-nonterminal">$</span><span class="macro-nonterminal">last</span>:<span class="ident">expr</span>) =&gt; {
-        <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">br</span>: <span class="kw-2">&amp;</span><span class="ident">BarrettReduction</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">upty</span>&gt;) -&gt; <span class="ident">bool</span> {
+<span class="doccomment">/// http://miller-rabin.appspot.com/
+</span><span class="macro">macro_rules!</span> impl_mr {
+    (<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$test</span>:ident, <span class="macro-nonterminal">$ty</span>:ty, <span class="macro-nonterminal">$upty</span>:ty, [$(<span class="macro-nonterminal">$th</span>:expr, [$(<span class="macro-nonterminal">$a</span>:expr),+]),+], |<span class="macro-nonterminal">$n</span>:ident, <span class="macro-nonterminal">$br</span>:ident|<span class="macro-nonterminal">$last</span>:expr) =&gt; {
+        <span class="kw">fn </span><span class="macro-nonterminal">$name</span>(<span class="macro-nonterminal">$n</span>: <span class="macro-nonterminal">$ty</span>, <span class="macro-nonterminal">$br</span>: <span class="kw-2">&amp;</span>BarrettReduction&lt;<span class="macro-nonterminal">$upty</span>&gt;) -&gt; bool {
             $(
-                <span class="kw">if</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span> &gt;= <span class="macro-nonterminal">$</span><span class="macro-nonterminal">th</span> {
-                    <span class="kw">return</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">test</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">n</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">br</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">a</span>))&amp;&amp;+
+                <span class="kw">if </span><span class="macro-nonterminal">$n </span>&gt;= <span class="macro-nonterminal">$th </span>{
+                    <span class="kw">return </span>$(<span class="macro-nonterminal">$test</span>(<span class="macro-nonterminal">$n</span>, <span class="macro-nonterminal">$br</span>, <span class="macro-nonterminal">$a</span>))&amp;&amp;+
                 }
             )+
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">last</span>
-        }
+            <span class="macro-nonterminal">$last
+        </span>}
     };
 }
 <span class="macro">impl_mr!</span>(
-    <span class="ident">mr32</span>,
-    <span class="ident">test_mr32</span>,
-    <span class="ident">u32</span>,
-    <span class="ident">u64</span>,
+    mr32,
+    test_mr32,
+    u32,
+    u64,
     [<span class="number">316349281</span>, [<span class="number">2</span>, <span class="number">7</span>, <span class="number">61</span>], <span class="number">49141</span>, [<span class="number">11000544</span>, <span class="number">31481107</span>]],
-    |<span class="ident">n</span>, <span class="ident">br</span>| <span class="ident">test_mr32</span>(<span class="ident">n</span>, <span class="ident">br</span>, <span class="number">921211727</span>)
+    |n, br| test_mr32(n, br, <span class="number">921211727</span>)
 );
 <span class="macro">impl_mr!</span>(
-    <span class="ident">mr64</span>,
-    <span class="ident">test_mr64</span>,
-    <span class="ident">u64</span>,
-    <span class="ident">u128</span>,
+    mr64,
+    test_mr64,
+    u64,
+    u128,
     [
         <span class="number">585226005592931977</span>,
         [<span class="number">2</span>, <span class="number">325</span>, <span class="number">9375</span>, <span class="number">28178</span>, <span class="number">450775</span>, <span class="number">9780504</span>, <span class="number">1795265022</span>],
@@ -229,66 +229,66 @@
             <span class="number">9233062284813009</span>,
             <span class="number">43835965440333360</span>,
             <span class="number">761179012939631437</span>,
-            <span class="number">1263739024124850375</span>
-        ],
+            <span class="number">1263739024124850375
+        </span>],
         <span class="number">55245642489451</span>,
         [
             <span class="number">2</span>,
             <span class="number">4130806001517</span>,
             <span class="number">149795463772692060</span>,
             <span class="number">186635894390467037</span>,
-            <span class="number">3967304179347715805</span>
-        ],
+            <span class="number">3967304179347715805
+        </span>],
         <span class="number">350269456337</span>,
         [
             <span class="number">2</span>,
             <span class="number">141889084524735</span>,
             <span class="number">1199124725622454117</span>,
-            <span class="number">11096072698276303650</span>
-        ],
+            <span class="number">11096072698276303650
+        </span>],
         <span class="number">1050535501</span>,
         [
             <span class="number">4230279247111683200</span>,
             <span class="number">14694767155120705706</span>,
-            <span class="number">16641139526367750375</span>
-        ]
+            <span class="number">16641139526367750375
+        </span>]
     ],
-    |<span class="ident">n</span>, <span class="ident">br</span>| <span class="ident">mr32</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">u32</span>, <span class="kw-2">&amp;</span><span class="ident">BarrettReduction</span>::&lt;<span class="ident">u64</span>&gt;<span class="ident">::new</span>(<span class="ident">n</span>))
+    |n, br| mr32(n <span class="kw">as </span>u32, <span class="kw-2">&amp;</span>BarrettReduction::&lt;u64&gt;::new(n))
 );
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">miller_rabin_with_br</span>(<span class="ident">n</span>: <span class="ident">u64</span>, <span class="ident">br</span>: <span class="kw-2">&amp;</span><span class="ident">BarrettReduction</span>&lt;<span class="ident">u128</span>&gt;) -&gt; <span class="ident">bool</span> {
-    <span class="kw">if</span> <span class="ident">n</span> % <span class="number">2</span> == <span class="number">0</span> {
-        <span class="kw">return</span> <span class="ident">n</span> == <span class="number">2</span>;
+<span class="kw">pub fn </span>miller_rabin_with_br(n: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; bool {
+    <span class="kw">if </span>n % <span class="number">2 </span>== <span class="number">0 </span>{
+        <span class="kw">return </span>n == <span class="number">2</span>;
     }
-    <span class="kw">if</span> <span class="ident">n</span> % <span class="number">3</span> == <span class="number">0</span> {
-        <span class="kw">return</span> <span class="ident">n</span> == <span class="number">3</span>;
+    <span class="kw">if </span>n % <span class="number">3 </span>== <span class="number">0 </span>{
+        <span class="kw">return </span>n == <span class="number">3</span>;
     }
-    <span class="kw">if</span> <span class="ident">n</span> % <span class="number">5</span> == <span class="number">0</span> {
-        <span class="kw">return</span> <span class="ident">n</span> == <span class="number">5</span>;
+    <span class="kw">if </span>n % <span class="number">5 </span>== <span class="number">0 </span>{
+        <span class="kw">return </span>n == <span class="number">5</span>;
     }
-    <span class="kw">if</span> <span class="ident">n</span> % <span class="number">7</span> == <span class="number">0</span> {
-        <span class="kw">return</span> <span class="ident">n</span> == <span class="number">7</span>;
+    <span class="kw">if </span>n % <span class="number">7 </span>== <span class="number">0 </span>{
+        <span class="kw">return </span>n == <span class="number">7</span>;
     }
-    <span class="kw">if</span> <span class="ident">n</span> &lt; <span class="number">121</span> {
-        <span class="ident">n</span> &gt; <span class="number">2</span>
-    } <span class="kw">else</span> {
-        <span class="ident">mr64</span>(<span class="ident">n</span>, <span class="ident">br</span>)
+    <span class="kw">if </span>n &lt; <span class="number">121 </span>{
+        n &gt; <span class="number">2
+    </span>} <span class="kw">else </span>{
+        mr64(n, br)
     }
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">miller_rabin</span>(<span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="ident">bool</span> {
-    <span class="ident">miller_rabin_with_br</span>(<span class="ident">n</span>, <span class="kw-2">&amp;</span><span class="ident">BarrettReduction</span>::&lt;<span class="ident">u128</span>&gt;<span class="ident">::new</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">u128</span>))
+<span class="kw">pub fn </span>miller_rabin(n: u64) -&gt; bool {
+    miller_rabin_with_br(n, <span class="kw-2">&amp;</span>BarrettReduction::&lt;u128&gt;::new(n <span class="kw">as </span>u128))
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_miller_rabin</span>() {
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">u32</span> = <span class="number">1_000_000</span>;
-    <span class="kw">let</span> <span class="ident">primes</span> = <span class="ident"><span class="kw">super</span>::PrimeTable::new</span>(<span class="ident">N</span>);
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..=<span class="ident">N</span> {
-        <span class="macro">assert_eq!</span>(<span class="ident">primes</span>.<span class="ident">is_prime</span>(<span class="ident">i</span>), <span class="ident">miller_rabin</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="string">&quot;{}&quot;</span>, <span class="ident">i</span>);
+<span class="attribute">#[test]</span>
+<span class="kw">fn </span>test_miller_rabin() {
+    <span class="kw">const </span>N: u32 = <span class="number">1_000_000</span>;
+    <span class="kw">let </span>primes = <span class="kw">super</span>::PrimeTable::new(N);
+    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=N {
+        <span class="macro">assert_eq!</span>(primes.is_prime(i), miller_rabin(i <span class="kw">as _</span>), <span class="string">&quot;{}&quot;</span>, i);
     }
-    <span class="macro">assert!</span>(<span class="ident">miller_rabin</span>(<span class="number">1_000_000_007</span>));
-    <span class="macro">assert!</span>(!<span class="ident">miller_rabin</span>(<span class="number">1_000_000_011</span>));
+    <span class="macro">assert!</span>(miller_rabin(<span class="number">1_000_000_007</span>));
+    <span class="macro">assert!</span>(!miller_rabin(<span class="number">1_000_000_011</span>));
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

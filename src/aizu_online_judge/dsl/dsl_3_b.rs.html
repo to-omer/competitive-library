@@ -39,30 +39,30 @@
 <span id="23">23</span>
 <span id="24">24</span>
 <span id="25">25</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">competitive::prelude</span>::<span class="kw-2">*</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>competitive::prelude::<span class="kw-2">*</span>;
 
-<span class="attribute">#[<span class="ident">verify::aizu_online_judge</span>(<span class="string">&quot;DSL_3_B&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dsl_3_b</span>(<span class="ident">reader</span>: <span class="kw">impl</span> <span class="ident">Read</span>, <span class="kw-2">mut</span> <span class="ident">writer</span>: <span class="kw">impl</span> <span class="ident">Write</span>) {
-    <span class="kw">let</span> <span class="ident">s</span> = <span class="ident">read_all_unchecked</span>(<span class="ident">reader</span>);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">scanner</span> = <span class="ident">Scanner::new</span>(<span class="kw-2">&amp;</span><span class="ident">s</span>);
-    <span class="macro">scan!</span>(<span class="ident">scanner</span>, <span class="ident">n</span>, <span class="ident">k</span>, <span class="ident">a</span>: [<span class="ident">Usize1</span>; <span class="ident">n</span>]);
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">counter</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">100_001</span>];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> = <span class="number">0</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ans</span> = <span class="ident">std::usize::MAX</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cnt</span> = <span class="number">0</span>;
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
-        <span class="kw">while</span> <span class="ident">j</span> &lt; <span class="ident">n</span> &amp;&amp; <span class="ident">cnt</span> &lt; <span class="ident">k</span> {
-            <span class="ident">cnt</span> += (<span class="ident">a</span>[<span class="ident">j</span>] &lt; <span class="ident">k</span> &amp;&amp; <span class="ident">counter</span>[<span class="ident">a</span>[<span class="ident">j</span>]] == <span class="number">0</span>) <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="ident">counter</span>[<span class="ident">a</span>[<span class="ident">j</span>]] += <span class="number">1</span>;
-            <span class="ident">j</span> += <span class="number">1</span>;
+<span class="attribute">#[verify::aizu_online_judge(<span class="string">&quot;DSL_3_B&quot;</span>)]</span>
+<span class="kw">pub fn </span>dsl_3_b(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+    <span class="kw">let </span>s = read_all_unchecked(reader);
+    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+    <span class="macro">scan!</span>(scanner, n, k, a: [Usize1; n]);
+    <span class="kw">let </span><span class="kw-2">mut </span>counter = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">100_001</span>];
+    <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>ans = std::usize::MAX;
+    <span class="kw">let </span><span class="kw-2">mut </span>cnt = <span class="number">0</span>;
+    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+        <span class="kw">while </span>j &lt; n &amp;&amp; cnt &lt; k {
+            cnt += (a[j] &lt; k &amp;&amp; counter[a[j]] == <span class="number">0</span>) <span class="kw">as </span>usize;
+            counter[a[j]] += <span class="number">1</span>;
+            j += <span class="number">1</span>;
         }
-        <span class="kw">if</span> <span class="ident">cnt</span> == <span class="ident">k</span> {
-            <span class="ident">ans</span> = <span class="ident">ans</span>.<span class="ident">min</span>(<span class="ident">j</span> - <span class="ident">i</span>);
+        <span class="kw">if </span>cnt == k {
+            ans = ans.min(j - i);
         }
-        <span class="ident">counter</span>[<span class="ident">a</span>[<span class="ident">i</span>]] -= <span class="number">1</span>;
-        <span class="ident">cnt</span> -= (<span class="ident">a</span>[<span class="ident">i</span>] &lt; <span class="ident">k</span> &amp;&amp; <span class="ident">counter</span>[<span class="ident">a</span>[<span class="ident">i</span>]] == <span class="number">0</span>) <span class="kw">as</span> <span class="ident">usize</span>;
+        counter[a[i]] -= <span class="number">1</span>;
+        cnt -= (a[i] &lt; k &amp;&amp; counter[a[i]] == <span class="number">0</span>) <span class="kw">as </span>usize;
     }
-    <span class="macro">writeln!</span>(<span class="ident">writer</span>, <span class="string">&quot;{}&quot;</span>, <span class="kw">if</span> <span class="ident">ans</span> == <span class="ident">std::usize::MAX</span> { <span class="number">0</span> } <span class="kw">else</span> { <span class="ident">ans</span> }).<span class="ident">ok</span>();
+    <span class="macro">writeln!</span>(writer, <span class="string">&quot;{}&quot;</span>, <span class="kw">if </span>ans == std::usize::MAX { <span class="number">0 </span>} <span class="kw">else </span>{ ans }).ok();
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="aizu_online_judge" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="aizu_online_judge" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

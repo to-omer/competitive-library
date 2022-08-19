@@ -375,361 +375,361 @@
 <span id="359">359</span>
 <span id="360">360</span>
 <span id="361">361</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::MonoidAction</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Debug</span>, <span class="ident">Formatter</span>},
-    <span class="ident">mem::replace</span>,
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::MonoidAction;
+<span class="kw">use </span>std::{
+    fmt::{<span class="self">self</span>, Debug, Formatter},
+    mem::replace,
 };
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LazySegmentTree</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
-    <span class="ident">M::AT</span>: <span class="ident">PartialEq</span>,
+<span class="kw">pub struct </span>LazySegmentTree&lt;M&gt;
+<span class="kw">where
+    </span>M: MonoidAction,
+    M::AT: PartialEq,
 {
-    <span class="ident">n</span>: <span class="ident">usize</span>,
-    <span class="ident">seg</span>: <span class="ident">Vec</span>&lt;(<span class="ident">M::MT</span>, <span class="ident">M::AT</span>)&gt;,
+    n: usize,
+    seg: Vec&lt;(M::MT, M::AT)&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">LazySegmentTree</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
-    <span class="ident">M::AT</span>: <span class="ident">PartialEq</span>,
+<span class="kw">impl</span>&lt;M&gt; Clone <span class="kw">for </span>LazySegmentTree&lt;M&gt;
+<span class="kw">where
+    </span>M: MonoidAction,
+    M::AT: PartialEq,
 {
-    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">n</span>: <span class="self">self</span>.<span class="ident">n</span>,
-            <span class="ident">seg</span>: <span class="self">self</span>.<span class="ident">seg</span>.<span class="ident">clone</span>(),
+    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            n: <span class="self">self</span>.n,
+            seg: <span class="self">self</span>.seg.clone(),
         }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Debug</span> <span class="kw">for</span> <span class="ident">LazySegmentTree</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
-    <span class="ident">M::MT</span>: <span class="ident">Debug</span>,
-    <span class="ident">M::AT</span>: <span class="ident">PartialEq</span> + <span class="ident">Debug</span>,
-{
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="ident">fmt::Result</span> {
-        <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;LazySegmentTree&quot;</span>)
-            .<span class="ident">field</span>(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">n</span>)
-            .<span class="ident">field</span>(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>)
-            .<span class="ident">finish</span>()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">LazySegmentTree</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MonoidAction</span>,
-    <span class="ident">M::AT</span>: <span class="ident">PartialEq</span>,
+<span class="kw">impl</span>&lt;M&gt; Debug <span class="kw">for </span>LazySegmentTree&lt;M&gt;
+<span class="kw">where
+    </span>M: MonoidAction,
+    M::MT: Debug,
+    M::AT: PartialEq + Debug,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">seg</span> = <span class="macro">vec!</span>[(<span class="ident">M::munit</span>(), <span class="ident">M::aunit</span>()); <span class="number">2</span> * <span class="ident">n</span>];
-        <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">seg</span> }
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        f.debug_struct(<span class="string">&quot;LazySegmentTree&quot;</span>)
+            .field(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.n)
+            .field(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.seg)
+            .finish()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">v</span>: <span class="ident">Vec</span>&lt;<span class="ident">M::MT</span>&gt;) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">v</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> = <span class="macro">vec!</span>[(<span class="ident">M::munit</span>(), <span class="ident">M::aunit</span>()); <span class="number">2</span> * <span class="ident">n</span>];
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">x</span>) <span class="kw">in</span> <span class="ident">v</span>.<span class="ident">into_iter</span>().<span class="ident">enumerate</span>() {
-            <span class="ident">seg</span>[<span class="ident">i</span> + <span class="ident">n</span>].<span class="number">0</span> = <span class="ident">x</span>;
-        }
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="ident">n</span>).<span class="ident">rev</span>() {
-            <span class="ident">seg</span>[<span class="ident">i</span>].<span class="number">0</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">i</span>].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">i</span> + <span class="number">1</span>].<span class="number">0</span>);
-        }
-        <span class="self">Self</span> { <span class="ident">n</span>, <span class="ident">seg</span> }
+}
+
+<span class="kw">impl</span>&lt;M&gt; LazySegmentTree&lt;M&gt;
+<span class="kw">where
+    </span>M: MonoidAction,
+    M::AT: PartialEq,
+{
+    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>seg = <span class="macro">vec!</span>[(M::munit(), M::aunit()); <span class="number">2 </span>* n];
+        <span class="self">Self </span>{ n, seg }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">update_at</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">M::AT</span>) {
-        <span class="kw">let</span> <span class="ident">nx</span> = <span class="ident">M::act</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">0</span>, <span class="ident">x</span>);
-        <span class="kw">if</span> <span class="ident">k</span> &lt; <span class="self">self</span>.<span class="ident">n</span> {
-            <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">1</span> = <span class="ident">M::aoperate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">1</span>, <span class="ident">x</span>);
+    <span class="kw">pub fn </span>from_vec(v: Vec&lt;M::MT&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>n = v.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="macro">vec!</span>[(M::munit(), M::aunit()); <span class="number">2 </span>* n];
+        <span class="kw">for </span>(i, x) <span class="kw">in </span>v.into_iter().enumerate() {
+            seg[i + n].<span class="number">0 </span>= x;
         }
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">nx</span>) = <span class="ident">nx</span> {
-            <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">0</span> = <span class="ident">nx</span>;
-        } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">k</span> &lt; <span class="self">self</span>.<span class="ident">n</span> {
-            <span class="self">self</span>.<span class="ident">propagate_at</span>(<span class="ident">k</span>);
-            <span class="self">self</span>.<span class="ident">recalc_at</span>(<span class="ident">k</span>);
-        } <span class="kw">else</span> {
+        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..n).rev() {
+            seg[i].<span class="number">0 </span>= M::moperate(<span class="kw-2">&amp;</span>seg[<span class="number">2 </span>* i].<span class="number">0</span>, <span class="kw-2">&amp;</span>seg[<span class="number">2 </span>* i + <span class="number">1</span>].<span class="number">0</span>);
+        }
+        <span class="self">Self </span>{ n, seg }
+    }
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: <span class="kw-2">&amp;</span>M::AT) {
+        <span class="kw">let </span>nx = M::act(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[k].<span class="number">0</span>, x);
+        <span class="kw">if </span>k &lt; <span class="self">self</span>.n {
+            <span class="self">self</span>.seg[k].<span class="number">1 </span>= M::aoperate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[k].<span class="number">1</span>, x);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(nx) = nx {
+            <span class="self">self</span>.seg[k].<span class="number">0 </span>= nx;
+        } <span class="kw">else if </span>k &lt; <span class="self">self</span>.n {
+            <span class="self">self</span>.propagate_at(k);
+            <span class="self">self</span>.recalc_at(k);
+        } <span class="kw">else </span>{
             <span class="macro">panic!</span>(<span class="string">&quot;act failed on leaf&quot;</span>);
         }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">recalc_at</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) {
-        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">0</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">k</span>].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="number">2</span> * <span class="ident">k</span> + <span class="number">1</span>].<span class="number">0</span>);
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>recalc_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
+        <span class="self">self</span>.seg[k].<span class="number">0 </span>= M::moperate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[<span class="number">2 </span>* k].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.seg[<span class="number">2 </span>* k + <span class="number">1</span>].<span class="number">0</span>);
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">propagate_at</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) {
-        <span class="macro">debug_assert!</span>(<span class="ident">k</span> &lt; <span class="self">self</span>.<span class="ident">n</span>);
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>].<span class="number">1</span>, <span class="ident">M::aunit</span>());
-        <span class="self">self</span>.<span class="ident">update_at</span>(<span class="number">2</span> * <span class="ident">k</span>, <span class="kw-2">&amp;</span><span class="ident">x</span>);
-        <span class="self">self</span>.<span class="ident">update_at</span>(<span class="number">2</span> * <span class="ident">k</span> + <span class="number">1</span>, <span class="kw-2">&amp;</span><span class="ident">x</span>);
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
+        <span class="macro">debug_assert!</span>(k &lt; <span class="self">self</span>.n);
+        <span class="kw">let </span>x = replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.seg[k].<span class="number">1</span>, M::aunit());
+        <span class="self">self</span>.update_at(<span class="number">2 </span>* k, <span class="kw-2">&amp;</span>x);
+        <span class="self">self</span>.update_at(<span class="number">2 </span>* k + <span class="number">1</span>, <span class="kw-2">&amp;</span>x);
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">propagate</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">right</span>: <span class="ident">bool</span>, <span class="ident">nofilt</span>: <span class="ident">bool</span>) {
-        <span class="kw">let</span> <span class="ident">right</span> = <span class="ident">right</span> <span class="kw">as</span> <span class="ident">usize</span>;
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..(<span class="ident">k</span> + <span class="number">1</span> - <span class="ident">right</span>).<span class="ident">next_power_of_two</span>().<span class="ident">trailing_zeros</span>()).<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">nofilt</span> || (<span class="ident">k</span> &gt;&gt; <span class="ident">i</span>) &lt;&lt; <span class="ident">i</span> != <span class="ident">k</span> {
-                <span class="self">self</span>.<span class="ident">propagate_at</span>((<span class="ident">k</span> - <span class="ident">right</span>) &gt;&gt; <span class="ident">i</span>);
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>propagate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, right: bool, nofilt: bool) {
+        <span class="kw">let </span>right = right <span class="kw">as </span>usize;
+        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..(k + <span class="number">1 </span>- right).next_power_of_two().trailing_zeros()).rev() {
+            <span class="kw">if </span>nofilt || (k &gt;&gt; i) &lt;&lt; i != k {
+                <span class="self">self</span>.propagate_at((k - right) &gt;&gt; i);
             }
         }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">recalc</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">right</span>: <span class="ident">bool</span>, <span class="ident">nofilt</span>: <span class="ident">bool</span>) {
-        <span class="kw">let</span> <span class="ident">right</span> = <span class="ident">right</span> <span class="kw">as</span> <span class="ident">usize</span>;
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..(<span class="ident">k</span> + <span class="number">1</span> - <span class="ident">right</span>).<span class="ident">next_power_of_two</span>().<span class="ident">trailing_zeros</span>() {
-            <span class="kw">if</span> <span class="ident">nofilt</span> || (<span class="ident">k</span> &gt;&gt; <span class="ident">i</span>) &lt;&lt; <span class="ident">i</span> != <span class="ident">k</span> {
-                <span class="self">self</span>.<span class="ident">recalc_at</span>((<span class="ident">k</span> - <span class="ident">right</span>) &gt;&gt; <span class="ident">i</span>);
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>recalc(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, right: bool, nofilt: bool) {
+        <span class="kw">let </span>right = right <span class="kw">as </span>usize;
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..(k + <span class="number">1 </span>- right).next_power_of_two().trailing_zeros() {
+            <span class="kw">if </span>nofilt || (k &gt;&gt; i) &lt;&lt; i != k {
+                <span class="self">self</span>.recalc_at((k - right) &gt;&gt; i);
             }
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">M::AT</span>) {
-        <span class="macro">debug_assert!</span>(<span class="ident">l</span> &lt;= <span class="ident">r</span>);
-        <span class="macro">debug_assert!</span>(<span class="ident">r</span> &lt;= <span class="self">self</span>.<span class="ident">n</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> = <span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">b</span> = <span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">a</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">b</span>, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
-        <span class="kw">while</span> <span class="ident">a</span> &lt; <span class="ident">b</span> {
-            <span class="kw">if</span> <span class="ident">a</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="self">self</span>.<span class="ident">update_at</span>(<span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">x</span>);
-                <span class="ident">a</span> += <span class="number">1</span>;
+    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: usize, r: usize, x: M::AT) {
+        <span class="macro">debug_assert!</span>(l &lt;= r);
+        <span class="macro">debug_assert!</span>(r &lt;= <span class="self">self</span>.n);
+        <span class="kw">let </span><span class="kw-2">mut </span>a = l + <span class="self">self</span>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>b = r + <span class="self">self</span>.n;
+        <span class="self">self</span>.propagate(a, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
+        <span class="self">self</span>.propagate(b, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
+        <span class="kw">while </span>a &lt; b {
+            <span class="kw">if </span>a &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                <span class="self">self</span>.update_at(a, <span class="kw-2">&amp;</span>x);
+                a += <span class="number">1</span>;
             }
-            <span class="kw">if</span> <span class="ident">b</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="ident">b</span> -= <span class="number">1</span>;
-                <span class="self">self</span>.<span class="ident">update_at</span>(<span class="ident">b</span>, <span class="kw-2">&amp;</span><span class="ident">x</span>);
+            <span class="kw">if </span>b &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                b -= <span class="number">1</span>;
+                <span class="self">self</span>.update_at(b, <span class="kw-2">&amp;</span>x);
             }
-            <span class="ident">a</span> /= <span class="number">2</span>;
-            <span class="ident">b</span> /= <span class="number">2</span>;
+            a /= <span class="number">2</span>;
+            b /= <span class="number">2</span>;
         }
-        <span class="self">self</span>.<span class="ident">recalc</span>(<span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-        <span class="self">self</span>.<span class="ident">recalc</span>(<span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
+        <span class="self">self</span>.recalc(l + <span class="self">self</span>.n, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
+        <span class="self">self</span>.recalc(r + <span class="self">self</span>.n, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::MT</span> {
-        <span class="macro">debug_assert!</span>(<span class="ident">l</span> &lt;= <span class="ident">r</span>);
-        <span class="macro">debug_assert!</span>(<span class="ident">r</span> &lt;= <span class="self">self</span>.<span class="ident">n</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> = <span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> = <span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">l</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">r</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vl</span> = <span class="ident">M::munit</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vr</span> = <span class="ident">M::munit</span>();
-        <span class="kw">while</span> <span class="ident">l</span> &lt; <span class="ident">r</span> {
-            <span class="kw">if</span> <span class="ident">l</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="ident">vl</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="ident">vl</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>].<span class="number">0</span>);
-                <span class="ident">l</span> += <span class="number">1</span>;
+    <span class="kw">pub fn </span>fold(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: usize, r: usize) -&gt; M::MT {
+        <span class="macro">debug_assert!</span>(l &lt;= r);
+        <span class="macro">debug_assert!</span>(r &lt;= <span class="self">self</span>.n);
+        <span class="kw">let </span><span class="kw-2">mut </span>l = l + <span class="self">self</span>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>r = r + <span class="self">self</span>.n;
+        <span class="self">self</span>.propagate(l, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <span class="self">self</span>.propagate(r, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>vl = M::munit();
+        <span class="kw">let </span><span class="kw-2">mut </span>vr = M::munit();
+        <span class="kw">while </span>l &lt; r {
+            <span class="kw">if </span>l &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                vl = M::moperate(<span class="kw-2">&amp;</span>vl, <span class="kw-2">&amp;</span><span class="self">self</span>.seg[l].<span class="number">0</span>);
+                l += <span class="number">1</span>;
             }
-            <span class="kw">if</span> <span class="ident">r</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="ident">r</span> -= <span class="number">1</span>;
-                <span class="ident">vr</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span>].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">vr</span>);
+            <span class="kw">if </span>r &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                r -= <span class="number">1</span>;
+                vr = M::moperate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[r].<span class="number">0</span>, <span class="kw-2">&amp;</span>vr);
             }
-            <span class="ident">l</span> /= <span class="number">2</span>;
-            <span class="ident">r</span> /= <span class="number">2</span>;
+            l /= <span class="number">2</span>;
+            r /= <span class="number">2</span>;
         }
-        <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="ident">vl</span>, <span class="kw-2">&amp;</span><span class="ident">vr</span>)
+        M::moperate(<span class="kw-2">&amp;</span>vl, <span class="kw-2">&amp;</span>vr)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">x</span>: <span class="ident">M::MT</span>) {
-        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">k</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">k</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">k</span>] = (<span class="ident">x</span>, <span class="ident">M::aunit</span>());
-        <span class="self">self</span>.<span class="ident">recalc</span>(<span class="ident">k</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: M::MT) {
+        <span class="kw">let </span>k = k + <span class="self">self</span>.n;
+        <span class="self">self</span>.propagate(k, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <span class="self">self</span>.seg[k] = (x, M::aunit());
+        <span class="self">self</span>.recalc(k, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::MT</span> {
-        <span class="self">self</span>.<span class="ident">fold</span>(<span class="ident">k</span>, <span class="ident">k</span> + <span class="number">1</span>)
+    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) -&gt; M::MT {
+        <span class="self">self</span>.fold(k, k + <span class="number">1</span>)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fold_all</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">M::MT</span> {
-        <span class="self">self</span>.<span class="ident">fold</span>(<span class="number">0</span>, <span class="self">self</span>.<span class="ident">n</span>)
+    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; M::MT {
+        <span class="self">self</span>.fold(<span class="number">0</span>, <span class="self">self</span>.n)
     }
-    <span class="kw">fn</span> <span class="ident">bisect_perfect</span>&lt;<span class="ident">P</span>&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::MT</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::MT</span>)
-    <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
+    <span class="kw">fn </span>bisect_perfect&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>pos: usize, <span class="kw-2">mut </span>acc: M::MT, p: P) -&gt; (usize, M::MT)
+    <span class="kw">where
+        </span>P: Fn(<span class="kw-2">&amp;</span>M::MT) -&gt; bool,
     {
-        <span class="kw">while</span> <span class="ident">pos</span> &lt; <span class="self">self</span>.<span class="ident">n</span> {
-            <span class="self">self</span>.<span class="ident">propagate_at</span>(<span class="ident">pos</span>);
-            <span class="ident">pos</span> &lt;&lt;= <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">pos</span>].<span class="number">0</span>);
-            <span class="kw">if</span> !<span class="ident">p</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                <span class="ident">acc</span> = <span class="ident">nacc</span>;
-                <span class="ident">pos</span> += <span class="number">1</span>;
+        <span class="kw">while </span>pos &lt; <span class="self">self</span>.n {
+            <span class="self">self</span>.propagate_at(pos);
+            pos &lt;&lt;= <span class="number">1</span>;
+            <span class="kw">let </span>nacc = M::moperate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span><span class="self">self</span>.seg[pos].<span class="number">0</span>);
+            <span class="kw">if </span>!p(<span class="kw-2">&amp;</span>nacc) {
+                acc = nacc;
+                pos += <span class="number">1</span>;
             }
         }
-        (<span class="ident">pos</span> - <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
+        (pos - <span class="self">self</span>.n, acc)
     }
-    <span class="kw">fn</span> <span class="ident">rbisect_perfect</span>&lt;<span class="ident">P</span>&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">pos</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">acc</span>: <span class="ident">M::MT</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; (<span class="ident">usize</span>, <span class="ident">M::MT</span>)
-    <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
+    <span class="kw">fn </span>rbisect_perfect&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>pos: usize, <span class="kw-2">mut </span>acc: M::MT, p: P) -&gt; (usize, M::MT)
+    <span class="kw">where
+        </span>P: Fn(<span class="kw-2">&amp;</span>M::MT) -&gt; bool,
     {
-        <span class="kw">while</span> <span class="ident">pos</span> &lt; <span class="self">self</span>.<span class="ident">n</span> {
-            <span class="self">self</span>.<span class="ident">propagate_at</span>(<span class="ident">pos</span>);
-            <span class="ident">pos</span> = <span class="ident">pos</span> * <span class="number">2</span> + <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">pos</span>].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">acc</span>);
-            <span class="kw">if</span> !<span class="ident">p</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                <span class="ident">acc</span> = <span class="ident">nacc</span>;
-                <span class="ident">pos</span> -= <span class="number">1</span>;
+        <span class="kw">while </span>pos &lt; <span class="self">self</span>.n {
+            <span class="self">self</span>.propagate_at(pos);
+            pos = pos * <span class="number">2 </span>+ <span class="number">1</span>;
+            <span class="kw">let </span>nacc = M::moperate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[pos].<span class="number">0</span>, <span class="kw-2">&amp;</span>acc);
+            <span class="kw">if </span>!p(<span class="kw-2">&amp;</span>nacc) {
+                acc = nacc;
+                pos -= <span class="number">1</span>;
             }
         }
-        (<span class="ident">pos</span> - <span class="self">self</span>.<span class="ident">n</span>, <span class="ident">acc</span>)
+        (pos - <span class="self">self</span>.n, acc)
     }
-    <span class="doccomment">/// Returns the first index that satisfies a accumlative predicate.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">position_acc</span>&lt;<span class="ident">P</span>&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
+    <span class="doccomment">/// Returns the first index that satisfies a accumlative predicate.
+    </span><span class="kw">pub fn </span>position_acc&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: usize, r: usize, p: P) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt;
+    <span class="kw">where
+        </span>P: Fn(<span class="kw-2">&amp;</span>M::MT) -&gt; bool,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> = <span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">l</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">r</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="number">0usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="ident">M::munit</span>();
-        <span class="kw">while</span> <span class="ident">l</span> &lt; <span class="ident">r</span> &gt;&gt; <span class="ident">k</span> {
-            <span class="kw">if</span> <span class="ident">l</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>].<span class="number">0</span>);
-                <span class="kw">if</span> <span class="ident">p</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">bisect_perfect</span>(<span class="ident">l</span>, <span class="ident">acc</span>, <span class="ident">p</span>).<span class="number">0</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>l = l + <span class="self">self</span>.n;
+        <span class="kw">let </span>r = r + <span class="self">self</span>.n;
+        <span class="self">self</span>.propagate(l, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <span class="self">self</span>.propagate(r, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::munit();
+        <span class="kw">while </span>l &lt; r &gt;&gt; k {
+            <span class="kw">if </span>l &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                <span class="kw">let </span>nacc = M::moperate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span><span class="self">self</span>.seg[l].<span class="number">0</span>);
+                <span class="kw">if </span>p(<span class="kw-2">&amp;</span>nacc) {
+                    <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">self</span>.bisect_perfect(l, acc, p).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> = <span class="ident">nacc</span>;
-                <span class="ident">l</span> += <span class="number">1</span>;
+                acc = nacc;
+                l += <span class="number">1</span>;
             }
-            <span class="ident">l</span> &gt;&gt;= <span class="number">1</span>;
-            <span class="ident">k</span> += <span class="number">1</span>;
+            l &gt;&gt;= <span class="number">1</span>;
+            k += <span class="number">1</span>;
         }
-        <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">r</span> &gt;&gt; <span class="ident">k</span>;
-            <span class="kw">if</span> <span class="ident">r</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span> - <span class="number">1</span>].<span class="number">0</span>);
-                <span class="kw">if</span> <span class="ident">p</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">bisect_perfect</span>(<span class="ident">r</span> - <span class="number">1</span>, <span class="ident">acc</span>, <span class="ident">p</span>).<span class="number">0</span>);
+        <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">0</span>..k).rev() {
+            <span class="kw">let </span>r = r &gt;&gt; k;
+            <span class="kw">if </span>r &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                <span class="kw">let </span>nacc = M::moperate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span><span class="self">self</span>.seg[r - <span class="number">1</span>].<span class="number">0</span>);
+                <span class="kw">if </span>p(<span class="kw-2">&amp;</span>nacc) {
+                    <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">self</span>.bisect_perfect(r - <span class="number">1</span>, acc, p).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> = <span class="ident">nacc</span>;
+                acc = nacc;
             }
         }
-        <span class="prelude-val">None</span>
-    }
-    <span class="doccomment">/// Returns the last index that satisfies a accumlative predicate.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rposition_acc</span>&lt;<span class="ident">P</span>&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">r</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">P</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">P</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::MT</span>) -&gt; <span class="ident">bool</span>,
+        <span class="prelude-val">None
+    </span>}
+    <span class="doccomment">/// Returns the last index that satisfies a accumlative predicate.
+    </span><span class="kw">pub fn </span>rposition_acc&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: usize, r: usize, p: P) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt;
+    <span class="kw">where
+        </span>P: Fn(<span class="kw-2">&amp;</span>M::MT) -&gt; bool,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">l</span> = <span class="ident">l</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> = <span class="ident">r</span> + <span class="self">self</span>.<span class="ident">n</span>;
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">l</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <span class="self">self</span>.<span class="ident">propagate</span>(<span class="ident">r</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> = <span class="number">0usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="number">0usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="ident">M::munit</span>();
-        <span class="kw">while</span> <span class="ident">l</span> &gt;&gt; <span class="ident">k</span> &lt; <span class="ident">r</span> {
-            <span class="ident">c</span> &lt;&lt;= <span class="number">1</span>;
-            <span class="kw">if</span> <span class="ident">l</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">k</span> != <span class="number">0</span> {
-                <span class="ident">l</span> += <span class="number">1</span> &lt;&lt; <span class="ident">k</span>;
-                <span class="ident">c</span> += <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>l = l + <span class="self">self</span>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>r = r + <span class="self">self</span>.n;
+        <span class="self">self</span>.propagate(l, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <span class="self">self</span>.propagate(r, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0usize</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::munit();
+        <span class="kw">while </span>l &gt;&gt; k &lt; r {
+            c &lt;&lt;= <span class="number">1</span>;
+            <span class="kw">if </span>l &amp; <span class="number">1 </span>&lt;&lt; k != <span class="number">0 </span>{
+                l += <span class="number">1 </span>&lt;&lt; k;
+                c += <span class="number">1</span>;
             }
-            <span class="kw">if</span> <span class="ident">r</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="ident">r</span> -= <span class="number">1</span>;
-                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">r</span>].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">acc</span>);
-                <span class="kw">if</span> <span class="ident">p</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">rbisect_perfect</span>(<span class="ident">r</span>, <span class="ident">acc</span>, <span class="ident">p</span>).<span class="number">0</span>);
+            <span class="kw">if </span>r &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                r -= <span class="number">1</span>;
+                <span class="kw">let </span>nacc = M::moperate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[r].<span class="number">0</span>, <span class="kw-2">&amp;</span>acc);
+                <span class="kw">if </span>p(<span class="kw-2">&amp;</span>nacc) {
+                    <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">self</span>.rbisect_perfect(r, acc, p).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> = <span class="ident">nacc</span>;
+                acc = nacc;
             }
-            <span class="ident">r</span> &gt;&gt;= <span class="number">1</span>;
-            <span class="ident">k</span> += <span class="number">1</span>;
+            r &gt;&gt;= <span class="number">1</span>;
+            k += <span class="number">1</span>;
         }
-        <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">c</span> &amp; <span class="number">1</span> != <span class="number">0</span> {
-                <span class="ident">l</span> -= <span class="number">1</span> &lt;&lt; <span class="ident">k</span>;
-                <span class="kw">let</span> <span class="ident">l</span> = <span class="ident">l</span> &gt;&gt; <span class="ident">k</span>;
-                <span class="kw">let</span> <span class="ident">nacc</span> = <span class="ident">M::moperate</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seg</span>[<span class="ident">l</span>].<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">acc</span>);
-                <span class="kw">if</span> <span class="ident">p</span>(<span class="kw-2">&amp;</span><span class="ident">nacc</span>) {
-                    <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">rbisect_perfect</span>(<span class="ident">l</span>, <span class="ident">acc</span>, <span class="ident">p</span>).<span class="number">0</span>);
+        <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">0</span>..k).rev() {
+            <span class="kw">if </span>c &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
+                l -= <span class="number">1 </span>&lt;&lt; k;
+                <span class="kw">let </span>l = l &gt;&gt; k;
+                <span class="kw">let </span>nacc = M::moperate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[l].<span class="number">0</span>, <span class="kw-2">&amp;</span>acc);
+                <span class="kw">if </span>p(<span class="kw-2">&amp;</span>nacc) {
+                    <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">self</span>.rbisect_perfect(l, acc, p).<span class="number">0</span>);
                 }
-                <span class="ident">acc</span> = <span class="ident">nacc</span>;
+                acc = nacc;
             }
-            <span class="ident">c</span> &gt;&gt;= <span class="number">1</span>;
+            c &gt;&gt;= <span class="number">1</span>;
         }
-        <span class="prelude-val">None</span>
-    }
+        <span class="prelude-val">None
+    </span>}
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">algebra</span>::{<span class="ident">RangeMaxRangeUpdate</span>, <span class="ident">RangeSumRangeAdd</span>},
-        <span class="ident">rand</span>,
-        <span class="ident">tools</span>::{<span class="ident">NotEmptySegment</span>, <span class="ident">Xorshift</span>},
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{
+        algebra::{RangeMaxRangeUpdate, RangeSumRangeAdd},
+        rand,
+        tools::{NotEmptySegment, Xorshift},
     };
 
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">1_000</span>;
-    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">20_000</span>;
-    <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">i64</span> = <span class="number">1_000_000_000</span>;
+    <span class="kw">const </span>N: usize = <span class="number">1_000</span>;
+    <span class="kw">const </span>Q: usize = <span class="number">20_000</span>;
+    <span class="kw">const </span>A: i64 = <span class="number">1_000_000_000</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_lazy_segment_tree</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="comment">// Range Sum Query &amp; Range Add Query</span>
-        <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="kw-2">mut</span> <span class="ident">arr</span>: [-<span class="ident">A</span>..<span class="ident">A</span>; <span class="ident">N</span>]);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> =
-            <span class="ident">LazySegmentTree</span>::&lt;<span class="ident">RangeSumRangeAdd</span>&lt;<span class="kw">_</span>&gt;&gt;<span class="ident">::from_vec</span>(<span class="ident">arr</span>.<span class="ident">iter</span>().<span class="ident">map</span>(|<span class="kw-2">&amp;</span><span class="ident">a</span>| (<span class="ident">a</span>, <span class="number">1</span>)).<span class="ident">collect</span>());
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="macro">rand!</span>(<span class="ident">rng</span>, (<span class="ident">l</span>, <span class="ident">r</span>): (<span class="ident">NotEmptySegment</span>(<span class="ident">N</span>)));
-            <span class="kw">if</span> <span class="ident">rng</span>.<span class="ident">rand</span>(<span class="number">2</span>) == <span class="number">0</span> {
-                <span class="comment">// Range Add Query</span>
-                <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (-<span class="ident">A</span>..<span class="ident">A</span>));
-                <span class="ident">seg</span>.<span class="ident">update</span>(<span class="ident">l</span>, <span class="ident">r</span>, <span class="ident">x</span>);
-                <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter_mut</span>() {
-                    <span class="kw-2">*</span><span class="ident">a</span> += <span class="ident">x</span>;
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_lazy_segment_tree() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="comment">// Range Sum Query &amp; Range Add Query
+        </span><span class="macro">rand!</span>(rng, <span class="kw-2">mut </span>arr: [-A..A; N]);
+        <span class="kw">let </span><span class="kw-2">mut </span>seg =
+            LazySegmentTree::&lt;RangeSumRangeAdd&lt;<span class="kw">_</span>&gt;&gt;::from_vec(arr.iter().map(|<span class="kw-2">&amp;</span>a| (a, <span class="number">1</span>)).collect());
+        <span class="kw">for _ in </span><span class="number">0</span>..Q {
+            <span class="macro">rand!</span>(rng, (l, r): (NotEmptySegment(N)));
+            <span class="kw">if </span>rng.rand(<span class="number">2</span>) == <span class="number">0 </span>{
+                <span class="comment">// Range Add Query
+                </span><span class="macro">rand!</span>(rng, x: (-A..A));
+                seg.update(l, r, x);
+                <span class="kw">for </span>a <span class="kw">in </span>arr[l..r].iter_mut() {
+                    <span class="kw-2">*</span>a += x;
                 }
-            } <span class="kw">else</span> {
-                <span class="comment">// Range Sum Query</span>
-                <span class="kw">let</span> <span class="ident">res</span> = <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">sum</span>();
-                <span class="macro">assert_eq!</span>(<span class="ident">seg</span>.<span class="ident">fold</span>(<span class="ident">l</span>, <span class="ident">r</span>).<span class="number">0</span>, <span class="ident">res</span>);
+            } <span class="kw">else </span>{
+                <span class="comment">// Range Sum Query
+                </span><span class="kw">let </span>res = arr[l..r].iter().sum();
+                <span class="macro">assert_eq!</span>(seg.fold(l, r).<span class="number">0</span>, res);
             }
         }
 
-        <span class="comment">// Range Max Query &amp; Range Update Query &amp; Binary Search Query</span>
-        <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="kw-2">mut</span> <span class="ident">arr</span>: [-<span class="ident">A</span>..<span class="ident">A</span>; <span class="ident">N</span>]);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seg</span> = <span class="ident">LazySegmentTree</span>::&lt;<span class="ident">RangeMaxRangeUpdate</span>&lt;<span class="kw">_</span>&gt;&gt;<span class="ident">::from_vec</span>(<span class="ident">arr</span>.<span class="ident">clone</span>());
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">Q</span> {
-            <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">ty</span>: (<span class="number">0</span>..<span class="number">4</span>), (<span class="ident">l</span>, <span class="ident">r</span>): (<span class="ident">NotEmptySegment</span>(<span class="ident">N</span>)));
-            <span class="kw">match</span> <span class="ident">ty</span> {
-                <span class="number">0</span> =&gt; {
-                    <span class="comment">// Range Update Query</span>
-                    <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (-<span class="ident">A</span>..<span class="ident">A</span>));
-                    <span class="ident">seg</span>.<span class="ident">update</span>(<span class="ident">l</span>, <span class="ident">r</span>, <span class="prelude-val">Some</span>(<span class="ident">x</span>));
-                    <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter_mut</span>().<span class="ident">for_each</span>(|<span class="ident">a</span>| <span class="kw-2">*</span><span class="ident">a</span> = <span class="ident">x</span>);
+        <span class="comment">// Range Max Query &amp; Range Update Query &amp; Binary Search Query
+        </span><span class="macro">rand!</span>(rng, <span class="kw-2">mut </span>arr: [-A..A; N]);
+        <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTree::&lt;RangeMaxRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::from_vec(arr.clone());
+        <span class="kw">for _ in </span><span class="number">0</span>..Q {
+            <span class="macro">rand!</span>(rng, ty: (<span class="number">0</span>..<span class="number">4</span>), (l, r): (NotEmptySegment(N)));
+            <span class="kw">match </span>ty {
+                <span class="number">0 </span>=&gt; {
+                    <span class="comment">// Range Update Query
+                    </span><span class="macro">rand!</span>(rng, x: (-A..A));
+                    seg.update(l, r, <span class="prelude-val">Some</span>(x));
+                    arr[l..r].iter_mut().for_each(|a| <span class="kw-2">*</span>a = x);
                 }
-                <span class="number">1</span> =&gt; {
-                    <span class="comment">// Range Max Query</span>
-                    <span class="kw">let</span> <span class="ident">res</span> = <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">max</span>().<span class="ident">cloned</span>().<span class="ident">unwrap_or_default</span>();
-                    <span class="macro">assert_eq!</span>(<span class="ident">seg</span>.<span class="ident">fold</span>(<span class="ident">l</span>, <span class="ident">r</span>), <span class="ident">res</span>);
+                <span class="number">1 </span>=&gt; {
+                    <span class="comment">// Range Max Query
+                    </span><span class="kw">let </span>res = arr[l..r].iter().max().cloned().unwrap_or_default();
+                    <span class="macro">assert_eq!</span>(seg.fold(l, r), res);
                 }
-                <span class="number">2</span> =&gt; {
-                    <span class="comment">// Binary Search Query</span>
-                    <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (-<span class="ident">A</span>..<span class="ident">A</span>));
+                <span class="number">2 </span>=&gt; {
+                    <span class="comment">// Binary Search Query
+                    </span><span class="macro">rand!</span>(rng, x: (-A..A));
                     <span class="macro">assert_eq!</span>(
-                        <span class="ident">seg</span>.<span class="ident">position_acc</span>(<span class="ident">l</span>, <span class="ident">r</span>, |<span class="kw-2">&amp;</span><span class="ident">d</span>| <span class="ident">d</span> &gt;= <span class="ident">x</span>),
-                        <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>]
-                            .<span class="ident">iter</span>()
-                            .<span class="ident">scan</span>(<span class="ident">std::i64::MIN</span>, |<span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>| {
-                                <span class="kw-2">*</span><span class="ident">acc</span> = <span class="ident">a</span>.<span class="ident">max</span>(<span class="kw-2">*</span><span class="ident">acc</span>);
-                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">acc</span>)
+                        seg.position_acc(l, r, |<span class="kw-2">&amp;</span>d| d &gt;= x),
+                        arr[l..r]
+                            .iter()
+                            .scan(std::i64::MIN, |acc, <span class="kw-2">&amp;</span>a| {
+                                <span class="kw-2">*</span>acc = a.max(<span class="kw-2">*</span>acc);
+                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
                             })
-                            .<span class="ident">position</span>(|<span class="ident">acc</span>| <span class="ident">acc</span> &gt;= <span class="ident">x</span>)
-                            .<span class="ident">map</span>(|<span class="ident">i</span>| <span class="ident">i</span> + <span class="ident">l</span>),
+                            .position(|acc| acc &gt;= x)
+                            .map(|i| i + l),
                     );
                 }
-                <span class="kw">_</span> =&gt; {
-                    <span class="comment">// Binary Search Query</span>
-                    <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">x</span>: (-<span class="ident">A</span>..<span class="ident">A</span>));
+                <span class="kw">_ </span>=&gt; {
+                    <span class="comment">// Binary Search Query
+                    </span><span class="macro">rand!</span>(rng, x: (-A..A));
                     <span class="macro">assert_eq!</span>(
-                        <span class="ident">seg</span>.<span class="ident">rposition_acc</span>(<span class="ident">l</span>, <span class="ident">r</span>, |<span class="kw-2">&amp;</span><span class="ident">d</span>| <span class="ident">d</span> &gt;= <span class="ident">x</span>),
-                        <span class="ident">arr</span>[<span class="ident">l</span>..<span class="ident">r</span>]
-                            .<span class="ident">iter</span>()
-                            .<span class="ident">rev</span>()
-                            .<span class="ident">scan</span>(<span class="ident">std::i64::MIN</span>, |<span class="ident">acc</span>, <span class="kw-2">&amp;</span><span class="ident">a</span>| {
-                                <span class="kw-2">*</span><span class="ident">acc</span> = <span class="ident">a</span>.<span class="ident">max</span>(<span class="kw-2">*</span><span class="ident">acc</span>);
-                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">acc</span>)
+                        seg.rposition_acc(l, r, |<span class="kw-2">&amp;</span>d| d &gt;= x),
+                        arr[l..r]
+                            .iter()
+                            .rev()
+                            .scan(std::i64::MIN, |acc, <span class="kw-2">&amp;</span>a| {
+                                <span class="kw-2">*</span>acc = a.max(<span class="kw-2">*</span>acc);
+                                <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
                             })
-                            .<span class="ident">position</span>(|<span class="ident">acc</span>| <span class="ident">acc</span> &gt;= <span class="ident">x</span>)
-                            .<span class="ident">map</span>(|<span class="ident">i</span>| <span class="ident">r</span> - <span class="ident">i</span> - <span class="number">1</span>),
+                            .position(|acc| acc &gt;= x)
+                            .map(|i| r - i - <span class="number">1</span>),
                     );
                 }
             }
@@ -737,4 +737,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

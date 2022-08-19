@@ -87,78 +87,78 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">IterScan</span>, <span class="ident">MarkedIterScan</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">ops::Range</span>, <span class="ident">slice::Iter</span>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{IterScan, MarkedIterScan};
+<span class="kw">use </span>std::{marker::PhantomData, ops::Range, slice::Iter};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="doccomment">/// Graph represented by a list of edges.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EdgeListGraph</span> {
-    <span class="ident">vsize</span>: <span class="ident">usize</span>,
-    <span class="ident">edges</span>: <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt;,
+<span class="attribute">#[derive(Clone, Debug)]</span>
+<span class="doccomment">/// Graph represented by a list of edges.
+</span><span class="kw">pub struct </span>EdgeListGraph {
+    vsize: usize,
+    edges: Vec&lt;(usize, usize)&gt;,
 }
-<span class="kw">impl</span> <span class="ident">EdgeListGraph</span> {
-    <span class="doccomment">/// Construct empty graph.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">vsize</span>,
-            <span class="ident">edges</span>: <span class="ident">Vec::new</span>(),
+<span class="kw">impl </span>EdgeListGraph {
+    <span class="doccomment">/// Construct empty graph.
+    </span><span class="kw">pub fn </span>new(vsize: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            vsize,
+            edges: Vec::new(),
         }
     }
-    <span class="doccomment">/// Return the number of vertices.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">vertices_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">vsize</span>
+    <span class="doccomment">/// Return the number of vertices.
+    </span><span class="kw">pub fn </span>vertices_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.vsize
     }
-    <span class="doccomment">/// Return the number of edges.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">edges_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">edges</span>.<span class="ident">len</span>()
+    <span class="doccomment">/// Return the number of edges.
+    </span><span class="kw">pub fn </span>edges_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.edges.len()
     }
-    <span class="doccomment">/// Return an iterator over graph vertices.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">vertices</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Range</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="number">0</span>..<span class="self">self</span>.<span class="ident">vertices_size</span>()
+    <span class="doccomment">/// Return an iterator over graph vertices.
+    </span><span class="kw">pub fn </span>vertices(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Range&lt;usize&gt; {
+        <span class="number">0</span>..<span class="self">self</span>.vertices_size()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">edges</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Iter</span>&lt;<span class="lifetime">&#39;_</span>, (<span class="ident">usize</span>, <span class="ident">usize</span>)&gt; {
-        <span class="self">self</span>.<span class="ident">edges</span>.<span class="ident">iter</span>()
+    <span class="kw">pub fn </span>edges(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Iter&lt;<span class="lifetime">&#39;_</span>, (usize, usize)&gt; {
+        <span class="self">self</span>.edges.iter()
     }
-    <span class="doccomment">/// Construct graph from edges.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_edges</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>, <span class="ident">edges</span>: <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt;) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">vsize</span>, <span class="ident">edges</span> }
-    }
-}
-<span class="kw">impl</span> <span class="ident">std::ops::Index</span>&lt;<span class="ident">usize</span>&gt; <span class="kw">for</span> <span class="ident">EdgeListGraph</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = (<span class="ident">usize</span>, <span class="ident">usize</span>);
-    <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">edges</span>[<span class="ident">index</span>]
+    <span class="doccomment">/// Construct graph from edges.
+    </span><span class="kw">pub fn </span>from_edges(vsize: usize, edges: Vec&lt;(usize, usize)&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ vsize, edges }
     }
 }
-
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EdgeListGraphScanner</span>&lt;<span class="ident">U</span>: <span class="ident">IterScan</span>&lt;<span class="ident">Output</span> = <span class="ident">usize</span>&gt;, <span class="ident">T</span>: <span class="ident">IterScan</span>&gt; {
-    <span class="ident">vsize</span>: <span class="ident">usize</span>,
-    <span class="ident">esize</span>: <span class="ident">usize</span>,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; (<span class="ident">U</span>, <span class="ident">T</span>)&gt;,
+<span class="kw">impl </span>std::ops::Index&lt;usize&gt; <span class="kw">for </span>EdgeListGraph {
+    <span class="kw">type </span>Output = (usize, usize);
+    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.edges[index]
+    }
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">U</span>: <span class="ident">IterScan</span>&lt;<span class="ident">Output</span> = <span class="ident">usize</span>&gt;, <span class="ident">T</span>: <span class="ident">IterScan</span>&gt; <span class="ident">EdgeListGraphScanner</span>&lt;<span class="ident">U</span>, <span class="ident">T</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">vsize</span>: <span class="ident">usize</span>, <span class="ident">esize</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">vsize</span>,
-            <span class="ident">esize</span>,
-            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>,
+<span class="kw">pub struct </span>EdgeListGraphScanner&lt;U: IterScan&lt;Output = usize&gt;, T: IterScan&gt; {
+    vsize: usize,
+    esize: usize,
+    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; (U, T)&gt;,
+}
+
+<span class="kw">impl</span>&lt;U: IterScan&lt;Output = usize&gt;, T: IterScan&gt; EdgeListGraphScanner&lt;U, T&gt; {
+    <span class="kw">pub fn </span>new(vsize: usize, esize: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            vsize,
+            esize,
+            _marker: PhantomData,
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">U</span>: <span class="ident">IterScan</span>&lt;<span class="ident">Output</span> = <span class="ident">usize</span>&gt;, <span class="ident">T</span>: <span class="ident">IterScan</span>&gt; <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">EdgeListGraphScanner</span>&lt;<span class="ident">U</span>, <span class="ident">T</span>&gt; {
-    <span class="kw">type</span> <span class="ident">Output</span> = (<span class="ident">EdgeListGraph</span>, <span class="ident">Vec</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;);
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">edges</span> = <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">esize</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rest</span> = <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">esize</span>);
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">esize</span> {
-            <span class="ident">edges</span>.<span class="ident">push</span>((<span class="ident">U::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>, <span class="ident">U::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>));
-            <span class="ident">rest</span>.<span class="ident">push</span>(<span class="ident">T::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>);
+<span class="kw">impl</span>&lt;U: IterScan&lt;Output = usize&gt;, T: IterScan&gt; MarkedIterScan <span class="kw">for </span>EdgeListGraphScanner&lt;U, T&gt; {
+    <span class="kw">type </span>Output = (EdgeListGraph, Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;);
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>edges = Vec::with_capacity(<span class="self">self</span>.esize);
+        <span class="kw">let </span><span class="kw-2">mut </span>rest = Vec::with_capacity(<span class="self">self</span>.esize);
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.esize {
+            edges.push((U::scan(iter)<span class="question-mark">?</span>, U::scan(iter)<span class="question-mark">?</span>));
+            rest.push(T::scan(iter)<span class="question-mark">?</span>);
         }
-        <span class="kw">let</span> <span class="ident">graph</span> = <span class="ident">EdgeListGraph::from_edges</span>(<span class="self">self</span>.<span class="ident">vsize</span>, <span class="ident">edges</span>);
-        <span class="prelude-val">Some</span>((<span class="ident">graph</span>, <span class="ident">rest</span>))
+        <span class="kw">let </span>graph = EdgeListGraph::from_edges(<span class="self">self</span>.vsize, edges);
+        <span class="prelude-val">Some</span>((graph, rest))
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

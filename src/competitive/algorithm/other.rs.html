@@ -89,75 +89,75 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-</pre><pre class="rust"><code><span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
-<span class="doccomment">/// return: \[(elem, length)\]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_length_encoding</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">PartialEq</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">T</span>&gt;&gt;(
-    <span class="ident">iter</span>: <span class="ident">I</span>,
-) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">T</span>, <span class="ident">usize</span>)&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="ident">Vec::new</span>();
-    <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="ident">iter</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">p</span>, <span class="ident">len</span>)) = <span class="ident">res</span>.<span class="ident">last_mut</span>() {
-            <span class="kw">if</span> <span class="ident">p</span> == <span class="kw-2">&amp;</span><span class="ident">a</span> {
-                <span class="kw-2">*</span><span class="ident">len</span> += <span class="number">1</span>;
+</pre><pre class="rust"><code><span class="attribute">#[codesnip::entry]</span>
+<span class="doccomment">/// return: \[(elem, length)\]
+</span><span class="kw">pub fn </span>run_length_encoding&lt;T: Clone + PartialEq, I: Iterator&lt;Item = T&gt;&gt;(
+    iter: I,
+) -&gt; Vec&lt;(T, usize)&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::new();
+    <span class="kw">for </span>a <span class="kw">in </span>iter {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((p, len)) = res.last_mut() {
+            <span class="kw">if </span>p == <span class="kw-2">&amp;</span>a {
+                <span class="kw-2">*</span>len += <span class="number">1</span>;
                 <span class="kw">continue</span>;
             }
         }
-        <span class="ident">res</span>.<span class="ident">push</span>((<span class="ident">a</span>, <span class="number">1</span>));
+        res.push((a, <span class="number">1</span>));
     }
-    <span class="ident">res</span>
+    res
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
-<span class="doccomment">/// $y = \left\lfloor\frac{n}{x}\right\rfloor$</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// segments that have same x or y</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">floor_kernel</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-    <span class="kw">let</span> <span class="ident">m</span> = (<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="ident">Vec::with_capacity</span>(<span class="ident">m</span> * <span class="number">2</span> + <span class="number">1</span>);
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..=<span class="ident">m</span> {
-        <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">i</span>);
+<span class="attribute">#[codesnip::entry]</span>
+<span class="doccomment">/// $y = \left\lfloor\frac{n}{x}\right\rfloor$
+///
+/// segments that have same x or y
+</span><span class="kw">pub fn </span>floor_kernel(n: usize) -&gt; Vec&lt;usize&gt; {
+    <span class="kw">let </span>m = (n <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>usize;
+    <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::with_capacity(m * <span class="number">2 </span>+ <span class="number">1</span>);
+    <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=m {
+        res.push(i);
     }
-    <span class="kw">if</span> <span class="ident">n</span> / <span class="ident">m</span> + <span class="number">1</span> != <span class="ident">m</span> + <span class="number">1</span> {
-        <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">m</span> + <span class="number">1</span>);
+    <span class="kw">if </span>n / m + <span class="number">1 </span>!= m + <span class="number">1 </span>{
+        res.push(m + <span class="number">1</span>);
     }
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..=<span class="ident">m</span>).<span class="ident">rev</span>() {
-        <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">n</span> / <span class="ident">i</span> + <span class="number">1</span>);
+    <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..=m).rev() {
+        res.push(n / i + <span class="number">1</span>);
     }
-    <span class="ident">res</span>
+    res
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">rand</span>, <span class="ident">tools::Xorshift</span>};
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{rand, tools::Xorshift};
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_run_length_encoding</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">100_000</span>;
-        <span class="macro">rand!</span>(<span class="ident">rng</span>, <span class="ident">v</span>: [<span class="number">0u8</span>..<span class="number">8u8</span>; <span class="ident">N</span>]);
-        <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">run_length_encoding</span>(<span class="ident">v</span>.<span class="ident">iter</span>());
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> = <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">l</span>) <span class="kw">in</span> <span class="ident">r</span> {
-            <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">v</span>[<span class="ident">s</span>..<span class="ident">s</span> + <span class="ident">l</span>] {
-                <span class="macro">assert_eq!</span>(<span class="ident">a</span>, <span class="ident">v</span>);
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_run_length_encoding() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">const </span>N: usize = <span class="number">100_000</span>;
+        <span class="macro">rand!</span>(rng, v: [<span class="number">0u8</span>..<span class="number">8u8</span>; N]);
+        <span class="kw">let </span>r = run_length_encoding(v.iter());
+        <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="number">0</span>;
+        <span class="kw">for </span>(a, l) <span class="kw">in </span>r {
+            <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span>v[s..s + l] {
+                <span class="macro">assert_eq!</span>(a, v);
             }
-            <span class="ident">s</span> += <span class="ident">l</span>;
+            s += l;
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_floor_kernel</span>() {
-        <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">1</span>..<span class="number">1000</span> {
-            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">floor_kernel</span>(<span class="ident">n</span>);
-            <span class="kw">let</span> <span class="ident">from</span> = <span class="ident">k</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">zip</span>(<span class="ident">k</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">skip</span>(<span class="number">1</span>));
-            <span class="kw">let</span> <span class="ident">to</span> = <span class="ident">k</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">zip</span>(<span class="ident">k</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">skip</span>(<span class="number">1</span>)).<span class="ident">rev</span>();
-            <span class="kw">for</span> ((<span class="ident">a</span>, <span class="ident">b</span>), (<span class="ident">c</span>, <span class="ident">d</span>)) <span class="kw">in</span> <span class="ident">from</span>.<span class="ident">zip</span>(<span class="ident">to</span>) {
-                <span class="macro">assert!</span>(<span class="ident">a</span> &lt; <span class="ident">b</span>);
-                <span class="macro">assert!</span>(<span class="ident">c</span> &lt; <span class="ident">d</span>);
-                <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">a</span>..<span class="ident">b</span> {
-                    <span class="kw">for</span> <span class="ident">y</span> <span class="kw">in</span> <span class="ident">c</span>..<span class="ident">d</span> {
-                        <span class="macro">assert!</span>(<span class="ident">x</span> * <span class="ident">y</span> &lt;= <span class="ident">n</span>);
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_floor_kernel() {
+        <span class="kw">for </span>n <span class="kw">in </span><span class="number">1</span>..<span class="number">1000 </span>{
+            <span class="kw">let </span>k = floor_kernel(n);
+            <span class="kw">let </span>from = k.iter().cloned().zip(k.iter().cloned().skip(<span class="number">1</span>));
+            <span class="kw">let </span>to = k.iter().cloned().zip(k.iter().cloned().skip(<span class="number">1</span>)).rev();
+            <span class="kw">for </span>((a, b), (c, d)) <span class="kw">in </span>from.zip(to) {
+                <span class="macro">assert!</span>(a &lt; b);
+                <span class="macro">assert!</span>(c &lt; d);
+                <span class="kw">for </span>x <span class="kw">in </span>a..b {
+                    <span class="kw">for </span>y <span class="kw">in </span>c..d {
+                        <span class="macro">assert!</span>(x * y &lt;= n);
                     }
                 }
             }
@@ -165,4 +165,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

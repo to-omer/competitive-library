@@ -75,66 +75,66 @@
 <span id="59">59</span>
 <span id="60">60</span>
 <span id="61">61</span>
-</pre><pre class="rust"><code><span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RangeArithmeticProgressionAdd</span> {
-    <span class="kw">pub</span> <span class="ident">dd</span>: <span class="ident">Vec</span>&lt;<span class="ident">i64</span>&gt;,
+</pre><pre class="rust"><code><span class="attribute">#[derive(Debug, Clone)]</span>
+<span class="kw">pub struct </span>RangeArithmeticProgressionAdd {
+    <span class="kw">pub </span>dd: Vec&lt;i64&gt;,
 }
-<span class="kw">impl</span> <span class="ident">RangeArithmeticProgressionAdd</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">dd</span>: <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">n</span>] }
+<span class="kw">impl </span>RangeArithmeticProgressionAdd {
+    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ dd: <span class="macro">vec!</span>[<span class="number">0</span>; n] }
     }
-    <span class="doccomment">/// add a, a+d, ..., a+(k-1)d into [l, l + k)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">usize</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">a</span>: <span class="ident">i64</span>, <span class="ident">d</span>: <span class="ident">i64</span>) {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">e</span>) = <span class="self">self</span>.<span class="ident">dd</span>.<span class="ident">get_mut</span>(<span class="ident">l</span>) {
-            <span class="kw-2">*</span><span class="ident">e</span> += <span class="ident">a</span>;
+    <span class="doccomment">/// add a, a+d, ..., a+(k-1)d into [l, l + k)
+    </span><span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: usize, k: usize, a: i64, d: i64) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(e) = <span class="self">self</span>.dd.get_mut(l) {
+            <span class="kw-2">*</span>e += a;
         }
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">e</span>) = <span class="self">self</span>.<span class="ident">dd</span>.<span class="ident">get_mut</span>(<span class="ident">l</span> + <span class="number">1</span>) {
-            <span class="kw-2">*</span><span class="ident">e</span> += <span class="ident">d</span> - <span class="ident">a</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(e) = <span class="self">self</span>.dd.get_mut(l + <span class="number">1</span>) {
+            <span class="kw-2">*</span>e += d - a;
         }
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">e</span>) = <span class="self">self</span>.<span class="ident">dd</span>.<span class="ident">get_mut</span>(<span class="ident">l</span> + <span class="ident">k</span>) {
-            <span class="kw-2">*</span><span class="ident">e</span> += -<span class="ident">a</span> - <span class="ident">k</span> <span class="kw">as</span> <span class="ident">i64</span> * <span class="ident">d</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(e) = <span class="self">self</span>.dd.get_mut(l + k) {
+            <span class="kw-2">*</span>e += -a - k <span class="kw">as </span>i64 * d;
         }
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">e</span>) = <span class="self">self</span>.<span class="ident">dd</span>.<span class="ident">get_mut</span>(<span class="ident">l</span> + <span class="ident">k</span> + <span class="number">1</span>) {
-            <span class="kw-2">*</span><span class="ident">e</span> += <span class="ident">a</span> + (<span class="ident">k</span> <span class="kw">as</span> <span class="ident">i64</span> - <span class="number">1</span>) * <span class="ident">d</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(e) = <span class="self">self</span>.dd.get_mut(l + k + <span class="number">1</span>) {
+            <span class="kw-2">*</span>e += a + (k <span class="kw">as </span>i64 - <span class="number">1</span>) * d;
         }
     }
-    <span class="doccomment">/// add a, a+d, ..., a+(k-1)d into [l, l + k)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_isize</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">l</span>: <span class="ident">isize</span>, <span class="ident">k</span>: <span class="ident">usize</span>, <span class="ident">a</span>: <span class="ident">i64</span>, <span class="ident">d</span>: <span class="ident">i64</span>) {
-        <span class="kw">if</span> <span class="ident">l</span> &lt; <span class="number">0</span> {
-            <span class="kw">let</span> <span class="ident">r</span> = <span class="ident">l</span> + <span class="ident">k</span> <span class="kw">as</span> <span class="ident">isize</span>;
-            <span class="kw">if</span> <span class="ident">r</span> &gt; <span class="number">0</span> {
-                <span class="self">self</span>.<span class="ident">update</span>(<span class="number">0</span>, <span class="ident">r</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">a</span> - <span class="ident">l</span> <span class="kw">as</span> <span class="ident">i64</span> * <span class="ident">d</span>, <span class="ident">d</span>);
+    <span class="doccomment">/// add a, a+d, ..., a+(k-1)d into [l, l + k)
+    </span><span class="kw">pub fn </span>update_isize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: isize, k: usize, a: i64, d: i64) {
+        <span class="kw">if </span>l &lt; <span class="number">0 </span>{
+            <span class="kw">let </span>r = l + k <span class="kw">as </span>isize;
+            <span class="kw">if </span>r &gt; <span class="number">0 </span>{
+                <span class="self">self</span>.update(<span class="number">0</span>, r <span class="kw">as </span>usize, a - l <span class="kw">as </span>i64 * d, d);
             }
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">update</span>(<span class="ident">l</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="ident">k</span>, <span class="ident">a</span>, <span class="ident">d</span>);
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.update(l <span class="kw">as </span>usize, k, a, d);
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_inplace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">2</span> {
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">dd</span>.<span class="ident">len</span>() - <span class="number">1</span> {
-                <span class="self">self</span>.<span class="ident">dd</span>[<span class="ident">i</span> + <span class="number">1</span>] += <span class="self">self</span>.<span class="ident">dd</span>[<span class="ident">i</span>];
+    <span class="kw">pub fn </span>build_inplace(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">2 </span>{
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.dd.len() - <span class="number">1 </span>{
+                <span class="self">self</span>.dd[i + <span class="number">1</span>] += <span class="self">self</span>.dd[i];
             }
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_range_ap_add</span>() {
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools</span>::{<span class="ident">NotEmptySegment</span> <span class="kw">as</span> <span class="ident">Nes</span>, <span class="ident">Xorshift</span>};
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">1000</span>;
-    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">10000</span>;
-    <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">i64</span> = <span class="number">1_000_000_000</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> = <span class="macro">vec!</span>[<span class="number">0i64</span>; <span class="ident">N</span>];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ap</span> = <span class="ident">RangeArithmeticProgressionAdd::new</span>(<span class="ident">N</span>);
-    <span class="kw">for</span> ((<span class="ident">l</span>, <span class="ident">r</span>), <span class="ident">a</span>, <span class="ident">d</span>) <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>((<span class="ident">Nes</span>(<span class="ident">N</span>), -<span class="ident">A</span>..=<span class="ident">A</span>, -<span class="ident">A</span>..=<span class="ident">A</span>)).<span class="ident">take</span>(<span class="ident">Q</span>) {
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">v</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter_mut</span>().<span class="ident">enumerate</span>() {
-            <span class="kw-2">*</span><span class="ident">v</span> += <span class="ident">a</span> + <span class="ident">i</span> <span class="kw">as</span> <span class="ident">i64</span> * <span class="ident">d</span>;
+<span class="attribute">#[test]</span>
+<span class="kw">fn </span>test_range_ap_add() {
+    <span class="kw">use </span><span class="kw">crate</span>::tools::{NotEmptySegment <span class="kw">as </span>Nes, Xorshift};
+    <span class="kw">const </span>N: usize = <span class="number">1000</span>;
+    <span class="kw">const </span>Q: usize = <span class="number">10000</span>;
+    <span class="kw">const </span>A: i64 = <span class="number">1_000_000_000</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
+    <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">0i64</span>; N];
+    <span class="kw">let </span><span class="kw-2">mut </span>ap = RangeArithmeticProgressionAdd::new(N);
+    <span class="kw">for </span>((l, r), a, d) <span class="kw">in </span>rng.gen_iter((Nes(N), -A..=A, -A..=A)).take(Q) {
+        <span class="kw">for </span>(i, v) <span class="kw">in </span>v[l..r].iter_mut().enumerate() {
+            <span class="kw-2">*</span>v += a + i <span class="kw">as </span>i64 * d;
         }
-        <span class="ident">ap</span>.<span class="ident">update</span>(<span class="ident">l</span>, <span class="ident">r</span> - <span class="ident">l</span>, <span class="ident">a</span>, <span class="ident">d</span>);
+        ap.update(l, r - l, a, d);
     }
-    <span class="ident">ap</span>.<span class="ident">build_inplace</span>();
-    <span class="macro">assert_eq!</span>(<span class="ident">ap</span>.<span class="ident">dd</span>, <span class="ident">v</span>);
+    ap.build_inplace();
+    <span class="macro">assert_eq!</span>(ap.dd, v);
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

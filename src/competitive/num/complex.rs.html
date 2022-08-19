@@ -331,322 +331,322 @@
 <span id="315">315</span>
 <span id="316">316</span>
 <span id="317">317</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">IterScan</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">cmp::Ordering</span>,
-    <span class="ident">iter</span>::{<span class="ident">Product</span>, <span class="ident">Sum</span>},
-    <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">AddAssign</span>, <span class="ident">Div</span>, <span class="ident">DivAssign</span>, <span class="ident">Mul</span>, <span class="ident">MulAssign</span>, <span class="ident">Neg</span>, <span class="ident">Sub</span>, <span class="ident">SubAssign</span>},
+</pre><pre class="rust"><code><span class="kw">use super</span>::{IterScan, One, Zero};
+<span class="kw">use </span>std::{
+    cmp::Ordering,
+    iter::{Product, Sum},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">pub</span> <span class="ident">re</span>: <span class="ident">T</span>,
-    <span class="kw">pub</span> <span class="ident">im</span>: <span class="ident">T</span>,
+<span class="attribute">#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="kw">pub struct </span>Complex&lt;T&gt; {
+    <span class="kw">pub </span>re: T,
+    <span class="kw">pub </span>im: T,
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">re</span>: <span class="ident">T</span>, <span class="ident">im</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Complex</span> { <span class="ident">re</span>, <span class="ident">im</span> }
+<span class="kw">impl</span>&lt;T&gt; Complex&lt;T&gt; {
+    <span class="kw">pub fn </span>new(re: T, im: T) -&gt; <span class="self">Self </span>{
+        Complex { re, im }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">transpose</span>(<span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Complex</span> {
-            <span class="ident">re</span>: <span class="self">self</span>.<span class="ident">im</span>,
-            <span class="ident">im</span>: <span class="self">self</span>.<span class="ident">re</span>,
+    <span class="kw">pub fn </span>transpose(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        Complex {
+            re: <span class="self">self</span>.im,
+            im: <span class="self">self</span>.re,
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Zero</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Zero</span>,
+<span class="kw">impl</span>&lt;T&gt; Zero <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Zero,
 {
-    <span class="kw">fn</span> <span class="ident">zero</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">T::zero</span>(), <span class="ident">T::zero</span>())
+    <span class="kw">fn </span>zero() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(T::zero(), T::zero())
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">One</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Zero</span> + <span class="ident">One</span>,
+<span class="kw">impl</span>&lt;T&gt; One <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Zero + One,
 {
-    <span class="kw">fn</span> <span class="ident">one</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">T::one</span>(), <span class="ident">T::zero</span>())
+    <span class="kw">fn </span>one() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(T::one(), T::zero())
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Zero</span> + <span class="ident">One</span>,
+<span class="kw">impl</span>&lt;T&gt; Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Zero + One,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">i</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">T::zero</span>(), <span class="ident">T::one</span>())
+    <span class="kw">pub fn </span>i() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(T::zero(), T::one())
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Neg</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;,
+<span class="kw">impl</span>&lt;T&gt; Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Neg&lt;Output = T&gt;,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">conjugate</span>(<span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>(<span class="self">self</span>.<span class="ident">re</span>, -<span class="self">self</span>.<span class="ident">im</span>)
+    <span class="kw">pub fn </span>conjugate(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(<span class="self">self</span>.re, -<span class="self">self</span>.im)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Mul</span>,
-    &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span>: <span class="ident">Add</span>,
+<span class="kw">impl</span>&lt;T&gt; Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Mul,
+    &lt;T <span class="kw">as </span>Mul&gt;::Output: Add,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dot</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; &lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span> <span class="kw">as</span> <span class="ident">Add</span>&gt;<span class="ident">::Output</span> {
-        <span class="self">self</span>.<span class="ident">re</span> * <span class="ident">rhs</span>.<span class="ident">re</span> + <span class="self">self</span>.<span class="ident">im</span> * <span class="ident">rhs</span>.<span class="ident">im</span>
+    <span class="kw">pub fn </span>dot(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; &lt;&lt;T <span class="kw">as </span>Mul&gt;::Output <span class="kw">as </span>Add&gt;::Output {
+        <span class="self">self</span>.re * rhs.re + <span class="self">self</span>.im * rhs.im
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Mul</span>,
-    &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span>: <span class="ident">Sub</span>,
+<span class="kw">impl</span>&lt;T&gt; Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Mul,
+    &lt;T <span class="kw">as </span>Mul&gt;::Output: Sub,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cross</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; &lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span> <span class="kw">as</span> <span class="ident">Sub</span>&gt;<span class="ident">::Output</span> {
-        <span class="self">self</span>.<span class="ident">re</span> * <span class="ident">rhs</span>.<span class="ident">im</span> - <span class="self">self</span>.<span class="ident">im</span> * <span class="ident">rhs</span>.<span class="ident">re</span>
+    <span class="kw">pub fn </span>cross(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; &lt;&lt;T <span class="kw">as </span>Mul&gt;::Output <span class="kw">as </span>Sub&gt;::Output {
+        <span class="self">self</span>.re * rhs.im - <span class="self">self</span>.im * rhs.re
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Mul</span> + <span class="ident">Clone</span>,
-    &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span>: <span class="ident">Add</span>,
+<span class="kw">impl</span>&lt;T&gt; Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Mul + Clone,
+    &lt;T <span class="kw">as </span>Mul&gt;::Output: Add,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">norm</span>(<span class="self">self</span>) -&gt; &lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span> <span class="kw">as</span> <span class="ident">Add</span>&gt;<span class="ident">::Output</span> {
-        <span class="self">self</span>.<span class="ident">re</span>.<span class="ident">clone</span>() * <span class="self">self</span>.<span class="ident">re</span> + <span class="self">self</span>.<span class="ident">im</span>.<span class="ident">clone</span>() * <span class="self">self</span>.<span class="ident">im</span>
+    <span class="kw">pub fn </span>norm(<span class="self">self</span>) -&gt; &lt;&lt;T <span class="kw">as </span>Mul&gt;::Output <span class="kw">as </span>Add&gt;::Output {
+        <span class="self">self</span>.re.clone() * <span class="self">self</span>.re + <span class="self">self</span>.im.clone() * <span class="self">self</span>.im
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Zero</span> + <span class="ident">Ord</span> + <span class="ident">Mul</span>,
-    &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span>: <span class="ident">Ord</span>,
+<span class="kw">impl</span>&lt;T&gt; Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Zero + Ord + Mul,
+    &lt;T <span class="kw">as </span>Mul&gt;::Output: Ord,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cmp_by_arg</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) -&gt; <span class="ident">Ordering</span> {
-        <span class="kw">fn</span> <span class="ident">pos</span>&lt;<span class="ident">T</span>&gt;(<span class="ident">c</span>: <span class="kw-2">&amp;</span><span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) -&gt; <span class="ident">bool</span>
-        <span class="kw">where</span>
-            <span class="ident">T</span>: <span class="ident">Zero</span> + <span class="ident">Ord</span>,
+    <span class="kw">pub fn </span>cmp_by_arg(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; Ordering {
+        <span class="kw">fn </span>pos&lt;T&gt;(c: <span class="kw-2">&amp;</span>Complex&lt;T&gt;) -&gt; bool
+        <span class="kw">where
+            </span>T: Zero + Ord,
         {
-            <span class="kw">let</span> <span class="ident">zero</span> = <span class="ident">T::zero</span>();
-            <span class="ident">c</span>.<span class="ident">im</span> &lt; <span class="ident">zero</span> || <span class="ident">c</span>.<span class="ident">im</span> &lt;= <span class="ident">zero</span> &amp;&amp; <span class="ident">c</span>.<span class="ident">re</span> &lt; <span class="ident">zero</span>
+            <span class="kw">let </span>zero = T::zero();
+            c.im &lt; zero || c.im &lt;= zero &amp;&amp; c.re &lt; zero
         }
-        <span class="ident">pos</span>(<span class="kw-2">&amp;</span><span class="self">self</span>)
-            .<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">pos</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>))
-            .<span class="ident">then_with</span>(|| (<span class="self">self</span>.<span class="ident">re</span> * <span class="ident">other</span>.<span class="ident">im</span>).<span class="ident">cmp</span>(<span class="kw-2">&amp;</span>(<span class="self">self</span>.<span class="ident">im</span> * <span class="ident">other</span>.<span class="ident">re</span>)).<span class="ident">reverse</span>())
+        pos(<span class="kw-2">&amp;</span><span class="self">self</span>)
+            .cmp(<span class="kw-2">&amp;</span>pos(<span class="kw-2">&amp;</span>other))
+            .then_with(|| (<span class="self">self</span>.re * other.im).cmp(<span class="kw-2">&amp;</span>(<span class="self">self</span>.im * other.re)).reverse())
     }
 }
-<span class="kw">impl</span> <span class="ident">Complex</span>&lt;<span class="ident">f64</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">polar</span>(<span class="ident">r</span>: <span class="ident">f64</span>, <span class="ident">theta</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">r</span> * <span class="ident">theta</span>.<span class="ident">cos</span>(), <span class="ident">r</span> * <span class="ident">theta</span>.<span class="ident">sin</span>())
+<span class="kw">impl </span>Complex&lt;f64&gt; {
+    <span class="kw">pub fn </span>polar(r: f64, theta: f64) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(r * theta.cos(), r * theta.sin())
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">abs</span>(<span class="self">self</span>) -&gt; <span class="ident">f64</span> {
-        <span class="self">self</span>.<span class="ident">re</span>.<span class="ident">hypot</span>(<span class="self">self</span>.<span class="ident">im</span>)
+    <span class="kw">pub fn </span>abs(<span class="self">self</span>) -&gt; f64 {
+        <span class="self">self</span>.re.hypot(<span class="self">self</span>.im)
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unit</span>(<span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span> / <span class="self">self</span>.<span class="ident">abs</span>()
+    <span class="kw">pub fn </span>unit(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">self </span>/ <span class="self">self</span>.abs()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">angle</span>(<span class="self">self</span>) -&gt; <span class="ident">f64</span> {
-        <span class="self">self</span>.<span class="ident">im</span>.<span class="ident">atan2</span>(<span class="self">self</span>.<span class="ident">re</span>)
+    <span class="kw">pub fn </span>angle(<span class="self">self</span>) -&gt; f64 {
+        <span class="self">self</span>.im.atan2(<span class="self">self</span>.re)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Add</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Add</span>,
+<span class="kw">impl</span>&lt;T&gt; Add <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Add,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Add</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Complex::new</span>(<span class="self">self</span>.<span class="ident">re</span> + <span class="ident">rhs</span>.<span class="ident">re</span>, <span class="self">self</span>.<span class="ident">im</span> + <span class="ident">rhs</span>.<span class="ident">im</span>)
+    <span class="kw">type </span>Output = Complex&lt;&lt;T <span class="kw">as </span>Add&gt;::Output&gt;;
+    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        Complex::new(<span class="self">self</span>.re + rhs.re, <span class="self">self</span>.im + rhs.im)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Add</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;,
+<span class="kw">impl</span>&lt;T&gt; Add&lt;T&gt; <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Add&lt;Output = T&gt;,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">add</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">T</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>(<span class="self">self</span>.<span class="ident">re</span> + <span class="ident">rhs</span>, <span class="self">self</span>.<span class="ident">im</span>)
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: T) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">Self</span>::new(<span class="self">self</span>.re + rhs, <span class="self">self</span>.im)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Sub</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Sub</span>,
+<span class="kw">impl</span>&lt;T&gt; Sub <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Sub,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Sub</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Complex::new</span>(<span class="self">self</span>.<span class="ident">re</span> - <span class="ident">rhs</span>.<span class="ident">re</span>, <span class="self">self</span>.<span class="ident">im</span> - <span class="ident">rhs</span>.<span class="ident">im</span>)
+    <span class="kw">type </span>Output = Complex&lt;&lt;T <span class="kw">as </span>Sub&gt;::Output&gt;;
+    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        Complex::new(<span class="self">self</span>.re - rhs.re, <span class="self">self</span>.im - rhs.im)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Sub</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;,
+<span class="kw">impl</span>&lt;T&gt; Sub&lt;T&gt; <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Sub&lt;Output = T&gt;,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="kw">fn</span> <span class="ident">sub</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">T</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident"><span class="self">Self</span>::new</span>(<span class="self">self</span>.<span class="ident">re</span> - <span class="ident">rhs</span>, <span class="self">self</span>.<span class="ident">im</span>)
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: T) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">Self</span>::new(<span class="self">self</span>.re - rhs, <span class="self">self</span>.im)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">U</span>&gt; <span class="ident">Mul</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Mul</span>,
-    &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span>: <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">U</span>&gt; + <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="ident">U</span>&gt;,
+<span class="kw">impl</span>&lt;T, U&gt; Mul <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Clone + Mul,
+    &lt;T <span class="kw">as </span>Mul&gt;::Output: Add&lt;Output = U&gt; + Sub&lt;Output = U&gt;,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;<span class="ident">U</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Complex::new</span>(
-            <span class="self">self</span>.<span class="ident">re</span>.<span class="ident">clone</span>() * <span class="ident">rhs</span>.<span class="ident">re</span>.<span class="ident">clone</span>() - <span class="self">self</span>.<span class="ident">im</span>.<span class="ident">clone</span>() * <span class="ident">rhs</span>.<span class="ident">im</span>.<span class="ident">clone</span>(),
-            <span class="self">self</span>.<span class="ident">re</span> * <span class="ident">rhs</span>.<span class="ident">im</span> + <span class="self">self</span>.<span class="ident">im</span> * <span class="ident">rhs</span>.<span class="ident">re</span>,
+    <span class="kw">type </span>Output = Complex&lt;U&gt;;
+    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        Complex::new(
+            <span class="self">self</span>.re.clone() * rhs.re.clone() - <span class="self">self</span>.im.clone() * rhs.im.clone(),
+            <span class="self">self</span>.re * rhs.im + <span class="self">self</span>.im * rhs.re,
         )
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Mul</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Mul</span>,
+<span class="kw">impl</span>&lt;T&gt; Mul&lt;T&gt; <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Clone + Mul,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Mul</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">mul</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">T</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Complex::new</span>(<span class="self">self</span>.<span class="ident">re</span> * <span class="ident">rhs</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">im</span> * <span class="ident">rhs</span>)
+    <span class="kw">type </span>Output = Complex&lt;&lt;T <span class="kw">as </span>Mul&gt;::Output&gt;;
+    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: T) -&gt; <span class="self">Self</span>::Output {
+        Complex::new(<span class="self">self</span>.re * rhs.clone(), <span class="self">self</span>.im * rhs)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Div</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Div</span>,
+<span class="kw">impl</span>&lt;T&gt; Div <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Clone + Add&lt;Output = T&gt; + Sub&lt;Output = T&gt; + Mul&lt;Output = T&gt; + Div,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Div</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">div</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">rhs</span>.<span class="ident">re</span>.<span class="ident">clone</span>() * <span class="ident">rhs</span>.<span class="ident">re</span>.<span class="ident">clone</span>() + <span class="ident">rhs</span>.<span class="ident">im</span>.<span class="ident">clone</span>() * <span class="ident">rhs</span>.<span class="ident">im</span>.<span class="ident">clone</span>();
-        <span class="ident">Complex::new</span>(
-            (<span class="self">self</span>.<span class="ident">re</span>.<span class="ident">clone</span>() * <span class="ident">rhs</span>.<span class="ident">re</span>.<span class="ident">clone</span>() + <span class="self">self</span>.<span class="ident">im</span>.<span class="ident">clone</span>() * <span class="ident">rhs</span>.<span class="ident">im</span>.<span class="ident">clone</span>()) / <span class="ident">d</span>.<span class="ident">clone</span>(),
-            (<span class="self">self</span>.<span class="ident">im</span> * <span class="ident">rhs</span>.<span class="ident">re</span> - <span class="self">self</span>.<span class="ident">re</span> * <span class="ident">rhs</span>.<span class="ident">im</span>) / <span class="ident">d</span>,
+    <span class="kw">type </span>Output = Complex&lt;&lt;T <span class="kw">as </span>Div&gt;::Output&gt;;
+    <span class="kw">fn </span>div(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>d = rhs.re.clone() * rhs.re.clone() + rhs.im.clone() * rhs.im.clone();
+        Complex::new(
+            (<span class="self">self</span>.re.clone() * rhs.re.clone() + <span class="self">self</span>.im.clone() * rhs.im.clone()) / d.clone(),
+            (<span class="self">self</span>.im * rhs.re - <span class="self">self</span>.re * rhs.im) / d,
         )
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Div</span>&lt;<span class="ident">T</span>&gt; <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Div</span>,
+<span class="kw">impl</span>&lt;T&gt; Div&lt;T&gt; <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Clone + Div,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Div</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">div</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">T</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Complex::new</span>(<span class="self">self</span>.<span class="ident">re</span> / <span class="ident">rhs</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">im</span> / <span class="ident">rhs</span>)
+    <span class="kw">type </span>Output = Complex&lt;&lt;T <span class="kw">as </span>Div&gt;::Output&gt;;
+    <span class="kw">fn </span>div(<span class="self">self</span>, rhs: T) -&gt; <span class="self">Self</span>::Output {
+        Complex::new(<span class="self">self</span>.re / rhs.clone(), <span class="self">self</span>.im / rhs)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Neg</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Neg</span>,
+<span class="kw">impl</span>&lt;T&gt; Neg <span class="kw">for </span>Complex&lt;T&gt;
+<span class="kw">where
+    </span>T: Neg,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Neg</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">neg</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">Complex::new</span>(-<span class="self">self</span>.<span class="ident">re</span>, -<span class="self">self</span>.<span class="ident">im</span>)
+    <span class="kw">type </span>Output = Complex&lt;&lt;T <span class="kw">as </span>Neg&gt;::Output&gt;;
+    <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
+        Complex::new(-<span class="self">self</span>.re, -<span class="self">self</span>.im)
     }
 }
-<span class="macro">macro_rules!</span> <span class="ident">impl_complex_ref_binop</span> {
-    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>:<span class="ident">ident</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">ty</span>) <span class="kw">where</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Clone</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)<span class="kw-2">*</span>,
+<span class="macro">macro_rules!</span> impl_complex_ref_binop {
+    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>:ident&gt; <span class="macro-nonterminal">$imp</span>:ident <span class="macro-nonterminal">$method</span>:ident (<span class="macro-nonterminal">$l</span>:ty, <span class="macro-nonterminal">$r</span>:ty) <span class="kw">where </span>$(<span class="macro-nonterminal">$w</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$l
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: Clone $(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)<span class="kw-2">*</span>,
         {
-            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt;&gt;<span class="ident">::Output</span>;
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt;&gt;<span class="ident">::Output</span> {
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>)
+            <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$l </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt;&gt;::Output;
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, rhs: <span class="macro-nonterminal">$r</span>) -&gt; &lt;<span class="macro-nonterminal">$l </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt;&gt;::Output {
+                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone(), rhs)
             }
         }
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Clone</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)<span class="kw-2">*</span>,
+        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$r</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$l
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: Clone $(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)<span class="kw-2">*</span>,
         {
-            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt;&gt;<span class="ident">::Output</span>;
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt;&gt;<span class="ident">::Output</span> {
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">rhs</span>.<span class="ident">clone</span>())
+            <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$l </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt;&gt;::Output;
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$r</span>) -&gt; &lt;<span class="macro-nonterminal">$l </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt;&gt;::Output {
+                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>, rhs.clone())
             }
         }
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Clone</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)<span class="kw-2">*</span>,
+        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$r</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$l
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: Clone $(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)<span class="kw-2">*</span>,
         {
-            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt;&gt;<span class="ident">::Output</span>;
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt;&gt;<span class="ident">::Output</span> {
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>.<span class="ident">clone</span>())
-            }
-        }
-    };
-}
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Add</span> <span class="ident">add</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="kw">where</span> <span class="ident">Add</span>);
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Add</span> <span class="ident">add</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="kw">where</span> <span class="ident">Add</span>);
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Sub</span> <span class="ident">sub</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="kw">where</span> <span class="ident">Sub</span>);
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Sub</span> <span class="ident">sub</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="kw">where</span> <span class="ident">Sub</span>);
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Mul</span> <span class="ident">mul</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="kw">where</span> <span class="ident">Add</span> <span class="ident">Sub</span> <span class="ident">Mul</span>);
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Mul</span> <span class="ident">mul</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="kw">where</span> <span class="ident">Mul</span>);
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Div</span> <span class="ident">div</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="kw">where</span> <span class="ident">Add</span> <span class="ident">Sub</span> <span class="ident">Mul</span> <span class="ident">Div</span>);
-<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Div</span> <span class="ident">div</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="kw">where</span> <span class="ident">Div</span>);
-<span class="macro">macro_rules!</span> <span class="ident">impl_complex_ref_unop</span> {
-    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>:<span class="ident">ident</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="kw">where</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Clone</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)<span class="kw-2">*</span>,
-        {
-            <span class="kw">type</span> <span class="ident">Output</span> = &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&gt;<span class="ident">::Output</span>;
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>) -&gt; &lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&gt;<span class="ident">::Output</span> {
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>.<span class="ident">clone</span>())
+            <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$l </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt;&gt;::Output;
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$r</span>) -&gt; &lt;<span class="macro-nonterminal">$l </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt;&gt;::Output {
+                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone(), rhs.clone())
             }
         }
     };
 }
-<span class="macro">impl_complex_ref_unop!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Neg</span> <span class="ident">neg</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="kw">where</span> <span class="ident">Neg</span>);
-<span class="macro">macro_rules!</span> <span class="ident">impl_complex_op_assign</span> {
-    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>:<span class="ident">ident</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">ty</span>) <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>:<span class="ident">ident</span> <span class="kw">where</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Clone</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)<span class="kw-2">*</span>,
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Add add (Complex&lt;T&gt;, Complex&lt;T&gt;) <span class="kw">where </span>Add);
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Add add (Complex&lt;T&gt;, T) <span class="kw">where </span>Add);
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Sub sub (Complex&lt;T&gt;, Complex&lt;T&gt;) <span class="kw">where </span>Sub);
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Sub sub (Complex&lt;T&gt;, T) <span class="kw">where </span>Sub);
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Mul mul (Complex&lt;T&gt;, Complex&lt;T&gt;) <span class="kw">where </span>Add Sub Mul);
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Mul mul (Complex&lt;T&gt;, T) <span class="kw">where </span>Mul);
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Div div (Complex&lt;T&gt;, Complex&lt;T&gt;) <span class="kw">where </span>Add Sub Mul Div);
+<span class="macro">impl_complex_ref_binop!</span>(<span class="kw">impl</span>&lt;T&gt; Div div (Complex&lt;T&gt;, T) <span class="kw">where </span>Div);
+<span class="macro">macro_rules!</span> impl_complex_ref_unop {
+    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>:ident&gt; <span class="macro-nonterminal">$imp</span>:ident <span class="macro-nonterminal">$method</span>:ident (<span class="macro-nonterminal">$t</span>:ty) <span class="kw">where </span>$(<span class="macro-nonterminal">$w</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>&gt; <span class="macro-nonterminal">$imp </span><span class="kw">for </span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$t
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: Clone $(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)<span class="kw-2">*</span>,
         {
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) {
-                <span class="kw-2">*</span><span class="self">self</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>(<span class="self">self</span>.<span class="ident">clone</span>(), <span class="ident">rhs</span>);
-            }
-        }
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Clone</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)<span class="kw-2">*</span>,
-        {
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) {
-                <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>(<span class="self">self</span>, <span class="ident">rhs</span>.<span class="ident">clone</span>());
-            }
-        }
-    };
-}
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">AddAssign</span> <span class="ident">add_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="ident">Add</span> <span class="ident">add</span> <span class="kw">where</span> <span class="ident">Add</span>);
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">AddAssign</span> <span class="ident">add_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="ident">Add</span> <span class="ident">add</span> <span class="kw">where</span> <span class="ident">Add</span>);
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">SubAssign</span> <span class="ident">sub_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="ident">Sub</span> <span class="ident">sub</span> <span class="kw">where</span> <span class="ident">Sub</span>);
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">SubAssign</span> <span class="ident">sub_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="ident">Sub</span> <span class="ident">sub</span> <span class="kw">where</span> <span class="ident">Sub</span>);
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">MulAssign</span> <span class="ident">mul_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="ident">Mul</span> <span class="ident">mul</span> <span class="kw">where</span> <span class="ident">Add</span> <span class="ident">Sub</span> <span class="ident">Mul</span>);
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">MulAssign</span> <span class="ident">mul_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="ident">Mul</span> <span class="ident">mul</span> <span class="kw">where</span> <span class="ident">Mul</span>);
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">DivAssign</span> <span class="ident">div_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="ident">Div</span> <span class="ident">div</span> <span class="kw">where</span> <span class="ident">Add</span> <span class="ident">Sub</span> <span class="ident">Mul</span> <span class="ident">Div</span>);
-<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">DivAssign</span> <span class="ident">div_assign</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">T</span>) <span class="ident">Div</span> <span class="ident">div</span> <span class="kw">where</span> <span class="ident">Div</span>);
-<span class="macro">macro_rules!</span> <span class="ident">impl_complex_fold</span> {
-    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>:<span class="ident">ident</span> (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>) <span class="macro-nonterminal">$</span><span class="macro-nonterminal">identimp</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">identmethod</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>:<span class="ident">ident</span> <span class="kw">where</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>:<span class="ident">ident</span>)* $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">identimp</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)* $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)<span class="kw-2">*</span>,
-        {
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>&lt;<span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="self">Self</span>&gt;&gt;(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-                <span class="ident">iter</span>.<span class="ident">fold</span>(&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">identimp</span>&gt;::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">identmethod</span>(), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>)
-            }
-        }
-        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="lifetime">&#39;a</span>&gt; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">imp</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt; <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>
-        <span class="kw">where</span>
-            <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Clone</span> + <span class="macro-nonterminal">$</span><span class="macro-nonterminal">identimp</span> $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">w</span>&lt;<span class="ident">Output</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>&gt;)* $(+ <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)<span class="kw-2">*</span>,
-        {
-            <span class="kw">fn</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">method</span>&lt;<span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;&gt;(<span class="ident">iter</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-                <span class="ident">iter</span>.<span class="ident">fold</span>(&lt;<span class="self">Self</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">identimp</span>&gt;::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">identmethod</span>(), <span class="macro-nonterminal">$</span><span class="macro-nonterminal">fromimp</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">frommethod</span>)
+            <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&gt;::Output;
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&gt;::Output {
+                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone())
             }
         }
     };
 }
-<span class="macro">impl_complex_fold!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Sum</span> <span class="ident">sum</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="ident">Zero</span> <span class="ident">zero</span> <span class="ident">Add</span> <span class="ident">add</span> <span class="kw">where</span> <span class="ident">Add</span>);
-<span class="macro">impl_complex_fold!</span>(<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Product</span> <span class="ident">product</span> (<span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) <span class="ident">One</span> <span class="ident">one</span> <span class="ident">Mul</span> <span class="ident">mul</span> <span class="kw">where</span> <span class="ident">Add</span> <span class="ident">Sub</span> <span class="ident">Mul</span> + <span class="ident">Zero</span> + <span class="ident">Clone</span>);
+<span class="macro">impl_complex_ref_unop!</span>(<span class="kw">impl</span>&lt;T&gt; Neg neg (Complex&lt;T&gt;) <span class="kw">where </span>Neg);
+<span class="macro">macro_rules!</span> impl_complex_op_assign {
+    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>:ident&gt; <span class="macro-nonterminal">$imp</span>:ident <span class="macro-nonterminal">$method</span>:ident (<span class="macro-nonterminal">$l</span>:ty, <span class="macro-nonterminal">$r</span>:ty) <span class="macro-nonterminal">$fromimp</span>:ident <span class="macro-nonterminal">$frommethod</span>:ident <span class="kw">where </span>$(<span class="macro-nonterminal">$w</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$r</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$l
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: Clone $(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)<span class="kw-2">*</span>,
+        {
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="macro-nonterminal">$r</span>) {
+                <span class="kw-2">*</span><span class="self">self </span>= <span class="macro-nonterminal">$fromimp</span>::<span class="macro-nonterminal">$frommethod</span>(<span class="self">self</span>.clone(), rhs);
+            }
+        }
+        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span><span class="macro-nonterminal">$r</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$l
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: Clone $(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)<span class="kw-2">*</span>,
+        {
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$r</span>) {
+                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>, rhs.clone());
+            }
+        }
+    };
+}
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; AddAssign add_assign (Complex&lt;T&gt;, Complex&lt;T&gt;) Add add <span class="kw">where </span>Add);
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; AddAssign add_assign (Complex&lt;T&gt;, T) Add add <span class="kw">where </span>Add);
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; SubAssign sub_assign (Complex&lt;T&gt;, Complex&lt;T&gt;) Sub sub <span class="kw">where </span>Sub);
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; SubAssign sub_assign (Complex&lt;T&gt;, T) Sub sub <span class="kw">where </span>Sub);
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; MulAssign mul_assign (Complex&lt;T&gt;, Complex&lt;T&gt;) Mul mul <span class="kw">where </span>Add Sub Mul);
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; MulAssign mul_assign (Complex&lt;T&gt;, T) Mul mul <span class="kw">where </span>Mul);
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; DivAssign div_assign (Complex&lt;T&gt;, Complex&lt;T&gt;) Div div <span class="kw">where </span>Add Sub Mul Div);
+<span class="macro">impl_complex_op_assign!</span>(<span class="kw">impl</span>&lt;T&gt; DivAssign div_assign (Complex&lt;T&gt;, T) Div div <span class="kw">where </span>Div);
+<span class="macro">macro_rules!</span> impl_complex_fold {
+    (<span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>:ident&gt; <span class="macro-nonterminal">$imp</span>:ident <span class="macro-nonterminal">$method</span>:ident (<span class="macro-nonterminal">$t</span>:ty) <span class="macro-nonterminal">$identimp</span>:ident <span class="macro-nonterminal">$identmethod</span>:ident <span class="macro-nonterminal">$fromimp</span>:ident <span class="macro-nonterminal">$frommethod</span>:ident <span class="kw">where </span>$(<span class="macro-nonterminal">$w</span>:ident)* $(+ <span class="macro-nonterminal">$x</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;<span class="macro-nonterminal">$T</span>&gt; <span class="macro-nonterminal">$imp </span><span class="kw">for </span><span class="macro-nonterminal">$t
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: <span class="macro-nonterminal">$identimp </span>$(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)* $(+ <span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>,
+        {
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>&lt;I: Iterator&lt;Item = <span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+                iter.fold(&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$identimp</span>&gt;::<span class="macro-nonterminal">$identmethod</span>(), <span class="macro-nonterminal">$fromimp</span>::<span class="macro-nonterminal">$frommethod</span>)
+            }
+        }
+        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="macro-nonterminal">$T</span>: <span class="lifetime">&#39;a</span>&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="macro-nonterminal">$t</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$t
+        </span><span class="kw">where
+            </span><span class="macro-nonterminal">$T</span>: Clone + <span class="macro-nonterminal">$identimp </span>$(+ <span class="macro-nonterminal">$w</span>&lt;Output = <span class="macro-nonterminal">$T</span>&gt;)* $(+ <span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>,
+        {
+            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>&lt;I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="macro-nonterminal">$t</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+                iter.fold(&lt;<span class="self">Self </span><span class="kw">as </span><span class="macro-nonterminal">$identimp</span>&gt;::<span class="macro-nonterminal">$identmethod</span>(), <span class="macro-nonterminal">$fromimp</span>::<span class="macro-nonterminal">$frommethod</span>)
+            }
+        }
+    };
+}
+<span class="macro">impl_complex_fold!</span>(<span class="kw">impl</span>&lt;T&gt; Sum sum (Complex&lt;T&gt;) Zero zero Add add <span class="kw">where </span>Add);
+<span class="macro">impl_complex_fold!</span>(<span class="kw">impl</span>&lt;T&gt; Product product (Complex&lt;T&gt;) One one Mul mul <span class="kw">where </span>Add Sub Mul + Zero + Clone);
 
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">IterScan</span>&gt; <span class="ident">IterScan</span> <span class="kw">for</span> <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Complex</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="prelude-val">Some</span>(<span class="ident">Complex::new</span>(
-            &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>,
-            &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>,
+<span class="kw">impl</span>&lt;T: IterScan&gt; IterScan <span class="kw">for </span>Complex&lt;T&gt; {
+    <span class="kw">type </span>Output = Complex&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;;
+    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="prelude-val">Some</span>(Complex::new(
+            &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">?</span>,
+            &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">?</span>,
         ))
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

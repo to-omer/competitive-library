@@ -58,49 +58,49 @@
 <span id="42">42</span>
 <span id="43">43</span>
 <span id="44">44</span>
-</pre><pre class="rust"><code><span class="doccomment">/// implement Ord by PartialOrd</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Example</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">/// # use competitive::tools::TotalOrd;</span>
-<span class="doccomment">/// let mut a = vec![3.1, 4.1, 5.9, 2.6];</span>
-<span class="doccomment">/// a.sort_by_key(|&amp;x| TotalOrd(x));</span>
-<span class="doccomment">/// ```</span>
-<span class="doccomment">///</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TotalOrd</span>&lt;<span class="ident">T</span>&gt;(<span class="kw">pub</span> <span class="ident">T</span>);
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">TotalOrd</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">PartialEq</span>,
+</pre><pre class="rust"><code><span class="doccomment">/// implement Ord by PartialOrd
+///
+/// # Example
+///
+/// ```
+/// # use competitive::tools::TotalOrd;
+/// let mut a = vec![3.1, 4.1, 5.9, 2.6];
+/// a.sort_by_key(|&amp;x| TotalOrd(x));
+/// ```
+///
+</span><span class="kw">pub struct </span>TotalOrd&lt;T&gt;(<span class="kw">pub </span>T);
+<span class="kw">impl</span>&lt;T&gt; PartialEq <span class="kw">for </span>TotalOrd&lt;T&gt;
+<span class="kw">where
+    </span>T: PartialEq,
 {
-    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="number">0</span> == <span class="ident">other</span>.<span class="number">0</span>
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="self">self</span>.<span class="number">0 </span>== other.<span class="number">0
+    </span>}
+}
+<span class="kw">impl</span>&lt;T&gt; Eq <span class="kw">for </span>TotalOrd&lt;T&gt; <span class="kw">where </span>T: PartialEq {}
+<span class="kw">impl</span>&lt;T&gt; PartialOrd <span class="kw">for </span>TotalOrd&lt;T&gt;
+<span class="kw">where
+    </span>T: PartialOrd,
+{
+    <span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>TotalOrd&lt;T&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;std::cmp::Ordering&gt; {
+        <span class="self">self</span>.<span class="number">0</span>.partial_cmp(<span class="kw-2">&amp;</span>other.<span class="number">0</span>)
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">TotalOrd</span>&lt;<span class="ident">T</span>&gt; <span class="kw">where</span> <span class="ident">T</span>: <span class="ident">PartialEq</span> {}
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">TotalOrd</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">PartialOrd</span>,
+<span class="kw">impl</span>&lt;T&gt; Ord <span class="kw">for </span>TotalOrd&lt;T&gt;
+<span class="kw">where
+    </span>T: PartialOrd,
 {
-    <span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">TotalOrd</span>&lt;<span class="ident">T</span>&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">std::cmp::Ordering</span>&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="number">0</span>)
+    <span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>TotalOrd&lt;T&gt;) -&gt; std::cmp::Ordering {
+        <span class="self">self</span>.partial_cmp(other).unwrap()
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">TotalOrd</span>&lt;<span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">PartialOrd</span>,
-{
-    <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">TotalOrd</span>&lt;<span class="ident">T</span>&gt;) -&gt; <span class="ident">std::cmp::Ordering</span> {
-        <span class="self">self</span>.<span class="ident">partial_cmp</span>(<span class="ident">other</span>).<span class="ident">unwrap</span>()
-    }
+<span class="kw">pub trait </span>AsTotalOrd {
+    <span class="kw">fn </span>as_total_ord(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TotalOrd&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>&gt;;
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AsTotalOrd</span> {
-    <span class="kw">fn</span> <span class="ident">as_total_ord</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TotalOrd</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>&gt;;
-}
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">PartialOrd</span>&gt; <span class="ident">AsTotalOrd</span> <span class="kw">for</span> <span class="ident">T</span> {
-    <span class="kw">fn</span> <span class="ident">as_total_ord</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">TotalOrd</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>&gt; {
-        <span class="ident">TotalOrd</span>(<span class="self">self</span>)
+<span class="kw">impl</span>&lt;T: PartialOrd&gt; AsTotalOrd <span class="kw">for </span>T {
+    <span class="kw">fn </span>as_total_ord(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TotalOrd&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>&gt; {
+        TotalOrd(<span class="self">self</span>)
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

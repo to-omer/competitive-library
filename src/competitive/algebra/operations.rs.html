@@ -748,739 +748,739 @@
 <span id="732">732</span>
 <span id="733">733</span>
 <span id="734">734</span>
-</pre><pre class="rust"><code><span class="doccomment">//! binary operaions</span>
+</pre><pre class="rust"><code><span class="doccomment">//! binary operaions
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">magma</span>::<span class="kw-2">*</span>, <span class="ident">Bounded</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
+</span><span class="kw">use super</span>::{magma::<span class="kw-2">*</span>, Bounded, One, Zero};
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MaxOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::max_operation_impl::MaxOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MaxOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">max_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="doccomment">/// binary operation to select larger element</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MaxOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;MaxOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::max_operation_impl::MaxOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;MaxOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
+<span class="kw">mod </span>max_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="doccomment">/// binary operation to select larger element
+    </span><span class="kw">pub struct </span>MaxOperation&lt;T: Clone + Ord + Bounded&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">MaxOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">max</span>(<span class="ident">y</span>).<span class="ident">clone</span>()
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Magma <span class="kw">for </span>MaxOperation&lt;T&gt; {
+        <span class="kw">type </span>T = T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.max(y).clone()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">MaxOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>()
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Unital <span class="kw">for </span>MaxOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            &lt;T <span class="kw">as </span>Bounded&gt;::minimum()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">MaxOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">MaxOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">MaxOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Associative <span class="kw">for </span>MaxOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Commutative <span class="kw">for </span>MaxOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Idempotent <span class="kw">for </span>MaxOperation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MinOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::min_operation_impl::MinOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MinOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">min_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="doccomment">/// binary operation to select smaller element</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;MinOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::min_operation_impl::MinOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;MinOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
+<span class="kw">mod </span>min_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="doccomment">/// binary operation to select smaller element
+    </span><span class="kw">pub struct </span>MinOperation&lt;T: Clone + Ord + Bounded&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">min</span>(<span class="ident">y</span>).<span class="ident">clone</span>()
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Magma <span class="kw">for </span>MinOperation&lt;T&gt; {
+        <span class="kw">type </span>T = T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.min(y).clone()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::maximum</span>()
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Unital <span class="kw">for </span>MinOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            &lt;T <span class="kw">as </span>Bounded&gt;::maximum()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">MinOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Associative <span class="kw">for </span>MinOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Commutative <span class="kw">for </span>MinOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Idempotent <span class="kw">for </span>MinOperation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;FirstOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::first_operation_impl::FirstOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;FirstOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">first_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="doccomment">/// retain the first element</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FirstOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;FirstOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::first_operation_impl::FirstOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;FirstOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>first_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="doccomment">/// retain the first element
+    </span><span class="kw">pub struct </span>FirstOperation&lt;T: Clone&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">FirstOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">as_ref</span>().<span class="ident">or</span>(<span class="ident">y</span>.<span class="ident">as_ref</span>()).<span class="ident">cloned</span>()
+    <span class="kw">impl</span>&lt;T: Clone&gt; Magma <span class="kw">for </span>FirstOperation&lt;T&gt; {
+        <span class="kw">type </span>T = <span class="prelude-ty">Option</span>&lt;T&gt;;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.as_ref().or(y.as_ref()).cloned()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">FirstOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="prelude-val">None</span>
-        }
+    <span class="kw">impl</span>&lt;T: Clone&gt; Unital <span class="kw">for </span>FirstOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            <span class="prelude-val">None
+        </span>}
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">FirstOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">FirstOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone&gt; Associative <span class="kw">for </span>FirstOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone&gt; Idempotent <span class="kw">for </span>FirstOperation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;LastOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::last_operation_impl::LastOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;LastOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">last_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="doccomment">/// retain the last element</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;LastOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::last_operation_impl::LastOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;LastOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>last_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="doccomment">/// retain the last element
+    </span><span class="kw">pub struct </span>LastOperation&lt;T: Clone&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">y</span>.<span class="ident">as_ref</span>().<span class="ident">or</span>(<span class="ident">x</span>.<span class="ident">as_ref</span>()).<span class="ident">cloned</span>()
+    <span class="kw">impl</span>&lt;T: Clone&gt; Magma <span class="kw">for </span>LastOperation&lt;T&gt; {
+        <span class="kw">type </span>T = <span class="prelude-ty">Option</span>&lt;T&gt;;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            y.as_ref().or(x.as_ref()).cloned()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="prelude-val">None</span>
-        }
+    <span class="kw">impl</span>&lt;T: Clone&gt; Unital <span class="kw">for </span>LastOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            <span class="prelude-val">None
+        </span>}
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">LastOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone&gt; Associative <span class="kw">for </span>LastOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone&gt; Idempotent <span class="kw">for </span>LastOperation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;AdditiveOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::additive_operation_impl::AdditiveOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;AdditiveOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">additive_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::{
-        <span class="ident">marker::PhantomData</span>,
-        <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">Neg</span>, <span class="ident">Sub</span>},
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;AdditiveOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::additive_operation_impl::AdditiveOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;AdditiveOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
+<span class="kw">mod </span>additive_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::{
+        marker::PhantomData,
+        ops::{Add, Neg, Sub},
     };
-    <span class="doccomment">/// $+$</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+    <span class="doccomment">/// $+$
+    </span><span class="kw">pub struct </span>AdditiveOperation&lt;T: Clone + Zero + Add&lt;Output = T&gt;&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">clone</span>() + <span class="ident">y</span>.<span class="ident">clone</span>()
+    <span class="kw">impl</span>&lt;T: Clone + Zero + Add&lt;Output = T&gt;&gt; Magma <span class="kw">for </span>AdditiveOperation&lt;T&gt; {
+        <span class="kw">type </span>T = T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.clone() + y.clone()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">Zero::zero</span>()
+    <span class="kw">impl</span>&lt;T: Clone + Zero + Add&lt;Output = T&gt;&gt; Unital <span class="kw">for </span>AdditiveOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            Zero::zero()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Neg</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Invertible</span>
-        <span class="kw">for</span> <span class="ident">AdditiveOperation</span>&lt;<span class="ident">T</span>&gt;
+    <span class="kw">impl</span>&lt;T: Clone + Zero + Add&lt;Output = T&gt;&gt; Associative <span class="kw">for </span>AdditiveOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Zero + Add&lt;Output = T&gt;&gt; Commutative <span class="kw">for </span>AdditiveOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Zero + Add&lt;Output = T&gt; + Sub&lt;Output = T&gt; + Neg&lt;Output = T&gt;&gt; Invertible
+        <span class="kw">for </span>AdditiveOperation&lt;T&gt;
     {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            -<span class="ident">x</span>.<span class="ident">clone</span>()
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            -x.clone()
         }
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">rinv_operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">clone</span>() - <span class="ident">y</span>.<span class="ident">clone</span>()
-        }
-    }
-}
-
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MultiplicativeOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::multiplicative_operation_impl::MultiplicativeOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;MultiplicativeOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">multiplicative_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::{
-        <span class="ident">marker::PhantomData</span>,
-        <span class="ident">ops</span>::{<span class="ident">Div</span>, <span class="ident">Mul</span>},
-    };
-    <span class="doccomment">/// $\times$</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">MultiplicativeOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">One</span> + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
-    }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">One</span> + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">MultiplicativeOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">clone</span>() * <span class="ident">y</span>.<span class="ident">clone</span>()
-        }
-    }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">One</span> + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">MultiplicativeOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">One::one</span>()
-        }
-    }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">One</span> + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">MultiplicativeOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">One</span> + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">MultiplicativeOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">One</span> + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Div</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Invertible</span> <span class="kw">for</span> <span class="ident">MultiplicativeOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident"><span class="self">Self</span>::unit</span>().<span class="ident">div</span>(<span class="ident">x</span>.<span class="ident">clone</span>())
-        }
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">rinv_operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            (<span class="ident">x</span>.<span class="ident">clone</span>()).<span class="ident">div</span>(<span class="ident">y</span>.<span class="ident">clone</span>())
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>rinv_operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.clone() - y.clone()
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;LinearOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::linear_operation_impl::LinearOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;LinearOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">linear_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::{
-        <span class="ident">marker::PhantomData</span>,
-        <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">Div</span>, <span class="ident">Mul</span>, <span class="ident">Neg</span>, <span class="ident">Sub</span>},
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;MultiplicativeOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::multiplicative_operation_impl::MultiplicativeOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;MultiplicativeOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
+<span class="kw">mod </span>multiplicative_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::{
+        marker::PhantomData,
+        ops::{Div, Mul},
     };
-    <span class="doccomment">/// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">LinearOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">One</span> + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+    <span class="doccomment">/// $\times$
+    </span><span class="kw">pub struct </span>MultiplicativeOperation&lt;T: Clone + One + Mul&lt;Output = T&gt;&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">One</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">LinearOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = (<span class="ident">T</span>, <span class="ident">T</span>);
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
+    <span class="kw">impl</span>&lt;T: Clone + One + Mul&lt;Output = T&gt;&gt; Magma <span class="kw">for </span>MultiplicativeOperation&lt;T&gt; {
+        <span class="kw">type </span>T = T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.clone() * y.clone()
+        }
+    }
+    <span class="kw">impl</span>&lt;T: Clone + One + Mul&lt;Output = T&gt;&gt; Unital <span class="kw">for </span>MultiplicativeOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            One::one()
+        }
+    }
+    <span class="kw">impl</span>&lt;T: Clone + One + Mul&lt;Output = T&gt;&gt; Associative <span class="kw">for </span>MultiplicativeOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + One + Mul&lt;Output = T&gt;&gt; Commutative <span class="kw">for </span>MultiplicativeOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + One + Mul&lt;Output = T&gt; + Div&lt;Output = T&gt;&gt; Invertible <span class="kw">for </span>MultiplicativeOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="self">Self</span>::unit().div(x.clone())
+        }
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>rinv_operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            (x.clone()).div(y.clone())
+        }
+    }
+}
+
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;LinearOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::linear_operation_impl::LinearOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;LinearOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))]</span>
+<span class="kw">mod </span>linear_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::{
+        marker::PhantomData,
+        ops::{Add, Div, Mul, Neg, Sub},
+    };
+    <span class="doccomment">/// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
+    </span><span class="kw">pub struct </span>LinearOperation&lt;T: Clone + Zero + Add&lt;Output = T&gt; + One + Mul&lt;Output = T&gt;&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+    }
+    <span class="kw">impl</span>&lt;T: Clone + Zero + One + Add&lt;Output = T&gt; + Mul&lt;Output = T&gt;&gt; Magma <span class="kw">for </span>LinearOperation&lt;T&gt; {
+        <span class="kw">type </span>T = (T, T);
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
             (
-                <span class="ident">y</span>.<span class="number">0</span>.<span class="ident">clone</span>() * <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>(),
-                <span class="ident">y</span>.<span class="number">0</span>.<span class="ident">clone</span>() * <span class="ident">x</span>.<span class="number">1</span>.<span class="ident">clone</span>() + <span class="ident">y</span>.<span class="number">1</span>.<span class="ident">clone</span>(),
+                y.<span class="number">0</span>.clone() * x.<span class="number">0</span>.clone(),
+                y.<span class="number">0</span>.clone() * x.<span class="number">1</span>.clone() + y.<span class="number">1</span>.clone(),
             )
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">One</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">LinearOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            (<span class="ident">One::one</span>(), <span class="ident">Zero::zero</span>())
+    <span class="kw">impl</span>&lt;T: Clone + Zero + One + Add&lt;Output = T&gt; + Mul&lt;Output = T&gt;&gt; Unital <span class="kw">for </span>LinearOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            (One::one(), Zero::zero())
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Zero</span> + <span class="ident">One</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">LinearOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Zero + One + Add&lt;Output = T&gt; + Mul&lt;Output = T&gt;&gt; Associative <span class="kw">for </span>LinearOperation&lt;T&gt; {}
     <span class="kw">impl</span>&lt;
-            <span class="ident">T</span>: <span class="ident">Clone</span>
-                + <span class="ident">Zero</span>
-                + <span class="ident">One</span>
-                + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;
-                + <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;
-                + <span class="ident">Neg</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;
-                + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;
-                + <span class="ident">Div</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;,
-        &gt; <span class="ident">Invertible</span> <span class="kw">for</span> <span class="ident">LinearOperation</span>&lt;<span class="ident">T</span>&gt;
+            T: Clone
+                + Zero
+                + One
+                + Add&lt;Output = T&gt;
+                + Sub&lt;Output = T&gt;
+                + Neg&lt;Output = T&gt;
+                + Mul&lt;Output = T&gt;
+                + Div&lt;Output = T&gt;,
+        &gt; Invertible <span class="kw">for </span>LinearOperation&lt;T&gt;
     {
-        <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="kw">let</span> <span class="ident">y</span> = &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">One</span>&gt;<span class="ident">::one</span>().<span class="ident">div</span>(<span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>());
-            (<span class="ident">y</span>.<span class="ident">clone</span>(), -<span class="ident">y</span>.<span class="ident">mul</span>(<span class="ident">x</span>.<span class="number">1</span>.<span class="ident">clone</span>()))
+        <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="kw">let </span>y = &lt;T <span class="kw">as </span>One&gt;::one().div(x.<span class="number">0</span>.clone());
+            (y.clone(), -y.mul(x.<span class="number">1</span>.clone()))
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;BitAndOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::bitand_operation_impl</span>::{<span class="ident">BitAndIdentity</span>, <span class="ident">BitAndOperation</span>};
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;BitAndOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">bitand_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">ops::BitAnd</span>};
-    <span class="doccomment">/// &amp;</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitAndOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitAndIdentity</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;BitAndOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::bitand_operation_impl::{BitAndIdentity, BitAndOperation};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;BitAndOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>bitand_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::{marker::PhantomData, ops::BitAnd};
+    <span class="doccomment">/// &amp;
+    </span><span class="kw">pub struct </span>BitAndOperation&lt;T: Clone + BitAndIdentity&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BitAndIdentity</span>: <span class="ident">Sized</span> + <span class="ident">BitAnd</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">all_one</span>() -&gt; <span class="self">Self</span>;
+    <span class="kw">pub trait </span>BitAndIdentity: Sized + BitAnd&lt;Output = <span class="self">Self</span>&gt; {
+        <span class="kw">fn </span>all_one() -&gt; <span class="self">Self</span>;
     }
-    <span class="attribute">#[<span class="ident">macro_export</span>]</span>
-    <span class="macro">macro_rules!</span> <span class="ident">impl_bitand_identity</span> {
-        ([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wh</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_one</span>:<span class="ident">expr</span>) =&gt; {
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wh</span>)<span class="kw-2">*</span>&gt; <span class="ident">BitAndIdentity</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">all_one</span>() -&gt; <span class="self">Self</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_one</span>
-                }
+    <span class="attribute">#[macro_export]</span>
+    <span class="macro">macro_rules!</span> impl_bitand_identity {
+        ([$(<span class="macro-nonterminal">$wh</span>:tt)<span class="kw-2">*</span>], <span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$all_one</span>:expr) =&gt; {
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$wh</span>)<span class="kw-2">*</span>&gt; BitAndIdentity <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>all_one() -&gt; <span class="self">Self </span>{
+                    <span class="macro-nonterminal">$all_one
+                </span>}
             }
         };
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_one</span>:<span class="ident">expr</span>) =&gt; {
-            <span class="kw">impl</span> <span class="ident">BitAndIdentity</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">all_one</span>() -&gt; <span class="self">Self</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_one</span>
-                }
+        (<span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$all_one</span>:expr) =&gt; {
+            <span class="kw">impl </span>BitAndIdentity <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>all_one() -&gt; <span class="self">Self </span>{
+                    <span class="macro-nonterminal">$all_one
+                </span>}
             }
         };
     }
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">bool</span>, <span class="bool-val">true</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">usize</span>, <span class="ident">std::usize::MAX</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">u8</span>, <span class="ident">std::u8::MAX</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">u16</span>, <span class="ident">std::u16::MAX</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">u32</span>, <span class="ident">std::u32::MAX</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">u64</span>, <span class="ident">std::u64::MAX</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">isize</span>, <span class="ident">std::isize::MIN</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">i8</span>, <span class="ident">std::i8::MIN</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">i16</span>, <span class="ident">std::i16::MIN</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">i32</span>, <span class="ident">std::i32::MIN</span>);
-    <span class="macro">impl_bitand_identity!</span>(<span class="ident">i64</span>, <span class="ident">std::i64::MIN</span>);
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitAndIdentity</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">BitAndOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">clone</span>() &amp; <span class="ident">y</span>.<span class="ident">clone</span>()
+    <span class="macro">impl_bitand_identity!</span>(bool, <span class="bool-val">true</span>);
+    <span class="macro">impl_bitand_identity!</span>(usize, std::usize::MAX);
+    <span class="macro">impl_bitand_identity!</span>(u8, std::u8::MAX);
+    <span class="macro">impl_bitand_identity!</span>(u16, std::u16::MAX);
+    <span class="macro">impl_bitand_identity!</span>(u32, std::u32::MAX);
+    <span class="macro">impl_bitand_identity!</span>(u64, std::u64::MAX);
+    <span class="macro">impl_bitand_identity!</span>(isize, std::isize::MIN);
+    <span class="macro">impl_bitand_identity!</span>(i8, std::i8::MIN);
+    <span class="macro">impl_bitand_identity!</span>(i16, std::i16::MIN);
+    <span class="macro">impl_bitand_identity!</span>(i32, std::i32::MIN);
+    <span class="macro">impl_bitand_identity!</span>(i64, std::i64::MIN);
+    <span class="kw">impl</span>&lt;T: Clone + BitAndIdentity&gt; Magma <span class="kw">for </span>BitAndOperation&lt;T&gt; {
+        <span class="kw">type </span>T = T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.clone() &amp; y.clone()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitAndIdentity</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">BitAndOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">BitAndIdentity::all_one</span>()
+    <span class="kw">impl</span>&lt;T: Clone + BitAndIdentity&gt; Unital <span class="kw">for </span>BitAndOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            BitAndIdentity::all_one()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitAndIdentity</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">BitAndOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitAndIdentity</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">BitAndOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitAndIdentity</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">BitAndOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitAndIdentity&gt; Associative <span class="kw">for </span>BitAndOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitAndIdentity&gt; Commutative <span class="kw">for </span>BitAndOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitAndIdentity&gt; Idempotent <span class="kw">for </span>BitAndOperation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;BitOrOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::bitor_operation_impl</span>::{<span class="ident">BitOrIdentity</span>, <span class="ident">BitOrOperation</span>};
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;BitOrOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">bitor_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">ops::BitOr</span>};
-    <span class="doccomment">/// |</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitOrOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitOrIdentity</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;BitOrOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::bitor_operation_impl::{BitOrIdentity, BitOrOperation};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;BitOrOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>bitor_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::{marker::PhantomData, ops::BitOr};
+    <span class="doccomment">/// |
+    </span><span class="kw">pub struct </span>BitOrOperation&lt;T: Clone + BitOrIdentity&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BitOrIdentity</span>: <span class="ident">Sized</span> + <span class="ident">BitOr</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">all_zero</span>() -&gt; <span class="self">Self</span>;
+    <span class="kw">pub trait </span>BitOrIdentity: Sized + BitOr&lt;Output = <span class="self">Self</span>&gt; {
+        <span class="kw">fn </span>all_zero() -&gt; <span class="self">Self</span>;
     }
-    <span class="attribute">#[<span class="ident">macro_export</span>]</span>
-    <span class="macro">macro_rules!</span> <span class="ident">impl_bitor_identity</span> {
-        ([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wh</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_zero</span>:<span class="ident">expr</span>) =&gt; {
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wh</span>)<span class="kw-2">*</span>&gt; <span class="ident">BitOrIdentity</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">all_zero</span>() -&gt; <span class="self">Self</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_zero</span>
-                }
+    <span class="attribute">#[macro_export]</span>
+    <span class="macro">macro_rules!</span> impl_bitor_identity {
+        ([$(<span class="macro-nonterminal">$wh</span>:tt)<span class="kw-2">*</span>], <span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$all_zero</span>:expr) =&gt; {
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$wh</span>)<span class="kw-2">*</span>&gt; BitOrIdentity <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>all_zero() -&gt; <span class="self">Self </span>{
+                    <span class="macro-nonterminal">$all_zero
+                </span>}
             }
         };
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_zero</span>:<span class="ident">expr</span>) =&gt; {
-            <span class="kw">impl</span> <span class="ident">BitOrIdentity</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">all_zero</span>() -&gt; <span class="self">Self</span> {
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">all_zero</span>
-                }
+        (<span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$all_zero</span>:expr) =&gt; {
+            <span class="kw">impl </span>BitOrIdentity <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>all_zero() -&gt; <span class="self">Self </span>{
+                    <span class="macro-nonterminal">$all_zero
+                </span>}
             }
         };
     }
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">bool</span>, <span class="bool-val">false</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">usize</span>, <span class="number">0usize</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">u8</span>, <span class="number">0u8</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">u16</span>, <span class="number">0u16</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">u32</span>, <span class="number">0u32</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">u64</span>, <span class="number">0u64</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">isize</span>, <span class="number">0isize</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">i8</span>, <span class="number">0i8</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">i16</span>, <span class="number">0i16</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">i32</span>, <span class="number">0i32</span>);
-    <span class="macro">impl_bitor_identity!</span>(<span class="ident">i64</span>, <span class="number">0i64</span>);
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitOrIdentity</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">BitOrOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">clone</span>() | <span class="ident">y</span>.<span class="ident">clone</span>()
+    <span class="macro">impl_bitor_identity!</span>(bool, <span class="bool-val">false</span>);
+    <span class="macro">impl_bitor_identity!</span>(usize, <span class="number">0usize</span>);
+    <span class="macro">impl_bitor_identity!</span>(u8, <span class="number">0u8</span>);
+    <span class="macro">impl_bitor_identity!</span>(u16, <span class="number">0u16</span>);
+    <span class="macro">impl_bitor_identity!</span>(u32, <span class="number">0u32</span>);
+    <span class="macro">impl_bitor_identity!</span>(u64, <span class="number">0u64</span>);
+    <span class="macro">impl_bitor_identity!</span>(isize, <span class="number">0isize</span>);
+    <span class="macro">impl_bitor_identity!</span>(i8, <span class="number">0i8</span>);
+    <span class="macro">impl_bitor_identity!</span>(i16, <span class="number">0i16</span>);
+    <span class="macro">impl_bitor_identity!</span>(i32, <span class="number">0i32</span>);
+    <span class="macro">impl_bitor_identity!</span>(i64, <span class="number">0i64</span>);
+    <span class="kw">impl</span>&lt;T: Clone + BitOrIdentity&gt; Magma <span class="kw">for </span>BitOrOperation&lt;T&gt; {
+        <span class="kw">type </span>T = T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.clone() | y.clone()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitOrIdentity</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">BitOrOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">BitOrIdentity::all_zero</span>()
+    <span class="kw">impl</span>&lt;T: Clone + BitOrIdentity&gt; Unital <span class="kw">for </span>BitOrOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            BitOrIdentity::all_zero()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitOrIdentity</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">BitOrOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitOrIdentity</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">BitOrOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitOrIdentity</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">BitOrOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitOrIdentity&gt; Associative <span class="kw">for </span>BitOrOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitOrIdentity&gt; Commutative <span class="kw">for </span>BitOrOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitOrIdentity&gt; Idempotent <span class="kw">for </span>BitOrOperation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;BitXorOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::bitxor_operation_impl</span>::{<span class="ident">BitXorIdentity</span>, <span class="ident">BitXorOperation</span>};
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;BitXorOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">bitxor_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">ops::BitXor</span>};
-    <span class="doccomment">/// ^</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitXorOperation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitXorIdentity</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;BitXorOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::bitxor_operation_impl::{BitXorIdentity, BitXorOperation};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;BitXorOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>bitxor_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::{marker::PhantomData, ops::BitXor};
+    <span class="doccomment">/// ^
+    </span><span class="kw">pub struct </span>BitXorOperation&lt;T: Clone + BitXorIdentity&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">BitXorIdentity</span>: <span class="ident">Sized</span> + <span class="ident">BitXor</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">xor_zero</span>() -&gt; <span class="self">Self</span>;
+    <span class="kw">pub trait </span>BitXorIdentity: Sized + BitXor&lt;Output = <span class="self">Self</span>&gt; {
+        <span class="kw">fn </span>xor_zero() -&gt; <span class="self">Self</span>;
     }
-    <span class="attribute">#[<span class="ident">macro_export</span>]</span>
-    <span class="macro">macro_rules!</span> <span class="ident">impl_bitxor_identity</span> {
-        ([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wh</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>], <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">xor_zero</span>:<span class="ident">expr</span>) =&gt; {
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">wh</span>)<span class="kw-2">*</span>&gt; <span class="ident">BitXorIdentity</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">xor_zero</span>() -&gt; <span class="self">Self</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">xor_zero</span> }
+    <span class="attribute">#[macro_export]</span>
+    <span class="macro">macro_rules!</span> impl_bitxor_identity {
+        ([$(<span class="macro-nonterminal">$wh</span>:tt)<span class="kw-2">*</span>], <span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$xor_zero</span>:expr) =&gt; {
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$wh</span>)<span class="kw-2">*</span>&gt; BitXorIdentity <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>xor_zero() -&gt; <span class="self">Self </span>{ <span class="macro-nonterminal">$xor_zero </span>}
             }
         };
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">xor_zero</span>:<span class="ident">expr</span>) =&gt;{
-            <span class="kw">impl</span> <span class="ident">BitXorIdentity</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">xor_zero</span>() -&gt; <span class="self">Self</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">xor_zero</span> }
+        (<span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$xor_zero</span>:expr) =&gt;{
+            <span class="kw">impl </span>BitXorIdentity <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>xor_zero() -&gt; <span class="self">Self </span>{ <span class="macro-nonterminal">$xor_zero </span>}
             }
         };
     }
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">bool</span>, <span class="bool-val">false</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">usize</span>, <span class="number">0usize</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">u8</span>, <span class="number">0u8</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">u16</span>, <span class="number">0u16</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">u32</span>, <span class="number">0u32</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">u64</span>, <span class="number">0u64</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">isize</span>, <span class="number">0isize</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">i8</span>, <span class="number">0i8</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">i16</span>, <span class="number">0i16</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">i32</span>, <span class="number">0i32</span>);
-    <span class="macro">impl_bitxor_identity!</span>(<span class="ident">i64</span>, <span class="number">0i64</span>);
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitXorIdentity</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">BitXorOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">clone</span>() ^ <span class="ident">y</span>.<span class="ident">clone</span>()
+    <span class="macro">impl_bitxor_identity!</span>(bool, <span class="bool-val">false</span>);
+    <span class="macro">impl_bitxor_identity!</span>(usize, <span class="number">0usize</span>);
+    <span class="macro">impl_bitxor_identity!</span>(u8, <span class="number">0u8</span>);
+    <span class="macro">impl_bitxor_identity!</span>(u16, <span class="number">0u16</span>);
+    <span class="macro">impl_bitxor_identity!</span>(u32, <span class="number">0u32</span>);
+    <span class="macro">impl_bitxor_identity!</span>(u64, <span class="number">0u64</span>);
+    <span class="macro">impl_bitxor_identity!</span>(isize, <span class="number">0isize</span>);
+    <span class="macro">impl_bitxor_identity!</span>(i8, <span class="number">0i8</span>);
+    <span class="macro">impl_bitxor_identity!</span>(i16, <span class="number">0i16</span>);
+    <span class="macro">impl_bitxor_identity!</span>(i32, <span class="number">0i32</span>);
+    <span class="macro">impl_bitxor_identity!</span>(i64, <span class="number">0i64</span>);
+    <span class="kw">impl</span>&lt;T: Clone + BitXorIdentity&gt; Magma <span class="kw">for </span>BitXorOperation&lt;T&gt; {
+        <span class="kw">type </span>T = T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.clone() ^ y.clone()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitXorIdentity</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">BitXorOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">BitXorIdentity::xor_zero</span>()
+    <span class="kw">impl</span>&lt;T: Clone + BitXorIdentity&gt; Unital <span class="kw">for </span>BitXorOperation&lt;T&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            BitXorIdentity::xor_zero()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitXorIdentity</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">BitXorOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitXorIdentity</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">BitXorOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">BitXorIdentity</span>&gt; <span class="ident">Invertible</span> <span class="kw">for</span> <span class="ident">BitXorOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">clone</span>()
+    <span class="kw">impl</span>&lt;T: Clone + BitXorIdentity&gt; Associative <span class="kw">for </span>BitXorOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitXorIdentity&gt; Commutative <span class="kw">for </span>BitXorOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + BitXorIdentity&gt; Invertible <span class="kw">for </span>BitXorOperation&lt;T&gt; {
+        <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.clone()
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;TupleOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">tuple_operation_impl</span> {
-    <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_variables</span>, <span class="ident">clippy::unused_unit</span>)]</span>
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="macro">macro_rules!</span> <span class="ident">impl_tuple_operation</span> {
-        (@<span class="kw">impl</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Magma</span>),<span class="kw-2">*</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {
-                <span class="kw">type</span> <span class="ident">T</span> = ($(&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span> <span class="kw">as</span> <span class="ident">Magma</span>&gt;<span class="ident">::T</span>,)<span class="kw-2">*</span>);
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-                    ($(&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span> <span class="kw">as</span> <span class="ident">Magma</span>&gt;<span class="ident">::operate</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>, <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>),)<span class="kw-2">*</span>)
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;TupleOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>tuple_operation_impl {
+    <span class="attribute">#![allow(unused_variables, clippy::unused_unit)]</span>
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="macro">macro_rules!</span> impl_tuple_operation {
+        (@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$i</span>:tt)<span class="kw-2">*</span>) =&gt; {
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: Magma),<span class="kw-2">*</span>&gt; Magma <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {
+                <span class="kw">type </span>T = ($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>Magma&gt;::T,)<span class="kw-2">*</span>);
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+                    ($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>Magma&gt;::operate(<span class="kw-2">&amp;</span>x.<span class="macro-nonterminal">$i</span>, <span class="kw-2">&amp;</span>y.<span class="macro-nonterminal">$i</span>),)<span class="kw-2">*</span>)
                 }
             }
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Unital</span>),<span class="kw-2">*</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-                    ($(&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span> <span class="kw">as</span> <span class="ident">Unital</span>&gt;<span class="ident">::unit</span>(),)<span class="kw-2">*</span>)
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: Unital),<span class="kw-2">*</span>&gt; Unital <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+                    ($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>Unital&gt;::unit(),)<span class="kw-2">*</span>)
                 }
             }
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Associative</span>),<span class="kw-2">*</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {}
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Commutative</span>),<span class="kw-2">*</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {}
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Idempotent</span>),<span class="kw-2">*</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {}
-            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">Invertible</span>),<span class="kw-2">*</span>&gt; <span class="ident">Invertible</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {
-                <span class="attribute">#[<span class="ident">inline</span>]</span>
-                <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-                    ($(&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span> <span class="kw">as</span> <span class="ident">Invertible</span>&gt;<span class="ident">::inverse</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>),)<span class="kw-2">*</span>)
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: Associative),<span class="kw-2">*</span>&gt; Associative <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {}
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: Commutative),<span class="kw-2">*</span>&gt; Commutative <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {}
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: Idempotent),<span class="kw-2">*</span>&gt; Idempotent <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {}
+            <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: Invertible),<span class="kw-2">*</span>&gt; Invertible <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {
+                <span class="attribute">#[inline]</span>
+                <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+                    ($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>Invertible&gt;::inverse(<span class="kw-2">&amp;</span>x.<span class="macro-nonterminal">$i</span>),)<span class="kw-2">*</span>)
                 }
             }
         };
-        (@<span class="ident">inner</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>][] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>][]) =&gt; {
-            <span class="macro">impl_tuple_operation!</span>(@<span class="kw">impl</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>)<span class="kw-2">*</span>);
+        (@inner [$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>][] [$(<span class="macro-nonterminal">$i</span>:tt)<span class="kw-2">*</span>][]) =&gt; {
+            <span class="macro">impl_tuple_operation!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$i</span>)<span class="kw-2">*</span>);
         };
-        (@<span class="ident">inner</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>][<span class="macro-nonterminal">$</span><span class="macro-nonterminal">U</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">Rest</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>][<span class="macro-nonterminal">$</span><span class="macro-nonterminal">j</span>:<span class="ident">tt</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>]) =&gt; {
-            <span class="macro">impl_tuple_operation!</span>(@<span class="kw">impl</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>)<span class="kw-2">*</span>);
-            <span class="macro">impl_tuple_operation!</span>(@<span class="ident">inner</span> [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)* <span class="macro-nonterminal">$</span><span class="macro-nonterminal">U</span>][$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">Rest</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>)* <span class="macro-nonterminal">$</span><span class="macro-nonterminal">j</span>][$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>)<span class="kw-2">*</span>]);
+        (@inner [$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>][<span class="macro-nonterminal">$U</span>:ident $(<span class="macro-nonterminal">$Rest</span>:ident)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$i</span>:tt)<span class="kw-2">*</span>][<span class="macro-nonterminal">$j</span>:tt $(<span class="macro-nonterminal">$rest</span>:tt)<span class="kw-2">*</span>]) =&gt; {
+            <span class="macro">impl_tuple_operation!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$i</span>)<span class="kw-2">*</span>);
+            <span class="macro">impl_tuple_operation!</span>(@inner [$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>][$(<span class="macro-nonterminal">$Rest</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$i</span>)* <span class="macro-nonterminal">$j</span>][$(<span class="macro-nonterminal">$rest</span>)<span class="kw-2">*</span>]);
         };
-        ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-            <span class="macro">impl_tuple_operation!</span>(@<span class="ident">inner</span> [][$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>] [][$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>)<span class="kw-2">*</span>]);
+        ($(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$i</span>:tt)<span class="kw-2">*</span>) =&gt; {
+            <span class="macro">impl_tuple_operation!</span>(@inner [][$(<span class="macro-nonterminal">$T</span>)<span class="kw-2">*</span>] [][$(<span class="macro-nonterminal">$i</span>)<span class="kw-2">*</span>]);
         };
     }
-    <span class="macro">impl_tuple_operation!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span> <span class="ident">G</span> <span class="ident">H</span> <span class="ident">I</span> <span class="ident">J</span>, <span class="number">0</span> <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> <span class="number">8</span> <span class="number">9</span>);
+    <span class="macro">impl_tuple_operation!</span>(A B C D E F G H I J, <span class="number">0 1 2 3 4 5 6 7 8 9</span>);
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;CountingOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::counting_operation_impl::CountingOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;CountingOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">counting_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CountingOperation</span>&lt;<span class="ident">M</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">M</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;CountingOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::counting_operation_impl::CountingOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;CountingOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>counting_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="kw">pub struct </span>CountingOperation&lt;M&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Magma</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">CountingOperation</span>&lt;<span class="ident">M</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">M::T</span>: <span class="ident">PartialEq</span>,
+    <span class="kw">impl</span>&lt;M: Magma&gt; Magma <span class="kw">for </span>CountingOperation&lt;M&gt;
+    <span class="kw">where
+        </span>M::T: PartialEq,
     {
-        <span class="kw">type</span> <span class="ident">T</span> = (<span class="ident">M::T</span>, <span class="ident">usize</span>);
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span> == <span class="ident">y</span>.<span class="number">0</span> {
-                (<span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="ident">x</span>.<span class="number">1</span> + <span class="ident">y</span>.<span class="number">1</span>)
-            } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">z</span> = <span class="ident">M::operate</span>(<span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">0</span>, <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">0</span>);
-                <span class="kw">if</span> <span class="ident">z</span> == <span class="ident">x</span>.<span class="number">0</span> {
-                    (<span class="ident">z</span>, <span class="ident">x</span>.<span class="number">1</span>)
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">z</span> == <span class="ident">y</span>.<span class="number">0</span> {
-                    (<span class="ident">z</span>, <span class="ident">y</span>.<span class="number">1</span>)
-                } <span class="kw">else</span> {
-                    (<span class="ident">z</span>, <span class="number">1</span>)
+        <span class="kw">type </span>T = (M::T, usize);
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="kw">if </span>x.<span class="number">0 </span>== y.<span class="number">0 </span>{
+                (x.<span class="number">0</span>.clone(), x.<span class="number">1 </span>+ y.<span class="number">1</span>)
+            } <span class="kw">else </span>{
+                <span class="kw">let </span>z = M::operate(<span class="kw-2">&amp;</span>x.<span class="number">0</span>, <span class="kw-2">&amp;</span>y.<span class="number">0</span>);
+                <span class="kw">if </span>z == x.<span class="number">0 </span>{
+                    (z, x.<span class="number">1</span>)
+                } <span class="kw">else if </span>z == y.<span class="number">0 </span>{
+                    (z, y.<span class="number">1</span>)
+                } <span class="kw">else </span>{
+                    (z, <span class="number">1</span>)
                 }
             }
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Unital</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">CountingOperation</span>&lt;<span class="ident">M</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">M::T</span>: <span class="ident">PartialEq</span>,
+    <span class="kw">impl</span>&lt;M: Unital&gt; Unital <span class="kw">for </span>CountingOperation&lt;M&gt;
+    <span class="kw">where
+        </span>M::T: PartialEq,
     {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            (<span class="ident">M::unit</span>(), <span class="number">0</span>)
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            (M::unit(), <span class="number">0</span>)
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Associative</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">CountingOperation</span>&lt;<span class="ident">M</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Commutative</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">CountingOperation</span>&lt;<span class="ident">M</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Idempotent</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">CountingOperation</span>&lt;<span class="ident">M</span>&gt; {}
+    <span class="kw">impl</span>&lt;M: Associative&gt; Associative <span class="kw">for </span>CountingOperation&lt;M&gt; {}
+    <span class="kw">impl</span>&lt;M: Commutative&gt; Commutative <span class="kw">for </span>CountingOperation&lt;M&gt; {}
+    <span class="kw">impl</span>&lt;M: Idempotent&gt; Idempotent <span class="kw">for </span>CountingOperation&lt;M&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;ReverseOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::reverse_operation_impl::ReverseOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;ReverseOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">reverse_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ReverseOperation</span>&lt;<span class="ident">M</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">M</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReverseOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::reverse_operation_impl::ReverseOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReverseOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>reverse_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="kw">pub struct </span>ReverseOperation&lt;M&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Magma</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">ReverseOperation</span>&lt;<span class="ident">M</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">M::T</span>;
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">M::operate</span>(<span class="ident">y</span>, <span class="ident">x</span>)
+    <span class="kw">impl</span>&lt;M: Magma&gt; Magma <span class="kw">for </span>ReverseOperation&lt;M&gt; {
+        <span class="kw">type </span>T = M::T;
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            M::operate(y, x)
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Unital</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">ReverseOperation</span>&lt;<span class="ident">M</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">M::unit</span>()
+    <span class="kw">impl</span>&lt;M: Unital&gt; Unital <span class="kw">for </span>ReverseOperation&lt;M&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            M::unit()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Associative</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">ReverseOperation</span>&lt;<span class="ident">M</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Commutative</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">ReverseOperation</span>&lt;<span class="ident">M</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Invertible</span>&gt; <span class="ident">Invertible</span> <span class="kw">for</span> <span class="ident">ReverseOperation</span>&lt;<span class="ident">M</span>&gt; {
-        <span class="attribute">#[<span class="ident">inline</span>]</span>
-        <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">M::inverse</span>(<span class="ident">x</span>)
+    <span class="kw">impl</span>&lt;M: Associative&gt; Associative <span class="kw">for </span>ReverseOperation&lt;M&gt; {}
+    <span class="kw">impl</span>&lt;M: Commutative&gt; Commutative <span class="kw">for </span>ReverseOperation&lt;M&gt; {}
+    <span class="kw">impl</span>&lt;M: Invertible&gt; Invertible <span class="kw">for </span>ReverseOperation&lt;M&gt; {
+        <span class="attribute">#[inline]</span>
+        <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            M::inverse(x)
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">M</span>: <span class="ident">Idempotent</span>&gt; <span class="ident">Idempotent</span> <span class="kw">for</span> <span class="ident">ReverseOperation</span>&lt;<span class="ident">M</span>&gt; {}
+    <span class="kw">impl</span>&lt;M: Idempotent&gt; Idempotent <span class="kw">for </span>ReverseOperation&lt;M&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Top2Operation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::top2_operation_impl::Top2Operation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Top2Operation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">top2_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Top2Operation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Top2Operation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::top2_operation_impl::Top2Operation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Top2Operation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
+<span class="kw">mod </span>top2_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="kw">pub struct </span>Top2Operation&lt;T: Clone + Ord + Bounded&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">Top2Operation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = (<span class="ident">T</span>, <span class="ident">T</span>);
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span> &lt; <span class="ident">y</span>.<span class="number">0</span> {
-                (<span class="ident">y</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span> &lt; <span class="ident">y</span>.<span class="number">1</span> { <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">1</span> } <span class="kw">else</span> { <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">0</span> }.<span class="ident">clone</span>())
-            } <span class="kw">else</span> {
-                (<span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="kw">if</span> <span class="ident">x</span>.<span class="number">1</span> &lt; <span class="ident">y</span>.<span class="number">0</span> { <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">0</span> } <span class="kw">else</span> { <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">1</span> }.<span class="ident">clone</span>())
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Magma <span class="kw">for </span>Top2Operation&lt;T&gt; {
+        <span class="kw">type </span>T = (T, T);
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="kw">if </span>x.<span class="number">0 </span>&lt; y.<span class="number">0 </span>{
+                (y.<span class="number">0</span>.clone(), <span class="kw">if </span>x.<span class="number">0 </span>&lt; y.<span class="number">1 </span>{ <span class="kw-2">&amp;</span>y.<span class="number">1 </span>} <span class="kw">else </span>{ <span class="kw-2">&amp;</span>x.<span class="number">0 </span>}.clone())
+            } <span class="kw">else </span>{
+                (x.<span class="number">0</span>.clone(), <span class="kw">if </span>x.<span class="number">1 </span>&lt; y.<span class="number">0 </span>{ <span class="kw-2">&amp;</span>y.<span class="number">0 </span>} <span class="kw">else </span>{ <span class="kw-2">&amp;</span>x.<span class="number">1 </span>}.clone())
             }
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">Top2Operation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            (&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>(), &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::minimum</span>())
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Unital <span class="kw">for </span>Top2Operation&lt;T&gt; {
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            (&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), &lt;T <span class="kw">as </span>Bounded&gt;::minimum())
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">Top2Operation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">Top2Operation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Associative <span class="kw">for </span>Top2Operation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Commutative <span class="kw">for </span>Top2Operation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Bottom2Operation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::bottom2_operation_impl::Bottom2Operation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Bottom2Operation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">bottom2_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Bottom2Operation</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Bottom2Operation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::bottom2_operation_impl::Bottom2Operation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Bottom2Operation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;bounded&quot;</span>))]</span>
+<span class="kw">mod </span>bottom2_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="kw">pub struct </span>Bottom2Operation&lt;T: Clone + Ord + Bounded&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">Bottom2Operation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = (<span class="ident">T</span>, <span class="ident">T</span>);
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span> &gt; <span class="ident">y</span>.<span class="number">0</span> {
-                (<span class="ident">y</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span> &gt; <span class="ident">y</span>.<span class="number">1</span> { <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">1</span> } <span class="kw">else</span> { <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">0</span> }.<span class="ident">clone</span>())
-            } <span class="kw">else</span> {
-                (<span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="kw">if</span> <span class="ident">x</span>.<span class="number">1</span> &gt; <span class="ident">y</span>.<span class="number">0</span> { <span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">0</span> } <span class="kw">else</span> { <span class="kw-2">&amp;</span><span class="ident">x</span>.<span class="number">1</span> }.<span class="ident">clone</span>())
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Magma <span class="kw">for </span>Bottom2Operation&lt;T&gt; {
+        <span class="kw">type </span>T = (T, T);
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="kw">if </span>x.<span class="number">0 </span>&gt; y.<span class="number">0 </span>{
+                (y.<span class="number">0</span>.clone(), <span class="kw">if </span>x.<span class="number">0 </span>&gt; y.<span class="number">1 </span>{ <span class="kw-2">&amp;</span>y.<span class="number">1 </span>} <span class="kw">else </span>{ <span class="kw-2">&amp;</span>x.<span class="number">0 </span>}.clone())
+            } <span class="kw">else </span>{
+                (x.<span class="number">0</span>.clone(), <span class="kw">if </span>x.<span class="number">1 </span>&gt; y.<span class="number">0 </span>{ <span class="kw-2">&amp;</span>y.<span class="number">0 </span>} <span class="kw">else </span>{ <span class="kw-2">&amp;</span>x.<span class="number">1 </span>}.clone())
             }
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">Bottom2Operation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            (&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::maximum</span>(), &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">Bounded</span>&gt;<span class="ident">::maximum</span>())
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Unital <span class="kw">for </span>Bottom2Operation&lt;T&gt; {
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            (&lt;T <span class="kw">as </span>Bounded&gt;::maximum(), &lt;T <span class="kw">as </span>Bounded&gt;::maximum())
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">Bottom2Operation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span> + <span class="ident">Bounded</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">Bottom2Operation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Associative <span class="kw">for </span>Bottom2Operation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T: Clone + Ord + Bounded&gt; Commutative <span class="kw">for </span>Bottom2Operation&lt;T&gt; {}
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PermutationOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::permutation_operation_impl::PermutationOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;PermutationOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">permutation_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">PermutationOperation</span> {}
-    <span class="kw">impl</span> <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">PermutationOperation</span> {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;;
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">y</span>.<span class="ident">iter</span>()
-                .<span class="ident">map</span>(|<span class="kw-2">&amp;</span><span class="ident">y</span>| <span class="kw">if</span> <span class="ident">y</span> &lt; <span class="ident">x</span>.<span class="ident">len</span>() { <span class="ident">x</span>[<span class="ident">y</span>] } <span class="kw">else</span> { <span class="ident">y</span> })
-                .<span class="ident">collect</span>()
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;PermutationOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::permutation_operation_impl::PermutationOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;PermutationOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>permutation_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">pub enum </span>PermutationOperation {}
+    <span class="kw">impl </span>Magma <span class="kw">for </span>PermutationOperation {
+        <span class="kw">type </span>T = Vec&lt;usize&gt;;
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            y.iter()
+                .map(|<span class="kw-2">&amp;</span>y| <span class="kw">if </span>y &lt; x.len() { x[y] } <span class="kw">else </span>{ y })
+                .collect()
         }
     }
-    <span class="kw">impl</span> <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">PermutationOperation</span> {}
-    <span class="kw">impl</span> <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">PermutationOperation</span> {
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">Vec::new</span>()
+    <span class="kw">impl </span>Associative <span class="kw">for </span>PermutationOperation {}
+    <span class="kw">impl </span>Unital <span class="kw">for </span>PermutationOperation {
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            Vec::new()
         }
     }
-    <span class="kw">impl</span> <span class="ident">Invertible</span> <span class="kw">for</span> <span class="ident">PermutationOperation</span> {
-        <span class="kw">fn</span> <span class="ident">inverse</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">x</span>.<span class="ident">len</span>()];
-            <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">x</span>) <span class="kw">in</span> <span class="ident">x</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                <span class="ident">y</span>[<span class="kw-2">*</span><span class="ident">x</span>] = <span class="ident">i</span>;
+    <span class="kw">impl </span>Invertible <span class="kw">for </span>PermutationOperation {
+        <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="kw">let </span><span class="kw-2">mut </span>y = <span class="macro">vec!</span>[<span class="number">0</span>; x.len()];
+            <span class="kw">for </span>(i, x) <span class="kw">in </span>x.iter().enumerate() {
+                y[<span class="kw-2">*</span>x] = i;
             }
-            <span class="ident">y</span>
+            y
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;FindMajorityOperation&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::find_majority_operation_impl::FindMajorityOperation</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;FindMajorityOperation&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">find_majority_operation_impl</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cmp::Ordering</span>, <span class="ident">marker::PhantomData</span>};
-    <span class="doccomment">/// Find majority(strict) of a sequence.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// fold $x \in S$ with `(Some(x), 1)`</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// `(Some(m), _)` represents `m` may be a majority of $S$.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// `(None, _)` represents that there is no majority value.</span>
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FindMajorityOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;FindMajorityOperation&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::find_majority_operation_impl::FindMajorityOperation;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;FindMajorityOperation&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]</span>
+<span class="kw">mod </span>find_majority_operation_impl {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::{cmp::Ordering, marker::PhantomData};
+    <span class="doccomment">/// Find majority(strict) of a sequence.
+    ///
+    /// fold $x \in S$ with `(Some(x), 1)`
+    ///
+    /// `(Some(m), _)` represents `m` may be a majority of $S$.
+    ///
+    /// `(None, _)` represents that there is no majority value.
+    </span><span class="kw">pub struct </span>FindMajorityOperation&lt;T&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Eq</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">FindMajorityOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">type</span> <span class="ident">T</span> = (<span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">usize</span>);
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="kw">if</span> <span class="ident">y</span>.<span class="number">0</span>.<span class="ident">is_none</span>() {
-                <span class="ident">x</span>.<span class="ident">clone</span>()
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">x</span>.<span class="number">0</span>.<span class="ident">is_none</span>() {
-                <span class="ident">y</span>.<span class="ident">clone</span>()
-            } <span class="kw">else</span> {
-                <span class="kw">match</span> (<span class="ident">x</span>.<span class="number">0</span>.<span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">0</span>), <span class="ident">x</span>.<span class="number">1</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">y</span>.<span class="number">1</span>)) {
-                    (<span class="bool-val">true</span>, <span class="kw">_</span>) =&gt; (<span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="ident">x</span>.<span class="number">1</span> + <span class="ident">y</span>.<span class="number">1</span>),
-                    (<span class="kw">_</span>, <span class="ident">Ordering::Less</span>) =&gt; (<span class="ident">y</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="ident">y</span>.<span class="number">1</span> - <span class="ident">x</span>.<span class="number">1</span>),
-                    (<span class="kw">_</span>, <span class="ident">Ordering::Equal</span>) =&gt; (<span class="prelude-val">None</span>, <span class="number">0</span>),
-                    (<span class="kw">_</span>, <span class="ident">Ordering::Greater</span>) =&gt; (<span class="ident">x</span>.<span class="number">0</span>.<span class="ident">clone</span>(), <span class="ident">x</span>.<span class="number">1</span> - <span class="ident">y</span>.<span class="number">1</span>),
+    <span class="kw">impl</span>&lt;T: Clone + Eq&gt; Magma <span class="kw">for </span>FindMajorityOperation&lt;T&gt; {
+        <span class="kw">type </span>T = (<span class="prelude-ty">Option</span>&lt;T&gt;, usize);
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="kw">if </span>y.<span class="number">0</span>.is_none() {
+                x.clone()
+            } <span class="kw">else if </span>x.<span class="number">0</span>.is_none() {
+                y.clone()
+            } <span class="kw">else </span>{
+                <span class="kw">match </span>(x.<span class="number">0</span>.eq(<span class="kw-2">&amp;</span>y.<span class="number">0</span>), x.<span class="number">1</span>.cmp(<span class="kw-2">&amp;</span>y.<span class="number">1</span>)) {
+                    (<span class="bool-val">true</span>, <span class="kw">_</span>) =&gt; (x.<span class="number">0</span>.clone(), x.<span class="number">1 </span>+ y.<span class="number">1</span>),
+                    (<span class="kw">_</span>, Ordering::Less) =&gt; (y.<span class="number">0</span>.clone(), y.<span class="number">1 </span>- x.<span class="number">1</span>),
+                    (<span class="kw">_</span>, Ordering::Equal) =&gt; (<span class="prelude-val">None</span>, <span class="number">0</span>),
+                    (<span class="kw">_</span>, Ordering::Greater) =&gt; (x.<span class="number">0</span>.clone(), x.<span class="number">1 </span>- y.<span class="number">1</span>),
                 }
             }
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Eq</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">FindMajorityOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
+    <span class="kw">impl</span>&lt;T: Clone + Eq&gt; Unital <span class="kw">for </span>FindMajorityOperation&lt;T&gt; {
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
             (<span class="prelude-val">None</span>, <span class="number">0</span>)
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">FindMajorityOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T&gt; Associative <span class="kw">for </span>FindMajorityOperation&lt;T&gt; {}
 }
 
-<span class="kw">mod</span> <span class="ident">concatenate_operation</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConcatenateOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="kw">mod </span>concatenate_operation {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>std::marker::PhantomData;
+    <span class="kw">pub struct </span>ConcatenateOperation&lt;T&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">ConcatenateOperation</span>&lt;<span class="ident">T</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Clone</span>,
+    <span class="kw">impl</span>&lt;T&gt; Magma <span class="kw">for </span>ConcatenateOperation&lt;T&gt;
+    <span class="kw">where
+        </span>T: Clone,
     {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;;
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">x</span>.<span class="ident">iter</span>().<span class="ident">chain</span>(<span class="ident">y</span>.<span class="ident">iter</span>()).<span class="ident">cloned</span>().<span class="ident">collect</span>()
+        <span class="kw">type </span>T = Vec&lt;T&gt;;
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            x.iter().chain(y.iter()).cloned().collect()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">ConcatenateOperation</span>&lt;<span class="ident">T</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Clone</span>,
+    <span class="kw">impl</span>&lt;T&gt; Unital <span class="kw">for </span>ConcatenateOperation&lt;T&gt;
+    <span class="kw">where
+        </span>T: Clone,
     {
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">Vec::new</span>()
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            Vec::new()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">ConcatenateOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T&gt; Associative <span class="kw">for </span>ConcatenateOperation&lt;T&gt; {}
 
-    <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SortedConcatenateOperation</span>&lt;<span class="ident">T</span>&gt; {
-        <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+    <span class="kw">pub struct </span>SortedConcatenateOperation&lt;T&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Magma</span> <span class="kw">for</span> <span class="ident">SortedConcatenateOperation</span>&lt;<span class="ident">T</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span>,
+    <span class="kw">impl</span>&lt;T&gt; Magma <span class="kw">for </span>SortedConcatenateOperation&lt;T&gt;
+    <span class="kw">where
+        </span>T: Clone + Ord,
     {
-        <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;;
-        <span class="kw">fn</span> <span class="ident">operate</span>(<span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">xit</span> = <span class="ident">x</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">peekable</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">yit</span> = <span class="ident">y</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">peekable</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">z</span> = <span class="ident">Vec::with_capacity</span>(<span class="ident">x</span>.<span class="ident">len</span>() + <span class="ident">y</span>.<span class="ident">len</span>());
-            <span class="kw">loop</span> {
-                <span class="kw">match</span> (<span class="ident">xit</span>.<span class="ident">peek</span>(), <span class="ident">yit</span>.<span class="ident">peek</span>()) {
+        <span class="kw">type </span>T = Vec&lt;T&gt;;
+        <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+            <span class="kw">let </span><span class="kw-2">mut </span>xit = x.iter().cloned().peekable();
+            <span class="kw">let </span><span class="kw-2">mut </span>yit = y.iter().cloned().peekable();
+            <span class="kw">let </span><span class="kw-2">mut </span>z = Vec::with_capacity(x.len() + y.len());
+            <span class="kw">loop </span>{
+                <span class="kw">match </span>(xit.peek(), yit.peek()) {
                     (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="kw">break</span>,
-                    (<span class="prelude-val">Some</span>(<span class="kw">_</span>), <span class="prelude-val">None</span>) =&gt; <span class="ident">z</span>.<span class="ident">push</span>(<span class="ident">xit</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>()),
-                    (<span class="prelude-val">Some</span>(<span class="ident">x</span>), <span class="prelude-val">Some</span>(<span class="ident">y</span>)) <span class="kw">if</span> <span class="ident">x</span> &lt;= <span class="ident">y</span> =&gt; <span class="ident">z</span>.<span class="ident">push</span>(<span class="ident">xit</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>()),
-                    <span class="kw">_</span> =&gt; <span class="ident">z</span>.<span class="ident">push</span>(<span class="ident">yit</span>.<span class="ident">next</span>().<span class="ident">unwrap</span>()),
+                    (<span class="prelude-val">Some</span>(<span class="kw">_</span>), <span class="prelude-val">None</span>) =&gt; z.push(xit.next().unwrap()),
+                    (<span class="prelude-val">Some</span>(x), <span class="prelude-val">Some</span>(y)) <span class="kw">if </span>x &lt;= y =&gt; z.push(xit.next().unwrap()),
+                    <span class="kw">_ </span>=&gt; z.push(yit.next().unwrap()),
                 }
             }
-            <span class="ident">z</span>
+            z
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Unital</span> <span class="kw">for</span> <span class="ident">SortedConcatenateOperation</span>&lt;<span class="ident">T</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">Ord</span>,
+    <span class="kw">impl</span>&lt;T&gt; Unital <span class="kw">for </span>SortedConcatenateOperation&lt;T&gt;
+    <span class="kw">where
+        </span>T: Clone + Ord,
     {
-        <span class="kw">fn</span> <span class="ident">unit</span>() -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-            <span class="ident">Vec::new</span>()
+        <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
+            Vec::new()
         }
     }
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Associative</span> <span class="kw">for</span> <span class="ident">SortedConcatenateOperation</span>&lt;<span class="ident">T</span>&gt; {}
-    <span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">Commutative</span> <span class="kw">for</span> <span class="ident">SortedConcatenateOperation</span>&lt;<span class="ident">T</span>&gt; {}
+    <span class="kw">impl</span>&lt;T&gt; Associative <span class="kw">for </span>SortedConcatenateOperation&lt;T&gt; {}
+    <span class="kw">impl</span>&lt;T&gt; Commutative <span class="kw">for </span>SortedConcatenateOperation&lt;T&gt; {}
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

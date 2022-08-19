@@ -76,67 +76,67 @@
 <span id="60">60</span>
 <span id="61">61</span>
 <span id="62">62</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{
-    <span class="ident">berlekamp_massey</span>, <span class="ident">montgomery::MInt998244353</span>, <span class="ident">Convolve998244353</span>, <span class="ident">ConvolveSteps</span>, <span class="ident">MInt</span>,
-    <span class="ident">MIntConvert</span>, <span class="ident">MIntConvolve</span>, <span class="ident">MemorizedFactorial</span>, <span class="ident">One</span>, <span class="ident">PartialIgnoredOrd</span>, <span class="ident">Zero</span>,
+</pre><pre class="rust"><code><span class="kw">use super</span>::{
+    berlekamp_massey, montgomery::MInt998244353, Convolve998244353, ConvolveSteps, MInt,
+    MIntConvert, MIntConvolve, MemorizedFactorial, One, PartialIgnoredOrd, Zero,
 };
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">marker::PhantomData</span>,
-    <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">AddAssign</span>, <span class="ident">Div</span>, <span class="ident">DivAssign</span>, <span class="ident">Mul</span>, <span class="ident">MulAssign</span>, <span class="ident">Neg</span>, <span class="ident">Sub</span>, <span class="ident">SubAssign</span>},
+<span class="kw">use </span>std::{
+    marker::PhantomData,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">FormalPowerSeries</span>&lt;<span class="ident">T</span>, <span class="ident">C</span>&gt; {
-    <span class="kw">pub</span> <span class="ident">data</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="ident">C</span>&gt;,
+<span class="attribute">#[derive(Debug, Default)]</span>
+<span class="kw">pub struct </span>FormalPowerSeries&lt;T, C&gt; {
+    <span class="kw">pub </span>data: Vec&lt;T&gt;,
+    _marker: PhantomData&lt;C&gt;,
 }
 
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Fps998244353</span> = <span class="ident">FormalPowerSeries</span>&lt;<span class="ident">MInt998244353</span>, <span class="ident">Convolve998244353</span>&gt;;
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Fps</span>&lt;<span class="ident">M</span>&gt; = <span class="ident">FormalPowerSeries</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;, <span class="ident">MIntConvolve</span>&lt;<span class="ident">M</span>&gt;&gt;;
+<span class="kw">pub type </span>Fps998244353 = FormalPowerSeries&lt;MInt998244353, Convolve998244353&gt;;
+<span class="kw">pub type </span>Fps&lt;M&gt; = FormalPowerSeries&lt;MInt&lt;M&gt;, MIntConvolve&lt;M&gt;&gt;;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FormalPowerSeriesCoefficient</span>:
-    <span class="ident">Sized</span>
-    + <span class="ident">Clone</span>
-    + <span class="ident">Zero</span>
-    + <span class="ident">PartialEq</span>
-    + <span class="ident">One</span>
-    + <span class="ident">From</span>&lt;<span class="ident">usize</span>&gt;
-    + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="ident">Div</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">Add</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>, <span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">Sub</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>, <span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">Mul</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>, <span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">Div</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>, <span class="ident">Output</span> = <span class="self">Self</span>&gt;
-    + <span class="ident">AddAssign</span>&lt;<span class="self">Self</span>&gt;
-    + <span class="ident">SubAssign</span>&lt;<span class="self">Self</span>&gt;
-    + <span class="ident">MulAssign</span>&lt;<span class="self">Self</span>&gt;
-    + <span class="ident">DivAssign</span>&lt;<span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">AddAssign</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">SubAssign</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">MulAssign</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>&gt;
-    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; <span class="ident">DivAssign</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="self">Self</span>&gt;
-    + <span class="ident">Neg</span>&lt;<span class="ident">Output</span> = <span class="self">Self</span>&gt;
+<span class="kw">pub trait </span>FormalPowerSeriesCoefficient:
+    Sized
+    + Clone
+    + Zero
+    + PartialEq
+    + One
+    + From&lt;usize&gt;
+    + Add&lt;Output = <span class="self">Self</span>&gt;
+    + Sub&lt;Output = <span class="self">Self</span>&gt;
+    + Mul&lt;Output = <span class="self">Self</span>&gt;
+    + Div&lt;Output = <span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; Add&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>, Output = <span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; Sub&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>, Output = <span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; Mul&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>, Output = <span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; Div&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>, Output = <span class="self">Self</span>&gt;
+    + AddAssign&lt;<span class="self">Self</span>&gt;
+    + SubAssign&lt;<span class="self">Self</span>&gt;
+    + MulAssign&lt;<span class="self">Self</span>&gt;
+    + DivAssign&lt;<span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; AddAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; SubAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; MulAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>&gt;
+    + <span class="kw">for</span>&lt;<span class="lifetime">&#39;r</span>&gt; DivAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="self">Self</span>&gt;
+    + Neg&lt;Output = <span class="self">Self</span>&gt;
 {
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">FormalPowerSeriesCoefficient</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt; <span class="kw">where</span> <span class="ident">M</span>: <span class="ident">MIntConvert</span>&lt;<span class="ident">usize</span>&gt; {}
+<span class="kw">impl</span>&lt;M&gt; FormalPowerSeriesCoefficient <span class="kw">for </span>MInt&lt;M&gt; <span class="kw">where </span>M: MIntConvert&lt;usize&gt; {}
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FormalPowerSeriesCoefficientSqrt</span>: <span class="ident">FormalPowerSeriesCoefficient</span> {
-    <span class="kw">fn</span> <span class="ident">sqrt_coefficient</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;;
+<span class="kw">pub trait </span>FormalPowerSeriesCoefficientSqrt: FormalPowerSeriesCoefficient {
+    <span class="kw">fn </span>sqrt_coefficient(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;;
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">FormalPowerSeriesCoefficientSqrt</span> <span class="kw">for</span> <span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MIntConvert</span>&lt;<span class="ident">u32</span>&gt; + <span class="ident">MIntConvert</span>&lt;<span class="ident">usize</span>&gt;,
+<span class="kw">impl</span>&lt;M&gt; FormalPowerSeriesCoefficientSqrt <span class="kw">for </span>MInt&lt;M&gt;
+<span class="kw">where
+    </span>M: MIntConvert&lt;u32&gt; + MIntConvert&lt;usize&gt;,
 {
-    <span class="kw">fn</span> <span class="ident">sqrt_coefficient</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">self</span>.<span class="ident">sqrt</span>()
+    <span class="kw">fn </span>sqrt_coefficient(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="self">self</span>.sqrt()
     }
 }
 
-<span class="kw">mod</span> <span class="ident">formal_power_series_impls</span>;
-<span class="kw">mod</span> <span class="ident">formal_power_series_nums</span>;
+<span class="kw">mod </span>formal_power_series_impls;
+<span class="kw">mod </span>formal_power_series_nums;
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

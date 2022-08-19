@@ -233,224 +233,224 @@
 <span id="217">217</span>
 <span id="218">218</span>
 <span id="219">219</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::iter::FromIterator</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::iter::FromIterator;
 
-<span class="doccomment">/// rank_i(select_i(k)) = k</span>
-<span class="doccomment">/// rank_i(select_i(k) + 1) = k + 1</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RankSelectDictionaries</span> {
-    <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span>;
-    <span class="doccomment">/// get k-th bit</span>
-    <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span>;
-    <span class="doccomment">/// the number of 1 in [0, k)</span>
-    <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| <span class="self">self</span>.<span class="ident">access</span>(<span class="ident">i</span>)).<span class="ident">count</span>()
+<span class="doccomment">/// rank_i(select_i(k)) = k
+/// rank_i(select_i(k) + 1) = k + 1
+</span><span class="kw">pub trait </span>RankSelectDictionaries {
+    <span class="kw">fn </span>bit_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
+    <span class="doccomment">/// get k-th bit
+    </span><span class="kw">fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; bool;
+    <span class="doccomment">/// the number of 1 in [0, k)
+    </span><span class="kw">fn </span>rank1(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; usize {
+        (<span class="number">0</span>..k).filter(|<span class="kw-2">&amp;</span>i| <span class="self">self</span>.access(i)).count()
     }
-    <span class="doccomment">/// the number of 0 in [0, k)</span>
-    <span class="kw">fn</span> <span class="ident">rank0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="ident">k</span> - <span class="self">self</span>.<span class="ident">rank1</span>(<span class="ident">k</span>)
+    <span class="doccomment">/// the number of 0 in [0, k)
+    </span><span class="kw">fn </span>rank0(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; usize {
+        k - <span class="self">self</span>.rank1(k)
     }
-    <span class="doccomment">/// index of k-th 1</span>
-    <span class="kw">fn</span> <span class="ident">select1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">bit_length</span>();
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rank1</span>(<span class="ident">n</span>) &lt;= <span class="ident">k</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+    <span class="doccomment">/// index of k-th 1
+    </span><span class="kw">fn </span>select1(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+        <span class="kw">let </span>n = <span class="self">self</span>.bit_length();
+        <span class="kw">if </span><span class="self">self</span>.rank1(n) &lt;= k {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) = (<span class="number">0</span>, <span class="ident">n</span>);
-        <span class="kw">while</span> <span class="ident">r</span> - <span class="ident">l</span> &gt; <span class="number">1</span> {
-            <span class="kw">let</span> <span class="ident">m</span> = (<span class="ident">l</span> + <span class="ident">r</span>) / <span class="number">2</span>;
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rank1</span>(<span class="ident">m</span>) &lt;= <span class="ident">k</span> {
-                <span class="ident">l</span> = <span class="ident">m</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">r</span> = <span class="ident">m</span>;
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, n);
+        <span class="kw">while </span>r - l &gt; <span class="number">1 </span>{
+            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+            <span class="kw">if </span><span class="self">self</span>.rank1(m) &lt;= k {
+                l = m;
+            } <span class="kw">else </span>{
+                r = m;
             }
         }
-        <span class="prelude-val">Some</span>(<span class="ident">l</span>)
+        <span class="prelude-val">Some</span>(l)
     }
-    <span class="doccomment">/// index of k-th 0</span>
-    <span class="kw">fn</span> <span class="ident">select0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">bit_length</span>();
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rank0</span>(<span class="ident">n</span>) &lt;= <span class="ident">k</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+    <span class="doccomment">/// index of k-th 0
+    </span><span class="kw">fn </span>select0(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+        <span class="kw">let </span>n = <span class="self">self</span>.bit_length();
+        <span class="kw">if </span><span class="self">self</span>.rank0(n) &lt;= k {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) = (<span class="number">0</span>, <span class="ident">n</span>);
-        <span class="kw">while</span> <span class="ident">r</span> - <span class="ident">l</span> &gt; <span class="number">1</span> {
-            <span class="kw">let</span> <span class="ident">m</span> = (<span class="ident">l</span> + <span class="ident">r</span>) / <span class="number">2</span>;
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rank0</span>(<span class="ident">m</span>) &lt;= <span class="ident">k</span> {
-                <span class="ident">l</span> = <span class="ident">m</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">r</span> = <span class="ident">m</span>;
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, n);
+        <span class="kw">while </span>r - l &gt; <span class="number">1 </span>{
+            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+            <span class="kw">if </span><span class="self">self</span>.rank0(m) &lt;= k {
+                l = m;
+            } <span class="kw">else </span>{
+                r = m;
             }
         }
-        <span class="prelude-val">Some</span>(<span class="ident">l</span>)
+        <span class="prelude-val">Some</span>(l)
     }
 }
-<span class="macro">macro_rules!</span> <span class="ident">impl_rank_select_for_bits</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) =&gt; {$(
-        <span class="kw">impl</span> <span class="ident">RankSelectDictionaries</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-            <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-                <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> = (<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>).<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-                <span class="ident">WORD_SIZE</span>
+<span class="macro">macro_rules!</span> impl_rank_select_for_bits {
+    ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {$(
+        <span class="kw">impl </span>RankSelectDictionaries <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+            <span class="kw">fn </span>bit_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+                <span class="kw">const </span>WORD_SIZE: usize = (<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$t</span>).count_zeros() <span class="kw">as </span>usize;
+                WORD_SIZE
             }
-            <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-                <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> = (<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>).<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-                <span class="kw">if</span> <span class="ident">k</span> &lt; <span class="ident">WORD_SIZE</span> {
-                    <span class="self">self</span> &amp; (<span class="number">1</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) &lt;&lt; <span class="ident">k</span> != <span class="number">0</span>
-                } <span class="kw">else</span> {
-                    <span class="bool-val">false</span>
-                }
+            <span class="kw">fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; bool {
+                <span class="kw">const </span>WORD_SIZE: usize = (<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$t</span>).count_zeros() <span class="kw">as </span>usize;
+                <span class="kw">if </span>k &lt; WORD_SIZE {
+                    <span class="self">self </span>&amp; (<span class="number">1 </span><span class="kw">as </span><span class="macro-nonterminal">$t</span>) &lt;&lt; k != <span class="number">0
+                </span>} <span class="kw">else </span>{
+                    <span class="bool-val">false
+                </span>}
             }
-            <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-                <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> = (<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>).<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-                <span class="kw">if</span> <span class="ident">k</span> &lt; <span class="ident">WORD_SIZE</span> {
-                    (<span class="self">self</span> &amp; !(!(<span class="number">0</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>) &lt;&lt; <span class="ident">k</span>)).<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">usize</span>
-                } <span class="kw">else</span> {
-                    <span class="self">self</span>.<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">usize</span>
+            <span class="kw">fn </span>rank1(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; usize {
+                <span class="kw">const </span>WORD_SIZE: usize = (<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$t</span>).count_zeros() <span class="kw">as </span>usize;
+                <span class="kw">if </span>k &lt; WORD_SIZE {
+                    (<span class="self">self </span>&amp; !(!(<span class="number">0 </span><span class="kw">as </span><span class="macro-nonterminal">$t</span>) &lt;&lt; k)).count_ones() <span class="kw">as </span>usize
+                } <span class="kw">else </span>{
+                    <span class="self">self</span>.count_ones() <span class="kw">as </span>usize
                 }
             }
         })*
     };
 }
-<span class="macro">impl_rank_select_for_bits!</span>(<span class="ident">u8</span> <span class="ident">u16</span> <span class="ident">u32</span> <span class="ident">u64</span> <span class="ident">usize</span> <span class="ident">i8</span> <span class="ident">i16</span> <span class="ident">i32</span> <span class="ident">i64</span> <span class="ident">isize</span> <span class="ident">u128</span> <span class="ident">i128</span>);
+<span class="macro">impl_rank_select_for_bits!</span>(u8 u16 u32 u64 usize i8 i16 i32 i64 isize u128 i128);
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitVector</span> {
-    <span class="doccomment">/// [(bit, sum)]</span>
-    <span class="ident">data</span>: <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">usize</span>)&gt;,
-    <span class="ident">sum</span>: <span class="ident">usize</span>,
+<span class="attribute">#[derive(Debug, Clone)]</span>
+<span class="kw">pub struct </span>BitVector {
+    <span class="doccomment">/// [(bit, sum)]
+    </span>data: Vec&lt;(usize, usize)&gt;,
+    sum: usize,
 }
-<span class="kw">impl</span> <span class="ident">BitVector</span> {
-    <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> = <span class="number">0usize</span>.<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+<span class="kw">impl </span>BitVector {
+    <span class="kw">const </span>WORD_SIZE: usize = <span class="number">0usize</span>.count_zeros() <span class="kw">as </span>usize;
 }
-<span class="kw">impl</span> <span class="ident">RankSelectDictionaries</span> <span class="kw">for</span> <span class="ident">BitVector</span> {
-    <span class="kw">fn</span> <span class="ident">bit_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>() * <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>
+<span class="kw">impl </span>RankSelectDictionaries <span class="kw">for </span>BitVector {
+    <span class="kw">fn </span>bit_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.data.len() * <span class="self">Self</span>::WORD_SIZE
     }
-    <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">k</span> / <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>].<span class="number">0</span> &amp; (<span class="number">1</span> &lt;&lt; (<span class="ident">k</span> % <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>)) != <span class="number">0</span>
+    <span class="kw">fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; bool {
+        <span class="self">self</span>.data[k / <span class="self">Self</span>::WORD_SIZE].<span class="number">0 </span>&amp; (<span class="number">1 </span>&lt;&lt; (k % <span class="self">Self</span>::WORD_SIZE)) != <span class="number">0
+    </span>}
+    <span class="kw">fn </span>rank1(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; usize {
+        <span class="kw">let </span>(bit, sum) = <span class="self">self</span>.data[k / <span class="self">Self</span>::WORD_SIZE];
+        sum + (bit &amp; !(std::usize::MAX &lt;&lt; (k % <span class="self">Self</span>::WORD_SIZE))).count_ones() <span class="kw">as </span>usize
     }
-    <span class="kw">fn</span> <span class="ident">rank1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">let</span> (<span class="ident">bit</span>, <span class="ident">sum</span>) = <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">k</span> / <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>];
-        <span class="ident">sum</span> + (<span class="ident">bit</span> &amp; !(<span class="ident">std::usize::MAX</span> &lt;&lt; (<span class="ident">k</span> % <span class="ident"><span class="self">Self</span>::WORD_SIZE</span>))).<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">usize</span>
-    }
-    <span class="kw">fn</span> <span class="ident">select1</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) = (<span class="number">0</span>, <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>());
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">sum</span> &lt;= <span class="ident">k</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+    <span class="kw">fn </span>select1(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, <span class="self">self</span>.data.len());
+        <span class="kw">if </span><span class="self">self</span>.sum &lt;= k {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="kw">while</span> <span class="ident">r</span> - <span class="ident">l</span> &gt; <span class="number">1</span> {
-            <span class="kw">let</span> <span class="ident">m</span> = (<span class="ident">l</span> + <span class="ident">r</span>) / <span class="number">2</span>;
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">m</span>].<span class="number">1</span> &lt;= <span class="ident">k</span> {
-                <span class="ident">l</span> = <span class="ident">m</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">r</span> = <span class="ident">m</span>;
+        <span class="kw">while </span>r - l &gt; <span class="number">1 </span>{
+            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+            <span class="kw">if </span><span class="self">self</span>.data[m].<span class="number">1 </span>&lt;= k {
+                l = m;
+            } <span class="kw">else </span>{
+                r = m;
             }
         }
-        <span class="kw">let</span> (<span class="ident">bit</span>, <span class="ident">sum</span>) = <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">l</span>];
-        <span class="ident">k</span> -= <span class="ident">sum</span>;
-        <span class="prelude-val">Some</span>(<span class="ident">l</span> * <span class="ident"><span class="self">Self</span>::WORD_SIZE</span> + <span class="ident">bit</span>.<span class="ident">select1</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>())
+        <span class="kw">let </span>(bit, sum) = <span class="self">self</span>.data[l];
+        k -= sum;
+        <span class="prelude-val">Some</span>(l * <span class="self">Self</span>::WORD_SIZE + bit.select1(k).unwrap())
     }
-    <span class="kw">fn</span> <span class="ident">select0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">l</span>, <span class="kw-2">mut</span> <span class="ident">r</span>) = (<span class="number">0</span>, <span class="self">self</span>.<span class="ident">data</span>.<span class="ident">len</span>());
-        <span class="kw">if</span> <span class="ident">r</span> * <span class="ident"><span class="self">Self</span>::WORD_SIZE</span> - <span class="self">self</span>.<span class="ident">sum</span> &lt;= <span class="ident">k</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+    <span class="kw">fn </span>select0(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, <span class="self">self</span>.data.len());
+        <span class="kw">if </span>r * <span class="self">Self</span>::WORD_SIZE - <span class="self">self</span>.sum &lt;= k {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="kw">while</span> <span class="ident">r</span> - <span class="ident">l</span> &gt; <span class="number">1</span> {
-            <span class="kw">let</span> <span class="ident">m</span> = (<span class="ident">l</span> + <span class="ident">r</span>) / <span class="number">2</span>;
-            <span class="kw">if</span> <span class="ident">m</span> * <span class="ident"><span class="self">Self</span>::WORD_SIZE</span> - <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">m</span>].<span class="number">1</span> &lt;= <span class="ident">k</span> {
-                <span class="ident">l</span> = <span class="ident">m</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">r</span> = <span class="ident">m</span>;
+        <span class="kw">while </span>r - l &gt; <span class="number">1 </span>{
+            <span class="kw">let </span>m = (l + r) / <span class="number">2</span>;
+            <span class="kw">if </span>m * <span class="self">Self</span>::WORD_SIZE - <span class="self">self</span>.data[m].<span class="number">1 </span>&lt;= k {
+                l = m;
+            } <span class="kw">else </span>{
+                r = m;
             }
         }
-        <span class="kw">let</span> (<span class="ident">bit</span>, <span class="ident">sum</span>) = <span class="self">self</span>.<span class="ident">data</span>[<span class="ident">l</span>];
-        <span class="ident">k</span> -= <span class="ident">l</span> * <span class="ident"><span class="self">Self</span>::WORD_SIZE</span> - <span class="ident">sum</span>;
-        <span class="prelude-val">Some</span>(<span class="ident">l</span> * <span class="ident"><span class="self">Self</span>::WORD_SIZE</span> + <span class="ident">bit</span>.<span class="ident">select0</span>(<span class="ident">k</span>).<span class="ident">unwrap</span>())
+        <span class="kw">let </span>(bit, sum) = <span class="self">self</span>.data[l];
+        k -= l * <span class="self">Self</span>::WORD_SIZE - sum;
+        <span class="prelude-val">Some</span>(l * <span class="self">Self</span>::WORD_SIZE + bit.select0(k).unwrap())
     }
 }
-<span class="kw">impl</span> <span class="ident">FromIterator</span>&lt;<span class="ident">bool</span>&gt; <span class="kw">for</span> <span class="ident">BitVector</span> {
-    <span class="kw">fn</span> <span class="ident">from_iter</span>&lt;<span class="ident">T</span>: <span class="ident">IntoIterator</span>&lt;<span class="ident">Item</span> = <span class="ident">bool</span>&gt;&gt;(<span class="ident">iter</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> = <span class="ident">iter</span>.<span class="ident">into_iter</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">data</span> = <span class="ident">Vec::new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sum</span> = <span class="number">0</span>;
-        <span class="lifetime">&#39;outer</span>: <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bit</span> = <span class="number">0</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">nsum</span> = <span class="ident">sum</span>;
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident"><span class="self">Self</span>::WORD_SIZE</span> {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">b</span>) = <span class="ident">iter</span>.<span class="ident">next</span>() {
-                    <span class="kw">if</span> <span class="ident">b</span> {
-                        <span class="ident">bit</span> |= <span class="number">1</span> &lt;&lt; <span class="ident">i</span>;
-                        <span class="ident">nsum</span> += <span class="number">1</span>;
+<span class="kw">impl </span>FromIterator&lt;bool&gt; <span class="kw">for </span>BitVector {
+    <span class="kw">fn </span>from_iter&lt;T: IntoIterator&lt;Item = bool&gt;&gt;(iter: T) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = iter.into_iter();
+        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">0</span>;
+        <span class="lifetime">&#39;outer</span>: <span class="kw">loop </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="number">0</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>nsum = sum;
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">Self</span>::WORD_SIZE {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(b) = iter.next() {
+                    <span class="kw">if </span>b {
+                        bit |= <span class="number">1 </span>&lt;&lt; i;
+                        nsum += <span class="number">1</span>;
                     }
-                } <span class="kw">else</span> {
-                    <span class="ident">data</span>.<span class="ident">push</span>((<span class="ident">bit</span>, <span class="ident">sum</span>));
-                    <span class="ident">sum</span> = <span class="ident">nsum</span>;
-                    <span class="kw">break</span> <span class="lifetime">&#39;outer</span>;
+                } <span class="kw">else </span>{
+                    data.push((bit, sum));
+                    sum = nsum;
+                    <span class="kw">break </span><span class="lifetime">&#39;outer</span>;
                 }
             }
-            <span class="ident">data</span>.<span class="ident">push</span>((<span class="ident">bit</span>, <span class="ident">sum</span>));
-            <span class="ident">sum</span> = <span class="ident">nsum</span>;
+            data.push((bit, sum));
+            sum = nsum;
         }
-        <span class="self">Self</span> { <span class="ident">data</span>, <span class="ident">sum</span> }
+        <span class="self">Self </span>{ data, sum }
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools::Xorshift</span>;
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
 
-    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">5_000</span>;
+    <span class="kw">const </span>Q: usize = <span class="number">5_000</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_rank_select_usize</span>() {
-        <span class="kw">const</span> <span class="ident">WORD_SIZE</span>: <span class="ident">usize</span> = <span class="number">0usize</span>.<span class="ident">count_zeros</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="number">0u64</span>..).<span class="ident">take</span>(<span class="ident">Q</span>) {
-            <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="number">0</span>..=<span class="ident">WORD_SIZE</span> {
-                <span class="macro">assert_eq!</span>(<span class="ident">x</span>.<span class="ident">rank1</span>(<span class="ident">k</span>), (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| <span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>)).<span class="ident">count</span>());
-                <span class="macro">assert_eq!</span>(<span class="ident">x</span>.<span class="ident">rank0</span>(<span class="ident">k</span>), (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| !<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>)).<span class="ident">count</span>());
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) = <span class="ident">x</span>.<span class="ident">select1</span>(<span class="ident">k</span>) {
-                    <span class="macro">assert_eq!</span>((<span class="number">0</span>..<span class="ident">i</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">j</span>| <span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">j</span>)).<span class="ident">count</span>(), <span class="ident">k</span>);
-                    <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>));
-                } <span class="kw">else</span> {
-                    <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">rank1</span>(<span class="ident">WORD_SIZE</span>) &lt;= <span class="ident">k</span>);
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_rank_select_usize() {
+        <span class="kw">const </span>WORD_SIZE: usize = <span class="number">0usize</span>.count_zeros() <span class="kw">as </span>usize;
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
+        <span class="kw">for </span>x <span class="kw">in </span>rng.gen_iter(<span class="number">0u64</span>..).take(Q) {
+            <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..=WORD_SIZE {
+                <span class="macro">assert_eq!</span>(x.rank1(k), (<span class="number">0</span>..k).filter(|<span class="kw-2">&amp;</span>i| x.access(i)).count());
+                <span class="macro">assert_eq!</span>(x.rank0(k), (<span class="number">0</span>..k).filter(|<span class="kw-2">&amp;</span>i| !x.access(i)).count());
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = x.select1(k) {
+                    <span class="macro">assert_eq!</span>((<span class="number">0</span>..i).filter(|<span class="kw-2">&amp;</span>j| x.access(j)).count(), k);
+                    <span class="macro">assert!</span>(x.access(i));
+                } <span class="kw">else </span>{
+                    <span class="macro">assert!</span>(x.rank1(WORD_SIZE) &lt;= k);
                 }
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) = <span class="ident">x</span>.<span class="ident">select0</span>(<span class="ident">k</span>) {
-                    <span class="macro">assert_eq!</span>((<span class="number">0</span>..<span class="ident">i</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">j</span>| !<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">j</span>)).<span class="ident">count</span>(), <span class="ident">k</span>);
-                    <span class="macro">assert!</span>(!<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>));
-                } <span class="kw">else</span> {
-                    <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">rank0</span>(<span class="ident">WORD_SIZE</span>) &lt;= <span class="ident">k</span>);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = x.select0(k) {
+                    <span class="macro">assert_eq!</span>((<span class="number">0</span>..i).filter(|<span class="kw-2">&amp;</span>j| !x.access(j)).count(), k);
+                    <span class="macro">assert!</span>(!x.access(i));
+                } <span class="kw">else </span>{
+                    <span class="macro">assert!</span>(x.rank0(WORD_SIZE) &lt;= k);
                 }
             }
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_rank_select_bit_vector</span>() {
-        <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">1_000</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
-        <span class="kw">let</span> <span class="ident">x</span>: <span class="ident">BitVector</span> = (<span class="number">0</span>..<span class="ident">N</span>).<span class="ident">map</span>(|<span class="kw">_</span>| <span class="ident">rng</span>.<span class="ident">rand</span>(<span class="number">2</span>) != <span class="number">0</span>).<span class="ident">collect</span>();
-        <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> <span class="ident">rng</span>.<span class="ident">gen_iter</span>(..=<span class="ident">N</span>).<span class="ident">take</span>(<span class="ident">Q</span>) {
-            <span class="macro">assert_eq!</span>(<span class="ident">x</span>.<span class="ident">rank1</span>(<span class="ident">k</span>), (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| <span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>)).<span class="ident">count</span>());
-            <span class="macro">assert_eq!</span>(<span class="ident">x</span>.<span class="ident">rank0</span>(<span class="ident">k</span>), (<span class="number">0</span>..<span class="ident">k</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| !<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>)).<span class="ident">count</span>());
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_rank_select_bit_vector() {
+        <span class="kw">const </span>N: usize = <span class="number">1_000</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
+        <span class="kw">let </span>x: BitVector = (<span class="number">0</span>..N).map(|<span class="kw">_</span>| rng.rand(<span class="number">2</span>) != <span class="number">0</span>).collect();
+        <span class="kw">for </span>k <span class="kw">in </span>rng.gen_iter(..=N).take(Q) {
+            <span class="macro">assert_eq!</span>(x.rank1(k), (<span class="number">0</span>..k).filter(|<span class="kw-2">&amp;</span>i| x.access(i)).count());
+            <span class="macro">assert_eq!</span>(x.rank0(k), (<span class="number">0</span>..k).filter(|<span class="kw-2">&amp;</span>i| !x.access(i)).count());
 
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) = <span class="ident">x</span>.<span class="ident">select1</span>(<span class="ident">k</span>) {
-                <span class="macro">assert_eq!</span>((<span class="number">0</span>..<span class="ident">i</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">j</span>| <span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">j</span>)).<span class="ident">count</span>(), <span class="ident">k</span>);
-                <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>));
-            } <span class="kw">else</span> {
-                <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">rank1</span>(<span class="ident">N</span>) &lt;= <span class="ident">k</span>);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = x.select1(k) {
+                <span class="macro">assert_eq!</span>((<span class="number">0</span>..i).filter(|<span class="kw-2">&amp;</span>j| x.access(j)).count(), k);
+                <span class="macro">assert!</span>(x.access(i));
+            } <span class="kw">else </span>{
+                <span class="macro">assert!</span>(x.rank1(N) &lt;= k);
             }
 
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">i</span>) = <span class="ident">x</span>.<span class="ident">select0</span>(<span class="ident">k</span>) {
-                <span class="macro">assert_eq!</span>((<span class="number">0</span>..<span class="ident">i</span>).<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">j</span>| !<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">j</span>)).<span class="ident">count</span>(), <span class="ident">k</span>);
-                <span class="macro">assert!</span>(!<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">i</span>));
-            } <span class="kw">else</span> {
-                <span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">rank0</span>(<span class="ident">N</span>) &lt;= <span class="ident">k</span>);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = x.select0(k) {
+                <span class="macro">assert_eq!</span>((<span class="number">0</span>..i).filter(|<span class="kw-2">&amp;</span>j| !x.access(j)).count(), k);
+                <span class="macro">assert!</span>(!x.access(i));
+            } <span class="kw">else </span>{
+                <span class="macro">assert!</span>(x.rank0(N) &lt;= k);
             }
         }
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>.<span class="ident">rank1</span>(<span class="number">0</span>), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>.<span class="ident">rank0</span>(<span class="number">0</span>), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(x.rank1(<span class="number">0</span>), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(x.rank0(<span class="number">0</span>), <span class="number">0</span>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

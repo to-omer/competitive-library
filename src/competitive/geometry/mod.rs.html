@@ -50,41 +50,41 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
-</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::self_named_constructors</span>)]</span>
+</pre><pre class="rust"><code><span class="attribute">#![allow(clippy::self_named_constructors)]</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">num</span>::{<span class="ident">Complex</span>, <span class="ident">Zero</span>},
-    <span class="ident">tools::TotalOrd</span>,
+<span class="kw">use crate</span>::{
+    num::{Complex, Zero},
+    tools::TotalOrd,
 };
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Approx&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::approx</span>::{<span class="ident">Approx</span>, <span class="ident">ApproxOrd</span>};
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Ccw&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::ccw::Ccw</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Circle&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::circle::Circle</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;closest_pair&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::closest_pair::closest_pair</span>;
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Line&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::line</span>::{<span class="ident">Line</span>, <span class="ident">LineSegment</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::polygon</span>::{<span class="ident">convex_diameter</span>, <span class="ident">convex_hull</span>};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Approx&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::approx::{Approx, ApproxOrd};
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Ccw&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::ccw::Ccw;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Circle&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::circle::Circle;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;closest_pair&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::closest_pair::closest_pair;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Line&quot;</span>)]</span>
+<span class="kw">pub use </span><span class="self">self</span>::line::{Line, LineSegment};
+<span class="kw">pub use </span><span class="self">self</span>::polygon::{convex_diameter, convex_hull};
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;Point&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;Complex&quot;</span>))]</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Point</span> = <span class="ident">Complex</span>&lt;<span class="ident">f64</span>&gt;;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Point&quot;</span>, include(<span class="string">&quot;Complex&quot;</span>))]</span>
+<span class="kw">pub type </span>Point = Complex&lt;f64&gt;;
 
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Approx&quot;</span>))]</span>
-<span class="kw">mod</span> <span class="ident">approx</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(
-    <span class="ident">nightly</span>,
-    <span class="ident">codesnip::entry</span>(<span class="string">&quot;Ccw&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;Approx&quot;</span>, <span class="string">&quot;Complex&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;Approx&quot;</span>))]</span>
+<span class="kw">mod </span>approx;
+<span class="attribute">#[cfg_attr(
+    nightly,
+    codesnip::entry(<span class="string">&quot;Ccw&quot;</span>, include(<span class="string">&quot;Approx&quot;</span>, <span class="string">&quot;Complex&quot;</span>, <span class="string">&quot;zero_one&quot;</span>))
 )]</span>
-<span class="kw">mod</span> <span class="ident">ccw</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Circle&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;Approx&quot;</span>, <span class="string">&quot;Point&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">circle</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;closest_pair&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;Point&quot;</span>, <span class="string">&quot;TotalOrd&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">closest_pair</span>;
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">nightly</span>, <span class="ident">codesnip::entry</span>(<span class="string">&quot;Line&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;Approx&quot;</span>, <span class="string">&quot;Ccw&quot;</span>, <span class="string">&quot;Point&quot;</span>)))]</span>
-<span class="kw">mod</span> <span class="ident">line</span>;
-<span class="kw">mod</span> <span class="ident">polygon</span>;
+<span class="kw">mod </span>ccw;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;Circle&quot;</span>, include(<span class="string">&quot;Approx&quot;</span>, <span class="string">&quot;Point&quot;</span>)))]</span>
+<span class="kw">mod </span>circle;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;closest_pair&quot;</span>, include(<span class="string">&quot;Point&quot;</span>, <span class="string">&quot;TotalOrd&quot;</span>)))]</span>
+<span class="kw">mod </span>closest_pair;
+<span class="attribute">#[cfg_attr(nightly, codesnip::entry(<span class="string">&quot;Line&quot;</span>, include(<span class="string">&quot;Approx&quot;</span>, <span class="string">&quot;Ccw&quot;</span>, <span class="string">&quot;Point&quot;</span>)))]</span>
+<span class="kw">mod </span>line;
+<span class="kw">mod </span>polygon;
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

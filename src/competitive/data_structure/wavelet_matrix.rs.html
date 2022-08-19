@@ -211,202 +211,202 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">BitVector</span>, <span class="ident">RankSelectDictionaries</span>};
-<span class="kw">use</span> <span class="ident">std::ops::Range</span>;
+</pre><pre class="rust"><code><span class="kw">use super</span>::{BitVector, RankSelectDictionaries};
+<span class="kw">use </span>std::ops::Range;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">WaveletMatrix</span> {
-    <span class="ident">len</span>: <span class="ident">usize</span>,
-    <span class="ident">table</span>: <span class="ident">Vec</span>&lt;(<span class="ident">usize</span>, <span class="ident">BitVector</span>)&gt;,
+<span class="attribute">#[derive(Debug, Clone)]</span>
+<span class="kw">pub struct </span>WaveletMatrix {
+    len: usize,
+    table: Vec&lt;(usize, BitVector)&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">WaveletMatrix</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>&lt;<span class="ident">T</span>: <span class="ident">Clone</span> + <span class="ident">RankSelectDictionaries</span>&gt;(<span class="kw-2">mut</span> <span class="ident">v</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">bit_length</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">len</span> = <span class="ident">v</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = <span class="ident">Vec::new</span>();
-        <span class="kw">for</span> <span class="ident">d</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">bit_length</span>).<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">BitVector</span> = <span class="ident">v</span>.<span class="ident">iter</span>().<span class="ident">map</span>(|<span class="ident">x</span>| <span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">d</span>)).<span class="ident">collect</span>();
-            <span class="ident">table</span>.<span class="ident">push</span>((<span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">len</span>), <span class="ident">b</span>));
-            <span class="ident">v</span> = <span class="ident">v</span>
-                .<span class="ident">iter</span>()
-                .<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">x</span>| !<span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">d</span>))
-                .<span class="ident">chain</span>(<span class="ident">v</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">x</span>| <span class="ident">x</span>.<span class="ident">access</span>(<span class="ident">d</span>)))
-                .<span class="ident">cloned</span>()
-                .<span class="ident">collect</span>();
+<span class="kw">impl </span>WaveletMatrix {
+    <span class="kw">pub fn </span>new&lt;T: Clone + RankSelectDictionaries&gt;(<span class="kw-2">mut </span>v: Vec&lt;T&gt;, bit_length: usize) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>len = v.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>table = Vec::new();
+        <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..bit_length).rev() {
+            <span class="kw">let </span>b: BitVector = v.iter().map(|x| x.access(d)).collect();
+            table.push((b.rank0(len), b));
+            v = v
+                .iter()
+                .filter(|<span class="kw-2">&amp;</span>x| !x.access(d))
+                .chain(v.iter().filter(|<span class="kw-2">&amp;</span>x| x.access(d)))
+                .cloned()
+                .collect();
         }
-        <span class="self">Self</span> { <span class="ident">len</span>, <span class="ident">table</span> }
+        <span class="self">Self </span>{ len, table }
     }
-    <span class="doccomment">/// get k-th value</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">access</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">val</span> = <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">d</span>, <span class="kw-2">&amp;</span>(<span class="ident">c</span>, <span class="kw-2">ref</span> <span class="ident">b</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>().<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">b</span>.<span class="ident">access</span>(<span class="ident">k</span>) {
-                <span class="ident">k</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">k</span>);
-                <span class="ident">val</span> |= <span class="number">1</span> &lt;&lt; <span class="ident">d</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">k</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">k</span>);
+    <span class="doccomment">/// get k-th value
+    </span><span class="kw">pub fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; usize {
+        <span class="kw">let </span><span class="kw-2">mut </span>val = <span class="number">0</span>;
+        <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
+            <span class="kw">if </span>b.access(k) {
+                k = c + b.rank1(k);
+                val |= <span class="number">1 </span>&lt;&lt; d;
+            } <span class="kw">else </span>{
+                k = b.rank0(k);
             }
         }
-        <span class="ident">val</span>
+        val
     }
-    <span class="doccomment">/// the number of val in range</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rank</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">val</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">range</span>: <span class="ident">Range</span>&lt;<span class="ident">usize</span>&gt;) -&gt; <span class="ident">usize</span> {
-        <span class="kw">for</span> (<span class="ident">d</span>, <span class="kw-2">&amp;</span>(<span class="ident">c</span>, <span class="kw-2">ref</span> <span class="ident">b</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>().<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">val</span>.<span class="ident">access</span>(<span class="ident">d</span>) {
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">end</span>);
-            } <span class="kw">else</span> {
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">end</span>);
+    <span class="doccomment">/// the number of val in range
+    </span><span class="kw">pub fn </span>rank(<span class="kw-2">&amp;</span><span class="self">self</span>, val: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;) -&gt; usize {
+        <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
+            <span class="kw">if </span>val.access(d) {
+                range.start = c + b.rank1(range.start);
+                range.end = c + b.rank1(range.end);
+            } <span class="kw">else </span>{
+                range.start = b.rank0(range.start);
+                range.end = b.rank0(range.end);
             }
         }
-        <span class="ident">range</span>.<span class="ident">end</span> - <span class="ident">range</span>.<span class="ident">start</span>
+        range.end - range.start
     }
-    <span class="doccomment">/// index of k-th val</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">select</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">val</span>: <span class="ident">usize</span>, <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">rank</span>(<span class="ident">val</span>, <span class="number">0</span>..<span class="self">self</span>.<span class="ident">len</span>) &lt;= <span class="ident">k</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+    <span class="doccomment">/// index of k-th val
+    </span><span class="kw">pub fn </span>select(<span class="kw-2">&amp;</span><span class="self">self</span>, val: usize, k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+        <span class="kw">if </span><span class="self">self</span>.rank(val, <span class="number">0</span>..<span class="self">self</span>.len) &lt;= k {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> = <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">d</span>, <span class="kw-2">&amp;</span>(<span class="ident">c</span>, <span class="kw-2">ref</span> <span class="ident">b</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>().<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">val</span>.<span class="ident">access</span>(<span class="ident">d</span>) {
-                <span class="ident">i</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">i</span>);
-            } <span class="kw">else</span> {
-                <span class="ident">i</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">i</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+        <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
+            <span class="kw">if </span>val.access(d) {
+                i = c + b.rank1(i);
+            } <span class="kw">else </span>{
+                i = b.rank0(i);
             }
         }
-        <span class="ident">i</span> += <span class="ident">k</span>;
-        <span class="kw">for</span> <span class="kw-2">&amp;</span>(<span class="ident">c</span>, <span class="kw-2">ref</span> <span class="ident">b</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">i</span> &gt;= <span class="ident">c</span> {
-                <span class="ident">i</span> = <span class="ident">b</span>.<span class="ident">select1</span>(<span class="ident">i</span> - <span class="ident">c</span>).<span class="ident">unwrap</span>();
-            } <span class="kw">else</span> {
-                <span class="ident">i</span> = <span class="ident">b</span>.<span class="ident">select0</span>(<span class="ident">i</span>).<span class="ident">unwrap</span>();
+        i += k;
+        <span class="kw">for </span><span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b) <span class="kw">in </span><span class="self">self</span>.table.iter().rev() {
+            <span class="kw">if </span>i &gt;= c {
+                i = b.select1(i - c).unwrap();
+            } <span class="kw">else </span>{
+                i = b.select0(i).unwrap();
             }
         }
-        <span class="prelude-val">Some</span>(<span class="ident">i</span>)
+        <span class="prelude-val">Some</span>(i)
     }
-    <span class="doccomment">/// get k-th smallest value in range</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">quantile</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">range</span>: <span class="ident">Range</span>&lt;<span class="ident">usize</span>&gt;, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">val</span> = <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">d</span>, <span class="kw-2">&amp;</span>(<span class="ident">c</span>, <span class="kw-2">ref</span> <span class="ident">b</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>().<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">z</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">end</span>) - <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-            <span class="kw">if</span> <span class="ident">z</span> &lt;= <span class="ident">k</span> {
-                <span class="ident">k</span> -= <span class="ident">z</span>;
-                <span class="ident">val</span> |= <span class="number">1</span> &lt;&lt; <span class="ident">d</span>;
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">end</span>);
-            } <span class="kw">else</span> {
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">end</span>);
+    <span class="doccomment">/// get k-th smallest value in range
+    </span><span class="kw">pub fn </span>quantile(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, <span class="kw-2">mut </span>k: usize) -&gt; usize {
+        <span class="kw">let </span><span class="kw-2">mut </span>val = <span class="number">0</span>;
+        <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
+            <span class="kw">let </span>z = b.rank0(range.end) - b.rank0(range.start);
+            <span class="kw">if </span>z &lt;= k {
+                k -= z;
+                val |= <span class="number">1 </span>&lt;&lt; d;
+                range.start = c + b.rank1(range.start);
+                range.end = c + b.rank1(range.end);
+            } <span class="kw">else </span>{
+                range.start = b.rank0(range.start);
+                range.end = b.rank0(range.end);
             }
         }
-        <span class="ident">val</span>
+        val
     }
-    <span class="doccomment">/// get k-th smallest value out of range</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">quantile_outer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">range</span>: <span class="ident">Range</span>&lt;<span class="ident">usize</span>&gt;, <span class="kw-2">mut</span> <span class="ident">k</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">val</span> = <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">orange</span> = <span class="number">0</span>..<span class="self">self</span>.<span class="ident">len</span>;
-        <span class="kw">for</span> (<span class="ident">d</span>, <span class="kw-2">&amp;</span>(<span class="ident">c</span>, <span class="kw-2">ref</span> <span class="ident">b</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>().<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">z</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">orange</span>.<span class="ident">end</span>) - <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">orange</span>.<span class="ident">start</span>) + <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">start</span>)
-                - <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">end</span>);
-            <span class="kw">if</span> <span class="ident">z</span> &lt;= <span class="ident">k</span> {
-                <span class="ident">k</span> -= <span class="ident">z</span>;
-                <span class="ident">val</span> |= <span class="number">1</span> &lt;&lt; <span class="ident">d</span>;
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">end</span>);
-                <span class="ident">orange</span>.<span class="ident">start</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">orange</span>.<span class="ident">start</span>);
-                <span class="ident">orange</span>.<span class="ident">end</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">orange</span>.<span class="ident">end</span>);
-            } <span class="kw">else</span> {
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">end</span>);
-                <span class="ident">orange</span>.<span class="ident">start</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">orange</span>.<span class="ident">start</span>);
-                <span class="ident">orange</span>.<span class="ident">end</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">orange</span>.<span class="ident">end</span>);
+    <span class="doccomment">/// get k-th smallest value out of range
+    </span><span class="kw">pub fn </span>quantile_outer(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, <span class="kw-2">mut </span>k: usize) -&gt; usize {
+        <span class="kw">let </span><span class="kw-2">mut </span>val = <span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>orange = <span class="number">0</span>..<span class="self">self</span>.len;
+        <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
+            <span class="kw">let </span>z = b.rank0(orange.end) - b.rank0(orange.start) + b.rank0(range.start)
+                - b.rank0(range.end);
+            <span class="kw">if </span>z &lt;= k {
+                k -= z;
+                val |= <span class="number">1 </span>&lt;&lt; d;
+                range.start = c + b.rank1(range.start);
+                range.end = c + b.rank1(range.end);
+                orange.start = c + b.rank1(orange.start);
+                orange.end = c + b.rank1(orange.end);
+            } <span class="kw">else </span>{
+                range.start = b.rank0(range.start);
+                range.end = b.rank0(range.end);
+                orange.start = b.rank0(orange.start);
+                orange.end = b.rank0(orange.end);
             }
         }
-        <span class="ident">val</span>
+        val
     }
-    <span class="doccomment">/// the number of value less than val in range</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rank_lessthan</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">val</span>: <span class="ident">usize</span>, <span class="kw-2">mut</span> <span class="ident">range</span>: <span class="ident">Range</span>&lt;<span class="ident">usize</span>&gt;) -&gt; <span class="ident">usize</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">d</span>, <span class="kw-2">&amp;</span>(<span class="ident">c</span>, <span class="kw-2">ref</span> <span class="ident">b</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">enumerate</span>().<span class="ident">rev</span>() {
-            <span class="kw">if</span> <span class="ident">val</span>.<span class="ident">access</span>(<span class="ident">d</span>) {
-                <span class="ident">res</span> += <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">end</span>) - <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">c</span> + <span class="ident">b</span>.<span class="ident">rank1</span>(<span class="ident">range</span>.<span class="ident">end</span>);
-            } <span class="kw">else</span> {
-                <span class="ident">range</span>.<span class="ident">start</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">start</span>);
-                <span class="ident">range</span>.<span class="ident">end</span> = <span class="ident">b</span>.<span class="ident">rank0</span>(<span class="ident">range</span>.<span class="ident">end</span>);
+    <span class="doccomment">/// the number of value less than val in range
+    </span><span class="kw">pub fn </span>rank_lessthan(<span class="kw-2">&amp;</span><span class="self">self</span>, val: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;) -&gt; usize {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="number">0</span>;
+        <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
+            <span class="kw">if </span>val.access(d) {
+                res += b.rank0(range.end) - b.rank0(range.start);
+                range.start = c + b.rank1(range.start);
+                range.end = c + b.rank1(range.end);
+            } <span class="kw">else </span>{
+                range.start = b.rank0(range.start);
+                range.end = b.rank0(range.end);
             }
         }
-        <span class="ident">res</span>
+        res
     }
-    <span class="doccomment">/// the number of valrange in range</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rank_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">valrange</span>: <span class="ident">Range</span>&lt;<span class="ident">usize</span>&gt;, <span class="ident">range</span>: <span class="ident">Range</span>&lt;<span class="ident">usize</span>&gt;) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">rank_lessthan</span>(<span class="ident">valrange</span>.<span class="ident">end</span>, <span class="ident">range</span>.<span class="ident">clone</span>()) - <span class="self">self</span>.<span class="ident">rank_lessthan</span>(<span class="ident">valrange</span>.<span class="ident">start</span>, <span class="ident">range</span>)
+    <span class="doccomment">/// the number of valrange in range
+    </span><span class="kw">pub fn </span>rank_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;usize&gt;, range: Range&lt;usize&gt;) -&gt; usize {
+        <span class="self">self</span>.rank_lessthan(valrange.end, range.clone()) - <span class="self">self</span>.rank_lessthan(valrange.start, range)
     }
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_wavelet_matrix</span>() {
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::rand_value</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools</span>::{<span class="ident">NotEmptySegment</span> <span class="kw">as</span> <span class="ident">Nes</span>, <span class="ident">Xorshift</span>};
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">1_000</span>;
-    <span class="kw">const</span> <span class="ident">Q</span>: <span class="ident">usize</span> = <span class="number">1_000</span>;
-    <span class="kw">const</span> <span class="ident">A</span>: <span class="ident">usize</span> = <span class="number">1</span> &lt;&lt; <span class="number">8</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
-    <span class="macro">crate::rand!</span>(<span class="ident">rng</span>, <span class="ident">v</span>: [..<span class="ident">A</span>; <span class="ident">N</span>]);
-    <span class="kw">let</span> <span class="ident">wm</span> = <span class="ident">WaveletMatrix::new</span>(<span class="ident">v</span>.<span class="ident">clone</span>(), <span class="number">8</span>);
-    <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">v</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">enumerate</span>() {
-        <span class="macro">assert_eq!</span>(<span class="ident">wm</span>.<span class="ident">access</span>(<span class="ident">i</span>), <span class="ident">v</span>);
+<span class="attribute">#[test]</span>
+<span class="kw">fn </span>test_wavelet_matrix() {
+    <span class="kw">use </span><span class="kw">crate</span>::rand_value;
+    <span class="kw">use </span><span class="kw">crate</span>::tools::{NotEmptySegment <span class="kw">as </span>Nes, Xorshift};
+    <span class="kw">const </span>N: usize = <span class="number">1_000</span>;
+    <span class="kw">const </span>Q: usize = <span class="number">1_000</span>;
+    <span class="kw">const </span>A: usize = <span class="number">1 </span>&lt;&lt; <span class="number">8</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
+    <span class="macro">crate::rand!</span>(rng, v: [..A; N]);
+    <span class="kw">let </span>wm = WaveletMatrix::new(v.clone(), <span class="number">8</span>);
+    <span class="kw">for </span>(i, v) <span class="kw">in </span>v.iter().cloned().enumerate() {
+        <span class="macro">assert_eq!</span>(wm.access(i), v);
     }
-    <span class="kw">for</span> ((<span class="ident">l</span>, <span class="ident">r</span>), <span class="ident">a</span>) <span class="kw">in</span> <span class="macro">rand_value!</span>(<span class="ident">rng</span>, [(<span class="ident">Nes</span>(<span class="ident">N</span>), ..<span class="ident">A</span>); <span class="ident">Q</span>]) {
+    <span class="kw">for </span>((l, r), a) <span class="kw">in </span><span class="macro">rand_value!</span>(rng, [(Nes(N), ..A); Q]) {
         <span class="macro">assert_eq!</span>(
-            <span class="ident">wm</span>.<span class="ident">rank</span>(<span class="ident">a</span>, <span class="ident">l</span>..<span class="ident">r</span>),
-            <span class="ident">v</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">filter</span>(|&amp;&amp;<span class="ident">x</span>| <span class="ident">x</span> == <span class="ident">a</span>).<span class="ident">count</span>()
+            wm.rank(a, l..r),
+            v[l..r].iter().filter(|&amp;&amp;x| x == a).count()
         );
 
-        <span class="kw">if</span> <span class="ident">wm</span>.<span class="ident">rank</span>(<span class="ident">a</span>, <span class="number">0</span>..<span class="ident">N</span>) &gt; <span class="number">0</span> {
-            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">rng</span>.<span class="ident">gen</span>(..<span class="ident">wm</span>.<span class="ident">rank</span>(<span class="ident">a</span>, <span class="number">0</span>..<span class="ident">N</span>));
+        <span class="kw">if </span>wm.rank(a, <span class="number">0</span>..N) &gt; <span class="number">0 </span>{
+            <span class="kw">let </span>k = rng.gen(..wm.rank(a, <span class="number">0</span>..N));
             <span class="macro">assert_eq!</span>(
-                <span class="ident">wm</span>.<span class="ident">select</span>(<span class="ident">a</span>, <span class="ident">k</span>).<span class="ident">unwrap</span>().<span class="ident">min</span>(<span class="ident">N</span>),
-                (<span class="number">0</span>..<span class="ident">N</span>)
-                    .<span class="ident">position</span>(|<span class="ident">i</span>| <span class="ident">wm</span>.<span class="ident">rank</span>(<span class="ident">a</span>, <span class="number">0</span>..<span class="ident">i</span> + <span class="number">1</span>) == <span class="ident">k</span> + <span class="number">1</span>)
-                    .<span class="ident">unwrap_or</span>(<span class="ident">N</span>)
+                wm.select(a, k).unwrap().min(N),
+                (<span class="number">0</span>..N)
+                    .position(|i| wm.rank(a, <span class="number">0</span>..i + <span class="number">1</span>) == k + <span class="number">1</span>)
+                    .unwrap_or(N)
             );
         }
 
         <span class="macro">assert_eq!</span>(
-            (<span class="number">0</span>..<span class="ident">r</span> - <span class="ident">l</span>).<span class="ident">map</span>(|<span class="ident">k</span>| <span class="ident">wm</span>.<span class="ident">quantile</span>(<span class="ident">l</span>..<span class="ident">r</span>, <span class="ident">k</span>)).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;(),
+            (<span class="number">0</span>..r - l).map(|k| wm.quantile(l..r, k)).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">v</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">to_vec</span>();
-                <span class="ident">v</span>.<span class="ident">sort_unstable</span>();
-                <span class="ident">v</span>
+                <span class="kw">let </span><span class="kw-2">mut </span>v: Vec&lt;<span class="kw">_</span>&gt; = v[l..r].to_vec();
+                v.sort_unstable();
+                v
             }
         );
 
         <span class="macro">assert_eq!</span>(
-            (<span class="number">0</span>..<span class="ident">N</span> + <span class="ident">l</span> - <span class="ident">r</span>)
-                .<span class="ident">map</span>(|<span class="ident">k</span>| <span class="ident">wm</span>.<span class="ident">quantile_outer</span>(<span class="ident">l</span>..<span class="ident">r</span>, <span class="ident">k</span>))
-                .<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;(),
+            (<span class="number">0</span>..N + l - r)
+                .map(|k| wm.quantile_outer(l..r, k))
+                .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
             {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">v</span>.<span class="ident">to_vec</span>();
-                <span class="ident">v</span>.<span class="ident">drain</span>(<span class="ident">l</span>..<span class="ident">r</span>);
-                <span class="ident">v</span>.<span class="ident">sort_unstable</span>();
-                <span class="ident">v</span>
+                <span class="kw">let </span><span class="kw-2">mut </span>v: Vec&lt;<span class="kw">_</span>&gt; = v.to_vec();
+                v.drain(l..r);
+                v.sort_unstable();
+                v
             }
         );
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">wm</span>.<span class="ident">rank_lessthan</span>(<span class="ident">a</span>, <span class="ident">l</span>..<span class="ident">r</span>),
-            <span class="ident">v</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">filter</span>(|&amp;&amp;<span class="ident">x</span>| <span class="ident">x</span> &lt; <span class="ident">a</span>).<span class="ident">count</span>()
+            wm.rank_lessthan(a, l..r),
+            v[l..r].iter().filter(|&amp;&amp;x| x &lt; a).count()
         );
 
-        <span class="kw">let</span> (<span class="ident">p</span>, <span class="ident">q</span>) = <span class="ident">rng</span>.<span class="ident">gen</span>(<span class="ident">Nes</span>(<span class="ident">A</span> - <span class="number">1</span>));
+        <span class="kw">let </span>(p, q) = rng.gen(Nes(A - <span class="number">1</span>));
         <span class="macro">assert_eq!</span>(
-            <span class="ident">wm</span>.<span class="ident">rank_range</span>(<span class="ident">p</span>..<span class="ident">q</span>, <span class="ident">l</span>..<span class="ident">r</span>),
-            <span class="ident">v</span>[<span class="ident">l</span>..<span class="ident">r</span>].<span class="ident">iter</span>().<span class="ident">filter</span>(|&amp;&amp;<span class="ident">x</span>| <span class="ident">p</span> &lt;= <span class="ident">x</span> &amp;&amp; <span class="ident">x</span> &lt; <span class="ident">q</span>).<span class="ident">count</span>()
+            wm.rank_range(p..q, l..r),
+            v[l..r].iter().filter(|&amp;&amp;x| p &lt;= x &amp;&amp; x &lt; q).count()
         );
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

@@ -114,105 +114,105 @@
 <span id="98">98</span>
 <span id="99">99</span>
 <span id="100">100</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">prime_factors</span>, <span class="ident">BarrettReduction</span>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{prime_factors, BarrettReduction};
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">primitive_root</span>(<span class="ident">p</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-    <span class="kw">if</span> <span class="ident">p</span> == <span class="number">2</span> {
-        <span class="kw">return</span> <span class="number">1</span>;
+<span class="kw">pub fn </span>primitive_root(p: u64) -&gt; u64 {
+    <span class="kw">if </span>p == <span class="number">2 </span>{
+        <span class="kw">return </span><span class="number">1</span>;
     }
-    <span class="kw">let</span> <span class="ident">phi</span> = <span class="ident">p</span> - <span class="number">1</span>;
-    <span class="kw">let</span> <span class="ident">pf</span> = <span class="ident">prime_factors</span>(<span class="ident">phi</span>);
-    <span class="kw">let</span> <span class="ident">br</span> = <span class="ident">BarrettReduction</span>::&lt;<span class="ident">u128</span>&gt;<span class="ident">::new</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span>);
+    <span class="kw">let </span>phi = p - <span class="number">1</span>;
+    <span class="kw">let </span>pf = prime_factors(phi);
+    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(p <span class="kw">as _</span>);
     (<span class="number">2</span>..)
-        .<span class="ident">find</span>(|<span class="kw-2">&amp;</span><span class="ident">g</span>| <span class="ident">check_primitive_root</span>(<span class="ident">g</span>, <span class="ident">phi</span>, <span class="kw-2">&amp;</span><span class="ident">br</span>, <span class="kw-2">&amp;</span><span class="ident">pf</span>))
-        .<span class="ident">unwrap</span>()
+        .find(|<span class="kw-2">&amp;</span>g| check_primitive_root(g, phi, <span class="kw-2">&amp;</span>br, <span class="kw-2">&amp;</span>pf))
+        .unwrap()
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">check_primitive_root</span>(
-    <span class="ident">g</span>: <span class="ident">u64</span>,
-    <span class="ident">phi</span>: <span class="ident">u64</span>,
-    <span class="ident">br</span>: <span class="kw-2">&amp;</span><span class="ident">BarrettReduction</span>&lt;<span class="ident">u128</span>&gt;,
-    <span class="ident">pf</span>: <span class="kw-2">&amp;</span>[(<span class="ident">u64</span>, <span class="ident">u32</span>)],
-) -&gt; <span class="ident">bool</span> {
-    <span class="ident">pf</span>.<span class="ident">iter</span>().<span class="ident">all</span>(|<span class="kw-2">&amp;</span>(<span class="ident">q</span>, <span class="kw">_</span>)| {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">g</span> = <span class="ident">g</span> <span class="kw">as</span> <span class="ident">u128</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="ident">phi</span> / <span class="ident">q</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span>: <span class="ident">u128</span> = <span class="number">1</span>;
-        <span class="kw">while</span> <span class="ident">k</span> &gt; <span class="number">0</span> {
-            <span class="kw">if</span> <span class="ident">k</span> &amp; <span class="number">1</span> == <span class="number">1</span> {
-                <span class="ident">r</span> = <span class="ident">br</span>.<span class="ident">rem</span>(<span class="ident">r</span> * <span class="ident">g</span>);
+<span class="kw">pub fn </span>check_primitive_root(
+    g: u64,
+    phi: u64,
+    br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;,
+    pf: <span class="kw-2">&amp;</span>[(u64, u32)],
+) -&gt; bool {
+    pf.iter().all(|<span class="kw-2">&amp;</span>(q, <span class="kw">_</span>)| {
+        <span class="kw">let </span><span class="kw-2">mut </span>g = g <span class="kw">as </span>u128;
+        <span class="kw">let </span><span class="kw-2">mut </span>k = phi / q;
+        <span class="kw">let </span><span class="kw-2">mut </span>r: u128 = <span class="number">1</span>;
+        <span class="kw">while </span>k &gt; <span class="number">0 </span>{
+            <span class="kw">if </span>k &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+                r = br.rem(r * g);
             }
-            <span class="ident">g</span> = <span class="ident">br</span>.<span class="ident">rem</span>(<span class="ident">g</span> * <span class="ident">g</span>);
-            <span class="ident">k</span> &gt;&gt;= <span class="number">1</span>;
+            g = br.rem(g * g);
+            k &gt;&gt;= <span class="number">1</span>;
         }
-        <span class="ident">r</span> &gt; <span class="number">1</span>
-    })
+        r &gt; <span class="number">1
+    </span>})
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::math::PrimeList</span>;
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::math::PrimeList;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_primitive_root</span>() {
-        <span class="macro">assert_eq!</span>(<span class="number">3</span>, <span class="ident">primitive_root</span>(<span class="number">998244353</span>));
-        <span class="kw">let</span> <span class="ident">pl</span> = <span class="ident">PrimeList::new</span>(<span class="number">1000</span>);
-        <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">p</span> <span class="kw">in</span> <span class="ident">pl</span>.<span class="ident">primes</span>() {
-            <span class="kw">let</span> <span class="ident">g</span> = <span class="ident">primitive_root</span>(<span class="ident">p</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = <span class="ident">g</span>;
-            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">p</span> - <span class="number">1</span> {
-                <span class="macro">assert_ne!</span>(<span class="ident">x</span>, <span class="number">1</span>);
-                <span class="ident">x</span> = <span class="ident">x</span> * <span class="ident">g</span> % <span class="ident">p</span>;
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_primitive_root() {
+        <span class="macro">assert_eq!</span>(<span class="number">3</span>, primitive_root(<span class="number">998244353</span>));
+        <span class="kw">let </span>pl = PrimeList::new(<span class="number">1000</span>);
+        <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span>pl.primes() {
+            <span class="kw">let </span>g = primitive_root(p);
+            <span class="kw">let </span><span class="kw-2">mut </span>x = g;
+            <span class="kw">for _ in </span><span class="number">1</span>..p - <span class="number">1 </span>{
+                <span class="macro">assert_ne!</span>(x, <span class="number">1</span>);
+                x = x * g % p;
             }
-            <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">1</span>);
+            <span class="macro">assert_eq!</span>(x, <span class="number">1</span>);
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_primitive_root_prime_power</span>() {
-        <span class="kw">let</span> <span class="ident">pl</span> = <span class="ident">PrimeList::new</span>(<span class="number">100</span>);
-        <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">p</span> <span class="kw">in</span> <span class="ident">pl</span>.<span class="ident">primes</span>().<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
-            <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="number">1</span>.. {
-                <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">p</span>.<span class="ident">pow</span>(<span class="ident">e</span>);
-                <span class="kw">let</span> <span class="ident">phi</span> = <span class="ident">n</span> - <span class="ident">n</span> / <span class="ident">p</span>;
-                <span class="kw">let</span> <span class="ident">g</span> = {
-                    <span class="kw">let</span> <span class="ident">pf</span> = <span class="ident">prime_factors</span>(<span class="ident">phi</span>);
-                    <span class="kw">let</span> <span class="ident">br</span> = <span class="ident">BarrettReduction</span>::&lt;<span class="ident">u128</span>&gt;<span class="ident">::new</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>);
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_primitive_root_prime_power() {
+        <span class="kw">let </span>pl = PrimeList::new(<span class="number">100</span>);
+        <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span>pl.primes().iter().skip(<span class="number">1</span>) {
+            <span class="kw">for </span>e <span class="kw">in </span><span class="number">1</span>.. {
+                <span class="kw">let </span>n = p.pow(e);
+                <span class="kw">let </span>phi = n - n / p;
+                <span class="kw">let </span>g = {
+                    <span class="kw">let </span>pf = prime_factors(phi);
+                    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(n <span class="kw">as _</span>);
                     (<span class="number">2</span>..)
-                        .<span class="ident">find</span>(|<span class="kw-2">&amp;</span><span class="ident">g</span>| <span class="ident">check_primitive_root</span>(<span class="ident">g</span>, <span class="ident">phi</span>, <span class="kw-2">&amp;</span><span class="ident">br</span>, <span class="kw-2">&amp;</span><span class="ident">pf</span>))
-                        .<span class="ident">unwrap</span>()
+                        .find(|<span class="kw-2">&amp;</span>g| check_primitive_root(g, phi, <span class="kw-2">&amp;</span>br, <span class="kw-2">&amp;</span>pf))
+                        .unwrap()
                 };
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = <span class="ident">g</span>;
-                <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">phi</span> {
-                    <span class="macro">assert_ne!</span>(<span class="ident">x</span>, <span class="number">1</span>);
-                    <span class="ident">x</span> = <span class="ident">x</span> * <span class="ident">g</span> % <span class="ident">n</span>;
+                <span class="kw">let </span><span class="kw-2">mut </span>x = g;
+                <span class="kw">for _ in </span><span class="number">1</span>..phi {
+                    <span class="macro">assert_ne!</span>(x, <span class="number">1</span>);
+                    x = x * g % n;
                 }
-                <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">1</span>);
-                <span class="kw">if</span> <span class="ident">n</span> &gt;= <span class="number">10_000</span> {
+                <span class="macro">assert_eq!</span>(x, <span class="number">1</span>);
+                <span class="kw">if </span>n &gt;= <span class="number">10_000 </span>{
                     <span class="kw">break</span>;
                 }
             }
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_primitive_root_power_of_two</span>() {
-        <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="number">3</span>.. {
-            <span class="kw">let</span> <span class="ident">n</span> = <span class="number">2u64</span>.<span class="ident">pow</span>(<span class="ident">e</span>);
-            <span class="kw">let</span> <span class="ident">phi</span> = <span class="ident">n</span> / <span class="number">4</span>;
-            <span class="kw">let</span> <span class="ident">g</span> = <span class="number">5</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = <span class="ident">g</span>;
-            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">phi</span> {
-                <span class="macro">assert_ne!</span>(<span class="ident">x</span>, <span class="number">1</span>);
-                <span class="ident">x</span> = <span class="ident">x</span> * <span class="ident">g</span> % <span class="ident">n</span>;
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_primitive_root_power_of_two() {
+        <span class="kw">for </span>e <span class="kw">in </span><span class="number">3</span>.. {
+            <span class="kw">let </span>n = <span class="number">2u64</span>.pow(e);
+            <span class="kw">let </span>phi = n / <span class="number">4</span>;
+            <span class="kw">let </span>g = <span class="number">5</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>x = g;
+            <span class="kw">for _ in </span><span class="number">1</span>..phi {
+                <span class="macro">assert_ne!</span>(x, <span class="number">1</span>);
+                x = x * g % n;
             }
-            <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">1</span>);
-            <span class="kw">if</span> <span class="ident">n</span> &gt;= <span class="number">10_000</span> {
+            <span class="macro">assert_eq!</span>(x, <span class="number">1</span>);
+            <span class="kw">if </span>n &gt;= <span class="number">10_000 </span>{
                 <span class="kw">break</span>;
             }
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

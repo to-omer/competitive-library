@@ -107,98 +107,98 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
+</pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">UnionFind</span> {
-    <span class="ident">parents</span>: <span class="ident">Vec</span>&lt;<span class="ident">isize</span>&gt;,
+<span class="attribute">#[derive(Clone, Debug)]</span>
+<span class="kw">pub struct </span>UnionFind {
+    parents: Vec&lt;isize&gt;,
 }
-<span class="kw">impl</span> <span class="ident">UnionFind</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">parents</span> = <span class="macro">vec!</span>[-<span class="number">1</span>; <span class="ident">n</span>];
-        <span class="self">Self</span> { <span class="ident">parents</span> }
+<span class="kw">impl </span>UnionFind {
+    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>parents = <span class="macro">vec!</span>[-<span class="number">1</span>; n];
+        <span class="self">Self </span>{ parents }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">find</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">x</span>] &lt; <span class="number">0</span> {
-            <span class="ident">x</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">xx</span> = <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">x</span>] <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="kw">let</span> <span class="ident">y</span> = <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">xx</span>);
-            <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">x</span>] = <span class="ident">y</span> <span class="kw">as</span> <span class="ident">isize</span>;
-            <span class="ident">y</span>
+    <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+        <span class="kw">if </span><span class="self">self</span>.parents[x] &lt; <span class="number">0 </span>{
+            x
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>xx = <span class="self">self</span>.parents[x] <span class="kw">as </span>usize;
+            <span class="kw">let </span>y = <span class="self">self</span>.find(xx);
+            <span class="self">self</span>.parents[x] = y <span class="kw">as </span>isize;
+            y
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unite</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>, <span class="ident">y</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">use</span> <span class="ident">std::mem::swap</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">x</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">y</span> = <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">y</span>);
-        <span class="kw">if</span> <span class="ident">x</span> == <span class="ident">y</span> {
-            <span class="kw">return</span> <span class="bool-val">false</span>;
+    <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+        <span class="kw">use </span>std::mem::swap;
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="self">self</span>.find(x);
+        <span class="kw">let </span><span class="kw-2">mut </span>y = <span class="self">self</span>.find(y);
+        <span class="kw">if </span>x == y {
+            <span class="kw">return </span><span class="bool-val">false</span>;
         }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">x</span>] &gt; <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">y</span>] {
-            <span class="ident">swap</span>(<span class="kw-2">&amp;mut</span> <span class="ident">x</span>, <span class="kw-2">&amp;mut</span> <span class="ident">y</span>);
+        <span class="kw">if </span><span class="self">self</span>.parents[x] &gt; <span class="self">self</span>.parents[y] {
+            swap(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;mut </span>y);
         }
-        <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">x</span>] += <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">y</span>];
-        <span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">y</span>] = <span class="ident">x</span> <span class="kw">as</span> <span class="ident">isize</span>;
-        <span class="bool-val">true</span>
+        <span class="self">self</span>.parents[x] += <span class="self">self</span>.parents[y];
+        <span class="self">self</span>.parents[y] = x <span class="kw">as </span>isize;
+        <span class="bool-val">true
+    </span>}
+
+    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+        <span class="kw">let </span>x = <span class="self">self</span>.find(x);
+        (-<span class="self">self</span>.parents[x]) <span class="kw">as </span>usize
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">size</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">x</span>);
-        (-<span class="self">self</span>.<span class="ident">parents</span>[<span class="ident">x</span>]) <span class="kw">as</span> <span class="ident">usize</span>
+    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
+        <span class="self">self</span>.find(x) == <span class="self">self</span>.find(y)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">same</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>, <span class="ident">y</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">x</span>) == <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">y</span>)
+    <span class="kw">pub fn </span>members(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; Vec&lt;usize&gt; {
+        <span class="kw">let </span>root = <span class="self">self</span>.find(x);
+        (<span class="number">0</span>..<span class="self">self</span>.parents.len())
+            .filter(|i| <span class="self">self</span>.find(<span class="kw-2">*</span>i) == root)
+            .collect::&lt;Vec&lt;usize&gt;&gt;()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">members</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">x</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> <span class="ident">root</span> = <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">x</span>);
-        (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">parents</span>.<span class="ident">len</span>())
-            .<span class="ident">filter</span>(|<span class="ident">i</span>| <span class="self">self</span>.<span class="ident">find</span>(<span class="kw-2">*</span><span class="ident">i</span>) == <span class="ident">root</span>)
-            .<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;&gt;()
+    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;usize&gt; {
+        (<span class="number">0</span>..<span class="self">self</span>.parents.len())
+            .filter(|i| <span class="self">self</span>.parents[<span class="kw-2">*</span>i] &lt; <span class="number">0</span>)
+            .collect::&lt;Vec&lt;usize&gt;&gt;()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">roots</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-        (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">parents</span>.<span class="ident">len</span>())
-            .<span class="ident">filter</span>(|<span class="ident">i</span>| <span class="self">self</span>.<span class="ident">parents</span>[<span class="kw-2">*</span><span class="ident">i</span>] &lt; <span class="number">0</span>)
-            .<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;&gt;()
-    }
-
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all_group_members</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">HashMap</span>&lt;<span class="ident">usize</span>, <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">groups_map</span> = <span class="ident">HashMap::new</span>();
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">parents</span>.<span class="ident">len</span>() {
-            <span class="kw">let</span> <span class="ident">r</span> = <span class="self">self</span>.<span class="ident">find</span>(<span class="ident">x</span>);
-            <span class="ident">groups_map</span>
-                .<span class="ident">entry</span>(<span class="ident">r</span>)
-                .<span class="ident">or_insert_with</span>(|| <span class="ident">Vec::with_capacity</span>(<span class="self">self</span>.<span class="ident">size</span>(<span class="ident">r</span>)))
-                .<span class="ident">push</span>(<span class="ident">x</span>);
+    <span class="kw">pub fn </span>all_group_members(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;usize, Vec&lt;usize&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>groups_map = HashMap::new();
+        <span class="kw">for </span>x <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.parents.len() {
+            <span class="kw">let </span>r = <span class="self">self</span>.find(x);
+            groups_map
+                .entry(r)
+                .or_insert_with(|| Vec::with_capacity(<span class="self">self</span>.size(r)))
+                .push(x);
         }
-        <span class="ident">groups_map</span>
+        groups_map
     }
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_union_find</span>() {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">uf</span> = <span class="ident">UnionFind::new</span>(<span class="number">10</span>);
-    <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="number">0</span>, <span class="number">1</span>);
-    <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="number">0</span>, <span class="number">2</span>);
-    <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="number">2</span>, <span class="number">9</span>);
-    <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="number">3</span>, <span class="number">5</span>);
-    <span class="ident">uf</span>.<span class="ident">unite</span>(<span class="number">3</span>, <span class="number">7</span>);
-    <span class="macro">assert!</span>(<span class="ident">uf</span>.<span class="ident">same</span>(<span class="number">0</span>, <span class="number">1</span>));
-    <span class="macro">assert!</span>(<span class="ident">uf</span>.<span class="ident">same</span>(<span class="number">0</span>, <span class="number">2</span>));
-    <span class="macro">assert!</span>(<span class="ident">uf</span>.<span class="ident">same</span>(<span class="number">2</span>, <span class="number">9</span>));
-    <span class="macro">assert!</span>(<span class="ident">uf</span>.<span class="ident">same</span>(<span class="number">3</span>, <span class="number">5</span>));
-    <span class="macro">assert!</span>(<span class="ident">uf</span>.<span class="ident">same</span>(<span class="number">3</span>, <span class="number">7</span>));
-    <span class="macro">assert!</span>(!<span class="ident">uf</span>.<span class="ident">same</span>(<span class="number">0</span>, <span class="number">3</span>));
-    <span class="macro">assert!</span>(!<span class="ident">uf</span>.<span class="ident">same</span>(<span class="number">0</span>, <span class="number">6</span>));
-    <span class="macro">assert_eq!</span>(<span class="ident">uf</span>.<span class="ident">size</span>(<span class="number">0</span>), <span class="number">4</span>);
-    <span class="macro">assert_eq!</span>(<span class="ident">uf</span>.<span class="ident">size</span>(<span class="number">1</span>), <span class="number">4</span>);
-    <span class="macro">assert_eq!</span>(<span class="ident">uf</span>.<span class="ident">size</span>(<span class="number">3</span>), <span class="number">3</span>);
-    <span class="comment">// println!(&quot;{:?}&quot;, uf.all_group_members())</span>
-}
+<span class="attribute">#[test]</span>
+<span class="kw">fn </span>test_union_find() {
+    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(<span class="number">10</span>);
+    uf.unite(<span class="number">0</span>, <span class="number">1</span>);
+    uf.unite(<span class="number">0</span>, <span class="number">2</span>);
+    uf.unite(<span class="number">2</span>, <span class="number">9</span>);
+    uf.unite(<span class="number">3</span>, <span class="number">5</span>);
+    uf.unite(<span class="number">3</span>, <span class="number">7</span>);
+    <span class="macro">assert!</span>(uf.same(<span class="number">0</span>, <span class="number">1</span>));
+    <span class="macro">assert!</span>(uf.same(<span class="number">0</span>, <span class="number">2</span>));
+    <span class="macro">assert!</span>(uf.same(<span class="number">2</span>, <span class="number">9</span>));
+    <span class="macro">assert!</span>(uf.same(<span class="number">3</span>, <span class="number">5</span>));
+    <span class="macro">assert!</span>(uf.same(<span class="number">3</span>, <span class="number">7</span>));
+    <span class="macro">assert!</span>(!uf.same(<span class="number">0</span>, <span class="number">3</span>));
+    <span class="macro">assert!</span>(!uf.same(<span class="number">0</span>, <span class="number">6</span>));
+    <span class="macro">assert_eq!</span>(uf.size(<span class="number">0</span>), <span class="number">4</span>);
+    <span class="macro">assert_eq!</span>(uf.size(<span class="number">1</span>), <span class="number">4</span>);
+    <span class="macro">assert_eq!</span>(uf.size(<span class="number">3</span>), <span class="number">3</span>);
+    <span class="comment">// println!(&quot;{:?}&quot;, uf.all_group_members())
+</span>}
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

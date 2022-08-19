@@ -74,65 +74,65 @@
 <span id="58">58</span>
 <span id="59">59</span>
 <span id="60">60</span>
-</pre><pre class="rust"><code><span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SuffixArray</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="ident">pat</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;,
-    <span class="ident">sa</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
-    <span class="ident">rank</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
+</pre><pre class="rust"><code><span class="attribute">#[derive(Clone, Debug)]</span>
+<span class="kw">pub struct </span>SuffixArray&lt;T&gt; {
+    pat: Vec&lt;T&gt;,
+    sa: Vec&lt;usize&gt;,
+    rank: Vec&lt;usize&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Ord</span>&gt; <span class="ident">SuffixArray</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">pat</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">pat</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sa</span> = (<span class="number">0</span>..<span class="ident">n</span> + <span class="number">1</span>).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rank</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">n</span> + <span class="number">1</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ford</span> = (<span class="number">0</span>..<span class="ident">n</span>).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="ident">ford</span>.<span class="ident">sort_by_key</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| <span class="kw-2">&amp;</span><span class="ident">pat</span>[<span class="ident">i</span>]);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> = <span class="number">1</span>;
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
-            <span class="ident">rank</span>[<span class="ident">ford</span>[<span class="ident">i</span>]] = <span class="ident">c</span>;
-            <span class="kw">if</span> <span class="ident">i</span> + <span class="number">1</span> &lt; <span class="ident">n</span> &amp;&amp; <span class="ident">pat</span>[<span class="ident">ford</span>[<span class="ident">i</span>]] != <span class="ident">pat</span>[<span class="ident">ford</span>[<span class="ident">i</span> + <span class="number">1</span>]] {
-                <span class="ident">c</span> += <span class="number">1</span>;
+<span class="kw">impl</span>&lt;T: Ord&gt; SuffixArray&lt;T&gt; {
+    <span class="kw">pub fn </span>new(pat: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>n = pat.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>sa = (<span class="number">0</span>..n + <span class="number">1</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="kw">let </span><span class="kw-2">mut </span>rank = <span class="macro">vec!</span>[<span class="number">0</span>; n + <span class="number">1</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>ford = (<span class="number">0</span>..n).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        ford.sort_by_key(|<span class="kw-2">&amp;</span>i| <span class="kw-2">&amp;</span>pat[i]);
+        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">1</span>;
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+            rank[ford[i]] = c;
+            <span class="kw">if </span>i + <span class="number">1 </span>&lt; n &amp;&amp; pat[ford[i]] != pat[ford[i + <span class="number">1</span>]] {
+                c += <span class="number">1</span>;
             }
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">k</span> = <span class="number">1</span>;
-        <span class="kw">while</span> <span class="ident">k</span> &lt;= <span class="ident">n</span> {
-            <span class="ident">sa</span>.<span class="ident">sort_by_key</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| (<span class="ident">rank</span>[<span class="ident">i</span>], <span class="ident">rank</span>.<span class="ident">get</span>(<span class="ident">i</span> + <span class="ident">k</span>).<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="number">0</span>)));
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tmp</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">n</span> + <span class="number">1</span>];
-            <span class="ident">tmp</span>[<span class="ident">sa</span>[<span class="number">0</span>]] = <span class="number">1</span>;
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">n</span> + <span class="number">1</span> {
-                <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">sa</span>[<span class="ident">i</span> - <span class="number">1</span>];
-                <span class="kw">let</span> <span class="ident">y</span> = <span class="ident">sa</span>[<span class="ident">i</span>];
-                <span class="kw">let</span> <span class="ident">b</span> = (<span class="ident">rank</span>[<span class="ident">x</span>], <span class="ident">rank</span>.<span class="ident">get</span>(<span class="ident">x</span> + <span class="ident">k</span>).<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="number">0</span>))
-                    &lt; (<span class="ident">rank</span>[<span class="ident">y</span>], <span class="ident">rank</span>.<span class="ident">get</span>(<span class="ident">y</span> + <span class="ident">k</span>).<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
-                <span class="ident">tmp</span>[<span class="ident">y</span>] = <span class="ident">tmp</span>[<span class="ident">x</span>] + <span class="ident">b</span> <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">1</span>;
+        <span class="kw">while </span>k &lt;= n {
+            sa.sort_by_key(|<span class="kw-2">&amp;</span>i| (rank[i], rank.get(i + k).unwrap_or(<span class="kw-2">&amp;</span><span class="number">0</span>)));
+            <span class="kw">let </span><span class="kw-2">mut </span>tmp = <span class="macro">vec!</span>[<span class="number">0</span>; n + <span class="number">1</span>];
+            tmp[sa[<span class="number">0</span>]] = <span class="number">1</span>;
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n + <span class="number">1 </span>{
+                <span class="kw">let </span>x = sa[i - <span class="number">1</span>];
+                <span class="kw">let </span>y = sa[i];
+                <span class="kw">let </span>b = (rank[x], rank.get(x + k).unwrap_or(<span class="kw-2">&amp;</span><span class="number">0</span>))
+                    &lt; (rank[y], rank.get(y + k).unwrap_or(<span class="kw-2">&amp;</span><span class="number">0</span>));
+                tmp[y] = tmp[x] + b <span class="kw">as </span>usize;
             }
-            <span class="ident">rank</span> = <span class="ident">tmp</span>;
-            <span class="ident">k</span> <span class="kw-2">*</span>= <span class="number">2</span>;
+            rank = tmp;
+            k <span class="kw-2">*</span>= <span class="number">2</span>;
         }
-        <span class="self">Self</span> { <span class="ident">pat</span>, <span class="ident">sa</span>, <span class="ident">rank</span> }
+        <span class="self">Self </span>{ pat, sa, rank }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">longest_common_prefix_array</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">pat</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">h</span> = <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">lcp</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">n</span>];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">n</span> {
-            <span class="kw">let</span> <span class="ident">j</span> = <span class="self">self</span>[<span class="self">self</span>.<span class="ident">rank</span>[<span class="ident">i</span>] - <span class="number">2</span>];
-            <span class="kw">if</span> <span class="ident">h</span> &gt; <span class="number">0</span> {
-                <span class="ident">h</span> -= <span class="number">1</span>;
+    <span class="kw">pub fn </span>longest_common_prefix_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;usize&gt; {
+        <span class="kw">let </span>n = <span class="self">self</span>.pat.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>h = <span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>lcp = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+            <span class="kw">let </span>j = <span class="self">self</span>[<span class="self">self</span>.rank[i] - <span class="number">2</span>];
+            <span class="kw">if </span>h &gt; <span class="number">0 </span>{
+                h -= <span class="number">1</span>;
             }
-            <span class="kw">while</span> <span class="ident">j</span> + <span class="ident">h</span> &lt; <span class="ident">n</span> &amp;&amp; <span class="ident">i</span> + <span class="ident">h</span> &lt; <span class="ident">n</span> &amp;&amp; <span class="self">self</span>.<span class="ident">pat</span>[<span class="ident">j</span> + <span class="ident">h</span>] == <span class="self">self</span>.<span class="ident">pat</span>[<span class="ident">i</span> + <span class="ident">h</span>] {
-                <span class="ident">h</span> += <span class="number">1</span>;
+            <span class="kw">while </span>j + h &lt; n &amp;&amp; i + h &lt; n &amp;&amp; <span class="self">self</span>.pat[j + h] == <span class="self">self</span>.pat[i + h] {
+                h += <span class="number">1</span>;
             }
-            <span class="ident">lcp</span>[<span class="self">self</span>.<span class="ident">rank</span>[<span class="ident">i</span>] - <span class="number">2</span>] = <span class="ident">h</span>;
+            lcp[<span class="self">self</span>.rank[i] - <span class="number">2</span>] = h;
         }
-        <span class="ident">lcp</span>
+        lcp
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">std::ops::Index</span>&lt;<span class="ident">usize</span>&gt; <span class="kw">for</span> <span class="ident">SuffixArray</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">usize</span>;
-    <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">sa</span>[<span class="ident">index</span>]
+<span class="kw">impl</span>&lt;T&gt; std::ops::Index&lt;usize&gt; <span class="kw">for </span>SuffixArray&lt;T&gt; {
+    <span class="kw">type </span>Output = usize;
+    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.sa[index]
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

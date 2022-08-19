@@ -273,264 +273,264 @@
 <span id="257">257</span>
 <span id="258">258</span>
 <span id="259">259</span>
-</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::suspicious_op_assign_impl</span>)]</span>
+</pre><pre class="rust"><code><span class="attribute">#![allow(clippy::suspicious_op_assign_impl)]</span>
 
-<span class="kw">use</span> <span class="ident">std::ops</span>::{
-    <span class="ident">BitAnd</span>, <span class="ident">BitAndAssign</span>, <span class="ident">BitOr</span>, <span class="ident">BitOrAssign</span>, <span class="ident">BitXor</span>, <span class="ident">BitXorAssign</span>, <span class="ident">Not</span>, <span class="ident">Shl</span>, <span class="ident">ShlAssign</span>, <span class="ident">Shr</span>,
-    <span class="ident">ShrAssign</span>,
+<span class="kw">use </span>std::ops::{
+    BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
+    ShrAssign,
 };
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitSet</span> {
-    <span class="ident">size</span>: <span class="ident">usize</span>,
-    <span class="ident">bits</span>: <span class="ident">Vec</span>&lt;<span class="ident">u64</span>&gt;,
+<span class="attribute">#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="kw">pub struct </span>BitSet {
+    size: usize,
+    bits: Vec&lt;u64&gt;,
 }
-<span class="kw">impl</span> <span class="ident">BitSet</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">size</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">size</span>,
-            <span class="ident">bits</span>: <span class="macro">vec!</span>[<span class="number">0</span>; (<span class="ident">size</span> + <span class="number">63</span>) / <span class="number">64</span>],
+<span class="kw">impl </span>BitSet {
+    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            size,
+            bits: <span class="macro">vec!</span>[<span class="number">0</span>; (size + <span class="number">63</span>) / <span class="number">64</span>],
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ones</span>(<span class="ident">size</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span> = <span class="self">Self</span> {
-            <span class="ident">size</span>,
-            <span class="ident">bits</span>: <span class="macro">vec!</span>[<span class="ident">std::u64::MAX</span>; (<span class="ident">size</span> + <span class="number">63</span>) / <span class="number">64</span>],
+    <span class="kw">pub fn </span>ones(size: usize) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
+            size,
+            bits: <span class="macro">vec!</span>[std::u64::MAX; (size + <span class="number">63</span>) / <span class="number">64</span>],
         };
-        <span class="ident">self_</span>.<span class="ident">trim</span>();
-        <span class="ident">self_</span>
+        self_.trim();
+        self_
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> &gt;&gt; <span class="number">6</span>] &amp; <span class="number">1</span> &lt;&lt; (<span class="ident">i</span> &amp; <span class="number">63</span>) != <span class="number">0</span>
-    }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">b</span>: <span class="ident">bool</span>) {
-        <span class="kw">if</span> <span class="ident">b</span> {
-            <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> &gt;&gt; <span class="number">6</span>] |= <span class="number">1</span> &lt;&lt; (<span class="ident">i</span> &amp; <span class="number">63</span>);
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> &gt;&gt; <span class="number">6</span>] &amp;= !(<span class="number">1</span> &lt;&lt; (<span class="ident">i</span> &amp; <span class="number">63</span>));
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, i: usize) -&gt; bool {
+        <span class="self">self</span>.bits[i &gt;&gt; <span class="number">6</span>] &amp; <span class="number">1 </span>&lt;&lt; (i &amp; <span class="number">63</span>) != <span class="number">0
+    </span>}
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize, b: bool) {
+        <span class="kw">if </span>b {
+            <span class="self">self</span>.bits[i &gt;&gt; <span class="number">6</span>] |= <span class="number">1 </span>&lt;&lt; (i &amp; <span class="number">63</span>);
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.bits[i &gt;&gt; <span class="number">6</span>] &amp;= !(<span class="number">1 </span>&lt;&lt; (i &amp; <span class="number">63</span>));
         }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count_ones</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u64</span> {
-        <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">iter</span>().<span class="ident">map</span>(|<span class="ident">x</span>| <span class="ident">x</span>.<span class="ident">count_ones</span>() <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">sum</span>()
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>count_ones(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="self">self</span>.bits.iter().map(|x| x.count_ones() <span class="kw">as </span>u64).sum()
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count_zeros</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u64</span> {
-        <span class="self">self</span>.<span class="ident">size</span> <span class="kw">as</span> <span class="ident">u64</span> - <span class="self">self</span>.<span class="ident">count_ones</span>()
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>count_zeros(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="self">self</span>.size <span class="kw">as </span>u64 - <span class="self">self</span>.count_ones()
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">trim</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">size</span> &amp; <span class="number">63</span> != <span class="number">0</span> {
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">x</span>) = <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">last_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">x</span> &amp;= <span class="number">0xffff_ffff_ffff_ffff</span> &gt;&gt; (<span class="number">64</span> - (<span class="self">self</span>.<span class="ident">size</span> &amp; <span class="number">63</span>));
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>trim(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>!= <span class="number">0 </span>{
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = <span class="self">self</span>.bits.last_mut() {
+                <span class="kw-2">*</span>x &amp;= <span class="number">0xffff_ffff_ffff_ffff </span>&gt;&gt; (<span class="number">64 </span>- (<span class="self">self</span>.size &amp; <span class="number">63</span>));
             }
         }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shl_bitor_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">rhs</span> &gt;&gt; <span class="number">6</span>;
-        <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">rhs</span> &amp; <span class="number">63</span>;
-        <span class="kw">if</span> <span class="ident">k</span> &lt; <span class="ident">n</span> {
-            <span class="kw">if</span> <span class="ident">d</span> == <span class="number">0</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">n</span> - <span class="ident">k</span>).<span class="ident">rev</span>() {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> + <span class="ident">k</span>] |= <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>];
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>shl_bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
+        <span class="kw">let </span>n = <span class="self">self</span>.bits.len();
+        <span class="kw">let </span>k = rhs &gt;&gt; <span class="number">6</span>;
+        <span class="kw">let </span>d = rhs &amp; <span class="number">63</span>;
+        <span class="kw">if </span>k &lt; n {
+            <span class="kw">if </span>d == <span class="number">0 </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..n - k).rev() {
+                    <span class="self">self</span>.bits[i + k] |= <span class="self">self</span>.bits[i];
                 }
-            } <span class="kw">else</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="ident">n</span> - <span class="ident">k</span>).<span class="ident">rev</span>() {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> + <span class="ident">k</span>] |= <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>] &lt;&lt; <span class="ident">d</span> | <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> - <span class="number">1</span>] &gt;&gt; (<span class="number">64</span> - <span class="ident">d</span>);
+            } <span class="kw">else </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..n - k).rev() {
+                    <span class="self">self</span>.bits[i + k] |= <span class="self">self</span>.bits[i] &lt;&lt; d | <span class="self">self</span>.bits[i - <span class="number">1</span>] &gt;&gt; (<span class="number">64 </span>- d);
                 }
-                <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">k</span>] |= <span class="self">self</span>.<span class="ident">bits</span>[<span class="number">0</span>] &lt;&lt; <span class="ident">d</span>;
+                <span class="self">self</span>.bits[k] |= <span class="self">self</span>.bits[<span class="number">0</span>] &lt;&lt; d;
             }
-            <span class="self">self</span>.<span class="ident">trim</span>();
+            <span class="self">self</span>.trim();
         }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">shr_bitor_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">rhs</span> &gt;&gt; <span class="number">6</span>;
-        <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">rhs</span> &amp; <span class="number">63</span>;
-        <span class="kw">if</span> <span class="ident">k</span> &lt; <span class="ident">n</span> {
-            <span class="kw">if</span> <span class="ident">d</span> == <span class="number">0</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">k</span>..<span class="ident">n</span> {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> - <span class="ident">k</span>] |= <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>];
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>shr_bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
+        <span class="kw">let </span>n = <span class="self">self</span>.bits.len();
+        <span class="kw">let </span>k = rhs &gt;&gt; <span class="number">6</span>;
+        <span class="kw">let </span>d = rhs &amp; <span class="number">63</span>;
+        <span class="kw">if </span>k &lt; n {
+            <span class="kw">if </span>d == <span class="number">0 </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>k..n {
+                    <span class="self">self</span>.bits[i - k] |= <span class="self">self</span>.bits[i];
                 }
-            } <span class="kw">else</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">k</span>..<span class="ident">n</span> - <span class="number">1</span> {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> - <span class="ident">k</span>] |= <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>] &gt;&gt; <span class="ident">d</span> | <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> + <span class="number">1</span>] &lt;&lt; (<span class="number">64</span> - <span class="ident">d</span>);
+            } <span class="kw">else </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>k..n - <span class="number">1 </span>{
+                    <span class="self">self</span>.bits[i - k] |= <span class="self">self</span>.bits[i] &gt;&gt; d | <span class="self">self</span>.bits[i + <span class="number">1</span>] &lt;&lt; (<span class="number">64 </span>- d);
                 }
-                <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">n</span> - <span class="ident">k</span> - <span class="number">1</span>] |= <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">n</span> - <span class="number">1</span>] &gt;&gt; <span class="ident">d</span>;
+                <span class="self">self</span>.bits[n - k - <span class="number">1</span>] |= <span class="self">self</span>.bits[n - <span class="number">1</span>] &gt;&gt; d;
             }
         }
     }
 }
-<span class="kw">impl</span> <span class="ident">ShlAssign</span>&lt;<span class="ident">usize</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">shl_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">rhs</span> &gt;&gt; <span class="number">6</span>;
-        <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">rhs</span> &amp; <span class="number">63</span>;
-        <span class="kw">if</span> <span class="ident">k</span> &gt;= <span class="ident">n</span> {
-            <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">x</span> = <span class="number">0</span>;
+<span class="kw">impl </span>ShlAssign&lt;usize&gt; <span class="kw">for </span>BitSet {
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>shl_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
+        <span class="kw">let </span>n = <span class="self">self</span>.bits.len();
+        <span class="kw">let </span>k = rhs &gt;&gt; <span class="number">6</span>;
+        <span class="kw">let </span>d = rhs &amp; <span class="number">63</span>;
+        <span class="kw">if </span>k &gt;= n {
+            <span class="kw">for </span>x <span class="kw">in </span><span class="self">self</span>.bits.iter_mut() {
+                <span class="kw-2">*</span>x = <span class="number">0</span>;
             }
-        } <span class="kw">else</span> {
-            <span class="kw">if</span> <span class="ident">d</span> == <span class="number">0</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="ident">n</span> - <span class="ident">k</span>).<span class="ident">rev</span>() {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> + <span class="ident">k</span>] = <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>];
+        } <span class="kw">else </span>{
+            <span class="kw">if </span>d == <span class="number">0 </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..n - k).rev() {
+                    <span class="self">self</span>.bits[i + k] = <span class="self">self</span>.bits[i];
                 }
-            } <span class="kw">else</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="ident">n</span> - <span class="ident">k</span>).<span class="ident">rev</span>() {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> + <span class="ident">k</span>] = <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>] &lt;&lt; <span class="ident">d</span> | <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> - <span class="number">1</span>] &gt;&gt; (<span class="number">64</span> - <span class="ident">d</span>);
+            } <span class="kw">else </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..n - k).rev() {
+                    <span class="self">self</span>.bits[i + k] = <span class="self">self</span>.bits[i] &lt;&lt; d | <span class="self">self</span>.bits[i - <span class="number">1</span>] &gt;&gt; (<span class="number">64 </span>- d);
                 }
-                <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">k</span>] = <span class="self">self</span>.<span class="ident">bits</span>[<span class="number">0</span>] &lt;&lt; <span class="ident">d</span>;
+                <span class="self">self</span>.bits[k] = <span class="self">self</span>.bits[<span class="number">0</span>] &lt;&lt; d;
             }
-            <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>[..<span class="ident">k</span>].<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">x</span> = <span class="number">0</span>;
+            <span class="kw">for </span>x <span class="kw">in </span><span class="self">self</span>.bits[..k].iter_mut() {
+                <span class="kw-2">*</span>x = <span class="number">0</span>;
             }
-            <span class="self">self</span>.<span class="ident">trim</span>();
+            <span class="self">self</span>.trim();
         }
     }
 }
-<span class="kw">impl</span> <span class="ident">Shl</span>&lt;<span class="ident">usize</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">shl</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="self">self</span> &lt;&lt;= <span class="ident">rhs</span>;
-        <span class="self">self</span>
-    }
+<span class="kw">impl </span>Shl&lt;usize&gt; <span class="kw">for </span>BitSet {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>shl(<span class="kw-2">mut </span><span class="self">self</span>, rhs: usize) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self </span>&lt;&lt;= rhs;
+        <span class="self">self
+    </span>}
 }
-<span class="kw">impl</span> <span class="ident">ShrAssign</span>&lt;<span class="ident">usize</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">shr_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">n</span> = <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">rhs</span> &gt;&gt; <span class="number">6</span>;
-        <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">rhs</span> &amp; <span class="number">63</span>;
-        <span class="kw">if</span> <span class="ident">k</span> &gt;= <span class="ident">n</span> {
-            <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">x</span> = <span class="number">0</span>;
+<span class="kw">impl </span>ShrAssign&lt;usize&gt; <span class="kw">for </span>BitSet {
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>shr_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
+        <span class="kw">let </span>n = <span class="self">self</span>.bits.len();
+        <span class="kw">let </span>k = rhs &gt;&gt; <span class="number">6</span>;
+        <span class="kw">let </span>d = rhs &amp; <span class="number">63</span>;
+        <span class="kw">if </span>k &gt;= n {
+            <span class="kw">for </span>x <span class="kw">in </span><span class="self">self</span>.bits.iter_mut() {
+                <span class="kw-2">*</span>x = <span class="number">0</span>;
             }
-        } <span class="kw">else</span> {
-            <span class="kw">if</span> <span class="ident">d</span> == <span class="number">0</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">k</span>..<span class="ident">n</span> {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> - <span class="ident">k</span>] = <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>];
+        } <span class="kw">else </span>{
+            <span class="kw">if </span>d == <span class="number">0 </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>k..n {
+                    <span class="self">self</span>.bits[i - k] = <span class="self">self</span>.bits[i];
                 }
-            } <span class="kw">else</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">k</span>..<span class="ident">n</span> - <span class="number">1</span> {
-                    <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> - <span class="ident">k</span>] = <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span>] &gt;&gt; <span class="ident">d</span> | <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">i</span> + <span class="number">1</span>] &lt;&lt; (<span class="number">64</span> - <span class="ident">d</span>);
+            } <span class="kw">else </span>{
+                <span class="kw">for </span>i <span class="kw">in </span>k..n - <span class="number">1 </span>{
+                    <span class="self">self</span>.bits[i - k] = <span class="self">self</span>.bits[i] &gt;&gt; d | <span class="self">self</span>.bits[i + <span class="number">1</span>] &lt;&lt; (<span class="number">64 </span>- d);
                 }
-                <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">n</span> - <span class="ident">k</span> - <span class="number">1</span>] = <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">n</span> - <span class="number">1</span>] &gt;&gt; <span class="ident">d</span>;
+                <span class="self">self</span>.bits[n - k - <span class="number">1</span>] = <span class="self">self</span>.bits[n - <span class="number">1</span>] &gt;&gt; d;
             }
-            <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>[<span class="ident">n</span> - <span class="ident">k</span>..].<span class="ident">iter_mut</span>() {
-                <span class="kw-2">*</span><span class="ident">x</span> = <span class="number">0</span>;
+            <span class="kw">for </span>x <span class="kw">in </span><span class="self">self</span>.bits[n - k..].iter_mut() {
+                <span class="kw-2">*</span>x = <span class="number">0</span>;
             }
         }
     }
 }
-<span class="kw">impl</span> <span class="ident">Shr</span>&lt;<span class="ident">usize</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">shr</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="self">self</span> &gt;&gt;= <span class="ident">rhs</span>;
-        <span class="self">self</span>
-    }
+<span class="kw">impl </span>Shr&lt;usize&gt; <span class="kw">for </span>BitSet {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>shr(<span class="kw-2">mut </span><span class="self">self</span>, rhs: usize) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self </span>&gt;&gt;= rhs;
+        <span class="self">self
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">BitOrAssign</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitor_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>) {
-        <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">rhs</span>.<span class="ident">bits</span>.<span class="ident">iter</span>()) {
-            <span class="kw-2">*</span><span class="ident">l</span> |= <span class="kw-2">*</span><span class="ident">r</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitOrAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet&gt; <span class="kw">for </span>BitSet {
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) {
+        <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.bits.iter_mut().zip(rhs.bits.iter()) {
+            <span class="kw-2">*</span>l |= <span class="kw-2">*</span>r;
         }
-        <span class="self">self</span>.<span class="ident">trim</span>();
+        <span class="self">self</span>.trim();
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">BitOr</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitor</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="self">self</span> |= <span class="ident">rhs</span>;
-        <span class="self">self</span>
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitOr&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet&gt; <span class="kw">for </span>BitSet {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitor(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self </span>|= rhs;
+        <span class="self">self
+    </span>}
+}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; BitOr&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>BitSet&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet {
+    <span class="kw">type </span>Output = BitSet;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitor(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>BitSet) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
+        res |= rhs;
+        res
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; <span class="ident">BitOr</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">BitSet</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitor</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">BitSet</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="self">self</span>.<span class="ident">clone</span>();
-        <span class="ident">res</span> |= <span class="ident">rhs</span>;
-        <span class="ident">res</span>
-    }
-}
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">BitAndAssign</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitand_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>) {
-        <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">rhs</span>.<span class="ident">bits</span>.<span class="ident">iter</span>()) {
-            <span class="kw-2">*</span><span class="ident">l</span> &amp;= <span class="kw-2">*</span><span class="ident">r</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitAndAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet&gt; <span class="kw">for </span>BitSet {
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitand_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) {
+        <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.bits.iter_mut().zip(rhs.bits.iter()) {
+            <span class="kw-2">*</span>l &amp;= <span class="kw-2">*</span>r;
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">BitAnd</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitand</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="self">self</span> &amp;= <span class="ident">rhs</span>;
-        <span class="self">self</span>
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitAnd&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet&gt; <span class="kw">for </span>BitSet {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitand(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self </span>&amp;= rhs;
+        <span class="self">self
+    </span>}
+}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; BitAnd&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>BitSet&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet {
+    <span class="kw">type </span>Output = BitSet;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitand(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>BitSet) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
+        res &amp;= rhs;
+        res
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; <span class="ident">BitAnd</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">BitSet</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitand</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">BitSet</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="self">self</span>.<span class="ident">clone</span>();
-        <span class="ident">res</span> &amp;= <span class="ident">rhs</span>;
-        <span class="ident">res</span>
-    }
-}
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">BitXorAssign</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitxor_assign</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>) {
-        <span class="kw">for</span> (<span class="ident">l</span>, <span class="ident">r</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">rhs</span>.<span class="ident">bits</span>.<span class="ident">iter</span>()) {
-            <span class="kw-2">*</span><span class="ident">l</span> ^= <span class="kw-2">*</span><span class="ident">r</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitXorAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet&gt; <span class="kw">for </span>BitSet {
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitxor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) {
+        <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.bits.iter_mut().zip(rhs.bits.iter()) {
+            <span class="kw-2">*</span>l ^= <span class="kw-2">*</span>r;
         }
-        <span class="self">self</span>.<span class="ident">trim</span>();
+        <span class="self">self</span>.trim();
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">BitXor</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitxor</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="self">self</span> ^= <span class="ident">rhs</span>;
-        <span class="self">self</span>
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitXor&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet&gt; <span class="kw">for </span>BitSet {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitxor(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self </span>^= rhs;
+        <span class="self">self
+    </span>}
+}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; BitXor&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>BitSet&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet {
+    <span class="kw">type </span>Output = BitSet;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>bitxor(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span>BitSet) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
+        res ^= rhs;
+        res
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; <span class="ident">BitXor</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">BitSet</span>&gt; <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">BitSet</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bitxor</span>(<span class="self">self</span>, <span class="ident">rhs</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">BitSet</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="self">self</span>.<span class="ident">clone</span>();
-        <span class="ident">res</span> ^= <span class="ident">rhs</span>;
-        <span class="ident">res</span>
-    }
-}
-<span class="kw">impl</span> <span class="ident">Not</span> <span class="kw">for</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">not</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="kw">for</span> <span class="ident">x</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">bits</span>.<span class="ident">iter_mut</span>() {
-            <span class="kw-2">*</span><span class="ident">x</span> = !<span class="kw-2">*</span><span class="ident">x</span>;
+<span class="kw">impl </span>Not <span class="kw">for </span>BitSet {
+    <span class="kw">type </span>Output = <span class="self">Self</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>not(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">for </span>x <span class="kw">in </span><span class="self">self</span>.bits.iter_mut() {
+            <span class="kw-2">*</span>x = !<span class="kw-2">*</span>x;
         }
-        <span class="self">self</span>.<span class="ident">trim</span>();
-        <span class="self">self</span>
-    }
+        <span class="self">self</span>.trim();
+        <span class="self">self
+    </span>}
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">Not</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSet</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">BitSet</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">not</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::Output</span> {
-        !<span class="self">self</span>.<span class="ident">clone</span>()
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Not <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitSet {
+    <span class="kw">type </span>Output = BitSet;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>not(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
+        !<span class="self">self</span>.clone()
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

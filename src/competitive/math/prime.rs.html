@@ -126,117 +126,117 @@
 <span id="110">110</span>
 <span id="111">111</span>
 <span id="112">112</span>
-</pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">euler_phi</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> = <span class="ident">n</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="ident">n</span>;
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span> {
-        <span class="kw">if</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
-            <span class="ident">res</span> = <span class="ident">res</span> / <span class="ident">i</span> * (<span class="ident">i</span> - <span class="number">1</span>);
-            <span class="kw">while</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
-                <span class="ident">n</span> /= <span class="ident">i</span>;
+</pre><pre class="rust"><code><span class="kw">pub fn </span>euler_phi(n: usize) -&gt; usize {
+    <span class="kw">let </span><span class="kw-2">mut </span>n = n;
+    <span class="kw">let </span><span class="kw-2">mut </span>res = n;
+    <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..(n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>usize + <span class="number">1 </span>{
+        <span class="kw">if </span>n % i == <span class="number">0 </span>{
+            res = res / i * (i - <span class="number">1</span>);
+            <span class="kw">while </span>n % i == <span class="number">0 </span>{
+                n /= i;
             }
         }
     }
-    <span class="kw">if</span> <span class="ident">n</span> != <span class="number">1</span> {
-        <span class="ident">res</span> = <span class="ident">res</span> / <span class="ident">n</span> * (<span class="ident">n</span> - <span class="number">1</span>);
+    <span class="kw">if </span>n != <span class="number">1 </span>{
+        res = res / n * (n - <span class="number">1</span>);
     }
-    <span class="ident">res</span>
+    res
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EulerPhiTable</span> {
-    <span class="ident">table</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
+<span class="attribute">#[derive(Clone, Debug)]</span>
+<span class="kw">pub struct </span>EulerPhiTable {
+    table: Vec&lt;usize&gt;,
 }
-<span class="kw">impl</span> <span class="ident">EulerPhiTable</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">max_n</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = (<span class="number">0</span>..<span class="ident">max_n</span> + <span class="number">1</span>).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..<span class="ident">max_n</span> + <span class="number">1</span> {
-            <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">i</span>] == <span class="ident">i</span> {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> = <span class="ident">i</span>;
-                <span class="kw">while</span> <span class="ident">j</span> &lt;= <span class="ident">max_n</span> {
-                    <span class="ident">table</span>[<span class="ident">j</span>] = <span class="ident">table</span>[<span class="ident">j</span>] / <span class="ident">i</span> * (<span class="ident">i</span> - <span class="number">1</span>);
-                    <span class="ident">j</span> += <span class="ident">i</span>;
+<span class="kw">impl </span>EulerPhiTable {
+    <span class="kw">pub fn </span>new(max_n: usize) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>table = (<span class="number">0</span>..max_n + <span class="number">1</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..max_n + <span class="number">1 </span>{
+            <span class="kw">if </span>table[i] == i {
+                <span class="kw">let </span><span class="kw-2">mut </span>j = i;
+                <span class="kw">while </span>j &lt;= max_n {
+                    table[j] = table[j] / i * (i - <span class="number">1</span>);
+                    j += i;
                 }
             }
         }
-        <span class="ident">EulerPhiTable</span> { <span class="ident">table</span> }
+        EulerPhiTable { table }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">n</span>]
+    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize) -&gt; usize {
+        <span class="self">self</span>.table[n]
     }
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
-<span class="doccomment">/// g(d) = Sigma mu(d) * f(n/d)</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">moebius</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">std::collections::HashMap</span>&lt;<span class="ident">usize</span>, <span class="ident">i64</span>&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="ident">std::collections::HashMap::new</span>();
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">primes</span> = <span class="macro">vec!</span>[];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">n</span> = <span class="ident">n</span>;
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">2</span>..(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span> {
-        <span class="kw">if</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
-            <span class="ident">primes</span>.<span class="ident">push</span>(<span class="ident">i</span>);
-            <span class="kw">while</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
-                <span class="ident">n</span> /= <span class="ident">i</span>;
+<span class="attribute">#[codesnip::entry]</span>
+<span class="doccomment">/// g(d) = Sigma mu(d) * f(n/d)
+</span><span class="kw">pub fn </span>moebius(n: usize) -&gt; std::collections::HashMap&lt;usize, i64&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>res = std::collections::HashMap::new();
+    <span class="kw">let </span><span class="kw-2">mut </span>primes = <span class="macro">vec!</span>[];
+    <span class="kw">let </span><span class="kw-2">mut </span>n = n;
+    <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..(n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>usize + <span class="number">1 </span>{
+        <span class="kw">if </span>n % i == <span class="number">0 </span>{
+            primes.push(i);
+            <span class="kw">while </span>n % i == <span class="number">0 </span>{
+                n /= i;
             }
         }
     }
-    <span class="kw">if</span> <span class="ident">n</span> != <span class="number">1</span> {
-        <span class="ident">primes</span>.<span class="ident">push</span>(<span class="ident">n</span>);
+    <span class="kw">if </span>n != <span class="number">1 </span>{
+        primes.push(n);
     }
-    <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">primes</span>.<span class="ident">len</span>();
-    <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">1</span> &lt;&lt; <span class="ident">m</span> {
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">mu</span>, <span class="kw-2">mut</span> <span class="ident">d</span>) = (<span class="number">1</span>, <span class="number">1</span>);
-        <span class="kw">for</span> (<span class="ident">j</span>, <span class="ident">p</span>) <span class="kw">in</span> <span class="ident">primes</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">i</span> &amp; <span class="number">1</span> &lt;&lt; <span class="ident">j</span> != <span class="number">0</span> {
-                <span class="ident">mu</span> <span class="kw-2">*</span>= -<span class="number">1</span>;
-                <span class="ident">d</span> <span class="kw-2">*</span>= <span class="ident">p</span>;
+    <span class="kw">let </span>m = primes.len();
+    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">1 </span>&lt;&lt; m {
+        <span class="kw">let </span>(<span class="kw-2">mut </span>mu, <span class="kw-2">mut </span>d) = (<span class="number">1</span>, <span class="number">1</span>);
+        <span class="kw">for </span>(j, p) <span class="kw">in </span>primes.iter().enumerate() {
+            <span class="kw">if </span>i &amp; <span class="number">1 </span>&lt;&lt; j != <span class="number">0 </span>{
+                mu <span class="kw-2">*</span>= -<span class="number">1</span>;
+                d <span class="kw-2">*</span>= p;
             }
         }
-        <span class="ident">res</span>.<span class="ident">insert</span>(<span class="ident">d</span>, <span class="ident">mu</span>);
+        res.insert(d, mu);
     }
-    <span class="ident">res</span>
+    res
 }
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>]</span>
-<span class="doccomment">/// [(hcn, #divisor)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">highly_composite_number</span>(<span class="ident">n</span>: <span class="ident">u128</span>) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">u128</span>, <span class="ident">u128</span>)&gt; {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dp</span> = <span class="macro">vec!</span>[(<span class="number">1u128</span>, <span class="number">1u128</span>)];
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="number">1u128</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="number">110</span>];
-    <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="number">2u128</span>.. {
-        <span class="kw">if</span> !<span class="ident">table</span>[<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>] {
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="ident">p</span>..<span class="number">110</span>).<span class="ident">step_by</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="kw">_</span>) {
-                <span class="ident">table</span>[<span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>] = <span class="bool-val">true</span>;
+<span class="attribute">#[codesnip::entry]</span>
+<span class="doccomment">/// [(hcn, #divisor)]
+</span><span class="kw">pub fn </span>highly_composite_number(n: u128) -&gt; Vec&lt;(u128, u128)&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>dp = <span class="macro">vec!</span>[(<span class="number">1u128</span>, <span class="number">1u128</span>)];
+    <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1u128</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>table = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="number">110</span>];
+    <span class="kw">for </span>p <span class="kw">in </span><span class="number">2u128</span>.. {
+        <span class="kw">if </span>!table[p <span class="kw">as </span>usize] {
+            <span class="kw">for </span>i <span class="kw">in </span>(p..<span class="number">110</span>).step_by(p <span class="kw">as _</span>) {
+                table[i <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
             }
-            <span class="ident">acc</span> = <span class="ident">acc</span>.<span class="ident">saturating_mul</span>(<span class="ident">p</span>);
-            <span class="kw">if</span> <span class="ident">acc</span> &gt; <span class="ident">n</span> {
+            acc = acc.saturating_mul(p);
+            <span class="kw">if </span>acc &gt; n {
                 <span class="kw">break</span>;
             }
-            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">dp</span>.<span class="ident">len</span>();
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">m</span> {
-                <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">a</span>, <span class="ident">b</span>) = <span class="ident">dp</span>[<span class="ident">i</span>];
-                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">2</span>.. {
-                    <span class="ident">a</span> = <span class="ident">a</span>.<span class="ident">saturating_mul</span>(<span class="ident">p</span>);
-                    <span class="kw">let</span> <span class="ident">nb</span> = <span class="ident">b</span>.<span class="ident">saturating_mul</span>(<span class="ident">j</span>);
-                    <span class="kw">if</span> <span class="ident">a</span> &gt; <span class="ident">n</span> {
+            <span class="kw">let </span>m = dp.len();
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..m {
+                <span class="kw">let </span>(<span class="kw-2">mut </span>a, b) = dp[i];
+                <span class="kw">for </span>j <span class="kw">in </span><span class="number">2</span>.. {
+                    a = a.saturating_mul(p);
+                    <span class="kw">let </span>nb = b.saturating_mul(j);
+                    <span class="kw">if </span>a &gt; n {
                         <span class="kw">break</span>;
                     }
-                    <span class="ident">dp</span>.<span class="ident">push</span>((<span class="ident">a</span>, <span class="ident">nb</span>));
+                    dp.push((a, nb));
                 }
             }
-            <span class="ident">dp</span>.<span class="ident">sort_unstable</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ndp</span> = <span class="macro">vec!</span>[];
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">mx</span> = <span class="number">0u128</span>;
-            <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">b</span>) <span class="kw">in</span> <span class="ident">dp</span> {
-                <span class="kw">if</span> <span class="ident">b</span> &gt; <span class="ident">mx</span> {
-                    <span class="ident">mx</span> = <span class="ident">b</span>;
-                    <span class="ident">ndp</span>.<span class="ident">push</span>((<span class="ident">a</span>, <span class="ident">b</span>));
+            dp.sort_unstable();
+            <span class="kw">let </span><span class="kw-2">mut </span>ndp = <span class="macro">vec!</span>[];
+            <span class="kw">let </span><span class="kw-2">mut </span>mx = <span class="number">0u128</span>;
+            <span class="kw">for </span>(a, b) <span class="kw">in </span>dp {
+                <span class="kw">if </span>b &gt; mx {
+                    mx = b;
+                    ndp.push((a, b));
                 }
             }
-            <span class="ident">dp</span> = <span class="ident">ndp</span>;
+            dp = ndp;
         }
     }
-    <span class="ident">dp</span>
+    dp
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

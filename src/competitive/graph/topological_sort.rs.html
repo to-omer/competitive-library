@@ -39,30 +39,30 @@
 <span id="23">23</span>
 <span id="24">24</span>
 <span id="25">25</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::SparseGraph</span>;
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::SparseGraph;
 
-<span class="kw">impl</span>&lt;<span class="ident">D</span>&gt; <span class="ident">SparseGraph</span>&lt;<span class="ident">D</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">topological_sort</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">indeg</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.<span class="ident">vertices_size</span>()];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="macro">vec!</span>[];
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">vertices</span>().<span class="ident">flat_map</span>(|<span class="ident">u</span>| <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>)) {
-            <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] += <span class="number">1</span>;
+<span class="kw">impl</span>&lt;D&gt; SparseGraph&lt;D&gt; {
+    <span class="kw">pub fn </span>topological_sort(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;usize&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>indeg = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()];
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[];
+        <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.vertices().flat_map(|u| <span class="self">self</span>.adjacencies(u)) {
+            indeg[a.to] += <span class="number">1</span>;
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stack</span> = <span class="self">self</span>
-            .<span class="ident">vertices</span>()
-            .<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">u</span>| <span class="ident">indeg</span>[<span class="ident">u</span>] == <span class="number">0</span>)
-            .<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">u</span>) = <span class="ident">stack</span>.<span class="ident">pop</span>() {
-            <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">u</span>);
-            <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>) {
-                <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] -= <span class="number">1</span>;
-                <span class="kw">if</span> <span class="ident">indeg</span>[<span class="ident">a</span>.<span class="ident">to</span>] == <span class="number">0</span> {
-                    <span class="ident">stack</span>.<span class="ident">push</span>(<span class="ident">a</span>.<span class="ident">to</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="self">self
+            </span>.vertices()
+            .filter(|<span class="kw-2">&amp;</span>u| indeg[u] == <span class="number">0</span>)
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = stack.pop() {
+            res.push(u);
+            <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.adjacencies(u) {
+                indeg[a.to] -= <span class="number">1</span>;
+                <span class="kw">if </span>indeg[a.to] == <span class="number">0 </span>{
+                    stack.push(a.to);
                 }
             }
         }
-        <span class="ident">res</span>
+        res
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

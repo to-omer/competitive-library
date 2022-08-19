@@ -111,102 +111,102 @@
 <span id="95">95</span>
 <span id="96">96</span>
 <span id="97">97</span>
-</pre><pre class="rust"><code><span class="doccomment">//! dynamic programming on all-rooted trees</span>
+</pre><pre class="rust"><code><span class="doccomment">//! dynamic programming on all-rooted trees
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::algebra::Monoid</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::graph</span>::{<span class="ident">Adjacency</span>, <span class="ident">UndirectedSparseGraph</span>};
+</span><span class="kw">use </span><span class="kw">crate</span>::algebra::Monoid;
+<span class="kw">use </span><span class="kw">crate</span>::graph::{Adjacency, UndirectedSparseGraph};
 
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;ReRooting&quot;</span>, <span class="ident">include</span>(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;SparseGraph&quot;</span>))]</span>
-<span class="doccomment">/// dynamic programming on all-rooted trees</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// caluculate all subtrees (hanging on the edge) in specific ordering,</span>
-<span class="doccomment">/// each subtree calculated in the order of merge and rooting</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ReRooting</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">M</span>: <span class="ident">Monoid</span>, <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::T</span>, <span class="ident">usize</span>, <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;) -&gt; <span class="ident">M::T</span>&gt; {
-    <span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">UndirectedSparseGraph</span>,
-    <span class="doccomment">/// dp\[v\]: result of v-rooted tree</span>
-    <span class="kw">pub</span> <span class="ident">dp</span>: <span class="ident">Vec</span>&lt;<span class="ident">M::T</span>&gt;,
-    <span class="doccomment">/// ep\[e\]: result of e-subtree, if e &gt;= n then reversed-e-subtree</span>
-    <span class="kw">pub</span> <span class="ident">ep</span>: <span class="ident">Vec</span>&lt;<span class="ident">M::T</span>&gt;,
-    <span class="doccomment">/// rooting(data, vid, (Optional)eid): add root node(vid), result subtree is edge(eid)</span>
-    <span class="ident">rooting</span>: <span class="ident">F</span>,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;SparseGraph&quot;</span>))]</span>
+<span class="doccomment">/// dynamic programming on all-rooted trees
+///
+/// caluculate all subtrees (hanging on the edge) in specific ordering,
+/// each subtree calculated in the order of merge and rooting
+</span><span class="attribute">#[derive(Clone, Debug)]</span>
+<span class="kw">pub struct </span>ReRooting&lt;<span class="lifetime">&#39;a</span>, M: Monoid, F: Fn(<span class="kw-2">&amp;</span>M::T, usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; M::T&gt; {
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>UndirectedSparseGraph,
+    <span class="doccomment">/// dp\[v\]: result of v-rooted tree
+    </span><span class="kw">pub </span>dp: Vec&lt;M::T&gt;,
+    <span class="doccomment">/// ep\[e\]: result of e-subtree, if e &gt;= n then reversed-e-subtree
+    </span><span class="kw">pub </span>ep: Vec&lt;M::T&gt;,
+    <span class="doccomment">/// rooting(data, vid, (Optional)eid): add root node(vid), result subtree is edge(eid)
+    </span>rooting: F,
 }
-<span class="attribute">#[<span class="ident">codesnip::entry</span>(<span class="string">&quot;ReRooting&quot;</span>)]</span>
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">F</span>&gt; <span class="ident">ReRooting</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">M</span>, <span class="ident">F</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">Monoid</span>,
-    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">M::T</span>, <span class="ident">usize</span>, <span class="prelude-ty">Option</span>&lt;<span class="ident">usize</span>&gt;) -&gt; <span class="ident">M::T</span>,
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>)]</span>
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, M, F&gt; ReRooting&lt;<span class="lifetime">&#39;a</span>, M, F&gt;
+<span class="kw">where
+    </span>M: Monoid,
+    F: Fn(<span class="kw-2">&amp;</span>M::T, usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; M::T,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">graph</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">UndirectedSparseGraph</span>, <span class="ident">rooting</span>: <span class="ident">F</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">dp</span> = <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="ident">graph</span>.<span class="ident">vertices_size</span>()];
-        <span class="kw">let</span> <span class="ident">ep</span> = <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="ident">graph</span>.<span class="ident">vertices_size</span>() * <span class="number">2</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span> = <span class="self">Self</span> {
-            <span class="ident">graph</span>,
-            <span class="ident">dp</span>,
-            <span class="ident">ep</span>,
-            <span class="ident">rooting</span>,
+    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>UndirectedSparseGraph, rooting: F) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>dp = <span class="macro">vec!</span>[M::unit(); graph.vertices_size()];
+        <span class="kw">let </span>ep = <span class="macro">vec!</span>[M::unit(); graph.vertices_size() * <span class="number">2</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
+            graph,
+            dp,
+            ep,
+            rooting,
         };
-        <span class="ident">self_</span>.<span class="ident">rerooting</span>();
-        <span class="ident">self_</span>
+        self_.rerooting();
+        self_
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">eidx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident">Adjacency</span>) -&gt; <span class="ident">usize</span> {
-        <span class="ident">a</span>.<span class="ident">id</span> + <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">edges_size</span>() * (<span class="ident">u</span> &gt; <span class="ident">a</span>.<span class="ident">to</span>) <span class="kw">as</span> <span class="ident">usize</span>
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>eidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
+        a.id + <span class="self">self</span>.graph.edges_size() * (u &gt; a.to) <span class="kw">as </span>usize
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">reidx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">a</span>: <span class="kw-2">&amp;</span><span class="ident">Adjacency</span>) -&gt; <span class="ident">usize</span> {
-        <span class="ident">a</span>.<span class="ident">id</span> + <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">edges_size</span>() * (<span class="ident">u</span> &lt; <span class="ident">a</span>.<span class="ident">to</span>) <span class="kw">as</span> <span class="ident">usize</span>
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>reidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
+        a.id + <span class="self">self</span>.graph.edges_size() * (u &lt; a.to) <span class="kw">as </span>usize
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">M::T</span>, <span class="ident">y</span>: <span class="kw-2">&amp;</span><span class="ident">M::T</span>) -&gt; <span class="ident">M::T</span> {
-        <span class="ident">M::operate</span>(<span class="ident">x</span>, <span class="ident">y</span>)
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>merge(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, y: <span class="kw-2">&amp;</span>M::T) -&gt; M::T {
+        M::operate(x, y)
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">add_subroot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">M::T</span>, <span class="ident">vid</span>: <span class="ident">usize</span>, <span class="ident">eid</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::T</span> {
-        (<span class="self">self</span>.<span class="ident">rooting</span>)(<span class="ident">x</span>, <span class="ident">vid</span>, <span class="prelude-val">Some</span>(<span class="ident">eid</span>))
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize, eid: usize) -&gt; M::T {
+        (<span class="self">self</span>.rooting)(x, vid, <span class="prelude-val">Some</span>(eid))
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">add_root</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">x</span>: <span class="kw-2">&amp;</span><span class="ident">M::T</span>, <span class="ident">vid</span>: <span class="ident">usize</span>) -&gt; <span class="ident">M::T</span> {
-        (<span class="self">self</span>.<span class="ident">rooting</span>)(<span class="ident">x</span>, <span class="ident">vid</span>, <span class="prelude-val">None</span>)
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>add_root(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize) -&gt; M::T {
+        (<span class="self">self</span>.rooting)(x, vid, <span class="prelude-val">None</span>)
     }
-    <span class="kw">fn</span> <span class="ident">dfs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">pa</span>: <span class="kw-2">&amp;</span><span class="ident">Adjacency</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">u</span> = <span class="ident">pa</span>.<span class="ident">to</span>;
-        <span class="kw">let</span> <span class="ident">pi</span> = <span class="self">self</span>.<span class="ident">eidx</span>(<span class="ident">p</span>, <span class="ident">pa</span>);
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">filter</span>(|<span class="ident">a</span>| <span class="ident">a</span>.<span class="ident">to</span> != <span class="ident">p</span>) {
-            <span class="kw">let</span> <span class="ident">i</span> = <span class="self">self</span>.<span class="ident">eidx</span>(<span class="ident">u</span>, <span class="ident">a</span>);
-            <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">a</span>, <span class="ident">u</span>);
-            <span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">pi</span>] = <span class="self">self</span>.<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">pi</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">i</span>]);
+    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pa: <span class="kw-2">&amp;</span>Adjacency, p: usize) {
+        <span class="kw">let </span>u = pa.to;
+        <span class="kw">let </span>pi = <span class="self">self</span>.eidx(p, pa);
+        <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).filter(|a| a.to != p) {
+            <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
+            <span class="self">self</span>.dfs(a, u);
+            <span class="self">self</span>.ep[pi] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span><span class="self">self</span>.ep[pi], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
         }
-        <span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">pi</span>] = <span class="self">self</span>.<span class="ident">add_subroot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">pi</span>], <span class="ident">u</span>, <span class="ident">pa</span>.<span class="ident">id</span>);
+        <span class="self">self</span>.ep[pi] = <span class="self">self</span>.add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>.ep[pi], u, pa.id);
     }
-    <span class="kw">fn</span> <span class="ident">efs</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">u</span>: <span class="ident">usize</span>, <span class="ident">p</span>: <span class="ident">usize</span>) {
-        <span class="kw">let</span> <span class="ident">m</span> = <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">left</span> = <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="ident">m</span> + <span class="number">1</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">right</span> = <span class="macro">vec!</span>[<span class="ident">M::unit</span>(); <span class="ident">m</span> + <span class="number">1</span>];
-        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">a</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">enumerate</span>() {
-            <span class="kw">let</span> <span class="ident">i</span> = <span class="self">self</span>.<span class="ident">eidx</span>(<span class="ident">u</span>, <span class="ident">a</span>);
-            <span class="ident">left</span>[<span class="ident">k</span> + <span class="number">1</span>] = <span class="self">self</span>.<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="ident">left</span>[<span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">i</span>]);
+    <span class="kw">fn </span>efs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, p: usize) {
+        <span class="kw">let </span>m = <span class="self">self</span>.graph.adjacencies(u).len();
+        <span class="kw">let </span><span class="kw-2">mut </span>left = <span class="macro">vec!</span>[M::unit(); m + <span class="number">1</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="macro">vec!</span>[M::unit(); m + <span class="number">1</span>];
+        <span class="kw">for </span>(k, a) <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).enumerate() {
+            <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
+            left[k + <span class="number">1</span>] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span>left[k], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
         }
-        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">a</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">enumerate</span>().<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">i</span> = <span class="self">self</span>.<span class="ident">eidx</span>(<span class="ident">u</span>, <span class="ident">a</span>);
-            <span class="ident">right</span>[<span class="ident">k</span>] = <span class="self">self</span>.<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="ident">right</span>[<span class="ident">k</span> + <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">i</span>]);
+        <span class="kw">for </span>(k, a) <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).enumerate().rev() {
+            <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
+            right[k] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span>right[k + <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
         }
-        <span class="self">self</span>.<span class="ident">dp</span>[<span class="ident">u</span>] = <span class="self">self</span>.<span class="ident">add_root</span>(<span class="kw-2">&amp;</span><span class="ident">left</span>[<span class="ident">m</span>], <span class="ident">u</span>);
-        <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">a</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="ident">u</span>).<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">a</span>.<span class="ident">to</span> != <span class="ident">p</span> {
-                <span class="kw">let</span> <span class="ident">i</span> = <span class="self">self</span>.<span class="ident">reidx</span>(<span class="ident">u</span>, <span class="ident">a</span>);
-                <span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">i</span>] = <span class="self">self</span>.<span class="ident">merge</span>(<span class="kw-2">&amp;</span><span class="ident">left</span>[<span class="ident">k</span>], <span class="kw-2">&amp;</span><span class="ident">right</span>[<span class="ident">k</span> + <span class="number">1</span>]);
-                <span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">i</span>] = <span class="self">self</span>.<span class="ident">add_subroot</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ep</span>[<span class="ident">i</span>], <span class="ident">u</span>, <span class="ident">a</span>.<span class="ident">id</span>);
-                <span class="self">self</span>.<span class="ident">efs</span>(<span class="ident">a</span>.<span class="ident">to</span>, <span class="ident">u</span>);
+        <span class="self">self</span>.dp[u] = <span class="self">self</span>.add_root(<span class="kw-2">&amp;</span>left[m], u);
+        <span class="kw">for </span>(k, a) <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).enumerate() {
+            <span class="kw">if </span>a.to != p {
+                <span class="kw">let </span>i = <span class="self">self</span>.reidx(u, a);
+                <span class="self">self</span>.ep[i] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span>left[k], <span class="kw-2">&amp;</span>right[k + <span class="number">1</span>]);
+                <span class="self">self</span>.ep[i] = <span class="self">self</span>.add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>.ep[i], u, a.id);
+                <span class="self">self</span>.efs(a.to, u);
             }
         }
     }
-    <span class="kw">fn</span> <span class="ident">rerooting</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">graph</span>.<span class="ident">adjacencies</span>(<span class="number">0</span>) {
-            <span class="self">self</span>.<span class="ident">dfs</span>(<span class="ident">a</span>, <span class="number">0</span>);
+    <span class="kw">fn </span>rerooting(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(<span class="number">0</span>) {
+            <span class="self">self</span>.dfs(a, <span class="number">0</span>);
         }
-        <span class="self">self</span>.<span class="ident">efs</span>(<span class="number">0</span>, <span class="ident">std::usize::MAX</span>);
+        <span class="self">self</span>.efs(<span class="number">0</span>, std::usize::MAX);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

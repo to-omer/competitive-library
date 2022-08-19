@@ -398,389 +398,389 @@
 <span id="382">382</span>
 <span id="383">383</span>
 <span id="384">384</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">iter</span>::{<span class="ident">from_fn</span>, <span class="ident">repeat_with</span>, <span class="ident">FromIterator</span>},
-    <span class="ident">marker::PhantomData</span>,
+</pre><pre class="rust"><code><span class="kw">use </span>std::{
+    iter::{from_fn, repeat_with, FromIterator},
+    marker::PhantomData,
 };
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_stdin_all</span>() -&gt; <span class="ident">String</span> {
-    <span class="kw">use</span> <span class="ident">std::io::Read</span> <span class="kw">as</span> <span class="kw">_</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> = <span class="ident">String::new</span>();
-    <span class="ident">std::io::stdin</span>().<span class="ident">read_to_string</span>(<span class="kw-2">&amp;mut</span> <span class="ident">s</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
-    <span class="ident">s</span>
+<span class="kw">pub fn </span>read_stdin_all() -&gt; String {
+    <span class="kw">use </span>std::io::Read <span class="kw">as _</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
+    std::io::stdin().read_to_string(<span class="kw-2">&amp;mut </span>s).expect(<span class="string">&quot;io error&quot;</span>);
+    s
 }
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_stdin_all_unchecked</span>() -&gt; <span class="ident">String</span> {
-    <span class="kw">use</span> <span class="ident">std::io::Read</span> <span class="kw">as</span> <span class="kw">_</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> = <span class="ident">Vec::new</span>();
-    <span class="ident">std::io::stdin</span>().<span class="ident">read_to_end</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buf</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
-    <span class="kw">unsafe</span> { <span class="ident">String::from_utf8_unchecked</span>(<span class="ident">buf</span>) }
+<span class="kw">pub fn </span>read_stdin_all_unchecked() -&gt; String {
+    <span class="kw">use </span>std::io::Read <span class="kw">as _</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>buf = Vec::new();
+    std::io::stdin().read_to_end(<span class="kw-2">&amp;mut </span>buf).expect(<span class="string">&quot;io error&quot;</span>);
+    <span class="kw">unsafe </span>{ String::from_utf8_unchecked(buf) }
 }
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all</span>(<span class="kw-2">mut</span> <span class="ident">reader</span>: <span class="kw">impl</span> <span class="ident">std::io::Read</span>) -&gt; <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> = <span class="ident">String::new</span>();
-    <span class="ident">reader</span>.<span class="ident">read_to_string</span>(<span class="kw-2">&amp;mut</span> <span class="ident">s</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
-    <span class="ident">s</span>
+<span class="kw">pub fn </span>read_all(<span class="kw-2">mut </span>reader: <span class="kw">impl </span>std::io::Read) -&gt; String {
+    <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
+    reader.read_to_string(<span class="kw-2">&amp;mut </span>s).expect(<span class="string">&quot;io error&quot;</span>);
+    s
 }
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_all_unchecked</span>(<span class="kw-2">mut</span> <span class="ident">reader</span>: <span class="kw">impl</span> <span class="ident">std::io::Read</span>) -&gt; <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> = <span class="ident">Vec::new</span>();
-    <span class="ident">reader</span>.<span class="ident">read_to_end</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buf</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
-    <span class="kw">unsafe</span> { <span class="ident">String::from_utf8_unchecked</span>(<span class="ident">buf</span>) }
+<span class="kw">pub fn </span>read_all_unchecked(<span class="kw-2">mut </span>reader: <span class="kw">impl </span>std::io::Read) -&gt; String {
+    <span class="kw">let </span><span class="kw-2">mut </span>buf = Vec::new();
+    reader.read_to_end(<span class="kw-2">&amp;mut </span>buf).expect(<span class="string">&quot;io error&quot;</span>);
+    <span class="kw">unsafe </span>{ String::from_utf8_unchecked(buf) }
 }
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_stdin_line</span>() -&gt; <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> = <span class="ident">String::new</span>();
-    <span class="ident">std::io::stdin</span>().<span class="ident">read_line</span>(<span class="kw-2">&amp;mut</span> <span class="ident">s</span>).<span class="ident">expect</span>(<span class="string">&quot;io error&quot;</span>);
-    <span class="ident">s</span>
+<span class="kw">pub fn </span>read_stdin_line() -&gt; String {
+    <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
+    std::io::stdin().read_line(<span class="kw-2">&amp;mut </span>s).expect(<span class="string">&quot;io error&quot;</span>);
+    s
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">IterScan</span>: <span class="ident">Sized</span> {
-    <span class="kw">type</span> <span class="ident">Output</span>;
-    <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt;;
+<span class="kw">pub trait </span>IterScan: Sized {
+    <span class="kw">type </span>Output;
+    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt;;
 }
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">MarkedIterScan</span>: <span class="ident">Sized</span> {
-    <span class="kw">type</span> <span class="ident">Output</span>;
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt;;
+<span class="kw">pub trait </span>MarkedIterScan: Sized {
+    <span class="kw">type </span>Output;
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt;;
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Scanner</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="ident">iter</span>: <span class="ident">std::str::SplitAsciiWhitespace</span>&lt;<span class="lifetime">&#39;a</span>&gt;,
+<span class="attribute">#[derive(Clone, Debug)]</span>
+<span class="kw">pub struct </span>Scanner&lt;<span class="lifetime">&#39;a</span>&gt; {
+    iter: std::str::SplitAsciiWhitespace&lt;<span class="lifetime">&#39;a</span>&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <span class="ident">Scanner</span>&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">iter</span> = <span class="ident">s</span>.<span class="ident">split_ascii_whitespace</span>();
-        <span class="self">Self</span> { <span class="ident">iter</span> }
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Scanner&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>new(s: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>iter = s.split_ascii_whitespace();
+        <span class="self">Self </span>{ iter }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="ident">T</span>&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">IterScan</span>,
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>scan&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; &lt;T <span class="kw">as </span>IterScan&gt;::Output
+    <span class="kw">where
+        </span>T: IterScan,
     {
-        &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">iter</span>).<span class="ident">expect</span>(<span class="string">&quot;scan error&quot;</span>)
+        &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter).expect(<span class="string">&quot;scan error&quot;</span>)
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="ident">T</span>&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">marker</span>: <span class="ident">T</span>) -&gt; &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">MarkedIterScan</span>&gt;<span class="ident">::Output</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">MarkedIterScan</span>,
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>mscan&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, marker: T) -&gt; &lt;T <span class="kw">as </span>MarkedIterScan&gt;::Output
+    <span class="kw">where
+        </span>T: MarkedIterScan,
     {
-        <span class="ident">marker</span>.<span class="ident">mscan</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">iter</span>).<span class="ident">expect</span>(<span class="string">&quot;scan error&quot;</span>)
+        marker.mscan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter).expect(<span class="string">&quot;scan error&quot;</span>)
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">scan_vec</span>&lt;<span class="ident">T</span>&gt;(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">size</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">IterScan</span>,
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>scan_vec&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, size: usize) -&gt; Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;
+    <span class="kw">where
+        </span>T: IterScan,
     {
-        (<span class="number">0</span>..<span class="ident">size</span>)
-            .<span class="ident">map</span>(|<span class="kw">_</span>| &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">iter</span>).<span class="ident">expect</span>(<span class="string">&quot;scan error&quot;</span>))
-            .<span class="ident">collect</span>()
+        (<span class="number">0</span>..size)
+            .map(|<span class="kw">_</span>| &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter).expect(<span class="string">&quot;scan error&quot;</span>))
+            .collect()
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">iter</span>&lt;<span class="lifetime">&#39;b</span>, <span class="ident">T</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">ScannerIter</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">T</span>&gt;
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">IterScan</span>,
+    <span class="attribute">#[inline]</span>
+    <span class="kw">pub fn </span>iter&lt;<span class="lifetime">&#39;b</span>, T&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><span class="kw-2">mut </span><span class="self">self</span>) -&gt; ScannerIter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt;
+    <span class="kw">where
+        </span>T: IterScan,
     {
-        <span class="ident">ScannerIter</span> {
-            <span class="ident">inner</span>: <span class="self">self</span>,
-            <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span>,
+        ScannerIter {
+            inner: <span class="self">self</span>,
+            _marker: std::marker::PhantomData,
         }
     }
 }
 
-<span class="macro">macro_rules!</span> <span class="ident">iter_scan_impls</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">ty</span>)<span class="kw-2">*</span>) =&gt; {$(
-        <span class="kw">impl</span> <span class="ident">IterScan</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span> {
-            <span class="kw">type</span> <span class="ident">Output</span> = <span class="self">Self</span>;
-            <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-                <span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>.<span class="ident">parse</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>&gt;().<span class="ident">ok</span>()
+<span class="macro">macro_rules!</span> iter_scan_impls {
+    ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {$(
+        <span class="kw">impl </span>IterScan <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+            <span class="kw">type </span>Output = <span class="self">Self</span>;
+            <span class="attribute">#[inline]</span>
+            <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                iter.next()<span class="question-mark">?</span>.parse::&lt;<span class="macro-nonterminal">$t</span>&gt;().ok()
             }
         })*
     };
 }
-<span class="macro">iter_scan_impls!</span>(<span class="ident">char</span> <span class="ident">u8</span> <span class="ident">u16</span> <span class="ident">u32</span> <span class="ident">u64</span> <span class="ident">usize</span> <span class="ident">i8</span> <span class="ident">i16</span> <span class="ident">i32</span> <span class="ident">i64</span> <span class="ident">isize</span> <span class="ident">f32</span> <span class="ident">f64</span> <span class="ident">u128</span> <span class="ident">i128</span> <span class="ident">String</span>);
+<span class="macro">iter_scan_impls!</span>(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
 
-<span class="macro">macro_rules!</span> <span class="ident">iter_scan_tuple_impl</span> {
-    (@<span class="kw">impl</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>: <span class="ident">IterScan</span>),<span class="kw-2">*</span>&gt; <span class="ident">IterScan</span> <span class="kw">for</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>,)<span class="kw-2">*</span>) {
-            <span class="kw">type</span> <span class="ident">Output</span> = ($(&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>,)<span class="kw-2">*</span>);
-            <span class="attribute">#[<span class="ident">inline</span>]</span>
-            <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">It</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">_iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">It</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-                <span class="prelude-val">Some</span>(($(&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">_iter</span>)<span class="question-mark">?</span>,)<span class="kw-2">*</span>))
+<span class="macro">macro_rules!</span> iter_scan_tuple_impl {
+    (@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: IterScan),<span class="kw-2">*</span>&gt; IterScan <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {
+            <span class="kw">type </span>Output = ($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>IterScan&gt;::Output,)<span class="kw-2">*</span>);
+            <span class="attribute">#[inline]</span>
+            <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, It: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(_iter: <span class="kw-2">&amp;mut </span>It) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+                <span class="prelude-val">Some</span>(($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>IterScan&gt;::scan(_iter)<span class="question-mark">?</span>,)<span class="kw-2">*</span>))
             }
         }
     };
-    (@<span class="ident">inner</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>,) =&gt; {
-        <span class="macro">iter_scan_tuple_impl!</span>(@<span class="kw">impl</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>);
+    (@inner $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>,) =&gt; {
+        <span class="macro">iter_scan_tuple_impl!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)<span class="kw-2">*</span>);
     };
-    (@<span class="ident">inner</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">U</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">Rest</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro">iter_scan_tuple_impl!</span>(@<span class="kw">impl</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>);
-        <span class="macro">iter_scan_tuple_impl!</span>(@<span class="ident">inner</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)* <span class="macro-nonterminal">$</span><span class="macro-nonterminal">U</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">Rest</span>)<span class="kw-2">*</span>);
+    (@inner $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, <span class="macro-nonterminal">$U</span>:ident $(<span class="macro-nonterminal">$Rest</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">iter_scan_tuple_impl!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)<span class="kw-2">*</span>);
+        <span class="macro">iter_scan_tuple_impl!</span>(@inner $(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$Rest</span>)<span class="kw-2">*</span>);
     };
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>:<span class="ident">ident</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro">iter_scan_tuple_impl!</span>(@<span class="ident">inner</span> , $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">T</span>)<span class="kw-2">*</span>);
+    ($(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">iter_scan_tuple_impl!</span>(@inner , $(<span class="macro-nonterminal">$T</span>)<span class="kw-2">*</span>);
     };
 }
-<span class="macro">iter_scan_tuple_impl!</span>(<span class="ident">A</span> <span class="ident">B</span> <span class="ident">C</span> <span class="ident">D</span> <span class="ident">E</span> <span class="ident">F</span> <span class="ident">G</span> <span class="ident">H</span> <span class="ident">I</span> <span class="ident">J</span> <span class="ident">K</span>);
+<span class="macro">iter_scan_tuple_impl!</span>(A B C D E F G H I J K);
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ScannerIter</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">T</span>&gt; {
-    <span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="kw-2">mut</span> <span class="ident">Scanner</span>&lt;<span class="lifetime">&#39;a</span>&gt;,
-    <span class="ident">_marker</span>: <span class="ident">std::marker::PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+<span class="kw">pub struct </span>ScannerIter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt; {
+    inner: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><span class="kw-2">mut </span>Scanner&lt;<span class="lifetime">&#39;a</span>&gt;,
+    _marker: std::marker::PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">T</span>&gt; <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">ScannerIter</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, <span class="ident">T</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt; Iterator <span class="kw">for </span>ScannerIter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt;
+<span class="kw">where
+    </span>T: IterScan,
 {
-    <span class="kw">type</span> <span class="ident">Item</span> = &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Item</span>&gt; {
-        &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">iter</span>)
+    <span class="kw">type </span>Item = &lt;T <span class="kw">as </span>IterScan&gt;::Output;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner.iter)
     }
 }
 
-<span class="doccomment">/// - `scan_value!(scanner, ELEMENT)`</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ELEMENT :=</span>
-<span class="doccomment">/// - `$ty`: IterScan</span>
-<span class="doccomment">/// - `@$expr`: MarkedIterScan</span>
-<span class="doccomment">/// - `[ELEMENT; $expr]`: vector</span>
-<span class="doccomment">/// - `[ELEMENT]`: iterator</span>
-<span class="doccomment">/// - `($(ELEMENT)*,)`: tuple</span>
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">scan_value</span> {
-    (@<span class="ident">repeat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>:<span class="ident">expr</span>)<span class="question-mark">?</span>)                              =&gt; { <span class="ident">::std::iter::repeat_with</span>(|| <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">inner</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>)) $(.<span class="ident">take</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>).<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;())<span class="question-mark">?</span> };
-    (@<span class="ident">tuple</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$([$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>])<span class="kw-2">*</span>])                                    =&gt; { ($($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)<span class="kw-2">*</span>,)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [[$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>]])                                   =&gt; { $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>)                            =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>.<span class="ident">mscan</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>)]]) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                 =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>.<span class="ident">mscan</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>)]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tuple</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">tuple</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tuple</span>)<span class="kw-2">*</span>)]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>:<span class="ident">expr</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>)]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [[$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>]; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>:<span class="ident">expr</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [[$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)<span class="kw-2">*</span>]] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>)]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>); <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>:<span class="ident">expr</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)<span class="kw-2">*</span>)] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>)]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>; <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>:<span class="ident">expr</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)       =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">len</span>)]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)<span class="kw-2">*</span>])]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>)                              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>.<span class="ident">scan</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>&gt;()]]) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                   =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)* [<span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>.<span class="ident">scan</span>::&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>&gt;()]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] , $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                         =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tag</span>:<span class="ident">ident</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>])                                     =&gt; { <span class="macro">::std::compile_error!</span>(<span class="macro">::std::stringify!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">args</span>)<span class="kw-2">*</span>)) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                                                      =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">inner</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) }
+<span class="doccomment">/// - `scan_value!(scanner, ELEMENT)`
+///
+/// ELEMENT :=
+/// - `$ty`: IterScan
+/// - `@$expr`: MarkedIterScan
+/// - `[ELEMENT; $expr]`: vector
+/// - `[ELEMENT]`: iterator
+/// - `($(ELEMENT)*,)`: tuple
+</span><span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> scan_value {
+    (@repeat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$len</span>:expr)<span class="question-mark">?</span>)                              =&gt; { ::std::iter::repeat_with(|| <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">inner $scanner</span>, [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)) $(.take(<span class="macro-nonterminal">$len</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;())<span class="question-mark">? </span>};
+    (@tuple <span class="macro-nonterminal">$scanner</span>:expr, [$([$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>])<span class="kw-2">*</span>])                                    =&gt; { ($($(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>,)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [[$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>]])                                   =&gt; { $(<span class="macro-nonterminal">$args</span>)* };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$e</span>:expr)                            =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$scanner</span>.mscan(<span class="macro-nonterminal">$e</span>)]]) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$e</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                 =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$scanner</span>.mscan(<span class="macro-nonterminal">$e</span>)]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] ($(<span class="macro-nonterminal">$tuple</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">tuple $scanner</span>, [] $(<span class="macro-nonterminal">$tuple</span>)<span class="kw-2">*</span>)]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] [@<span class="macro-nonterminal">$e</span>:expr; <span class="macro-nonterminal">$len</span>:expr] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat $scanner</span>, [@<span class="macro-nonterminal">$e</span>] <span class="macro-nonterminal">$len</span>)]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] [[$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>]; <span class="macro-nonterminal">$len</span>:expr] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat $scanner</span>, [[$(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>]] <span class="macro-nonterminal">$len</span>)]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] [($(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>); <span class="macro-nonterminal">$len</span>:expr] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat $scanner</span>, [($(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>)] <span class="macro-nonterminal">$len</span>)]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] [<span class="macro-nonterminal">$ty</span>:ty; <span class="macro-nonterminal">$len</span>:expr] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)       =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat $scanner</span>, [<span class="macro-nonterminal">$ty</span>] <span class="macro-nonterminal">$len</span>)]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">repeat $scanner</span>, [$(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>])]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$ty</span>:ty)                              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$scanner</span>.scan::&lt;<span class="macro-nonterminal">$ty</span>&gt;()]]) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$ty</span>:ty, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                   =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)* [<span class="macro-nonterminal">$scanner</span>.scan::&lt;<span class="macro-nonterminal">$ty</span>&gt;()]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>] , $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                         =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">$tag $scanner</span>, [$(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>])                                     =&gt; { <span class="macro">::std::compile_error!</span>(<span class="macro">::std::stringify!</span>($(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>)) };
+    (<span class="macro-nonterminal">$scanner</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                                                      =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">inner $scanner</span>, [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) }
 }
 
-<span class="doccomment">/// - `scan!(scanner, $($pat $(: ELEMENT)?),*)`</span>
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">scan</span> {
-    (@<span class="ident">assert</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">pat</span>) =&gt; {};
-    (@<span class="ident">assert</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro">::std::compile_error!</span>(<span class="macro">::std::concat!</span>(<span class="string">&quot;expected pattern, found `&quot;</span>, <span class="macro">::std::stringify!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>), <span class="string">&quot;`&quot;</span>)); };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [] [])                                          =&gt; {};
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [] [] , $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">ident</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)* <span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] :: $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                    =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)* ::] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] &amp; $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)* <span class="kw-2">&amp;</span>] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)* ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)<span class="kw-2">*</span>)] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)* [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)<span class="kw-2">*</span>]] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] {$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>} $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)* {$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)<span class="kw-2">*</span>}] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] : $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">ty</span>  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)                       =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [<span class="ident">usize</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">ty</span>  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)* @<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>]) };
-    (@<span class="ident">ty</span>  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)   =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)* @<span class="macro-nonterminal">$</span><span class="macro-nonterminal">e</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">ty</span>  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)* ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">ty</span>  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)* [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">x</span>)<span class="kw-2">*</span>]] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="ident">ty</span>  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>)                =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)* <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>]) };
-    (@<span class="ident">ty</span>  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>:<span class="ident">ty</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>)     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)* <span class="macro-nonterminal">$</span><span class="macro-nonterminal">ty</span>], $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
-    (@<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>{@<span class="macro-nonterminal">assert</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="kw-2">*</span>}
-        <span class="kw">let</span> $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)* = <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tt</span>)<span class="kw-2">*</span>);
-        <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>)
+<span class="doccomment">/// - `scan!(scanner, $($pat $(: ELEMENT)?),*)`
+</span><span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> scan {
+    (@assert <span class="macro-nonterminal">$p</span>:pat) =&gt; {};
+    (@assert $(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro">::std::compile_error!</span>(<span class="macro">::std::concat!</span>(<span class="string">&quot;expected pattern, found `&quot;</span>, <span class="macro">::std::stringify!</span>($(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>), <span class="string">&quot;`&quot;</span>)); };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [] [])                                          =&gt; {};
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [] [] , $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] <span class="macro-nonterminal">$x</span>:ident $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [$(<span class="macro-nonterminal">$p</span>)* <span class="macro-nonterminal">$x</span>] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] :: $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                    =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [$(<span class="macro-nonterminal">$p</span>)* ::] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] &amp; $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [$(<span class="macro-nonterminal">$p</span>)* <span class="kw-2">&amp;</span>] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [$(<span class="macro-nonterminal">$p</span>)* ($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>)] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] [$(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [$(<span class="macro-nonterminal">$p</span>)* [$(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>]] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] {$(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>} $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)           =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [$(<span class="macro-nonterminal">$p</span>)* {$(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>}] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] : $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">ty  $scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@pat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                       =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [usize] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@ty  <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$e</span>:expr)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>)* @<span class="macro-nonterminal">$e</span>]) };
+    (@ty  <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] @<span class="macro-nonterminal">$e</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)   =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>)* @<span class="macro-nonterminal">$e</span>], $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@ty  <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>)* ($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@ty  <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>)* [$(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>]] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@ty  <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$ty</span>:ty)                =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>)* <span class="macro-nonterminal">$ty</span>]) };
+    (@ty  <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$ty</span>:ty, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>, [$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>)* <span class="macro-nonterminal">$ty</span>], $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="kw">let </span><span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>{@<span class="macro-nonterminal">assert </span>$(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>}
+        <span class="kw">let </span>$(<span class="macro-nonterminal">$p</span>)* = <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(<span class="macro-nonterminal">$scanner</span>, $(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>);
+        <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)
     };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">scanner</span>, [] [] $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) }
+    (<span class="macro-nonterminal">$scanner</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Usize1</span> {}
-<span class="kw">impl</span> <span class="ident">IterScan</span> <span class="kw">for</span> <span class="ident">Usize1</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">usize</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        &lt;<span class="ident">usize</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>.<span class="ident">checked_sub</span>(<span class="number">1</span>)
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub enum </span>Usize1 {}
+<span class="kw">impl </span>IterScan <span class="kw">for </span>Usize1 {
+    <span class="kw">type </span>Output = usize;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        &lt;usize <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">?</span>.checked_sub(<span class="number">1</span>)
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CharWithBase</span>(<span class="kw">pub</span> <span class="ident">char</span>);
-<span class="kw">impl</span> <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">CharWithBase</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">usize</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="prelude-val">Some</span>((&lt;<span class="ident">char</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">u8</span> - <span class="self">self</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">u8</span>) <span class="kw">as</span> <span class="ident">usize</span>)
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub struct </span>CharWithBase(<span class="kw">pub </span>char);
+<span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>CharWithBase {
+    <span class="kw">type </span>Output = usize;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="prelude-val">Some</span>((&lt;char <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">? </span><span class="kw">as </span>u8 - <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>u8) <span class="kw">as </span>usize)
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Chars</span> {}
-<span class="kw">impl</span> <span class="ident">IterScan</span> <span class="kw">for</span> <span class="ident">Chars</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Vec</span>&lt;<span class="ident">char</span>&gt;;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="prelude-val">Some</span>(<span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>.<span class="ident">chars</span>().<span class="ident">collect</span>())
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub enum </span>Chars {}
+<span class="kw">impl </span>IterScan <span class="kw">for </span>Chars {
+    <span class="kw">type </span>Output = Vec&lt;char&gt;;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="prelude-val">Some</span>(iter.next()<span class="question-mark">?</span>.chars().collect())
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CharsWithBase</span>(<span class="kw">pub</span> <span class="ident">char</span>);
-<span class="kw">impl</span> <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">CharsWithBase</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub struct </span>CharsWithBase(<span class="kw">pub </span>char);
+<span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>CharsWithBase {
+    <span class="kw">type </span>Output = Vec&lt;usize&gt;;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(
-            <span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>
-                .<span class="ident">chars</span>()
-                .<span class="ident">map</span>(|<span class="ident">c</span>| (<span class="ident">c</span> <span class="kw">as</span> <span class="ident">u8</span> - <span class="self">self</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">u8</span>) <span class="kw">as</span> <span class="ident">usize</span>)
-                .<span class="ident">collect</span>(),
+            iter.next()<span class="question-mark">?
+                </span>.chars()
+                .map(|c| (c <span class="kw">as </span>u8 - <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>u8) <span class="kw">as </span>usize)
+                .collect(),
         )
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ByteWithBase</span>(<span class="kw">pub</span> <span class="ident">u8</span>);
-<span class="kw">impl</span> <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">ByteWithBase</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">usize</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="prelude-val">Some</span>((&lt;<span class="ident">char</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span> <span class="kw">as</span> <span class="ident">u8</span> - <span class="self">self</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">usize</span>)
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub struct </span>ByteWithBase(<span class="kw">pub </span>u8);
+<span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>ByteWithBase {
+    <span class="kw">type </span>Output = usize;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="prelude-val">Some</span>((&lt;char <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">? </span><span class="kw">as </span>u8 - <span class="self">self</span>.<span class="number">0</span>) <span class="kw">as </span>usize)
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Bytes</span> {}
-<span class="kw">impl</span> <span class="ident">IterScan</span> <span class="kw">for</span> <span class="ident">Bytes</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Vec</span>&lt;<span class="ident">u8</span>&gt;;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="prelude-val">Some</span>(<span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>.<span class="ident">bytes</span>().<span class="ident">collect</span>())
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub enum </span>Bytes {}
+<span class="kw">impl </span>IterScan <span class="kw">for </span>Bytes {
+    <span class="kw">type </span>Output = Vec&lt;u8&gt;;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="prelude-val">Some</span>(iter.next()<span class="question-mark">?</span>.bytes().collect())
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BytesWithBase</span>(<span class="kw">pub</span> <span class="ident">u8</span>);
-<span class="kw">impl</span> <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">BytesWithBase</span> {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub struct </span>BytesWithBase(<span class="kw">pub </span>u8);
+<span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>BytesWithBase {
+    <span class="kw">type </span>Output = Vec&lt;usize&gt;;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(
-            <span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>
-                .<span class="ident">bytes</span>()
-                .<span class="ident">map</span>(|<span class="ident">c</span>| (<span class="ident">c</span> - <span class="self">self</span>.<span class="number">0</span>) <span class="kw">as</span> <span class="ident">usize</span>)
-                .<span class="ident">collect</span>(),
+            iter.next()<span class="question-mark">?
+                </span>.bytes()
+                .map(|c| (c - <span class="self">self</span>.<span class="number">0</span>) <span class="kw">as </span>usize)
+                .collect(),
         )
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Collect</span>&lt;<span class="ident">T</span>, <span class="ident">B</span> = <span class="ident">Vec</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
-    <span class="ident">B</span>: <span class="ident">FromIterator</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;,
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub struct </span>Collect&lt;T, B = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;&gt;
+<span class="kw">where
+    </span>T: IterScan,
+    B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
 {
-    <span class="ident">size</span>: <span class="ident">usize</span>,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; (<span class="ident">T</span>, <span class="ident">B</span>)&gt;,
+    size: usize,
+    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; (T, B)&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">B</span>&gt; <span class="ident">Collect</span>&lt;<span class="ident">T</span>, <span class="ident">B</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
-    <span class="ident">B</span>: <span class="ident">FromIterator</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;,
+<span class="kw">impl</span>&lt;T, B&gt; Collect&lt;T, B&gt;
+<span class="kw">where
+    </span>T: IterScan,
+    B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">size</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">size</span>,
-            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>,
+    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            size,
+            _marker: PhantomData,
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">B</span>&gt; <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">Collect</span>&lt;<span class="ident">T</span>, <span class="ident">B</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
-    <span class="ident">B</span>: <span class="ident">FromIterator</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;,
+<span class="kw">impl</span>&lt;T, B&gt; MarkedIterScan <span class="kw">for </span>Collect&lt;T, B&gt;
+<span class="kw">where
+    </span>T: IterScan,
+    B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">B</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="ident">repeat_with</span>(|| &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">iter</span>))
-            .<span class="ident">take</span>(<span class="self">self</span>.<span class="ident">size</span>)
-            .<span class="ident">collect</span>()
+    <span class="kw">type </span>Output = B;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        repeat_with(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter))
+            .take(<span class="self">self</span>.size)
+            .collect()
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SizedCollect</span>&lt;<span class="ident">T</span>, <span class="ident">B</span> = <span class="ident">Vec</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
-    <span class="ident">B</span>: <span class="ident">FromIterator</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;,
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub struct </span>SizedCollect&lt;T, B = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;&gt;
+<span class="kw">where
+    </span>T: IterScan,
+    B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
 {
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; (<span class="ident">T</span>, <span class="ident">B</span>)&gt;,
+    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; (T, B)&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">B</span>&gt; <span class="ident">IterScan</span> <span class="kw">for</span> <span class="ident">SizedCollect</span>&lt;<span class="ident">T</span>, <span class="ident">B</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
-    <span class="ident">B</span>: <span class="ident">FromIterator</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;,
+<span class="kw">impl</span>&lt;T, B&gt; IterScan <span class="kw">for </span>SizedCollect&lt;T, B&gt;
+<span class="kw">where
+    </span>T: IterScan,
+    B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">B</span>;
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">scan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="kw">let</span> <span class="ident">size</span> = <span class="ident">usize::scan</span>(<span class="ident">iter</span>)<span class="question-mark">?</span>;
-        <span class="ident">repeat_with</span>(|| &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="ident">iter</span>))
-            .<span class="ident">take</span>(<span class="ident">size</span>)
-            .<span class="ident">collect</span>()
+    <span class="kw">type </span>Output = B;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="kw">let </span>size = usize::scan(iter)<span class="question-mark">?</span>;
+        repeat_with(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter))
+            .take(size)
+            .collect()
     }
 }
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Splitted</span>&lt;<span class="ident">T</span>, <span class="ident">P</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
+<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
+<span class="kw">pub struct </span>Splitted&lt;T, P&gt;
+<span class="kw">where
+    </span>T: IterScan,
 {
-    <span class="ident">pat</span>: <span class="ident">P</span>,
-    <span class="ident">_marker</span>: <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;,
+    pat: P,
+    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">P</span>&gt; <span class="ident">Splitted</span>&lt;<span class="ident">T</span>, <span class="ident">P</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
+<span class="kw">impl</span>&lt;T, P&gt; Splitted&lt;T, P&gt;
+<span class="kw">where
+    </span>T: IterScan,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">pat</span>: <span class="ident">P</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">pat</span>,
-            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>,
+    <span class="kw">pub fn </span>new(pat: P) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            pat,
+            _marker: PhantomData,
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">Splitted</span>&lt;<span class="ident">T</span>, <span class="ident">char</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
+<span class="kw">impl</span>&lt;T&gt; MarkedIterScan <span class="kw">for </span>Splitted&lt;T, char&gt;
+<span class="kw">where
+    </span>T: IterScan,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Vec</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> = <span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>.<span class="ident">split</span>(<span class="self">self</span>.<span class="ident">pat</span>);
-        <span class="prelude-val">Some</span>(<span class="ident">from_fn</span>(|| &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="kw-2">&amp;mut</span> <span class="ident">iter</span>)).<span class="ident">collect</span>())
+    <span class="kw">type </span>Output = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;;
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = iter.next()<span class="question-mark">?</span>.split(<span class="self">self</span>.pat);
+        <span class="prelude-val">Some</span>(from_fn(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span>iter)).collect())
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">Splitted</span>&lt;<span class="ident">T</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">IterScan</span>,
+<span class="kw">impl</span>&lt;T&gt; MarkedIterScan <span class="kw">for </span>Splitted&lt;T, <span class="kw-2">&amp;</span>str&gt;
+<span class="kw">where
+    </span>T: IterScan,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">Vec</span>&lt;&lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::Output</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> = <span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>.<span class="ident">split</span>(<span class="self">self</span>.<span class="ident">pat</span>);
-        <span class="prelude-val">Some</span>(<span class="ident">from_fn</span>(|| &lt;<span class="ident">T</span> <span class="kw">as</span> <span class="ident">IterScan</span>&gt;<span class="ident">::scan</span>(<span class="kw-2">&amp;mut</span> <span class="ident">iter</span>)).<span class="ident">collect</span>())
+    <span class="kw">type </span>Output = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;;
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = iter.next()<span class="question-mark">?</span>.split(<span class="self">self</span>.pat);
+        <span class="prelude-val">Some</span>(from_fn(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span>iter)).collect())
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>, <span class="ident">F</span>&gt; <span class="ident">MarkedIterScan</span> <span class="kw">for</span> <span class="ident">F</span>
-<span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident">T</span>&gt;,
+<span class="kw">impl</span>&lt;T, F&gt; MarkedIterScan <span class="kw">for </span>F
+<span class="kw">where
+    </span>F: Fn(<span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt;,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> = <span class="ident">T</span>;
-    <span class="kw">fn</span> <span class="ident">mscan</span>&lt;<span class="lifetime">&#39;a</span>, <span class="ident">I</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>&gt;&gt;(<span class="self">self</span>, <span class="ident">iter</span>: <span class="kw-2">&amp;mut</span> <span class="ident">I</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Output</span>&gt; {
-        <span class="self">self</span>(<span class="ident">iter</span>.<span class="ident">next</span>()<span class="question-mark">?</span>)
+    <span class="kw">type </span>Output = T;
+    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="self">self</span>(iter.next()<span class="question-mark">?</span>)
     }
 }
 
-<span class="attribute">#[<span class="ident">test</span>]</span>
-<span class="kw">fn</span> <span class="ident">test_scan</span>() {
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::scan</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> = <span class="ident">Scanner::new</span>(<span class="string">&quot;1 2 3 a 1 2 1 1 1.1&quot;</span>);
-    <span class="macro">scan!</span>(<span class="ident">s</span>, <span class="ident">x</span>, <span class="ident">y</span>: <span class="ident">char</span>, <span class="ident">z</span>: <span class="ident">Usize1</span>, <span class="ident">a</span>: @<span class="ident">CharWithBase</span>(<span class="string">&#39;a&#39;</span>), <span class="ident">b</span>: [<span class="ident">usize</span>; <span class="number">2</span>], <span class="ident">c</span>: (<span class="ident">usize</span>, @<span class="ident">CharWithBase</span>(<span class="string">&#39;0&#39;</span>)), <span class="ident">d</span>: @<span class="ident">Splitted</span>::&lt;<span class="ident">usize</span>, <span class="kw">_</span>&gt;<span class="ident">::new</span>(<span class="string">&#39;.&#39;</span>));
-    <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">1</span>);
-    <span class="macro">assert_eq!</span>(<span class="ident">y</span>, <span class="string">&#39;2&#39;</span>);
-    <span class="macro">assert_eq!</span>(<span class="ident">z</span>, <span class="number">2</span>);
-    <span class="macro">assert_eq!</span>(<span class="ident">a</span>, <span class="number">0</span>);
-    <span class="macro">assert_eq!</span>(<span class="ident">b</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>]);
-    <span class="macro">assert_eq!</span>(<span class="ident">c</span>, (<span class="number">1</span>, <span class="number">1</span>));
-    <span class="macro">assert_eq!</span>(<span class="ident">d</span>, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>]);
+<span class="attribute">#[test]</span>
+<span class="kw">fn </span>test_scan() {
+    <span class="kw">use </span><span class="kw">crate</span>::scan;
+    <span class="kw">let </span><span class="kw-2">mut </span>s = Scanner::new(<span class="string">&quot;1 2 3 a 1 2 1 1 1.1&quot;</span>);
+    <span class="macro">scan!</span>(s, x, y: char, z: Usize1, a: @CharWithBase(<span class="string">&#39;a&#39;</span>), b: [usize; <span class="number">2</span>], c: (usize, @CharWithBase(<span class="string">&#39;0&#39;</span>)), d: @Splitted::&lt;usize, <span class="kw">_</span>&gt;::new(<span class="string">&#39;.&#39;</span>));
+    <span class="macro">assert_eq!</span>(x, <span class="number">1</span>);
+    <span class="macro">assert_eq!</span>(y, <span class="string">&#39;2&#39;</span>);
+    <span class="macro">assert_eq!</span>(z, <span class="number">2</span>);
+    <span class="macro">assert_eq!</span>(a, <span class="number">0</span>);
+    <span class="macro">assert_eq!</span>(b, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>]);
+    <span class="macro">assert_eq!</span>(c, (<span class="number">1</span>, <span class="number">1</span>));
+    <span class="macro">assert_eq!</span>(d, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>]);
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

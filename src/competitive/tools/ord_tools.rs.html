@@ -164,139 +164,139 @@
 <span id="148">148</span>
 <span id="149">149</span>
 <span id="150">150</span>
-</pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PartialOrdExt</span>: <span class="ident">Sized</span> {
-    <span class="kw">fn</span> <span class="ident">chmin</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>);
-    <span class="kw">fn</span> <span class="ident">chmax</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>);
-    <span class="kw">fn</span> <span class="ident">minmax</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>);
+</pre><pre class="rust"><code><span class="kw">pub trait </span>PartialOrdExt: Sized {
+    <span class="kw">fn </span>chmin(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="self">Self</span>);
+    <span class="kw">fn </span>chmax(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="self">Self</span>);
+    <span class="kw">fn </span>minmax(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>);
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>&gt; <span class="ident">PartialOrdExt</span> <span class="kw">for</span> <span class="ident">T</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">PartialOrd</span>,
+<span class="kw">impl</span>&lt;T&gt; PartialOrdExt <span class="kw">for </span>T
+<span class="kw">where
+    </span>T: PartialOrd,
 {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">chmin</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) {
-        <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> &gt; <span class="ident">other</span> {
-            <span class="kw-2">*</span><span class="self">self</span> = <span class="ident">other</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>chmin(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="self">Self</span>) {
+        <span class="kw">if </span><span class="kw-2">*</span><span class="self">self </span>&gt; other {
+            <span class="kw-2">*</span><span class="self">self </span>= other;
         }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">chmax</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) {
-        <span class="kw">if</span> <span class="kw-2">*</span><span class="self">self</span> &lt; <span class="ident">other</span> {
-            <span class="kw-2">*</span><span class="self">self</span> = <span class="ident">other</span>;
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>chmax(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="self">Self</span>) {
+        <span class="kw">if </span><span class="kw-2">*</span><span class="self">self </span>&lt; other {
+            <span class="kw-2">*</span><span class="self">self </span>= other;
         }
     }
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">minmax</span>(<span class="self">self</span>, <span class="ident">other</span>: <span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
-        <span class="kw">if</span> <span class="self">self</span> &lt; <span class="ident">other</span> {
-            (<span class="self">self</span>, <span class="ident">other</span>)
-        } <span class="kw">else</span> {
-            (<span class="ident">other</span>, <span class="self">self</span>)
+    <span class="attribute">#[inline]</span>
+    <span class="kw">fn </span>minmax(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
+        <span class="kw">if </span><span class="self">self </span>&lt; other {
+            (<span class="self">self</span>, other)
+        } <span class="kw">else </span>{
+            (other, <span class="self">self</span>)
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">min</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>) =&gt; { (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>).<span class="ident">min</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>), $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
+<span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> min {
+    (<span class="macro-nonterminal">$l</span>:expr) =&gt; { <span class="macro-nonterminal">$l </span>};
+    (<span class="macro-nonterminal">$l</span>:expr,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$l</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr) =&gt; { (<span class="macro-nonterminal">$l</span>).min(<span class="macro-nonterminal">$r</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>), $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
 }
 
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">chmin</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>) =&gt; {};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>,) =&gt; {};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>) =&gt; {{ <span class="kw">let</span> <span class="ident">r</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>; <span class="kw">if</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> &gt; <span class="ident">r</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> = <span class="ident">r</span>; } }};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmin!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmin!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>); <span class="macro-nonterminal">$</span><span class="macro">crate::chmin!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
+<span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> chmin {
+    (<span class="macro-nonterminal">$l</span>:expr) =&gt; {};
+    (<span class="macro-nonterminal">$l</span>:expr,) =&gt; {};
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr) =&gt; {{ <span class="kw">let </span>r = <span class="macro-nonterminal">$r</span>; <span class="kw">if </span><span class="macro-nonterminal">$l </span>&gt; r { <span class="macro-nonterminal">$l </span>= r; } }};
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmin!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmin!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>); <span class="macro-nonterminal">$</span><span class="macro">crate::chmin!</span>(<span class="macro-nonterminal">$l</span>, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
 }
 
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">max</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>) =&gt; { (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>).<span class="ident">max</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>), $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
+<span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> max {
+    (<span class="macro-nonterminal">$l</span>:expr) =&gt; { <span class="macro-nonterminal">$l </span>};
+    (<span class="macro-nonterminal">$l</span>:expr,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$l</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr) =&gt; { (<span class="macro-nonterminal">$l</span>).max(<span class="macro-nonterminal">$r</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>), $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
 }
 
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">chmax</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>) =&gt; {};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>,) =&gt; {};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>) =&gt; {{ <span class="kw">let</span> <span class="ident">r</span> = <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>; <span class="kw">if</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> &lt; <span class="ident">r</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> = <span class="ident">r</span>; } }};
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmax!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>) };
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmax!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>); <span class="macro-nonterminal">$</span><span class="macro">crate::chmax!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>) };
+<span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> chmax {
+    (<span class="macro-nonterminal">$l</span>:expr) =&gt; {};
+    (<span class="macro-nonterminal">$l</span>:expr,) =&gt; {};
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr) =&gt; {{ <span class="kw">let </span>r = <span class="macro-nonterminal">$r</span>; <span class="kw">if </span><span class="macro-nonterminal">$l </span>&lt; r { <span class="macro-nonterminal">$l </span>= r; } }};
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr,) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmax!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>) };
+    (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::chmax!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>); <span class="macro-nonterminal">$</span><span class="macro">crate::chmax!</span>(<span class="macro-nonterminal">$l</span>, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
 }
 
-<span class="attribute">#[<span class="ident">macro_export</span>]</span>
-<span class="macro">macro_rules!</span> <span class="ident">minmax</span> {
-    ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; { (<span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>), <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>)) };
+<span class="attribute">#[macro_export]</span>
+<span class="macro">macro_rules!</span> minmax {
+    ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { (<span class="macro-nonterminal">$</span><span class="macro">crate::min!</span>($(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>), <span class="macro-nonterminal">$</span><span class="macro">crate::max!</span>($(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)) };
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::eq_op</span>)]</span>
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">chmax</span>, <span class="ident">chmin</span>, <span class="ident">max</span>, <span class="ident">min</span>, <span class="ident">minmax</span>};
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="attribute">#![allow(clippy::eq_op)]</span>
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{chmax, chmin, max, min, minmax};
 
-    <span class="macro">macro_rules!</span> <span class="ident">assert_eq_f64</span> {
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>) =&gt; { <span class="macro">assert_eq_f64!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>,) };
-        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>:<span class="ident">expr</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) =&gt; {
-            <span class="macro">::std::assert!</span>((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">l</span> - <span class="macro-nonterminal">$</span><span class="macro-nonterminal">r</span>).<span class="ident">abs</span>() &lt; <span class="ident">::std::f64::EPSILON</span>, $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">t</span>)<span class="kw-2">*</span>);
+    <span class="macro">macro_rules!</span> assert_eq_f64 {
+        (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr) =&gt; { <span class="macro">assert_eq_f64!</span>(<span class="macro-nonterminal">$l</span>, <span class="macro-nonterminal">$r</span>,) };
+        (<span class="macro-nonterminal">$l</span>:expr, <span class="macro-nonterminal">$r</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
+            <span class="macro">::std::assert!</span>((<span class="macro-nonterminal">$l </span>- <span class="macro-nonterminal">$r</span>).abs() &lt; ::std::f64::EPSILON, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>);
         };
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_min</span>() {
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_min() {
         <span class="macro">assert_eq!</span>(<span class="macro">min!</span>(<span class="number">1</span>), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(<span class="macro">min!</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">1</span>);
         <span class="macro">assert_eq_f64!</span>(<span class="macro">min!</span>(<span class="number">4.0f64</span>, <span class="number">1.</span>, <span class="number">2.</span>), <span class="number">1.0f64</span>);
         <span class="macro">assert_eq!</span>(<span class="macro">min!</span>(<span class="number">4</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">3</span>,), <span class="number">2</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_chmin</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = <span class="number">100</span>;
-        <span class="macro">chmin!</span>(<span class="ident">x</span>, <span class="number">101</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">100</span>);
-        <span class="macro">chmin!</span>(<span class="ident">x</span>, <span class="number">91</span>, <span class="number">78</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">78</span>);
-        <span class="macro">chmin!</span>(<span class="ident">x</span>, <span class="number">61</span>, <span class="number">42</span>, <span class="number">51</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">42</span>);
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_chmin() {
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="number">100</span>;
+        <span class="macro">chmin!</span>(x, <span class="number">101</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">100</span>);
+        <span class="macro">chmin!</span>(x, <span class="number">91</span>, <span class="number">78</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">78</span>);
+        <span class="macro">chmin!</span>(x, <span class="number">61</span>, <span class="number">42</span>, <span class="number">51</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">42</span>);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> = <span class="macro">vec!</span>[<span class="number">31</span>, <span class="number">12</span>];
-        <span class="macro">chmin!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>], <span class="number">14</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>]);
+        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">31</span>, <span class="number">12</span>];
+        <span class="macro">chmin!</span>(v[<span class="number">0</span>], v[<span class="number">1</span>], <span class="number">14</span>);
+        <span class="macro">assert_eq!</span>(v[<span class="number">0</span>], v[<span class="number">1</span>]);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_max</span>() {
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_max() {
         <span class="macro">assert_eq!</span>(<span class="macro">max!</span>(<span class="number">1</span>), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(<span class="macro">max!</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="number">2</span>);
         <span class="macro">assert_eq_f64!</span>(<span class="macro">max!</span>(<span class="number">4.0f64</span>, <span class="number">1.</span>, <span class="number">2.</span>), <span class="number">4.0f64</span>);
         <span class="macro">assert_eq!</span>(<span class="macro">max!</span>(<span class="number">4</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">3</span>,), <span class="number">9</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_chmax</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = <span class="number">100</span>;
-        <span class="macro">chmax!</span>(<span class="ident">x</span>, <span class="number">91</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">100</span>);
-        <span class="macro">chmax!</span>(<span class="ident">x</span>, <span class="number">191</span>, <span class="number">178</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">191</span>);
-        <span class="macro">chmax!</span>(<span class="ident">x</span>, <span class="number">261</span>, <span class="number">242</span>, <span class="number">251</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">261</span>);
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_chmax() {
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="number">100</span>;
+        <span class="macro">chmax!</span>(x, <span class="number">91</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">100</span>);
+        <span class="macro">chmax!</span>(x, <span class="number">191</span>, <span class="number">178</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">191</span>);
+        <span class="macro">chmax!</span>(x, <span class="number">261</span>, <span class="number">242</span>, <span class="number">251</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">261</span>);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> = <span class="macro">vec!</span>[<span class="number">31</span>, <span class="number">42</span>];
-        <span class="macro">chmax!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>], <span class="number">14</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">v</span>[<span class="number">0</span>], <span class="ident">v</span>[<span class="number">1</span>]);
+        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="macro">vec!</span>[<span class="number">31</span>, <span class="number">42</span>];
+        <span class="macro">chmax!</span>(v[<span class="number">0</span>], v[<span class="number">1</span>], <span class="number">14</span>);
+        <span class="macro">assert_eq!</span>(v[<span class="number">0</span>], v[<span class="number">1</span>]);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_minmax</span>() {
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_minmax() {
         <span class="macro">assert_eq!</span>(<span class="macro">minmax!</span>(<span class="number">1</span>), (<span class="number">1</span>, <span class="number">1</span>));
         <span class="macro">assert_eq!</span>(<span class="macro">minmax!</span>(<span class="number">1</span>, <span class="number">2</span>), (<span class="number">1</span>, <span class="number">2</span>));
         <span class="macro">assert_eq_f64!</span>(<span class="macro">minmax!</span>(<span class="number">4.0f64</span>, <span class="number">1.</span>, <span class="number">2.</span>).<span class="number">0</span>, <span class="number">1.0f64</span>);
@@ -304,15 +304,15 @@
         <span class="macro">assert_eq!</span>(<span class="macro">minmax!</span>(<span class="number">4</span>, <span class="number">9</span>, <span class="number">2</span>, <span class="number">3</span>,), (<span class="number">2</span>, <span class="number">9</span>));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_partial_ord_ext</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">x</span> = <span class="number">100</span>;
-        <span class="ident">x</span>.<span class="ident">chmin</span>(<span class="number">91</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">91</span>);
-        <span class="ident">x</span>.<span class="ident">chmax</span>(<span class="number">101</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">x</span>, <span class="number">101</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">100</span>.<span class="ident">minmax</span>(<span class="number">91</span>), (<span class="number">91</span>, <span class="number">100</span>));
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_partial_ord_ext() {
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="number">100</span>;
+        x.chmin(<span class="number">91</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">91</span>);
+        x.chmax(<span class="number">101</span>);
+        <span class="macro">assert_eq!</span>(x, <span class="number">101</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">100</span>.minmax(<span class="number">91</span>), (<span class="number">91</span>, <span class="number">100</span>));
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

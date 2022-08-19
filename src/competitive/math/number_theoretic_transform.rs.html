@@ -382,373 +382,373 @@
 <span id="366">366</span>
 <span id="367">367</span>
 <span id="368">368</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">montgomery</span>::<span class="kw-2">*</span>, <span class="ident">AssociatedValue</span>, <span class="ident">MInt</span>, <span class="ident">MIntBase</span>, <span class="ident">MIntConvert</span>, <span class="ident">One</span>, <span class="ident">Zero</span>};
-<span class="kw">use</span> <span class="ident">std::marker::PhantomData</span>;
+</pre><pre class="rust"><code><span class="kw">use super</span>::{montgomery::<span class="kw-2">*</span>, AssociatedValue, MInt, MIntBase, MIntConvert, One, Zero};
+<span class="kw">use </span>std::marker::PhantomData;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NumberTheoreticTransform</span>&lt;<span class="ident">M</span>&gt;(<span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">M</span>&gt;);
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">NttModulus</span>:
-    <span class="lifetime">&#39;static</span> + <span class="ident">Sized</span> + <span class="ident">MIntBase</span>&lt;<span class="ident">Inner</span> = <span class="ident">u32</span>&gt; + <span class="ident">MIntConvert</span>&lt;<span class="ident">u32</span>&gt; + <span class="ident">AssociatedValue</span>&lt;<span class="ident">T</span> = <span class="ident">NttCache</span>&lt;<span class="self">Self</span>&gt;&gt;
+<span class="kw">pub struct </span>NumberTheoreticTransform&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
+<span class="kw">pub trait </span>NttModulus:
+    <span class="lifetime">&#39;static </span>+ Sized + MIntBase&lt;Inner = u32&gt; + MIntConvert&lt;u32&gt; + AssociatedValue&lt;T = NttCache&lt;<span class="self">Self</span>&gt;&gt;
 {
-    <span class="kw">fn</span> <span class="ident">primitive_root</span>() -&gt; <span class="ident">MInt</span>&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>primitive_root() -&gt; MInt&lt;<span class="self">Self</span>&gt;;
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Convolve</span>&lt;<span class="ident">M</span>&gt;(<span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">M</span>&gt;);
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Convolve998244353</span> = <span class="ident">Convolve</span>&lt;<span class="ident">Modulo998244353</span>&gt;;
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">MIntConvolve</span>&lt;<span class="ident">M</span>&gt; = <span class="ident">Convolve</span>&lt;(<span class="ident">M</span>, (<span class="ident">Modulo2013265921</span>, <span class="ident">Modulo1811939329</span>, <span class="ident">Modulo2113929217</span>))&gt;;
+<span class="kw">pub struct </span>Convolve&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
+<span class="kw">pub type </span>Convolve998244353 = Convolve&lt;Modulo998244353&gt;;
+<span class="kw">pub type </span>MIntConvolve&lt;M&gt; = Convolve&lt;(M, (Modulo2013265921, Modulo1811939329, Modulo2113929217))&gt;;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ConvolveSteps</span> {
-    <span class="kw">type</span> <span class="ident">T</span>;
-    <span class="kw">type</span> <span class="ident">F</span>;
-    <span class="kw">fn</span> <span class="ident">length</span>(<span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident">usize</span>;
-    <span class="kw">fn</span> <span class="ident">transform</span>(<span class="ident">t</span>: <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::F</span>;
-    <span class="kw">fn</span> <span class="ident">inverse_transform</span>(<span class="ident">f</span>: <span class="ident"><span class="self">Self</span>::F</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span>;
-    <span class="kw">fn</span> <span class="ident">multiply</span>(<span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::F</span>, <span class="ident">g</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::F</span>);
-    <span class="kw">fn</span> <span class="ident">convolve</span>(<span class="ident">a</span>: <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">b</span>: <span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-        <span class="kw">let</span> <span class="ident">len</span> = (<span class="ident"><span class="self">Self</span>::length</span>(<span class="kw-2">&amp;</span><span class="ident">a</span>) + <span class="ident"><span class="self">Self</span>::length</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>)).<span class="ident">saturating_sub</span>(<span class="number">1</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">a</span> = <span class="ident"><span class="self">Self</span>::transform</span>(<span class="ident">a</span>, <span class="ident">len</span>);
-        <span class="kw">let</span> <span class="ident">b</span> = <span class="ident"><span class="self">Self</span>::transform</span>(<span class="ident">b</span>, <span class="ident">len</span>);
-        <span class="ident"><span class="self">Self</span>::multiply</span>(<span class="kw-2">&amp;mut</span> <span class="ident">a</span>, <span class="kw-2">&amp;</span><span class="ident">b</span>);
-        <span class="ident"><span class="self">Self</span>::inverse_transform</span>(<span class="ident">a</span>, <span class="ident">len</span>)
+<span class="kw">pub trait </span>ConvolveSteps {
+    <span class="kw">type </span>T;
+    <span class="kw">type </span>F;
+    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize;
+    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F;
+    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T;
+    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F);
+    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
+        <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
+        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
+        <span class="self">Self</span>::inverse_transform(a, len)
     }
 }
-<span class="macro">macro_rules!</span> <span class="ident">impl_ntt_modulus</span> {
-    ($([<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">g</span>:<span class="ident">expr</span>]),<span class="kw-2">*</span>) =&gt; {
+<span class="macro">macro_rules!</span> impl_ntt_modulus {
+    ($([<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$g</span>:expr]),<span class="kw-2">*</span>) =&gt; {
         $(
-            <span class="kw">impl</span> <span class="ident">NttModulus</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> {
-                <span class="kw">fn</span> <span class="ident">primitive_root</span>() -&gt; <span class="ident">MInt</span>&lt;<span class="self">Self</span>&gt; {
-                    <span class="ident">MInt::new_unchecked</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">g</span>)
+            <span class="kw">impl </span>NttModulus <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
+                <span class="kw">fn </span>primitive_root() -&gt; MInt&lt;<span class="self">Self</span>&gt; {
+                    MInt::new_unchecked(<span class="macro-nonterminal">$g</span>)
                 }
             }
-            <span class="macro">crate::impl_assoc_value!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>, <span class="ident">NttCache</span>&lt;<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span>&gt;, <span class="ident">NttCache::new</span>());
+            <span class="macro">crate::impl_assoc_value!</span>(<span class="macro-nonterminal">$name</span>, NttCache&lt;<span class="macro-nonterminal">$name</span>&gt;, NttCache::new());
         )*
     };
 }
 <span class="macro">impl_ntt_modulus!</span>(
-    [<span class="ident">Modulo998244353</span>, <span class="number">3</span>],
-    [<span class="ident">Modulo2113929217</span>, <span class="number">5</span>],
-    [<span class="ident">Modulo1811939329</span>, <span class="number">13</span>],
-    [<span class="ident">Modulo2013265921</span>, <span class="number">31</span>]
+    [Modulo998244353, <span class="number">3</span>],
+    [Modulo2113929217, <span class="number">5</span>],
+    [Modulo1811939329, <span class="number">13</span>],
+    [Modulo2013265921, <span class="number">31</span>]
 );
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NttCache</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">NttModulus</span>,
+<span class="attribute">#[derive(Debug)]</span>
+<span class="kw">pub struct </span>NttCache&lt;M&gt;
+<span class="kw">where
+    </span>M: NttModulus,
 {
-    <span class="ident">cache</span>: <span class="ident">Vec</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;,
-    <span class="ident">icache</span>: <span class="ident">Vec</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;,
+    cache: Vec&lt;MInt&lt;M&gt;&gt;,
+    icache: Vec&lt;MInt&lt;M&gt;&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">NttCache</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">NttModulus</span>,
+<span class="kw">impl</span>&lt;M&gt; Clone <span class="kw">for </span>NttCache&lt;M&gt;
+<span class="kw">where
+    </span>M: NttModulus,
 {
-    <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">cache</span>: <span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">clone</span>(),
-            <span class="ident">icache</span>: <span class="self">self</span>.<span class="ident">icache</span>.<span class="ident">clone</span>(),
+    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            cache: <span class="self">self</span>.cache.clone(),
+            icache: <span class="self">self</span>.icache.clone(),
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">NttCache</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">NttModulus</span>,
+<span class="kw">impl</span>&lt;M&gt; NttCache&lt;M&gt;
+<span class="kw">where
+    </span>M: NttModulus,
 {
-    <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">cache</span>: <span class="ident">Vec::new</span>(),
-            <span class="ident">icache</span>: <span class="ident">Vec::new</span>(),
+    <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            cache: Vec::new(),
+            icache: Vec::new(),
         }
     }
-    <span class="kw">fn</span> <span class="ident">ensure</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) {
-        <span class="macro">assert_eq!</span>(<span class="ident">n</span>.<span class="ident">count_ones</span>(), <span class="number">1</span>, <span class="string">&quot;call with power of two but {}&quot;</span>, <span class="ident">n</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">m</span> = <span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">len</span>();
+    <span class="kw">fn </span>ensure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, n: usize) {
+        <span class="macro">assert_eq!</span>(n.count_ones(), <span class="number">1</span>, <span class="string">&quot;call with power of two but {}&quot;</span>, n);
+        <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="self">self</span>.cache.len();
         <span class="macro">assert!</span>(
-            <span class="ident">m</span>.<span class="ident">count_ones</span>() &lt;= <span class="number">1</span>,
+            m.count_ones() &lt;= <span class="number">1</span>,
             <span class="string">&quot;length might be power of two but {}&quot;</span>,
-            <span class="ident">m</span>
+            m
         );
-        <span class="kw">if</span> <span class="ident">m</span> &gt;= <span class="ident">n</span> {
+        <span class="kw">if </span>m &gt;= n {
             <span class="kw">return</span>;
         }
-        <span class="kw">let</span> <span class="ident">q</span>: <span class="ident">usize</span> = <span class="ident">M::mod_into</span>() <span class="kw">as</span> <span class="ident">usize</span> - <span class="number">1</span>;
-        <span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">reserve_exact</span>(<span class="ident">n</span> - <span class="ident">m</span>);
-        <span class="self">self</span>.<span class="ident">icache</span>.<span class="ident">reserve_exact</span>(<span class="ident">n</span> - <span class="ident">m</span>);
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">is_empty</span>() {
-            <span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">push</span>(<span class="ident">MInt::one</span>());
-            <span class="self">self</span>.<span class="ident">icache</span>.<span class="ident">push</span>(<span class="ident">MInt::one</span>());
-            <span class="ident">m</span> += <span class="number">1</span>;
+        <span class="kw">let </span>q: usize = M::mod_into() <span class="kw">as </span>usize - <span class="number">1</span>;
+        <span class="self">self</span>.cache.reserve_exact(n - m);
+        <span class="self">self</span>.icache.reserve_exact(n - m);
+        <span class="kw">if </span><span class="self">self</span>.cache.is_empty() {
+            <span class="self">self</span>.cache.push(MInt::one());
+            <span class="self">self</span>.icache.push(MInt::one());
+            m += <span class="number">1</span>;
         }
-        <span class="kw">while</span> <span class="ident">m</span> &lt; <span class="ident">n</span> {
-            <span class="kw">let</span> <span class="ident">p</span> = <span class="ident">M::primitive_root</span>().<span class="ident">pow</span>(<span class="ident">q</span> / (<span class="ident">m</span> * <span class="number">4</span>));
-            <span class="kw">let</span> <span class="ident">pinv</span> = <span class="ident">p</span>.<span class="ident">inv</span>();
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">m</span> {
-                <span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">cache</span>[<span class="ident">i</span>] * <span class="ident">p</span>);
-                <span class="self">self</span>.<span class="ident">icache</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">icache</span>[<span class="ident">i</span>] * <span class="ident">pinv</span>);
+        <span class="kw">while </span>m &lt; n {
+            <span class="kw">let </span>p = M::primitive_root().pow(q / (m * <span class="number">4</span>));
+            <span class="kw">let </span>pinv = p.inv();
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..m {
+                <span class="self">self</span>.cache.push(<span class="self">self</span>.cache[i] * p);
+                <span class="self">self</span>.icache.push(<span class="self">self</span>.icache[i] * pinv);
             }
-            <span class="ident">m</span> &lt;&lt;= <span class="number">1</span>;
+            m &lt;&lt;= <span class="number">1</span>;
         }
-        <span class="macro">assert_eq!</span>(<span class="self">self</span>.<span class="ident">cache</span>.<span class="ident">len</span>(), <span class="ident">n</span>);
+        <span class="macro">assert_eq!</span>(<span class="self">self</span>.cache.len(), n);
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">NumberTheoreticTransform</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">NttModulus</span>,
+<span class="kw">impl</span>&lt;M&gt; NumberTheoreticTransform&lt;M&gt;
+<span class="kw">where
+    </span>M: NttModulus,
 {
-    <span class="kw">fn</span> <span class="ident">ntt</span>(<span class="ident">a</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;]) {
-        <span class="ident">M::modify</span>(|<span class="ident">cache</span>| {
-            <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">a</span>.<span class="ident">len</span>();
-            <span class="ident">cache</span>.<span class="ident">ensure</span>(<span class="ident">n</span> / <span class="number">2</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> = <span class="ident">n</span> / <span class="number">2</span>;
-            <span class="kw">while</span> <span class="ident">v</span> &gt; <span class="number">0</span> {
-                <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">wj</span>) <span class="kw">in</span> <span class="ident">a</span>.<span class="ident">chunks_exact_mut</span>(<span class="ident">v</span> &lt;&lt; <span class="number">1</span>).<span class="ident">zip</span>(<span class="kw-2">&amp;</span><span class="ident">cache</span>.<span class="ident">cache</span>) {
-                    <span class="kw">let</span> (<span class="ident">l</span>, <span class="ident">r</span>) = <span class="ident">a</span>.<span class="ident">split_at_mut</span>(<span class="ident">v</span>);
-                    <span class="kw">for</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="kw">in</span> <span class="ident">l</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">r</span>) {
-                        <span class="kw">let</span> <span class="ident">ajv</span> = <span class="ident">wj</span> * <span class="kw-2">*</span><span class="ident">y</span>;
-                        <span class="kw-2">*</span><span class="ident">y</span> = <span class="kw-2">*</span><span class="ident">x</span> - <span class="ident">ajv</span>;
-                        <span class="kw-2">*</span><span class="ident">x</span> += <span class="ident">ajv</span>;
+    <span class="kw">fn </span>ntt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
+        M::modify(|cache| {
+            <span class="kw">let </span>n = a.len();
+            cache.ensure(n / <span class="number">2</span>);
+            <span class="kw">let </span><span class="kw-2">mut </span>v = n / <span class="number">2</span>;
+            <span class="kw">while </span>v &gt; <span class="number">0 </span>{
+                <span class="kw">for </span>(a, wj) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span>cache.cache) {
+                    <span class="kw">let </span>(l, r) = a.split_at_mut(v);
+                    <span class="kw">for </span>(x, y) <span class="kw">in </span>l.iter_mut().zip(r) {
+                        <span class="kw">let </span>ajv = wj * <span class="kw-2">*</span>y;
+                        <span class="kw-2">*</span>y = <span class="kw-2">*</span>x - ajv;
+                        <span class="kw-2">*</span>x += ajv;
                     }
                 }
-                <span class="ident">v</span> &gt;&gt;= <span class="number">1</span>;
+                v &gt;&gt;= <span class="number">1</span>;
             }
         });
     }
-    <span class="kw">fn</span> <span class="ident">intt</span>(<span class="ident">a</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;]) {
-        <span class="ident">M::modify</span>(|<span class="ident">cache</span>| {
-            <span class="kw">let</span> <span class="ident">n</span> = <span class="ident">a</span>.<span class="ident">len</span>();
-            <span class="ident">cache</span>.<span class="ident">ensure</span>(<span class="ident">n</span> / <span class="number">2</span>);
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> = <span class="number">1</span>;
-            <span class="kw">while</span> <span class="ident">v</span> &lt; <span class="ident">n</span> {
-                <span class="kw">for</span> (<span class="ident">a</span>, <span class="ident">wj</span>) <span class="kw">in</span> <span class="ident">a</span>.<span class="ident">chunks_exact_mut</span>(<span class="ident">v</span> &lt;&lt; <span class="number">1</span>).<span class="ident">zip</span>(<span class="kw-2">&amp;</span><span class="ident">cache</span>.<span class="ident">icache</span>) {
-                    <span class="kw">let</span> (<span class="ident">l</span>, <span class="ident">r</span>) = <span class="ident">a</span>.<span class="ident">split_at_mut</span>(<span class="ident">v</span>);
-                    <span class="kw">for</span> (<span class="ident">x</span>, <span class="ident">y</span>) <span class="kw">in</span> <span class="ident">l</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">r</span>) {
-                        <span class="kw">let</span> <span class="ident">ajv</span> = <span class="kw-2">*</span><span class="ident">x</span> - <span class="kw-2">*</span><span class="ident">y</span>;
-                        <span class="kw-2">*</span><span class="ident">x</span> += <span class="kw-2">*</span><span class="ident">y</span>;
-                        <span class="kw-2">*</span><span class="ident">y</span> = <span class="ident">wj</span> * <span class="ident">ajv</span>;
+    <span class="kw">fn </span>intt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
+        M::modify(|cache| {
+            <span class="kw">let </span>n = a.len();
+            cache.ensure(n / <span class="number">2</span>);
+            <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
+            <span class="kw">while </span>v &lt; n {
+                <span class="kw">for </span>(a, wj) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span>cache.icache) {
+                    <span class="kw">let </span>(l, r) = a.split_at_mut(v);
+                    <span class="kw">for </span>(x, y) <span class="kw">in </span>l.iter_mut().zip(r) {
+                        <span class="kw">let </span>ajv = <span class="kw-2">*</span>x - <span class="kw-2">*</span>y;
+                        <span class="kw-2">*</span>x += <span class="kw-2">*</span>y;
+                        <span class="kw-2">*</span>y = wj * ajv;
                     }
                 }
-                <span class="ident">v</span> &lt;&lt;= <span class="number">1</span>;
+                v &lt;&lt;= <span class="number">1</span>;
             }
         });
     }
 }
-<span class="kw">impl</span>&lt;<span class="ident">M</span>&gt; <span class="ident">ConvolveSteps</span> <span class="kw">for</span> <span class="ident">Convolve</span>&lt;<span class="ident">M</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">NttModulus</span>,
+<span class="kw">impl</span>&lt;M&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;M&gt;
+<span class="kw">where
+    </span>M: NttModulus,
 {
-    <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">Vec</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;;
-    <span class="kw">type</span> <span class="ident">F</span> = <span class="ident">Vec</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;;
-    <span class="kw">fn</span> <span class="ident">length</span>(<span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident">usize</span> {
-        <span class="ident">t</span>.<span class="ident">len</span>()
+    <span class="kw">type </span>T = Vec&lt;MInt&lt;M&gt;&gt;;
+    <span class="kw">type </span>F = Vec&lt;MInt&lt;M&gt;&gt;;
+    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
+        t.len()
     }
-    <span class="kw">fn</span> <span class="ident">transform</span>(<span class="kw-2">mut</span> <span class="ident">t</span>: <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::F</span> {
-        <span class="ident">t</span>.<span class="ident">resize_with</span>(<span class="ident">len</span>.<span class="ident">max</span>(<span class="number">2</span>).<span class="ident">next_power_of_two</span>(), <span class="ident">Zero::zero</span>);
-        <span class="ident">NumberTheoreticTransform</span>::&lt;<span class="ident">M</span>&gt;<span class="ident">::ntt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">t</span>);
-        <span class="ident">t</span>
+    <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+        t.resize_with(len.max(<span class="number">2</span>).next_power_of_two(), Zero::zero);
+        NumberTheoreticTransform::&lt;M&gt;::ntt(<span class="kw-2">&amp;mut </span>t);
+        t
     }
-    <span class="kw">fn</span> <span class="ident">inverse_transform</span>(<span class="kw-2">mut</span> <span class="ident">f</span>: <span class="ident"><span class="self">Self</span>::F</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-        <span class="ident">NumberTheoreticTransform</span>::&lt;<span class="ident">M</span>&gt;<span class="ident">::intt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">f</span>);
-        <span class="ident">f</span>.<span class="ident">truncate</span>(<span class="ident">len</span>);
-        <span class="kw">let</span> <span class="ident">inv</span> = <span class="ident">MInt::from</span>(<span class="ident">len</span>.<span class="ident">max</span>(<span class="number">2</span>).<span class="ident">next_power_of_two</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">inv</span>();
-        <span class="kw">for</span> <span class="ident">f</span> <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">iter_mut</span>() {
-            <span class="kw-2">*</span><span class="ident">f</span> <span class="kw-2">*</span>= <span class="ident">inv</span>;
+    <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+        NumberTheoreticTransform::&lt;M&gt;::intt(<span class="kw-2">&amp;mut </span>f);
+        f.truncate(len);
+        <span class="kw">let </span>inv = MInt::from(len.max(<span class="number">2</span>).next_power_of_two() <span class="kw">as </span>u32).inv();
+        <span class="kw">for </span>f <span class="kw">in </span>f.iter_mut() {
+            <span class="kw-2">*</span>f <span class="kw-2">*</span>= inv;
         }
-        <span class="ident">f</span>
+        f
     }
-    <span class="kw">fn</span> <span class="ident">multiply</span>(<span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::F</span>, <span class="ident">g</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::F</span>) {
-        <span class="macro">assert_eq!</span>(<span class="ident">f</span>.<span class="ident">len</span>(), <span class="ident">g</span>.<span class="ident">len</span>());
-        <span class="kw">for</span> (<span class="ident">f</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">g</span>.<span class="ident">iter</span>()) {
-            <span class="kw-2">*</span><span class="ident">f</span> <span class="kw-2">*</span>= <span class="kw-2">*</span><span class="ident">g</span>;
+    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+        <span class="macro">assert_eq!</span>(f.len(), g.len());
+        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.iter_mut().zip(g.iter()) {
+            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
         }
     }
 }
-<span class="kw">type</span> <span class="ident">MVec</span>&lt;<span class="ident">M</span>&gt; = <span class="ident">Vec</span>&lt;<span class="ident">MInt</span>&lt;<span class="ident">M</span>&gt;&gt;;
-<span class="kw">impl</span>&lt;<span class="ident">M</span>, <span class="ident">N1</span>, <span class="ident">N2</span>, <span class="ident">N3</span>&gt; <span class="ident">ConvolveSteps</span> <span class="kw">for</span> <span class="ident">Convolve</span>&lt;(<span class="ident">M</span>, (<span class="ident">N1</span>, <span class="ident">N2</span>, <span class="ident">N3</span>))&gt;
-<span class="kw">where</span>
-    <span class="ident">M</span>: <span class="ident">MIntConvert</span> + <span class="ident">MIntConvert</span>&lt;<span class="ident">u32</span>&gt;,
-    <span class="ident">N1</span>: <span class="ident">NttModulus</span>,
-    <span class="ident">N2</span>: <span class="ident">NttModulus</span>,
-    <span class="ident">N3</span>: <span class="ident">NttModulus</span>,
+<span class="kw">type </span>MVec&lt;M&gt; = Vec&lt;MInt&lt;M&gt;&gt;;
+<span class="kw">impl</span>&lt;M, N1, N2, N3&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;(M, (N1, N2, N3))&gt;
+<span class="kw">where
+    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
+    N1: NttModulus,
+    N2: NttModulus,
+    N3: NttModulus,
 {
-    <span class="kw">type</span> <span class="ident">T</span> = <span class="ident">MVec</span>&lt;<span class="ident">M</span>&gt;;
-    <span class="kw">type</span> <span class="ident">F</span> = (<span class="ident">MVec</span>&lt;<span class="ident">N1</span>&gt;, <span class="ident">MVec</span>&lt;<span class="ident">N2</span>&gt;, <span class="ident">MVec</span>&lt;<span class="ident">N3</span>&gt;);
-    <span class="kw">fn</span> <span class="ident">length</span>(<span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::T</span>) -&gt; <span class="ident">usize</span> {
-        <span class="ident">t</span>.<span class="ident">len</span>()
+    <span class="kw">type </span>T = MVec&lt;M&gt;;
+    <span class="kw">type </span>F = (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;);
+    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
+        t.len()
     }
-    <span class="kw">fn</span> <span class="ident">transform</span>(<span class="ident">t</span>: <span class="ident"><span class="self">Self</span>::T</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::F</span> {
-        <span class="kw">let</span> <span class="ident">npot</span> = <span class="ident">len</span>.<span class="ident">max</span>(<span class="number">2</span>).<span class="ident">next_power_of_two</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">f</span> = (
-            <span class="ident">MVec</span>::&lt;<span class="ident">N1</span>&gt;<span class="ident">::with_capacity</span>(<span class="ident">npot</span>),
-            <span class="ident">MVec</span>::&lt;<span class="ident">N2</span>&gt;<span class="ident">::with_capacity</span>(<span class="ident">npot</span>),
-            <span class="ident">MVec</span>::&lt;<span class="ident">N3</span>&gt;<span class="ident">::with_capacity</span>(<span class="ident">npot</span>),
+    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+        <span class="kw">let </span>npot = len.max(<span class="number">2</span>).next_power_of_two();
+        <span class="kw">let </span><span class="kw-2">mut </span>f = (
+            MVec::&lt;N1&gt;::with_capacity(npot),
+            MVec::&lt;N2&gt;::with_capacity(npot),
+            MVec::&lt;N3&gt;::with_capacity(npot),
         );
-        <span class="kw">for</span> <span class="ident">t</span> <span class="kw">in</span> <span class="ident">t</span> {
-            <span class="ident">f</span>.<span class="number">0</span>.<span class="ident">push</span>(&lt;<span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span>&lt;<span class="ident">u32</span>&gt;&gt;<span class="ident">::into</span>(<span class="ident">t</span>.<span class="ident">inner</span>()).<span class="ident">into</span>());
-            <span class="ident">f</span>.<span class="number">1</span>.<span class="ident">push</span>(&lt;<span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span>&lt;<span class="ident">u32</span>&gt;&gt;<span class="ident">::into</span>(<span class="ident">t</span>.<span class="ident">inner</span>()).<span class="ident">into</span>());
-            <span class="ident">f</span>.<span class="number">2</span>.<span class="ident">push</span>(&lt;<span class="ident">M</span> <span class="kw">as</span> <span class="ident">MIntConvert</span>&lt;<span class="ident">u32</span>&gt;&gt;<span class="ident">::into</span>(<span class="ident">t</span>.<span class="ident">inner</span>()).<span class="ident">into</span>());
+        <span class="kw">for </span>t <span class="kw">in </span>t {
+            f.<span class="number">0</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
+            f.<span class="number">1</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
+            f.<span class="number">2</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
         }
-        <span class="ident">f</span>.<span class="number">0</span>.<span class="ident">resize_with</span>(<span class="ident">npot</span>, <span class="ident">Zero::zero</span>);
-        <span class="ident">f</span>.<span class="number">1</span>.<span class="ident">resize_with</span>(<span class="ident">npot</span>, <span class="ident">Zero::zero</span>);
-        <span class="ident">f</span>.<span class="number">2</span>.<span class="ident">resize_with</span>(<span class="ident">npot</span>, <span class="ident">Zero::zero</span>);
-        <span class="ident">NumberTheoreticTransform</span>::&lt;<span class="ident">N1</span>&gt;<span class="ident">::ntt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">f</span>.<span class="number">0</span>);
-        <span class="ident">NumberTheoreticTransform</span>::&lt;<span class="ident">N2</span>&gt;<span class="ident">::ntt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">f</span>.<span class="number">1</span>);
-        <span class="ident">NumberTheoreticTransform</span>::&lt;<span class="ident">N3</span>&gt;<span class="ident">::ntt</span>(<span class="kw-2">&amp;mut</span> <span class="ident">f</span>.<span class="number">2</span>);
-        <span class="ident">f</span>
+        f.<span class="number">0</span>.resize_with(npot, Zero::zero);
+        f.<span class="number">1</span>.resize_with(npot, Zero::zero);
+        f.<span class="number">2</span>.resize_with(npot, Zero::zero);
+        NumberTheoreticTransform::&lt;N1&gt;::ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>);
+        NumberTheoreticTransform::&lt;N2&gt;::ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>);
+        NumberTheoreticTransform::&lt;N3&gt;::ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>);
+        f
     }
-    <span class="kw">fn</span> <span class="ident">inverse_transform</span>(<span class="ident">f</span>: <span class="ident"><span class="self">Self</span>::F</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="ident"><span class="self">Self</span>::T</span> {
-        <span class="kw">let</span> <span class="ident">t1</span> = <span class="ident">MInt</span>::&lt;<span class="ident">N2</span>&gt;<span class="ident">::new</span>(<span class="ident">N1::get_mod</span>()).<span class="ident">inv</span>();
-        <span class="kw">let</span> <span class="ident">m1</span> = <span class="ident">MInt</span>::&lt;<span class="ident">M</span>&gt;<span class="ident">::from</span>(<span class="ident">N1::get_mod</span>());
-        <span class="kw">let</span> <span class="ident">m1_3</span> = <span class="ident">MInt</span>::&lt;<span class="ident">N3</span>&gt;<span class="ident">::new</span>(<span class="ident">N1::get_mod</span>());
-        <span class="kw">let</span> <span class="ident">t2</span> = (<span class="ident">m1_3</span> * <span class="ident">MInt</span>::&lt;<span class="ident">N3</span>&gt;<span class="ident">::new</span>(<span class="ident">N2::get_mod</span>())).<span class="ident">inv</span>();
-        <span class="kw">let</span> <span class="ident">m2</span> = <span class="ident">m1</span> * <span class="ident">MInt</span>::&lt;<span class="ident">M</span>&gt;<span class="ident">::from</span>(<span class="ident">N2::get_mod</span>());
-        <span class="ident">Convolve</span>::&lt;<span class="ident">N1</span>&gt;<span class="ident">::inverse_transform</span>(<span class="ident">f</span>.<span class="number">0</span>, <span class="ident">len</span>)
-            .<span class="ident">into_iter</span>()
-            .<span class="ident">zip</span>(<span class="ident">Convolve</span>::&lt;<span class="ident">N2</span>&gt;<span class="ident">::inverse_transform</span>(<span class="ident">f</span>.<span class="number">1</span>, <span class="ident">len</span>))
-            .<span class="ident">zip</span>(<span class="ident">Convolve</span>::&lt;<span class="ident">N3</span>&gt;<span class="ident">::inverse_transform</span>(<span class="ident">f</span>.<span class="number">2</span>, <span class="ident">len</span>))
-            .<span class="ident">map</span>(|((<span class="ident">c1</span>, <span class="ident">c2</span>), <span class="ident">c3</span>)| {
-                <span class="kw">let</span> <span class="ident">d1</span> = <span class="ident">c1</span>.<span class="ident">inner</span>();
-                <span class="kw">let</span> <span class="ident">d2</span> = ((<span class="ident">c2</span> - <span class="ident">MInt</span>::&lt;<span class="ident">N2</span>&gt;<span class="ident">::from</span>(<span class="ident">d1</span>)) * <span class="ident">t1</span>).<span class="ident">inner</span>();
-                <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">MInt</span>::&lt;<span class="ident">N3</span>&gt;<span class="ident">::new</span>(<span class="ident">d1</span>) + <span class="ident">MInt</span>::&lt;<span class="ident">N3</span>&gt;<span class="ident">::new</span>(<span class="ident">d2</span>) * <span class="ident">m1_3</span>;
-                <span class="kw">let</span> <span class="ident">d3</span> = ((<span class="ident">c3</span> - <span class="ident">x</span>) * <span class="ident">t2</span>).<span class="ident">inner</span>();
-                <span class="ident">MInt</span>::&lt;<span class="ident">M</span>&gt;<span class="ident">::from</span>(<span class="ident">d1</span>) + <span class="ident">MInt</span>::&lt;<span class="ident">M</span>&gt;<span class="ident">::from</span>(<span class="ident">d2</span>) * <span class="ident">m1</span> + <span class="ident">MInt</span>::&lt;<span class="ident">M</span>&gt;<span class="ident">::from</span>(<span class="ident">d3</span>) * <span class="ident">m2</span>
+    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
+        <span class="kw">let </span>m1 = MInt::&lt;M&gt;::from(N1::get_mod());
+        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
+        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
+        <span class="kw">let </span>m2 = m1 * MInt::&lt;M&gt;::from(N2::get_mod());
+        Convolve::&lt;N1&gt;::inverse_transform(f.<span class="number">0</span>, len)
+            .into_iter()
+            .zip(Convolve::&lt;N2&gt;::inverse_transform(f.<span class="number">1</span>, len))
+            .zip(Convolve::&lt;N3&gt;::inverse_transform(f.<span class="number">2</span>, len))
+            .map(|((c1, c2), c3)| {
+                <span class="kw">let </span>d1 = c1.inner();
+                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
+                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+                <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
+                MInt::&lt;M&gt;::from(d1) + MInt::&lt;M&gt;::from(d2) * m1 + MInt::&lt;M&gt;::from(d3) * m2
             })
-            .<span class="ident">collect</span>()
+            .collect()
     }
-    <span class="kw">fn</span> <span class="ident">multiply</span>(<span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::F</span>, <span class="ident">g</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::F</span>) {
-        <span class="macro">assert_eq!</span>(<span class="ident">f</span>.<span class="number">0</span>.<span class="ident">len</span>(), <span class="ident">g</span>.<span class="number">0</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">f</span>.<span class="number">1</span>.<span class="ident">len</span>(), <span class="ident">g</span>.<span class="number">1</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">f</span>.<span class="number">2</span>.<span class="ident">len</span>(), <span class="ident">g</span>.<span class="number">2</span>.<span class="ident">len</span>());
-        <span class="kw">for</span> (<span class="ident">f</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="number">0</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">g</span>.<span class="number">0</span>.<span class="ident">iter</span>()) {
-            <span class="kw-2">*</span><span class="ident">f</span> <span class="kw-2">*</span>= <span class="kw-2">*</span><span class="ident">g</span>;
+    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+        <span class="macro">assert_eq!</span>(f.<span class="number">0</span>.len(), g.<span class="number">0</span>.len());
+        <span class="macro">assert_eq!</span>(f.<span class="number">1</span>.len(), g.<span class="number">1</span>.len());
+        <span class="macro">assert_eq!</span>(f.<span class="number">2</span>.len(), g.<span class="number">2</span>.len());
+        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">0</span>.iter_mut().zip(g.<span class="number">0</span>.iter()) {
+            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
         }
-        <span class="kw">for</span> (<span class="ident">f</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="number">1</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">g</span>.<span class="number">1</span>.<span class="ident">iter</span>()) {
-            <span class="kw-2">*</span><span class="ident">f</span> <span class="kw-2">*</span>= <span class="kw-2">*</span><span class="ident">g</span>;
+        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">1</span>.iter_mut().zip(g.<span class="number">1</span>.iter()) {
+            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
         }
-        <span class="kw">for</span> (<span class="ident">f</span>, <span class="ident">g</span>) <span class="kw">in</span> <span class="ident">f</span>.<span class="number">2</span>.<span class="ident">iter_mut</span>().<span class="ident">zip</span>(<span class="ident">g</span>.<span class="number">2</span>.<span class="ident">iter</span>()) {
-            <span class="kw-2">*</span><span class="ident">f</span> <span class="kw-2">*</span>= <span class="kw-2">*</span><span class="ident">g</span>;
+        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">2</span>.iter_mut().zip(g.<span class="number">2</span>.iter()) {
+            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
         }
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num</span>::{
-        <span class="ident">mint_basic::Modulo1000000009</span>,
-        <span class="ident">montgomery</span>::{<span class="ident">MInt998244353</span>, <span class="ident">Modulo998244353</span>},
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::num::{
+        mint_basic::Modulo1000000009,
+        montgomery::{MInt998244353, Modulo998244353},
     };
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools::Xorshift</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
 
-    <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span> = <span class="number">3_000</span>;
+    <span class="kw">const </span>N: usize = <span class="number">3_000</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_ntt998244353</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
-        <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">rng</span>
-            .<span class="ident">gen_iter</span>(..<span class="ident">MInt998244353::get_mod</span>())
-            .<span class="ident">map</span>(<span class="ident">MInt998244353::new_unchecked</span>)
-            .<span class="ident">take</span>(<span class="ident">N</span>)
-            .<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">rng</span>
-            .<span class="ident">gen_iter</span>(..<span class="ident">MInt998244353::get_mod</span>())
-            .<span class="ident">map</span>(<span class="ident">MInt998244353::new_unchecked</span>)
-            .<span class="ident">take</span>(<span class="ident">N</span>)
-            .<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> = <span class="macro">vec!</span>[<span class="ident">MInt998244353::zero</span>(); <span class="ident">N</span> * <span class="number">2</span> - <span class="number">1</span>];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-                <span class="ident">c</span>[<span class="ident">i</span> + <span class="ident">j</span>] += <span class="ident">a</span>[<span class="ident">i</span>] * <span class="ident">b</span>[<span class="ident">j</span>];
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_ntt998244353() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
+        <span class="kw">let </span>a: Vec&lt;<span class="kw">_</span>&gt; = rng
+            .gen_iter(..MInt998244353::get_mod())
+            .map(MInt998244353::new_unchecked)
+            .take(N)
+            .collect();
+        <span class="kw">let </span>b: Vec&lt;<span class="kw">_</span>&gt; = rng
+            .gen_iter(..MInt998244353::get_mod())
+            .map(MInt998244353::new_unchecked)
+            .take(N)
+            .collect();
+        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[MInt998244353::zero(); N * <span class="number">2 </span>- <span class="number">1</span>];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N {
+            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..N {
+                c[i + j] += a[i] * b[j];
             }
         }
-        <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">Convolve</span>::&lt;<span class="ident">Modulo998244353</span>&gt;<span class="ident">::convolve</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
+        <span class="kw">let </span>d = Convolve::&lt;Modulo998244353&gt;::convolve(a, b);
+        <span class="macro">assert_eq!</span>(c, d);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_convolve3</span>() {
-        <span class="kw">type</span> <span class="ident">M</span> = <span class="ident">MInt</span>&lt;<span class="ident">Modulo1000000009</span>&gt;;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::time</span>();
-        <span class="kw">let</span> <span class="ident">a</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">rng</span>
-            .<span class="ident">gen_iter</span>(..<span class="ident">M::get_mod</span>())
-            .<span class="ident">map</span>(<span class="ident">M::new_unchecked</span>)
-            .<span class="ident">take</span>(<span class="ident">N</span>)
-            .<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="ident">b</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">rng</span>
-            .<span class="ident">gen_iter</span>(..<span class="ident">M::get_mod</span>())
-            .<span class="ident">map</span>(<span class="ident">M::new_unchecked</span>)
-            .<span class="ident">take</span>(<span class="ident">N</span>)
-            .<span class="ident">collect</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">c</span> = <span class="macro">vec!</span>[<span class="ident">M::zero</span>(); <span class="ident">N</span> * <span class="number">2</span> - <span class="number">1</span>];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-            <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">N</span> {
-                <span class="ident">c</span>[<span class="ident">i</span> + <span class="ident">j</span>] += <span class="ident">a</span>[<span class="ident">i</span>] * <span class="ident">b</span>[<span class="ident">j</span>];
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_convolve3() {
+        <span class="kw">type </span>M = MInt&lt;Modulo1000000009&gt;;
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
+        <span class="kw">let </span>a: Vec&lt;<span class="kw">_</span>&gt; = rng
+            .gen_iter(..M::get_mod())
+            .map(M::new_unchecked)
+            .take(N)
+            .collect();
+        <span class="kw">let </span>b: Vec&lt;<span class="kw">_</span>&gt; = rng
+            .gen_iter(..M::get_mod())
+            .map(M::new_unchecked)
+            .take(N)
+            .collect();
+        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[M::zero(); N * <span class="number">2 </span>- <span class="number">1</span>];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N {
+            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..N {
+                c[i + j] += a[i] * b[j];
             }
         }
-        <span class="kw">let</span> <span class="ident">d</span> = <span class="ident">MIntConvolve</span>::&lt;<span class="ident">Modulo1000000009</span>&gt;<span class="ident">::convolve</span>(<span class="ident">a</span>, <span class="ident">b</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">c</span>, <span class="ident">d</span>);
+        <span class="kw">let </span>d = MIntConvolve::&lt;Modulo1000000009&gt;::convolve(a, b);
+        <span class="macro">assert_eq!</span>(c, d);
     }
 
-    <span class="comment">// #[test]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">find_proth</span>() {
-        <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::math</span>::{<span class="ident">divisors</span>, <span class="ident">prime_factors_flatten</span>};
-        <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::num::mint_basic::DynMIntU32</span>;
-        <span class="comment">// p = a * 2^b + 1 (b &gt;= 1, a &lt; 2^b)</span>
-        <span class="kw">for</span> <span class="ident">b</span> <span class="kw">in</span> <span class="number">22</span>..<span class="number">32</span> {
-            <span class="kw">for</span> <span class="ident">a</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="number">1u64</span> &lt;&lt; <span class="ident">b</span>).<span class="ident">step_by</span>(<span class="number">2</span>) {
-                <span class="kw">let</span> <span class="ident">p</span> = <span class="ident">a</span> * (<span class="number">1u64</span> &lt;&lt; <span class="ident">b</span>) + <span class="number">1</span>;
-                <span class="kw">if</span> <span class="number">1</span> &lt;&lt; <span class="number">31</span> &lt; <span class="ident">p</span> {
+    <span class="comment">// #[test]
+    </span><span class="attribute">#[allow(dead_code)]</span>
+    <span class="kw">fn </span>find_proth() {
+        <span class="kw">use </span><span class="kw">crate</span>::math::{divisors, prime_factors_flatten};
+        <span class="kw">use </span><span class="kw">crate</span>::num::mint_basic::DynMIntU32;
+        <span class="comment">// p = a * 2^b + 1 (b &gt;= 1, a &lt; 2^b)
+        </span><span class="kw">for </span>b <span class="kw">in </span><span class="number">22</span>..<span class="number">32 </span>{
+            <span class="kw">for </span>a <span class="kw">in </span>(<span class="number">1</span>..<span class="number">1u64 </span>&lt;&lt; b).step_by(<span class="number">2</span>) {
+                <span class="kw">let </span>p = a * (<span class="number">1u64 </span>&lt;&lt; b) + <span class="number">1</span>;
+                <span class="kw">if </span><span class="number">1 </span>&lt;&lt; <span class="number">31 </span>&lt; p {
                     <span class="kw">break</span>;
                 }
-                <span class="kw">if</span> <span class="ident">p</span> &lt; <span class="number">1</span> &lt;&lt; <span class="number">29</span> {
+                <span class="kw">if </span>p &lt; <span class="number">1 </span>&lt;&lt; <span class="number">29 </span>{
                     <span class="kw">continue</span>;
                 }
-                <span class="kw">let</span> <span class="ident">f</span> = <span class="ident">prime_factors_flatten</span>(<span class="ident">p</span>);
-                <span class="kw">if</span> <span class="ident">f</span>.<span class="ident">len</span>() == <span class="number">1</span> &amp;&amp; <span class="ident">f</span>[<span class="number">0</span>] == <span class="ident">p</span> {
-                    <span class="ident">DynMIntU32::set_mod</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="ident">u32</span>);
-                    <span class="kw">for</span> <span class="ident">g</span> <span class="kw">in</span> (<span class="number">3</span>..).<span class="ident">step_by</span>(<span class="number">2</span>) {
-                        <span class="kw">let</span> <span class="ident">g</span> = <span class="ident">DynMIntU32::new</span>(<span class="ident">g</span>);
-                        <span class="kw">if</span> <span class="ident">divisors</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="ident">u64</span> - <span class="number">1</span>)
-                            .<span class="ident">into_iter</span>()
-                            .<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">d</span>| <span class="ident">d</span> != <span class="ident">p</span> <span class="kw">as</span> <span class="ident">u64</span> - <span class="number">1</span>)
-                            .<span class="ident">all</span>(|<span class="ident">d</span>| <span class="ident">g</span>.<span class="ident">pow</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">usize</span>) != <span class="ident">DynMIntU32::one</span>())
+                <span class="kw">let </span>f = prime_factors_flatten(p);
+                <span class="kw">if </span>f.len() == <span class="number">1 </span>&amp;&amp; f[<span class="number">0</span>] == p {
+                    DynMIntU32::set_mod(p <span class="kw">as </span>u32);
+                    <span class="kw">for </span>g <span class="kw">in </span>(<span class="number">3</span>..).step_by(<span class="number">2</span>) {
+                        <span class="kw">let </span>g = DynMIntU32::new(g);
+                        <span class="kw">if </span>divisors(p <span class="kw">as </span>u64 - <span class="number">1</span>)
+                            .into_iter()
+                            .filter(|<span class="kw-2">&amp;</span>d| d != p <span class="kw">as </span>u64 - <span class="number">1</span>)
+                            .all(|d| g.pow(d <span class="kw">as </span>usize) != DynMIntU32::one())
                         {
-                            <span class="macro">println!</span>(<span class="string">&quot;(p,a,b,g) = {:?}&quot;</span>, (<span class="ident">p</span>, <span class="ident">a</span>, <span class="ident">b</span>, <span class="ident">g</span>));
+                            <span class="macro">println!</span>(<span class="string">&quot;(p,a,b,g) = {:?}&quot;</span>, (p, a, b, g));
                             <span class="kw">break</span>;
                         }
                     }
                 }
             }
         }
-        <span class="comment">// (p,a,b,g) = (666894337, 159, 22, 5)</span>
-        <span class="comment">// (p,a,b,g) = (683671553, 163, 22, 3)</span>
-        <span class="comment">// (p,a,b,g) = (918552577, 219, 22, 5)</span>
-        <span class="comment">// (p,a,b,g) = (935329793, 223, 22, 3)</span>
-        <span class="comment">// (p,a,b,g) = (943718401, 225, 22, 7)</span>
-        <span class="comment">// (p,a,b,g) = (985661441, 235, 22, 3)</span>
-        <span class="comment">// (p,a,b,g) = (1161822209, 277, 22, 3)</span>
-        <span class="comment">// (p,a,b,g) = (1212153857, 289, 22, 3)</span>
-        <span class="comment">// (p,a,b,g) = (1321205761, 315, 22, 11)</span>
-        <span class="comment">// (p,a,b,g) = (1438646273, 343, 22, 3)</span>
-        <span class="comment">// (p,a,b,g) = (1572864001, 375, 22, 13)</span>
-        <span class="comment">// (p,a,b,g) = (1790967809, 427, 22, 13)</span>
-        <span class="comment">// (p,a,b,g) = (1866465281, 445, 22, 3)</span>
-        <span class="comment">// (p,a,b,g) = (2025848833, 483, 22, 11)</span>
-        <span class="comment">// (p,a,b,g) = (595591169, 71, 23, 3)</span>
-        <span class="comment">// (p,a,b,g) = (645922817, 77, 23, 3)</span>
-        <span class="comment">// (p,a,b,g) = (880803841, 105, 23, 37)</span>
-        <span class="comment">// (p,a,b,g) = (897581057, 107, 23, 3)</span>
-        <span class="comment">// (p,a,b,g) = (998244353, 119, 23, 3)</span>
-        <span class="comment">// (p,a,b,g) = (1300234241, 155, 23, 3)</span>
-        <span class="comment">// (p,a,b,g) = (1484783617, 177, 23, 5)</span>
-        <span class="comment">// (p,a,b,g) = (2088763393, 249, 23, 5)</span>
-        <span class="comment">// (p,a,b,g) = (754974721, 45, 24, 11)</span>
-        <span class="comment">// (p,a,b,g) = (1224736769, 73, 24, 3)</span>
-        <span class="comment">// (p,a,b,g) = (2130706433, 127, 24, 3)</span>
-        <span class="comment">// (p,a,b,g) = (1107296257, 33, 25, 31)</span>
-        <span class="comment">// (p,a,b,g) = (1711276033, 51, 25, 29)</span>
-        <span class="comment">// (p,a,b,g) = (2113929217, 63, 25, 5)</span>
-        <span class="comment">// (p,a,b,g) = (1811939329, 27, 26, 13)</span>
-        <span class="comment">// (p,a,b,g) = (2013265921, 15, 27, 31)</span>
-    }
+        <span class="comment">// (p,a,b,g) = (666894337, 159, 22, 5)
+        // (p,a,b,g) = (683671553, 163, 22, 3)
+        // (p,a,b,g) = (918552577, 219, 22, 5)
+        // (p,a,b,g) = (935329793, 223, 22, 3)
+        // (p,a,b,g) = (943718401, 225, 22, 7)
+        // (p,a,b,g) = (985661441, 235, 22, 3)
+        // (p,a,b,g) = (1161822209, 277, 22, 3)
+        // (p,a,b,g) = (1212153857, 289, 22, 3)
+        // (p,a,b,g) = (1321205761, 315, 22, 11)
+        // (p,a,b,g) = (1438646273, 343, 22, 3)
+        // (p,a,b,g) = (1572864001, 375, 22, 13)
+        // (p,a,b,g) = (1790967809, 427, 22, 13)
+        // (p,a,b,g) = (1866465281, 445, 22, 3)
+        // (p,a,b,g) = (2025848833, 483, 22, 11)
+        // (p,a,b,g) = (595591169, 71, 23, 3)
+        // (p,a,b,g) = (645922817, 77, 23, 3)
+        // (p,a,b,g) = (880803841, 105, 23, 37)
+        // (p,a,b,g) = (897581057, 107, 23, 3)
+        // (p,a,b,g) = (998244353, 119, 23, 3)
+        // (p,a,b,g) = (1300234241, 155, 23, 3)
+        // (p,a,b,g) = (1484783617, 177, 23, 5)
+        // (p,a,b,g) = (2088763393, 249, 23, 5)
+        // (p,a,b,g) = (754974721, 45, 24, 11)
+        // (p,a,b,g) = (1224736769, 73, 24, 3)
+        // (p,a,b,g) = (2130706433, 127, 24, 3)
+        // (p,a,b,g) = (1107296257, 33, 25, 31)
+        // (p,a,b,g) = (1711276033, 51, 25, 29)
+        // (p,a,b,g) = (2113929217, 63, 25, 5)
+        // (p,a,b,g) = (1811939329, 27, 26, 13)
+        // (p,a,b,g) = (2013265921, 15, 27, 31)
+    </span>}
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

@@ -77,68 +77,68 @@
 <span id="61">61</span>
 <span id="62">62</span>
 <span id="63">63</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Approx</span>, <span class="ident">ApproxOrd</span>, <span class="ident">Complex</span>, <span class="ident">Zero</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">cmp::Ordering</span>,
-    <span class="ident">ops</span>::{<span class="ident">Add</span>, <span class="ident">Mul</span>, <span class="ident">Sub</span>},
+</pre><pre class="rust"><code><span class="kw">use super</span>::{Approx, ApproxOrd, Complex, Zero};
+<span class="kw">use </span>std::{
+    cmp::Ordering,
+    ops::{Add, Mul, Sub},
 };
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Ord</span>, <span class="ident">Hash</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Ccw</span> {
-    <span class="doccomment">/// a--b--c</span>
-    <span class="ident">OnlineFront</span> = -<span class="number">2</span>,
-    <span class="doccomment">/// a--b-vc</span>
-    <span class="ident">Clockwise</span> = -<span class="number">1</span>,
-    <span class="doccomment">/// a--c--b</span>
-    <span class="ident">OnSegment</span> = <span class="number">0</span>,
-    <span class="doccomment">/// a--b-^c</span>
-    <span class="ident">CounterClockwise</span> = <span class="number">1</span>,
-    <span class="doccomment">/// c--a--b</span>
-    <span class="ident">OnlineBack</span> = <span class="number">2</span>,
+<span class="attribute">#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]</span>
+<span class="kw">pub enum </span>Ccw {
+    <span class="doccomment">/// a--b--c
+    </span>OnlineFront = -<span class="number">2</span>,
+    <span class="doccomment">/// a--b-vc
+    </span>Clockwise = -<span class="number">1</span>,
+    <span class="doccomment">/// a--c--b
+    </span>OnSegment = <span class="number">0</span>,
+    <span class="doccomment">/// a--b-^c
+    </span>CounterClockwise = <span class="number">1</span>,
+    <span class="doccomment">/// c--a--b
+    </span>OnlineBack = <span class="number">2</span>,
 }
-<span class="kw">impl</span> <span class="ident">Ccw</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ccw</span>&lt;<span class="ident">T</span>&gt;(<span class="ident">a</span>: <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">b</span>: <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">c</span>: <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) -&gt; <span class="self">Self</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">ApproxOrd</span> + <span class="ident">Copy</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;,
+<span class="kw">impl </span>Ccw {
+    <span class="kw">pub fn </span>ccw&lt;T&gt;(a: Complex&lt;T&gt;, b: Complex&lt;T&gt;, c: Complex&lt;T&gt;) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>T: ApproxOrd + Copy + Zero + Add&lt;Output = T&gt; + Sub&lt;Output = T&gt; + Mul&lt;Output = T&gt;,
     {
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">b</span> - <span class="ident">a</span>;
-        <span class="kw">let</span> <span class="ident">y</span> = <span class="ident">c</span> - <span class="ident">a</span>;
-        <span class="kw">let</span> <span class="ident">zero</span> = <span class="ident">T::zero</span>();
-        <span class="kw">match</span> <span class="ident">x</span>.<span class="ident">cross</span>(<span class="ident">y</span>).<span class="ident">approx_cmp</span>(<span class="kw-2">&amp;</span><span class="ident">zero</span>) {
-            <span class="ident">Ordering::Less</span> =&gt; <span class="ident"><span class="self">Self</span>::Clockwise</span>,
-            <span class="ident">Ordering::Greater</span> =&gt; <span class="ident"><span class="self">Self</span>::CounterClockwise</span>,
-            <span class="ident">Ordering::Equal</span> =&gt; {
-                <span class="kw">if</span> <span class="ident">Approx</span>(<span class="ident">x</span>.<span class="ident">dot</span>(<span class="ident">y</span>)) &lt; <span class="ident">Approx</span>(<span class="ident">zero</span>) {
-                    <span class="ident"><span class="self">Self</span>::OnlineBack</span>
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">Approx</span>((<span class="ident">a</span> - <span class="ident">b</span>).<span class="ident">dot</span>(<span class="ident">c</span> - <span class="ident">b</span>)) &lt; <span class="ident">Approx</span>(<span class="ident">zero</span>) {
-                    <span class="ident"><span class="self">Self</span>::OnlineFront</span>
-                } <span class="kw">else</span> {
-                    <span class="ident"><span class="self">Self</span>::OnSegment</span>
+        <span class="kw">let </span>x = b - a;
+        <span class="kw">let </span>y = c - a;
+        <span class="kw">let </span>zero = T::zero();
+        <span class="kw">match </span>x.cross(y).approx_cmp(<span class="kw-2">&amp;</span>zero) {
+            Ordering::Less =&gt; <span class="self">Self</span>::Clockwise,
+            Ordering::Greater =&gt; <span class="self">Self</span>::CounterClockwise,
+            Ordering::Equal =&gt; {
+                <span class="kw">if </span>Approx(x.dot(y)) &lt; Approx(zero) {
+                    <span class="self">Self</span>::OnlineBack
+                } <span class="kw">else if </span>Approx((a - b).dot(c - b)) &lt; Approx(zero) {
+                    <span class="self">Self</span>::OnlineFront
+                } <span class="kw">else </span>{
+                    <span class="self">Self</span>::OnSegment
                 }
             }
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ccw_open</span>&lt;<span class="ident">T</span>&gt;(<span class="ident">a</span>: <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">b</span>: <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;, <span class="ident">c</span>: <span class="ident">Complex</span>&lt;<span class="ident">T</span>&gt;) -&gt; <span class="self">Self</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">ApproxOrd</span> + <span class="ident">Copy</span> + <span class="ident">Zero</span> + <span class="ident">Add</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Sub</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt; + <span class="ident">Mul</span>&lt;<span class="ident">Output</span> = <span class="ident">T</span>&gt;,
+    <span class="kw">pub fn </span>ccw_open&lt;T&gt;(a: Complex&lt;T&gt;, b: Complex&lt;T&gt;, c: Complex&lt;T&gt;) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>T: ApproxOrd + Copy + Zero + Add&lt;Output = T&gt; + Sub&lt;Output = T&gt; + Mul&lt;Output = T&gt;,
     {
-        <span class="kw">let</span> <span class="ident">x</span> = <span class="ident">b</span> - <span class="ident">a</span>;
-        <span class="kw">let</span> <span class="ident">y</span> = <span class="ident">c</span> - <span class="ident">a</span>;
-        <span class="kw">let</span> <span class="ident">zero</span> = <span class="ident">T::zero</span>();
-        <span class="kw">match</span> <span class="ident">x</span>.<span class="ident">cross</span>(<span class="ident">y</span>).<span class="ident">approx_cmp</span>(<span class="kw-2">&amp;</span><span class="ident">zero</span>) {
-            <span class="ident">Ordering::Less</span> =&gt; <span class="ident"><span class="self">Self</span>::Clockwise</span>,
-            <span class="ident">Ordering::Greater</span> =&gt; <span class="ident"><span class="self">Self</span>::CounterClockwise</span>,
-            <span class="ident">Ordering::Equal</span> =&gt; {
-                <span class="kw">if</span> <span class="ident">Approx</span>(<span class="ident">x</span>.<span class="ident">dot</span>(<span class="ident">y</span>)) &lt;= <span class="ident">Approx</span>(<span class="ident">zero</span>) {
-                    <span class="ident"><span class="self">Self</span>::OnlineBack</span>
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">Approx</span>((<span class="ident">a</span> - <span class="ident">b</span>).<span class="ident">dot</span>(<span class="ident">c</span> - <span class="ident">b</span>)) &lt;= <span class="ident">Approx</span>(<span class="ident">zero</span>) {
-                    <span class="ident"><span class="self">Self</span>::OnlineFront</span>
-                } <span class="kw">else</span> {
-                    <span class="ident"><span class="self">Self</span>::OnSegment</span>
+        <span class="kw">let </span>x = b - a;
+        <span class="kw">let </span>y = c - a;
+        <span class="kw">let </span>zero = T::zero();
+        <span class="kw">match </span>x.cross(y).approx_cmp(<span class="kw-2">&amp;</span>zero) {
+            Ordering::Less =&gt; <span class="self">Self</span>::Clockwise,
+            Ordering::Greater =&gt; <span class="self">Self</span>::CounterClockwise,
+            Ordering::Equal =&gt; {
+                <span class="kw">if </span>Approx(x.dot(y)) &lt;= Approx(zero) {
+                    <span class="self">Self</span>::OnlineBack
+                } <span class="kw">else if </span>Approx((a - b).dot(c - b)) &lt;= Approx(zero) {
+                    <span class="self">Self</span>::OnlineFront
+                } <span class="kw">else </span>{
+                    <span class="self">Self</span>::OnSegment
                 }
             }
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

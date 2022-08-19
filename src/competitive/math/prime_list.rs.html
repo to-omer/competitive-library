@@ -319,310 +319,310 @@
 <span id="303">303</span>
 <span id="304">304</span>
 <span id="305">305</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">mem::replace</span>, <span class="ident">slice::Iter</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{mem::replace, slice::Iter};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Default</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimeList</span> {
-    <span class="ident">primes</span>: <span class="ident">Vec</span>&lt;<span class="ident">u64</span>&gt;,
-    <span class="ident">max_n</span>: <span class="ident">u64</span>,
+<span class="attribute">#[derive(Debug, Clone, Default)]</span>
+<span class="kw">pub struct </span>PrimeList {
+    primes: Vec&lt;u64&gt;,
+    max_n: u64,
 }
-<span class="kw">impl</span> <span class="ident">PrimeList</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">max_n</span>: <span class="ident">u64</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">self_</span>: <span class="self">Self</span> = <span class="ident">Default::default</span>();
-        <span class="ident">self_</span>.<span class="ident">reserve</span>(<span class="ident">max_n</span>);
-        <span class="ident">self_</span>
+<span class="kw">impl </span>PrimeList {
+    <span class="kw">pub fn </span>new(max_n: u64) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>self_: <span class="self">Self </span>= Default::default();
+        self_.reserve(max_n);
+        self_
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">primes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">u64</span>] {
-        <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">as_slice</span>()
+    <span class="kw">pub fn </span>primes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u64] {
+        <span class="self">self</span>.primes.as_slice()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">primes_lte</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">u64</span>] {
-        <span class="macro">assert!</span>(<span class="ident">n</span> &lt;= <span class="self">self</span>.<span class="ident">max_n</span>, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, <span class="ident">n</span>, <span class="self">self</span>.<span class="ident">max_n</span>);
-        <span class="kw">let</span> <span class="ident">i</span> = <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">n</span>).<span class="ident">unwrap_or_else</span>(|<span class="ident">i</span>| <span class="ident">i</span>);
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">primes</span>[..<span class="ident">i</span>]
+    <span class="kw">pub fn </span>primes_lte(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u64) -&gt; <span class="kw-2">&amp;</span>[u64] {
+        <span class="macro">assert!</span>(n &lt;= <span class="self">self</span>.max_n, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, n, <span class="self">self</span>.max_n);
+        <span class="kw">let </span>i = <span class="self">self</span>.primes.binary_search(<span class="kw-2">&amp;</span>n).unwrap_or_else(|i| i);
+        <span class="kw-2">&amp;</span><span class="self">self</span>.primes[..i]
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_prime</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="ident">bool</span> {
-        <span class="macro">assert!</span>(<span class="ident">n</span> &lt;= <span class="self">self</span>.<span class="ident">max_n</span>, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, <span class="ident">n</span>, <span class="self">self</span>.<span class="ident">max_n</span>);
-        <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">n</span>).<span class="ident">is_ok</span>()
+    <span class="kw">pub fn </span>is_prime(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u64) -&gt; bool {
+        <span class="macro">assert!</span>(n &lt;= <span class="self">self</span>.max_n, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, n, <span class="self">self</span>.max_n);
+        <span class="self">self</span>.primes.binary_search(<span class="kw-2">&amp;</span>n).is_ok()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">trial_division</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="ident">PrimeListTrialDivision</span>&lt;<span class="lifetime">&#39;_</span>&gt; {
-        <span class="kw">let</span> <span class="ident">bound</span> = <span class="self">self</span>.<span class="ident">max_n</span>.<span class="ident">saturating_mul</span>(<span class="self">self</span>.<span class="ident">max_n</span>);
-        <span class="macro">assert!</span>(<span class="ident">n</span> &lt;= <span class="ident">bound</span>, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, <span class="ident">n</span>, <span class="ident">bound</span>);
-        <span class="ident">PrimeListTrialDivision</span> {
-            <span class="ident">primes</span>: <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">iter</span>(),
-            <span class="ident">n</span>,
+    <span class="kw">pub fn </span>trial_division(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u64) -&gt; PrimeListTrialDivision&lt;<span class="lifetime">&#39;_</span>&gt; {
+        <span class="kw">let </span>bound = <span class="self">self</span>.max_n.saturating_mul(<span class="self">self</span>.max_n);
+        <span class="macro">assert!</span>(n &lt;= bound, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, n, bound);
+        PrimeListTrialDivision {
+            primes: <span class="self">self</span>.primes.iter(),
+            n,
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">prime_factors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="ident">Vec</span>&lt;(<span class="ident">u64</span>, <span class="ident">u32</span>)&gt; {
-        <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>).<span class="ident">collect</span>()
+    <span class="kw">pub fn </span>prime_factors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u64) -&gt; Vec&lt;(u64, u32)&gt; {
+        <span class="self">self</span>.trial_division(n).collect()
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count_divisors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="ident">u64</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">divisor_cnt</span> = <span class="number">1u64</span>;
-        <span class="kw">for</span> (<span class="kw">_</span>, <span class="ident">cnt</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>) {
-            <span class="ident">divisor_cnt</span> <span class="kw-2">*</span>= <span class="ident">cnt</span> <span class="kw">as</span> <span class="ident">u64</span> + <span class="number">1</span>;
+    <span class="kw">pub fn </span>count_divisors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u64) -&gt; u64 {
+        <span class="kw">let </span><span class="kw-2">mut </span>divisor_cnt = <span class="number">1u64</span>;
+        <span class="kw">for </span>(<span class="kw">_</span>, cnt) <span class="kw">in </span><span class="self">self</span>.trial_division(n) {
+            divisor_cnt <span class="kw-2">*</span>= cnt <span class="kw">as </span>u64 + <span class="number">1</span>;
         }
-        <span class="ident">divisor_cnt</span>
+        divisor_cnt
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">divisors</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">u64</span>&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">d</span> = <span class="macro">vec!</span>[<span class="number">1u64</span>];
-        <span class="kw">for</span> (<span class="ident">p</span>, <span class="ident">c</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">trial_division</span>(<span class="ident">n</span>) {
-            <span class="kw">let</span> <span class="ident">k</span> = <span class="ident">d</span>.<span class="ident">len</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">acc</span> = <span class="ident">p</span>;
-            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">c</span> {
-                <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">k</span> {
-                    <span class="ident">d</span>.<span class="ident">push</span>(<span class="ident">d</span>[<span class="ident">i</span>] * <span class="ident">acc</span>);
+    <span class="kw">pub fn </span>divisors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: u64) -&gt; Vec&lt;u64&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>d = <span class="macro">vec!</span>[<span class="number">1u64</span>];
+        <span class="kw">for </span>(p, c) <span class="kw">in </span><span class="self">self</span>.trial_division(n) {
+            <span class="kw">let </span>k = d.len();
+            <span class="kw">let </span><span class="kw-2">mut </span>acc = p;
+            <span class="kw">for _ in </span><span class="number">0</span>..c {
+                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..k {
+                    d.push(d[i] * acc);
                 }
-                <span class="ident">acc</span> <span class="kw-2">*</span>= <span class="ident">p</span>;
+                acc <span class="kw-2">*</span>= p;
             }
         }
-        <span class="ident">d</span>.<span class="ident">sort_unstable</span>();
-        <span class="ident">d</span>
+        d.sort_unstable();
+        d
     }
-    <span class="doccomment">/// list primes less than or equal to `max_n` by segmented sieve</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reserve</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">max_n</span>: <span class="ident">u64</span>) {
-        <span class="kw">if</span> <span class="ident">max_n</span> &lt;= <span class="self">self</span>.<span class="ident">max_n</span> || <span class="ident">max_n</span> &lt; <span class="number">2</span> {
+    <span class="doccomment">/// list primes less than or equal to `max_n` by segmented sieve
+    </span><span class="kw">pub fn </span>reserve(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_n: u64) {
+        <span class="kw">if </span>max_n &lt;= <span class="self">self</span>.max_n || max_n &lt; <span class="number">2 </span>{
             <span class="kw">return</span>;
         }
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">is_empty</span>() {
-            <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">push</span>(<span class="number">2</span>);
-            <span class="self">self</span>.<span class="ident">max_n</span> = <span class="number">2</span>;
+        <span class="kw">if </span><span class="self">self</span>.primes.is_empty() {
+            <span class="self">self</span>.primes.push(<span class="number">2</span>);
+            <span class="self">self</span>.max_n = <span class="number">2</span>;
         }
-        <span class="kw">if</span> <span class="ident">max_n</span> == <span class="number">2</span> {
+        <span class="kw">if </span>max_n == <span class="number">2 </span>{
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let</span> <span class="ident">max_n</span> = (<span class="ident">max_n</span> + <span class="number">1</span>) / <span class="number">2</span> * <span class="number">2</span>; <span class="comment">// odd</span>
-        <span class="kw">let</span> <span class="ident">sqrt_n</span> = ((<span class="ident">max_n</span> <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span>) / <span class="number">2</span> * <span class="number">2</span>; <span class="comment">// even</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = <span class="ident">Vec::with_capacity</span>(<span class="ident">sqrt_n</span> &gt;&gt; <span class="number">1</span>);
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">max_n</span> &lt; <span class="ident">sqrt_n</span> <span class="kw">as</span> <span class="ident">u64</span> {
-            <span class="kw">let</span> <span class="ident">start</span> = (<span class="self">self</span>.<span class="ident">max_n</span> <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span>) | <span class="number">1</span>; <span class="comment">// odd</span>
-            <span class="kw">let</span> <span class="ident">end</span> = <span class="ident">sqrt_n</span> + <span class="number">1</span>;
-            <span class="kw">let</span> <span class="ident">sqrt_end</span> = (<span class="ident">sqrt_n</span> <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span>;
-            <span class="kw">let</span> <span class="ident">plen</span> = <span class="self">self</span>.<span class="ident">primes</span>[<span class="number">1</span>..]
-                .<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span>(<span class="ident">sqrt_end</span> <span class="kw">as</span> <span class="ident">u64</span> + <span class="number">1</span>))
-                .<span class="ident">unwrap_or_else</span>(|<span class="ident">x</span>| <span class="ident">x</span>);
-            <span class="ident">table</span>.<span class="ident">resize</span>(<span class="ident">end</span> / <span class="number">2</span> - <span class="ident">start</span> / <span class="number">2</span>, <span class="bool-val">false</span>);
-            <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">p</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="ident">plen</span>) {
-                <span class="kw">let</span> <span class="ident">y</span> = <span class="ident">p</span>.<span class="ident">max</span>((<span class="ident">start</span> <span class="kw">as</span> <span class="ident">u64</span> + <span class="ident">p</span> - <span class="number">1</span>) / (<span class="number">2</span> * <span class="ident">p</span>) * <span class="number">2</span> + <span class="number">1</span>) * <span class="ident">p</span> / <span class="number">2</span>;
-                (<span class="ident">y</span> <span class="kw">as</span> <span class="ident">usize</span> - <span class="ident">start</span> / <span class="number">2</span>..<span class="ident">end</span> / <span class="number">2</span> - <span class="ident">start</span> / <span class="number">2</span>)
-                    .<span class="ident">step_by</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>)
-                    .<span class="ident">for_each</span>(|<span class="ident">i</span>| <span class="ident">table</span>[<span class="ident">i</span>] = <span class="bool-val">true</span>);
+        <span class="kw">let </span>max_n = (max_n + <span class="number">1</span>) / <span class="number">2 </span>* <span class="number">2</span>; <span class="comment">// odd
+        </span><span class="kw">let </span>sqrt_n = ((max_n <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>usize + <span class="number">1</span>) / <span class="number">2 </span>* <span class="number">2</span>; <span class="comment">// even
+        </span><span class="kw">let </span><span class="kw-2">mut </span>table = Vec::with_capacity(sqrt_n &gt;&gt; <span class="number">1</span>);
+        <span class="kw">if </span><span class="self">self</span>.max_n &lt; sqrt_n <span class="kw">as </span>u64 {
+            <span class="kw">let </span>start = (<span class="self">self</span>.max_n <span class="kw">as </span>usize + <span class="number">1</span>) | <span class="number">1</span>; <span class="comment">// odd
+            </span><span class="kw">let </span>end = sqrt_n + <span class="number">1</span>;
+            <span class="kw">let </span>sqrt_end = (sqrt_n <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>usize;
+            <span class="kw">let </span>plen = <span class="self">self</span>.primes[<span class="number">1</span>..]
+                .binary_search(<span class="kw-2">&amp;</span>(sqrt_end <span class="kw">as </span>u64 + <span class="number">1</span>))
+                .unwrap_or_else(|x| x);
+            table.resize(end / <span class="number">2 </span>- start / <span class="number">2</span>, <span class="bool-val">false</span>);
+            <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span><span class="self">self</span>.primes.iter().skip(<span class="number">1</span>).take(plen) {
+                <span class="kw">let </span>y = p.max((start <span class="kw">as </span>u64 + p - <span class="number">1</span>) / (<span class="number">2 </span>* p) * <span class="number">2 </span>+ <span class="number">1</span>) * p / <span class="number">2</span>;
+                (y <span class="kw">as </span>usize - start / <span class="number">2</span>..end / <span class="number">2 </span>- start / <span class="number">2</span>)
+                    .step_by(p <span class="kw">as </span>usize)
+                    .for_each(|i| table[i] = <span class="bool-val">true</span>);
             }
-            <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..=(<span class="ident">sqrt_end</span> / <span class="number">2</span>).<span class="ident">saturating_sub</span>(<span class="ident">start</span> / <span class="number">2</span>) {
-                <span class="kw">if</span> !<span class="ident">table</span>[<span class="ident">i</span>] {
-                    <span class="kw">let</span> <span class="ident">p</span> = (<span class="ident">i</span> + <span class="ident">start</span> / <span class="number">2</span>) * <span class="number">2</span> + <span class="number">1</span>;
-                    <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> (<span class="ident">p</span> * <span class="ident">p</span> / <span class="number">2</span> - <span class="ident">start</span> / <span class="number">2</span>..<span class="ident">sqrt_n</span> / <span class="number">2</span> - <span class="ident">start</span> / <span class="number">2</span>).<span class="ident">step_by</span>(<span class="ident">p</span>) {
-                        <span class="ident">table</span>[<span class="ident">j</span>] = <span class="bool-val">true</span>;
+            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=(sqrt_end / <span class="number">2</span>).saturating_sub(start / <span class="number">2</span>) {
+                <span class="kw">if </span>!table[i] {
+                    <span class="kw">let </span>p = (i + start / <span class="number">2</span>) * <span class="number">2 </span>+ <span class="number">1</span>;
+                    <span class="kw">for </span>j <span class="kw">in </span>(p * p / <span class="number">2 </span>- start / <span class="number">2</span>..sqrt_n / <span class="number">2 </span>- start / <span class="number">2</span>).step_by(p) {
+                        table[j] = <span class="bool-val">true</span>;
                     }
                 }
             }
-            <span class="self">self</span>.<span class="ident">primes</span>
-                .<span class="ident">extend</span>(<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">enumerate</span>().<span class="ident">filter_map</span>(|(<span class="ident">i</span>, <span class="ident">b</span>)| {
-                    <span class="kw">if</span> !<span class="ident">b</span> {
-                        <span class="prelude-val">Some</span>((<span class="ident">i</span> + <span class="ident">start</span> / <span class="number">2</span>) <span class="kw">as</span> <span class="ident">u64</span> * <span class="number">2</span> + <span class="number">1</span>)
-                    } <span class="kw">else</span> {
-                        <span class="prelude-val">None</span>
-                    }
+            <span class="self">self</span>.primes
+                .extend(table.iter().cloned().enumerate().filter_map(|(i, b)| {
+                    <span class="kw">if </span>!b {
+                        <span class="prelude-val">Some</span>((i + start / <span class="number">2</span>) <span class="kw">as </span>u64 * <span class="number">2 </span>+ <span class="number">1</span>)
+                    } <span class="kw">else </span>{
+                        <span class="prelude-val">None
+                    </span>}
                 }));
-            <span class="self">self</span>.<span class="ident">max_n</span> = <span class="ident">sqrt_n</span> <span class="kw">as</span> <span class="ident">u64</span>;
+            <span class="self">self</span>.max_n = sqrt_n <span class="kw">as </span>u64;
         }
 
-        <span class="kw">let</span> <span class="ident">sqrt_n</span> = <span class="ident">sqrt_n</span> <span class="kw">as</span> <span class="ident">u64</span>;
-        <span class="kw">for</span> <span class="ident">start</span> <span class="kw">in</span> (<span class="self">self</span>.<span class="ident">max_n</span> + <span class="number">1</span>..=<span class="ident">max_n</span>).<span class="ident">step_by</span>(<span class="ident">sqrt_n</span> <span class="kw">as</span> <span class="ident">usize</span>) {
-            <span class="kw">let</span> <span class="ident">end</span> = (<span class="ident">start</span> + <span class="ident">sqrt_n</span>).<span class="ident">min</span>(<span class="ident">max_n</span> + <span class="number">1</span>);
-            <span class="kw">let</span> <span class="ident">sqrt_end</span> = (<span class="ident">end</span> <span class="kw">as</span> <span class="ident">f64</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">u64</span>;
-            <span class="kw">let</span> <span class="ident">length</span> = <span class="ident">end</span> - <span class="ident">start</span>;
-            <span class="kw">let</span> <span class="ident">plen</span> = <span class="self">self</span>.<span class="ident">primes</span>[<span class="number">1</span>..]
-                .<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span>(<span class="ident">sqrt_end</span> + <span class="number">1</span>))
-                .<span class="ident">unwrap_or_else</span>(|<span class="ident">x</span>| <span class="ident">x</span>);
-            <span class="ident">table</span>.<span class="ident">clear</span>();
-            <span class="ident">table</span>.<span class="ident">resize</span>(<span class="ident">length</span> <span class="kw">as</span> <span class="ident">usize</span> / <span class="number">2</span>, <span class="bool-val">false</span>);
-            <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">p</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">1</span>).<span class="ident">take</span>(<span class="ident">plen</span>) {
-                <span class="kw">let</span> <span class="ident">y</span> = <span class="ident">p</span>.<span class="ident">max</span>((<span class="ident">start</span> <span class="kw">as</span> <span class="ident">u64</span> + <span class="ident">p</span> - <span class="number">1</span>) / (<span class="number">2</span> * <span class="ident">p</span>) * <span class="number">2</span> + <span class="number">1</span>) * <span class="ident">p</span> / <span class="number">2</span>;
-                ((<span class="ident">y</span> - <span class="ident">start</span> / <span class="number">2</span>) <span class="kw">as</span> <span class="ident">usize</span>..<span class="ident">length</span> <span class="kw">as</span> <span class="ident">usize</span> / <span class="number">2</span>)
-                    .<span class="ident">step_by</span>(<span class="ident">p</span> <span class="kw">as</span> <span class="ident">usize</span>)
-                    .<span class="ident">for_each</span>(|<span class="ident">i</span>| <span class="ident">table</span>[<span class="ident">i</span>] = <span class="bool-val">true</span>);
+        <span class="kw">let </span>sqrt_n = sqrt_n <span class="kw">as </span>u64;
+        <span class="kw">for </span>start <span class="kw">in </span>(<span class="self">self</span>.max_n + <span class="number">1</span>..=max_n).step_by(sqrt_n <span class="kw">as </span>usize) {
+            <span class="kw">let </span>end = (start + sqrt_n).min(max_n + <span class="number">1</span>);
+            <span class="kw">let </span>sqrt_end = (end <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>u64;
+            <span class="kw">let </span>length = end - start;
+            <span class="kw">let </span>plen = <span class="self">self</span>.primes[<span class="number">1</span>..]
+                .binary_search(<span class="kw-2">&amp;</span>(sqrt_end + <span class="number">1</span>))
+                .unwrap_or_else(|x| x);
+            table.clear();
+            table.resize(length <span class="kw">as </span>usize / <span class="number">2</span>, <span class="bool-val">false</span>);
+            <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span><span class="self">self</span>.primes.iter().skip(<span class="number">1</span>).take(plen) {
+                <span class="kw">let </span>y = p.max((start <span class="kw">as </span>u64 + p - <span class="number">1</span>) / (<span class="number">2 </span>* p) * <span class="number">2 </span>+ <span class="number">1</span>) * p / <span class="number">2</span>;
+                ((y - start / <span class="number">2</span>) <span class="kw">as </span>usize..length <span class="kw">as </span>usize / <span class="number">2</span>)
+                    .step_by(p <span class="kw">as </span>usize)
+                    .for_each(|i| table[i] = <span class="bool-val">true</span>);
             }
-            <span class="self">self</span>.<span class="ident">primes</span>
-                .<span class="ident">extend</span>(<span class="ident">table</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>().<span class="ident">enumerate</span>().<span class="ident">filter_map</span>(|(<span class="ident">i</span>, <span class="ident">b</span>)| {
-                    <span class="kw">if</span> !<span class="ident">b</span> {
-                        <span class="prelude-val">Some</span>((<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u64</span> + <span class="ident">start</span> / <span class="number">2</span>) <span class="kw">as</span> <span class="ident">u64</span> * <span class="number">2</span> + <span class="number">1</span>)
-                    } <span class="kw">else</span> {
-                        <span class="prelude-val">None</span>
-                    }
+            <span class="self">self</span>.primes
+                .extend(table.iter().cloned().enumerate().filter_map(|(i, b)| {
+                    <span class="kw">if </span>!b {
+                        <span class="prelude-val">Some</span>((i <span class="kw">as </span>u64 + start / <span class="number">2</span>) <span class="kw">as </span>u64 * <span class="number">2 </span>+ <span class="number">1</span>)
+                    } <span class="kw">else </span>{
+                        <span class="prelude-val">None
+                    </span>}
                 }));
         }
-        <span class="self">self</span>.<span class="ident">max_n</span> = <span class="ident">max_n</span>;
+        <span class="self">self</span>.max_n = max_n;
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimeListTrialDivision</span>&lt;<span class="lifetime">&#39;p</span>&gt; {
-    <span class="ident">primes</span>: <span class="ident">Iter</span>&lt;<span class="lifetime">&#39;p</span>, <span class="ident">u64</span>&gt;,
-    <span class="ident">n</span>: <span class="ident">u64</span>,
+<span class="attribute">#[derive(Debug, Clone)]</span>
+<span class="kw">pub struct </span>PrimeListTrialDivision&lt;<span class="lifetime">&#39;p</span>&gt; {
+    primes: Iter&lt;<span class="lifetime">&#39;p</span>, u64&gt;,
+    n: u64,
 }
-<span class="kw">impl</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">PrimeListTrialDivision</span>&lt;<span class="lifetime">&#39;_</span>&gt; {
-    <span class="kw">type</span> <span class="ident">Item</span> = (<span class="ident">u64</span>, <span class="ident">u32</span>);
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="ident"><span class="self">Self</span>::Item</span>&gt; {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">n</span> &lt;= <span class="number">1</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+<span class="kw">impl </span>Iterator <span class="kw">for </span>PrimeListTrialDivision&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">type </span>Item = (u64, u32);
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="kw">if </span><span class="self">self</span>.n &lt;= <span class="number">1 </span>{
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="kw">loop</span> {
-            <span class="kw">match</span> <span class="self">self</span>.<span class="ident">primes</span>.<span class="ident">next</span>() {
-                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>) <span class="kw">if</span> <span class="ident">p</span> * <span class="ident">p</span> &lt;= <span class="self">self</span>.<span class="ident">n</span> =&gt; {
-                    <span class="kw">if</span> <span class="self">self</span>.<span class="ident">n</span> % <span class="ident">p</span> == <span class="number">0</span> {
-                        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cnt</span> = <span class="number">1u32</span>;
-                        <span class="self">self</span>.<span class="ident">n</span> /= <span class="ident">p</span>;
-                        <span class="kw">while</span> <span class="self">self</span>.<span class="ident">n</span> % <span class="ident">p</span> == <span class="number">0</span> {
-                            <span class="ident">cnt</span> += <span class="number">1</span>;
-                            <span class="self">self</span>.<span class="ident">n</span> /= <span class="ident">p</span>;
+        <span class="kw">loop </span>{
+            <span class="kw">match </span><span class="self">self</span>.primes.next() {
+                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>p) <span class="kw">if </span>p * p &lt;= <span class="self">self</span>.n =&gt; {
+                    <span class="kw">if </span><span class="self">self</span>.n % p == <span class="number">0 </span>{
+                        <span class="kw">let </span><span class="kw-2">mut </span>cnt = <span class="number">1u32</span>;
+                        <span class="self">self</span>.n /= p;
+                        <span class="kw">while </span><span class="self">self</span>.n % p == <span class="number">0 </span>{
+                            cnt += <span class="number">1</span>;
+                            <span class="self">self</span>.n /= p;
                         }
-                        <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">p</span>, <span class="ident">cnt</span>));
+                        <span class="kw">return </span><span class="prelude-val">Some</span>((p, cnt));
                     }
                 }
-                <span class="kw">_</span> =&gt; <span class="kw">break</span>,
+                <span class="kw">_ </span>=&gt; <span class="kw">break</span>,
             }
         }
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">n</span> &gt; <span class="number">1</span> {
-            <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">n</span>, <span class="number">1</span>), <span class="number">1</span>));
+        <span class="kw">if </span><span class="self">self</span>.n &gt; <span class="number">1 </span>{
+            <span class="kw">return </span><span class="prelude-val">Some</span>((replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.n, <span class="number">1</span>), <span class="number">1</span>));
         }
-        <span class="prelude-val">None</span>
-    }
+        <span class="prelude-val">None
+    </span>}
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::math</span>::{<span class="ident">prime_factors</span>, <span class="ident">PrimeTable</span>};
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::tools::Xorshift</span>;
+<span class="attribute">#[cfg(test)]</span>
+<span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::math::{prime_factors, PrimeTable};
+    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
 
-    <span class="kw">fn</span> <span class="ident">primes</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">if</span> <span class="ident">n</span> &lt; <span class="number">2</span> {
-            <span class="kw">return</span> <span class="macro">vec!</span>[];
+    <span class="kw">fn </span>primes(n: usize) -&gt; Vec&lt;usize&gt; {
+        <span class="kw">if </span>n &lt; <span class="number">2 </span>{
+            <span class="kw">return </span><span class="macro">vec!</span>[];
         }
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="macro">vec!</span>[<span class="number">2</span>];
-        <span class="kw">let</span> <span class="ident">sqrt_n</span> = (<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> | <span class="number">1</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seive</span> = <span class="macro">vec!</span>[<span class="bool-val">true</span>; <span class="ident">n</span> / <span class="number">2</span>];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">3</span>..=<span class="ident">sqrt_n</span>).<span class="ident">step_by</span>(<span class="number">2</span>) {
-            <span class="kw">if</span> <span class="ident">seive</span>[<span class="ident">i</span> / <span class="number">2</span> - <span class="number">1</span>] {
-                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">i</span>);
-                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> (<span class="ident">i</span> * <span class="ident">i</span>..=<span class="ident">n</span>).<span class="ident">step_by</span>(<span class="ident">i</span> * <span class="number">2</span>) {
-                    <span class="ident">seive</span>[<span class="ident">j</span> / <span class="number">2</span> - <span class="number">1</span>] = <span class="bool-val">false</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[<span class="number">2</span>];
+        <span class="kw">let </span>sqrt_n = (n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>usize | <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>seive = <span class="macro">vec!</span>[<span class="bool-val">true</span>; n / <span class="number">2</span>];
+        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">3</span>..=sqrt_n).step_by(<span class="number">2</span>) {
+            <span class="kw">if </span>seive[i / <span class="number">2 </span>- <span class="number">1</span>] {
+                res.push(i);
+                <span class="kw">for </span>j <span class="kw">in </span>(i * i..=n).step_by(i * <span class="number">2</span>) {
+                    seive[j / <span class="number">2 </span>- <span class="number">1</span>] = <span class="bool-val">false</span>;
                 }
             }
         }
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="ident">std::cmp::max</span>(<span class="number">3</span>, <span class="ident">sqrt_n</span> + <span class="number">2</span>)..=<span class="ident">n</span>).<span class="ident">step_by</span>(<span class="number">2</span>) {
-            <span class="kw">if</span> <span class="ident">seive</span>[<span class="ident">i</span> / <span class="number">2</span> - <span class="number">1</span>] {
-                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">i</span>);
+        <span class="kw">for </span>i <span class="kw">in </span>(std::cmp::max(<span class="number">3</span>, sqrt_n + <span class="number">2</span>)..=n).step_by(<span class="number">2</span>) {
+            <span class="kw">if </span>seive[i / <span class="number">2 </span>- <span class="number">1</span>] {
+                res.push(i);
             }
         }
-        <span class="ident">res</span>
+        res
     }
 
-    <span class="kw">fn</span> <span class="ident">segmented_sieve_primes</span>(<span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">if</span> <span class="ident">n</span> &lt; <span class="number">2</span> {
-            <span class="kw">return</span> <span class="ident">Vec::new</span>();
+    <span class="kw">fn </span>segmented_sieve_primes(n: usize) -&gt; Vec&lt;usize&gt; {
+        <span class="kw">if </span>n &lt; <span class="number">2 </span>{
+            <span class="kw">return </span>Vec::new();
         }
-        <span class="kw">let</span> <span class="ident">seg_size</span> = ((<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">2</span>) &gt;&gt; <span class="number">1</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">primes</span> = <span class="macro">vec!</span>[<span class="number">2</span>];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = <span class="macro">vec!</span>[<span class="bool-val">true</span>; <span class="ident">seg_size</span>];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">seg_size</span> {
-            <span class="kw">if</span> <span class="ident">table</span>[<span class="ident">i</span>] {
-                <span class="kw">let</span> <span class="ident">p</span> = <span class="ident">i</span> * <span class="number">2</span> + <span class="number">1</span>;
-                <span class="ident">primes</span>.<span class="ident">push</span>(<span class="ident">p</span>);
-                <span class="kw">for</span> <span class="ident">j</span> <span class="kw">in</span> (<span class="ident">p</span> * <span class="ident">p</span> / <span class="number">2</span>..<span class="ident">seg_size</span>).<span class="ident">step_by</span>(<span class="ident">p</span>) {
-                    <span class="ident">table</span>[<span class="ident">j</span>] = <span class="bool-val">false</span>;
+        <span class="kw">let </span>seg_size = ((n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>usize + <span class="number">2</span>) &gt;&gt; <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>primes = <span class="macro">vec!</span>[<span class="number">2</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>table = <span class="macro">vec!</span>[<span class="bool-val">true</span>; seg_size];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..seg_size {
+            <span class="kw">if </span>table[i] {
+                <span class="kw">let </span>p = i * <span class="number">2 </span>+ <span class="number">1</span>;
+                primes.push(p);
+                <span class="kw">for </span>j <span class="kw">in </span>(p * p / <span class="number">2</span>..seg_size).step_by(p) {
+                    table[j] = <span class="bool-val">false</span>;
                 }
             }
         }
-        <span class="kw">for</span> <span class="ident">s</span> <span class="kw">in</span> (<span class="ident">seg_size</span>..=<span class="ident">n</span> / <span class="number">2</span>).<span class="ident">step_by</span>(<span class="ident">seg_size</span>) {
-            <span class="kw">let</span> <span class="ident">m</span> = <span class="ident">seg_size</span>.<span class="ident">min</span>((<span class="ident">n</span> + <span class="number">1</span>) / <span class="number">2</span> - <span class="ident">s</span>);
-            <span class="ident">table</span>.<span class="ident">clear</span>();
-            <span class="ident">table</span>.<span class="ident">resize</span>(<span class="ident">m</span>, <span class="bool-val">true</span>);
-            <span class="kw">let</span> <span class="ident">plen</span> = <span class="ident">primes</span>[<span class="number">1</span>..]
-                .<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span>((((<span class="ident">s</span> + <span class="ident">m</span>) * <span class="number">2</span> + <span class="number">1</span>) <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">usize</span> + <span class="number">1</span>))
-                .<span class="ident">unwrap_or_else</span>(|<span class="ident">x</span>| <span class="ident">x</span>);
-            <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="ident">p</span> <span class="kw">in</span> <span class="ident">primes</span>[<span class="number">1</span>..<span class="ident">plen</span> + <span class="number">1</span>].<span class="ident">iter</span>() {
-                <span class="kw">for</span> <span class="ident">k</span> <span class="kw">in</span> (((<span class="ident">s</span> * <span class="number">2</span> + <span class="ident">p</span> * <span class="number">3</span>) / (<span class="ident">p</span> * <span class="number">2</span>) * <span class="ident">p</span> * <span class="number">2</span> - <span class="ident">p</span>) / <span class="number">2</span> - <span class="ident">s</span>..<span class="ident">m</span>).<span class="ident">step_by</span>(<span class="ident">p</span>) {
-                    <span class="ident">table</span>[<span class="ident">k</span>] = <span class="bool-val">false</span>;
+        <span class="kw">for </span>s <span class="kw">in </span>(seg_size..=n / <span class="number">2</span>).step_by(seg_size) {
+            <span class="kw">let </span>m = seg_size.min((n + <span class="number">1</span>) / <span class="number">2 </span>- s);
+            table.clear();
+            table.resize(m, <span class="bool-val">true</span>);
+            <span class="kw">let </span>plen = primes[<span class="number">1</span>..]
+                .binary_search(<span class="kw-2">&amp;</span>((((s + m) * <span class="number">2 </span>+ <span class="number">1</span>) <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>usize + <span class="number">1</span>))
+                .unwrap_or_else(|x| x);
+            <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span>primes[<span class="number">1</span>..plen + <span class="number">1</span>].iter() {
+                <span class="kw">for </span>k <span class="kw">in </span>(((s * <span class="number">2 </span>+ p * <span class="number">3</span>) / (p * <span class="number">2</span>) * p * <span class="number">2 </span>- p) / <span class="number">2 </span>- s..m).step_by(p) {
+                    table[k] = <span class="bool-val">false</span>;
                 }
             }
-            <span class="ident">primes</span>.<span class="ident">extend</span>((<span class="ident">s</span>..<span class="ident">m</span> + <span class="ident">s</span>).<span class="ident">filter</span>(|<span class="ident">k</span>| <span class="ident">table</span>[<span class="ident">k</span> - <span class="ident">s</span>]).<span class="ident">map</span>(|<span class="ident">k</span>| <span class="ident">k</span> * <span class="number">2</span> + <span class="number">1</span>));
+            primes.extend((s..m + s).filter(|k| table[k - s]).map(|k| k * <span class="number">2 </span>+ <span class="number">1</span>));
         }
-        <span class="ident">primes</span>
+        primes
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">divisors</span>(<span class="ident">n</span>: <span class="ident">u64</span>) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">u64</span>&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="macro">vec!</span>[];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">f32</span>).<span class="ident">sqrt</span>() <span class="kw">as</span> <span class="ident">u64</span> + <span class="number">1</span> {
-            <span class="kw">if</span> <span class="ident">n</span> % <span class="ident">i</span> == <span class="number">0</span> {
-                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">i</span>);
-                <span class="kw">if</span> <span class="ident">i</span> * <span class="ident">i</span> != <span class="ident">n</span> {
-                    <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">n</span> / <span class="ident">i</span>);
+    <span class="kw">pub fn </span>divisors(n: u64) -&gt; Vec&lt;u64&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..(n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>u64 + <span class="number">1 </span>{
+            <span class="kw">if </span>n % i == <span class="number">0 </span>{
+                res.push(i);
+                <span class="kw">if </span>i * i != n {
+                    res.push(n / i);
                 }
             }
         }
-        <span class="ident">res</span>.<span class="ident">sort_unstable</span>();
-        <span class="ident">res</span>
+        res.sort_unstable();
+        res
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_prime_list</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_prime_list() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
 
-        <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="number">1000</span>).<span class="ident">chain</span>(<span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="number">0</span>..=<span class="number">20000</span>).<span class="ident">take</span>(<span class="number">100</span>)) {
-            <span class="kw">let</span> <span class="ident">pl</span> = <span class="ident">PrimeList::new</span>(<span class="ident">n</span>);
-            <span class="kw">let</span> <span class="ident">ps</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">primes</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">into_iter</span>().<span class="ident">map</span>(|<span class="ident">p</span>| <span class="ident">p</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">collect</span>();
-            <span class="macro">assert_eq!</span>(<span class="ident">pl</span>.<span class="ident">primes</span>(), <span class="ident">ps</span>.<span class="ident">as_slice</span>());
+        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">1000</span>).chain(rng.gen_iter(<span class="number">0</span>..=<span class="number">20000</span>).take(<span class="number">100</span>)) {
+            <span class="kw">let </span>pl = PrimeList::new(n);
+            <span class="kw">let </span>ps: Vec&lt;<span class="kw">_</span>&gt; = primes(n <span class="kw">as _</span>).into_iter().map(|p| p <span class="kw">as </span>u64).collect();
+            <span class="macro">assert_eq!</span>(pl.primes(), ps.as_slice());
         }
 
-        <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">100</span> {
-            <span class="kw">let</span> <span class="ident">b</span> = <span class="ident">rng</span>.<span class="ident">randf</span>() * <span class="number">0.0001</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">pl</span> = <span class="ident">PrimeList::new</span>(<span class="number">0</span>);
-            <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">20000</span> {
-                <span class="kw">if</span> <span class="ident">rng</span>.<span class="ident">gen_bool</span>(<span class="ident">b</span>) {
-                    <span class="ident">pl</span>.<span class="ident">reserve</span>(<span class="ident">n</span>);
-                    <span class="kw">let</span> <span class="ident">ps</span>: <span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt; = <span class="ident">primes</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="kw">_</span>).<span class="ident">into_iter</span>().<span class="ident">map</span>(|<span class="ident">p</span>| <span class="ident">p</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">collect</span>();
-                    <span class="macro">assert_eq!</span>(<span class="ident">pl</span>.<span class="ident">primes</span>(), <span class="ident">ps</span>.<span class="ident">as_slice</span>());
+        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+            <span class="kw">let </span>b = rng.randf() * <span class="number">0.0001</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>pl = PrimeList::new(<span class="number">0</span>);
+            <span class="kw">for </span>n <span class="kw">in </span><span class="number">0</span>..<span class="number">20000 </span>{
+                <span class="kw">if </span>rng.gen_bool(b) {
+                    pl.reserve(n);
+                    <span class="kw">let </span>ps: Vec&lt;<span class="kw">_</span>&gt; = primes(n <span class="kw">as _</span>).into_iter().map(|p| p <span class="kw">as </span>u64).collect();
+                    <span class="macro">assert_eq!</span>(pl.primes(), ps.as_slice());
                 }
             }
         }
 
-        <span class="kw">let</span> <span class="ident">pl</span> = <span class="ident">PrimeList::new</span>(<span class="number">100_000</span>);
-        <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="number">1000</span>).<span class="ident">chain</span>(<span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="number">0</span>..=<span class="number">1_000_000_000</span>).<span class="ident">take</span>(<span class="number">100</span>)) {
-            <span class="macro">assert_eq!</span>(<span class="ident">prime_factors</span>(<span class="ident">n</span>), <span class="ident">pl</span>.<span class="ident">prime_factors</span>(<span class="ident">n</span> <span class="kw">as</span> <span class="ident">u64</span>));
+        <span class="kw">let </span>pl = PrimeList::new(<span class="number">100_000</span>);
+        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">0</span>..<span class="number">1000</span>).chain(rng.gen_iter(<span class="number">0</span>..=<span class="number">1_000_000_000</span>).take(<span class="number">100</span>)) {
+            <span class="macro">assert_eq!</span>(prime_factors(n), pl.prime_factors(n <span class="kw">as </span>u64));
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_primes</span>() {
-        <span class="kw">let</span> <span class="ident">t</span> = <span class="ident">PrimeTable::new</span>(<span class="number">2000</span>);
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">2000</span> {
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_primes() {
+        <span class="kw">let </span>t = PrimeTable::new(<span class="number">2000</span>);
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">2000 </span>{
             <span class="macro">assert_eq!</span>(
-                <span class="ident">primes</span>(<span class="ident">i</span>),
-                (<span class="number">2</span>..=<span class="ident">i</span>)
-                    .<span class="ident">filter</span>(|<span class="kw-2">&amp;</span><span class="ident">i</span>| <span class="ident">t</span>.<span class="ident">is_prime</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>))
-                    .<span class="ident">collect</span>::&lt;<span class="ident">Vec</span>&lt;<span class="kw">_</span>&gt;&gt;(),
+                primes(i),
+                (<span class="number">2</span>..=i)
+                    .filter(|<span class="kw-2">&amp;</span>i| t.is_prime(i <span class="kw">as </span>u32))
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
             );
         }
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_segmented_sieve_primes</span>() {
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="number">300</span> {
-            <span class="macro">assert_eq!</span>(<span class="ident">primes</span>(<span class="ident">i</span>), <span class="ident">segmented_sieve_primes</span>(<span class="ident">i</span>));
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_segmented_sieve_primes() {
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">300 </span>{
+            <span class="macro">assert_eq!</span>(primes(i), segmented_sieve_primes(i));
         }
-        <span class="macro">assert_eq!</span>(<span class="ident">primes</span>(<span class="number">1_000_000</span>), <span class="ident">segmented_sieve_primes</span>(<span class="number">1_000_000</span>));
+        <span class="macro">assert_eq!</span>(primes(<span class="number">1_000_000</span>), segmented_sieve_primes(<span class="number">1_000_000</span>));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_divisors</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> = <span class="ident">Xorshift::default</span>();
-        <span class="kw">let</span> <span class="ident">pl</span> = <span class="ident">PrimeList::new</span>(<span class="number">20000</span>);
-        <span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> (<span class="number">1</span>..<span class="number">1000</span>).<span class="ident">chain</span>(<span class="ident">rng</span>.<span class="ident">gen_iter</span>(<span class="number">1</span>..=<span class="number">20000000</span>).<span class="ident">take</span>(<span class="number">100</span>)) {
-            <span class="macro">assert_eq!</span>(<span class="ident">pl</span>.<span class="ident">divisors</span>(<span class="ident">n</span>), <span class="ident">divisors</span>(<span class="ident">n</span>));
+    <span class="attribute">#[test]</span>
+    <span class="kw">fn </span>test_divisors() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">let </span>pl = PrimeList::new(<span class="number">20000</span>);
+        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">1</span>..<span class="number">1000</span>).chain(rng.gen_iter(<span class="number">1</span>..=<span class="number">20000000</span>).take(<span class="number">100</span>)) {
+            <span class="macro">assert_eq!</span>(pl.divisors(n), divisors(n));
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

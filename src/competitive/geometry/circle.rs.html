@@ -43,34 +43,34 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Approx</span>, <span class="ident">Point</span>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{Approx, Point};
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Circle</span> {
-    <span class="ident">c</span>: <span class="ident">Point</span>,
-    <span class="ident">r</span>: <span class="ident">f64</span>,
+<span class="attribute">#[derive(Clone, Debug, PartialEq)]</span>
+<span class="kw">pub struct </span>Circle {
+    c: Point,
+    r: f64,
 }
-<span class="kw">impl</span> <span class="ident">Circle</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">c</span>: <span class="ident">Point</span>, <span class="ident">r</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident">Circle</span> { <span class="ident">c</span>, <span class="ident">r</span> }
+<span class="kw">impl </span>Circle {
+    <span class="kw">pub fn </span>new(c: Point, r: f64) -&gt; <span class="self">Self </span>{
+        Circle { c, r }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">cross_circle</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="ident">Point</span>, <span class="ident">Point</span>)&gt; {
-        <span class="kw">let</span> <span class="ident">d</span> = (<span class="self">self</span>.<span class="ident">c</span> - <span class="ident">other</span>.<span class="ident">c</span>).<span class="ident">abs</span>();
-        <span class="kw">let</span> <span class="ident">rc</span> = (<span class="ident">d</span> * <span class="ident">d</span> + <span class="self">self</span>.<span class="ident">r</span> * <span class="self">self</span>.<span class="ident">r</span> - <span class="ident">other</span>.<span class="ident">r</span> * <span class="ident">other</span>.<span class="ident">r</span>) / (<span class="number">2.</span> * <span class="ident">d</span>);
-        <span class="kw">let</span> <span class="ident">rs2</span> = <span class="self">self</span>.<span class="ident">r</span> * <span class="self">self</span>.<span class="ident">r</span> - <span class="ident">rc</span> * <span class="ident">rc</span>;
-        <span class="kw">if</span> <span class="ident">rs2</span> &lt; <span class="number">0.</span> {
-            <span class="kw">return</span> <span class="prelude-val">None</span>;
+    <span class="kw">pub fn </span>cross_circle(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;(Point, Point)&gt; {
+        <span class="kw">let </span>d = (<span class="self">self</span>.c - other.c).abs();
+        <span class="kw">let </span>rc = (d * d + <span class="self">self</span>.r * <span class="self">self</span>.r - other.r * other.r) / (<span class="number">2. </span>* d);
+        <span class="kw">let </span>rs2 = <span class="self">self</span>.r * <span class="self">self</span>.r - rc * rc;
+        <span class="kw">if </span>rs2 &lt; <span class="number">0. </span>{
+            <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="kw">let</span> <span class="ident">rs</span> = <span class="ident">rs2</span>.<span class="ident">abs</span>().<span class="ident">sqrt</span>();
-        <span class="kw">let</span> <span class="ident">diff</span> = (<span class="ident">other</span>.<span class="ident">c</span> - <span class="self">self</span>.<span class="ident">c</span>) / <span class="ident">d</span>;
+        <span class="kw">let </span>rs = rs2.abs().sqrt();
+        <span class="kw">let </span>diff = (other.c - <span class="self">self</span>.c) / d;
         <span class="prelude-val">Some</span>((
-            <span class="self">self</span>.<span class="ident">c</span> + <span class="ident">diff</span> * <span class="ident">Point::new</span>(<span class="ident">rc</span>, <span class="ident">rs</span>),
-            <span class="self">self</span>.<span class="ident">c</span> + <span class="ident">diff</span> * <span class="ident">Point::new</span>(<span class="ident">rc</span>, -<span class="ident">rs</span>),
+            <span class="self">self</span>.c + diff * Point::new(rc, rs),
+            <span class="self">self</span>.c + diff * Point::new(rc, -rs),
         ))
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contains_point</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">p</span>: <span class="ident">Point</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">Approx</span>((<span class="self">self</span>.<span class="ident">c</span> - <span class="ident">p</span>).<span class="ident">abs</span>()) &lt;= <span class="ident">Approx</span>(<span class="self">self</span>.<span class="ident">r</span>)
+    <span class="kw">pub fn </span>contains_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Point) -&gt; bool {
+        Approx((<span class="self">self</span>.c - p).abs()) &lt;= Approx(<span class="self">self</span>.r)
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

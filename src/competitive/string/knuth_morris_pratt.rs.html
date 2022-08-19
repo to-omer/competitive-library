@@ -49,40 +49,40 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
-</pre><pre class="rust"><code><span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KnuthMorrisPratt</span>&lt;<span class="ident">T</span>: <span class="ident">Eq</span>&gt; {
-    <span class="ident">pattern</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;,
-    <span class="ident">table</span>: <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt;,
+</pre><pre class="rust"><code><span class="attribute">#[derive(Clone, Debug)]</span>
+<span class="kw">pub struct </span>KnuthMorrisPratt&lt;T: Eq&gt; {
+    pattern: Vec&lt;T&gt;,
+    table: Vec&lt;usize&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="ident">T</span>: <span class="ident">Eq</span>&gt; <span class="ident">KnuthMorrisPratt</span>&lt;<span class="ident">T</span>&gt; {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">pattern</span>: <span class="ident">Vec</span>&lt;<span class="ident">T</span>&gt;) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">table</span> = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">pattern</span>.<span class="ident">len</span>() + <span class="number">1</span>];
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">pattern</span>.<span class="ident">len</span>() {
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> = <span class="ident">table</span>[<span class="ident">i</span> - <span class="number">1</span>];
-            <span class="kw">while</span> <span class="ident">j</span> &gt; <span class="number">0</span> &amp;&amp; <span class="ident">pattern</span>[<span class="ident">i</span>] != <span class="ident">pattern</span>[<span class="ident">j</span>] {
-                <span class="ident">j</span> = <span class="ident">table</span>[<span class="ident">j</span> - <span class="number">1</span>];
+<span class="kw">impl</span>&lt;T: Eq&gt; KnuthMorrisPratt&lt;T&gt; {
+    <span class="kw">pub fn </span>new(pattern: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>table = <span class="macro">vec!</span>[<span class="number">0</span>; pattern.len() + <span class="number">1</span>];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..pattern.len() {
+            <span class="kw">let </span><span class="kw-2">mut </span>j = table[i - <span class="number">1</span>];
+            <span class="kw">while </span>j &gt; <span class="number">0 </span>&amp;&amp; pattern[i] != pattern[j] {
+                j = table[j - <span class="number">1</span>];
             }
-            <span class="ident">table</span>[<span class="ident">i</span>] = <span class="ident">j</span> + (<span class="ident">pattern</span>[<span class="ident">i</span>] == <span class="ident">pattern</span>[<span class="ident">j</span>]) <span class="kw">as</span> <span class="ident">usize</span>;
+            table[i] = j + (pattern[i] == pattern[j]) <span class="kw">as </span>usize;
         }
-        <span class="self">Self</span> { <span class="ident">pattern</span>, <span class="ident">table</span> }
+        <span class="self">Self </span>{ pattern, table }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">search_all</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span>[<span class="ident">T</span>]) -&gt; <span class="ident">Vec</span>&lt;<span class="ident">usize</span>&gt; {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> = <span class="macro">vec!</span>[];
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">j</span> = <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">s</span>) <span class="kw">in</span> <span class="ident">s</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">while</span> <span class="ident">j</span> &gt; <span class="number">0</span> &amp;&amp; <span class="ident">s</span> != <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pattern</span>[<span class="ident">j</span>] {
-                <span class="ident">j</span> = <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">j</span> - <span class="number">1</span>];
+    <span class="kw">pub fn </span>search_all(<span class="kw-2">&amp;</span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;usize&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[];
+        <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
+        <span class="kw">for </span>(i, s) <span class="kw">in </span>s.iter().enumerate() {
+            <span class="kw">while </span>j &gt; <span class="number">0 </span>&amp;&amp; s != <span class="kw-2">&amp;</span><span class="self">self</span>.pattern[j] {
+                j = <span class="self">self</span>.table[j - <span class="number">1</span>];
             }
-            <span class="kw">if</span> <span class="ident">s</span> == <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">pattern</span>[<span class="ident">j</span>] {
-                <span class="ident">j</span> += <span class="number">1</span>;
+            <span class="kw">if </span>s == <span class="kw-2">&amp;</span><span class="self">self</span>.pattern[j] {
+                j += <span class="number">1</span>;
             }
-            <span class="kw">if</span> <span class="ident">j</span> == <span class="self">self</span>.<span class="ident">pattern</span>.<span class="ident">len</span>() {
-                <span class="ident">res</span>.<span class="ident">push</span>(<span class="ident">i</span> - (<span class="ident">j</span> - <span class="number">1</span>));
-                <span class="ident">j</span> = <span class="self">self</span>.<span class="ident">table</span>[<span class="ident">j</span> - <span class="number">1</span>];
+            <span class="kw">if </span>j == <span class="self">self</span>.pattern.len() {
+                res.push(i - (j - <span class="number">1</span>));
+                j = <span class="self">self</span>.table[j - <span class="number">1</span>];
             }
         }
-        <span class="ident">res</span>
+        res
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>

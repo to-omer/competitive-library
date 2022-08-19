@@ -130,121 +130,121 @@
 <span id="114">114</span>
 <span id="115">115</span>
 <span id="116">116</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">hash::Hash</span>, <span class="ident">marker::PhantomData</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, hash::Hash, marker::PhantomData};
 
-<span class="kw">type</span> <span class="ident">Marker</span>&lt;<span class="ident">T</span>&gt; = <span class="ident">PhantomData</span>&lt;<span class="kw">fn</span>() -&gt; <span class="ident">T</span>&gt;;
+<span class="kw">type </span>Marker&lt;T&gt; = PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;;
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PartisanGame</span> {
-    <span class="kw">type</span> <span class="ident">State</span>;
-    <span class="kw">type</span> <span class="ident">LIter</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::State</span>&gt;;
-    <span class="kw">type</span> <span class="ident">RIter</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident"><span class="self">Self</span>::State</span>&gt;;
-    <span class="kw">fn</span> <span class="ident">next_left</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::State</span>) -&gt; <span class="ident"><span class="self">Self</span>::LIter</span>;
-    <span class="kw">fn</span> <span class="ident">next_right</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::State</span>) -&gt; <span class="ident"><span class="self">Self</span>::RIter</span>;
+<span class="kw">pub trait </span>PartisanGame {
+    <span class="kw">type </span>State;
+    <span class="kw">type </span>LIter: Iterator&lt;Item = <span class="self">Self</span>::State&gt;;
+    <span class="kw">type </span>RIter: Iterator&lt;Item = <span class="self">Self</span>::State&gt;;
+    <span class="kw">fn </span>next_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <span class="self">Self</span>::LIter;
+    <span class="kw">fn </span>next_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <span class="self">Self</span>::RIter;
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PartisanGamer</span>&lt;<span class="ident">S</span>, <span class="ident">F</span>, <span class="ident">G</span>, <span class="ident">L</span>, <span class="ident">R</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>) -&gt; <span class="ident">L</span>,
-    <span class="ident">L</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">S</span>&gt;,
-    <span class="ident">G</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>) -&gt; <span class="ident">R</span>,
-    <span class="ident">R</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">S</span>&gt;,
+<span class="kw">pub struct </span>PartisanGamer&lt;S, F, G, L, R&gt;
+<span class="kw">where
+    </span>F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; L,
+    L: Iterator&lt;Item = S&gt;,
+    G: FnMut(<span class="kw-2">&amp;</span>S) -&gt; R,
+    R: Iterator&lt;Item = S&gt;,
 {
-    <span class="ident">f</span>: <span class="ident">F</span>,
-    <span class="ident">g</span>: <span class="ident">G</span>,
-    <span class="ident">_marker</span>: <span class="ident">Marker</span>&lt;(<span class="ident">S</span>, <span class="ident">L</span>, <span class="ident">R</span>)&gt;,
+    f: F,
+    g: G,
+    _marker: Marker&lt;(S, L, R)&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">S</span>, <span class="ident">F</span>, <span class="ident">G</span>, <span class="ident">L</span>, <span class="ident">R</span>&gt; <span class="ident">PartisanGamer</span>&lt;<span class="ident">S</span>, <span class="ident">F</span>, <span class="ident">G</span>, <span class="ident">L</span>, <span class="ident">R</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>) -&gt; <span class="ident">L</span>,
-    <span class="ident">L</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">S</span>&gt;,
-    <span class="ident">G</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>) -&gt; <span class="ident">R</span>,
-    <span class="ident">R</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">S</span>&gt;,
+<span class="kw">impl</span>&lt;S, F, G, L, R&gt; PartisanGamer&lt;S, F, G, L, R&gt;
+<span class="kw">where
+    </span>F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; L,
+    L: Iterator&lt;Item = S&gt;,
+    G: FnMut(<span class="kw-2">&amp;</span>S) -&gt; R,
+    R: Iterator&lt;Item = S&gt;,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">f</span>: <span class="ident">F</span>, <span class="ident">g</span>: <span class="ident">G</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">f</span>,
-            <span class="ident">g</span>,
-            <span class="ident">_marker</span>: <span class="ident">PhantomData</span>,
+    <span class="kw">pub fn </span>new(f: F, g: G) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            f,
+            g,
+            _marker: PhantomData,
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">S</span>, <span class="ident">F</span>, <span class="ident">G</span>, <span class="ident">L</span>, <span class="ident">R</span>&gt; <span class="ident">PartisanGame</span> <span class="kw">for</span> <span class="ident">PartisanGamer</span>&lt;<span class="ident">S</span>, <span class="ident">F</span>, <span class="ident">G</span>, <span class="ident">L</span>, <span class="ident">R</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>) -&gt; <span class="ident">L</span>,
-    <span class="ident">L</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">S</span>&gt;,
-    <span class="ident">G</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>) -&gt; <span class="ident">R</span>,
-    <span class="ident">R</span>: <span class="ident">Iterator</span>&lt;<span class="ident">Item</span> = <span class="ident">S</span>&gt;,
+<span class="kw">impl</span>&lt;S, F, G, L, R&gt; PartisanGame <span class="kw">for </span>PartisanGamer&lt;S, F, G, L, R&gt;
+<span class="kw">where
+    </span>F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; L,
+    L: Iterator&lt;Item = S&gt;,
+    G: FnMut(<span class="kw-2">&amp;</span>S) -&gt; R,
+    R: Iterator&lt;Item = S&gt;,
 {
-    <span class="kw">type</span> <span class="ident">State</span> = <span class="ident">S</span>;
-    <span class="kw">type</span> <span class="ident">LIter</span> = <span class="ident">L</span>;
-    <span class="kw">type</span> <span class="ident">RIter</span> = <span class="ident">R</span>;
-    <span class="kw">fn</span> <span class="ident">next_left</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::State</span>) -&gt; <span class="ident"><span class="self">Self</span>::LIter</span> {
-        (<span class="self">self</span>.<span class="ident">f</span>)(<span class="ident">s</span>)
+    <span class="kw">type </span>State = S;
+    <span class="kw">type </span>LIter = L;
+    <span class="kw">type </span>RIter = R;
+    <span class="kw">fn </span>next_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <span class="self">Self</span>::LIter {
+        (<span class="self">self</span>.f)(s)
     }
-    <span class="kw">fn</span> <span class="ident">next_right</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::State</span>) -&gt; <span class="ident"><span class="self">Self</span>::RIter</span> {
-        (<span class="self">self</span>.<span class="ident">g</span>)(<span class="ident">s</span>)
+    <span class="kw">fn </span>next_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <span class="self">Self</span>::RIter {
+        (<span class="self">self</span>.g)(s)
     }
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PartisanGameAnalyzer</span>&lt;<span class="ident">G</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">PartisanGame</span>,
-    <span class="ident">G::State</span>: <span class="ident">Eq</span> + <span class="ident">Hash</span>,
+<span class="attribute">#[derive(Debug, Clone)]</span>
+<span class="kw">pub struct </span>PartisanGameAnalyzer&lt;G&gt;
+<span class="kw">where
+    </span>G: PartisanGame,
+    G::State: Eq + Hash,
 {
-    <span class="ident">game</span>: <span class="ident">G</span>,
-    <span class="ident">number</span>: <span class="ident">HashMap</span>&lt;<span class="ident">G::State</span>, <span class="ident">i64</span>&gt;,
+    game: G,
+    number: HashMap&lt;G::State, i64&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="ident">G</span>&gt; <span class="ident">PartisanGameAnalyzer</span>&lt;<span class="ident">G</span>&gt;
-<span class="kw">where</span>
-    <span class="ident">G</span>: <span class="ident">PartisanGame</span>,
-    <span class="ident">G::State</span>: <span class="ident">Eq</span> + <span class="ident">Hash</span> + <span class="ident">Clone</span>,
+<span class="kw">impl</span>&lt;G&gt; PartisanGameAnalyzer&lt;G&gt;
+<span class="kw">where
+    </span>G: PartisanGame,
+    G::State: Eq + Hash + Clone,
 {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">game</span>: <span class="ident">G</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">game</span>,
-            <span class="ident">number</span>: <span class="ident">Default::default</span>(),
+    <span class="kw">pub fn </span>new(game: G) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            game,
+            number: Default::default(),
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">eval</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">G::State</span>) -&gt; <span class="ident">i64</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">n</span>) = <span class="self">self</span>.<span class="ident">number</span>.<span class="ident">get</span>(<span class="ident">s</span>).<span class="ident">cloned</span>() {
-            <span class="ident">n</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">lmax</span> = <span class="self">self</span>
-                .<span class="ident">game</span>
-                .<span class="ident">next_left</span>(<span class="ident">s</span>)
-                .<span class="ident">map</span>(|<span class="ident">ns</span>| <span class="self">self</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="ident">ns</span>))
-                .<span class="ident">fold</span>(<span class="ident">std::i64::MIN</span>, <span class="ident">Ord::max</span>);
-            <span class="kw">let</span> <span class="ident">rmin</span> = <span class="self">self</span>
-                .<span class="ident">game</span>
-                .<span class="ident">next_right</span>(<span class="ident">s</span>)
-                .<span class="ident">map</span>(|<span class="ident">ns</span>| <span class="self">self</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="ident">ns</span>))
-                .<span class="ident">fold</span>(<span class="ident">std::i64::MAX</span>, <span class="ident">Ord::min</span>);
-            <span class="kw">let</span> <span class="ident">res</span> = <span class="ident"><span class="self">Self</span>::simple_number</span>(<span class="ident">lmax</span>, <span class="ident">rmin</span>);
-            <span class="self">self</span>.<span class="ident">number</span>.<span class="ident">insert</span>(<span class="ident">s</span>.<span class="ident">clone</span>(), <span class="ident">res</span>);
-            <span class="ident">res</span>
+    <span class="kw">pub fn </span>eval(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>G::State) -&gt; i64 {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(n) = <span class="self">self</span>.number.get(s).cloned() {
+            n
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>lmax = <span class="self">self
+                </span>.game
+                .next_left(s)
+                .map(|ns| <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>ns))
+                .fold(std::i64::MIN, Ord::max);
+            <span class="kw">let </span>rmin = <span class="self">self
+                </span>.game
+                .next_right(s)
+                .map(|ns| <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>ns))
+                .fold(std::i64::MAX, Ord::min);
+            <span class="kw">let </span>res = <span class="self">Self</span>::simple_number(lmax, rmin);
+            <span class="self">self</span>.number.insert(s.clone(), res);
+            res
         }
     }
-    <span class="kw">fn</span> <span class="ident">simple_number</span>(<span class="ident">lmax</span>: <span class="ident">i64</span>, <span class="ident">rmin</span>: <span class="ident">i64</span>) -&gt; <span class="ident">i64</span> {
-        <span class="kw">const</span> <span class="ident">FIX</span>: <span class="ident">u32</span> = <span class="number">50</span>;
-        <span class="macro">assert!</span>(<span class="ident">lmax</span> &lt; <span class="ident">rmin</span>);
-        <span class="macro">assert!</span>(<span class="ident">lmax</span> + <span class="number">1</span> != <span class="ident">rmin</span>);
-        <span class="kw">if</span> <span class="ident">lmax</span> &lt; <span class="number">0</span> &amp;&amp; <span class="number">0</span> &lt; <span class="ident">rmin</span> {
-            <span class="number">0</span>
-        } <span class="kw">else</span> {
-            <span class="kw">let</span> <span class="ident">c</span> = <span class="number">63</span> - ((<span class="ident">rmin</span> - <span class="number">1</span>) ^ <span class="ident">lmax</span>).<span class="ident">leading_zeros</span>();
-            <span class="kw">if</span> <span class="ident">c</span> &lt;= <span class="ident">FIX</span> {
-                (<span class="ident">rmin</span> - <span class="number">1</span>) &gt;&gt; <span class="ident">c</span> &lt;&lt; <span class="ident">c</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">lmax</span> &gt;= <span class="number">0</span> {
-                ((<span class="ident">lmax</span> &gt;&gt; <span class="ident">FIX</span>) + <span class="number">1</span>) &lt;&lt; <span class="ident">FIX</span>
-            } <span class="kw">else</span> {
-                (<span class="ident">rmin</span> - <span class="number">1</span>) &gt;&gt; <span class="ident">FIX</span> &lt;&lt; <span class="ident">FIX</span>
+    <span class="kw">fn </span>simple_number(lmax: i64, rmin: i64) -&gt; i64 {
+        <span class="kw">const </span>FIX: u32 = <span class="number">50</span>;
+        <span class="macro">assert!</span>(lmax &lt; rmin);
+        <span class="macro">assert!</span>(lmax + <span class="number">1 </span>!= rmin);
+        <span class="kw">if </span>lmax &lt; <span class="number">0 </span>&amp;&amp; <span class="number">0 </span>&lt; rmin {
+            <span class="number">0
+        </span>} <span class="kw">else </span>{
+            <span class="kw">let </span>c = <span class="number">63 </span>- ((rmin - <span class="number">1</span>) ^ lmax).leading_zeros();
+            <span class="kw">if </span>c &lt;= FIX {
+                (rmin - <span class="number">1</span>) &gt;&gt; c &lt;&lt; c
+            } <span class="kw">else if </span>lmax &gt;= <span class="number">0 </span>{
+                ((lmax &gt;&gt; FIX) + <span class="number">1</span>) &lt;&lt; FIX
+            } <span class="kw">else </span>{
+                (rmin - <span class="number">1</span>) &gt;&gt; FIX &lt;&lt; FIX
             }
         }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (f22819bcc 2022-08-12)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
