@@ -49,7 +49,8 @@ pub use self::segment_tree_map::SegmentTreeMap;
 pub use self::sliding_winsow_aggregation::{DequeAggregation, QueueAggregation};
 #[codesnip::entry("slope_trick")]
 pub use self::slope_trick::SlopeTrick;
-pub use self::splay_tree::SplayMap;
+#[codesnip::entry("SplayTree")]
+pub use self::splay_tree::{SplayMap, SplaySequence};
 #[codesnip::entry("Trie")]
 pub use self::trie::Trie;
 #[codesnip::entry("UnionFind")]
@@ -115,6 +116,7 @@ mod segment_tree_map;
 mod sliding_winsow_aggregation;
 #[cfg_attr(nightly, codesnip::entry("slope_trick"))]
 mod slope_trick;
+#[cfg_attr(nightly, codesnip::entry("SplayTree", include("Allocator", "algebra")))]
 mod splay_tree;
 #[cfg_attr(nightly, codesnip::entry("Trie"))]
 mod trie;

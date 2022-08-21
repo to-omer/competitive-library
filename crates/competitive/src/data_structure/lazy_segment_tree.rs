@@ -7,16 +7,16 @@ use std::{
 pub struct LazySegmentTree<M>
 where
     M: MonoidAction,
-    M::AT: PartialEq,
+    M::Act: PartialEq,
 {
     n: usize,
-    seg: Vec<(M::MT, M::AT)>,
+    seg: Vec<(M::Agg, M::Act)>,
 }
 
 impl<M> Clone for LazySegmentTree<M>
 where
     M: MonoidAction,
-    M::AT: PartialEq,
+    M::Act: PartialEq,
 {
     fn clone(&self) -> Self {
         Self {
@@ -29,8 +29,8 @@ where
 impl<M> Debug for LazySegmentTree<M>
 where
     M: MonoidAction,
-    M::MT: Debug,
-    M::AT: PartialEq + Debug,
+    M::Agg: Debug,
+    M::Act: PartialEq + Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazySegmentTree")
@@ -43,28 +43,28 @@ where
 impl<M> LazySegmentTree<M>
 where
     M: MonoidAction,
-    M::AT: PartialEq,
+    M::Act: PartialEq,
 {
     pub fn new(n: usize) -> Self {
-        let seg = vec![(M::munit(), M::aunit()); 2 * n];
+        let seg = vec![(M::agg_unit(), M::act_unit()); 2 * n];
         Self { n, seg }
     }
-    pub fn from_vec(v: Vec<M::MT>) -> Self {
+    pub fn from_vec(v: Vec<M::Agg>) -> Self {
         let n = v.len();
-        let mut seg = vec![(M::munit(), M::aunit()); 2 * n];
+        let mut seg = vec![(M::agg_unit(), M::act_unit()); 2 * n];
         for (i, x) in v.into_iter().enumerate() {
             seg[i + n].0 = x;
         }
         for i in (1..n).rev() {
-            seg[i].0 = M::moperate(&seg[2 * i].0, &seg[2 * i + 1].0);
+            seg[i].0 = M::agg_operate(&seg[2 * i].0, &seg[2 * i + 1].0);
         }
         Self { n, seg }
     }
     #[inline]
-    fn update_at(&mut self, k: usize, x: &M::AT) {
-        let nx = M::act(&self.seg[k].0, x);
+    fn update_at(&mut self, k: usize, x: &M::Act) {
+        let nx = M::act_agg(&self.seg[k].0, x);
         if k < self.n {
-            self.seg[k].1 = M::aoperate(&self.seg[k].1, x);
+            self.seg[k].1 = M::act_operate(&self.seg[k].1, x);
         }
         if let Some(nx) = nx {
             self.seg[k].0 = nx;
@@ -77,12 +77,12 @@ where
     }
     #[inline]
     fn recalc_at(&mut self, k: usize) {
-        self.seg[k].0 = M::moperate(&self.seg[2 * k].0, &self.seg[2 * k + 1].0);
+        self.seg[k].0 = M::agg_operate(&self.seg[2 * k].0, &self.seg[2 * k + 1].0);
     }
     #[inline]
     fn propagate_at(&mut self, k: usize) {
         debug_assert!(k < self.n);
-        let x = replace(&mut self.seg[k].1, M::aunit());
+        let x = replace(&mut self.seg[k].1, M::act_unit());
         self.update_at(2 * k, &x);
         self.update_at(2 * k + 1, &x);
     }
@@ -104,7 +104,7 @@ where
             }
         }
     }
-    pub fn update(&mut self, l: usize, r: usize, x: M::AT) {
+    pub fn update(&mut self, l: usize, r: usize, x: M::Act) {
         debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut a = l + self.n;
@@ -126,49 +126,49 @@ where
         self.recalc(l + self.n, false, false);
         self.recalc(r + self.n, true, false);
     }
-    pub fn fold(&mut self, l: usize, r: usize) -> M::MT {
+    pub fn fold(&mut self, l: usize, r: usize) -> M::Agg {
         debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut l = l + self.n;
         let mut r = r + self.n;
         self.propagate(l, false, true);
         self.propagate(r, true, true);
-        let mut vl = M::munit();
-        let mut vr = M::munit();
+        let mut vl = M::agg_unit();
+        let mut vr = M::agg_unit();
         while l < r {
             if l & 1 != 0 {
-                vl = M::moperate(&vl, &self.seg[l].0);
+                vl = M::agg_operate(&vl, &self.seg[l].0);
                 l += 1;
             }
             if r & 1 != 0 {
                 r -= 1;
-                vr = M::moperate(&self.seg[r].0, &vr);
+                vr = M::agg_operate(&self.seg[r].0, &vr);
             }
             l /= 2;
             r /= 2;
         }
-        M::moperate(&vl, &vr)
+        M::agg_operate(&vl, &vr)
     }
-    pub fn set(&mut self, k: usize, x: M::MT) {
+    pub fn set(&mut self, k: usize, x: M::Agg) {
         let k = k + self.n;
         self.propagate(k, false, true);
-        self.seg[k] = (x, M::aunit());
+        self.seg[k] = (x, M::act_unit());
         self.recalc(k, false, true);
     }
-    pub fn get(&mut self, k: usize) -> M::MT {
+    pub fn get(&mut self, k: usize) -> M::Agg {
         self.fold(k, k + 1)
     }
-    pub fn fold_all(&mut self) -> M::MT {
+    pub fn fold_all(&mut self) -> M::Agg {
         self.fold(0, self.n)
     }
-    fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::MT, p: P) -> (usize, M::MT)
+    fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::Agg, p: P) -> (usize, M::Agg)
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         while pos < self.n {
             self.propagate_at(pos);
             pos <<= 1;
-            let nacc = M::moperate(&acc, &self.seg[pos].0);
+            let nacc = M::agg_operate(&acc, &self.seg[pos].0);
             if !p(&nacc) {
                 acc = nacc;
                 pos += 1;
@@ -176,14 +176,14 @@ where
         }
         (pos - self.n, acc)
     }
-    fn rbisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::MT, p: P) -> (usize, M::MT)
+    fn rbisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::Agg, p: P) -> (usize, M::Agg)
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         while pos < self.n {
             self.propagate_at(pos);
             pos = pos * 2 + 1;
-            let nacc = M::moperate(&self.seg[pos].0, &acc);
+            let nacc = M::agg_operate(&self.seg[pos].0, &acc);
             if !p(&nacc) {
                 acc = nacc;
                 pos -= 1;
@@ -194,17 +194,17 @@ where
     /// Returns the first index that satisfies a accumlative predicate.
     pub fn position_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         let mut l = l + self.n;
         let r = r + self.n;
         self.propagate(l, false, true);
         self.propagate(r, true, true);
         let mut k = 0usize;
-        let mut acc = M::munit();
+        let mut acc = M::agg_unit();
         while l < r >> k {
             if l & 1 != 0 {
-                let nacc = M::moperate(&acc, &self.seg[l].0);
+                let nacc = M::agg_operate(&acc, &self.seg[l].0);
                 if p(&nacc) {
                     return Some(self.bisect_perfect(l, acc, p).0);
                 }
@@ -217,7 +217,7 @@ where
         for k in (0..k).rev() {
             let r = r >> k;
             if r & 1 != 0 {
-                let nacc = M::moperate(&acc, &self.seg[r - 1].0);
+                let nacc = M::agg_operate(&acc, &self.seg[r - 1].0);
                 if p(&nacc) {
                     return Some(self.bisect_perfect(r - 1, acc, p).0);
                 }
@@ -229,7 +229,7 @@ where
     /// Returns the last index that satisfies a accumlative predicate.
     pub fn rposition_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         let mut l = l + self.n;
         let mut r = r + self.n;
@@ -237,7 +237,7 @@ where
         self.propagate(r, true, true);
         let mut c = 0usize;
         let mut k = 0usize;
-        let mut acc = M::munit();
+        let mut acc = M::agg_unit();
         while l >> k < r {
             c <<= 1;
             if l & 1 << k != 0 {
@@ -246,7 +246,7 @@ where
             }
             if r & 1 != 0 {
                 r -= 1;
-                let nacc = M::moperate(&self.seg[r].0, &acc);
+                let nacc = M::agg_operate(&self.seg[r].0, &acc);
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(r, acc, p).0);
                 }
@@ -259,7 +259,7 @@ where
             if c & 1 != 0 {
                 l -= 1 << k;
                 let l = l >> k;
-                let nacc = M::moperate(&self.seg[l].0, &acc);
+                let nacc = M::agg_operate(&self.seg[l].0, &acc);
                 if p(&nacc) {
                     return Some(self.rbisect_perfect(l, acc, p).0);
                 }

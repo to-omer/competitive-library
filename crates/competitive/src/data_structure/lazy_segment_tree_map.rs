@@ -8,16 +8,16 @@ use std::{
 pub struct LazySegmentTreeMap<M>
 where
     M: MonoidAction,
-    M::AT: PartialEq,
+    M::Act: PartialEq,
 {
     n: usize,
-    seg: HashMap<usize, (M::MT, M::AT)>,
+    seg: HashMap<usize, (M::Agg, M::Act)>,
 }
 
 impl<M> Clone for LazySegmentTreeMap<M>
 where
     M: MonoidAction,
-    M::AT: PartialEq,
+    M::Act: PartialEq,
 {
     fn clone(&self) -> Self {
         Self {
@@ -30,8 +30,8 @@ where
 impl<M> Debug for LazySegmentTreeMap<M>
 where
     M: MonoidAction,
-    M::MT: Debug,
-    M::AT: PartialEq + Debug,
+    M::Agg: Debug,
+    M::Act: PartialEq + Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazySegmentTreeMap")
@@ -44,7 +44,7 @@ where
 impl<M> LazySegmentTreeMap<M>
 where
     M: MonoidAction,
-    M::AT: PartialEq,
+    M::Act: PartialEq,
 {
     pub fn new(n: usize) -> Self {
         Self {
@@ -53,16 +53,16 @@ where
         }
     }
     #[inline]
-    fn get_mut(&mut self, k: usize) -> &mut (M::MT, M::AT) {
-        self.seg.entry(k).or_insert((M::munit(), M::aunit()))
+    fn get_mut(&mut self, k: usize) -> &mut (M::Agg, M::Act) {
+        self.seg.entry(k).or_insert((M::agg_unit(), M::act_unit()))
     }
     #[inline]
-    fn update_at(&mut self, k: usize, x: &M::AT) {
+    fn update_at(&mut self, k: usize, x: &M::Act) {
         let n = self.n;
         let a = self.get_mut(k);
-        let nx = M::act(&a.0, x);
+        let nx = M::act_agg(&a.0, x);
         if k < n {
-            a.1 = M::aoperate(&a.1, x);
+            a.1 = M::act_operate(&a.1, x);
         }
         if let Some(nx) = nx {
             a.0 = nx;
@@ -76,10 +76,10 @@ where
     #[inline]
     fn recalc_at(&mut self, k: usize) {
         let x = match (self.seg.get(&(2 * k)), self.seg.get(&(2 * k + 1))) {
-            (None, None) => M::munit(),
+            (None, None) => M::agg_unit(),
             (None, Some((y, _))) => y.clone(),
             (Some((x, _)), None) => x.clone(),
-            (Some((x, _)), Some((y, _))) => M::moperate(x, y),
+            (Some((x, _)), Some((y, _))) => M::agg_operate(x, y),
         };
         self.get_mut(k).0 = x;
     }
@@ -87,8 +87,8 @@ where
     fn propagate_at(&mut self, k: usize) {
         debug_assert!(k < self.n);
         let x = match self.seg.get_mut(&k) {
-            Some((_, x)) => replace(x, M::aunit()),
-            None => M::aunit(),
+            Some((_, x)) => replace(x, M::act_unit()),
+            None => M::act_unit(),
         };
         self.update_at(2 * k, &x);
         self.update_at(2 * k + 1, &x);
@@ -111,7 +111,7 @@ where
             }
         }
     }
-    pub fn update(&mut self, l: usize, r: usize, x: M::AT) {
+    pub fn update(&mut self, l: usize, r: usize, x: M::Act) {
         debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut a = l + self.n;
@@ -133,54 +133,54 @@ where
         self.recalc(l + self.n, false, false);
         self.recalc(r + self.n, true, false);
     }
-    pub fn fold(&mut self, l: usize, r: usize) -> M::MT {
+    pub fn fold(&mut self, l: usize, r: usize) -> M::Agg {
         debug_assert!(l <= r);
         debug_assert!(r <= self.n);
         let mut l = l + self.n;
         let mut r = r + self.n;
         self.propagate(l, false, true);
         self.propagate(r, true, true);
-        let mut vl = M::munit();
-        let mut vr = M::munit();
+        let mut vl = M::agg_unit();
+        let mut vr = M::agg_unit();
         while l < r {
             if l & 1 != 0 {
                 if let Some((x, _)) = self.seg.get(&l) {
-                    vl = M::moperate(&vl, x);
+                    vl = M::agg_operate(&vl, x);
                 }
                 l += 1;
             }
             if r & 1 != 0 {
                 r -= 1;
                 if let Some((x, _)) = self.seg.get(&r) {
-                    vr = M::moperate(x, &vr);
+                    vr = M::agg_operate(x, &vr);
                 }
             }
             l /= 2;
             r /= 2;
         }
-        M::moperate(&vl, &vr)
+        M::agg_operate(&vl, &vr)
     }
-    pub fn set(&mut self, k: usize, x: M::MT) {
+    pub fn set(&mut self, k: usize, x: M::Agg) {
         let k = k + self.n;
         self.propagate(k, false, true);
-        *self.get_mut(k) = (x, M::aunit());
+        *self.get_mut(k) = (x, M::act_unit());
         self.recalc(k, false, true);
     }
-    pub fn get(&mut self, k: usize) -> M::MT {
+    pub fn get(&mut self, k: usize) -> M::Agg {
         self.fold(k, k + 1)
     }
-    pub fn fold_all(&mut self) -> M::MT {
+    pub fn fold_all(&mut self) -> M::Agg {
         self.fold(0, self.n)
     }
-    fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::MT, p: P) -> (usize, M::MT)
+    fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::Agg, p: P) -> (usize, M::Agg)
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         while pos < self.n {
             self.propagate_at(pos);
             pos <<= 1;
             let nacc = match self.seg.get(&pos) {
-                Some((x, _)) => M::moperate(&acc, x),
+                Some((x, _)) => M::agg_operate(&acc, x),
                 None => acc.clone(),
             };
             if !p(&nacc) {
@@ -190,15 +190,15 @@ where
         }
         (pos - self.n, acc)
     }
-    fn rbisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::MT, p: P) -> (usize, M::MT)
+    fn rbisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::Agg, p: P) -> (usize, M::Agg)
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         while pos < self.n {
             self.propagate_at(pos);
             pos = pos * 2 + 1;
             let nacc = match self.seg.get(&pos) {
-                Some((x, _)) => M::moperate(x, &acc),
+                Some((x, _)) => M::agg_operate(x, &acc),
                 None => acc.clone(),
             };
             if !p(&nacc) {
@@ -211,18 +211,18 @@ where
     /// Returns the first index that satisfies a accumlative predicate.
     pub fn position_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         let mut l = l + self.n;
         let r = r + self.n;
         self.propagate(l, false, true);
         self.propagate(r, true, true);
         let mut k = 0usize;
-        let mut acc = M::munit();
+        let mut acc = M::agg_unit();
         while l < r >> k {
             if l & 1 != 0 {
                 let nacc = match self.seg.get(&l) {
-                    Some((x, _)) => M::moperate(&acc, x),
+                    Some((x, _)) => M::agg_operate(&acc, x),
                     None => acc.clone(),
                 };
                 if p(&nacc) {
@@ -238,7 +238,7 @@ where
             let r = r >> k;
             if r & 1 != 0 {
                 let nacc = match self.seg.get(&(r - 1)) {
-                    Some((x, _)) => M::moperate(&acc, x),
+                    Some((x, _)) => M::agg_operate(&acc, x),
                     None => acc.clone(),
                 };
                 if p(&nacc) {
@@ -252,7 +252,7 @@ where
     /// Returns the last index that satisfies a accumlative predicate.
     pub fn rposition_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
     where
-        P: Fn(&M::MT) -> bool,
+        P: Fn(&M::Agg) -> bool,
     {
         let mut l = l + self.n;
         let mut r = r + self.n;
@@ -260,7 +260,7 @@ where
         self.propagate(r, true, true);
         let mut c = 0usize;
         let mut k = 0usize;
-        let mut acc = M::munit();
+        let mut acc = M::agg_unit();
         while l >> k < r {
             c <<= 1;
             if l & 1 << k != 0 {
@@ -270,7 +270,7 @@ where
             if r & 1 != 0 {
                 r -= 1;
                 let nacc = match self.seg.get(&r) {
-                    Some((x, _)) => M::moperate(x, &acc),
+                    Some((x, _)) => M::agg_operate(x, &acc),
                     None => acc.clone(),
                 };
                 if p(&nacc) {
@@ -286,7 +286,7 @@ where
                 l -= 1 << k;
                 let l = l >> k;
                 let nacc = match self.seg.get(&l) {
-                    Some((x, _)) => M::moperate(x, &acc),
+                    Some((x, _)) => M::agg_operate(x, &acc),
                     None => acc.clone(),
                 };
                 if p(&nacc) {

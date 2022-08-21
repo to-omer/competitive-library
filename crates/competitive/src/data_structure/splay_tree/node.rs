@@ -222,6 +222,12 @@ where
                 .map(|node| NodeRef::new_unchecked(node))
         }
     }
+    pub fn reverse(&self) {
+        unsafe {
+            let node = &mut (*self.as_ptr());
+            swap(&mut node.left, &mut node.right);
+        }
+    }
 }
 
 impl<'a, S> NodeRef<marker::Mut<'a>, S>
@@ -431,6 +437,7 @@ where
     }
     pub fn merge(mut self, mut other: Self) -> Self {
         if other.reborrow().left().is_none() {
+            S::top_down(other.borrow_datamut());
             other.borrow_mut().set_left(Some(self));
             S::bottom_up(other.borrow_datamut());
             other
@@ -675,6 +682,9 @@ where
         let noderef = unsafe { NodeRef::new_unchecked(last.node) };
         self.back.insert_first(last);
         Some(noderef)
+    }
+    pub fn root(&mut self) -> &mut Root<S> {
+        self.root
     }
 }
 impl<'a, S> Drop for NodeRange<'a, S>

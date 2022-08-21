@@ -1,8 +1,10 @@
+pub mod dynamic_sequence_range_affine_range_sum;
 pub mod line_add_get_min;
 pub mod point_add_range_sum;
 pub mod point_set_range_composite;
 pub mod queue_operate_all_composite;
 pub mod range_affine_range_sum;
+pub mod range_chmin_chmax_add_range_sum;
 pub mod range_kth_smallest;
 pub mod staticrmq;
 pub mod unionfind;
