@@ -174,28 +174,28 @@
 <span id="158">158</span>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{graph::UndirectedSparseGraph, tools::Xorshift, tree::TreeCenter};
 
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_hash&quot;</span>, include(<span class="string">&quot;Xorshift&quot;</span>, <span class="string">&quot;tree_center&quot;</span>))]</span>
-<span class="attribute">#[derive(Default, Debug)]</span>
-<span class="kw">pub struct </span>TreeHasher {
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_hash&quot;</span>, include(<span class="string">&quot;Xorshift&quot;</span>, <span class="string">&quot;tree_center&quot;</span>))]
+#[derive(Default, Debug)]
+</span><span class="kw">pub struct </span>TreeHasher {
     rv: Vec&lt;u64&gt;,
     rng: Xorshift,
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_hash&quot;</span>)]</span>
-<span class="kw">impl </span>TreeHasher {
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_hash&quot;</span>)]
+</span><span class="kw">impl </span>TreeHasher {
     <span class="kw">const </span>MASK30: u64 = (<span class="number">1 </span>&lt;&lt; <span class="number">30</span>) - <span class="number">1</span>;
     <span class="kw">const </span>MASK31: u64 = (<span class="number">1 </span>&lt;&lt; <span class="number">31</span>) - <span class="number">1</span>;
     <span class="kw">const </span>MASK61: u64 = (<span class="number">1 </span>&lt;&lt; <span class="number">61</span>) - <span class="number">1</span>;
     <span class="kw">const </span>MOD: u64 = <span class="self">Self</span>::MASK61;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mersenne_mod(a: u64) -&gt; u64 {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mersenne_mod(a: u64) -&gt; u64 {
         <span class="kw">let </span><span class="kw-2">mut </span>res = (a &gt;&gt; <span class="number">61</span>) + (a &amp; <span class="self">Self</span>::MASK61);
         <span class="kw">if </span>res &gt;= <span class="self">Self</span>::MASK61 {
             res -= <span class="self">Self</span>::MASK61;
         }
         res
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mersenne_mul(a: u64, b: u64) -&gt; u64 {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mersenne_mul(a: u64, b: u64) -&gt; u64 {
         <span class="kw">let </span>au = a &gt;&gt; <span class="number">31</span>;
         <span class="kw">let </span>ad = a &amp; <span class="self">Self</span>::MASK31;
         <span class="kw">let </span>bu = b &gt;&gt; <span class="number">31</span>;
@@ -205,8 +205,8 @@
         <span class="kw">let </span>midd = mid &amp; <span class="self">Self</span>::MASK30;
         au * bu * <span class="number">2 </span>+ midu + (midd &lt;&lt; <span class="number">31</span>) + ad * bd
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mersenne_mul_mod(a: u64, b: u64) -&gt; u64 {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mersenne_mul_mod(a: u64, b: u64) -&gt; u64 {
         <span class="self">Self</span>::mersenne_mod(<span class="self">Self</span>::mersenne_mul(a, b))
     }
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
@@ -253,8 +253,8 @@
     }
 }
 
-<span class="attribute">#[cfg(test)]</span>
-<span class="kw">mod </span>tests {
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::tree::MixedTree;
     <span class="kw">use </span>std::{
@@ -262,8 +262,8 @@
         collections::{BTreeMap, HashMap},
     };
 
-    <span class="attribute">#[allow(clippy::ptr_arg)]</span>
-    <span class="kw">fn </span>vec_len_cmp&lt;T: Ord&gt;(left: <span class="kw-2">&amp;</span>Vec&lt;T&gt;, right: <span class="kw-2">&amp;</span>Vec&lt;T&gt;) -&gt; Ordering {
+    <span class="attribute">#[allow(clippy::ptr_arg)]
+    </span><span class="kw">fn </span>vec_len_cmp&lt;T: Ord&gt;(left: <span class="kw-2">&amp;</span>Vec&lt;T&gt;, right: <span class="kw-2">&amp;</span>Vec&lt;T&gt;) -&gt; Ordering {
         <span class="kw">match </span>left.len().cmp(<span class="kw-2">&amp;</span>right.len()) {
             Ordering::Equal =&gt; left.cmp(right),
             non_eq =&gt; non_eq,
@@ -303,8 +303,8 @@
         }
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_tree_hash() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_tree_hash() {
         <span class="kw">const </span>N: usize = <span class="number">200</span>;
         <span class="kw">const </span>Q: usize = <span class="number">1000</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
@@ -331,4 +331,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

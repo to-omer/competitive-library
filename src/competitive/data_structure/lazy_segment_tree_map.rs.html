@@ -460,12 +460,12 @@
             seg: Default::default(),
         }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) -&gt; <span class="kw-2">&amp;mut </span>(M::MT, M::AT) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) -&gt; <span class="kw-2">&amp;mut </span>(M::MT, M::AT) {
         <span class="self">self</span>.seg.entry(k).or_insert((M::munit(), M::aunit()))
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: <span class="kw-2">&amp;</span>M::AT) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: <span class="kw-2">&amp;</span>M::AT) {
         <span class="kw">let </span>n = <span class="self">self</span>.n;
         <span class="kw">let </span>a = <span class="self">self</span>.get_mut(k);
         <span class="kw">let </span>nx = M::act(<span class="kw-2">&amp;</span>a.<span class="number">0</span>, x);
@@ -481,8 +481,8 @@
             <span class="macro">panic!</span>(<span class="string">&quot;act failed on leaf&quot;</span>);
         }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>recalc_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>recalc_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
         <span class="kw">let </span>x = <span class="kw">match </span>(<span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>(<span class="number">2 </span>* k)), <span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>(<span class="number">2 </span>* k + <span class="number">1</span>))) {
             (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; M::munit(),
             (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>((y, <span class="kw">_</span>))) =&gt; y.clone(),
@@ -491,8 +491,8 @@
         };
         <span class="self">self</span>.get_mut(k).<span class="number">0 </span>= x;
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize) {
         <span class="macro">debug_assert!</span>(k &lt; <span class="self">self</span>.n);
         <span class="kw">let </span>x = <span class="kw">match </span><span class="self">self</span>.seg.get_mut(<span class="kw-2">&amp;</span>k) {
             <span class="prelude-val">Some</span>((<span class="kw">_</span>, x)) =&gt; replace(x, M::aunit()),
@@ -501,8 +501,8 @@
         <span class="self">self</span>.update_at(<span class="number">2 </span>* k, <span class="kw-2">&amp;</span>x);
         <span class="self">self</span>.update_at(<span class="number">2 </span>* k + <span class="number">1</span>, <span class="kw-2">&amp;</span>x);
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>propagate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, right: bool, nofilt: bool) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>propagate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, right: bool, nofilt: bool) {
         <span class="kw">let </span>right = right <span class="kw">as </span>usize;
         <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..(k + <span class="number">1 </span>- right).next_power_of_two().trailing_zeros()).rev() {
             <span class="kw">if </span>nofilt || (k &gt;&gt; i) &lt;&lt; i != k {
@@ -510,8 +510,8 @@
             }
         }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>recalc(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, right: bool, nofilt: bool) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>recalc(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, right: bool, nofilt: bool) {
         <span class="kw">let </span>right = right <span class="kw">as </span>usize;
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..(k + <span class="number">1 </span>- right).next_power_of_two().trailing_zeros() {
             <span class="kw">if </span>nofilt || (k &gt;&gt; i) &lt;&lt; i != k {
@@ -708,8 +708,8 @@
     </span>}
 }
 
-<span class="attribute">#[cfg(test)]</span>
-<span class="kw">mod </span>tests {
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
         algebra::{RangeMaxRangeUpdate, RangeSumRangeAdd},
@@ -721,8 +721,8 @@
     <span class="kw">const </span>Q: usize = <span class="number">20_000</span>;
     <span class="kw">const </span>A: i64 = <span class="number">1_000_000_000</span>;
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_lazy_segment_tree_map() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_lazy_segment_tree_map() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="comment">// Range Sum Query &amp; Range Add Query
         </span><span class="kw">let </span><span class="kw-2">mut </span>arr = <span class="macro">vec!</span>[<span class="number">0i64</span>; N];
@@ -799,4 +799,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

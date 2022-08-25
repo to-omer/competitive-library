@@ -438,32 +438,32 @@
     <span class="kw">type </span>Output;
     <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt;;
 }
-<span class="attribute">#[derive(Clone, Debug)]</span>
-<span class="kw">pub struct </span>Scanner&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="attribute">#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>Scanner&lt;<span class="lifetime">&#39;a</span>&gt; {
     iter: std::str::SplitAsciiWhitespace&lt;<span class="lifetime">&#39;a</span>&gt;,
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Scanner&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>new(s: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>new(s: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>iter = s.split_ascii_whitespace();
         <span class="self">Self </span>{ iter }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>scan&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; &lt;T <span class="kw">as </span>IterScan&gt;::Output
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>scan&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; &lt;T <span class="kw">as </span>IterScan&gt;::Output
     <span class="kw">where
         </span>T: IterScan,
     {
         &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter).expect(<span class="string">&quot;scan error&quot;</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>mscan&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, marker: T) -&gt; &lt;T <span class="kw">as </span>MarkedIterScan&gt;::Output
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>mscan&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, marker: T) -&gt; &lt;T <span class="kw">as </span>MarkedIterScan&gt;::Output
     <span class="kw">where
         </span>T: MarkedIterScan,
     {
         marker.mscan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter).expect(<span class="string">&quot;scan error&quot;</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>scan_vec&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, size: usize) -&gt; Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>scan_vec&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, size: usize) -&gt; Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;
     <span class="kw">where
         </span>T: IterScan,
     {
@@ -471,8 +471,8 @@
             .map(|<span class="kw">_</span>| &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.iter).expect(<span class="string">&quot;scan error&quot;</span>))
             .collect()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>iter&lt;<span class="lifetime">&#39;b</span>, T&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><span class="kw-2">mut </span><span class="self">self</span>) -&gt; ScannerIter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt;
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>iter&lt;<span class="lifetime">&#39;b</span>, T&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><span class="kw-2">mut </span><span class="self">self</span>) -&gt; ScannerIter&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt;
     <span class="kw">where
         </span>T: IterScan,
     {
@@ -483,12 +483,12 @@
     }
 }
 
-<span class="macro">macro_rules!</span> iter_scan_impls {
+<span class="macro">macro_rules! </span>iter_scan_impls {
     ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {$(
         <span class="kw">impl </span>IterScan <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
             <span class="kw">type </span>Output = <span class="self">Self</span>;
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
                 iter.next()<span class="question-mark">?</span>.parse::&lt;<span class="macro-nonterminal">$t</span>&gt;().ok()
             }
         })*
@@ -496,12 +496,12 @@
 }
 <span class="macro">iter_scan_impls!</span>(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
 
-<span class="macro">macro_rules!</span> iter_scan_tuple_impl {
+<span class="macro">macro_rules! </span>iter_scan_tuple_impl {
     (@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>) =&gt; {
         <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>: IterScan),<span class="kw-2">*</span>&gt; IterScan <span class="kw">for </span>($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>) {
             <span class="kw">type </span>Output = ($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>IterScan&gt;::Output,)<span class="kw-2">*</span>);
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, It: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(_iter: <span class="kw-2">&amp;mut </span>It) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, It: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(_iter: <span class="kw-2">&amp;mut </span>It) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
                 <span class="prelude-val">Some</span>(($(&lt;<span class="macro-nonterminal">$T </span><span class="kw">as </span>IterScan&gt;::scan(_iter)<span class="question-mark">?</span>,)<span class="kw-2">*</span>))
             }
         }
@@ -528,8 +528,8 @@
     </span>T: IterScan,
 {
     <span class="kw">type </span>Item = &lt;T <span class="kw">as </span>IterScan&gt;::Output;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><span class="self">self</span>.inner.iter)
     }
 }
@@ -542,8 +542,8 @@
 /// - `[ELEMENT; $expr]`: vector
 /// - `[ELEMENT]`: iterator
 /// - `($(ELEMENT)*,)`: tuple
-</span><span class="attribute">#[macro_export]</span>
-<span class="macro">macro_rules!</span> scan_value {
+</span><span class="attribute">#[macro_export]
+</span><span class="macro">macro_rules! </span>scan_value {
     (@repeat <span class="macro-nonterminal">$scanner</span>:expr, [$(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>] $(<span class="macro-nonterminal">$len</span>:expr)<span class="question-mark">?</span>)                              =&gt; { ::std::iter::repeat_with(|| <span class="macro-nonterminal">$</span><span class="macro">crate::scan_value!</span>(@<span class="macro-nonterminal">inner $scanner</span>, [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)) $(.take(<span class="macro-nonterminal">$len</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;())<span class="question-mark">? </span>};
     (@tuple <span class="macro-nonterminal">$scanner</span>:expr, [$([$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>])<span class="kw-2">*</span>])                                    =&gt; { ($($(<span class="macro-nonterminal">$args</span>)<span class="kw-2">*</span>,)<span class="kw-2">*</span>) };
     (@<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$scanner</span>:expr, [[$(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>]])                                   =&gt; { $(<span class="macro-nonterminal">$args</span>)* };
@@ -563,8 +563,8 @@
 }
 
 <span class="doccomment">/// - `scan!(scanner, $($pat $(: ELEMENT)?),*)`
-</span><span class="attribute">#[macro_export]</span>
-<span class="macro">macro_rules!</span> scan {
+</span><span class="attribute">#[macro_export]
+</span><span class="macro">macro_rules! </span>scan {
     (@assert <span class="macro-nonterminal">$p</span>:pat) =&gt; {};
     (@assert $(<span class="macro-nonterminal">$p</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro">::std::compile_error!</span>(<span class="macro">::std::concat!</span>(<span class="string">&quot;expected pattern, found `&quot;</span>, <span class="macro">::std::stringify!</span>($(<span class="macro-nonterminal">$p</span>)<span class="kw-2">*</span>), <span class="string">&quot;`&quot;</span>)); };
     (@pat <span class="macro-nonterminal">$scanner</span>:expr, [] [])                                          =&gt; {};
@@ -591,39 +591,39 @@
     (<span class="macro-nonterminal">$scanner</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::scan!</span>(@<span class="macro-nonterminal">pat $scanner</span>, [] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) }
 }
 
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub enum </span>Usize1 {}
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub enum </span>Usize1 {}
 <span class="kw">impl </span>IterScan <span class="kw">for </span>Usize1 {
     <span class="kw">type </span>Output = usize;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         &lt;usize <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">?</span>.checked_sub(<span class="number">1</span>)
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub struct </span>CharWithBase(<span class="kw">pub </span>char);
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub struct </span>CharWithBase(<span class="kw">pub </span>char);
 <span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>CharWithBase {
     <span class="kw">type </span>Output = usize;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>((&lt;char <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">? </span><span class="kw">as </span>u8 - <span class="self">self</span>.<span class="number">0 </span><span class="kw">as </span>u8) <span class="kw">as </span>usize)
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub enum </span>Chars {}
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub enum </span>Chars {}
 <span class="kw">impl </span>IterScan <span class="kw">for </span>Chars {
     <span class="kw">type </span>Output = Vec&lt;char&gt;;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(iter.next()<span class="question-mark">?</span>.chars().collect())
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub struct </span>CharsWithBase(<span class="kw">pub </span>char);
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub struct </span>CharsWithBase(<span class="kw">pub </span>char);
 <span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>CharsWithBase {
     <span class="kw">type </span>Output = Vec&lt;usize&gt;;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(
             iter.next()<span class="question-mark">?
                 </span>.chars()
@@ -632,30 +632,30 @@
         )
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub struct </span>ByteWithBase(<span class="kw">pub </span>u8);
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub struct </span>ByteWithBase(<span class="kw">pub </span>u8);
 <span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>ByteWithBase {
     <span class="kw">type </span>Output = usize;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>((&lt;char <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">? </span><span class="kw">as </span>u8 - <span class="self">self</span>.<span class="number">0</span>) <span class="kw">as </span>usize)
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub enum </span>Bytes {}
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub enum </span>Bytes {}
 <span class="kw">impl </span>IterScan <span class="kw">for </span>Bytes {
     <span class="kw">type </span>Output = Vec&lt;u8&gt;;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(iter.next()<span class="question-mark">?</span>.bytes().collect())
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub struct </span>BytesWithBase(<span class="kw">pub </span>u8);
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub struct </span>BytesWithBase(<span class="kw">pub </span>u8);
 <span class="kw">impl </span>MarkedIterScan <span class="kw">for </span>BytesWithBase {
     <span class="kw">type </span>Output = Vec&lt;usize&gt;;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(
             iter.next()<span class="question-mark">?
                 </span>.bytes()
@@ -664,8 +664,8 @@
         )
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub struct </span>Collect&lt;T, B = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;&gt;
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub struct </span>Collect&lt;T, B = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;&gt;
 <span class="kw">where
     </span>T: IterScan,
     B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
@@ -691,15 +691,15 @@
     B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
 {
     <span class="kw">type </span>Output = B;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         repeat_with(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter))
             .take(<span class="self">self</span>.size)
             .collect()
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub struct </span>SizedCollect&lt;T, B = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;&gt;
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub struct </span>SizedCollect&lt;T, B = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;&gt;
 <span class="kw">where
     </span>T: IterScan,
     B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
@@ -712,16 +712,16 @@
     B: FromIterator&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;,
 {
     <span class="kw">type </span>Output = B;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="kw">let </span>size = usize::scan(iter)<span class="question-mark">?</span>;
         repeat_with(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(iter))
             .take(size)
             .collect()
     }
 }
-<span class="attribute">#[derive(Debug, Copy, Clone)]</span>
-<span class="kw">pub struct </span>Splitted&lt;T, P&gt;
+<span class="attribute">#[derive(Debug, Copy, Clone)]
+</span><span class="kw">pub struct </span>Splitted&lt;T, P&gt;
 <span class="kw">where
     </span>T: IterScan,
 {
@@ -769,8 +769,8 @@
     }
 }
 
-<span class="attribute">#[test]</span>
-<span class="kw">fn </span>test_scan() {
+<span class="attribute">#[test]
+</span><span class="kw">fn </span>test_scan() {
     <span class="kw">use </span><span class="kw">crate</span>::scan;
     <span class="kw">let </span><span class="kw-2">mut </span>s = Scanner::new(<span class="string">&quot;1 2 3 a 1 2 1 1 1.1&quot;</span>);
     <span class="macro">scan!</span>(s, x, y: char, z: Usize1, a: @CharWithBase(<span class="string">&#39;a&#39;</span>), b: [usize; <span class="number">2</span>], c: (usize, @CharWithBase(<span class="string">&#39;0&#39;</span>)), d: @Splitted::&lt;usize, <span class="kw">_</span>&gt;::new(<span class="string">&#39;.&#39;</span>));
@@ -783,4 +783,4 @@
     <span class="macro">assert_eq!</span>(d, <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">1</span>]);
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

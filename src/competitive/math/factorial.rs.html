@@ -230,17 +230,17 @@
 <span id="214">214</span>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num::{MInt, MIntConvert, One, Zero};
 
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;factorial&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>))]</span>
-<span class="attribute">#[derive(Clone, Debug)]</span>
-<span class="kw">pub struct </span>MemorizedFactorial&lt;M&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;factorial&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>))]
+#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>MemorizedFactorial&lt;M&gt;
 <span class="kw">where
     </span>M: MIntConvert&lt;usize&gt;,
 {
     <span class="kw">pub </span>fact: Vec&lt;MInt&lt;M&gt;&gt;,
     <span class="kw">pub </span>inv_fact: Vec&lt;MInt&lt;M&gt;&gt;,
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;factorial&quot;</span>)]</span>
-<span class="kw">impl</span>&lt;M&gt; MemorizedFactorial&lt;M&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;factorial&quot;</span>)]
+</span><span class="kw">impl</span>&lt;M&gt; MemorizedFactorial&lt;M&gt;
 <span class="kw">where
     </span>M: MIntConvert&lt;usize&gt;,
 {
@@ -256,8 +256,8 @@
         }
         <span class="self">Self </span>{ fact, inv_fact }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
         <span class="macro">debug_assert!</span>(n &lt; <span class="self">self</span>.fact.len());
         <span class="kw">if </span>r &lt;= n {
             <span class="self">self</span>.fact[n] * <span class="self">self</span>.inv_fact[r] * <span class="self">self</span>.inv_fact[n - r]
@@ -265,8 +265,8 @@
             MInt::zero()
         }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>permutation(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>permutation(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
         <span class="macro">debug_assert!</span>(n &lt; <span class="self">self</span>.fact.len());
         <span class="kw">if </span>r &lt;= n {
             <span class="self">self</span>.fact[n] * <span class="self">self</span>.inv_fact[n - r]
@@ -274,8 +274,8 @@
             MInt::zero()
         }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
         <span class="macro">debug_assert!</span>(n + r &lt; <span class="self">self</span>.fact.len() + <span class="number">1</span>);
         <span class="kw">if </span>n == <span class="number">0 </span>&amp;&amp; r == <span class="number">0 </span>{
             MInt::one()
@@ -283,24 +283,24 @@
             <span class="self">self</span>.combination(n + r - <span class="number">1</span>, r)
         }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>inv(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize) -&gt; MInt&lt;M&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>inv(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize) -&gt; MInt&lt;M&gt; {
         <span class="macro">debug_assert!</span>(n &lt; <span class="self">self</span>.fact.len());
         <span class="macro">debug_assert!</span>(n &gt; <span class="number">0</span>);
         <span class="self">self</span>.inv_fact[n] * <span class="self">self</span>.fact[n - <span class="number">1</span>]
     }
 }
 
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>))]</span>
-<span class="attribute">#[derive(Clone, Debug)]</span>
-<span class="kw">pub struct </span>SmallModMemorizedFactorial&lt;M&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>))]
+#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>SmallModMemorizedFactorial&lt;M&gt;
 <span class="kw">where
     </span>M: MIntConvert&lt;usize&gt;,
 {
     fact: Vec&lt;MInt&lt;M&gt;&gt;,
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]</span>
-<span class="kw">impl</span>&lt;M&gt; Default <span class="kw">for </span>SmallModMemorizedFactorial&lt;M&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]
+</span><span class="kw">impl</span>&lt;M&gt; Default <span class="kw">for </span>SmallModMemorizedFactorial&lt;M&gt;
 <span class="kw">where
     </span>M: MIntConvert&lt;usize&gt;,
 {
@@ -313,8 +313,8 @@
         <span class="self">Self </span>{ fact }
     }
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]</span>
-<span class="kw">impl</span>&lt;M&gt; SmallModMemorizedFactorial&lt;M&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]
+</span><span class="kw">impl</span>&lt;M&gt; SmallModMemorizedFactorial&lt;M&gt;
 <span class="kw">where
     </span>M: MIntConvert&lt;usize&gt;,
 {
@@ -349,9 +349,9 @@
     }
 }
 
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;PowPrec&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>))]</span>
-<span class="attribute">#[derive(Debug, Clone)]</span>
-<span class="kw">pub struct </span>PowPrec&lt;M&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;PowPrec&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>))]
+#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>PowPrec&lt;M&gt;
 <span class="kw">where
     </span>M: MIntConvert&lt;usize&gt;,
 {
@@ -359,8 +359,8 @@
     p0: Vec&lt;MInt&lt;M&gt;&gt;,
     p1: Vec&lt;MInt&lt;M&gt;&gt;,
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;PowPrec&quot;</span>)]</span>
-<span class="kw">impl</span>&lt;M&gt; PowPrec&lt;M&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;PowPrec&quot;</span>)]
+</span><span class="kw">impl</span>&lt;M&gt; PowPrec&lt;M&gt;
 <span class="kw">where
     </span>M: MIntConvert&lt;usize&gt;,
 {
@@ -396,12 +396,12 @@
     }
 }
 
-<span class="attribute">#[cfg(test)]</span>
-<span class="kw">mod </span>tests {
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_factorials() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_factorials() {
         <span class="kw">use </span><span class="kw">crate</span>::num::mint_basic::MInt1000000007;
         <span class="kw">let </span>fact = MemorizedFactorial::new(<span class="number">100</span>);
         <span class="kw">type </span>M = MInt1000000007;
@@ -426,8 +426,8 @@
         <span class="macro">assert_eq!</span>(fact.permutation(<span class="number">10</span>, <span class="number">11</span>), M::new(<span class="number">0</span>));
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_small_factorials() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_small_factorials() {
         <span class="kw">use </span><span class="kw">crate</span>::num::mint_basic::DynModuloU32;
         <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
@@ -443,4 +443,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

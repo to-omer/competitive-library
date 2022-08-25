@@ -261,13 +261,13 @@
 <span class="kw">where
     </span>M: Monoid,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>bit = <span class="macro">vec!</span>[M::unit(); n + <span class="number">1</span>];
         <span class="self">Self </span>{ n, bit }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>from_slice(slice: <span class="kw-2">&amp;</span>[M::T]) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>from_slice(slice: <span class="kw-2">&amp;</span>[M::T]) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>n = slice.len();
         <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="macro">vec!</span>[M::unit(); n + <span class="number">1</span>];
         <span class="kw">for </span>(i, x) <span class="kw">in </span>slice.iter().enumerate() {
@@ -280,8 +280,8 @@
         }
         <span class="self">Self </span>{ n, bit }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="doccomment">/// fold [0, k)
+    <span class="attribute">#[inline]
+    </span><span class="doccomment">/// fold [0, k)
     </span><span class="kw">pub fn </span>accumulate0(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; M::T {
         <span class="macro">debug_assert!</span>(k &lt;= <span class="self">self</span>.n);
         <span class="kw">let </span><span class="kw-2">mut </span>res = M::unit();
@@ -291,13 +291,13 @@
         }
         res
     }
-    <span class="attribute">#[inline]</span>
-    <span class="doccomment">/// fold [0, k]
+    <span class="attribute">#[inline]
+    </span><span class="doccomment">/// fold [0, k]
     </span><span class="kw">pub fn </span>accumulate(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; M::T {
         <span class="self">self</span>.accumulate0(k + <span class="number">1</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: M::T) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: M::T) {
         <span class="macro">debug_assert!</span>(k &lt; <span class="self">self</span>.n);
         <span class="kw">let </span><span class="kw-2">mut </span>k = k + <span class="number">1</span>;
         <span class="kw">while </span>k &lt;= <span class="self">self</span>.n {
@@ -308,17 +308,17 @@
 }
 
 <span class="kw">impl</span>&lt;G: Group&gt; BinaryIndexedTree&lt;G&gt; {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, l: usize, r: usize) -&gt; G::T {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, l: usize, r: usize) -&gt; G::T {
         <span class="macro">debug_assert!</span>(l &lt;= <span class="self">self</span>.n &amp;&amp; r &lt;= <span class="self">self</span>.n);
         G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw-2">&amp;</span><span class="self">self</span>.accumulate0(l)), <span class="kw-2">&amp;</span><span class="self">self</span>.accumulate0(r))
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; G::T {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; G::T {
         <span class="self">self</span>.fold(k, k + <span class="number">1</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: G::T) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: G::T) {
         <span class="self">self</span>.update(k, G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw-2">&amp;</span><span class="self">self</span>.get(k)), <span class="kw-2">&amp;</span>x));
     }
 }
@@ -327,8 +327,8 @@
 <span class="kw">where
     </span>M::T: Ord,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>lower_bound(<span class="kw-2">&amp;</span><span class="self">self</span>, x: M::T) -&gt; usize {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>lower_bound(<span class="kw-2">&amp;</span><span class="self">self</span>, x: M::T) -&gt; usize {
         <span class="kw">let </span>n = <span class="self">self</span>.n;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
         <span class="kw">let </span><span class="kw-2">mut </span>pos = <span class="number">0</span>;
@@ -344,8 +344,8 @@
     }
 }
 
-<span class="attribute">#[cfg(test)]</span>
-<span class="kw">mod </span>tests {
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
         algebra::{AdditiveOperation, MaxOperation},
@@ -358,8 +358,8 @@
     <span class="kw">const </span>A: u64 = <span class="number">1_000_000_000</span>;
     <span class="kw">const </span>B: i64 = <span class="number">1_000_000_000</span>;
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_binary_indexed_tree() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_binary_indexed_tree() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.gen_iter(..A).take(N).collect();
         <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
@@ -388,8 +388,8 @@
         }
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_group_binary_indexed_tree() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_group_binary_indexed_tree() {
         <span class="kw">const </span>N: usize = <span class="number">2_000</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.gen_iter(-B..B).take(N).collect();
@@ -411,8 +411,8 @@
         }
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_binary_indexed_tree_lower_bound() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_binary_indexed_tree_lower_bound() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">let </span><span class="kw-2">mut </span>arr: Vec&lt;<span class="kw">_</span>&gt; = rng.gen_iter(<span class="number">1</span>..B).take(N).collect();
         <span class="kw">let </span><span class="kw-2">mut </span>bit = BinaryIndexedTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_slice(<span class="kw-2">&amp;</span>arr);
@@ -429,4 +429,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

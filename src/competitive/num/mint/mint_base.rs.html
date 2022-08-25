@@ -400,8 +400,8 @@
     str::FromStr,
 };
 
-<span class="attribute">#[repr(transparent)]</span>
-<span class="kw">pub struct </span>MInt&lt;M&gt;
+<span class="attribute">#[repr(transparent)]
+</span><span class="kw">pub struct </span>MInt&lt;M&gt;
 <span class="kw">where
     </span>M: MIntBase,
 {
@@ -443,12 +443,12 @@
 <span class="kw">where
     </span>M: MIntConvert,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>new(x: M::Inner) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>new(x: M::Inner) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new_unchecked(&lt;M <span class="kw">as </span>MIntConvert&lt;M::Inner&gt;&gt;::from(x))
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>inner(<span class="self">self</span>) -&gt; M::Inner {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>inner(<span class="self">self</span>) -&gt; M::Inner {
         &lt;M <span class="kw">as </span>MIntConvert&lt;M::Inner&gt;&gt;::into(<span class="self">self</span>.x)
     }
 }
@@ -456,23 +456,23 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>new_unchecked(x: M::Inner) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>new_unchecked(x: M::Inner) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             x,
             _marker: PhantomData,
         }
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>get_mod() -&gt; M::Inner {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>get_mod() -&gt; M::Inner {
         M::get_mod()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>pow(<span class="self">self</span>, y: usize) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>pow(<span class="self">self</span>, y: usize) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new_unchecked(M::mod_pow(<span class="self">self</span>.x, y))
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>inv(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>inv(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new_unchecked(M::mod_inv(<span class="self">self</span>.x))
     }
 }
@@ -481,8 +481,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             x: Clone::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.x),
             _marker: PhantomData,
@@ -502,8 +502,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         &lt;<span class="self">Self </span><span class="kw">as </span>Zero&gt;::zero()
     }
 }
@@ -511,8 +511,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
         PartialEq::eq(<span class="kw-2">&amp;</span><span class="self">self</span>.x, <span class="kw-2">&amp;</span>other.x)
     }
 }
@@ -521,19 +521,19 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
         Hash::hash(<span class="kw-2">&amp;</span><span class="self">self</span>.x, state)
     }
 }
-<span class="macro">macro_rules!</span> impl_mint_from {
+<span class="macro">macro_rules! </span>impl_mint_from {
     ($(<span class="macro-nonterminal">$t</span>:ty),<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl</span>&lt;M&gt; From&lt;<span class="macro-nonterminal">$t</span>&gt; <span class="kw">for </span>MInt&lt;M&gt;
         <span class="kw">where
             </span>M: MIntConvert&lt;<span class="macro-nonterminal">$t</span>&gt;,
         {
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span>from(x: <span class="macro-nonterminal">$t</span>) -&gt; <span class="self">Self </span>{
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span>from(x: <span class="macro-nonterminal">$t</span>) -&gt; <span class="self">Self </span>{
                 <span class="self">Self</span>::new_unchecked(&lt;M <span class="kw">as </span>MIntConvert&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::from(x))
             }
         }
@@ -541,8 +541,8 @@
         </span><span class="kw">where
             </span>M: MIntConvert&lt;<span class="macro-nonterminal">$t</span>&gt;,
         {
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span>from(x: MInt&lt;M&gt;) -&gt; <span class="macro-nonterminal">$t </span>{
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span>from(x: MInt&lt;M&gt;) -&gt; <span class="macro-nonterminal">$t </span>{
                 &lt;M <span class="kw">as </span>MIntConvert&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::into(x.x)
             }
         })*
@@ -553,8 +553,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>zero() -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>zero() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new_unchecked(M::mod_zero())
     }
 }
@@ -562,8 +562,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>one() -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>one() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new_unchecked(M::mod_one())
     }
 }
@@ -573,8 +573,8 @@
     </span>M: MIntBase,
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self</span>::new_unchecked(M::mod_add(<span class="self">self</span>.x, rhs.x))
     }
 }
@@ -583,8 +583,8 @@
     </span>M: MIntBase,
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self</span>::new_unchecked(M::mod_sub(<span class="self">self</span>.x, rhs.x))
     }
 }
@@ -593,8 +593,8 @@
     </span>M: MIntBase,
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self</span>::new_unchecked(M::mod_mul(<span class="self">self</span>.x, rhs.x))
     }
 }
@@ -603,8 +603,8 @@
     </span>M: MIntBase,
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>div(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>div(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self</span>::new_unchecked(M::mod_div(<span class="self">self</span>.x, rhs.x))
     }
 }
@@ -613,8 +613,8 @@
     </span>M: MIntBase,
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self</span>::new_unchecked(M::mod_neg(<span class="self">self</span>.x))
     }
 }
@@ -622,8 +622,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>sum&lt;I: Iterator&lt;Item = <span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>sum&lt;I: Iterator&lt;Item = <span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
         iter.fold(&lt;<span class="self">Self </span><span class="kw">as </span>Zero&gt;::zero(), Add::add)
     }
 }
@@ -631,8 +631,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>product&lt;I: Iterator&lt;Item = <span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>product&lt;I: Iterator&lt;Item = <span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
         iter.fold(&lt;<span class="self">Self </span><span class="kw">as </span>One&gt;::one(), Mul::mul)
     }
 }
@@ -640,8 +640,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>sum&lt;I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>sum&lt;I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
         iter.fold(&lt;<span class="self">Self </span><span class="kw">as </span>Zero&gt;::zero(), Add::add)
     }
 }
@@ -649,8 +649,8 @@
 <span class="kw">where
     </span>M: MIntBase,
 {
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>product&lt;I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>product&lt;I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>&gt;&gt;(iter: I) -&gt; <span class="self">Self </span>{
         iter.fold(&lt;<span class="self">Self </span><span class="kw">as </span>One&gt;::one(), Mul::mul)
     }
 }
@@ -669,8 +669,8 @@
     M::Inner: FromStr,
 {
     <span class="kw">type </span><span class="prelude-val">Err </span>= &lt;M::Inner <span class="kw">as </span>FromStr&gt;::Err;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
         s.parse::&lt;M::Inner&gt;().map(<span class="self">Self</span>::new)
     }
 }
@@ -680,20 +680,20 @@
     M::Inner: FromStr,
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>scan&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         iter.next()<span class="question-mark">?</span>.parse::&lt;MInt&lt;M&gt;&gt;().ok()
     }
 }
-<span class="macro">macro_rules!</span> impl_mint_ref_binop {
+<span class="macro">macro_rules! </span>impl_mint_ref_binop {
     (<span class="macro-nonterminal">$imp</span>:ident, <span class="macro-nonterminal">$method</span>:ident, <span class="macro-nonterminal">$t</span>:ty) =&gt; {
         <span class="kw">impl</span>&lt;M&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$t
         </span><span class="kw">where
             </span>M: MIntBase,
         {
             <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output;
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, other: <span class="macro-nonterminal">$t</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, other: <span class="macro-nonterminal">$t</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output {
                 <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="kw-2">*</span><span class="self">self</span>, other)
             }
         }
@@ -702,8 +702,8 @@
             </span>M: MIntBase,
         {
             <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output;
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output {
                 <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>, <span class="kw-2">*</span>other)
             }
         }
@@ -712,8 +712,8 @@
             </span>M: MIntBase,
         {
             <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output;
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt;&gt;::Output {
                 <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="kw-2">*</span><span class="self">self</span>, <span class="kw-2">*</span>other)
             }
         }
@@ -723,29 +723,29 @@
 <span class="macro">impl_mint_ref_binop!</span>(Sub, sub, MInt&lt;M&gt;);
 <span class="macro">impl_mint_ref_binop!</span>(Mul, mul, MInt&lt;M&gt;);
 <span class="macro">impl_mint_ref_binop!</span>(Div, div, MInt&lt;M&gt;);
-<span class="macro">macro_rules!</span> impl_mint_ref_unop {
+<span class="macro">macro_rules! </span>impl_mint_ref_unop {
     (<span class="macro-nonterminal">$imp</span>:ident, <span class="macro-nonterminal">$method</span>:ident, <span class="macro-nonterminal">$t</span>:ty) =&gt; {
         <span class="kw">impl</span>&lt;M&gt; <span class="macro-nonterminal">$imp </span><span class="kw">for </span><span class="kw-2">&amp;</span><span class="macro-nonterminal">$t
         </span><span class="kw">where
             </span>M: MIntBase,
         {
             <span class="kw">type </span>Output = &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&gt;::Output;
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&gt;::Output {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="self">self</span>) -&gt; &lt;<span class="macro-nonterminal">$t </span><span class="kw">as </span><span class="macro-nonterminal">$imp</span>&gt;::Output {
                 <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="kw-2">*</span><span class="self">self</span>)
             }
         }
     };
 }
 <span class="macro">impl_mint_ref_unop!</span>(Neg, neg, MInt&lt;M&gt;);
-<span class="macro">macro_rules!</span> impl_mint_ref_op_assign {
+<span class="macro">macro_rules! </span>impl_mint_ref_op_assign {
     (<span class="macro-nonterminal">$imp</span>:ident, <span class="macro-nonterminal">$method</span>:ident, <span class="macro-nonterminal">$t</span>:ty, <span class="macro-nonterminal">$fromimp</span>:ident, <span class="macro-nonterminal">$frommethod</span>:ident) =&gt; {
         <span class="kw">impl</span>&lt;M&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="macro-nonterminal">$t</span>&gt; <span class="kw">for </span><span class="macro-nonterminal">$t
         </span><span class="kw">where
             </span>M: MIntBase,
         {
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="macro-nonterminal">$t</span>) {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="macro-nonterminal">$t</span>) {
                 <span class="kw-2">*</span><span class="self">self </span>= <span class="macro-nonterminal">$fromimp</span>::<span class="macro-nonterminal">$frommethod</span>(<span class="kw-2">*</span><span class="self">self</span>, rhs);
             }
         }
@@ -753,8 +753,8 @@
         </span><span class="kw">where
             </span>M: MIntBase,
         {
-            <span class="attribute">#[inline]</span>
-            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) {
+            <span class="attribute">#[inline]
+            </span><span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="macro-nonterminal">$t</span>) {
                 <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>, <span class="kw-2">*</span>other);
             }
         }
@@ -765,4 +765,4 @@
 <span class="macro">impl_mint_ref_op_assign!</span>(MulAssign, mul_assign, MInt&lt;M&gt;, Mul, mul);
 <span class="macro">impl_mint_ref_op_assign!</span>(DivAssign, div_assign, MInt&lt;M&gt;, Div, div);
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

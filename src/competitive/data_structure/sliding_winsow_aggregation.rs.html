@@ -302,46 +302,46 @@
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::default()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="self">self</span>.front_stack.len() + <span class="self">self</span>.back_stack.len()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.front_stack.is_empty() &amp;&amp; <span class="self">self</span>.back_stack.is_empty()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
         M::operate(
             <span class="self">self</span>.front_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
             <span class="self">self</span>.back_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
         )
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>last(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>last(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
         <span class="self">self</span>.back_stack
             .last()
             .or_else(|| <span class="self">self</span>.front_stack.first())
             .map(|t| <span class="kw-2">&amp;</span>t.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
         <span class="kw">let </span>x = M::operate(
             <span class="self">self</span>.back_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
             <span class="kw-2">&amp;</span>value,
         );
         <span class="self">self</span>.back_stack.push((x, value));
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
         <span class="kw">let </span>x = M::operate(
             <span class="kw-2">&amp;</span>value,
             <span class="self">self</span>.front_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
         );
         <span class="self">self</span>.front_stack.push((x, value));
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
         <span class="kw">if </span><span class="self">self</span>.front_stack.is_empty() {
             <span class="kw">let </span><span class="kw-2">mut </span>back_stack = std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.back_stack);
             <span class="kw">for </span>x <span class="kw">in </span>back_stack.drain(..).map(|t| t.<span class="number">1</span>).rev() {
@@ -404,45 +404,45 @@
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::default()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="self">self</span>.front_stack.len() + <span class="self">self</span>.back_stack.len()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.front_stack.is_empty() &amp;&amp; <span class="self">self</span>.back_stack.is_empty()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
         M::operate(
             <span class="self">self</span>.front_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
             <span class="self">self</span>.back_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
         )
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>front(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>front(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
         <span class="self">self</span>.front_stack
             .last()
             .or_else(|| <span class="self">self</span>.back_stack.first())
             .map(|t| <span class="kw-2">&amp;</span>t.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>back(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>back(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
         <span class="self">self</span>.back_stack
             .last()
             .or_else(|| <span class="self">self</span>.front_stack.first())
             .map(|t| <span class="kw-2">&amp;</span>t.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
         <span class="kw">let </span>x = M::operate(
             <span class="kw-2">&amp;</span>value,
             <span class="self">self</span>.front_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
         );
         <span class="self">self</span>.front_stack.push((x, value));
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>push_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>push_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
         <span class="kw">let </span>x = M::operate(
             <span class="self">self</span>.back_stack.last().map(|t| <span class="kw-2">&amp;</span>t.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
             <span class="kw-2">&amp;</span>value,
@@ -475,10 +475,10 @@
         }
         <span class="self">self</span>.back_stack.pop().map(|t| t.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>reverse(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>reverse(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.back_stack, <span class="kw-2">&amp;mut </span><span class="self">self</span>.front_stack);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

@@ -82,13 +82,13 @@
 <span id="66">66</span>
 <span id="67">67</span>
 <span id="68">68</span>
-</pre><pre class="rust"><code><span class="attribute">#[codesnip::entry(<span class="string">&quot;Xorshift&quot;</span>)]</span>
-<span class="attribute">#[derive(Clone, Debug)]</span>
-<span class="kw">pub struct </span>Xorshift {
+</pre><pre class="rust"><code><span class="attribute">#[codesnip::entry(<span class="string">&quot;Xorshift&quot;</span>)]
+#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>Xorshift {
     y: u64,
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;Xorshift&quot;</span>)]</span>
-<span class="kw">impl </span>Xorshift {
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Xorshift&quot;</span>)]
+</span><span class="kw">impl </span>Xorshift {
     <span class="kw">pub fn </span>new(seed: u64) -&gt; <span class="self">Self </span>{
         Xorshift { y: seed }
     }
@@ -100,31 +100,31 @@
             .as_secs() <span class="kw">as </span>u64;
         Xorshift::new(seed)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>rand64(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; u64 {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>rand64(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; u64 {
         <span class="self">self</span>.y ^= <span class="self">self</span>.y &lt;&lt; <span class="number">5</span>;
         <span class="self">self</span>.y ^= <span class="self">self</span>.y &gt;&gt; <span class="number">17</span>;
         <span class="self">self</span>.y ^= <span class="self">self</span>.y &lt;&lt; <span class="number">11</span>;
         <span class="self">self</span>.y
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>rand(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64) -&gt; u64 {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>rand(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64) -&gt; u64 {
         <span class="self">self</span>.rand64() % k
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>rands(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64, n: usize) -&gt; Vec&lt;u64&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>rands(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: u64, n: usize) -&gt; Vec&lt;u64&gt; {
         (<span class="number">0</span>..n).map(|<span class="kw">_</span>| <span class="self">self</span>.rand(k)).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>randf(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; f64 {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>randf(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; f64 {
         <span class="kw">const </span>UPPER_MASK: u64 = <span class="number">0x3FF0_0000_0000_0000</span>;
         <span class="kw">const </span>LOWER_MASK: u64 = <span class="number">0x000F_FFFF_FFFF_FFFF</span>;
         <span class="kw">let </span>tmp = UPPER_MASK | (<span class="self">self</span>.rand64() &amp; LOWER_MASK);
         <span class="kw">let </span>result: f64 = f64::from_bits(tmp);
         result - <span class="number">1.0
     </span>}
-    <span class="attribute">#[inline]</span>
-    <span class="kw">pub fn </span>gen_bool(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p: f64) -&gt; bool {
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>gen_bool(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p: f64) -&gt; bool {
         <span class="self">self</span>.randf() &lt; p
     }
     <span class="kw">pub fn </span>shuffle&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, slice: <span class="kw-2">&amp;mut </span>[T]) {
@@ -136,8 +136,8 @@
         }
     }
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;Xorshift&quot;</span>)]</span>
-<span class="kw">impl </span>Default <span class="kw">for </span>Xorshift {
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;Xorshift&quot;</span>)]
+</span><span class="kw">impl </span>Default <span class="kw">for </span>Xorshift {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         Xorshift::new(<span class="number">0x2b99_2ddf_a232_49d6</span>)
     }
@@ -146,9 +146,9 @@
 <span class="attribute">#[cfg_attr(
     nightly,
     codesnip::entry(<span class="string">&quot;random_generator&quot;</span>, include(<span class="string">&quot;Xorshift&quot;</span>, <span class="string">&quot;bounded&quot;</span>))
-)]</span>
-<span class="kw">mod </span>random_generator;
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;random_generator&quot;</span>)]</span>
-<span class="kw">pub use </span>random_generator::{NotEmptySegment, RandIter, RandomSpec};
+)]
+</span><span class="kw">mod </span>random_generator;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;random_generator&quot;</span>)]
+</span><span class="kw">pub use </span>random_generator::{NotEmptySegment, RandIter, RandomSpec};
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

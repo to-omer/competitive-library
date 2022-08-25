@@ -244,8 +244,8 @@
     a
 }
 
-<span class="attribute">#[codesnip::entry]</span>
-<span class="doccomment">/// binary gcd
+<span class="attribute">#[codesnip::entry]
+</span><span class="doccomment">/// binary gcd
 </span><span class="kw">pub fn </span>gcd(<span class="kw-2">mut </span>a: u64, <span class="kw-2">mut </span>b: u64) -&gt; u64 {
     <span class="kw">if </span>a == <span class="number">0 </span>{
         <span class="kw">return </span>b;
@@ -268,8 +268,8 @@
     a &lt;&lt; k
 }
 
-<span class="attribute">#[codesnip::entry(include(<span class="string">&quot;gcd&quot;</span>))]</span>
-<span class="kw">pub fn </span>lcm(a: u64, b: u64) -&gt; u64 {
+<span class="attribute">#[codesnip::entry(include(<span class="string">&quot;gcd&quot;</span>))]
+</span><span class="kw">pub fn </span>lcm(a: u64, b: u64) -&gt; u64 {
     a / gcd(a, b) * b
 }
 
@@ -284,8 +284,8 @@
     }
 }
 
-<span class="attribute">#[codesnip::entry]</span>
-<span class="kw">pub fn </span>extgcd(<span class="kw-2">mut </span>a: i64, <span class="kw-2">mut </span>b: i64) -&gt; (i64, i64, i64) {
+<span class="attribute">#[codesnip::entry]
+</span><span class="kw">pub fn </span>extgcd(<span class="kw-2">mut </span>a: i64, <span class="kw-2">mut </span>b: i64) -&gt; (i64, i64, i64) {
     <span class="kw">let </span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>v, <span class="kw-2">mut </span>x, <span class="kw-2">mut </span>y) = (<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);
     <span class="kw">while </span>a != <span class="number">0 </span>{
         <span class="kw">let </span>k = b / a;
@@ -345,8 +345,8 @@
     (extgcd_recurse(a <span class="kw">as </span>i64, m <span class="kw">as </span>i64).<span class="number">1 </span>% m <span class="kw">as </span>i64 + m <span class="kw">as </span>i64) <span class="kw">as </span>u64 % m
 }
 
-<span class="attribute">#[codesnip::entry(include(<span class="string">&quot;extgcd&quot;</span>))]</span>
-<span class="kw">pub fn </span>modinv(a: u64, m: u64) -&gt; u64 {
+<span class="attribute">#[codesnip::entry(include(<span class="string">&quot;extgcd&quot;</span>))]
+</span><span class="kw">pub fn </span>modinv(a: u64, m: u64) -&gt; u64 {
     <span class="kw">let </span>(<span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (a <span class="kw">as </span>i64, m <span class="kw">as </span>i64);
     <span class="kw">let </span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>x) = (<span class="number">1</span>, <span class="number">0</span>);
     <span class="kw">while </span>a != <span class="number">0 </span>{
@@ -392,15 +392,15 @@
     s
 }
 
-<span class="attribute">#[cfg(test)]</span>
-<span class="kw">mod </span>tests {
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
     <span class="kw">const </span>Q: usize = <span class="number">100_000</span>;
     <span class="kw">const </span>A: i64 = <span class="number">1_000_000_007_000_000_007</span>;
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_gcd() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_gcd() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">for </span>(a, b) <span class="kw">in </span>rng.gen_iter((<span class="number">0</span>.., <span class="number">0</span>..)).take(Q) {
             <span class="macro">assert_eq!</span>(gcd_loop(a, b), gcd(a, b));
@@ -409,8 +409,8 @@
         <span class="macro">assert_eq!</span>(gcd_loop(<span class="number">0</span>, <span class="number">100</span>), gcd(<span class="number">0</span>, <span class="number">100</span>));
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_extgcd() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_extgcd() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">for </span>(a, b) <span class="kw">in </span>rng.gen_iter((-A..=A, -A..=A)).take(Q) {
             <span class="kw">let </span>(g, x, y) = extgcd(a, b);
@@ -418,8 +418,8 @@
         }
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_extgcd_binary() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_extgcd_binary() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">for </span>(a, b) <span class="kw">in </span>rng.gen_iter((<span class="number">0</span>..=A, <span class="number">0</span>..=A)).take(Q) {
             <span class="kw">let </span>(g, x, y) = extgcd_binary(a, b);
@@ -427,8 +427,8 @@
         }
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_modinv() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_modinv() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">for _ in </span><span class="number">0</span>..Q {
             <span class="kw">let </span>m = rng.gen(<span class="number">1</span>..=A <span class="kw">as </span>u64);
@@ -442,8 +442,8 @@
         }
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_modinv_extgcd_binary() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_modinv_extgcd_binary() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">for _ in </span><span class="number">0</span>..Q {
             <span class="kw">let </span>m = rng.gen(<span class="number">1</span>..=A <span class="kw">as </span>u64);
@@ -459,4 +459,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

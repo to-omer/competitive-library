@@ -223,7 +223,7 @@
     </span><span class="kw">fn </span>section_end(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool;
 }
 
-<span class="macro">macro_rules!</span> impl_bisect_unsigned {
+<span class="macro">macro_rules! </span>impl_bisect_unsigned {
     ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl </span>Bisect <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
             <span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
@@ -243,7 +243,7 @@
         })*
     };
 }
-<span class="macro">macro_rules!</span> impl_bisect_signed {
+<span class="macro">macro_rules! </span>impl_bisect_signed {
     ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl </span>Bisect <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
             <span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
@@ -255,7 +255,7 @@
         })*
     };
 }
-<span class="macro">macro_rules!</span> impl_bisect_float {
+<span class="macro">macro_rules! </span>impl_bisect_float {
     ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl </span>Bisect <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
             <span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
@@ -326,13 +326,13 @@
     }
 }
 
-<span class="attribute">#[cfg(test)]</span>
-<span class="kw">mod </span>tests {
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">const </span>V: [i64; <span class="number">10</span>] = [<span class="number">0i64</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">8</span>];
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_binary_search() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_binary_search() {
         <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &gt;= <span class="number">1</span>, V.len(), <span class="number">0</span>), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &gt;= <span class="number">2</span>, V.len(), <span class="number">0</span>), <span class="number">4</span>);
         <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| V[x] &gt;= <span class="number">3</span>, V.len(), <span class="number">0</span>), <span class="number">6</span>);
@@ -350,8 +350,8 @@
         <span class="macro">assert!</span>(expect - <span class="number">1e-8 </span>&lt;= sq2 &amp;&amp; sq2 &lt;= expect + <span class="number">1e-8</span>);
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_position() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_position() {
         <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= -<span class="number">1</span>), <span class="number">0</span>);
         <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">0</span>), <span class="number">0</span>);
         <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">1</span>), <span class="number">1</span>);
@@ -361,8 +361,8 @@
         <span class="macro">assert_eq!</span>(V.position_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">10</span>), <span class="number">10</span>);
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_find() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_find() {
         <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= -<span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
         <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">0</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
         <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
@@ -372,8 +372,8 @@
         <span class="macro">assert_eq!</span>(V.find_bisect(|<span class="kw-2">&amp;</span>x| x &gt;= <span class="number">10</span>), <span class="prelude-val">None</span>);
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_rposition() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_rposition() {
         <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= -<span class="number">1</span>), <span class="number">0</span>);
         <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">0</span>), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">1</span>), <span class="number">4</span>);
@@ -383,8 +383,8 @@
         <span class="macro">assert_eq!</span>(V.rposition_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">10</span>), <span class="number">10</span>);
     }
 
-    <span class="attribute">#[test]</span>
-    <span class="kw">fn </span>test_rfind() {
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_rfind() {
         <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= -<span class="number">1</span>), <span class="prelude-val">None</span>);
         <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">0</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">0</span>));
         <span class="macro">assert_eq!</span>(V.rfind_bisect(|<span class="kw-2">&amp;</span>x| x &lt;= <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
@@ -417,4 +417,4 @@
     ok
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

@@ -91,20 +91,20 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
-</pre><pre class="rust"><code><span class="attribute">#![allow(dead_code)]</span>
-<span class="attribute">#![allow(clippy::crate_in_macro_def)]</span>
+</pre><pre class="rust"><code><span class="attribute">#![allow(dead_code)]
+#![allow(clippy::crate_in_macro_def)]
 
-<span class="attribute">#[codesnip::skip]</span>
-<span class="kw">use </span><span class="kw">crate</span>::tools::{read_stdin_all_unchecked, Scanner};
+#[codesnip::skip]
+</span><span class="kw">use </span><span class="kw">crate</span>::tools::{read_stdin_all_unchecked, Scanner};
 
-<span class="attribute">#[cfg_attr(any(), rust_minify::skip)]</span>
-<span class="kw">pub fn </span>main() {
+<span class="attribute">#[cfg_attr(any(), rust_minify::skip)]
+</span><span class="kw">pub fn </span>main() {
     <span class="macro">crate::prepare!</span>();
     <span class="macro">sc!</span>(_n);
 }
 
-<span class="attribute">#[allow(unused_imports)]</span>
-<span class="kw">use </span>std::{
+<span class="attribute">#[allow(unused_imports)]
+</span><span class="kw">use </span>std::{
     cmp::{Ordering, Reverse},
     collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, VecDeque},
 };
@@ -113,53 +113,53 @@
     <span class="doccomment">/// Prepare useful macros.
     /// - `prepare!();`: default (all input scanner (`sc!`, `sv!`) + buf print (`pp!`, `dg!`))
     /// - `prepare!(?);`: interactive (line scanner (`scln!`) + buf print (`pp!`, `dg!`))
-    </span><span class="attribute">#[macro_export]</span>
-    <span class="macro">macro_rules!</span> prepare {
+    </span><span class="attribute">#[macro_export]
+    </span><span class="macro">macro_rules! </span>prepare {
         (@output (<span class="macro-nonterminal">$dol</span>:tt)) =&gt; {
-            <span class="attribute">#[allow(unused_imports)]</span>
-            <span class="kw">use </span>std::io::Write <span class="kw">as _</span>;
+            <span class="attribute">#[allow(unused_imports)]
+            </span><span class="kw">use </span>std::io::Write <span class="kw">as _</span>;
             <span class="kw">let </span>__out = std::io::stdout();
-            <span class="attribute">#[allow(unused_mut,unused_variables)]</span>
-            <span class="kw">let </span><span class="kw-2">mut </span>__out = std::io::BufWriter::new(__out.lock());
-            <span class="attribute">#[allow(unused_macros)]</span>
-            <span class="doccomment">/// [`iter_print!`] for buffered stdout.
-            </span><span class="macro">macro_rules!</span> pp { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$dol </span><span class="macro">crate::iter_print!</span>(__out, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>) } }
-            <span class="attribute">#[cfg(debug_assertions)]</span>
-            <span class="attribute">#[allow(unused_macros)]</span>
-            <span class="doccomment">/// [`iter_print!`] for buffered stderr. Do nothing in release mode.
-            </span><span class="macro">macro_rules!</span> dg {
+            <span class="attribute">#[allow(unused_mut,unused_variables)]
+            </span><span class="kw">let </span><span class="kw-2">mut </span>__out = std::io::BufWriter::new(__out.lock());
+            <span class="attribute">#[allow(unused_macros)]
+            </span><span class="doccomment">/// [`iter_print!`] for buffered stdout.
+            </span><span class="macro">macro_rules! </span>pp { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$dol </span><span class="macro">crate::iter_print!</span>(__out, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>) } }
+            <span class="attribute">#[cfg(debug_assertions)]
+            #[allow(unused_macros)]
+            </span><span class="doccomment">/// [`iter_print!`] for buffered stderr. Do nothing in release mode.
+            </span><span class="macro">macro_rules! </span>dg {
                 (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; {{
-                    <span class="attribute">#[allow(unused_imports)]</span>
-                    <span class="kw">use </span>std::io::Write <span class="kw">as _</span>;
+                    <span class="attribute">#[allow(unused_imports)]
+                    </span><span class="kw">use </span>std::io::Write <span class="kw">as _</span>;
                     <span class="kw">let </span>__err = std::io::stderr();
-                    <span class="attribute">#[allow(unused_mut,unused_variables)]</span>
-                    <span class="kw">let </span><span class="kw-2">mut </span>__err = std::io::BufWriter::new(__err.lock());
+                    <span class="attribute">#[allow(unused_mut,unused_variables)]
+                    </span><span class="kw">let </span><span class="kw-2">mut </span>__err = std::io::BufWriter::new(__err.lock());
                     <span class="macro-nonterminal">$dol </span><span class="macro">crate::iter_print!</span>(__err, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>);
                     <span class="kw">let _ </span>= __err.flush();
                 }}
             }
-            <span class="attribute">#[cfg(not(debug_assertions))]</span>
-            <span class="attribute">#[allow(unused_macros)]</span>
-            <span class="doccomment">/// [`iter_print!`] for buffered stderr. Do nothing in release mode.
-            </span><span class="macro">macro_rules!</span> dg { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; {} }
+            <span class="attribute">#[cfg(not(debug_assertions))]
+            #[allow(unused_macros)]
+            </span><span class="doccomment">/// [`iter_print!`] for buffered stderr. Do nothing in release mode.
+            </span><span class="macro">macro_rules! </span>dg { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; {} }
         };
         (@normal (<span class="macro-nonterminal">$dol</span>:tt)) =&gt; {
             <span class="kw">let </span>__in_buf = read_stdin_all_unchecked();
-            <span class="attribute">#[allow(unused_mut,unused_variables)]</span>
-            <span class="kw">let </span><span class="kw-2">mut </span>__scanner = Scanner::new(<span class="kw-2">&amp;</span>__in_buf);
-            <span class="attribute">#[allow(unused_macros)]</span>
-            <span class="macro">macro_rules!</span> sc { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$dol </span><span class="macro">crate::scan!</span>(__scanner, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>) } }
-            <span class="attribute">#[allow(unused_macros)]</span>
-            <span class="macro">macro_rules!</span> sv { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$dol </span><span class="macro">crate::scan_value!</span>(__scanner, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>) } }
+            <span class="attribute">#[allow(unused_mut,unused_variables)]
+            </span><span class="kw">let </span><span class="kw-2">mut </span>__scanner = Scanner::new(<span class="kw-2">&amp;</span>__in_buf);
+            <span class="attribute">#[allow(unused_macros)]
+            </span><span class="macro">macro_rules! </span>sc { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$dol </span><span class="macro">crate::scan!</span>(__scanner, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>) } }
+            <span class="attribute">#[allow(unused_macros)]
+            </span><span class="macro">macro_rules! </span>sv { (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; { <span class="macro-nonterminal">$dol </span><span class="macro">crate::scan_value!</span>(__scanner, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>) } }
         };
         (@interactive (<span class="macro-nonterminal">$dol</span>:tt)) =&gt; {
-            <span class="attribute">#[allow(unused_macros)]</span>
-            <span class="doccomment">/// Scan a line, and previous line will be truncated in the next call.
-            </span><span class="macro">macro_rules!</span> scln {
+            <span class="attribute">#[allow(unused_macros)]
+            </span><span class="doccomment">/// Scan a line, and previous line will be truncated in the next call.
+            </span><span class="macro">macro_rules! </span>scln {
                 (<span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t:tt)<span class="kw-2">*</span>) =&gt; {
                     <span class="kw">let </span>__in_buf = read_stdin_line();
-                    <span class="attribute">#[allow(unused_mut,unused_variables)]</span>
-                    <span class="kw">let </span><span class="kw-2">mut </span>__scanner = Scanner::new(<span class="kw-2">&amp;</span>__in_buf);
+                    <span class="attribute">#[allow(unused_mut,unused_variables)]
+                    </span><span class="kw">let </span><span class="kw-2">mut </span>__scanner = Scanner::new(<span class="kw-2">&amp;</span>__in_buf);
                     <span class="macro-nonterminal">$dol </span><span class="macro">crate::scan!</span>(__scanner, <span class="macro-nonterminal">$dol</span>(<span class="macro-nonterminal">$dol </span>t)<span class="kw-2">*</span>)
                 }
             }
@@ -169,4 +169,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>

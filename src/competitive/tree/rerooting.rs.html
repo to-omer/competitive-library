@@ -116,13 +116,13 @@
 </span><span class="kw">use </span><span class="kw">crate</span>::algebra::Monoid;
 <span class="kw">use </span><span class="kw">crate</span>::graph::{Adjacency, UndirectedSparseGraph};
 
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;SparseGraph&quot;</span>))]</span>
-<span class="doccomment">/// dynamic programming on all-rooted trees
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;SparseGraph&quot;</span>))]
+</span><span class="doccomment">/// dynamic programming on all-rooted trees
 ///
 /// caluculate all subtrees (hanging on the edge) in specific ordering,
 /// each subtree calculated in the order of merge and rooting
-</span><span class="attribute">#[derive(Clone, Debug)]</span>
-<span class="kw">pub struct </span>ReRooting&lt;<span class="lifetime">&#39;a</span>, M: Monoid, F: Fn(<span class="kw-2">&amp;</span>M::T, usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; M::T&gt; {
+</span><span class="attribute">#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>ReRooting&lt;<span class="lifetime">&#39;a</span>, M: Monoid, F: Fn(<span class="kw-2">&amp;</span>M::T, usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; M::T&gt; {
     graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>UndirectedSparseGraph,
     <span class="doccomment">/// dp\[v\]: result of v-rooted tree
     </span><span class="kw">pub </span>dp: Vec&lt;M::T&gt;,
@@ -131,8 +131,8 @@
     <span class="doccomment">/// rooting(data, vid, (Optional)eid): add root node(vid), result subtree is edge(eid)
     </span>rooting: F,
 }
-<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>)]</span>
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, M, F&gt; ReRooting&lt;<span class="lifetime">&#39;a</span>, M, F&gt;
+<span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, M, F&gt; ReRooting&lt;<span class="lifetime">&#39;a</span>, M, F&gt;
 <span class="kw">where
     </span>M: Monoid,
     F: Fn(<span class="kw-2">&amp;</span>M::T, usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; M::T,
@@ -149,24 +149,24 @@
         self_.rerooting();
         self_
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>eidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>eidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
         a.id + <span class="self">self</span>.graph.edges_size() * (u &gt; a.to) <span class="kw">as </span>usize
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>reidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>reidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
         a.id + <span class="self">self</span>.graph.edges_size() * (u &lt; a.to) <span class="kw">as </span>usize
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>merge(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, y: <span class="kw-2">&amp;</span>M::T) -&gt; M::T {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>merge(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, y: <span class="kw-2">&amp;</span>M::T) -&gt; M::T {
         M::operate(x, y)
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize, eid: usize) -&gt; M::T {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize, eid: usize) -&gt; M::T {
         (<span class="self">self</span>.rooting)(x, vid, <span class="prelude-val">Some</span>(eid))
     }
-    <span class="attribute">#[inline]</span>
-    <span class="kw">fn </span>add_root(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize) -&gt; M::T {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>add_root(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize) -&gt; M::T {
         (<span class="self">self</span>.rooting)(x, vid, <span class="prelude-val">None</span>)
     }
     <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pa: <span class="kw-2">&amp;</span>Adjacency, p: usize) {
@@ -209,4 +209,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (0b79f758c 2022-08-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (addacb587 2022-08-24)" ></div></body></html>
