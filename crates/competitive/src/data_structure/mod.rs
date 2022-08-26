@@ -116,7 +116,10 @@ mod segment_tree_map;
 mod sliding_winsow_aggregation;
 #[cfg_attr(nightly, codesnip::entry("slope_trick"))]
 mod slope_trick;
-#[cfg_attr(nightly, codesnip::entry("SplayTree", include("Allocator", "algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SplayTree", include("Allocator", "MonoidAction"))
+)]
 mod splay_tree;
 #[cfg_attr(nightly, codesnip::entry("Trie"))]
 mod trie;
