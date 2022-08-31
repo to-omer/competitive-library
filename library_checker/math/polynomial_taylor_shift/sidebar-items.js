@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["polynomial_taylor_shift","✅  AC  103ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["polynomial_taylor_shift","✅  AC  118ms"]]};
