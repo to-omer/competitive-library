@@ -145,85 +145,85 @@
 <span id="129">129</span>
 <span id="130">130</span>
 <span id="131">131</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{Group, Monoid};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/algebra/magma.rs.html#73">Group</a>, <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>};
 <span class="kw">use </span>std::{
-    fmt::{<span class="self">self</span>, Debug, Formatter},
-    iter::FromIterator,
+    fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>},
+    <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html">iter::FromIterator</a>,
 };
 
 <span class="doccomment">/// Accumlated data
 </span><span class="kw">pub struct </span>Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
 {
     data: Vec&lt;M::T&gt;,
 }
 
-<span class="kw">impl</span>&lt;M&gt; Debug <span class="kw">for </span>Accumulate&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    M::T: Debug,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        f.debug_struct(<span class="string">&quot;Accumulate&quot;</span>)
-            .field(<span class="string">&quot;data&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.data)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+        <a href="../../../src/competitive/data_structure/accumulate.rs.html#20">f</a>.debug_struct(<span class="string">&quot;Accumulate&quot;</span>)
+            .field(<span class="string">&quot;data&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/accumulate.rs.html#20">self</a>.data)
             .finish()
     }
 }
 
 <span class="kw">impl</span>&lt;M&gt; FromIterator&lt;M::T&gt; <span class="kw">for </span>Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
 {
     <span class="kw">fn </span>from_iter&lt;T&gt;(iter: T) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>T: IntoIterator&lt;Item = M::T&gt;,
     {
-        <span class="kw">let </span>iter = iter.into_iter();
-        <span class="kw">let </span>(lower, <span class="kw">_</span>) = iter.size_hint();
-        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity(lower.saturating_add(<span class="number">1</span>));
+        <span class="kw">let </span>iter = <a href="../../../src/competitive/data_structure/accumulate.rs.html#31">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>();
+        <span class="kw">let </span>(lower, <span class="kw">_</span>) = <a href="../../../src/competitive/data_structure/accumulate.rs.html#35">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">size_hint</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity(<a href="../../../src/competitive/data_structure/accumulate.rs.html#36">lower</a>.saturating_add(<span class="number">1</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
         <span class="kw">for </span>x <span class="kw">in </span>iter {
             <span class="kw">let </span>y = M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span>x);
             data.push(acc);
             acc = y;
         }
-        data.push(acc);
-        <span class="self">Self </span>{ data }
+        <a href="../../../src/competitive/data_structure/accumulate.rs.html#37">data</a>.push(<a href="../../../src/competitive/data_structure/accumulate.rs.html#38">acc</a>);
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/accumulate.rs.html#37">data</a> }
     }
 }
 
 <span class="kw">impl</span>&lt;M&gt; Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
 {
     <span class="doccomment">/// Return accumlate of \[0, k\)
-    </span><span class="kw">pub fn </span>accumulate(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; M::T {
-        <span class="macro">assert!</span>(
+    </span><span class="kw">pub fn </span>accumulate(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
             k &lt; <span class="self">self</span>.data.len(),
             <span class="string">&quot;index out of range: the len is {} but the index is {}&quot;</span>,
             <span class="self">self</span>.data.len(),
             k
         );
-        <span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(k) }.clone()
+        <span class="kw">unsafe </span>{ <a class="self" href="../../../src/competitive/data_structure/accumulate.rs.html#54">self</a>.data.get_unchecked(<a href="../../../src/competitive/data_structure/accumulate.rs.html#54">k</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
     }
 }
 
 <span class="kw">impl</span>&lt;G&gt; Accumulate&lt;G&gt;
 <span class="kw">where
-    </span>G: Group,
+    </span>G: <a href="../../../src/competitive/algebra/magma.rs.html#73">Group</a>,
 {
     <span class="doccomment">/// Return fold of \[l, r\)
-    </span><span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, l: usize, r: usize) -&gt; G::T {
-        <span class="macro">assert!</span>(l &lt;= r, <span class="string">&quot;bad range [{}, {})&quot;</span>, l, r);
-        <span class="macro">assert!</span>(
+    </span><span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::T {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(l &lt;= r, <span class="string">&quot;bad range [{}, {})&quot;</span>, l, r);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
             r &lt; <span class="self">self</span>.data.len(),
             <span class="string">&quot;index out of range: the len is {} but the index is {}&quot;</span>,
             <span class="self">self</span>.data.len(),
             r
         );
-        G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw">unsafe </span>{ <span class="self">self</span>.data.get_unchecked(l) }), <span class="kw">unsafe </span>{
-            <span class="self">self</span>.data.get_unchecked(r)
+        G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw">unsafe </span>{ <a class="self" href="../../../src/competitive/data_structure/accumulate.rs.html#70">self</a>.data.get_unchecked(<a href="../../../src/competitive/data_structure/accumulate.rs.html#70">l</a>) }), <span class="kw">unsafe </span>{
+            <a class="self" href="../../../src/competitive/data_structure/accumulate.rs.html#70">self</a>.data.get_unchecked(<a href="../../../src/competitive/data_structure/accumulate.rs.html#70">r</a>)
         })
     }
 }

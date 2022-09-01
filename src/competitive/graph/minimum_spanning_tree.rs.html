@@ -138,25 +138,25 @@
 <span id="122">122</span>
 <span id="123">123</span>
 <span id="124">124</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::EdgeListGraph;
-<span class="kw">use </span><span class="kw">crate</span>::algebra::Group;
-<span class="kw">use </span><span class="kw">crate</span>::data_structure::{MergingUnionFind, UnionFind};
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/graph/edge_list.rs.html#6"><span class="kw">super</span>::EdgeListGraph</a>;
+<span class="kw">use </span><a href="../../../src/competitive/algebra/magma.rs.html#73"><span class="kw">crate</span>::algebra::Group</a>;
+<span class="kw">use </span><span class="kw">crate</span>::data_structure::{<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#6">MergingUnionFind</a>, <a href="../../../src/competitive/data_structure/union_find.rs.html#4">UnionFind</a>};
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;minimum_spanning_tree&quot;</span>, include(<span class="string">&quot;EdgeListGraph&quot;</span>, <span class="string">&quot;UnionFind&quot;</span>))]
-</span><span class="kw">impl </span>EdgeListGraph {
-    <span class="kw">pub fn </span>minimum_spanning_tree&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, weight: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>usize) -&gt; T) -&gt; Vec&lt;bool&gt;
+</span><span class="kw">impl </span><a href="../../../src/competitive/graph/edge_list.rs.html#6">EdgeListGraph</a> {
+    <span class="kw">pub fn </span>minimum_spanning_tree&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, weight: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;
     <span class="kw">where
-        </span>T: Ord,
+        </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>idx: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<span class="self">self</span>.edges_size()).collect();
-        idx.sort_by_key(weight);
-        <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(<span class="self">self</span>.vertices_size());
-        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.edges_size()];
+        <span class="kw">let </span><span class="kw-2">mut </span>idx: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<a class="self" href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#7">self</a>.<a href="../../../src/competitive/graph/edge_list.rs.html#23">edges_size</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#11">idx</a>.sort_by_key(<a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#7">weight</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFind::new(<a class="self" href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#7">self</a>.<a href="../../../src/competitive/graph/edge_list.rs.html#19">vertices_size</a>());
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <span class="self">self</span>.edges_size()];
         <span class="kw">for </span>eid <span class="kw">in </span>idx.into_iter() {
             <span class="kw">let </span>(u, v) = <span class="self">self</span>[eid];
             res[eid] = uf.unite(u, v);
         }
-        res
+        <a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#14">res</a>
     }
 }
 
@@ -164,39 +164,39 @@
     <span class="string">&quot;minimum_spanning_arborescence&quot;</span>,
     include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;EdgeListGraph&quot;</span>, <span class="string">&quot;MergingUnionFind&quot;</span>)
 )]
-</span><span class="kw">impl </span>EdgeListGraph {
+</span><span class="kw">impl </span><a href="../../../src/competitive/graph/edge_list.rs.html#6">EdgeListGraph</a> {
     <span class="doccomment">/// tarjan
     </span><span class="kw">pub fn </span>minimum_spanning_arborescence&lt;G, F&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        root: usize,
+        root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
         weight: F,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;(G::T, Vec&lt;usize&gt;)&gt;
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;(G::T, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;)&gt;
     <span class="kw">where
-        </span>G: Group,
-        G::T: Ord,
-        F: Fn(usize) -&gt; G::T,
+        </span>G: <a href="../../../src/competitive/algebra/magma.rs.html#73">Group</a>,
+        G::T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
+        F: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::T,
     {
-        <span class="kw">use </span>std::{cmp::Reverse, collections::BinaryHeap};
+        <span class="kw">use </span>std::{cmp::Reverse, <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">collections::BinaryHeap</a>};
         <span class="kw">let </span><span class="kw-2">mut </span>uf = MergingUnionFind::new(
-            <span class="self">self</span>.vertices_size(),
+            <a class="self" href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#30">self</a>.<a href="../../../src/competitive/graph/edge_list.rs.html#19">vertices_size</a>(),
             |<span class="kw">_</span>| (BinaryHeap::new(), G::unit()),
             |x, y| {
-                <span class="kw">let </span>ny = G::rinv_operate(<span class="kw-2">&amp;</span>y.<span class="number">1</span>, <span class="kw-2">&amp;</span>x.<span class="number">1</span>);
-                x.<span class="number">0</span>.extend(
-                    (y.<span class="number">0</span>)
+                <span class="kw">let </span>ny = G::rinv_operate(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#43">y</a>.<span class="number">1</span>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#43">x</a>.<span class="number">1</span>);
+                <a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#43">x</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">extend</a>(
+                    (<a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#43">y</a>.<span class="number">0</span>)
                         .drain()
-                        .map(|(Reverse(<span class="kw-2">ref </span>w), i)| (Reverse(G::operate(w, <span class="kw-2">&amp;</span>ny)), i)),
+                        .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|(Reverse(<span class="kw-2">ref </span>w), i)| (Reverse(G::operate(<a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#48">w</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#44">ny</a>)), <a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#48">i</a>)),
                 )
             },
         );
-        <span class="kw">let </span><span class="kw-2">mut </span>state = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()]; <span class="comment">// 0: unprocessed, 1: in process, 2: completed
-        </span>state[root] = <span class="number">2</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>state = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()]; <span class="comment">// 0: unprocessed, 1: in process, 2: completed
+        </span><a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#52">state</a>[<a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#31">root</a>] = <span class="number">2</span>;
         <span class="kw">for </span>(id, <span class="kw-2">&amp;</span>(<span class="kw">_</span>, to)) <span class="kw">in </span><span class="self">self</span>.edges().enumerate() {
             uf.find_root_mut(to).data.<span class="number">0</span>.push((Reverse(weight(id)), id));
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>paredge = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.edges_size()];
-        <span class="kw">let </span><span class="kw-2">mut </span>ord = <span class="macro">vec!</span>[];
-        <span class="kw">let </span><span class="kw-2">mut </span>leaf = <span class="macro">vec!</span>[<span class="self">self</span>.edges_size(); <span class="self">self</span>.vertices_size()];
+        <span class="kw">let </span><span class="kw-2">mut </span>paredge = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <span class="self">self</span>.edges_size()];
+        <span class="kw">let </span><span class="kw-2">mut </span>ord = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
+        <span class="kw">let </span><span class="kw-2">mut </span>leaf = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="self">self</span>.edges_size(); <span class="self">self</span>.vertices_size()];
         <span class="kw">let </span><span class="kw-2">mut </span>cycle = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = G::unit();
         <span class="kw">for </span><span class="kw-2">mut </span>cur <span class="kw">in </span><span class="self">self</span>.vertices() {
@@ -246,8 +246,8 @@
                 state[u] = <span class="number">2</span>;
             }
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>tree = <span class="macro">vec!</span>[root; <span class="self">self</span>.vertices_size()];
-        <span class="kw">let </span><span class="kw-2">mut </span>used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.edges_size()];
+        <span class="kw">let </span><span class="kw-2">mut </span>tree = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[root; <span class="self">self</span>.vertices_size()];
+        <span class="kw">let </span><span class="kw-2">mut </span>used = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <span class="self">self</span>.edges_size()];
         <span class="kw">for </span>eid <span class="kw">in </span>ord.into_iter().rev() {
             <span class="kw">if </span>!used[eid] {
                 <span class="kw">let </span>(u, v) = <span class="self">self</span>[eid];
@@ -259,7 +259,7 @@
                 }
             }
         }
-        <span class="prelude-val">Some</span>((acc, tree))
+        <span class="prelude-val">Some</span>((<a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#61">acc</a>, <a href="../../../src/competitive/graph/minimum_spanning_tree.rs.html#109">tree</a>))
     }
 }
 </code></pre></div>

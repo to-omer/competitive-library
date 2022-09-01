@@ -211,18 +211,18 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{BitVector, RankSelectDictionaries};
-<span class="kw">use </span>std::ops::Range;
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/data_structure/bit_vector.rs.html#81">BitVector</a>, <a href="../../../src/competitive/data_structure/bit_vector.rs.html#5">RankSelectDictionaries</a>};
+<span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">std::ops::Range</a>;
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>WaveletMatrix {
-    len: usize,
-    table: Vec&lt;(usize, BitVector)&gt;,
+    len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    table: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="../../../src/competitive/data_structure/bit_vector.rs.html#81">BitVector</a>)&gt;,
 }
 
-<span class="kw">impl </span>WaveletMatrix {
-    <span class="kw">pub fn </span>new&lt;T: Clone + RankSelectDictionaries&gt;(<span class="kw-2">mut </span>v: Vec&lt;T&gt;, bit_length: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>len = v.len();
+<span class="kw">impl </span><a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#5">WaveletMatrix</a> {
+    <span class="kw">pub fn </span>new&lt;T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="../../../src/competitive/data_structure/bit_vector.rs.html#5">RankSelectDictionaries</a>&gt;(<span class="kw-2">mut </span>v: Vec&lt;T&gt;, bit_length: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>len = <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#11">v</a>.len();
         <span class="kw">let </span><span class="kw-2">mut </span>table = Vec::new();
         <span class="kw">for </span>d <span class="kw">in </span>(<span class="number">0</span>..bit_length).rev() {
             <span class="kw">let </span>b: BitVector = v.iter().map(|x| x.access(d)).collect();
@@ -234,10 +234,10 @@
                 .cloned()
                 .collect();
         }
-        <span class="self">Self </span>{ len, table }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#12">len</a>, <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#13">table</a> }
     }
     <span class="doccomment">/// get k-th value
-    </span><span class="kw">pub fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: usize) -&gt; usize {
+    </span><span class="kw">pub fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>val = <span class="number">0</span>;
         <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
             <span class="kw">if </span>b.access(k) {
@@ -247,10 +247,10 @@
                 k = b.rank0(k);
             }
         }
-        val
+        <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#28">val</a>
     }
     <span class="doccomment">/// the number of val in range
-    </span><span class="kw">pub fn </span>rank(<span class="kw-2">&amp;</span><span class="self">self</span>, val: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;) -&gt; usize {
+    </span><span class="kw">pub fn </span>rank(<span class="kw-2">&amp;</span><span class="self">self</span>, val: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>range: Range&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
             <span class="kw">if </span>val.access(d) {
                 range.start = c + b.rank1(range.start);
@@ -260,10 +260,10 @@
                 range.end = b.rank0(range.end);
             }
         }
-        range.end - range.start
+        <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#40">range</a>.end - <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#40">range</a>.start
     }
     <span class="doccomment">/// index of k-th val
-    </span><span class="kw">pub fn </span>select(<span class="kw-2">&amp;</span><span class="self">self</span>, val: usize, k: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+    </span><span class="kw">pub fn </span>select(<span class="kw-2">&amp;</span><span class="self">self</span>, val: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
         <span class="kw">if </span><span class="self">self</span>.rank(val, <span class="number">0</span>..<span class="self">self</span>.len) &lt;= k {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
@@ -275,7 +275,7 @@
                 i = b.rank0(i);
             }
         }
-        i += k;
+        <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#57">i</a> += <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#53">k</a>;
         <span class="kw">for </span><span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b) <span class="kw">in </span><span class="self">self</span>.table.iter().rev() {
             <span class="kw">if </span>i &gt;= c {
                 i = b.select1(i - c).unwrap();
@@ -283,10 +283,10 @@
                 i = b.select0(i).unwrap();
             }
         }
-        <span class="prelude-val">Some</span>(i)
+        <span class="prelude-val">Some</span>(<a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#57">i</a>)
     }
     <span class="doccomment">/// get k-th smallest value in range
-    </span><span class="kw">pub fn </span>quantile(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, <span class="kw-2">mut </span>k: usize) -&gt; usize {
+    </span><span class="kw">pub fn </span>quantile(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, <span class="kw-2">mut </span>k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>val = <span class="number">0</span>;
         <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
             <span class="kw">let </span>z = b.rank0(range.end) - b.rank0(range.start);
@@ -300,12 +300,12 @@
                 range.end = b.rank0(range.end);
             }
         }
-        val
+        <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#77">val</a>
     }
     <span class="doccomment">/// get k-th smallest value out of range
-    </span><span class="kw">pub fn </span>quantile_outer(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;usize&gt;, <span class="kw-2">mut </span>k: usize) -&gt; usize {
+    </span><span class="kw">pub fn </span>quantile_outer(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>range: Range&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, <span class="kw-2">mut </span>k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>val = <span class="number">0</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>orange = <span class="number">0</span>..<span class="self">self</span>.len;
+        <span class="kw">let </span><span class="kw-2">mut </span>orange = <span class="number">0</span>..<a class="self" href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#93">self</a>.len;
         <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
             <span class="kw">let </span>z = b.rank0(orange.end) - b.rank0(orange.start) + b.rank0(range.start)
                 - b.rank0(range.end);
@@ -323,10 +323,10 @@
                 orange.end = b.rank0(orange.end);
             }
         }
-        val
+        <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#94">val</a>
     }
     <span class="doccomment">/// the number of value less than val in range
-    </span><span class="kw">pub fn </span>rank_lessthan(<span class="kw-2">&amp;</span><span class="self">self</span>, val: usize, <span class="kw-2">mut </span>range: Range&lt;usize&gt;) -&gt; usize {
+    </span><span class="kw">pub fn </span>rank_lessthan(<span class="kw-2">&amp;</span><span class="self">self</span>, val: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>range: Range&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="number">0</span>;
         <span class="kw">for </span>(d, <span class="kw-2">&amp;</span>(c, <span class="kw-2">ref </span>b)) <span class="kw">in </span><span class="self">self</span>.table.iter().rev().enumerate().rev() {
             <span class="kw">if </span>val.access(d) {
@@ -338,11 +338,11 @@
                 range.end = b.rank0(range.end);
             }
         }
-        res
+        <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#117">res</a>
     }
     <span class="doccomment">/// the number of valrange in range
-    </span><span class="kw">pub fn </span>rank_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;usize&gt;, range: Range&lt;usize&gt;) -&gt; usize {
-        <span class="self">self</span>.rank_lessthan(valrange.end, range.clone()) - <span class="self">self</span>.rank_lessthan(valrange.start, range)
+    </span><span class="kw">pub fn </span>rank_range(<span class="kw-2">&amp;</span><span class="self">self</span>, valrange: Range&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, range: Range&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a class="self" href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#131">self</a>.<a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#116">rank_lessthan</a>(<a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#131">valrange</a>.end, <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#131">range</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()) - <a class="self" href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#131">self</a>.<a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#116">rank_lessthan</a>(<a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#131">valrange</a>.start, <a href="../../../src/competitive/data_structure/wavelet_matrix.rs.html#131">range</a>)
     }
 }
 

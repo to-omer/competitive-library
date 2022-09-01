@@ -59,49 +59,49 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{DirectedSparseGraph, StronglyConnectedComponent};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/graph/sparse_graph.rs.html#160">DirectedSparseGraph</a>, <a href="../../../src/competitive/graph/strongly_connected_component.rs.html#4">StronglyConnectedComponent</a>};
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>TwoSatisfiability {
-    vsize: usize,
-    edges: Vec&lt;(usize, usize)&gt;,
+    vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    edges: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
 }
 
-<span class="kw">impl </span>TwoSatisfiability {
-    <span class="kw">pub fn </span>new(vsize: usize) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span><a href="../../../src/competitive/graph/two_satisfiability.rs.html#4">TwoSatisfiability</a> {
+    <span class="kw">pub fn </span>new(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            vsize,
+            <a href="../../../src/competitive/graph/two_satisfiability.rs.html#10">vsize</a>,
             edges: Vec::new(),
         }
     }
     <span class="doccomment">/// (p_x = f) | (p_y = g)
-    </span><span class="kw">pub fn </span>add_clause(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, f: bool, y: usize, g: bool) {
-        <span class="self">self</span>.edges.push((<span class="number">2 </span>* x + f <span class="kw">as </span>usize, <span class="number">2 </span>* y + !g <span class="kw">as </span>usize));
-        <span class="self">self</span>.edges.push((<span class="number">2 </span>* y + g <span class="kw">as </span>usize, <span class="number">2 </span>* x + !f <span class="kw">as </span>usize));
+    </span><span class="kw">pub fn </span>add_clause(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, f: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, g: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
+        <a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#17">self</a>.edges.push((<span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">x</a> + <a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">f</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">y</a> + !<a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">g</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>));
+        <a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#17">self</a>.edges.push((<span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">y</a> + <a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">g</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">x</a> + !<a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">f</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>));
     }
-    <span class="kw">pub fn </span>add_or(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) {
-        <span class="self">self</span>.add_clause(x, <span class="bool-val">true</span>, y, <span class="bool-val">true</span>);
+    <span class="kw">pub fn </span>add_or(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#21">self</a>.<a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">add_clause</a>(<a href="../../../src/competitive/graph/two_satisfiability.rs.html#21">x</a>, <span class="bool-val">true</span>, <a href="../../../src/competitive/graph/two_satisfiability.rs.html#21">y</a>, <span class="bool-val">true</span>);
     }
-    <span class="kw">pub fn </span>add_nand(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) {
-        <span class="self">self</span>.add_clause(x, <span class="bool-val">false</span>, y, <span class="bool-val">false</span>);
+    <span class="kw">pub fn </span>add_nand(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#24">self</a>.<a href="../../../src/competitive/graph/two_satisfiability.rs.html#17">add_clause</a>(<a href="../../../src/competitive/graph/two_satisfiability.rs.html#24">x</a>, <span class="bool-val">false</span>, <a href="../../../src/competitive/graph/two_satisfiability.rs.html#24">y</a>, <span class="bool-val">false</span>);
     }
-    <span class="kw">pub fn </span>set_true(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) {
-        <span class="self">self</span>.edges.push((<span class="number">2 </span>* x + <span class="number">1</span>, <span class="number">2 </span>* x));
+    <span class="kw">pub fn </span>set_true(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#27">self</a>.edges.push((<span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#27">x</a> + <span class="number">1</span>, <span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#27">x</a>));
     }
-    <span class="kw">pub fn </span>set_false(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) {
-        <span class="self">self</span>.edges.push((<span class="number">2 </span>* x, <span class="number">2 </span>* x + <span class="number">1</span>));
+    <span class="kw">pub fn </span>set_false(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#30">self</a>.edges.push((<span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#30">x</a>, <span class="number">2 </span>* <a href="../../../src/competitive/graph/two_satisfiability.rs.html#30">x</a> + <span class="number">1</span>));
     }
-    <span class="kw">pub fn </span>two_satisfiability(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;bool&gt;&gt; {
-        <span class="kw">let </span>graph = DirectedSparseGraph::from_edges(<span class="self">self</span>.vsize * <span class="number">2</span>, <span class="self">self</span>.edges);
-        <span class="kw">let </span>scc = StronglyConnectedComponent::new(<span class="kw-2">&amp;</span>graph);
-        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.vsize];
+    <span class="kw">pub fn </span>two_satisfiability(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;&gt; {
+        <span class="kw">let </span>graph = DirectedSparseGraph::from_edges(<a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#33">self</a>.vsize * <span class="number">2</span>, <a class="self" href="../../../src/competitive/graph/two_satisfiability.rs.html#33">self</a>.edges);
+        <span class="kw">let </span>scc = StronglyConnectedComponent::new(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/two_satisfiability.rs.html#34">graph</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <span class="self">self</span>.vsize];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.vsize {
             <span class="kw">if </span>scc[i * <span class="number">2</span>] == scc[i * <span class="number">2 </span>+ <span class="number">1</span>] {
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
             res[i] = scc[i * <span class="number">2</span>] &gt; scc[i * <span class="number">2 </span>+ <span class="number">1</span>];
         }
-        <span class="prelude-val">Some</span>(res)
+        <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/two_satisfiability.rs.html#36">res</a>)
     }
 }
 </code></pre></div>

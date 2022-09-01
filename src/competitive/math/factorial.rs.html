@@ -228,13 +228,13 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num::{MInt, MIntConvert, One, Zero};
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::num::{<a href="../../../src/competitive/num/mint/mint_base.rs.html#13">MInt</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#21">MIntConvert</a>, <a href="../../../src/competitive/num/zero_one.rs.html#15">One</a>, <a href="../../../src/competitive/num/zero_one.rs.html#1">Zero</a>};
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;factorial&quot;</span>, include(<span class="string">&quot;MIntBase&quot;</span>))]
 #[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>MemorizedFactorial&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
     <span class="kw">pub </span>fact: Vec&lt;MInt&lt;M&gt;&gt;,
     <span class="kw">pub </span>inv_fact: Vec&lt;MInt&lt;M&gt;&gt;,
@@ -242,52 +242,52 @@
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;factorial&quot;</span>)]
 </span><span class="kw">impl</span>&lt;M&gt; MemorizedFactorial&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
-    <span class="kw">pub fn </span>new(max_n: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>fact = <span class="macro">vec!</span>[MInt::one(); max_n + <span class="number">1</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>inv_fact = <span class="macro">vec!</span>[MInt::one(); max_n + <span class="number">1</span>];
+    <span class="kw">pub fn </span>new(max_n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>fact = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::one(); max_n + <span class="number">1</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>inv_fact = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::one(); max_n + <span class="number">1</span>];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..=max_n {
             fact[i] = fact[i - <span class="number">1</span>] * MInt::from(i);
         }
-        inv_fact[max_n] = fact[max_n].inv();
+        <a href="../../../src/competitive/math/factorial.rs.html#19">inv_fact</a>[<a href="../../../src/competitive/math/factorial.rs.html#17">max_n</a>] = <a href="../../../src/competitive/math/factorial.rs.html#18">fact</a>[<a href="../../../src/competitive/math/factorial.rs.html#17">max_n</a>].<a href="../../../src/competitive/num/mint/mint_base.rs.html#84">inv</a>();
         <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">3</span>..=max_n).rev() {
             inv_fact[i - <span class="number">1</span>] = inv_fact[i] * MInt::from(i);
         }
-        <span class="self">Self </span>{ fact, inv_fact }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/math/factorial.rs.html#18">fact</a>, <a href="../../../src/competitive/math/factorial.rs.html#19">inv_fact</a> }
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
-        <span class="macro">debug_assert!</span>(n &lt; <span class="self">self</span>.fact.len());
+    </span><span class="kw">pub fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; MInt&lt;M&gt; {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(n &lt; <span class="self">self</span>.fact.len());
         <span class="kw">if </span>r &lt;= n {
-            <span class="self">self</span>.fact[n] * <span class="self">self</span>.inv_fact[r] * <span class="self">self</span>.inv_fact[n - r]
+            <a class="self" href="../../../src/competitive/math/factorial.rs.html#30">self</a>.fact[<a href="../../../src/competitive/math/factorial.rs.html#30">n</a>] * <a class="self" href="../../../src/competitive/math/factorial.rs.html#30">self</a>.inv_fact[<a href="../../../src/competitive/math/factorial.rs.html#30">r</a>] * <a class="self" href="../../../src/competitive/math/factorial.rs.html#30">self</a>.inv_fact[<a href="../../../src/competitive/math/factorial.rs.html#30">n</a> - <a href="../../../src/competitive/math/factorial.rs.html#30">r</a>]
         } <span class="kw">else </span>{
             MInt::zero()
         }
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>permutation(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
-        <span class="macro">debug_assert!</span>(n &lt; <span class="self">self</span>.fact.len());
+    </span><span class="kw">pub fn </span>permutation(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; MInt&lt;M&gt; {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(n &lt; <span class="self">self</span>.fact.len());
         <span class="kw">if </span>r &lt;= n {
-            <span class="self">self</span>.fact[n] * <span class="self">self</span>.inv_fact[n - r]
+            <a class="self" href="../../../src/competitive/math/factorial.rs.html#39">self</a>.fact[<a href="../../../src/competitive/math/factorial.rs.html#39">n</a>] * <a class="self" href="../../../src/competitive/math/factorial.rs.html#39">self</a>.inv_fact[<a href="../../../src/competitive/math/factorial.rs.html#39">n</a> - <a href="../../../src/competitive/math/factorial.rs.html#39">r</a>]
         } <span class="kw">else </span>{
             MInt::zero()
         }
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
-        <span class="macro">debug_assert!</span>(n + r &lt; <span class="self">self</span>.fact.len() + <span class="number">1</span>);
+    </span><span class="kw">pub fn </span>homogeneous_product(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; MInt&lt;M&gt; {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(n + r &lt; <span class="self">self</span>.fact.len() + <span class="number">1</span>);
         <span class="kw">if </span>n == <span class="number">0 </span>&amp;&amp; r == <span class="number">0 </span>{
             MInt::one()
         } <span class="kw">else </span>{
-            <span class="self">self</span>.combination(n + r - <span class="number">1</span>, r)
+            <a class="self" href="../../../src/competitive/math/factorial.rs.html#48">self</a>.<a href="../../../src/competitive/math/factorial.rs.html#30">combination</a>(<a href="../../../src/competitive/math/factorial.rs.html#48">n</a> + <a href="../../../src/competitive/math/factorial.rs.html#48">r</a> - <span class="number">1</span>, <a href="../../../src/competitive/math/factorial.rs.html#48">r</a>)
         }
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>inv(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize) -&gt; MInt&lt;M&gt; {
-        <span class="macro">debug_assert!</span>(n &lt; <span class="self">self</span>.fact.len());
-        <span class="macro">debug_assert!</span>(n &gt; <span class="number">0</span>);
-        <span class="self">self</span>.inv_fact[n] * <span class="self">self</span>.fact[n - <span class="number">1</span>]
+    </span><span class="kw">pub fn </span>inv(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; MInt&lt;M&gt; {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(n &lt; <span class="self">self</span>.fact.len());
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(n &gt; <span class="number">0</span>);
+        <a class="self" href="../../../src/competitive/math/factorial.rs.html#57">self</a>.inv_fact[<a href="../../../src/competitive/math/factorial.rs.html#57">n</a>] * <a class="self" href="../../../src/competitive/math/factorial.rs.html#57">self</a>.fact[<a href="../../../src/competitive/math/factorial.rs.html#57">n</a> - <span class="number">1</span>]
     }
 }
 
@@ -295,54 +295,54 @@
 #[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>SmallModMemorizedFactorial&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
     fact: Vec&lt;MInt&lt;M&gt;&gt;,
 }
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]
-</span><span class="kw">impl</span>&lt;M&gt; Default <span class="kw">for </span>SmallModMemorizedFactorial&lt;M&gt;
+</span><span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>SmallModMemorizedFactorial&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>p = M::mod_into();
-        <span class="kw">let </span><span class="kw-2">mut </span>fact = <span class="macro">vec!</span>[MInt::&lt;M&gt;::one(); p];
+        <span class="kw">let </span><span class="kw-2">mut </span>fact = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::one(); p];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..p {
             fact[i] = fact[i - <span class="number">1</span>] * MInt::&lt;M&gt;::from(i);
         }
-        <span class="self">Self </span>{ fact }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/math/factorial.rs.html#79">fact</a> }
     }
 }
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;SmallModMemorizedFactorial&quot;</span>)]
 </span><span class="kw">impl</span>&lt;M&gt; SmallModMemorizedFactorial&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        Default::default()
+        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
     }
     <span class="doccomment">/// n! = a * p^e
-    </span><span class="kw">pub fn </span>factorial(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize) -&gt; (MInt&lt;M&gt;, usize) {
+    </span><span class="kw">pub fn </span>factorial(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (MInt&lt;M&gt;, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>p = M::mod_into();
         <span class="kw">if </span>n == <span class="number">0 </span>{
             (MInt::&lt;M&gt;::one(), <span class="number">0</span>)
         } <span class="kw">else </span>{
-            <span class="kw">let </span>e = n / p;
-            <span class="kw">let </span>res = <span class="self">self</span>.factorial(e);
+            <span class="kw">let </span>e = <a href="../../../src/competitive/math/factorial.rs.html#95">n</a> / <a href="../../../src/competitive/math/factorial.rs.html#96">p</a>;
+            <span class="kw">let </span>res = <a class="self" href="../../../src/competitive/math/factorial.rs.html#95">self</a>.<a href="../../../src/competitive/math/factorial.rs.html#95">factorial</a>(<a href="../../../src/competitive/math/factorial.rs.html#100">e</a>);
             <span class="kw">if </span>e % <span class="number">2 </span>== <span class="number">0 </span>{
-                (res.<span class="number">0 </span>* <span class="self">self</span>.fact[n % p], res.<span class="number">1 </span>+ e)
+                (<a href="../../../src/competitive/math/factorial.rs.html#101">res</a>.<span class="number">0 </span>* <a class="self" href="../../../src/competitive/math/factorial.rs.html#95">self</a>.fact[<a href="../../../src/competitive/math/factorial.rs.html#95">n</a> % <a href="../../../src/competitive/math/factorial.rs.html#96">p</a>], <a href="../../../src/competitive/math/factorial.rs.html#101">res</a>.<span class="number">1 </span>+ <a href="../../../src/competitive/math/factorial.rs.html#100">e</a>)
             } <span class="kw">else </span>{
-                (res.<span class="number">0 </span>* -<span class="self">self</span>.fact[n % p], res.<span class="number">1 </span>+ e)
+                (<a href="../../../src/competitive/math/factorial.rs.html#101">res</a>.<span class="number">0 </span>* -<a class="self" href="../../../src/competitive/math/factorial.rs.html#95">self</a>.fact[<a href="../../../src/competitive/math/factorial.rs.html#95">n</a> % <a href="../../../src/competitive/math/factorial.rs.html#96">p</a>], <a href="../../../src/competitive/math/factorial.rs.html#101">res</a>.<span class="number">1 </span>+ <a href="../../../src/competitive/math/factorial.rs.html#100">e</a>)
             }
         }
     }
-    <span class="kw">pub fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, r: usize) -&gt; MInt&lt;M&gt; {
+    <span class="kw">pub fn </span>combination(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; MInt&lt;M&gt; {
         <span class="kw">if </span>r &lt;= n {
-            <span class="kw">let </span>(a1, e1) = <span class="self">self</span>.factorial(n);
-            <span class="kw">let </span>(a2, e2) = <span class="self">self</span>.factorial(r);
-            <span class="kw">let </span>(a3, e3) = <span class="self">self</span>.factorial(n - r);
+            <span class="kw">let </span>(a1, e1) = <a class="self" href="../../../src/competitive/math/factorial.rs.html#109">self</a>.<a href="../../../src/competitive/math/factorial.rs.html#95">factorial</a>(<a href="../../../src/competitive/math/factorial.rs.html#109">n</a>);
+            <span class="kw">let </span>(a2, e2) = <a class="self" href="../../../src/competitive/math/factorial.rs.html#109">self</a>.<a href="../../../src/competitive/math/factorial.rs.html#95">factorial</a>(<a href="../../../src/competitive/math/factorial.rs.html#109">r</a>);
+            <span class="kw">let </span>(a3, e3) = <a class="self" href="../../../src/competitive/math/factorial.rs.html#109">self</a>.<a href="../../../src/competitive/math/factorial.rs.html#95">factorial</a>(<a href="../../../src/competitive/math/factorial.rs.html#109">n</a> - <a href="../../../src/competitive/math/factorial.rs.html#109">r</a>);
             <span class="kw">if </span>e1 &lt;= e2 + e3 {
-                <span class="kw">return </span>a1 * (a2 * a3).inv();
+                <span class="kw">return </span><a href="../../../src/competitive/math/factorial.rs.html#111">a1</a> * (<a href="../../../src/competitive/math/factorial.rs.html#112">a2</a> * <a href="../../../src/competitive/math/factorial.rs.html#113">a3</a>).<a href="../../../src/competitive/num/mint/mint_base.rs.html#84">inv</a>();
             }
         }
         MInt::&lt;M&gt;::zero()
@@ -353,46 +353,46 @@
 #[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>PowPrec&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
-    sqn: usize,
+    sqn: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     p0: Vec&lt;MInt&lt;M&gt;&gt;,
     p1: Vec&lt;MInt&lt;M&gt;&gt;,
 }
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;PowPrec&quot;</span>)]
 </span><span class="kw">impl</span>&lt;M&gt; PowPrec&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
     <span class="kw">pub fn </span>new(a: MInt&lt;M&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>sqn = (M::mod_into() <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>usize + <span class="number">1</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(sqn);
-        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(sqn);
+        <span class="kw">let </span>sqn = (M::mod_into() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(<a href="../../../src/competitive/math/factorial.rs.html#138">sqn</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(<a href="../../../src/competitive/math/factorial.rs.html#138">sqn</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>acc = MInt::&lt;M&gt;::one();
         <span class="kw">for _ in </span><span class="number">0</span>..sqn {
             p0.push(acc);
             acc <span class="kw-2">*</span>= a;
         }
-        <span class="kw">let </span>b = acc;
-        acc = MInt::&lt;M&gt;::one();
+        <span class="kw">let </span>b = <a href="../../../src/competitive/math/factorial.rs.html#141">acc</a>;
+        <a href="../../../src/competitive/math/factorial.rs.html#141">acc</a> = MInt::&lt;M&gt;::one();
         <span class="kw">for _ in </span><span class="number">0</span>..sqn {
             p1.push(acc);
             acc <span class="kw-2">*</span>= b;
         }
-        <span class="self">Self </span>{ sqn, p0, p1 }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/math/factorial.rs.html#138">sqn</a>, <a href="../../../src/competitive/math/factorial.rs.html#139">p0</a>, <a href="../../../src/competitive/math/factorial.rs.html#140">p1</a> }
     }
-    <span class="kw">pub fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize) -&gt; MInt&lt;M&gt; {
-        <span class="kw">let </span>n = n % (M::mod_into() - <span class="number">1</span>);
-        <span class="kw">let </span>(p, q) = (n / <span class="self">self</span>.sqn, n % <span class="self">self</span>.sqn);
-        <span class="self">self</span>.p1[p] * <span class="self">self</span>.p0[q]
+    <span class="kw">pub fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; MInt&lt;M&gt; {
+        <span class="kw">let </span>n = <a href="../../../src/competitive/math/factorial.rs.html#154">n</a> % (M::mod_into() - <span class="number">1</span>);
+        <span class="kw">let </span>(p, q) = (<a href="../../../src/competitive/math/factorial.rs.html#155">n</a> / <a class="self" href="../../../src/competitive/math/factorial.rs.html#154">self</a>.sqn, <a href="../../../src/competitive/math/factorial.rs.html#155">n</a> % <a class="self" href="../../../src/competitive/math/factorial.rs.html#154">self</a>.sqn);
+        <a class="self" href="../../../src/competitive/math/factorial.rs.html#154">self</a>.p1[<a href="../../../src/competitive/math/factorial.rs.html#156">p</a>] * <a class="self" href="../../../src/competitive/math/factorial.rs.html#154">self</a>.p0[<a href="../../../src/competitive/math/factorial.rs.html#156">q</a>]
     }
-    <span class="kw">pub fn </span>powi(<span class="kw-2">&amp;</span><span class="self">self</span>, n: isize) -&gt; MInt&lt;M&gt; {
-        <span class="kw">let </span>n = n.rem_euclid(M::mod_into() <span class="kw">as </span>isize - <span class="number">1</span>) <span class="kw">as </span>usize;
-        <span class="kw">let </span>(p, q) = (n / <span class="self">self</span>.sqn, n % <span class="self">self</span>.sqn);
-        <span class="self">self</span>.p1[p] * <span class="self">self</span>.p0[q]
+    <span class="kw">pub fn </span>powi(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>) -&gt; MInt&lt;M&gt; {
+        <span class="kw">let </span>n = <a href="../../../src/competitive/math/factorial.rs.html#159">n</a>.rem_euclid(M::mod_into() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> - <span class="number">1</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+        <span class="kw">let </span>(p, q) = (<a href="../../../src/competitive/math/factorial.rs.html#160">n</a> / <a class="self" href="../../../src/competitive/math/factorial.rs.html#159">self</a>.sqn, <a href="../../../src/competitive/math/factorial.rs.html#160">n</a> % <a class="self" href="../../../src/competitive/math/factorial.rs.html#159">self</a>.sqn);
+        <a class="self" href="../../../src/competitive/math/factorial.rs.html#159">self</a>.p1[<a href="../../../src/competitive/math/factorial.rs.html#161">p</a>] * <a class="self" href="../../../src/competitive/math/factorial.rs.html#159">self</a>.p0[<a href="../../../src/competitive/math/factorial.rs.html#161">q</a>]
     }
     <span class="kw">pub fn </span>inv(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MInt&lt;M&gt; {
-        <span class="self">self</span>.powi(-<span class="number">1</span>)
+        <a class="self" href="../../../src/competitive/math/factorial.rs.html#164">self</a>.<a href="../../../src/competitive/math/factorial.rs.html#159">powi</a>(-<span class="number">1</span>)
     }
 }
 

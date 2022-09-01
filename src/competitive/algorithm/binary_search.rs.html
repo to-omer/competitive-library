@@ -216,11 +216,11 @@
 <span id="200">200</span>
 <span id="201">201</span>
 </pre><pre class="rust"><code><span class="doccomment">/// binary search helper
-</span><span class="kw">pub trait </span>Bisect: Clone {
+</span><span class="kw">pub trait </span>Bisect: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> {
     <span class="doccomment">/// return between two elements
     </span><span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span>;
     <span class="doccomment">/// the end condition of binary search
-    </span><span class="kw">fn </span>section_end(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool;
+    </span><span class="kw">fn </span>section_end(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
 }
 
 <span class="macro">macro_rules! </span>impl_bisect_unsigned {
@@ -268,9 +268,9 @@
         })*
     };
 }
-<span class="macro">impl_bisect_unsigned!</span>(u8 u16 u32 u64 u128 usize);
-<span class="macro">impl_bisect_signed!</span>(i8 i16 i32 i64 i128 isize);
-<span class="macro">impl_bisect_float!</span>(f32 f64);
+<a class="macro" href="../../../src/competitive/algorithm/binary_search.rs.html#9-28">impl_bisect_unsigned!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+<a class="macro" href="../../../src/competitive/algorithm/binary_search.rs.html#29-40">impl_bisect_signed!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>);
+<a class="macro" href="../../../src/competitive/algorithm/binary_search.rs.html#41-53">impl_bisect_float!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>);
 
 <span class="doccomment">/// binary search for monotone segment
 ///
@@ -279,8 +279,8 @@
 /// if `err &lt; ok` then search (err, ok] where `err`, f, f, f, ... f, t(`ret`), ... t, t, t(`ok`)
 </span><span class="kw">pub fn </span>binary_search&lt;T, F&gt;(<span class="kw-2">mut </span>f: F, <span class="kw-2">mut </span>ok: T, <span class="kw-2">mut </span>err: T) -&gt; T
 <span class="kw">where
-    </span>T: Bisect,
-    F: FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool,
+    </span>T: <a href="../../../src/competitive/algorithm/binary_search.rs.html#2">Bisect</a>,
+    F: FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">while </span>!ok.section_end(<span class="kw-2">&amp;</span>err) {
         <span class="kw">let </span>m = ok.halve(<span class="kw-2">&amp;</span>err);
@@ -290,39 +290,39 @@
             err = m;
         }
     }
-    ok
+    <a href="../../../src/competitive/algorithm/binary_search.rs.html#63">ok</a>
 }
 
 <span class="doccomment">/// binary search for slice
 </span><span class="kw">pub trait </span>SliceBisectExt&lt;T&gt; {
     <span class="doccomment">/// Returns the first element that satisfies a predicate.
-    </span><span class="kw">fn </span>find_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt;;
+    </span><span class="kw">fn </span>find_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt;;
     <span class="doccomment">/// Returns the last element that satisfies a predicate.
-    </span><span class="kw">fn </span>rfind_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt;;
+    </span><span class="kw">fn </span>rfind_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt;;
     <span class="doccomment">/// Returns the first index that satisfies a predicate.
     /// if not found, returns `len()`.
-    </span><span class="kw">fn </span>position_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize;
+    </span><span class="kw">fn </span>position_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
     <span class="doccomment">/// Returns the last index+1 that satisfies a predicate.
     /// if not found, returns `0`.
-    </span><span class="kw">fn </span>rposition_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize;
+    </span><span class="kw">fn </span>rposition_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
 }
 <span class="kw">impl</span>&lt;T&gt; SliceBisectExt&lt;T&gt; <span class="kw">for </span>[T] {
-    <span class="kw">fn </span>find_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
-        <span class="self">self</span>.get(<span class="self">self</span>.position_bisect(f))
+    <span class="kw">fn </span>find_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
+        <a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#93">self</a>.get(<a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#93">self</a>.<a href="../../../src/competitive/algorithm/binary_search.rs.html#87">position_bisect</a>(<a href="../../../src/competitive/algorithm/binary_search.rs.html#93">f</a>))
     }
-    <span class="kw">fn </span>rfind_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
-        <span class="kw">let </span>pos = <span class="self">self</span>.rposition_bisect(f);
+    <span class="kw">fn </span>rfind_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
+        <span class="kw">let </span>pos = <a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#96">self</a>.<a href="../../../src/competitive/algorithm/binary_search.rs.html#90">rposition_bisect</a>(<a href="../../../src/competitive/algorithm/binary_search.rs.html#96">f</a>);
         <span class="kw">if </span>pos == <span class="number">0 </span>{
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{
-            <span class="self">self</span>.get(pos - <span class="number">1</span>)
+            <a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#96">self</a>.get(<a href="../../../src/competitive/algorithm/binary_search.rs.html#97">pos</a> - <span class="number">1</span>)
         }
     }
-    <span class="kw">fn </span>position_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize {
-        binary_search(|i| f(<span class="kw-2">&amp;</span><span class="self">self</span>[<span class="kw-2">*</span>i <span class="kw">as </span>usize]), <span class="self">self</span>.len() <span class="kw">as </span>i64, -<span class="number">1</span>) <span class="kw">as </span>usize
+    <span class="kw">fn </span>position_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="../../../src/competitive/algorithm/binary_search.rs.html#63-66">binary_search</a>(|i| <a href="../../../src/competitive/algorithm/binary_search.rs.html#104">f</a>(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#104">self</a>[<span class="kw-2">*</span><a href="../../../src/competitive/algorithm/binary_search.rs.html#105">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]), <a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#104">self</a>.len() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, -<span class="number">1</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
-    <span class="kw">fn </span>rposition_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize {
-        binary_search(|i| f(<span class="kw-2">&amp;</span><span class="self">self</span>[i - <span class="number">1</span>]), <span class="number">0</span>, <span class="self">self</span>.len() + <span class="number">1</span>)
+    <span class="kw">fn </span>rposition_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="../../../src/competitive/algorithm/binary_search.rs.html#63-66">binary_search</a>(|i| <a href="../../../src/competitive/algorithm/binary_search.rs.html#107">f</a>(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#107">self</a>[<a href="../../../src/competitive/algorithm/binary_search.rs.html#108">i</a> - <span class="number">1</span>]), <span class="number">0</span>, <a class="self" href="../../../src/competitive/algorithm/binary_search.rs.html#107">self</a>.len() + <span class="number">1</span>)
     }
 }
 
@@ -395,14 +395,14 @@
     }
 }
 
-<span class="kw">pub fn </span>parallel_binary_search&lt;T, F, G&gt;(<span class="kw-2">mut </span>f: F, q: usize, ok: T, err: T) -&gt; Vec&lt;T&gt;
+<span class="kw">pub fn </span>parallel_binary_search&lt;T, F, G&gt;(<span class="kw-2">mut </span>f: F, q: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, ok: T, err: T) -&gt; Vec&lt;T&gt;
 <span class="kw">where
-    </span>T: Bisect,
+    </span>T: <a href="../../../src/competitive/algorithm/binary_search.rs.html#2">Bisect</a>,
     F: FnMut(<span class="kw-2">&amp;</span>[T]) -&gt; G,
-    G: Fn(usize) -&gt; bool,
+    G: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
-    <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="macro">vec!</span>[ok; q];
-    <span class="kw">let </span><span class="kw-2">mut </span>err = <span class="macro">vec!</span>[err; q];
+    <span class="kw">let </span><span class="kw-2">mut </span>ok = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[ok; q];
+    <span class="kw">let </span><span class="kw-2">mut </span>err = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[err; q];
     <span class="kw">while </span>!ok.iter().zip(<span class="kw-2">&amp;</span>err).all(|(ok, err)| ok.section_end(err)) {
         <span class="kw">let </span>m: Vec&lt;<span class="kw">_</span>&gt; = ok.iter().zip(<span class="kw-2">&amp;</span>err).map(|(ok, err)| ok.halve(err)).collect();
         <span class="kw">let </span>g = f(<span class="kw-2">&amp;</span>m);
@@ -414,7 +414,7 @@
             }
         }
     }
-    ok
+    <a href="../../../src/competitive/algorithm/binary_search.rs.html#187">ok</a>
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (9243168fa 2022-08-31)" ></div></body></html>

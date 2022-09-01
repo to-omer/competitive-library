@@ -382,33 +382,33 @@
 <span id="366">366</span>
 <span id="367">367</span>
 <span id="368">368</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{montgomery::<span class="kw-2">*</span>, AssociatedValue, MInt, MIntBase, MIntConvert, One, Zero};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/num/mint/mod.rs.html#21">montgomery</a>::<span class="kw-2">*</span>, <a href="../../../src/competitive/tools/associated_value.rs.html#2">AssociatedValue</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#13">MInt</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#21">MIntConvert</a>, <a href="../../../src/competitive/num/zero_one.rs.html#15">One</a>, <a href="../../../src/competitive/num/zero_one.rs.html#1">Zero</a>};
 <span class="kw">use </span>std::marker::PhantomData;
 
 <span class="kw">pub struct </span>NumberTheoreticTransform&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
 <span class="kw">pub trait </span>NttModulus:
-    <span class="lifetime">&#39;static </span>+ Sized + MIntBase&lt;Inner = u32&gt; + MIntConvert&lt;u32&gt; + AssociatedValue&lt;T = NttCache&lt;<span class="self">Self</span>&gt;&gt;
+    <span class="lifetime">&#39;static </span>+ <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a> + MIntBase&lt;Inner = <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; + MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; + AssociatedValue&lt;T = NttCache&lt;<span class="self">Self</span>&gt;&gt;
 {
     <span class="kw">fn </span>primitive_root() -&gt; MInt&lt;<span class="self">Self</span>&gt;;
 }
 
 <span class="kw">pub struct </span>Convolve&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
-<span class="kw">pub type </span>Convolve998244353 = Convolve&lt;Modulo998244353&gt;;
-<span class="kw">pub type </span>MIntConvolve&lt;M&gt; = Convolve&lt;(M, (Modulo2013265921, Modulo1811939329, Modulo2113929217))&gt;;
+<span class="kw">pub type </span>Convolve998244353 = Convolve&lt;<a href="../../../src/competitive/num/mint/montgomery.rs.html#253-290">Modulo998244353</a>&gt;;
+<span class="kw">pub type </span>MIntConvolve&lt;M&gt; = Convolve&lt;(M, (<a href="../../../src/competitive/num/mint/montgomery.rs.html#253-290">Modulo2013265921</a>, <a href="../../../src/competitive/num/mint/montgomery.rs.html#253-290">Modulo1811939329</a>, <a href="../../../src/competitive/num/mint/montgomery.rs.html#253-290">Modulo2113929217</a>))&gt;;
 
 <span class="kw">pub trait </span>ConvolveSteps {
     <span class="kw">type </span>T;
     <span class="kw">type </span>F;
-    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize;
-    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F;
-    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T;
+    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::F;
+    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::T;
     <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F);
     <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
-        <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
-        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
-        <span class="self">Self</span>::inverse_transform(a, len)
+        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#22">a</a>) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#22">b</a>)).saturating_sub(<span class="number">1</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#22">a</a>, <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#23">len</a>);
+        <span class="kw">let </span>b = <span class="self">Self</span>::transform(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#22">b</a>, <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#23">len</a>);
+        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#24">a</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#25">b</a>);
+        <span class="self">Self</span>::inverse_transform(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#24">a</a>, <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#23">len</a>)
     }
 }
 <span class="macro">macro_rules! </span>impl_ntt_modulus {
@@ -423,7 +423,7 @@
         )*
     };
 }
-<span class="macro">impl_ntt_modulus!</span>(
+<a class="macro" href="../../../src/competitive/math/number_theoretic_transform.rs.html#30-41">impl_ntt_modulus!</a>(
     [Modulo998244353, <span class="number">3</span>],
     [Modulo2113929217, <span class="number">5</span>],
     [Modulo1811939329, <span class="number">13</span>],
@@ -432,25 +432,25 @@
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>NttCache&lt;M&gt;
 <span class="kw">where
-    </span>M: NttModulus,
+    </span>M: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
 {
     cache: Vec&lt;MInt&lt;M&gt;&gt;,
     icache: Vec&lt;MInt&lt;M&gt;&gt;,
 }
-<span class="kw">impl</span>&lt;M&gt; Clone <span class="kw">for </span>NttCache&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>NttCache&lt;M&gt;
 <span class="kw">where
-    </span>M: NttModulus,
+    </span>M: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            cache: <span class="self">self</span>.cache.clone(),
-            icache: <span class="self">self</span>.icache.clone(),
+            cache: <a class="self" href="../../../src/competitive/math/number_theoretic_transform.rs.html#60">self</a>.cache.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            icache: <a class="self" href="../../../src/competitive/math/number_theoretic_transform.rs.html#60">self</a>.icache.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
         }
     }
 }
 <span class="kw">impl</span>&lt;M&gt; NttCache&lt;M&gt;
 <span class="kw">where
-    </span>M: NttModulus,
+    </span>M: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
 {
     <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -458,10 +458,10 @@
             icache: Vec::new(),
         }
     }
-    <span class="kw">fn </span>ensure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, n: usize) {
-        <span class="macro">assert_eq!</span>(n.count_ones(), <span class="number">1</span>, <span class="string">&quot;call with power of two but {}&quot;</span>, n);
-        <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="self">self</span>.cache.len();
-        <span class="macro">assert!</span>(
+    <span class="kw">fn </span>ensure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(n.count_ones(), <span class="number">1</span>, <span class="string">&quot;call with power of two but {}&quot;</span>, n);
+        <span class="kw">let </span><span class="kw-2">mut </span>m = <a class="self" href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">self</a>.cache.len();
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
             m.count_ones() &lt;= <span class="number">1</span>,
             <span class="string">&quot;length might be power of two but {}&quot;</span>,
             m
@@ -469,13 +469,13 @@
         <span class="kw">if </span>m &gt;= n {
             <span class="kw">return</span>;
         }
-        <span class="kw">let </span>q: usize = M::mod_into() <span class="kw">as </span>usize - <span class="number">1</span>;
-        <span class="self">self</span>.cache.reserve_exact(n - m);
-        <span class="self">self</span>.icache.reserve_exact(n - m);
+        <span class="kw">let </span>q: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = M::mod_into() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> - <span class="number">1</span>;
+        <a class="self" href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">self</a>.cache.reserve_exact(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">n</a> - <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#79">m</a>);
+        <a class="self" href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">self</a>.icache.reserve_exact(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">n</a> - <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#79">m</a>);
         <span class="kw">if </span><span class="self">self</span>.cache.is_empty() {
-            <span class="self">self</span>.cache.push(MInt::one());
-            <span class="self">self</span>.icache.push(MInt::one());
-            m += <span class="number">1</span>;
+            <a class="self" href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">self</a>.cache.push(MInt::one());
+            <a class="self" href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">self</a>.icache.push(MInt::one());
+            <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#79">m</a> += <span class="number">1</span>;
         }
         <span class="kw">while </span>m &lt; n {
             <span class="kw">let </span>p = M::primitive_root().pow(q / (m * <span class="number">4</span>));
@@ -486,18 +486,18 @@
             }
             m &lt;&lt;= <span class="number">1</span>;
         }
-        <span class="macro">assert_eq!</span>(<span class="self">self</span>.cache.len(), n);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(<span class="self">self</span>.cache.len(), n);
     }
 }
 <span class="kw">impl</span>&lt;M&gt; NumberTheoreticTransform&lt;M&gt;
 <span class="kw">where
-    </span>M: NttModulus,
+    </span>M: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
 {
     <span class="kw">fn </span>ntt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
         M::modify(|cache| {
-            <span class="kw">let </span>n = a.len();
-            cache.ensure(n / <span class="number">2</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>v = n / <span class="number">2</span>;
+            <span class="kw">let </span>n = <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#112">a</a>.len();
+            <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#113">cache</a>.<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">ensure</a>(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#114">n</a> / <span class="number">2</span>);
+            <span class="kw">let </span><span class="kw-2">mut </span>v = <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#114">n</a> / <span class="number">2</span>;
             <span class="kw">while </span>v &gt; <span class="number">0 </span>{
                 <span class="kw">for </span>(a, wj) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span>cache.cache) {
                     <span class="kw">let </span>(l, r) = a.split_at_mut(v);
@@ -513,8 +513,8 @@
     }
     <span class="kw">fn </span>intt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
         M::modify(|cache| {
-            <span class="kw">let </span>n = a.len();
-            cache.ensure(n / <span class="number">2</span>);
+            <span class="kw">let </span>n = <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#130">a</a>.len();
+            <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#131">cache</a>.<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#77">ensure</a>(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#132">n</a> / <span class="number">2</span>);
             <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
             <span class="kw">while </span>v &lt; n {
                 <span class="kw">for </span>(a, wj) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span>cache.icache) {
@@ -530,92 +530,92 @@
         });
     }
 }
-<span class="kw">impl</span>&lt;M&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#15">ConvolveSteps</a> <span class="kw">for </span>Convolve&lt;M&gt;
 <span class="kw">where
-    </span>M: NttModulus,
+    </span>M: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
 {
     <span class="kw">type </span>T = Vec&lt;MInt&lt;M&gt;&gt;;
     <span class="kw">type </span>F = Vec&lt;MInt&lt;M&gt;&gt;;
-    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
-        t.len()
+    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#155">t</a>.len()
     }
-    <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
-        t.resize_with(len.max(<span class="number">2</span>).next_power_of_two(), Zero::zero);
-        NumberTheoreticTransform::&lt;M&gt;::ntt(<span class="kw-2">&amp;mut </span>t);
-        t
+    <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::F {
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#158">t</a>.resize_with(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#158">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two(), <a href="../../../src/competitive/num/zero_one.rs.html#2">Zero::zero</a>);
+        NumberTheoreticTransform::&lt;M&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#158">t</a>);
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#158">t</a>
     }
-    <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
-        NumberTheoreticTransform::&lt;M&gt;::intt(<span class="kw-2">&amp;mut </span>f);
-        f.truncate(len);
-        <span class="kw">let </span>inv = MInt::from(len.max(<span class="number">2</span>).next_power_of_two() <span class="kw">as </span>u32).inv();
+    <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::T {
+        NumberTheoreticTransform::&lt;M&gt;::intt(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#163">f</a>);
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#163">f</a>.truncate(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#163">len</a>);
+        <span class="kw">let </span>inv = MInt::from(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#163">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>).<a href="../../../src/competitive/num/mint/mint_base.rs.html#84">inv</a>();
         <span class="kw">for </span>f <span class="kw">in </span>f.iter_mut() {
             <span class="kw-2">*</span>f <span class="kw-2">*</span>= inv;
         }
-        f
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#163">f</a>
     }
     <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-        <span class="macro">assert_eq!</span>(f.len(), g.len());
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(f.len(), g.len());
         <span class="kw">for </span>(f, g) <span class="kw">in </span>f.iter_mut().zip(g.iter()) {
             <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
         }
     }
 }
 <span class="kw">type </span>MVec&lt;M&gt; = Vec&lt;MInt&lt;M&gt;&gt;;
-<span class="kw">impl</span>&lt;M, N1, N2, N3&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;(M, (N1, N2, N3))&gt;
+<span class="kw">impl</span>&lt;M, N1, N2, N3&gt; <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#15">ConvolveSteps</a> <span class="kw">for </span>Convolve&lt;(M, (N1, N2, N3))&gt;
 <span class="kw">where
-    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
-    N1: NttModulus,
-    N2: NttModulus,
-    N3: NttModulus,
+    </span>M: <a href="../../../src/competitive/num/mint/mint_base.rs.html#21">MIntConvert</a> + MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,
+    N1: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
+    N2: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
+    N3: <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#5-6">NttModulus</a>,
 {
     <span class="kw">type </span>T = MVec&lt;M&gt;;
     <span class="kw">type </span>F = (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;);
-    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
-        t.len()
+    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#189">t</a>.len()
     }
-    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
-        <span class="kw">let </span>npot = len.max(<span class="number">2</span>).next_power_of_two();
+    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::F {
+        <span class="kw">let </span>npot = <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#192">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two();
         <span class="kw">let </span><span class="kw-2">mut </span>f = (
-            MVec::&lt;N1&gt;::with_capacity(npot),
-            MVec::&lt;N2&gt;::with_capacity(npot),
-            MVec::&lt;N3&gt;::with_capacity(npot),
+            MVec::&lt;N1&gt;::with_capacity(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#193">npot</a>),
+            MVec::&lt;N2&gt;::with_capacity(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#193">npot</a>),
+            MVec::&lt;N3&gt;::with_capacity(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#193">npot</a>),
         );
         <span class="kw">for </span>t <span class="kw">in </span>t {
             f.<span class="number">0</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
             f.<span class="number">1</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
             f.<span class="number">2</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
         }
-        f.<span class="number">0</span>.resize_with(npot, Zero::zero);
-        f.<span class="number">1</span>.resize_with(npot, Zero::zero);
-        f.<span class="number">2</span>.resize_with(npot, Zero::zero);
-        NumberTheoreticTransform::&lt;N1&gt;::ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>);
-        NumberTheoreticTransform::&lt;N2&gt;::ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>);
-        NumberTheoreticTransform::&lt;N3&gt;::ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>);
-        f
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#194">f</a>.<span class="number">0</span>.resize_with(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#193">npot</a>, <a href="../../../src/competitive/num/zero_one.rs.html#2">Zero::zero</a>);
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#194">f</a>.<span class="number">1</span>.resize_with(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#193">npot</a>, <a href="../../../src/competitive/num/zero_one.rs.html#2">Zero::zero</a>);
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#194">f</a>.<span class="number">2</span>.resize_with(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#193">npot</a>, <a href="../../../src/competitive/num/zero_one.rs.html#2">Zero::zero</a>);
+        NumberTheoreticTransform::&lt;N1&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#194">f</a>.<span class="number">0</span>);
+        NumberTheoreticTransform::&lt;N2&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#194">f</a>.<span class="number">1</span>);
+        NumberTheoreticTransform::&lt;N3&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/number_theoretic_transform.rs.html#194">f</a>.<span class="number">2</span>);
+        <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#194">f</a>
     }
-    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
-        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
+    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::T {
+        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).<a href="../../../src/competitive/num/mint/mint_base.rs.html#84">inv</a>();
         <span class="kw">let </span>m1 = MInt::&lt;M&gt;::from(N1::get_mod());
         <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
-        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
-        <span class="kw">let </span>m2 = m1 * MInt::&lt;M&gt;::from(N2::get_mod());
-        Convolve::&lt;N1&gt;::inverse_transform(f.<span class="number">0</span>, len)
-            .into_iter()
-            .zip(Convolve::&lt;N2&gt;::inverse_transform(f.<span class="number">1</span>, len))
-            .zip(Convolve::&lt;N3&gt;::inverse_transform(f.<span class="number">2</span>, len))
-            .map(|((c1, c2), c3)| {
-                <span class="kw">let </span>d1 = c1.inner();
-                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
-                <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
-                MInt::&lt;M&gt;::from(d1) + MInt::&lt;M&gt;::from(d2) * m1 + MInt::&lt;M&gt;::from(d3) * m2
+        <span class="kw">let </span>t2 = (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#215">m1_3</a> * MInt::&lt;N3&gt;::new(N2::get_mod())).<a href="../../../src/competitive/num/mint/mint_base.rs.html#84">inv</a>();
+        <span class="kw">let </span>m2 = <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#214">m1</a> * MInt::&lt;M&gt;::from(N2::get_mod());
+        Convolve::&lt;N1&gt;::inverse_transform(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#212">f</a>.<span class="number">0</span>, <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#212">len</a>)
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">zip</a>(Convolve::&lt;N2&gt;::inverse_transform(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#212">f</a>.<span class="number">1</span>, <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#212">len</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">zip</a>(Convolve::&lt;N3&gt;::inverse_transform(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#212">f</a>.<span class="number">2</span>, <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#212">len</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|((c1, c2), c3)| {
+                <span class="kw">let </span>d1 = <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#222">c1</a>.<a href="../../../src/competitive/num/mint/mint_base.rs.html#60">inner</a>();
+                <span class="kw">let </span>d2 = ((<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#222">c2</a> - MInt::&lt;N2&gt;::from(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#223">d1</a>)) * <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#213">t1</a>).<a href="../../../src/competitive/num/mint/mint_base.rs.html#60">inner</a>();
+                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#223">d1</a>) + MInt::&lt;N3&gt;::new(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#224">d2</a>) * <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#215">m1_3</a>;
+                <span class="kw">let </span>d3 = ((<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#222">c3</a> - <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#225">x</a>) * <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#216">t2</a>).<a href="../../../src/competitive/num/mint/mint_base.rs.html#60">inner</a>();
+                MInt::&lt;M&gt;::from(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#223">d1</a>) + MInt::&lt;M&gt;::from(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#224">d2</a>) * <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#214">m1</a> + MInt::&lt;M&gt;::from(<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#226">d3</a>) * <a href="../../../src/competitive/math/number_theoretic_transform.rs.html#217">m2</a>
             })
-            .collect()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
     }
     <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-        <span class="macro">assert_eq!</span>(f.<span class="number">0</span>.len(), g.<span class="number">0</span>.len());
-        <span class="macro">assert_eq!</span>(f.<span class="number">1</span>.len(), g.<span class="number">1</span>.len());
-        <span class="macro">assert_eq!</span>(f.<span class="number">2</span>.len(), g.<span class="number">2</span>.len());
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(f.<span class="number">0</span>.len(), g.<span class="number">0</span>.len());
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(f.<span class="number">1</span>.len(), g.<span class="number">1</span>.len());
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(f.<span class="number">2</span>.len(), g.<span class="number">2</span>.len());
         <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">0</span>.iter_mut().zip(g.<span class="number">0</span>.iter()) {
             <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
         }

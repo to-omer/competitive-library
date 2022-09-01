@@ -173,60 +173,60 @@
 <span id="157">157</span>
 <span id="158">158</span>
 <span id="159">159</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::BidirectionalSparseGraph;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#162"><span class="kw">super</span>::BidirectionalSparseGraph</a>;
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>PrimalDualBuilder {
-    vsize: usize,
-    edges: Vec&lt;(usize, usize)&gt;,
-    capacities: Vec&lt;u64&gt;,
-    costs: Vec&lt;i64&gt;,
-    has_negedge: bool,
+    vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    edges: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
+    capacities: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+    costs: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    has_negedge: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 }
-<span class="kw">impl </span>PrimalDualBuilder {
-    <span class="kw">pub fn </span>new(vsize: usize, esize_expect: usize) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span><a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#4">PrimalDualBuilder</a> {
+    <span class="kw">pub fn </span>new(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            vsize,
-            edges: Vec::with_capacity(esize_expect),
-            capacities: Vec::with_capacity(esize_expect * <span class="number">2</span>),
-            costs: Vec::with_capacity(esize_expect * <span class="number">2</span>),
+            <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#12">vsize</a>,
+            edges: Vec::with_capacity(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#12">esize_expect</a>),
+            capacities: Vec::with_capacity(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#12">esize_expect</a> * <span class="number">2</span>),
+            costs: Vec::with_capacity(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#12">esize_expect</a> * <span class="number">2</span>),
             has_negedge: <span class="bool-val">false</span>,
         }
     }
-    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: usize, to: usize, cap: u64, cost: i64) {
-        <span class="self">self</span>.edges.push((from, to));
-        <span class="self">self</span>.capacities.push(cap);
-        <span class="self">self</span>.capacities.push(<span class="number">0</span>);
-        <span class="self">self</span>.has_negedge |= cost &lt; <span class="number">0</span>;
-        <span class="self">self</span>.costs.push(cost);
-        <span class="self">self</span>.costs.push(-cost);
+    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, to: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, cost: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">self</a>.edges.push((<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">from</a>, <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">to</a>));
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">self</a>.capacities.push(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">cap</a>);
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">self</a>.capacities.push(<span class="number">0</span>);
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">self</a>.has_negedge |= <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">cost</a> &lt; <span class="number">0</span>;
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">self</a>.costs.push(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">cost</a>);
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">self</a>.costs.push(-<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#21">cost</a>);
     }
-    <span class="kw">pub fn </span>gen_graph(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; BidirectionalSparseGraph {
-        <span class="kw">let </span>edges = std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.edges);
-        BidirectionalSparseGraph::from_edges(<span class="self">self</span>.vsize, edges)
+    <span class="kw">pub fn </span>gen_graph(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a> {
+        <span class="kw">let </span>edges = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#29">self</a>.edges);
+        BidirectionalSparseGraph::from_edges(<a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#29">self</a>.vsize, <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#30">edges</a>)
     }
-    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span>BidirectionalSparseGraph) -&gt; PrimalDual&lt;<span class="lifetime">&#39;_</span>&gt; {
-        <span class="kw">let </span>PrimalDualBuilder {
+    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a>) -&gt; PrimalDual&lt;<span class="lifetime">&#39;_</span>&gt; {
+        <span class="kw">let </span><a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#4">PrimalDualBuilder</a> {
             vsize,
             capacities,
             costs,
             has_negedge,
             ..
-        } = <span class="self">self</span>;
-        PrimalDual {
-            graph,
-            capacities,
-            costs,
-            potential: std::iter::repeat(<span class="number">0</span>).take(vsize).collect(),
-            dist: Vec::with_capacity(vsize),
-            prev_vertex: std::iter::repeat(<span class="number">0</span>).take(vsize).collect(),
-            prev_edge: std::iter::repeat(<span class="number">0</span>).take(vsize).collect(),
-            has_negedge,
+        } = <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#33">self</a>;
+        <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#62">PrimalDual</a> {
+            <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#33">graph</a>,
+            <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#36">capacities</a>,
+            <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#37">costs</a>,
+            potential: std::iter::repeat(<span class="number">0</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">take</a>(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#35">vsize</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+            dist: Vec::with_capacity(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#35">vsize</a>),
+            prev_vertex: std::iter::repeat(<span class="number">0</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">take</a>(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#35">vsize</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+            prev_edge: std::iter::repeat(<span class="number">0</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">take</a>(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#35">vsize</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+            <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#38">has_negedge</a>,
         }
     }
 }
-<span class="kw">impl </span>Extend&lt;(usize, usize, u64, i64)&gt; <span class="kw">for </span>PrimalDualBuilder {
-    <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = (usize, usize, u64, i64)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
+<span class="kw">impl </span>Extend&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt; <span class="kw">for </span><a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#4">PrimalDualBuilder</a> {
+    <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
         <span class="kw">for </span>(from, to, cap, cost) <span class="kw">in </span>iter {
             <span class="self">self</span>.add_edge(from, to, cap, cost)
         }
@@ -235,24 +235,24 @@
 
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>PrimalDual&lt;<span class="lifetime">&#39;a</span>&gt; {
-    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BidirectionalSparseGraph,
-    capacities: Vec&lt;u64&gt;,
-    costs: Vec&lt;i64&gt;,
-    potential: Vec&lt;i64&gt;,
-    dist: Vec&lt;i64&gt;,
-    prev_vertex: Vec&lt;usize&gt;,
-    prev_edge: Vec&lt;usize&gt;,
-    has_negedge: bool,
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a>,
+    capacities: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+    costs: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    potential: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    dist: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    prev_vertex: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    prev_edge: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    has_negedge: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; PrimalDual&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>builder(vsize: usize, esize_expect: usize) -&gt; PrimalDualBuilder {
-        PrimalDualBuilder::new(vsize, esize_expect)
+    <span class="kw">pub fn </span>builder(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#4">PrimalDualBuilder</a> {
+        PrimalDualBuilder::new(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#73">vsize</a>, <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#73">esize_expect</a>)
     }
-    <span class="kw">fn </span>bellman_ford(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize) {
-        <span class="self">self</span>.potential.clear();
-        <span class="self">self</span>.potential
-            .resize(<span class="self">self</span>.graph.vertices_size(), std::i64::MAX);
-        <span class="self">self</span>.potential[s] = <span class="number">0</span>;
+    <span class="kw">fn </span>bellman_ford(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#76">self</a>.potential.clear();
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#76">self</a>.potential
+            .resize(<a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#76">self</a>.graph.<a href="../../../src/competitive/graph/sparse_graph.rs.html#39">vertices_size</a>(), std::i64::MAX);
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#76">self</a>.potential[<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#76">s</a>] = <span class="number">0</span>;
         <span class="kw">for _ in </span><span class="number">1</span>..<span class="self">self</span>.graph.vertices_size() {
             <span class="kw">let </span><span class="kw-2">mut </span>end = <span class="bool-val">true</span>;
             <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.graph.vertices() {
@@ -269,13 +269,13 @@
             }
         }
     }
-    <span class="kw">fn </span>dijkstra(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize, t: usize) -&gt; bool {
-        <span class="kw">use </span>std::{cmp::Reverse, collections::BinaryHeap};
-        <span class="self">self</span>.dist.clear();
-        <span class="self">self</span>.dist.resize(<span class="self">self</span>.graph.vertices_size(), std::i64::MAX);
-        <span class="self">self</span>.dist[s] = <span class="number">0</span>;
+    <span class="kw">fn </span>dijkstra(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <span class="kw">use </span>std::{cmp::Reverse, <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">collections::BinaryHeap</a>};
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">self</a>.dist.clear();
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">self</a>.dist.resize(<a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">self</a>.graph.<a href="../../../src/competitive/graph/sparse_graph.rs.html#39">vertices_size</a>(), std::i64::MAX);
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">self</a>.dist[<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">s</a>] = <span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>heap = BinaryHeap::new();
-        heap.push((Reverse(<span class="number">0</span>), s));
+        <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#102">heap</a>.push((Reverse(<span class="number">0</span>), <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">s</a>));
         <span class="kw">while let </span><span class="prelude-val">Some</span>((Reverse(d), u)) = heap.pop() {
             <span class="kw">if </span><span class="self">self</span>.dist[u] &lt; d {
                 <span class="kw">continue</span>;
@@ -294,14 +294,14 @@
                 }
             }
         }
-        <span class="self">self</span>.dist[t] != std::i64::MAX
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">self</a>.dist[<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#97">t</a>] != std::i64::MAX
     }
     <span class="doccomment">/// Return (flow, cost).
-    </span><span class="kw">pub fn </span>minimum_cost_flow_limited(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize, t: usize, limit: u64) -&gt; (u64, i64) {
+    </span><span class="kw">pub fn </span>minimum_cost_flow_limited(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, limit: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
         <span class="kw">let </span><span class="kw-2">mut </span>flow = <span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>cost = <span class="number">0</span>;
         <span class="kw">if </span><span class="self">self</span>.has_negedge {
-            <span class="self">self</span>.bellman_ford(s);
+            <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#125">self</a>.<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#76">bellman_ford</a>(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#125">s</a>);
         }
         <span class="kw">while </span>flow &lt; limit &amp;&amp; <span class="self">self</span>.dijkstra(s, t) {
             <span class="kw">for </span>(p, d) <span class="kw">in </span><span class="self">self</span>.potential.iter_mut().zip(<span class="self">self</span>.dist.iter()) {
@@ -322,14 +322,14 @@
                 v = <span class="self">self</span>.prev_vertex[v];
             }
         }
-        (flow, cost)
+        (<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#126">flow</a>, <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#127">cost</a>)
     }
     <span class="doccomment">/// Return (flow, cost).
-    </span><span class="kw">pub fn </span>minimum_cost_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize, t: usize) -&gt; (u64, i64) {
-        <span class="self">self</span>.minimum_cost_flow_limited(s, t, std::u64::MAX)
+    </span><span class="kw">pub fn </span>minimum_cost_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#153">self</a>.<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#125">minimum_cost_flow_limited</a>(<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#153">s</a>, <a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#153">t</a>, std::u64::MAX)
     }
-    <span class="kw">pub fn </span>get_flow(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: usize) -&gt; u64 {
-        <span class="self">self</span>.capacities[eid * <span class="number">2 </span>+ <span class="number">1</span>]
+    <span class="kw">pub fn </span>get_flow(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <a class="self" href="../../../src/competitive/graph/minimum_cost_flow.rs.html#156">self</a>.capacities[<a href="../../../src/competitive/graph/minimum_cost_flow.rs.html#156">eid</a> * <span class="number">2 </span>+ <span class="number">1</span>]
     }
 }
 </code></pre></div>

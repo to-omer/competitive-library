@@ -172,50 +172,50 @@
 <span id="156">156</span>
 <span id="157">157</span>
 <span id="158">158</span>
-</pre><pre class="rust"><code><span class="kw">use crate</span>::{graph::UndirectedSparseGraph, tools::Xorshift, tree::TreeCenter};
+</pre><pre class="rust"><code><span class="kw">use crate</span>::{<a href="../../../src/competitive/graph/sparse_graph.rs.html#161">graph::UndirectedSparseGraph</a>, <a href="../../../src/competitive/tools/random/mod.rs.html#3">tools::Xorshift</a>, <a href="../../../src/competitive/tree/tree_center.rs.html#5">tree::TreeCenter</a>};
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_hash&quot;</span>, include(<span class="string">&quot;Xorshift&quot;</span>, <span class="string">&quot;tree_center&quot;</span>))]
 #[derive(Default, Debug)]
 </span><span class="kw">pub struct </span>TreeHasher {
-    rv: Vec&lt;u64&gt;,
-    rng: Xorshift,
+    rv: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+    rng: <a href="../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>,
 }
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_hash&quot;</span>)]
-</span><span class="kw">impl </span>TreeHasher {
-    <span class="kw">const </span>MASK30: u64 = (<span class="number">1 </span>&lt;&lt; <span class="number">30</span>) - <span class="number">1</span>;
-    <span class="kw">const </span>MASK31: u64 = (<span class="number">1 </span>&lt;&lt; <span class="number">31</span>) - <span class="number">1</span>;
-    <span class="kw">const </span>MASK61: u64 = (<span class="number">1 </span>&lt;&lt; <span class="number">61</span>) - <span class="number">1</span>;
-    <span class="kw">const </span>MOD: u64 = <span class="self">Self</span>::MASK61;
+</span><span class="kw">impl </span><a href="../../../src/competitive/tree/tree_hash.rs.html#5">TreeHasher</a> {
+    <span class="kw">const </span>MASK30: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = (<span class="number">1 </span>&lt;&lt; <span class="number">30</span>) - <span class="number">1</span>;
+    <span class="kw">const </span>MASK31: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = (<span class="number">1 </span>&lt;&lt; <span class="number">31</span>) - <span class="number">1</span>;
+    <span class="kw">const </span>MASK61: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = (<span class="number">1 </span>&lt;&lt; <span class="number">61</span>) - <span class="number">1</span>;
+    <span class="kw">const </span>MOD: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = <span class="self">Self</span>::MASK61;
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mersenne_mod(a: u64) -&gt; u64 {
-        <span class="kw">let </span><span class="kw-2">mut </span>res = (a &gt;&gt; <span class="number">61</span>) + (a &amp; <span class="self">Self</span>::MASK61);
+    </span><span class="kw">fn </span>mersenne_mod(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <span class="kw">let </span><span class="kw-2">mut </span>res = (<a href="../../../src/competitive/tree/tree_hash.rs.html#16">a</a> &gt;&gt; <span class="number">61</span>) + (<a href="../../../src/competitive/tree/tree_hash.rs.html#16">a</a> &amp; <span class="self">Self</span>::MASK61);
         <span class="kw">if </span>res &gt;= <span class="self">Self</span>::MASK61 {
-            res -= <span class="self">Self</span>::MASK61;
+            <a href="../../../src/competitive/tree/tree_hash.rs.html#17">res</a> -= <span class="self">Self</span>::MASK61;
         }
-        res
+        <a href="../../../src/competitive/tree/tree_hash.rs.html#17">res</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mersenne_mul(a: u64, b: u64) -&gt; u64 {
-        <span class="kw">let </span>au = a &gt;&gt; <span class="number">31</span>;
-        <span class="kw">let </span>ad = a &amp; <span class="self">Self</span>::MASK31;
-        <span class="kw">let </span>bu = b &gt;&gt; <span class="number">31</span>;
-        <span class="kw">let </span>bd = b &amp; <span class="self">Self</span>::MASK31;
-        <span class="kw">let </span>mid = ad * bu + au * bd;
-        <span class="kw">let </span>midu = mid &gt;&gt; <span class="number">30</span>;
-        <span class="kw">let </span>midd = mid &amp; <span class="self">Self</span>::MASK30;
-        au * bu * <span class="number">2 </span>+ midu + (midd &lt;&lt; <span class="number">31</span>) + ad * bd
+    </span><span class="kw">fn </span>mersenne_mul(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <span class="kw">let </span>au = <a href="../../../src/competitive/tree/tree_hash.rs.html#24">a</a> &gt;&gt; <span class="number">31</span>;
+        <span class="kw">let </span>ad = <a href="../../../src/competitive/tree/tree_hash.rs.html#24">a</a> &amp; <span class="self">Self</span>::MASK31;
+        <span class="kw">let </span>bu = <a href="../../../src/competitive/tree/tree_hash.rs.html#24">b</a> &gt;&gt; <span class="number">31</span>;
+        <span class="kw">let </span>bd = <a href="../../../src/competitive/tree/tree_hash.rs.html#24">b</a> &amp; <span class="self">Self</span>::MASK31;
+        <span class="kw">let </span>mid = <a href="../../../src/competitive/tree/tree_hash.rs.html#26">ad</a> * <a href="../../../src/competitive/tree/tree_hash.rs.html#27">bu</a> + <a href="../../../src/competitive/tree/tree_hash.rs.html#25">au</a> * <a href="../../../src/competitive/tree/tree_hash.rs.html#28">bd</a>;
+        <span class="kw">let </span>midu = <a href="../../../src/competitive/tree/tree_hash.rs.html#29">mid</a> &gt;&gt; <span class="number">30</span>;
+        <span class="kw">let </span>midd = <a href="../../../src/competitive/tree/tree_hash.rs.html#29">mid</a> &amp; <span class="self">Self</span>::MASK30;
+        <a href="../../../src/competitive/tree/tree_hash.rs.html#25">au</a> * <a href="../../../src/competitive/tree/tree_hash.rs.html#27">bu</a> * <span class="number">2 </span>+ <a href="../../../src/competitive/tree/tree_hash.rs.html#30">midu</a> + (<a href="../../../src/competitive/tree/tree_hash.rs.html#31">midd</a> &lt;&lt; <span class="number">31</span>) + <a href="../../../src/competitive/tree/tree_hash.rs.html#26">ad</a> * <a href="../../../src/competitive/tree/tree_hash.rs.html#28">bd</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mersenne_mul_mod(a: u64, b: u64) -&gt; u64 {
-        <span class="self">Self</span>::mersenne_mod(<span class="self">Self</span>::mersenne_mul(a, b))
+    </span><span class="kw">fn </span>mersenne_mul_mod(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <span class="self">Self</span>::mersenne_mod(<span class="self">Self</span>::mersenne_mul(<a href="../../../src/competitive/tree/tree_hash.rs.html#35">a</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#35">b</a>))
     }
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::default()
     }
-    <span class="kw">pub fn </span>with_seed(seed: u64) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>with_seed(seed: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             rv: Vec::new(),
-            rng: Xorshift::new(seed),
+            rng: Xorshift::new(<a href="../../../src/competitive/tree/tree_hash.rs.html#41">seed</a>),
         }
     }
     <span class="kw">pub fn </span>time_seeded() -&gt; <span class="self">Self </span>{
@@ -224,32 +224,32 @@
             rng: Xorshift::time(),
         }
     }
-    <span class="kw">pub fn </span>hash(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span>UndirectedSparseGraph) -&gt; u64 {
-        <span class="kw">match </span>g.tree_center() {
-            TreeCenter::One(u) =&gt; <span class="self">self</span>.hash_rec(g, u, !<span class="number">0</span>, <span class="number">0</span>),
-            TreeCenter::Two(u, v) =&gt; {
-                <span class="self">Self</span>::mersenne_mul_mod(<span class="self">self</span>.hash_rooted(g, u, v), <span class="self">self</span>.hash_rooted(g, v, u))
+    <span class="kw">pub fn </span>hash(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <span class="kw">match </span><a href="../../../src/competitive/tree/tree_hash.rs.html#53">g</a>.<a href="../../../src/competitive/tree/tree_center.rs.html#12">tree_center</a>() {
+            <a href="../../../src/competitive/tree/tree_center.rs.html#6">TreeCenter::One</a>(u) =&gt; <a class="self" href="../../../src/competitive/tree/tree_hash.rs.html#53">self</a>.<a href="../../../src/competitive/tree/tree_hash.rs.html#64">hash_rec</a>(<a href="../../../src/competitive/tree/tree_hash.rs.html#53">g</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#55">u</a>, !<span class="number">0</span>, <span class="number">0</span>),
+            <a href="../../../src/competitive/tree/tree_center.rs.html#7">TreeCenter::Two</a>(u, v) =&gt; {
+                <span class="self">Self</span>::mersenne_mul_mod(<a class="self" href="../../../src/competitive/tree/tree_hash.rs.html#53">self</a>.<a href="../../../src/competitive/tree/tree_hash.rs.html#61">hash_rooted</a>(<a href="../../../src/competitive/tree/tree_hash.rs.html#53">g</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#56">u</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#56">v</a>), <a class="self" href="../../../src/competitive/tree/tree_hash.rs.html#53">self</a>.<a href="../../../src/competitive/tree/tree_hash.rs.html#61">hash_rooted</a>(<a href="../../../src/competitive/tree/tree_hash.rs.html#53">g</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#56">v</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#56">u</a>))
             }
         }
     }
-    <span class="kw">pub fn </span>hash_rooted(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span>UndirectedSparseGraph, root: usize, parent: usize) -&gt; u64 {
-        <span class="self">self</span>.hash_rec(g, root, parent, <span class="number">0</span>)
+    <span class="kw">pub fn </span>hash_rooted(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>, root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, parent: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <a class="self" href="../../../src/competitive/tree/tree_hash.rs.html#61">self</a>.<a href="../../../src/competitive/tree/tree_hash.rs.html#64">hash_rec</a>(<a href="../../../src/competitive/tree/tree_hash.rs.html#61">g</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#61">root</a>, <a href="../../../src/competitive/tree/tree_hash.rs.html#61">parent</a>, <span class="number">0</span>)
     }
-    <span class="kw">fn </span>hash_rec(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span>UndirectedSparseGraph, u: usize, p: usize, d: usize) -&gt; u64 {
+    <span class="kw">fn </span>hash_rec(<span class="kw-2">&amp;mut </span><span class="self">self</span>, g: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, d: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>s = <span class="number">1u64</span>;
         <span class="kw">if </span><span class="self">self</span>.rv.len() &lt;= d {
-            <span class="self">self</span>.rv.push(<span class="self">Self</span>::mersenne_mod(<span class="self">self</span>.rng.rand64()));
+            <a class="self" href="../../../src/competitive/tree/tree_hash.rs.html#64">self</a>.rv.push(<span class="self">Self</span>::mersenne_mod(<a class="self" href="../../../src/competitive/tree/tree_hash.rs.html#64">self</a>.rng.<a href="../../../src/competitive/tools/random/mod.rs.html#20">rand64</a>()));
         }
         <span class="kw">for </span>a <span class="kw">in </span>g.adjacencies(u) {
             <span class="kw">if </span>a.to != p {
                 s = <span class="self">Self</span>::mersenne_mul_mod(s, <span class="self">self</span>.hash_rec(g, a.to, u, d + <span class="number">1</span>));
             }
         }
-        s += <span class="self">self</span>.rv[d];
+        <a href="../../../src/competitive/tree/tree_hash.rs.html#65">s</a> += <a class="self" href="../../../src/competitive/tree/tree_hash.rs.html#64">self</a>.rv[<a href="../../../src/competitive/tree/tree_hash.rs.html#64">d</a>];
         <span class="kw">if </span>s &gt;= <span class="self">Self</span>::MOD {
-            s -= <span class="self">Self</span>::MOD;
+            <a href="../../../src/competitive/tree/tree_hash.rs.html#65">s</a> -= <span class="self">Self</span>::MOD;
         }
-        s
+        <a href="../../../src/competitive/tree/tree_hash.rs.html#65">s</a>
     }
 }
 

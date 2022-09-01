@@ -102,43 +102,43 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{MInt, MIntBase, MIntConvert, MemorizedFactorial, One, Zero};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/num/mint/mint_base.rs.html#13">MInt</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#21">MIntConvert</a>, <a href="../../../src/competitive/math/factorial.rs.html#5">MemorizedFactorial</a>, <a href="../../../src/competitive/num/zero_one.rs.html#15">One</a>, <a href="../../../src/competitive/num/zero_one.rs.html#1">Zero</a>};
 
 <span class="kw">pub fn </span>lagrange_interpolation&lt;M&gt;(x: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], t: MInt&lt;M&gt;) -&gt; MInt&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntBase,
+    </span>M: <a href="../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a>,
 {
-    <span class="kw">let </span>n = x.len();
-    <span class="macro">debug_assert!</span>(n == y.len());
-    x.iter().position(|<span class="kw-2">&amp;</span>x| x == t).map_or_else(
+    <span class="kw">let </span>n = <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">x</a>.len();
+    <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(n == y.len());
+    <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">x</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">position</a>(|<span class="kw-2">&amp;</span>x| <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#9">x</a> == <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">t</a>).map_or_else(
         || {
-            (<span class="number">0</span>..n)
-                .map(|i| {
-                    y[i] * (<span class="number">0</span>..n)
-                        .filter(|<span class="kw-2">&amp;</span>j| j != i)
-                        .map(|j| (t - x[j]) / (x[i] - x[j]))
-                        .product::&lt;MInt&lt;M&gt;&gt;()
+            (<span class="number">0</span>..<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#7">n</a>)
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| {
+                    <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">y</a>[<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#12">i</a>] * (<span class="number">0</span>..<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#7">n</a>)
+                        .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|<span class="kw-2">&amp;</span>j| <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#14">j</a> != <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#12">i</a>)
+                        .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|j| (<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">t</a> - <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">x</a>[<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#15">j</a>]) / (<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">x</a>[<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#12">i</a>] - <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">x</a>[<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#15">j</a>]))
+                        .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">product</a>::&lt;MInt&lt;M&gt;&gt;()
                 })
-                .sum()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">sum</a>()
         },
-        |i| y[i],
+        |i| <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#3">y</a>[<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#20">i</a>],
     )
 }
 
 <span class="kw">impl</span>&lt;M&gt; MemorizedFactorial&lt;M&gt;
 <span class="kw">where
-    </span>M: MIntConvert&lt;usize&gt;,
+    </span>M: MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
     <span class="doccomment">/// Lagrange interpolation with (i, f(i)) (0 &lt;= i &lt;= n)
-    </span><span class="kw">pub fn </span>lagrange_interpolation&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize, f: F, t: MInt&lt;M&gt;) -&gt; MInt&lt;M&gt;
+    </span><span class="kw">pub fn </span>lagrange_interpolation&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, f: F, t: MInt&lt;M&gt;) -&gt; MInt&lt;M&gt;
     <span class="kw">where
         </span>F: Fn(MInt&lt;M&gt;) -&gt; MInt&lt;M&gt;,
     {
-        <span class="macro">debug_assert!</span>(<span class="number">0 </span>&lt; n &amp;&amp; n &lt; M::mod_into() + <span class="number">1</span>);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(<span class="number">0 </span>&lt; n &amp;&amp; n &lt; M::mod_into() + <span class="number">1</span>);
         <span class="kw">if </span>usize::from(t) &lt;= n {
-            <span class="kw">return </span>f(t);
+            <span class="kw">return </span><a href="../../../src/competitive/math/lagrange_interpolation.rs.html#29">f</a>(<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#29">t</a>);
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>left = <span class="macro">vec!</span>[MInt::one(); n + <span class="number">1</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>left = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::one(); n + <span class="number">1</span>];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
             left[i + <span class="number">1</span>] = left[i] * (t - MInt::from(i));
         }
@@ -147,26 +147,26 @@
             res += f(MInt::from(i)) * left[i] * right * <span class="self">self</span>.inv_fact[i] * <span class="self">self</span>.inv_fact[n - i];
             right <span class="kw-2">*</span>= MInt::from(i) - t;
         }
-        res
+        <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#41">res</a>
     }
 }
 
 <span class="kw">pub fn </span>lagrange_interpolation_polynomial&lt;M&gt;(x: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], y: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
 <span class="kw">where
-    </span>M: MIntBase,
+    </span>M: <a href="../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a>,
 {
-    <span class="kw">let </span>n = x.len() - <span class="number">1</span>;
-    <span class="kw">let </span><span class="kw-2">mut </span>dp = <span class="macro">vec!</span>[MInt::zero(); n + <span class="number">2</span>];
-    <span class="kw">let </span><span class="kw-2">mut </span>ndp = <span class="macro">vec!</span>[MInt::zero(); n + <span class="number">2</span>];
-    dp[<span class="number">0</span>] = -x[<span class="number">0</span>];
-    dp[<span class="number">1</span>] = MInt::one();
+    <span class="kw">let </span>n = <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#50">x</a>.len() - <span class="number">1</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>dp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::zero(); n + <span class="number">2</span>];
+    <span class="kw">let </span><span class="kw-2">mut </span>ndp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::zero(); n + <span class="number">2</span>];
+    <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#55">dp</a>[<span class="number">0</span>] = -<a href="../../../src/competitive/math/lagrange_interpolation.rs.html#50">x</a>[<span class="number">0</span>];
+    <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#55">dp</a>[<span class="number">1</span>] = MInt::one();
     <span class="kw">for </span>x <span class="kw">in </span>x.iter().skip(<span class="number">1</span>) {
         <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..=n + <span class="number">1 </span>{
             ndp[j] = -dp[j] * x + <span class="kw">if </span>j &gt;= <span class="number">1 </span>{ dp[j - <span class="number">1</span>] } <span class="kw">else </span>{ MInt::zero() };
         }
         std::mem::swap(<span class="kw-2">&amp;mut </span>dp, <span class="kw-2">&amp;mut </span>ndp);
     }
-    <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[MInt::zero(); n + <span class="number">1</span>];
+    <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::zero(); n + <span class="number">1</span>];
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=n {
         <span class="kw">let </span>t = y[i]
             / (<span class="number">0</span>..=n)
@@ -188,7 +188,7 @@
             }
         }
     }
-    res
+    <a href="../../../src/competitive/math/lagrange_interpolation.rs.html#65">res</a>
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (9243168fa 2022-08-31)" ></div></body></html>

@@ -559,216 +559,216 @@
 <span id="543">543</span>
 <span id="544">544</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{
-    node::{marker, Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec},
-    Allocator, MemoryPool,
+    node::{<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#702">marker</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#65">Node</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#628">NodeRange</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#81">NodeRef</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#89">Root</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#20">SplaySeeker</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#11">SplaySpec</a>},
+    <a href="../../../../src/competitive/data_structure/allocator.rs.html#7">Allocator</a>, <a href="../../../../src/competitive/data_structure/allocator.rs.html#13">MemoryPool</a>,
 };
 <span class="kw">use </span>std::{
-    borrow::Borrow,
-    cmp::Ordering,
-    fmt::{<span class="self">self</span>, Debug},
-    iter::FusedIterator,
+    <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">borrow::Borrow</a>,
+    <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>,
+    fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>},
+    <a href="https://doc.rust-lang.org/nightly/core/iter/traits/marker/trait.FusedIterator.html">iter::FusedIterator</a>,
     marker::PhantomData,
-    mem::{replace, ManuallyDrop},
-    ops::{Bound, DerefMut, RangeBounds},
+    mem::{<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/manually_drop/struct.ManuallyDrop.html">ManuallyDrop</a>},
+    ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html">Bound</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">DerefMut</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">RangeBounds</a>},
 };
 
 <span class="kw">struct </span>SizedSplay&lt;T&gt; {
     _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
-<span class="kw">impl</span>&lt;T&gt; SplaySpec <span class="kw">for </span>SizedSplay&lt;T&gt; {
-    <span class="kw">type </span>T = (T, usize);
-    <span class="kw">fn </span>has_bottom_up() -&gt; bool {
+<span class="kw">impl</span>&lt;T&gt; <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#11">SplaySpec</a> <span class="kw">for </span>SizedSplay&lt;T&gt; {
+    <span class="kw">type </span>T = (T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+    <span class="kw">fn </span>has_bottom_up() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <span class="bool-val">true
     </span>}
     <span class="kw">fn </span>bottom_up(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) {
-        <span class="kw">let </span>l = node.left().map(|p| p.data().<span class="number">1</span>).unwrap_or_default();
-        <span class="kw">let </span>r = node.right().map(|p| p.data().<span class="number">1</span>).unwrap_or_default();
-        node.data_mut().<span class="number">1 </span>= l + r + <span class="number">1</span>;
+        <span class="kw">let </span>l = <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#23">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#211">left</a>().map(|p| <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#24">p</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>().<span class="number">1</span>).unwrap_or_default();
+        <span class="kw">let </span>r = <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#23">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#218">right</a>().map(|p| <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#25">p</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>().<span class="number">1</span>).unwrap_or_default();
+        <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#23">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().<span class="number">1 </span>= <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#24">l</a> + <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#25">r</a> + <span class="number">1</span>;
     }
 }
 
 <span class="kw">struct </span>SeekByKey&lt;<span class="lifetime">&#39;a</span>, K, V, Q&gt;
 <span class="kw">where
-    </span>Q: <span class="question-mark">?</span>Sized,
+    </span>Q: <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
 {
     key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Q,
     _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; (K, V)&gt;,
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, K, V, Q&gt; SeekByKey&lt;<span class="lifetime">&#39;a</span>, K, V, Q&gt;
 <span class="kw">where
-    </span>Q: <span class="question-mark">?</span>Sized,
+    </span>Q: <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
 {
     <span class="kw">fn </span>new(key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Q) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            key,
+            <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#41">key</a>,
             _marker: PhantomData,
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, K, V, Q&gt; SplaySeeker <span class="kw">for </span>SeekByKey&lt;<span class="lifetime">&#39;a</span>, K, V, Q&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, K, V, Q&gt; <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#20">SplaySeeker</a> <span class="kw">for </span>SeekByKey&lt;<span class="lifetime">&#39;a</span>, K, V, Q&gt;
 <span class="kw">where
     </span>K: Borrow&lt;Q&gt;,
-    Q: Ord + <span class="question-mark">?</span>Sized,
+    Q: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
 {
     <span class="kw">type </span>S = SizedSplay&lt;(K, V)&gt;;
-    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; Ordering {
-        <span class="self">self</span>.key.cmp((node.data().<span class="number">0</span>).<span class="number">0</span>.borrow())
+    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#54">self</a>.key.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>((<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#54">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#168">data</a>().<span class="number">0</span>).<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">borrow</a>())
     }
 }
 
 <span class="kw">struct </span>SeekBySize&lt;K, V&gt; {
-    index: usize,
+    index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; (K, V)&gt;,
 }
 <span class="kw">impl</span>&lt;K, V&gt; SeekBySize&lt;K, V&gt; {
-    <span class="kw">fn </span>new(index: usize) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>new(index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            index,
+            <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#64">index</a>,
             _marker: PhantomData,
         }
     }
 }
-<span class="kw">impl</span>&lt;K, V&gt; SplaySeeker <span class="kw">for </span>SeekBySize&lt;K, V&gt; {
+<span class="kw">impl</span>&lt;K, V&gt; <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#20">SplaySeeker</a> <span class="kw">for </span>SeekBySize&lt;K, V&gt; {
     <span class="kw">type </span>S = SizedSplay&lt;(K, V)&gt;;
-    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; Ordering {
-        <span class="kw">let </span>lsize = node.left().map(|l| l.data().<span class="number">1</span>).unwrap_or_default();
-        <span class="kw">let </span>ord = <span class="self">self</span>.index.cmp(<span class="kw-2">&amp;</span>lsize);
-        <span class="kw">if </span><span class="macro">matches!</span>(ord, Ordering::Greater) {
-            <span class="self">self</span>.index -= lsize + <span class="number">1</span>;
+    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
+        <span class="kw">let </span>lsize = <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#73">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#171">left</a>().map(|l| <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#74">l</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#168">data</a>().<span class="number">1</span>).unwrap_or_default();
+        <span class="kw">let </span>ord = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#73">self</a>.index.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#74">lsize</a>);
+        <span class="kw">if </span><a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(ord, Ordering::Greater) {
+            <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#73">self</a>.index -= <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#74">lsize</a> + <span class="number">1</span>;
         }
-        ord
+        <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#75">ord</a>
     }
 }
 
-<span class="kw">pub struct </span>SplayMap&lt;K, V, A = MemoryPool&lt;Node&lt;((K, V), usize)&gt;&gt;&gt;
+<span class="kw">pub struct </span>SplayMap&lt;K, V, A = MemoryPool&lt;Node&lt;((K, V), <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;&gt;&gt;
 <span class="kw">where
-    </span>A: Allocator&lt;Node&lt;((K, V), usize)&gt;&gt;,
+    </span>A: Allocator&lt;Node&lt;((K, V), <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;&gt;,
 {
     root: Root&lt;SizedSplay&lt;(K, V)&gt;&gt;,
-    length: usize,
+    length: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     alloc: ManuallyDrop&lt;A&gt;,
 }
 
-<span class="kw">impl</span>&lt;K, V, A&gt; Debug <span class="kw">for </span>SplayMap&lt;K, V, A&gt;
+<span class="kw">impl</span>&lt;K, V, A&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>SplayMap&lt;K, V, A&gt;
 <span class="kw">where
-    </span>K: Debug,
-    V: Debug,
-    A: Allocator&lt;Node&lt;((K, V), usize)&gt;&gt;,
+    </span>K: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
+    V: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
+    A: Allocator&lt;Node&lt;((K, V), <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;&gt;,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        f.debug_struct(<span class="string">&quot;SplayMap&quot;</span>)
-            .field(<span class="string">&quot;root&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.root)
-            .field(<span class="string">&quot;length&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.length)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+        <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#98">f</a>.debug_struct(<span class="string">&quot;SplayMap&quot;</span>)
+            .field(<span class="string">&quot;root&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#98">self</a>.root)
+            .field(<span class="string">&quot;length&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#98">self</a>.length)
             .finish()
     }
 }
 
-<span class="kw">impl</span>&lt;K, V, A&gt; Drop <span class="kw">for </span>SplayMap&lt;K, V, A&gt;
+<span class="kw">impl</span>&lt;K, V, A&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html">Drop</a> <span class="kw">for </span>SplayMap&lt;K, V, A&gt;
 <span class="kw">where
-    </span>A: Allocator&lt;Node&lt;((K, V), usize)&gt;&gt;,
+    </span>A: Allocator&lt;Node&lt;((K, V), <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;&gt;,
 {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">unsafe </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = <span class="self">self</span>.root.take_first() {
                 <span class="self">self</span>.alloc.deallocate(node.into_dying().into_inner());
             }
-            ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>.alloc);
+            ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#110">self</a>.alloc);
         }
     }
 }
 
-<span class="kw">impl</span>&lt;K, V, A&gt; Default <span class="kw">for </span>SplayMap&lt;K, V, A&gt;
+<span class="kw">impl</span>&lt;K, V, A&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>SplayMap&lt;K, V, A&gt;
 <span class="kw">where
-    </span>A: Allocator&lt;Node&lt;((K, V), usize)&gt;&gt; + Default,
+    </span>A: Allocator&lt;Node&lt;((K, V), <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;&gt; + <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a>,
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             root: Root::default(),
             length: <span class="number">0</span>,
-            alloc: Default::default(),
+            alloc: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
         }
     }
 }
 
 <span class="kw">impl</span>&lt;K, V&gt; SplayMap&lt;K, V&gt; {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        Default::default()
+        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
     }
-    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             root: Root::default(),
             length: <span class="number">0</span>,
-            alloc: ManuallyDrop::new(MemoryPool::with_capacity(capacity)),
+            alloc: ManuallyDrop::new(MemoryPool::with_capacity(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#137">capacity</a>)),
         }
     }
 }
 <span class="kw">impl</span>&lt;K, V, A&gt; SplayMap&lt;K, V, A&gt;
 <span class="kw">where
-    </span>A: Allocator&lt;Node&lt;((K, V), usize)&gt;&gt;,
+    </span>A: Allocator&lt;Node&lt;((K, V), <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;&gt;,
 {
     <span class="kw">pub fn </span>get&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>V&gt;
     <span class="kw">where
         </span>K: Borrow&lt;Q&gt;,
-        Q: Ord + <span class="question-mark">?</span>Sized,
+        Q: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
     {
-        <span class="self">self</span>.get_key_value(key).map(|(<span class="kw">_</span>, v)| v)
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#149">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#163-166">get_key_value</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#149">key</a>).map(|(<span class="kw">_</span>, v)| <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#154">v</a>)
     }
-    <span class="kw">fn </span>splay_by_key&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt;
+    <span class="kw">fn </span>splay_by_key&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>&gt;
     <span class="kw">where
         </span>K: Borrow&lt;Q&gt;,
-        Q: Ord + <span class="question-mark">?</span>Sized,
+        Q: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
     {
-        <span class="self">self</span>.root.splay_by(SeekByKey::new(key))
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#156">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#469-471">splay_by</a>(SeekByKey::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#156">key</a>))
     }
     <span class="kw">pub fn </span>get_key_value&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt;
     <span class="kw">where
         </span>K: Borrow&lt;Q&gt;,
-        Q: Ord + <span class="question-mark">?</span>Sized,
+        Q: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
     {
         <span class="kw">if </span>!<span class="macro">matches!</span>(<span class="self">self</span>.splay_by_key(key)<span class="question-mark">?</span>, Ordering::Equal) {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="self">self</span>.root.root().map(|node| {
-            <span class="kw">let </span>((k, v), <span class="kw">_</span>) = node.data();
-            (k, v)
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#163">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#463">root</a>().map(|node| {
+            <span class="kw">let </span>((k, v), <span class="kw">_</span>) = <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#171">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#168">data</a>();
+            (<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#172">k</a>, <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#172">v</a>)
         })
     }
-    <span class="kw">fn </span>splay_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
-        <span class="self">self</span>.root.splay_by(SeekBySize::new(index))
+    <span class="kw">fn </span>splay_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>&gt; {
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#176">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#469-471">splay_by</a>(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#176">index</a>))
     }
-    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
+    <span class="kw">pub fn </span>get_key_value_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt; {
         <span class="kw">if </span>index &gt;= <span class="self">self</span>.length {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="self">self</span>.splay_at(index);
-        <span class="self">self</span>.root.root().map(|node| {
-            <span class="kw">let </span>((k, v), <span class="kw">_</span>) = node.data();
-            (k, v)
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#179">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#176">splay_at</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#179">index</a>);
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#179">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#463">root</a>().map(|node| {
+            <span class="kw">let </span>((k, v), <span class="kw">_</span>) = <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#184">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#168">data</a>();
+            (<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#185">k</a>, <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#185">v</a>)
         })
     }
     <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: K, value: V) -&gt; <span class="prelude-ty">Option</span>&lt;V&gt;
     <span class="kw">where
-        </span>K: Ord,
+        </span>K: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
     {
-        <span class="kw">let </span>ord = <span class="self">self</span>.splay_by_key(<span class="kw-2">&amp;</span>key);
-        <span class="self">self</span>.length += (ord != <span class="prelude-val">Some</span>(Ordering::Equal)) <span class="kw">as </span>usize;
-        <span class="kw">match </span>ord {
+        <span class="kw">let </span>ord = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#156-159">splay_by_key</a>(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">key</a>);
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">self</a>.length += (<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#193">ord</a> != <span class="prelude-val">Some</span>(Ordering::Equal)) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+        <span class="kw">match </span><a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#193">ord</a> {
             <span class="prelude-val">Some</span>(Ordering::Equal) =&gt; {
-                <span class="kw">return </span><span class="prelude-val">Some</span>(replace(
-                    <span class="kw-2">&amp;mut </span>(<span class="self">self</span>.root.root_data_mut().unwrap().data_mut().<span class="number">0</span>).<span class="number">1</span>,
-                    value,
+                <span class="kw">return </span><span class="prelude-val">Some</span>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(
+                    <span class="kw-2">&amp;mut </span>(<a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#466">root_data_mut</a>().unwrap().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().<span class="number">0</span>).<span class="number">1</span>,
+                    <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">value</a>,
                 ))
             }
             <span class="prelude-val">Some</span>(Ordering::Less) =&gt; <span class="kw">unsafe </span>{
-                <span class="self">self</span>.root.insert_left(NodeRef::from_data(
-                    ((key, value), <span class="number">1</span>),
-                    <span class="self">self</span>.alloc.deref_mut(),
+                <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#477">insert_left</a>(NodeRef::from_data(
+                    ((<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">key</a>, <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">value</a>), <span class="number">1</span>),
+                    <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>(),
                 ));
             },
             <span class="kw">_ </span>=&gt; <span class="kw">unsafe </span>{
-                <span class="self">self</span>.root.insert_right(NodeRef::from_data(
-                    ((key, value), <span class="number">1</span>),
-                    <span class="self">self</span>.alloc.deref_mut(),
+                <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#486">insert_right</a>(NodeRef::from_data(
+                    ((<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">key</a>, <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">value</a>), <span class="number">1</span>),
+                    <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#189">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>(),
                 ));
             },
         }
@@ -777,71 +777,71 @@
     <span class="kw">pub fn </span>remove&lt;Q&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>Q) -&gt; <span class="prelude-ty">Option</span>&lt;V&gt;
     <span class="kw">where
         </span>K: Borrow&lt;Q&gt;,
-        Q: Ord + <span class="question-mark">?</span>Sized,
+        Q: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
     {
         <span class="kw">if </span>!<span class="macro">matches!</span>(<span class="self">self</span>.splay_by_key(key)<span class="question-mark">?</span>, Ordering::Equal) {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="self">self</span>.length -= <span class="number">1</span>;
-        <span class="kw">let </span>node = <span class="self">self</span>.root.take_root().unwrap().into_dying();
-        <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>((node.into_data(<span class="self">self</span>.alloc.deref_mut()).<span class="number">0</span>).<span class="number">1</span>) }
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#217">self</a>.length -= <span class="number">1</span>;
+        <span class="kw">let </span>node = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#217">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#513">take_root</a>().unwrap().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#158">into_dying</a>();
+        <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>((<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#226">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#268-270">into_data</a>(<a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#217">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>()).<span class="number">0</span>).<span class="number">1</span>) }
     }
-    <span class="kw">pub fn </span>remove_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;(K, V)&gt; {
+    <span class="kw">pub fn </span>remove_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(K, V)&gt; {
         <span class="kw">if </span>index &gt;= <span class="self">self</span>.length {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <span class="self">self</span>.splay_at(index);
-        <span class="self">self</span>.length -= <span class="number">1</span>;
-        <span class="kw">let </span>node = <span class="self">self</span>.root.take_root().unwrap().into_dying();
-        <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>(node.into_data(<span class="self">self</span>.alloc.deref_mut()).<span class="number">0</span>) }
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#229">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#176">splay_at</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#229">index</a>);
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#229">self</a>.length -= <span class="number">1</span>;
+        <span class="kw">let </span>node = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#229">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#513">take_root</a>().unwrap().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#158">into_dying</a>();
+        <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#235">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#268-270">into_data</a>(<a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#229">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>()).<span class="number">0</span>) }
     }
-    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.length
+    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#238">self</a>.length
     }
-    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.len() == <span class="number">0
+    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#241">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#238">len</a>() == <span class="number">0
     </span>}
     <span class="kw">pub fn </span>iter(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Iter&lt;<span class="lifetime">&#39;_</span>, K, V&gt; {
-        Iter {
-            iter: NodeRange::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.root),
+        <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#290">Iter</a> {
+            iter: NodeRange::new(<span class="kw-2">&amp;mut </span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#244">self</a>.root),
         }
     }
     <span class="kw">pub fn </span>range&lt;Q, R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; Iter&lt;<span class="lifetime">&#39;_</span>, K, V&gt;
     <span class="kw">where
         </span>K: Borrow&lt;Q&gt;,
-        Q: Ord + <span class="question-mark">?</span>Sized,
+        Q: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
         R: RangeBounds&lt;Q&gt;,
     {
-        <span class="kw">let </span>start = <span class="kw">match </span>range.start_bound() {
-            Bound::Included(key) =&gt; Bound::Included(SeekByKey::new(key)),
-            Bound::Excluded(key) =&gt; Bound::Excluded(SeekByKey::new(key)),
+        <span class="kw">let </span>start = <span class="kw">match </span><a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#249">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">start_bound</a>() {
+            Bound::Included(key) =&gt; Bound::Included(SeekByKey::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#256">key</a>)),
+            Bound::Excluded(key) =&gt; Bound::Excluded(SeekByKey::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#257">key</a>)),
             Bound::Unbounded =&gt; Bound::Unbounded,
         };
-        <span class="kw">let </span>end = <span class="kw">match </span>range.end_bound() {
-            Bound::Included(key) =&gt; Bound::Included(SeekByKey::new(key)),
-            Bound::Excluded(key) =&gt; Bound::Excluded(SeekByKey::new(key)),
+        <span class="kw">let </span>end = <span class="kw">match </span><a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#249">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">end_bound</a>() {
+            Bound::Included(key) =&gt; Bound::Included(SeekByKey::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#261">key</a>)),
+            Bound::Excluded(key) =&gt; Bound::Excluded(SeekByKey::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#262">key</a>)),
             Bound::Unbounded =&gt; Bound::Unbounded,
         };
-        Iter {
-            iter: <span class="self">self</span>.root.range(start, end),
+        <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#290">Iter</a> {
+            iter: <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#249">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#559-561">range</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#255">start</a>, <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#260">end</a>),
         }
     }
     <span class="kw">pub fn </span>range_at&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; Iter&lt;<span class="lifetime">&#39;_</span>, K, V&gt;
     <span class="kw">where
-        </span>R: RangeBounds&lt;usize&gt;,
+        </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <span class="kw">let </span>start = <span class="kw">match </span>range.start_bound() {
-            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(index)),
-            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(index)),
+        <span class="kw">let </span>start = <span class="kw">match </span><a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#269">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">start_bound</a>() {
+            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#274">index</a>)),
+            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#275">index</a>)),
             Bound::Unbounded =&gt; Bound::Unbounded,
         };
-        <span class="kw">let </span>end = <span class="kw">match </span>range.end_bound() {
-            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(index)),
-            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(index)),
+        <span class="kw">let </span>end = <span class="kw">match </span><a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#269">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">end_bound</a>() {
+            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#279">index</a>)),
+            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#280">index</a>)),
             Bound::Unbounded =&gt; Bound::Unbounded,
         };
-        Iter {
-            iter: <span class="self">self</span>.root.range(start, end),
+        <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#290">Iter</a> {
+            iter: <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#269">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#559-561">range</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#273">start</a>, <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#278">end</a>),
         }
     }
 }
@@ -850,40 +850,40 @@
 </span><span class="kw">pub struct </span>Iter&lt;<span class="lifetime">&#39;a</span>, K, V&gt; {
     iter: NodeRange&lt;<span class="lifetime">&#39;a</span>, SizedSplay&lt;(K, V)&gt;&gt;,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, K, V&gt; Iterator <span class="kw">for </span>Iter&lt;<span class="lifetime">&#39;a</span>, K, V&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, K, V&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a> <span class="kw">for </span>Iter&lt;<span class="lifetime">&#39;a</span>, K, V&gt;
 <span class="kw">where
-    </span>K: Clone,
-    V: Clone,
+    </span>K: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+    V: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
 {
     <span class="kw">type </span>Item = (K, V);
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="self">self</span>.iter.next_checked().map(|node| node.data().<span class="number">0</span>.clone())
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#299">self</a>.iter.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#674">next_checked</a>().map(|node| <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#300">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>())
     }
     <span class="kw">fn </span>last(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="self">self</span>.next_back()
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#302">self</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/double_ended/trait.DoubleEndedIterator.html">next_back</a>()
     }
     <span class="kw">fn </span>min(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="self">self</span>.next()
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#305">self</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()
     }
     <span class="kw">fn </span>max(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="self">self</span>.next_back()
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#308">self</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/double_ended/trait.DoubleEndedIterator.html">next_back</a>()
     }
 }
-<span class="kw">impl</span>&lt;K, V&gt; FusedIterator <span class="kw">for </span>Iter&lt;<span class="lifetime">&#39;_</span>, K, V&gt;
+<span class="kw">impl</span>&lt;K, V&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/marker/trait.FusedIterator.html">FusedIterator</a> <span class="kw">for </span>Iter&lt;<span class="lifetime">&#39;_</span>, K, V&gt;
 <span class="kw">where
-    </span>K: Clone,
-    V: Clone,
+    </span>K: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+    V: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
 {
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, K, V&gt; DoubleEndedIterator <span class="kw">for </span>Iter&lt;<span class="lifetime">&#39;a</span>, K, V&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, K, V&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/double_ended/trait.DoubleEndedIterator.html">DoubleEndedIterator</a> <span class="kw">for </span>Iter&lt;<span class="lifetime">&#39;a</span>, K, V&gt;
 <span class="kw">where
-    </span>K: Clone,
-    V: Clone,
+    </span>K: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+    V: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
 {
     <span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="self">self</span>.iter
-            .next_back_checked()
-            .map(|node| node.data().<span class="number">0</span>.clone())
+        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#323">self</a>.iter
+            .<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#680">next_back_checked</a>()
+            .map(|node| <a href="../../../../src/competitive/data_structure/splay_tree/sized_map.rs.html#326">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>())
     }
 }
 

@@ -133,67 +133,67 @@
 <span id="117">117</span>
 <span id="118">118</span>
 <span id="119">119</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{GetDistinctMut, Monoid, SegmentTree, SliceBisectExt};
-<span class="kw">use </span>std::fmt::{<span class="self">self</span>, Debug, Formatter};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/tools/slice.rs.html#2">GetDistinctMut</a>, <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>, <a href="../../../src/competitive/data_structure/segment_tree.rs.html#4">SegmentTree</a>, <a href="../../../src/competitive/algorithm/binary_search.rs.html#80">SliceBisectExt</a>};
+<span class="kw">use </span>std::fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>};
 
 <span class="kw">pub struct </span>SegmentTree2D&lt;M, X, Y&gt;
 <span class="kw">where
-    </span>M: Monoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
 {
     xs: Vec&lt;X&gt;,
     ys: Vec&lt;Y&gt;,
-    index: Vec&lt;Vec&lt;usize&gt;&gt;,
+    index: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;,
     segs: Vec&lt;SegmentTree&lt;M&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;M, X, Y&gt; Clone <span class="kw">for </span>SegmentTree2D&lt;M, X, Y&gt;
+<span class="kw">impl</span>&lt;M, X, Y&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>SegmentTree2D&lt;M, X, Y&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    X: Clone,
-    Y: Clone,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    X: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+    Y: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            xs: <span class="self">self</span>.xs.clone(),
-            ys: <span class="self">self</span>.ys.clone(),
-            index: <span class="self">self</span>.index.clone(),
-            segs: <span class="self">self</span>.segs.clone(),
+            xs: <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#20">self</a>.xs.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            ys: <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#20">self</a>.ys.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            index: <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#20">self</a>.index.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            segs: <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#20">self</a>.segs.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
         }
     }
 }
 
-<span class="kw">impl</span>&lt;M, X, Y&gt; Debug <span class="kw">for </span>SegmentTree2D&lt;M, X, Y&gt;
+<span class="kw">impl</span>&lt;M, X, Y&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>SegmentTree2D&lt;M, X, Y&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    M::T: Debug,
-    X: Debug,
-    Y: Debug,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
+    X: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
+    Y: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        f.debug_struct(<span class="string">&quot;SegmentTree2D&quot;</span>)
-            .field(<span class="string">&quot;xs&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.xs)
-            .field(<span class="string">&quot;ys&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.ys)
-            .field(<span class="string">&quot;index&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.index)
-            .field(<span class="string">&quot;segs&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.segs)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+        <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#37">f</a>.debug_struct(<span class="string">&quot;SegmentTree2D&quot;</span>)
+            .field(<span class="string">&quot;xs&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#37">self</a>.xs)
+            .field(<span class="string">&quot;ys&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#37">self</a>.ys)
+            .field(<span class="string">&quot;index&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#37">self</a>.index)
+            .field(<span class="string">&quot;segs&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#37">self</a>.segs)
             .finish()
     }
 }
 
 <span class="kw">impl</span>&lt;M, X, Y&gt; SegmentTree2D&lt;M, X, Y&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    X: Ord + Clone,
-    Y: Ord + Clone,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    X: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+    Y: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
 {
     <span class="kw">pub fn </span>new(points: <span class="kw-2">&amp;</span>[(X, Y)]) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>xs: Vec&lt;<span class="kw">_</span>&gt; = points.iter().map(|(x, <span class="kw">_</span>)| x.clone()).collect();
-        <span class="kw">let </span><span class="kw-2">mut </span>ys: Vec&lt;<span class="kw">_</span>&gt; = points.iter().map(|(<span class="kw">_</span>, y)| y.clone()).collect();
-        xs.sort();
-        xs.dedup();
-        ys.sort();
-        ys.dedup();
-        <span class="kw">let </span>n = xs.len();
-        <span class="kw">let </span><span class="kw-2">mut </span>index = <span class="macro">vec!</span>[<span class="macro">vec!</span>[]; n * <span class="number">2</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>xs: Vec&lt;<span class="kw">_</span>&gt; = <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#53">points</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|(x, <span class="kw">_</span>)| <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#54">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>ys: Vec&lt;<span class="kw">_</span>&gt; = <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#53">points</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|(<span class="kw">_</span>, y)| <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#55">y</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#54">xs</a>.sort();
+        <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#54">xs</a>.dedup();
+        <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#55">ys</a>.sort();
+        <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#55">ys</a>.dedup();
+        <span class="kw">let </span>n = <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#54">xs</a>.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>index = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[]; n * <span class="number">2</span>];
         <span class="kw">for </span>(x, y) <span class="kw">in </span>points {
             <span class="kw">let </span>i = xs.binary_search(x).unwrap();
             <span class="kw">let </span>j = ys.binary_search(y).unwrap();
@@ -210,17 +210,17 @@
             index[i].sort_unstable();
             index[i].dedup();
         }
-        <span class="kw">let </span>segs = index.iter().map(Vec::len).map(SegmentTree::new).collect();
+        <span class="kw">let </span>segs = <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#61">index</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(Vec::len).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(SegmentTree::new).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="self">Self </span>{
-            xs,
-            ys,
-            index,
-            segs,
+            <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#54">xs</a>,
+            <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#55">ys</a>,
+            <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#61">index</a>,
+            <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#78">segs</a>,
         }
     }
     <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: X, y: Y, v: M::T) {
-        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="self">self</span>.xs.binary_search(<span class="kw-2">&amp;</span>x).expect(<span class="string">&quot;not exist X key&quot;</span>) + <span class="self">self</span>.xs.len();
-        <span class="kw">let </span>j = <span class="self">self</span>.ys.binary_search(<span class="kw-2">&amp;</span>y).expect(<span class="string">&quot;not exist Y key&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>i = <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#86">self</a>.xs.binary_search(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#86">x</a>).expect(<span class="string">&quot;not exist X key&quot;</span>) + <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#86">self</a>.xs.len();
+        <span class="kw">let </span>j = <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#86">self</a>.ys.binary_search(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#86">y</a>).expect(<span class="string">&quot;not exist Y key&quot;</span>);
         <span class="kw">while </span>i &gt; <span class="number">0 </span>{
             <span class="kw">let </span>jj = <span class="self">self</span>.index[i].binary_search(<span class="kw-2">&amp;</span>j).unwrap();
             <span class="self">self</span>.segs[i].update(jj, v.clone());
@@ -228,10 +228,10 @@
         }
     }
     <span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, xl: X, xr: X, yl: Y, yr: Y) -&gt; M::T {
-        <span class="kw">let </span><span class="kw-2">mut </span>il = <span class="self">self</span>.xs.position_bisect(|x| x &gt;= <span class="kw-2">&amp;</span>xl) + <span class="self">self</span>.xs.len();
-        <span class="kw">let </span><span class="kw-2">mut </span>ir = <span class="self">self</span>.xs.position_bisect(|x| x &gt;= <span class="kw-2">&amp;</span>xr) + <span class="self">self</span>.xs.len();
-        <span class="kw">let </span>jl = <span class="self">self</span>.ys.position_bisect(|y| y &gt;= <span class="kw-2">&amp;</span>yl);
-        <span class="kw">let </span>jr = <span class="self">self</span>.ys.position_bisect(|y| y &gt;= <span class="kw-2">&amp;</span>yr);
+        <span class="kw">let </span><span class="kw-2">mut </span>il = <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">self</a>.xs.<a href="../../../src/competitive/algorithm/binary_search.rs.html#87">position_bisect</a>(|x| <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#96">x</a> &gt;= <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">xl</a>) + <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">self</a>.xs.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>ir = <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">self</a>.xs.<a href="../../../src/competitive/algorithm/binary_search.rs.html#87">position_bisect</a>(|x| <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#97">x</a> &gt;= <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">xr</a>) + <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">self</a>.xs.len();
+        <span class="kw">let </span>jl = <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">self</a>.ys.<a href="../../../src/competitive/algorithm/binary_search.rs.html#87">position_bisect</a>(|y| <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#98">y</a> &gt;= <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">yl</a>);
+        <span class="kw">let </span>jr = <a class="self" href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">self</a>.ys.<a href="../../../src/competitive/algorithm/binary_search.rs.html#87">position_bisect</a>(|y| <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#99">y</a> &gt;= <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#95">yr</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>v = M::unit();
         <span class="kw">while </span>il &lt; ir {
             <span class="kw">if </span>il &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
@@ -249,7 +249,7 @@
             il /= <span class="number">2</span>;
             ir /= <span class="number">2</span>;
         }
-        v
+        <a href="../../../src/competitive/data_structure/segment_tree_2d.rs.html#100">v</a>
     }
 }
 </code></pre></div>

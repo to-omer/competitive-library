@@ -193,61 +193,61 @@
 <span id="177">177</span>
 <span id="178">178</span>
 </pre><pre class="rust"><code><span class="attribute">#[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
-</span><span class="kw">pub struct </span>BitDp(<span class="kw">pub </span>usize);
+</span><span class="kw">pub struct </span>BitDp(<span class="kw">pub </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
 
-<span class="kw">impl </span>BitDp {
-    <span class="kw">pub fn </span>is_element(mask: usize, x: usize) -&gt; bool {
-        mask &amp; <span class="number">1 </span>&lt;&lt; x != <span class="number">0
+<span class="kw">impl </span><a href="../../../src/competitive/algorithm/bitdp.rs.html#2">BitDp</a> {
+    <span class="kw">pub fn </span>is_element(mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a href="../../../src/competitive/algorithm/bitdp.rs.html#5">mask</a> &amp; <span class="number">1 </span>&lt;&lt; <a href="../../../src/competitive/algorithm/bitdp.rs.html#5">x</a> != <span class="number">0
     </span>}
-    <span class="kw">pub fn </span>elements(<span class="self">self</span>, mask: usize) -&gt; <span class="kw">impl </span>Iterator&lt;Item = usize&gt; {
-        (<span class="number">0</span>..<span class="self">self</span>.<span class="number">0</span>).filter(<span class="kw">move </span>|<span class="kw-2">&amp;</span>x| <span class="self">Self</span>::is_element(mask, x))
+    <span class="kw">pub fn </span>elements(<span class="self">self</span>, mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
+        (<span class="number">0</span>..<a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#8">self</a>.<span class="number">0</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(<span class="kw">move </span>|<span class="kw-2">&amp;</span>x| <span class="self">Self</span>::is_element(<a href="../../../src/competitive/algorithm/bitdp.rs.html#8">mask</a>, <a href="../../../src/competitive/algorithm/bitdp.rs.html#9">x</a>))
     }
-    <span class="kw">pub fn </span>not_elements(<span class="self">self</span>, mask: usize) -&gt; <span class="kw">impl </span>Iterator&lt;Item = usize&gt; {
-        (<span class="number">0</span>..<span class="self">self</span>.<span class="number">0</span>).filter(<span class="kw">move </span>|<span class="kw-2">&amp;</span>x| !<span class="self">Self</span>::is_element(mask, x))
+    <span class="kw">pub fn </span>not_elements(<span class="self">self</span>, mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
+        (<span class="number">0</span>..<a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#11">self</a>.<span class="number">0</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(<span class="kw">move </span>|<span class="kw-2">&amp;</span>x| !<span class="self">Self</span>::is_element(<a href="../../../src/competitive/algorithm/bitdp.rs.html#11">mask</a>, <a href="../../../src/competitive/algorithm/bitdp.rs.html#12">x</a>))
     }
-    <span class="kw">pub fn </span>is_subset(mask: usize, elements: usize) -&gt; bool {
-        mask &amp; elements == elements
+    <span class="kw">pub fn </span>is_subset(mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, elements: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a href="../../../src/competitive/algorithm/bitdp.rs.html#14">mask</a> &amp; <a href="../../../src/competitive/algorithm/bitdp.rs.html#14">elements</a> == <a href="../../../src/competitive/algorithm/bitdp.rs.html#14">elements</a>
     }
-    <span class="kw">fn </span>next_subset(mask: usize, cur: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+    <span class="kw">fn </span>next_subset(mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cur: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
         <span class="kw">if </span>cur == <span class="number">0 </span>{
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{
-            <span class="prelude-val">Some</span>((cur - <span class="number">1</span>) &amp; mask)
+            <span class="prelude-val">Some</span>((<a href="../../../src/competitive/algorithm/bitdp.rs.html#17">cur</a> - <span class="number">1</span>) &amp; <a href="../../../src/competitive/algorithm/bitdp.rs.html#17">mask</a>)
         }
     }
-    <span class="kw">pub fn </span>subsets(mask: usize) -&gt; Subsets {
-        Subsets {
-            mask,
-            cur: <span class="prelude-val">Some</span>(mask),
+    <span class="kw">pub fn </span>subsets(mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="../../../src/competitive/algorithm/bitdp.rs.html#47">Subsets</a> {
+        <a href="../../../src/competitive/algorithm/bitdp.rs.html#47">Subsets</a> {
+            <a href="../../../src/competitive/algorithm/bitdp.rs.html#24">mask</a>,
+            cur: <span class="prelude-val">Some</span>(<a href="../../../src/competitive/algorithm/bitdp.rs.html#24">mask</a>),
         }
     }
-    <span class="kw">fn </span>next_combination(cur: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+    <span class="kw">fn </span>next_combination(cur: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
         <span class="kw">if </span>cur == <span class="number">0 </span>{
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{
-            <span class="kw">let </span>x = cur &amp; (!cur + <span class="number">1</span>);
-            <span class="kw">let </span>y = cur + x;
-            <span class="prelude-val">Some</span>(((cur &amp; !y) / x / <span class="number">2</span>) | y)
+            <span class="kw">let </span>x = <a href="../../../src/competitive/algorithm/bitdp.rs.html#30">cur</a> &amp; (!<a href="../../../src/competitive/algorithm/bitdp.rs.html#30">cur</a> + <span class="number">1</span>);
+            <span class="kw">let </span>y = <a href="../../../src/competitive/algorithm/bitdp.rs.html#30">cur</a> + <a href="../../../src/competitive/algorithm/bitdp.rs.html#34">x</a>;
+            <span class="prelude-val">Some</span>(((<a href="../../../src/competitive/algorithm/bitdp.rs.html#30">cur</a> &amp; !<a href="../../../src/competitive/algorithm/bitdp.rs.html#35">y</a>) / <a href="../../../src/competitive/algorithm/bitdp.rs.html#34">x</a> / <span class="number">2</span>) | <a href="../../../src/competitive/algorithm/bitdp.rs.html#35">y</a>)
         }
     }
-    <span class="kw">pub fn </span>combinations(<span class="self">self</span>, k: usize) -&gt; Combinations {
-        Combinations {
-            mask: <span class="number">1 </span>&lt;&lt; <span class="self">self</span>.<span class="number">0</span>,
-            cur: <span class="prelude-val">Some</span>((<span class="number">1 </span>&lt;&lt; k) - <span class="number">1</span>),
+    <span class="kw">pub fn </span>combinations(<span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="../../../src/competitive/algorithm/bitdp.rs.html#63">Combinations</a> {
+        <a href="../../../src/competitive/algorithm/bitdp.rs.html#63">Combinations</a> {
+            mask: <span class="number">1 </span>&lt;&lt; <a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#39">self</a>.<span class="number">0</span>,
+            cur: <span class="prelude-val">Some</span>((<span class="number">1 </span>&lt;&lt; <a href="../../../src/competitive/algorithm/bitdp.rs.html#39">k</a>) - <span class="number">1</span>),
         }
     }
 }
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Subsets {
-    mask: usize,
-    cur: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    cur: <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 }
-<span class="kw">impl </span>Iterator <span class="kw">for </span>Subsets {
-    <span class="kw">type </span>Item = usize;
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a> <span class="kw">for </span><a href="../../../src/competitive/algorithm/bitdp.rs.html#47">Subsets</a> {
+    <span class="kw">type </span>Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(cur) = <span class="self">self</span>.cur {
-            <span class="self">self</span>.cur = BitDp::next_subset(<span class="self">self</span>.mask, cur);
-            <span class="prelude-val">Some</span>(cur)
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(cur) = <a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#53">self</a>.cur {
+            <a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#53">self</a>.cur = BitDp::next_subset(<a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#53">self</a>.mask, <a href="../../../src/competitive/algorithm/bitdp.rs.html#54">cur</a>);
+            <span class="prelude-val">Some</span>(<a href="../../../src/competitive/algorithm/bitdp.rs.html#54">cur</a>)
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>}
@@ -255,16 +255,16 @@
 }
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Combinations {
-    mask: usize,
-    cur: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    mask: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    cur: <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 }
-<span class="kw">impl </span>Iterator <span class="kw">for </span>Combinations {
-    <span class="kw">type </span>Item = usize;
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a> <span class="kw">for </span><a href="../../../src/competitive/algorithm/bitdp.rs.html#63">Combinations</a> {
+    <span class="kw">type </span>Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(cur) = <span class="self">self</span>.cur {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(cur) = <a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#69">self</a>.cur {
             <span class="kw">if </span>cur &lt; <span class="self">self</span>.mask {
-                <span class="self">self</span>.cur = BitDp::next_combination(cur);
-                <span class="prelude-val">Some</span>(cur)
+                <a class="self" href="../../../src/competitive/algorithm/bitdp.rs.html#69">self</a>.cur = BitDp::next_combination(<a href="../../../src/competitive/algorithm/bitdp.rs.html#70">cur</a>);
+                <span class="prelude-val">Some</span>(<a href="../../../src/competitive/algorithm/bitdp.rs.html#70">cur</a>)
             } <span class="kw">else </span>{
                 <span class="prelude-val">None
             </span>}

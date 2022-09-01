@@ -113,8 +113,8 @@
 <span id="97">97</span>
 </pre><pre class="rust"><code><span class="doccomment">//! dynamic programming on all-rooted trees
 
-</span><span class="kw">use </span><span class="kw">crate</span>::algebra::Monoid;
-<span class="kw">use </span><span class="kw">crate</span>::graph::{Adjacency, UndirectedSparseGraph};
+</span><span class="kw">use </span><a href="../../../src/competitive/algebra/magma.rs.html#45"><span class="kw">crate</span>::algebra::Monoid</a>;
+<span class="kw">use </span><span class="kw">crate</span>::graph::{<a href="../../../src/competitive/graph/sparse_graph.rs.html#17">Adjacency</a>, <a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>};
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;SparseGraph&quot;</span>))]
 </span><span class="doccomment">/// dynamic programming on all-rooted trees
@@ -122,8 +122,8 @@
 /// caluculate all subtrees (hanging on the edge) in specific ordering,
 /// each subtree calculated in the order of merge and rooting
 </span><span class="attribute">#[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span>ReRooting&lt;<span class="lifetime">&#39;a</span>, M: Monoid, F: Fn(<span class="kw-2">&amp;</span>M::T, usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; M::T&gt; {
-    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>UndirectedSparseGraph,
+</span><span class="kw">pub struct </span>ReRooting&lt;<span class="lifetime">&#39;a</span>, M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>, F: Fn(<span class="kw-2">&amp;</span>M::T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; M::T&gt; {
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
     <span class="doccomment">/// dp\[v\]: result of v-rooted tree
     </span><span class="kw">pub </span>dp: Vec&lt;M::T&gt;,
     <span class="doccomment">/// ep\[e\]: result of e-subtree, if e &gt;= n then reversed-e-subtree
@@ -134,55 +134,55 @@
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>)]
 </span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, M, F&gt; ReRooting&lt;<span class="lifetime">&#39;a</span>, M, F&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    F: Fn(<span class="kw-2">&amp;</span>M::T, usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; M::T,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    F: Fn(<span class="kw-2">&amp;</span>M::T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; M::T,
 {
-    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>UndirectedSparseGraph, rooting: F) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>dp = <span class="macro">vec!</span>[M::unit(); graph.vertices_size()];
-        <span class="kw">let </span>ep = <span class="macro">vec!</span>[M::unit(); graph.vertices_size() * <span class="number">2</span>];
+    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>, rooting: F) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>dp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); graph.vertices_size()];
+        <span class="kw">let </span>ep = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); graph.vertices_size() * <span class="number">2</span>];
         <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
-            graph,
-            dp,
-            ep,
-            rooting,
+            <a href="../../../src/competitive/tree/rerooting.rs.html#27">graph</a>,
+            <a href="../../../src/competitive/tree/rerooting.rs.html#28">dp</a>,
+            <a href="../../../src/competitive/tree/rerooting.rs.html#29">ep</a>,
+            <a href="../../../src/competitive/tree/rerooting.rs.html#27">rooting</a>,
         };
-        self_.rerooting();
-        self_
+        <a href="../../../src/competitive/tree/rerooting.rs.html#30">self_</a>.<a href="../../../src/competitive/tree/rerooting.rs.html#91">rerooting</a>();
+        <a href="../../../src/competitive/tree/rerooting.rs.html#30">self_</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>eidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
-        a.id + <span class="self">self</span>.graph.edges_size() * (u &gt; a.to) <span class="kw">as </span>usize
+    </span><span class="kw">fn </span>eidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, a: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#17">Adjacency</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="../../../src/competitive/tree/rerooting.rs.html#40">a</a>.id + <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#40">self</a>.graph.<a href="../../../src/competitive/graph/sparse_graph.rs.html#43">edges_size</a>() * (<a href="../../../src/competitive/tree/rerooting.rs.html#40">u</a> &gt; <a href="../../../src/competitive/tree/rerooting.rs.html#40">a</a>.to) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>reidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, a: <span class="kw-2">&amp;</span>Adjacency) -&gt; usize {
-        a.id + <span class="self">self</span>.graph.edges_size() * (u &lt; a.to) <span class="kw">as </span>usize
+    </span><span class="kw">fn </span>reidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, a: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#17">Adjacency</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="../../../src/competitive/tree/rerooting.rs.html#44">a</a>.id + <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#44">self</a>.graph.<a href="../../../src/competitive/graph/sparse_graph.rs.html#43">edges_size</a>() * (<a href="../../../src/competitive/tree/rerooting.rs.html#44">u</a> &lt; <a href="../../../src/competitive/tree/rerooting.rs.html#44">a</a>.to) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>merge(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, y: <span class="kw-2">&amp;</span>M::T) -&gt; M::T {
-        M::operate(x, y)
+        M::operate(<a href="../../../src/competitive/tree/rerooting.rs.html#48">x</a>, <a href="../../../src/competitive/tree/rerooting.rs.html#48">y</a>)
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize, eid: usize) -&gt; M::T {
-        (<span class="self">self</span>.rooting)(x, vid, <span class="prelude-val">Some</span>(eid))
+    </span><span class="kw">fn </span>add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
+        (<a class="self" href="../../../src/competitive/tree/rerooting.rs.html#52">self</a>.rooting)(<a href="../../../src/competitive/tree/rerooting.rs.html#52">x</a>, <a href="../../../src/competitive/tree/rerooting.rs.html#52">vid</a>, <span class="prelude-val">Some</span>(<a href="../../../src/competitive/tree/rerooting.rs.html#52">eid</a>))
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>add_root(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: usize) -&gt; M::T {
-        (<span class="self">self</span>.rooting)(x, vid, <span class="prelude-val">None</span>)
+    </span><span class="kw">fn </span>add_root(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
+        (<a class="self" href="../../../src/competitive/tree/rerooting.rs.html#56">self</a>.rooting)(<a href="../../../src/competitive/tree/rerooting.rs.html#56">x</a>, <a href="../../../src/competitive/tree/rerooting.rs.html#56">vid</a>, <span class="prelude-val">None</span>)
     }
-    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pa: <span class="kw-2">&amp;</span>Adjacency, p: usize) {
-        <span class="kw">let </span>u = pa.to;
-        <span class="kw">let </span>pi = <span class="self">self</span>.eidx(p, pa);
+    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pa: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#17">Adjacency</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <span class="kw">let </span>u = <a href="../../../src/competitive/tree/rerooting.rs.html#59">pa</a>.to;
+        <span class="kw">let </span>pi = <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#59">self</a>.<a href="../../../src/competitive/tree/rerooting.rs.html#40">eidx</a>(<a href="../../../src/competitive/tree/rerooting.rs.html#59">p</a>, <a href="../../../src/competitive/tree/rerooting.rs.html#59">pa</a>);
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).filter(|a| a.to != p) {
             <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
             <span class="self">self</span>.dfs(a, u);
             <span class="self">self</span>.ep[pi] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span><span class="self">self</span>.ep[pi], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
         }
-        <span class="self">self</span>.ep[pi] = <span class="self">self</span>.add_subroot(<span class="kw-2">&amp;</span><span class="self">self</span>.ep[pi], u, pa.id);
+        <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#59">self</a>.ep[<a href="../../../src/competitive/tree/rerooting.rs.html#61">pi</a>] = <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#59">self</a>.<a href="../../../src/competitive/tree/rerooting.rs.html#52">add_subroot</a>(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/tree/rerooting.rs.html#59">self</a>.ep[<a href="../../../src/competitive/tree/rerooting.rs.html#61">pi</a>], <a href="../../../src/competitive/tree/rerooting.rs.html#60">u</a>, <a href="../../../src/competitive/tree/rerooting.rs.html#59">pa</a>.id);
     }
-    <span class="kw">fn </span>efs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, p: usize) {
-        <span class="kw">let </span>m = <span class="self">self</span>.graph.adjacencies(u).len();
-        <span class="kw">let </span><span class="kw-2">mut </span>left = <span class="macro">vec!</span>[M::unit(); m + <span class="number">1</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>right = <span class="macro">vec!</span>[M::unit(); m + <span class="number">1</span>];
+    <span class="kw">fn </span>efs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <span class="kw">let </span>m = <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#69">self</a>.graph.<a href="../../../src/competitive/graph/sparse_graph.rs.html#51">adjacencies</a>(<a href="../../../src/competitive/tree/rerooting.rs.html#69">u</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html">len</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>left = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); m + <span class="number">1</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>right = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); m + <span class="number">1</span>];
         <span class="kw">for </span>(k, a) <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).enumerate() {
             <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
             left[k + <span class="number">1</span>] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span>left[k], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
@@ -191,7 +191,7 @@
             <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
             right[k] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span>right[k + <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
         }
-        <span class="self">self</span>.dp[u] = <span class="self">self</span>.add_root(<span class="kw-2">&amp;</span>left[m], u);
+        <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#69">self</a>.dp[<a href="../../../src/competitive/tree/rerooting.rs.html#69">u</a>] = <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#69">self</a>.<a href="../../../src/competitive/tree/rerooting.rs.html#56">add_root</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/tree/rerooting.rs.html#71">left</a>[<a href="../../../src/competitive/tree/rerooting.rs.html#70">m</a>], <a href="../../../src/competitive/tree/rerooting.rs.html#69">u</a>);
         <span class="kw">for </span>(k, a) <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).enumerate() {
             <span class="kw">if </span>a.to != p {
                 <span class="kw">let </span>i = <span class="self">self</span>.reidx(u, a);
@@ -205,7 +205,7 @@
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(<span class="number">0</span>) {
             <span class="self">self</span>.dfs(a, <span class="number">0</span>);
         }
-        <span class="self">self</span>.efs(<span class="number">0</span>, std::usize::MAX);
+        <a class="self" href="../../../src/competitive/tree/rerooting.rs.html#91">self</a>.<a href="../../../src/competitive/tree/rerooting.rs.html#69">efs</a>(<span class="number">0</span>, std::usize::MAX);
     }
 }
 </code></pre></div>

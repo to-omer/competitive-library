@@ -289,90 +289,90 @@
 <span id="273">273</span>
 <span id="274">274</span>
 <span id="275">275</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{AbelianMonoid, Monoid};
-<span class="kw">use </span>std::fmt::{<span class="self">self</span>, Debug, Formatter};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/algebra/magma.rs.html#81">AbelianMonoid</a>, <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>};
+<span class="kw">use </span>std::fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>};
 
 <span class="kw">pub struct </span>SegmentTree&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
 {
-    n: usize,
+    n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     seg: Vec&lt;M::T&gt;,
 }
 
-<span class="kw">impl</span>&lt;M&gt; Clone <span class="kw">for </span>SegmentTree&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>SegmentTree&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            n: <span class="self">self</span>.n,
-            seg: <span class="self">self</span>.seg.clone(),
+            n: <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#16">self</a>.n,
+            seg: <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#16">self</a>.seg.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
         }
     }
 }
 
-<span class="kw">impl</span>&lt;M&gt; Debug <span class="kw">for </span>SegmentTree&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>SegmentTree&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    M::T: Debug,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        f.debug_struct(<span class="string">&quot;SegmentTree&quot;</span>)
-            .field(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.n)
-            .field(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.seg)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+        <a href="../../../src/competitive/data_structure/segment_tree.rs.html#29">f</a>.debug_struct(<span class="string">&quot;SegmentTree&quot;</span>)
+            .field(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#29">self</a>.n)
+            .field(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#29">self</a>.seg)
             .finish()
     }
 }
 
 <span class="kw">impl</span>&lt;M&gt; SegmentTree&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
 {
-    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>seg = <span class="macro">vec!</span>[M::unit(); <span class="number">2 </span>* n];
-        <span class="self">Self </span>{ n, seg }
+    <span class="kw">pub fn </span>new(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>seg = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); <span class="number">2 </span>* n];
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/segment_tree.rs.html#41">n</a>, <a href="../../../src/competitive/data_structure/segment_tree.rs.html#42">seg</a> }
     }
     <span class="kw">pub fn </span>from_vec(v: Vec&lt;M::T&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>n = v.len();
-        <span class="kw">let </span><span class="kw-2">mut </span>seg = <span class="macro">vec!</span>[M::unit(); <span class="number">2 </span>* n];
+        <span class="kw">let </span>n = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#45">v</a>.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>seg = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); <span class="number">2 </span>* n];
         <span class="kw">for </span>(i, x) <span class="kw">in </span>v.into_iter().enumerate() {
             seg[n + i] = x;
         }
         <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..n).rev() {
             seg[i] = M::operate(<span class="kw-2">&amp;</span>seg[<span class="number">2 </span>* i], <span class="kw-2">&amp;</span>seg[<span class="number">2 </span>* i + <span class="number">1</span>]);
         }
-        <span class="self">Self </span>{ n, seg }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/segment_tree.rs.html#46">n</a>, <a href="../../../src/competitive/data_structure/segment_tree.rs.html#47">seg</a> }
     }
-    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: M::T) {
-        <span class="macro">debug_assert!</span>(k &lt; <span class="self">self</span>.n);
-        <span class="kw">let </span><span class="kw-2">mut </span>k = k + <span class="self">self</span>.n;
-        <span class="self">self</span>.seg[k] = x;
-        k /= <span class="number">2</span>;
+    <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::T) {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(k &lt; <span class="self">self</span>.n);
+        <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#56">k</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#56">self</a>.n;
+        <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#56">self</a>.seg[<a href="../../../src/competitive/data_structure/segment_tree.rs.html#58">k</a>] = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#56">x</a>;
+        <a href="../../../src/competitive/data_structure/segment_tree.rs.html#58">k</a> /= <span class="number">2</span>;
         <span class="kw">while </span>k &gt; <span class="number">0 </span>{
             <span class="self">self</span>.seg[k] = M::operate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[<span class="number">2 </span>* k], <span class="kw-2">&amp;</span><span class="self">self</span>.seg[<span class="number">2 </span>* k + <span class="number">1</span>]);
             k /= <span class="number">2</span>;
         }
     }
-    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: usize, x: M::T) {
-        <span class="macro">debug_assert!</span>(k &lt; <span class="self">self</span>.n);
-        <span class="kw">let </span><span class="kw-2">mut </span>k = k + <span class="self">self</span>.n;
-        <span class="self">self</span>.seg[k] = M::operate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[k], <span class="kw-2">&amp;</span>x);
-        k /= <span class="number">2</span>;
+    <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::T) {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(k &lt; <span class="self">self</span>.n);
+        <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#66">k</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#66">self</a>.n;
+        <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#66">self</a>.seg[<a href="../../../src/competitive/data_structure/segment_tree.rs.html#68">k</a>] = M::operate(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#66">self</a>.seg[<a href="../../../src/competitive/data_structure/segment_tree.rs.html#68">k</a>], <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree.rs.html#66">x</a>);
+        <a href="../../../src/competitive/data_structure/segment_tree.rs.html#68">k</a> /= <span class="number">2</span>;
         <span class="kw">while </span>k &gt; <span class="number">0 </span>{
             <span class="self">self</span>.seg[k] = M::operate(<span class="kw-2">&amp;</span><span class="self">self</span>.seg[<span class="number">2 </span>* k], <span class="kw-2">&amp;</span><span class="self">self</span>.seg[<span class="number">2 </span>* k + <span class="number">1</span>]);
             k /= <span class="number">2</span>;
         }
     }
-    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; M::T {
-        <span class="macro">debug_assert!</span>(k &lt; <span class="self">self</span>.n);
-        <span class="self">self</span>.seg[k + <span class="self">self</span>.n].clone()
+    <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(k &lt; <span class="self">self</span>.n);
+        <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#76">self</a>.seg[<a href="../../../src/competitive/data_structure/segment_tree.rs.html#76">k</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#76">self</a>.n].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
     }
-    <span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, l: usize, r: usize) -&gt; M::T {
-        <span class="macro">debug_assert!</span>(r &lt;= <span class="self">self</span>.n);
-        <span class="macro">debug_assert!</span>(l &lt;= r);
-        <span class="kw">let </span><span class="kw-2">mut </span>l = l + <span class="self">self</span>.n;
-        <span class="kw">let </span><span class="kw-2">mut </span>r = r + <span class="self">self</span>.n;
+    <span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(r &lt;= <span class="self">self</span>.n);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(l &lt;= r);
+        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#80">l</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#80">self</a>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#80">r</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#80">self</a>.n;
         <span class="kw">let </span><span class="kw-2">mut </span>vl = M::unit();
         <span class="kw">let </span><span class="kw-2">mut </span>vr = M::unit();
         <span class="kw">while </span>l &lt; r {
@@ -387,11 +387,11 @@
             l /= <span class="number">2</span>;
             r /= <span class="number">2</span>;
         }
-        M::operate(<span class="kw-2">&amp;</span>vl, <span class="kw-2">&amp;</span>vr)
+        M::operate(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree.rs.html#85">vl</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/segment_tree.rs.html#86">vr</a>)
     }
-    <span class="kw">fn </span>bisect_perfect&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>pos: usize, <span class="kw-2">mut </span>acc: M::T, f: F) -&gt; (usize, M::T)
+    <span class="kw">fn </span>bisect_perfect&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>pos: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>acc: M::T, f: F) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, M::T)
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; bool,
+        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     {
         <span class="kw">while </span>pos &lt; <span class="self">self</span>.n {
             pos &lt;&lt;= <span class="number">1</span>;
@@ -401,11 +401,11 @@
                 pos += <span class="number">1</span>;
             }
         }
-        (pos - <span class="self">self</span>.n, acc)
+        (<a href="../../../src/competitive/data_structure/segment_tree.rs.html#101">pos</a> - <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#101">self</a>.n, <a href="../../../src/competitive/data_structure/segment_tree.rs.html#101">acc</a>)
     }
-    <span class="kw">fn </span>rbisect_perfect&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>pos: usize, <span class="kw-2">mut </span>acc: M::T, f: F) -&gt; (usize, M::T)
+    <span class="kw">fn </span>rbisect_perfect&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>pos: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>acc: M::T, f: F) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, M::T)
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; bool,
+        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     {
         <span class="kw">while </span>pos &lt; <span class="self">self</span>.n {
             pos = pos * <span class="number">2 </span>+ <span class="number">1</span>;
@@ -415,15 +415,15 @@
                 pos -= <span class="number">1</span>;
             }
         }
-        (pos - <span class="self">self</span>.n, acc)
+        (<a href="../../../src/competitive/data_structure/segment_tree.rs.html#115">pos</a> - <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#115">self</a>.n, <a href="../../../src/competitive/data_structure/segment_tree.rs.html#115">acc</a>)
     }
     <span class="doccomment">/// Returns the first index that satisfies a accumlative predicate.
-    </span><span class="kw">pub fn </span>position_acc&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, l: usize, r: usize, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt;
+    </span><span class="kw">pub fn </span>position_acc&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; bool,
+        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>l = l + <span class="self">self</span>.n;
-        <span class="kw">let </span>r = r + <span class="self">self</span>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#130">l</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#130">self</a>.n;
+        <span class="kw">let </span>r = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#130">r</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#130">self</a>.n;
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
         <span class="kw">while </span>l &lt; r &gt;&gt; k {
@@ -451,12 +451,12 @@
         <span class="prelude-val">None
     </span>}
     <span class="doccomment">/// Returns the last index that satisfies a accumlative predicate.
-    </span><span class="kw">pub fn </span>rposition_acc&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, l: usize, r: usize, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt;
+    </span><span class="kw">pub fn </span>rposition_acc&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, f: F) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; bool,
+        </span>F: Fn(<span class="kw-2">&amp;</span>M::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>l = l + <span class="self">self</span>.n;
-        <span class="kw">let </span><span class="kw-2">mut </span>r = r + <span class="self">self</span>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#163">l</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#163">self</a>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="../../../src/competitive/data_structure/segment_tree.rs.html#163">r</a> + <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#163">self</a>.n;
         <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
@@ -492,15 +492,15 @@
         <span class="prelude-val">None
     </span>}
     <span class="kw">pub fn </span>as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[M::T] {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.seg[<span class="self">self</span>.n..]
+        <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#203">self</a>.seg[<a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#203">self</a>.n..]
     }
 }
 <span class="kw">impl</span>&lt;M&gt; SegmentTree&lt;M&gt;
 <span class="kw">where
-    </span>M: AbelianMonoid,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#81">AbelianMonoid</a>,
 {
     <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
-        <span class="self">self</span>.seg[<span class="number">1</span>].clone()
+        <a class="self" href="../../../src/competitive/data_structure/segment_tree.rs.html#211">self</a>.seg[<span class="number">1</span>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
     }
 }
 

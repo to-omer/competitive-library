@@ -77,67 +77,67 @@
 <span id="61">61</span>
 <span id="62">62</span>
 <span id="63">63</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::algebra::Monoid;
-<span class="kw">use </span><span class="kw">crate</span>::graph::UndirectedSparseGraph;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/algebra/magma.rs.html#45"><span class="kw">crate</span>::algebra::Monoid</a>;
+<span class="kw">use </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161"><span class="kw">crate</span>::graph::UndirectedSparseGraph</a>;
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_depth&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]
-</span><span class="kw">impl </span>UndirectedSparseGraph {
-    <span class="kw">fn </span>depth_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, p: usize, d: u64, depth: <span class="kw-2">&amp;mut </span>Vec&lt;u64&gt;) {
-        depth[u] = d;
+</span><span class="kw">impl </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a> {
+    <span class="kw">fn </span>depth_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, d: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, depth: <span class="kw-2">&amp;mut </span>Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;) {
+        <a href="../../../src/competitive/tree/depth.rs.html#6">depth</a>[<a href="../../../src/competitive/tree/depth.rs.html#6">u</a>] = <a href="../../../src/competitive/tree/depth.rs.html#6">d</a>;
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.adjacencies(u).filter(|a| a.to != p) {
             <span class="self">self</span>.depth_dfs(a.to, u, d + <span class="number">1</span>, depth);
         }
     }
-    <span class="kw">pub fn </span>tree_depth(<span class="kw-2">&amp;</span><span class="self">self</span>, root: usize) -&gt; Vec&lt;u64&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>depth = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()];
-        <span class="self">self</span>.depth_dfs(root, <span class="self">self</span>.vertices_size(), <span class="number">0</span>, <span class="kw-2">&amp;mut </span>depth);
-        depth
+    <span class="kw">pub fn </span>tree_depth(<span class="kw-2">&amp;</span><span class="self">self</span>, root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>depth = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()];
+        <a class="self" href="../../../src/competitive/tree/depth.rs.html#12">self</a>.<a href="../../../src/competitive/tree/depth.rs.html#6">depth_dfs</a>(<a href="../../../src/competitive/tree/depth.rs.html#12">root</a>, <a class="self" href="../../../src/competitive/tree/depth.rs.html#12">self</a>.<a href="../../../src/competitive/graph/sparse_graph.rs.html#39">vertices_size</a>(), <span class="number">0</span>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/tree/depth.rs.html#13">depth</a>);
+        <a href="../../../src/competitive/tree/depth.rs.html#13">depth</a>
     }
 }
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;weighted_tree_depth&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;SparseGraph&quot;</span>))]
-</span><span class="kw">impl </span>UndirectedSparseGraph {
+</span><span class="kw">impl </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a> {
     <span class="kw">fn </span>weighted_depth_dfs&lt;M, F&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        u: usize,
-        p: usize,
+        u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+        p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
         d: M::T,
         depth: <span class="kw-2">&amp;mut </span>Vec&lt;M::T&gt;,
         weight: <span class="kw-2">&amp;</span>F,
     ) <span class="kw">where
-        </span>M: Monoid,
-        F: Fn(usize) -&gt; M::T,
+        </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+        F: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T,
     {
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.adjacencies(u).filter(|a| a.to != p) {
             <span class="kw">let </span>nd = M::operate(<span class="kw-2">&amp;</span>d, <span class="kw-2">&amp;</span>weight(a.id));
             <span class="self">self</span>.weighted_depth_dfs::&lt;M, <span class="kw">_</span>&gt;(a.to, u, nd, depth, weight);
         }
-        depth[u] = d;
+        <a href="../../../src/competitive/tree/depth.rs.html#26">depth</a>[<a href="../../../src/competitive/tree/depth.rs.html#23">u</a>] = <a href="../../../src/competitive/tree/depth.rs.html#25">d</a>;
     }
-    <span class="kw">pub fn </span>weighted_tree_depth&lt;M: Monoid, F: Fn(usize) -&gt; M::T&gt;(
+    <span class="kw">pub fn </span>weighted_tree_depth&lt;M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>, F: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        root: usize,
+        root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
         weight: F,
     ) -&gt; Vec&lt;M::T&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>depth = <span class="macro">vec!</span>[M::unit(); <span class="self">self</span>.vertices_size()];
-        <span class="self">self</span>.weighted_depth_dfs::&lt;M, <span class="kw">_</span>&gt;(root, std::usize::MAX, M::unit(), <span class="kw-2">&amp;mut </span>depth, <span class="kw-2">&amp;</span>weight);
-        depth
+        <span class="kw">let </span><span class="kw-2">mut </span>depth = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); <span class="self">self</span>.vertices_size()];
+        <a class="self" href="../../../src/competitive/tree/depth.rs.html#39">self</a>.<a href="../../../src/competitive/tree/depth.rs.html#21-30">weighted_depth_dfs</a>::&lt;M, <span class="kw">_</span>&gt;(<a href="../../../src/competitive/tree/depth.rs.html#40">root</a>, std::usize::MAX, M::unit(), <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/tree/depth.rs.html#43">depth</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/tree/depth.rs.html#41">weight</a>);
+        <a href="../../../src/competitive/tree/depth.rs.html#43">depth</a>
     }
 }
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_size&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]
-</span><span class="kw">impl </span>UndirectedSparseGraph {
-    <span class="kw">fn </span>size_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>, u: usize, p: usize, size: <span class="kw-2">&amp;mut </span>Vec&lt;u64&gt;) {
-        size[u] = <span class="number">1</span>;
+</span><span class="kw">impl </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a> {
+    <span class="kw">fn </span>size_dfs(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, size: <span class="kw-2">&amp;mut </span>Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;) {
+        <a href="../../../src/competitive/tree/depth.rs.html#51">size</a>[<a href="../../../src/competitive/tree/depth.rs.html#51">u</a>] = <span class="number">1</span>;
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.adjacencies(u).filter(|a| a.to != p) {
             <span class="self">self</span>.size_dfs(a.to, u, size);
             size[u] += size[a.to];
         }
     }
-    <span class="kw">pub fn </span>tree_size(<span class="kw-2">&amp;</span><span class="self">self</span>, root: usize) -&gt; Vec&lt;u64&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>size = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()];
-        <span class="self">self</span>.size_dfs(root, std::usize::MAX, <span class="kw-2">&amp;mut </span>size);
-        size
+    <span class="kw">pub fn </span>tree_size(<span class="kw-2">&amp;</span><span class="self">self</span>, root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>size = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <span class="self">self</span>.vertices_size()];
+        <a class="self" href="../../../src/competitive/tree/depth.rs.html#58">self</a>.<a href="../../../src/competitive/tree/depth.rs.html#51">size_dfs</a>(<a href="../../../src/competitive/tree/depth.rs.html#58">root</a>, std::usize::MAX, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/tree/depth.rs.html#59">size</a>);
+        <a href="../../../src/competitive/tree/depth.rs.html#59">size</a>
     }
 }
 </code></pre></div>

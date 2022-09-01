@@ -130,7 +130,7 @@
 <span id="114">114</span>
 <span id="115">115</span>
 <span id="116">116</span>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, hash::Hash, marker::PhantomData};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">collections::HashMap</a>, <a href="https://doc.rust-lang.org/nightly/core/hash/macros/derive.Hash.html">hash::Hash</a>, marker::PhantomData};
 
 <span class="kw">type </span>Marker&lt;T&gt; = PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;;
 
@@ -163,14 +163,14 @@
 {
     <span class="kw">pub fn </span>new(f: F, g: G) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            f,
-            g,
+            <a href="../../../src/competitive/algorithm/partisan_game.rs.html#32">f</a>,
+            <a href="../../../src/competitive/algorithm/partisan_game.rs.html#32">g</a>,
             _marker: PhantomData,
         }
     }
 }
 
-<span class="kw">impl</span>&lt;S, F, G, L, R&gt; PartisanGame <span class="kw">for </span>PartisanGamer&lt;S, F, G, L, R&gt;
+<span class="kw">impl</span>&lt;S, F, G, L, R&gt; <a href="../../../src/competitive/algorithm/partisan_game.rs.html#5">PartisanGame</a> <span class="kw">for </span>PartisanGamer&lt;S, F, G, L, R&gt;
 <span class="kw">where
     </span>F: FnMut(<span class="kw-2">&amp;</span>S) -&gt; L,
     L: Iterator&lt;Item = S&gt;,
@@ -181,67 +181,67 @@
     <span class="kw">type </span>LIter = L;
     <span class="kw">type </span>RIter = R;
     <span class="kw">fn </span>next_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <span class="self">Self</span>::LIter {
-        (<span class="self">self</span>.f)(s)
+        (<a class="self" href="../../../src/competitive/algorithm/partisan_game.rs.html#51">self</a>.f)(<a href="../../../src/competitive/algorithm/partisan_game.rs.html#51">s</a>)
     }
     <span class="kw">fn </span>next_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <span class="self">Self</span>::RIter {
-        (<span class="self">self</span>.g)(s)
+        (<a class="self" href="../../../src/competitive/algorithm/partisan_game.rs.html#54">self</a>.g)(<a href="../../../src/competitive/algorithm/partisan_game.rs.html#54">s</a>)
     }
 }
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>PartisanGameAnalyzer&lt;G&gt;
 <span class="kw">where
-    </span>G: PartisanGame,
-    G::State: Eq + Hash,
+    </span>G: <a href="../../../src/competitive/algorithm/partisan_game.rs.html#5">PartisanGame</a>,
+    G::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
 {
     game: G,
-    number: HashMap&lt;G::State, i64&gt;,
+    number: HashMap&lt;G::State, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
 }
 
 <span class="kw">impl</span>&lt;G&gt; PartisanGameAnalyzer&lt;G&gt;
 <span class="kw">where
-    </span>G: PartisanGame,
-    G::State: Eq + Hash + Clone,
+    </span>G: <a href="../../../src/competitive/algorithm/partisan_game.rs.html#5">PartisanGame</a>,
+    G::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a> + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
 {
     <span class="kw">pub fn </span>new(game: G) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            game,
-            number: Default::default(),
+            <a href="../../../src/competitive/algorithm/partisan_game.rs.html#74">game</a>,
+            number: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
         }
     }
-    <span class="kw">pub fn </span>eval(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>G::State) -&gt; i64 {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(n) = <span class="self">self</span>.number.get(s).cloned() {
-            n
+    <span class="kw">pub fn </span>eval(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>G::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(n) = <a class="self" href="../../../src/competitive/algorithm/partisan_game.rs.html#80">self</a>.number.get(<a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">s</a>).cloned() {
+            <a href="../../../src/competitive/algorithm/partisan_game.rs.html#81">n</a>
         } <span class="kw">else </span>{
-            <span class="kw">let </span>lmax = <span class="self">self
+            <span class="kw">let </span>lmax = <span class="self"><a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">self</a>
                 </span>.game
-                .next_left(s)
-                .map(|ns| <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>ns))
-                .fold(std::i64::MIN, Ord::max);
-            <span class="kw">let </span>rmin = <span class="self">self
+                .<a href="../../../src/competitive/algorithm/partisan_game.rs.html#9">next_left</a>(<a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">s</a>)
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|ns| <a class="self" href="../../../src/competitive/algorithm/partisan_game.rs.html#80">self</a>.<a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">eval</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/algorithm/partisan_game.rs.html#87">ns</a>))
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">fold</a>(std::i64::MIN, <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord::max</a>);
+            <span class="kw">let </span>rmin = <span class="self"><a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">self</a>
                 </span>.game
-                .next_right(s)
-                .map(|ns| <span class="self">self</span>.eval(<span class="kw-2">&amp;</span>ns))
-                .fold(std::i64::MAX, Ord::min);
-            <span class="kw">let </span>res = <span class="self">Self</span>::simple_number(lmax, rmin);
-            <span class="self">self</span>.number.insert(s.clone(), res);
-            res
+                .<a href="../../../src/competitive/algorithm/partisan_game.rs.html#10">next_right</a>(<a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">s</a>)
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|ns| <a class="self" href="../../../src/competitive/algorithm/partisan_game.rs.html#80">self</a>.<a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">eval</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/algorithm/partisan_game.rs.html#92">ns</a>))
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">fold</a>(std::i64::MAX, <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord::min</a>);
+            <span class="kw">let </span>res = <span class="self">Self</span>::simple_number(<a href="../../../src/competitive/algorithm/partisan_game.rs.html#84">lmax</a>, <a href="../../../src/competitive/algorithm/partisan_game.rs.html#89">rmin</a>);
+            <a class="self" href="../../../src/competitive/algorithm/partisan_game.rs.html#80">self</a>.number.insert(<a href="../../../src/competitive/algorithm/partisan_game.rs.html#80">s</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(), <a href="../../../src/competitive/algorithm/partisan_game.rs.html#94">res</a>);
+            <a href="../../../src/competitive/algorithm/partisan_game.rs.html#94">res</a>
         }
     }
-    <span class="kw">fn </span>simple_number(lmax: i64, rmin: i64) -&gt; i64 {
-        <span class="kw">const </span>FIX: u32 = <span class="number">50</span>;
-        <span class="macro">assert!</span>(lmax &lt; rmin);
-        <span class="macro">assert!</span>(lmax + <span class="number">1 </span>!= rmin);
+    <span class="kw">fn </span>simple_number(lmax: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, rmin: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
+        <span class="kw">const </span>FIX: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> = <span class="number">50</span>;
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(lmax &lt; rmin);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(lmax + <span class="number">1 </span>!= rmin);
         <span class="kw">if </span>lmax &lt; <span class="number">0 </span>&amp;&amp; <span class="number">0 </span>&lt; rmin {
             <span class="number">0
         </span>} <span class="kw">else </span>{
-            <span class="kw">let </span>c = <span class="number">63 </span>- ((rmin - <span class="number">1</span>) ^ lmax).leading_zeros();
+            <span class="kw">let </span>c = <span class="number">63 </span>- ((<a href="../../../src/competitive/algorithm/partisan_game.rs.html#99">rmin</a> - <span class="number">1</span>) ^ <a href="../../../src/competitive/algorithm/partisan_game.rs.html#99">lmax</a>).leading_zeros();
             <span class="kw">if </span>c &lt;= FIX {
-                (rmin - <span class="number">1</span>) &gt;&gt; c &lt;&lt; c
+                (<a href="../../../src/competitive/algorithm/partisan_game.rs.html#99">rmin</a> - <span class="number">1</span>) &gt;&gt; <a href="../../../src/competitive/algorithm/partisan_game.rs.html#106">c</a> &lt;&lt; <a href="../../../src/competitive/algorithm/partisan_game.rs.html#106">c</a>
             } <span class="kw">else if </span>lmax &gt;= <span class="number">0 </span>{
-                ((lmax &gt;&gt; FIX) + <span class="number">1</span>) &lt;&lt; FIX
+                ((<a href="../../../src/competitive/algorithm/partisan_game.rs.html#99">lmax</a> &gt;&gt; <a href="../../../src/competitive/algorithm/partisan_game.rs.html#100">FIX</a>) + <span class="number">1</span>) &lt;&lt; <a href="../../../src/competitive/algorithm/partisan_game.rs.html#100">FIX</a>
             } <span class="kw">else </span>{
-                (rmin - <span class="number">1</span>) &gt;&gt; FIX &lt;&lt; FIX
+                (<a href="../../../src/competitive/algorithm/partisan_game.rs.html#99">rmin</a> - <span class="number">1</span>) &gt;&gt; <a href="../../../src/competitive/algorithm/partisan_game.rs.html#100">FIX</a> &lt;&lt; <a href="../../../src/competitive/algorithm/partisan_game.rs.html#100">FIX</a>
             }
         }
     }

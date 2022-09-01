@@ -105,30 +105,30 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{BipartiteMatching, DirectedSparseGraph, StronglyConnectedComponent};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/graph/bipartite_matching.rs.html#4">BipartiteMatching</a>, <a href="../../../src/competitive/graph/sparse_graph.rs.html#160">DirectedSparseGraph</a>, <a href="../../../src/competitive/graph/strongly_connected_component.rs.html#4">StronglyConnectedComponent</a>};
 
 <span class="kw">pub fn </span>dulmage_mendelsohn_decomposition(
-    l: usize,
-    r: usize,
-    edges: <span class="kw-2">&amp;</span>[(usize, usize)],
-) -&gt; Vec&lt;(Vec&lt;usize&gt;, Vec&lt;usize&gt;)&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>matching = <span class="macro">vec!</span>[!<span class="number">0usize</span>; l + r];
-    <span class="kw">let </span><span class="kw-2">mut </span>medges: Vec&lt;<span class="kw">_</span>&gt; = edges.iter().map(|<span class="kw-2">&amp;</span>(u, v)| (u, v + l)).collect();
+    l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    edges: <span class="kw-2">&amp;</span>[(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)],
+) -&gt; Vec&lt;(Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;)&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>matching = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0usize</span>; l + r];
+    <span class="kw">let </span><span class="kw-2">mut </span>medges: Vec&lt;<span class="kw">_</span>&gt; = <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#6">edges</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw-2">&amp;</span>(u, v)| (<a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#9">u</a>, <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#9">v</a> + <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#4">l</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
     <span class="kw">for </span>(u, v) <span class="kw">in </span>BipartiteMatching::from_edges(l, r, edges).maximum_matching() {
         medges.push((v + l, u));
         matching[u] = v + l;
         matching[v + l] = u;
     }
-    <span class="kw">let </span>rmedges = medges.iter().map(|<span class="kw-2">&amp;</span>(u, v)| (v, u)).collect();
+    <span class="kw">let </span>rmedges = <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#9">medges</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw-2">&amp;</span>(u, v)| (<a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#15">v</a>, <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#15">u</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
 
-    <span class="kw">let </span>g = DirectedSparseGraph::from_edges(l + r, medges);
-    <span class="kw">let </span>rg = DirectedSparseGraph::from_edges(l + r, rmedges);
-    <span class="kw">let </span>scc = StronglyConnectedComponent::new(<span class="kw-2">&amp;</span>g);
-    <span class="kw">let </span>csize = scc.size();
+    <span class="kw">let </span>g = DirectedSparseGraph::from_edges(<a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#4">l</a> + <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#5">r</a>, <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#9">medges</a>);
+    <span class="kw">let </span>rg = DirectedSparseGraph::from_edges(<a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#4">l</a> + <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#5">r</a>, <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#15">rmedges</a>);
+    <span class="kw">let </span>scc = StronglyConnectedComponent::new(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#17">g</a>);
+    <span class="kw">let </span>csize = <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#19">scc</a>.<a href="../../../src/competitive/graph/strongly_connected_component.rs.html#98">size</a>();
 
-    <span class="kw">let </span><span class="kw-2">mut </span>cmap = <span class="macro">vec!</span>[!<span class="number">0usize </span>- <span class="number">1</span>; csize];
-    <span class="kw">let </span><span class="kw-2">mut </span>visited = <span class="macro">vec!</span>[<span class="bool-val">false</span>; l + r];
-    <span class="kw">let </span><span class="kw-2">mut </span>stack = <span class="macro">vec!</span>[];
+    <span class="kw">let </span><span class="kw-2">mut </span>cmap = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0usize </span>- <span class="number">1</span>; csize];
+    <span class="kw">let </span><span class="kw-2">mut </span>visited = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; l + r];
+    <span class="kw">let </span><span class="kw-2">mut </span>stack = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
     <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..l {
         <span class="kw">if </span>matching[u] == !<span class="number">0 </span>&amp;&amp; !visited[u] {
             visited[u] = <span class="bool-val">true</span>;
@@ -172,9 +172,9 @@
             <span class="kw-2">*</span>v = nset;
         }
     }
-    nset += <span class="number">1</span>;
+    <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#56">nset</a> += <span class="number">1</span>;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>groups = <span class="macro">vec!</span>[(<span class="macro">vec!</span>[], <span class="macro">vec!</span>[]); nset];
+    <span class="kw">let </span><span class="kw-2">mut </span>groups = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(<span class="macro">vec!</span>[], <span class="macro">vec!</span>[]); nset];
     <span class="kw">for </span>u <span class="kw">in </span><span class="number">0</span>..l {
         <span class="kw">if </span>matching[u] != !<span class="number">0 </span>{
             <span class="kw">let </span>c = cmap[scc[u]];
@@ -194,7 +194,7 @@
             groups[c].<span class="number">1</span>.push(u);
         }
     }
-    groups
+    <a href="../../../src/competitive/graph/dulmage_mendelsohn_decomposition.rs.html#70">groups</a>
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (9243168fa 2022-08-31)" ></div></body></html>

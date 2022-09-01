@@ -107,67 +107,67 @@
 <span id="91">91</span>
 <span id="92">92</span>
 <span id="93">93</span>
-</pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">std::collections::HashMap</a>;
 
 <span class="attribute">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>UnionFind {
-    parents: Vec&lt;isize&gt;,
+    parents: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>&gt;,
 }
-<span class="kw">impl </span>UnionFind {
-    <span class="kw">pub fn </span>new(n: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>parents = <span class="macro">vec!</span>[-<span class="number">1</span>; n];
-        <span class="self">Self </span>{ parents }
+<span class="kw">impl </span><a href="../../../src/competitive/data_structure/union_find.rs.html#4">UnionFind</a> {
+    <span class="kw">pub fn </span>new(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>parents = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[-<span class="number">1</span>; n];
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/union_find.rs.html#9">parents</a> }
     }
 
-    <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
+    <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <span class="kw">if </span><span class="self">self</span>.parents[x] &lt; <span class="number">0 </span>{
-            x
+            <a href="../../../src/competitive/data_structure/union_find.rs.html#13">x</a>
         } <span class="kw">else </span>{
-            <span class="kw">let </span>xx = <span class="self">self</span>.parents[x] <span class="kw">as </span>usize;
-            <span class="kw">let </span>y = <span class="self">self</span>.find(xx);
-            <span class="self">self</span>.parents[x] = y <span class="kw">as </span>isize;
-            y
+            <span class="kw">let </span>xx = <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#13">self</a>.parents[<a href="../../../src/competitive/data_structure/union_find.rs.html#13">x</a>] <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+            <span class="kw">let </span>y = <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#13">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<a href="../../../src/competitive/data_structure/union_find.rs.html#17">xx</a>);
+            <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#13">self</a>.parents[<a href="../../../src/competitive/data_structure/union_find.rs.html#13">x</a>] = <a href="../../../src/competitive/data_structure/union_find.rs.html#18">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>;
+            <a href="../../../src/competitive/data_structure/union_find.rs.html#18">y</a>
         }
     }
 
-    <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
-        <span class="kw">use </span>std::mem::swap;
-        <span class="kw">let </span><span class="kw-2">mut </span>x = <span class="self">self</span>.find(x);
-        <span class="kw">let </span><span class="kw-2">mut </span>y = <span class="self">self</span>.find(y);
+    <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">std::mem::swap</a>;
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#24">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<a href="../../../src/competitive/data_structure/union_find.rs.html#24">x</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>y = <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#24">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<a href="../../../src/competitive/data_structure/union_find.rs.html#24">y</a>);
         <span class="kw">if </span>x == y {
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
         <span class="kw">if </span><span class="self">self</span>.parents[x] &gt; <span class="self">self</span>.parents[y] {
-            swap(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;mut </span>y);
+            <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/union_find.rs.html#26">x</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/union_find.rs.html#27">y</a>);
         }
-        <span class="self">self</span>.parents[x] += <span class="self">self</span>.parents[y];
-        <span class="self">self</span>.parents[y] = x <span class="kw">as </span>isize;
+        <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#24">self</a>.parents[<a href="../../../src/competitive/data_structure/union_find.rs.html#26">x</a>] += <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#24">self</a>.parents[<a href="../../../src/competitive/data_structure/union_find.rs.html#27">y</a>];
+        <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#24">self</a>.parents[<a href="../../../src/competitive/data_structure/union_find.rs.html#27">y</a>] = <a href="../../../src/competitive/data_structure/union_find.rs.html#26">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>;
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; usize {
-        <span class="kw">let </span>x = <span class="self">self</span>.find(x);
-        (-<span class="self">self</span>.parents[x]) <span class="kw">as </span>usize
+    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <span class="kw">let </span>x = <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#39">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<a href="../../../src/competitive/data_structure/union_find.rs.html#39">x</a>);
+        (-<a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#39">self</a>.parents[<a href="../../../src/competitive/data_structure/union_find.rs.html#40">x</a>]) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
 
-    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize, y: usize) -&gt; bool {
-        <span class="self">self</span>.find(x) == <span class="self">self</span>.find(y)
+    <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#44">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<a href="../../../src/competitive/data_structure/union_find.rs.html#44">x</a>) == <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#44">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<a href="../../../src/competitive/data_structure/union_find.rs.html#44">y</a>)
     }
 
-    <span class="kw">pub fn </span>members(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: usize) -&gt; Vec&lt;usize&gt; {
-        <span class="kw">let </span>root = <span class="self">self</span>.find(x);
-        (<span class="number">0</span>..<span class="self">self</span>.parents.len())
-            .filter(|i| <span class="self">self</span>.find(<span class="kw-2">*</span>i) == root)
-            .collect::&lt;Vec&lt;usize&gt;&gt;()
+    <span class="kw">pub fn </span>members(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
+        <span class="kw">let </span>root = <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#48">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<a href="../../../src/competitive/data_structure/union_find.rs.html#48">x</a>);
+        (<span class="number">0</span>..<a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#48">self</a>.parents.len())
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|i| <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#48">self</a>.<a href="../../../src/competitive/data_structure/union_find.rs.html#13">find</a>(<span class="kw-2">*</span><a href="../../../src/competitive/data_structure/union_find.rs.html#51">i</a>) == <a href="../../../src/competitive/data_structure/union_find.rs.html#49">root</a>)
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>::&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;()
     }
 
-    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;usize&gt; {
-        (<span class="number">0</span>..<span class="self">self</span>.parents.len())
-            .filter(|i| <span class="self">self</span>.parents[<span class="kw-2">*</span>i] &lt; <span class="number">0</span>)
-            .collect::&lt;Vec&lt;usize&gt;&gt;()
+    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
+        (<span class="number">0</span>..<a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#55">self</a>.parents.len())
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|i| <a class="self" href="../../../src/competitive/data_structure/union_find.rs.html#55">self</a>.parents[<span class="kw-2">*</span><a href="../../../src/competitive/data_structure/union_find.rs.html#57">i</a>] &lt; <span class="number">0</span>)
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>::&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;()
     }
 
-    <span class="kw">pub fn </span>all_group_members(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;usize, Vec&lt;usize&gt;&gt; {
+    <span class="kw">pub fn </span>all_group_members(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>groups_map = HashMap::new();
         <span class="kw">for </span>x <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.parents.len() {
             <span class="kw">let </span>r = <span class="self">self</span>.find(x);
@@ -176,7 +176,7 @@
                 .or_insert_with(|| Vec::with_capacity(<span class="self">self</span>.size(r)))
                 .push(x);
         }
-        groups_map
+        <a href="../../../src/competitive/data_structure/union_find.rs.html#62">groups_map</a>
     }
 }
 

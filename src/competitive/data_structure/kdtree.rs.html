@@ -86,74 +86,74 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
-</pre><pre class="rust"><code><span class="kw">use </span>std::ops::Range;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">std::ops::Range</a>;
 
 <span class="kw">pub struct </span>Static2DTree&lt;T, U, V&gt;
 <span class="kw">where
-    </span>T: Ord,
-    U: Ord,
+    </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
+    U: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     data: Vec&lt;(T, U, V)&gt;,
 }
 <span class="kw">impl</span>&lt;T, U, V&gt; Static2DTree&lt;T, U, V&gt;
 <span class="kw">where
-    </span>T: Ord,
-    U: Ord,
+    </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
+    U: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">pub fn </span>new&lt;I&gt;(data: I) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>I: IntoIterator&lt;Item = (T, U, V)&gt;,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>data: Vec&lt;<span class="kw">_</span>&gt; = data.into_iter().collect();
-        <span class="kw">let </span>n = data.len();
-        <span class="self">Self</span>::build(<span class="kw-2">&amp;mut </span>data, <span class="number">0</span>, n, <span class="number">0</span>);
-        <span class="self">Self </span>{ data }
+        <span class="kw">let </span><span class="kw-2">mut </span>data: Vec&lt;<span class="kw">_</span>&gt; = <a href="../../../src/competitive/data_structure/kdtree.rs.html#15">data</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <span class="kw">let </span>n = <a href="../../../src/competitive/data_structure/kdtree.rs.html#19">data</a>.len();
+        <span class="self">Self</span>::build(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/kdtree.rs.html#19">data</a>, <span class="number">0</span>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#20">n</a>, <span class="number">0</span>);
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/kdtree.rs.html#19">data</a> }
     }
-    <span class="kw">fn </span>build(data: <span class="kw-2">&amp;mut </span>[(T, U, V)], l: usize, r: usize, depth: usize) {
+    <span class="kw">fn </span>build(data: <span class="kw-2">&amp;mut </span>[(T, U, V)], l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, depth: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">if </span>l &lt; r {
-            <span class="kw">let </span>m = l + (r - l) / <span class="number">2</span>;
+            <span class="kw">let </span>m = <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">l</a> + (<a href="../../../src/competitive/data_structure/kdtree.rs.html#24">r</a> - <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">l</a>) / <span class="number">2</span>;
             <span class="kw">if </span>depth % <span class="number">2 </span>== <span class="number">0 </span>{
-                data[l..r].sort_by(|p, q| p.<span class="number">0</span>.cmp(<span class="kw-2">&amp;</span>q.<span class="number">0</span>));
+                <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">data</a>[<a href="../../../src/competitive/data_structure/kdtree.rs.html#24">l</a>..<a href="../../../src/competitive/data_structure/kdtree.rs.html#24">r</a>].sort_by(|p, q| <a href="../../../src/competitive/data_structure/kdtree.rs.html#28">p</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/kdtree.rs.html#28">q</a>.<span class="number">0</span>));
             } <span class="kw">else </span>{
-                data[l..r].sort_by(|p, q| p.<span class="number">1</span>.cmp(<span class="kw-2">&amp;</span>q.<span class="number">1</span>));
+                <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">data</a>[<a href="../../../src/competitive/data_structure/kdtree.rs.html#24">l</a>..<a href="../../../src/competitive/data_structure/kdtree.rs.html#24">r</a>].sort_by(|p, q| <a href="../../../src/competitive/data_structure/kdtree.rs.html#30">p</a>.<span class="number">1</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/kdtree.rs.html#30">q</a>.<span class="number">1</span>));
             }
-            <span class="self">Self</span>::build(data, l, m, depth + <span class="number">1</span>);
-            <span class="self">Self</span>::build(data, m + <span class="number">1</span>, r, depth + <span class="number">1</span>);
+            <span class="self">Self</span>::build(<a href="../../../src/competitive/data_structure/kdtree.rs.html#24">data</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">l</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#26">m</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">depth</a> + <span class="number">1</span>);
+            <span class="self">Self</span>::build(<a href="../../../src/competitive/data_structure/kdtree.rs.html#24">data</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#26">m</a> + <span class="number">1</span>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">r</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#24">depth</a> + <span class="number">1</span>);
         }
     }
     <span class="kw">pub fn </span>range(<span class="kw-2">&amp;</span><span class="self">self</span>, range1: Range&lt;T&gt;, range2: Range&lt;U&gt;) -&gt; Vec&lt;<span class="kw-2">&amp;</span>V&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[];
-        <span class="self">self</span>.range_inner(<span class="kw-2">&amp;</span>range1, <span class="kw-2">&amp;</span>range2, <span class="number">0</span>, <span class="self">self</span>.data.len(), <span class="number">0</span>, <span class="kw-2">&amp;mut </span>res);
-        res
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
+        <a class="self" href="../../../src/competitive/data_structure/kdtree.rs.html#36">self</a>.<a href="../../../src/competitive/data_structure/kdtree.rs.html#41-49">range_inner</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/kdtree.rs.html#36">range1</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/kdtree.rs.html#36">range2</a>, <span class="number">0</span>, <a class="self" href="../../../src/competitive/data_structure/kdtree.rs.html#36">self</a>.data.len(), <span class="number">0</span>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/kdtree.rs.html#37">res</a>);
+        <a href="../../../src/competitive/data_structure/kdtree.rs.html#37">res</a>
     }
     <span class="kw">fn </span>range_inner&lt;<span class="lifetime">&#39;a</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
         range1: <span class="kw-2">&amp;</span>Range&lt;T&gt;,
         range2: <span class="kw-2">&amp;</span>Range&lt;U&gt;,
-        l: usize,
-        r: usize,
-        depth: usize,
+        l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+        r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+        depth: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
         res: <span class="kw-2">&amp;mut </span>Vec&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>V&gt;,
     ) {
         <span class="kw">if </span>l &lt; r {
-            <span class="kw">let </span>m = l + (r - l) / <span class="number">2</span>;
-            <span class="kw">let </span>(t, u, v) = <span class="kw-2">&amp;</span><span class="self">self</span>.data[m];
+            <span class="kw">let </span>m = <a href="../../../src/competitive/data_structure/kdtree.rs.html#45">l</a> + (<a href="../../../src/competitive/data_structure/kdtree.rs.html#46">r</a> - <a href="../../../src/competitive/data_structure/kdtree.rs.html#45">l</a>) / <span class="number">2</span>;
+            <span class="kw">let </span>(t, u, v) = <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/kdtree.rs.html#42">self</a>.data[<a href="../../../src/competitive/data_structure/kdtree.rs.html#51">m</a>];
             <span class="kw">if </span>range1.contains(t) &amp;&amp; range2.contains(u) {
-                res.push(v);
+                <a href="../../../src/competitive/data_structure/kdtree.rs.html#48">res</a>.push(<a href="../../../src/competitive/data_structure/kdtree.rs.html#52">v</a>);
             }
             <span class="kw">if if </span>depth % <span class="number">2 </span>== <span class="number">0 </span>{
                 <span class="kw-2">&amp;</span>range1.start &lt;= t
             } <span class="kw">else </span>{
                 <span class="kw-2">&amp;</span>range2.start &lt;= u
             } {
-                <span class="self">self</span>.range_inner(range1, range2, l, m, depth + <span class="number">1</span>, res);
+                <a class="self" href="../../../src/competitive/data_structure/kdtree.rs.html#42">self</a>.<a href="../../../src/competitive/data_structure/kdtree.rs.html#41-49">range_inner</a>(<a href="../../../src/competitive/data_structure/kdtree.rs.html#43">range1</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#44">range2</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#45">l</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#51">m</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#47">depth</a> + <span class="number">1</span>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#48">res</a>);
             }
             <span class="kw">if if </span>depth % <span class="number">2 </span>== <span class="number">0 </span>{
                 t &lt; <span class="kw-2">&amp;</span>range1.end
             } <span class="kw">else </span>{
                 u &lt; <span class="kw-2">&amp;</span>range2.end
             } {
-                <span class="self">self</span>.range_inner(range1, range2, m + <span class="number">1</span>, r, depth + <span class="number">1</span>, res);
+                <a class="self" href="../../../src/competitive/data_structure/kdtree.rs.html#42">self</a>.<a href="../../../src/competitive/data_structure/kdtree.rs.html#41-49">range_inner</a>(<a href="../../../src/competitive/data_structure/kdtree.rs.html#43">range1</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#44">range2</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#51">m</a> + <span class="number">1</span>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#46">r</a>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#47">depth</a> + <span class="number">1</span>, <a href="../../../src/competitive/data_structure/kdtree.rs.html#48">res</a>);
             }
         }
     }

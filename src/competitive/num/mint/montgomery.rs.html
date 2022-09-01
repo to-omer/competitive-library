@@ -439,11 +439,11 @@
 <span id="423">423</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-<span class="kw">impl</span>&lt;M&gt; MIntBase <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; <a href="../../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a> <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: MontgomeryReduction32,
+    </span>M: <a href="../../../../src/competitive/num/mint/montgomery.rs.html#189">MontgomeryReduction32</a>,
 {
-    <span class="kw">type </span>Inner = u32;
+    <span class="kw">type </span>Inner = <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>get_mod() -&gt; <span class="self">Self</span>::Inner {
         &lt;<span class="self">Self </span><span class="kw">as </span>MontgomeryReduction32&gt;::get_mod()
@@ -458,41 +458,41 @@
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_add(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="kw">let </span>z = x + y;
+        <span class="kw">let </span>z = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#21">x</a> + <a href="../../../../src/competitive/num/mint/montgomery.rs.html#21">y</a>;
         <span class="kw">let </span>m = <span class="self">Self</span>::get_mod();
         <span class="kw">if </span>z &gt;= m {
-            z - m
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#22">z</a> - <a href="../../../../src/competitive/num/mint/montgomery.rs.html#23">m</a>
         } <span class="kw">else </span>{
-            z
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#22">z</a>
         }
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_sub(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
         <span class="kw">if </span>x &lt; y {
-            x + <span class="self">Self</span>::get_mod() - y
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#31">x</a> + <span class="self">Self</span>::get_mod() - <a href="../../../../src/competitive/num/mint/montgomery.rs.html#31">y</a>
         } <span class="kw">else </span>{
-            x - y
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#31">x</a> - <a href="../../../../src/competitive/num/mint/montgomery.rs.html#31">y</a>
         }
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_mul(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64 * y <span class="kw">as </span>u64)
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#39">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <a href="../../../../src/competitive/num/mint/montgomery.rs.html#39">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_div(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::mod_mul(x, <span class="self">Self</span>::mod_inv(y))
+        <span class="self">Self</span>::mod_mul(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#43">x</a>, <span class="self">Self</span>::mod_inv(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#43">y</a>))
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_neg(x: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
         <span class="kw">if </span>x == <span class="number">0 </span>{
             <span class="number">0
         </span>} <span class="kw">else </span>{
-            <span class="self">Self</span>::get_mod() - x
+            <span class="self">Self</span>::get_mod() - <a href="../../../../src/competitive/num/mint/montgomery.rs.html#47">x</a>
         }
     }
     <span class="kw">fn </span>mod_inv(x: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="kw">let </span>p = <span class="self">Self</span>::get_mod() <span class="kw">as </span>i32;
-        <span class="kw">let </span>(<span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (x <span class="kw">as </span>i32, p);
+        <span class="kw">let </span>p = <span class="self">Self</span>::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>;
+        <span class="kw">let </span>(<span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (<a href="../../../../src/competitive/num/mint/montgomery.rs.html#54">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>, <a href="../../../../src/competitive/num/mint/montgomery.rs.html#55">p</a>);
         <span class="kw">let </span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>x) = (<span class="number">1</span>, <span class="number">0</span>);
         <span class="kw">while </span>a != <span class="number">0 </span>{
             <span class="kw">let </span>k = b / a;
@@ -501,135 +501,135 @@
             std::mem::swap(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;mut </span>u);
             std::mem::swap(<span class="kw-2">&amp;mut </span>b, <span class="kw-2">&amp;mut </span>a);
         }
-        <span class="self">Self</span>::reduce((<span class="kw">if </span>x &lt; <span class="number">0 </span>{ x + p } <span class="kw">else </span>{ x }) <span class="kw">as </span>u64 * <span class="self">Self</span>::n3() <span class="kw">as </span>u64)
+        <span class="self">Self</span>::reduce((<span class="kw">if </span>x &lt; <span class="number">0 </span>{ <a href="../../../../src/competitive/num/mint/montgomery.rs.html#57">x</a> + <a href="../../../../src/competitive/num/mint/montgomery.rs.html#55">p</a> } <span class="kw">else </span>{ <a href="../../../../src/competitive/num/mint/montgomery.rs.html#57">x</a> }) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::n3() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
 }
-<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;u32&gt; <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: MontgomeryReduction32,
+    </span>M: <a href="../../../../src/competitive/num/mint/montgomery.rs.html#189">MontgomeryReduction32</a>,
 {
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>from(x: u32) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64 * <span class="self">Self</span>::n2() <span class="kw">as </span>u64)
+    </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="self">Self</span>::Inner {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#73">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::n2() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; u32 {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64) <span class="kw">as </span>u32
+    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#77">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mod_into() -&gt; u32 {
-        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>u32
+    </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
+        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>
     }
 }
-<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;u64&gt; <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: MontgomeryReduction32,
+    </span>M: <a href="../../../../src/competitive/num/mint/montgomery.rs.html#189">MontgomeryReduction32</a>,
 {
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>from(x: u64) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(x % <span class="self">Self</span>::get_mod() <span class="kw">as </span>u64 * <span class="self">Self</span>::n2() <span class="kw">as </span>u64)
+    </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="self">Self</span>::Inner {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#90">x</a> % <span class="self">Self</span>::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::n2() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; u64 {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64) <span class="kw">as </span>u64
+    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#94">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mod_into() -&gt; u64 {
-        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>u64
+    </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
     }
 }
-<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;usize&gt; <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: MontgomeryReduction32,
+    </span>M: <a href="../../../../src/competitive/num/mint/montgomery.rs.html#189">MontgomeryReduction32</a>,
 {
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>from(x: usize) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64 % <span class="self">Self</span>::get_mod() <span class="kw">as </span>u64 * <span class="self">Self</span>::n2() <span class="kw">as </span>u64)
+    </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::Inner {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#107">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> % <span class="self">Self</span>::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::n2() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; usize {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64) <span class="kw">as </span>usize
+    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#111">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mod_into() -&gt; usize {
-        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>usize
+    </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
 }
-<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;i32&gt; <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: MontgomeryReduction32,
+    </span>M: <a href="../../../../src/competitive/num/mint/montgomery.rs.html#189">MontgomeryReduction32</a>,
 {
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>from(x: i32) -&gt; <span class="self">Self</span>::Inner {
-        <span class="kw">let </span>x = x % &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>i32;
+    </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) -&gt; <span class="self">Self</span>::Inner {
+        <span class="kw">let </span>x = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#124">x</a> % &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>;
         <span class="kw">let </span>x = <span class="kw">if </span>x &lt; <span class="number">0 </span>{
-            (x + &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>i32) <span class="kw">as </span>u64
+            (<a href="../../../../src/competitive/num/mint/montgomery.rs.html#125">x</a> + &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         } <span class="kw">else </span>{
-            x <span class="kw">as </span>u64
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#125">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         };
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64 * <span class="self">Self</span>::n2() <span class="kw">as </span>u64)
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#126">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::n2() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; i32 {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64) <span class="kw">as </span>i32
+    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#134">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mod_into() -&gt; i32 {
-        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>i32
+    </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> {
+        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>
     }
 }
-<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;i64&gt; <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: MontgomeryReduction32,
+    </span>M: <a href="../../../../src/competitive/num/mint/montgomery.rs.html#189">MontgomeryReduction32</a>,
 {
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>from(x: i64) -&gt; <span class="self">Self</span>::Inner {
-        <span class="kw">let </span>x = x % &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>i64;
+    </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <span class="self">Self</span>::Inner {
+        <span class="kw">let </span>x = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#147">x</a> % &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>;
         <span class="kw">let </span>x = <span class="kw">if </span>x &lt; <span class="number">0 </span>{
-            (x + &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>i64) <span class="kw">as </span>u64
+            (<a href="../../../../src/competitive/num/mint/montgomery.rs.html#148">x</a> + &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         } <span class="kw">else </span>{
-            x <span class="kw">as </span>u64
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#148">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         };
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64 * <span class="self">Self</span>::n2() <span class="kw">as </span>u64)
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#149">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::n2() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; i64 {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64) <span class="kw">as </span>i64
+    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#157">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mod_into() -&gt; i64 {
-        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>i64
+    </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
+        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>
     }
 }
-<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;isize&gt; <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: MontgomeryReduction32,
+    </span>M: <a href="../../../../src/competitive/num/mint/montgomery.rs.html#189">MontgomeryReduction32</a>,
 {
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>from(x: isize) -&gt; <span class="self">Self</span>::Inner {
-        <span class="kw">let </span>x = x % &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>isize;
+    </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>) -&gt; <span class="self">Self</span>::Inner {
+        <span class="kw">let </span>x = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#170">x</a> % &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>;
         <span class="kw">let </span>x = <span class="kw">if </span>x &lt; <span class="number">0 </span>{
-            (x + &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>isize) <span class="kw">as </span>u64
+            (<a href="../../../../src/competitive/num/mint/montgomery.rs.html#171">x</a> + &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         } <span class="kw">else </span>{
-            x <span class="kw">as </span>u64
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#171">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         };
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64 * <span class="self">Self</span>::n2() <span class="kw">as </span>u64)
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#172">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::n2() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; isize {
-        <span class="self">Self</span>::reduce(x <span class="kw">as </span>u64) <span class="kw">as </span>isize
+    </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> {
+        <span class="self">Self</span>::reduce(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#180">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mod_into() -&gt; isize {
-        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span>isize
+    </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> {
+        &lt;<span class="self">Self </span><span class="kw">as </span>MIntBase&gt;::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>
     }
 }
 <span class="doccomment">/// m is prime, n = 2^32
 </span><span class="kw">pub trait </span>MontgomeryReduction32 {
     <span class="doccomment">/// m
-    </span><span class="kw">fn </span>get_mod() -&gt; u32;
+    </span><span class="kw">fn </span>get_mod() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="doccomment">/// (-m)^{-1} mod n
-    </span><span class="kw">fn </span>r() -&gt; u32 {
+    </span><span class="kw">fn </span>r() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
         <span class="kw">let </span>m = <span class="self">Self</span>::get_mod();
         <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>t = <span class="number">0</span>;
@@ -640,23 +640,23 @@
             }
             t /= <span class="number">2</span>;
         }
-        r
+        <a href="../../../../src/competitive/num/mint/montgomery.rs.html#195">r</a>
     }
     <span class="doccomment">/// n^1 mod m
-    </span><span class="kw">fn </span>n1() -&gt; u32;
+    </span><span class="kw">fn </span>n1() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="doccomment">/// n^2 mod m
-    </span><span class="kw">fn </span>n2() -&gt; u32;
+    </span><span class="kw">fn </span>n2() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="doccomment">/// n^3 mod m
-    </span><span class="kw">fn </span>n3() -&gt; u32;
+    </span><span class="kw">fn </span>n3() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="doccomment">/// n^{-1}x = (x + (xr mod n)m) / n
-    </span><span class="kw">fn </span>reduce(x: u64) -&gt; u32 {
-        <span class="kw">let </span>m: u32 = <span class="self">Self</span>::get_mod();
+    </span><span class="kw">fn </span>reduce(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
+        <span class="kw">let </span>m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> = <span class="self">Self</span>::get_mod();
         <span class="kw">let </span>r = <span class="self">Self</span>::r();
-        <span class="kw">let </span><span class="kw-2">mut </span>x = ((x + r.wrapping_mul(x <span class="kw">as </span>u32) <span class="kw">as </span>u64 * m <span class="kw">as </span>u64) &gt;&gt; <span class="number">32</span>) <span class="kw">as </span>u32;
+        <span class="kw">let </span><span class="kw-2">mut </span>x = ((<a href="../../../../src/competitive/num/mint/montgomery.rs.html#213">x</a> + <a href="../../../../src/competitive/num/mint/montgomery.rs.html#215">r</a>.wrapping_mul(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#213">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <a href="../../../../src/competitive/num/mint/montgomery.rs.html#214">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) &gt;&gt; <span class="number">32</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
         <span class="kw">if </span>x &gt;= m {
-            x -= m;
+            <a href="../../../../src/competitive/num/mint/montgomery.rs.html#216">x</a> -= <a href="../../../../src/competitive/num/mint/montgomery.rs.html#214">m</a>;
         }
-        x
+        <a href="../../../../src/competitive/num/mint/montgomery.rs.html#216">x</a>
     }
 }
 <span class="macro">macro_rules! </span>define_montgomery_reduction_32 {
@@ -689,7 +689,7 @@
         )*
     };
 }
-<span class="macro">define_montgomery_reduction_32!</span>(
+<a class="macro" href="../../../../src/competitive/num/mint/montgomery.rs.html#223-252">define_montgomery_reduction_32!</a>(
     [
         Modulo998244353,
         <span class="number">998_244_353</span>,
@@ -732,20 +732,20 @@
 </span><span class="attribute">#[allow(dead_code)]
 #[codesnip::skip]
 </span><span class="kw">fn </span>culculate_montgomery() {
-    <span class="kw">use </span><span class="kw">crate</span>::math::modinv;
-    <span class="kw">let </span>m: u64 = <span class="number">998_244_353</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;m = {}&quot;</span>, m);
+    <span class="kw">use </span><a href="../../../../src/competitive/math/gcd.rs.html#111"><span class="kw">crate</span>::math::modinv</a>;
+    <span class="kw">let </span>m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = <span class="number">998_244_353</span>;
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;m = {}&quot;</span>, m);
     <span class="kw">let </span>n = <span class="number">1u64 </span>&lt;&lt; <span class="number">32</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;n = {}&quot;</span>, n);
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;n = {}&quot;</span>, n);
     <span class="comment">// n^{-1} mod m
-    </span><span class="kw">let </span>ninv = modinv(n, m);
-    <span class="macro">println!</span>(<span class="string">&quot;n^{{-1}} = {}&quot;</span>, ninv);
+    </span><span class="kw">let </span>ninv = <a href="../../../../src/competitive/math/gcd.rs.html#111">modinv</a>(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#299">n</a>, <a href="../../../../src/competitive/num/mint/montgomery.rs.html#297">m</a>);
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;n^{{-1}} = {}&quot;</span>, ninv);
     <span class="comment">// r = (-m)^{-1} mod n
-    </span><span class="kw">let </span>r = modinv(n - m, n);
-    <span class="macro">println!</span>(<span class="string">&quot;r = {}&quot;</span>, r);
+    </span><span class="kw">let </span>r = <a href="../../../../src/competitive/math/gcd.rs.html#111">modinv</a>(<a href="../../../../src/competitive/num/mint/montgomery.rs.html#299">n</a> - <a href="../../../../src/competitive/num/mint/montgomery.rs.html#297">m</a>, <a href="../../../../src/competitive/num/mint/montgomery.rs.html#299">n</a>);
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;r = {}&quot;</span>, r);
     <span class="kw">let </span>get_r = || {
         <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="number">0</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>n = n;
+        <span class="kw">let </span><span class="kw-2">mut </span>n = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#299">n</a>;
         <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>t = <span class="number">0</span>;
         <span class="kw">while </span>n &gt; <span class="number">1 </span>{
@@ -757,17 +757,17 @@
             n /= <span class="number">2</span>;
             i <span class="kw-2">*</span>= <span class="number">2</span>;
         }
-        r
+        <a href="../../../../src/competitive/num/mint/montgomery.rs.html#308">r</a>
     };
-    <span class="macro">assert_eq!</span>((get_r() * m + <span class="number">1</span>) &amp; (n - <span class="number">1</span>), <span class="number">0</span>);
-    <span class="macro">assert_eq!</span>((r * m + <span class="number">1</span>) &amp; (n - <span class="number">1</span>), <span class="number">0</span>);
-    <span class="macro">assert_eq!</span>(r, get_r());
-    <span class="kw">let </span>n1 = n % m;
-    <span class="macro">println!</span>(<span class="string">&quot;n^1 = {}&quot;</span>, n1);
-    <span class="kw">let </span>n2 = n1 * n1 % m;
-    <span class="macro">println!</span>(<span class="string">&quot;n^2 = {}&quot;</span>, n2);
-    <span class="kw">let </span>n3 = n1 * n2 % m;
-    <span class="macro">println!</span>(<span class="string">&quot;n^3 = {}&quot;</span>, n3);
+    <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>((get_r() * m + <span class="number">1</span>) &amp; (n - <span class="number">1</span>), <span class="number">0</span>);
+    <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>((r * m + <span class="number">1</span>) &amp; (n - <span class="number">1</span>), <span class="number">0</span>);
+    <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(r, get_r());
+    <span class="kw">let </span>n1 = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#299">n</a> % <a href="../../../../src/competitive/num/mint/montgomery.rs.html#297">m</a>;
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;n^1 = {}&quot;</span>, n1);
+    <span class="kw">let </span>n2 = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#326">n1</a> * <a href="../../../../src/competitive/num/mint/montgomery.rs.html#326">n1</a> % <a href="../../../../src/competitive/num/mint/montgomery.rs.html#297">m</a>;
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;n^2 = {}&quot;</span>, n2);
+    <span class="kw">let </span>n3 = <a href="../../../../src/competitive/num/mint/montgomery.rs.html#326">n1</a> * <a href="../../../../src/competitive/num/mint/montgomery.rs.html#328">n2</a> % <a href="../../../../src/competitive/num/mint/montgomery.rs.html#297">m</a>;
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;n^3 = {}&quot;</span>, n3);
     <span class="comment">// (x + (xr mod n)m) / n
     // r &lt; n
     // xr &lt; xn

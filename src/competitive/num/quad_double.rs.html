@@ -341,24 +341,24 @@
 </pre><pre class="rust"><code><span class="attribute">#![allow(clippy::suspicious_arithmetic_impl)]
 
 </span><span class="kw">use </span>std::{
-    fmt::{<span class="self">self</span>, Display},
-    num::ParseFloatError,
-    ops::{Add, Div, Index, Mul, Neg, Sub},
-    str::FromStr,
+    fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a>},
+    <a href="https://doc.rust-lang.org/nightly/core/num/dec2flt/struct.ParseFloatError.html">num::ParseFloatError</a>,
+    ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html">Div</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html">Index</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Mul</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html">Neg</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">Sub</a>},
+    <a href="https://doc.rust-lang.org/nightly/core/str/traits/trait.FromStr.html">str::FromStr</a>,
 };
 
 <span class="doccomment">/// ref: &lt;https://na-inet.jp/na/qd_ja.pdf&gt;
 </span><span class="attribute">#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
-</span><span class="kw">pub struct </span>QuadDouble(f64, f64, f64, f64);
+</span><span class="kw">pub struct </span>QuadDouble(<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>);
 
-<span class="kw">impl </span>QuadDouble {
-    <span class="kw">fn </span>renormalize(a0: f64, a1: f64, a2: f64, a3: f64, a4: f64) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>(s, t4) = quick_two_sum(a3, a4);
-        <span class="kw">let </span>(s, t3) = quick_two_sum(a2, s);
-        <span class="kw">let </span>(s, t2) = quick_two_sum(a1, s);
-        <span class="kw">let </span>(<span class="kw-2">mut </span>s, t1) = quick_two_sum(a0, s);
+<span class="kw">impl </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
+    <span class="kw">fn </span>renormalize(a0: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, a1: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, a2: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, a3: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, a4: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>(s, t4) = <a href="../../../src/competitive/num/quad_double.rs.html#35">quick_two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#15">a3</a>, <a href="../../../src/competitive/num/quad_double.rs.html#15">a4</a>);
+        <span class="kw">let </span>(s, t3) = <a href="../../../src/competitive/num/quad_double.rs.html#35">quick_two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#15">a2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#16">s</a>);
+        <span class="kw">let </span>(s, t2) = <a href="../../../src/competitive/num/quad_double.rs.html#35">quick_two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#15">a1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#17">s</a>);
+        <span class="kw">let </span>(<span class="kw-2">mut </span>s, t1) = <a href="../../../src/competitive/num/quad_double.rs.html#35">quick_two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#15">a0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#18">s</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>b = [s, t1, t2, t3];
+        <span class="kw">let </span><span class="kw-2">mut </span>b = [<a href="../../../src/competitive/num/quad_double.rs.html#19">s</a>, <a href="../../../src/competitive/num/quad_double.rs.html#19">t1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#18">t2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#17">t3</a>];
         <span class="kw">for </span><span class="kw-2">&amp;</span>t <span class="kw">in </span>[t1, t2, t3, t4].iter() {
             <span class="kw">let </span>(s_, e) = quick_two_sum(s, t);
             s = s_;
@@ -368,54 +368,54 @@
                 k += <span class="number">1</span>;
             }
         }
-        <span class="self">Self</span>(b[<span class="number">0</span>], b[<span class="number">1</span>], b[<span class="number">2</span>], b[<span class="number">3</span>])
+        <span class="self">Self</span>(<a href="../../../src/competitive/num/quad_double.rs.html#21">b</a>[<span class="number">0</span>], <a href="../../../src/competitive/num/quad_double.rs.html#21">b</a>[<span class="number">1</span>], <a href="../../../src/competitive/num/quad_double.rs.html#21">b</a>[<span class="number">2</span>], <a href="../../../src/competitive/num/quad_double.rs.html#21">b</a>[<span class="number">3</span>])
     }
 }
 
-<span class="kw">fn </span>quick_two_sum(a: f64, b: f64) -&gt; (f64, f64) {
-    <span class="kw">let </span>s = a + b;
-    <span class="kw">let </span>e = b - (s - a);
-    (s, e)
+<span class="kw">fn </span>quick_two_sum(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>s = <a href="../../../src/competitive/num/quad_double.rs.html#35">a</a> + <a href="../../../src/competitive/num/quad_double.rs.html#35">b</a>;
+    <span class="kw">let </span>e = <a href="../../../src/competitive/num/quad_double.rs.html#35">b</a> - (<a href="../../../src/competitive/num/quad_double.rs.html#36">s</a> - <a href="../../../src/competitive/num/quad_double.rs.html#35">a</a>);
+    (<a href="../../../src/competitive/num/quad_double.rs.html#36">s</a>, <a href="../../../src/competitive/num/quad_double.rs.html#37">e</a>)
 }
 
-<span class="kw">fn </span>two_sum(a: f64, b: f64) -&gt; (f64, f64) {
-    <span class="kw">let </span>s = a + b;
-    <span class="kw">let </span>v = s - a;
-    <span class="kw">let </span>e = (a - (s - v)) + (b - v);
-    (s, e)
+<span class="kw">fn </span>two_sum(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>s = <a href="../../../src/competitive/num/quad_double.rs.html#41">a</a> + <a href="../../../src/competitive/num/quad_double.rs.html#41">b</a>;
+    <span class="kw">let </span>v = <a href="../../../src/competitive/num/quad_double.rs.html#42">s</a> - <a href="../../../src/competitive/num/quad_double.rs.html#41">a</a>;
+    <span class="kw">let </span>e = (<a href="../../../src/competitive/num/quad_double.rs.html#41">a</a> - (<a href="../../../src/competitive/num/quad_double.rs.html#42">s</a> - <a href="../../../src/competitive/num/quad_double.rs.html#43">v</a>)) + (<a href="../../../src/competitive/num/quad_double.rs.html#41">b</a> - <a href="../../../src/competitive/num/quad_double.rs.html#43">v</a>);
+    (<a href="../../../src/competitive/num/quad_double.rs.html#42">s</a>, <a href="../../../src/competitive/num/quad_double.rs.html#44">e</a>)
 }
 
-<span class="kw">fn </span>split(a: f64) -&gt; (f64, f64) {
-    <span class="kw">let </span>t = <span class="number">134_217_729. </span>* a; <span class="comment">// 134217729 = 2 ** 27 + 1
-    </span><span class="kw">let </span>ahi = t - (t - a);
-    <span class="kw">let </span>alo = a - ahi;
-    (ahi, alo)
+<span class="kw">fn </span>split(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>t = <span class="number">134_217_729. </span>* <a href="../../../src/competitive/num/quad_double.rs.html#48">a</a>; <span class="comment">// 134217729 = 2 ** 27 + 1
+    </span><span class="kw">let </span>ahi = <a href="../../../src/competitive/num/quad_double.rs.html#49">t</a> - (<a href="../../../src/competitive/num/quad_double.rs.html#49">t</a> - <a href="../../../src/competitive/num/quad_double.rs.html#48">a</a>);
+    <span class="kw">let </span>alo = <a href="../../../src/competitive/num/quad_double.rs.html#48">a</a> - <a href="../../../src/competitive/num/quad_double.rs.html#50">ahi</a>;
+    (<a href="../../../src/competitive/num/quad_double.rs.html#50">ahi</a>, <a href="../../../src/competitive/num/quad_double.rs.html#51">alo</a>)
 }
 
-<span class="kw">fn </span>two_prod(a: f64, b: f64) -&gt; (f64, f64) {
-    <span class="kw">let </span>p = a * b;
-    <span class="kw">let </span>(ahi, alo) = split(a);
-    <span class="kw">let </span>(bhi, blo) = split(b);
-    <span class="kw">let </span>e = ((ahi * bhi - p) + ahi * blo + alo * bhi) + alo * blo;
-    (p, e)
+<span class="kw">fn </span>two_prod(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>p = <a href="../../../src/competitive/num/quad_double.rs.html#55">a</a> * <a href="../../../src/competitive/num/quad_double.rs.html#55">b</a>;
+    <span class="kw">let </span>(ahi, alo) = <a href="../../../src/competitive/num/quad_double.rs.html#48">split</a>(<a href="../../../src/competitive/num/quad_double.rs.html#55">a</a>);
+    <span class="kw">let </span>(bhi, blo) = <a href="../../../src/competitive/num/quad_double.rs.html#48">split</a>(<a href="../../../src/competitive/num/quad_double.rs.html#55">b</a>);
+    <span class="kw">let </span>e = ((<a href="../../../src/competitive/num/quad_double.rs.html#57">ahi</a> * <a href="../../../src/competitive/num/quad_double.rs.html#58">bhi</a> - <a href="../../../src/competitive/num/quad_double.rs.html#56">p</a>) + <a href="../../../src/competitive/num/quad_double.rs.html#57">ahi</a> * <a href="../../../src/competitive/num/quad_double.rs.html#58">blo</a> + <a href="../../../src/competitive/num/quad_double.rs.html#57">alo</a> * <a href="../../../src/competitive/num/quad_double.rs.html#58">bhi</a>) + <a href="../../../src/competitive/num/quad_double.rs.html#57">alo</a> * <a href="../../../src/competitive/num/quad_double.rs.html#58">blo</a>;
+    (<a href="../../../src/competitive/num/quad_double.rs.html#56">p</a>, <a href="../../../src/competitive/num/quad_double.rs.html#59">e</a>)
 }
 
-<span class="kw">fn </span>three_three_sum(a: f64, b: f64, c: f64) -&gt; (f64, f64, f64) {
-    <span class="kw">let </span>(u, v) = two_sum(a, b);
-    <span class="kw">let </span>(r0, w) = two_sum(u, c);
-    <span class="kw">let </span>(r1, r2) = two_sum(v, w);
-    (r0, r1, r2)
+<span class="kw">fn </span>three_three_sum(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, c: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>(u, v) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#63">a</a>, <a href="../../../src/competitive/num/quad_double.rs.html#63">b</a>);
+    <span class="kw">let </span>(r0, w) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#64">u</a>, <a href="../../../src/competitive/num/quad_double.rs.html#63">c</a>);
+    <span class="kw">let </span>(r1, r2) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#64">v</a>, <a href="../../../src/competitive/num/quad_double.rs.html#65">w</a>);
+    (<a href="../../../src/competitive/num/quad_double.rs.html#65">r0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#66">r1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#66">r2</a>)
 }
 
-<span class="kw">fn </span>three_two_sum(a: f64, b: f64, c: f64) -&gt; (f64, f64) {
-    <span class="kw">let </span>(u, v) = two_sum(a, b);
-    <span class="kw">let </span>(r0, w) = two_sum(u, c);
-    <span class="kw">let </span>r1 = v + w;
-    (r0, r1)
+<span class="kw">fn </span>three_two_sum(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, c: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>(u, v) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#70">a</a>, <a href="../../../src/competitive/num/quad_double.rs.html#70">b</a>);
+    <span class="kw">let </span>(r0, w) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#71">u</a>, <a href="../../../src/competitive/num/quad_double.rs.html#70">c</a>);
+    <span class="kw">let </span>r1 = <a href="../../../src/competitive/num/quad_double.rs.html#71">v</a> + <a href="../../../src/competitive/num/quad_double.rs.html#72">w</a>;
+    (<a href="../../../src/competitive/num/quad_double.rs.html#72">r0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#73">r1</a>)
 }
 
-<span class="kw">fn </span>multiple_three_sum(xs: <span class="kw-2">&amp;</span>[f64]) -&gt; (f64, f64, f64) {
-    <span class="kw">let </span>(<span class="kw-2">mut </span>r0, <span class="kw-2">mut </span>r1, <span class="kw-2">mut </span>r2) = (<span class="kw-2">*</span>xs.first().unwrap_or(<span class="kw-2">&amp;</span><span class="number">0.</span>), <span class="number">0.</span>, <span class="number">0.</span>);
+<span class="kw">fn </span>multiple_three_sum(xs: <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>]) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>(<span class="kw-2">mut </span>r0, <span class="kw-2">mut </span>r1, <span class="kw-2">mut </span>r2) = (<span class="kw-2">*</span><a href="../../../src/competitive/num/quad_double.rs.html#77">xs</a>.first().unwrap_or(<span class="kw-2">&amp;</span><span class="number">0.</span>), <span class="number">0.</span>, <span class="number">0.</span>);
     <span class="kw">for </span><span class="kw-2">&amp;</span>x <span class="kw">in </span>xs.iter() {
         <span class="kw">let </span>(s, e) = two_sum(r0, x);
         r0 = s;
@@ -423,46 +423,46 @@
         r1 = s;
         r2 += e;
     }
-    (r0, r1, r2)
+    (<a href="../../../src/competitive/num/quad_double.rs.html#78">r0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#78">r1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#78">r2</a>)
 }
 
-<span class="kw">fn </span>multiple_two_sum(xs: <span class="kw-2">&amp;</span>[f64]) -&gt; (f64, f64) {
-    <span class="kw">let </span>(<span class="kw-2">mut </span>r0, <span class="kw-2">mut </span>r1) = (<span class="kw-2">*</span>xs.first().unwrap_or(<span class="kw-2">&amp;</span><span class="number">0.</span>), <span class="number">0.</span>);
+<span class="kw">fn </span>multiple_two_sum(xs: <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>]) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>(<span class="kw-2">mut </span>r0, <span class="kw-2">mut </span>r1) = (<span class="kw-2">*</span><a href="../../../src/competitive/num/quad_double.rs.html#89">xs</a>.first().unwrap_or(<span class="kw-2">&amp;</span><span class="number">0.</span>), <span class="number">0.</span>);
     <span class="kw">for </span><span class="kw-2">&amp;</span>x <span class="kw">in </span>xs.iter() {
         <span class="kw">let </span>(s, e) = two_sum(r0, x);
         r0 = s;
         r1 += e;
     }
-    (r0, r1)
+    (<a href="../../../src/competitive/num/quad_double.rs.html#90">r0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#90">r1</a>)
 }
 
-<span class="kw">impl </span>Add&lt;f64&gt; <span class="kw">for </span>QuadDouble {
+<span class="kw">impl </span>Add&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt; <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: f64) -&gt; <span class="self">Self</span>::Output {
-        <span class="kw">let </span>(t0, e) = two_sum(<span class="self">self</span>.<span class="number">0</span>, rhs);
-        <span class="kw">let </span>(t1, e) = two_sum(<span class="self">self</span>.<span class="number">1</span>, e);
-        <span class="kw">let </span>(t2, e) = two_sum(<span class="self">self</span>.<span class="number">2</span>, e);
-        <span class="kw">let </span>(t3, t4) = two_sum(<span class="self">self</span>.<span class="number">3</span>, e);
-        <span class="self">Self</span>::renormalize(t0, t1, t2, t3, t4)
+    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>(t0, e) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#101">self</a>.<span class="number">0</span>, <a href="../../../src/competitive/num/quad_double.rs.html#101">rhs</a>);
+        <span class="kw">let </span>(t1, e) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#101">self</a>.<span class="number">1</span>, <a href="../../../src/competitive/num/quad_double.rs.html#102">e</a>);
+        <span class="kw">let </span>(t2, e) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#101">self</a>.<span class="number">2</span>, <a href="../../../src/competitive/num/quad_double.rs.html#103">e</a>);
+        <span class="kw">let </span>(t3, t4) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#101">self</a>.<span class="number">3</span>, <a href="../../../src/competitive/num/quad_double.rs.html#104">e</a>);
+        <span class="self">Self</span>::renormalize(<a href="../../../src/competitive/num/quad_double.rs.html#102">t0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#103">t1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#104">t2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#105">t3</a>, <a href="../../../src/competitive/num/quad_double.rs.html#105">t4</a>)
     }
 }
 
-<span class="kw">fn </span>double_accumulate(u: f64, v: f64, x: f64) -&gt; (f64, f64, f64) {
-    <span class="kw">let </span>(s, <span class="kw-2">mut </span>v) = two_sum(v, x);
-    <span class="kw">let </span>(<span class="kw-2">mut </span>s, <span class="kw-2">mut </span>u) = two_sum(u, s);
+<span class="kw">fn </span>double_accumulate(u: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, v: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) {
+    <span class="kw">let </span>(s, <span class="kw-2">mut </span>v) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#110">v</a>, <a href="../../../src/competitive/num/quad_double.rs.html#110">x</a>);
+    <span class="kw">let </span>(<span class="kw-2">mut </span>s, <span class="kw-2">mut </span>u) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#110">u</a>, <a href="../../../src/competitive/num/quad_double.rs.html#111">s</a>);
     <span class="kw">if </span>u == <span class="number">0. </span>{
-        u = s;
-        s = <span class="number">0.</span>;
+        <a href="../../../src/competitive/num/quad_double.rs.html#112">u</a> = <a href="../../../src/competitive/num/quad_double.rs.html#112">s</a>;
+        <a href="../../../src/competitive/num/quad_double.rs.html#112">s</a> = <span class="number">0.</span>;
     }
     <span class="kw">if </span>v == <span class="number">0. </span>{
-        v = u;
-        u = s;
-        s = <span class="number">0.
+        <a href="../../../src/competitive/num/quad_double.rs.html#111">v</a> = <a href="../../../src/competitive/num/quad_double.rs.html#112">u</a>;
+        <a href="../../../src/competitive/num/quad_double.rs.html#112">u</a> = <a href="../../../src/competitive/num/quad_double.rs.html#112">s</a>;
+        <a href="../../../src/competitive/num/quad_double.rs.html#112">s</a> = <span class="number">0.
     </span>}
-    (s, u, v)
+    (<a href="../../../src/competitive/num/quad_double.rs.html#112">s</a>, <a href="../../../src/competitive/num/quad_double.rs.html#112">u</a>, <a href="../../../src/competitive/num/quad_double.rs.html#111">v</a>)
 }
 
-<span class="kw">impl </span>Add&lt;QuadDouble&gt; <span class="kw">for </span>QuadDouble {
+<span class="kw">impl </span>Add&lt;<a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a>&gt; <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span><span class="kw-2">mut </span>x = [<span class="number">0.</span>; <span class="number">8</span>];
@@ -493,114 +493,114 @@
             i += <span class="number">1</span>;
         }
         <span class="kw">if </span>k &lt; <span class="number">2 </span>{
-            c[k + <span class="number">1</span>] = v;
+            <a href="../../../src/competitive/num/quad_double.rs.html#143">c</a>[<a href="../../../src/competitive/num/quad_double.rs.html#142">k</a> + <span class="number">1</span>] = <a href="../../../src/competitive/num/quad_double.rs.html#141">v</a>;
         }
         <span class="kw">if </span>k &lt; <span class="number">3 </span>{
-            c[k] = u;
+            <a href="../../../src/competitive/num/quad_double.rs.html#143">c</a>[<a href="../../../src/competitive/num/quad_double.rs.html#142">k</a>] = <a href="../../../src/competitive/num/quad_double.rs.html#141">u</a>;
         }
-        <span class="self">Self</span>::renormalize(c[<span class="number">0</span>], c[<span class="number">1</span>], c[<span class="number">2</span>], c[<span class="number">3</span>], <span class="number">0.</span>)
+        <span class="self">Self</span>::renormalize(<a href="../../../src/competitive/num/quad_double.rs.html#143">c</a>[<span class="number">0</span>], <a href="../../../src/competitive/num/quad_double.rs.html#143">c</a>[<span class="number">1</span>], <a href="../../../src/competitive/num/quad_double.rs.html#143">c</a>[<span class="number">2</span>], <a href="../../../src/competitive/num/quad_double.rs.html#143">c</a>[<span class="number">3</span>], <span class="number">0.</span>)
     }
 }
 
-<span class="kw">impl </span>Sub <span class="kw">for </span>QuadDouble {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">Sub</a> <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-        <span class="self">self </span>+ -rhs
+        <span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#167">self</a> </span>+ -<a href="../../../src/competitive/num/quad_double.rs.html#167">rhs</a>
     }
 }
 
-<span class="kw">impl </span>Neg <span class="kw">for </span>QuadDouble {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html">Neg</a> <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
-        <span class="self">Self</span>(-<span class="self">self</span>.<span class="number">0</span>, -<span class="self">self</span>.<span class="number">1</span>, -<span class="self">self</span>.<span class="number">2</span>, -<span class="self">self</span>.<span class="number">3</span>)
+        <span class="self">Self</span>(-<a class="self" href="../../../src/competitive/num/quad_double.rs.html#174">self</a>.<span class="number">0</span>, -<a class="self" href="../../../src/competitive/num/quad_double.rs.html#174">self</a>.<span class="number">1</span>, -<a class="self" href="../../../src/competitive/num/quad_double.rs.html#174">self</a>.<span class="number">2</span>, -<a class="self" href="../../../src/competitive/num/quad_double.rs.html#174">self</a>.<span class="number">3</span>)
     }
 }
 
-<span class="kw">impl </span>Mul&lt;f64&gt; <span class="kw">for </span>QuadDouble {
+<span class="kw">impl </span>Mul&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt; <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: f64) -&gt; <span class="self">Self</span>::Output {
-        <span class="kw">let </span>(t0, e0) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs);
-        <span class="kw">let </span>(p1, e1) = two_prod(<span class="self">self</span>.<span class="number">1</span>, rhs);
-        <span class="kw">let </span>(p2, e2) = two_prod(<span class="self">self</span>.<span class="number">2</span>, rhs);
-        <span class="kw">let </span>p3 = <span class="self">self</span>.<span class="number">3 </span>* rhs;
+    <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self</span>::Output {
+        <span class="kw">let </span>(t0, e0) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#181">self</a>.<span class="number">0</span>, <a href="../../../src/competitive/num/quad_double.rs.html#181">rhs</a>);
+        <span class="kw">let </span>(p1, e1) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#181">self</a>.<span class="number">1</span>, <a href="../../../src/competitive/num/quad_double.rs.html#181">rhs</a>);
+        <span class="kw">let </span>(p2, e2) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#181">self</a>.<span class="number">2</span>, <a href="../../../src/competitive/num/quad_double.rs.html#181">rhs</a>);
+        <span class="kw">let </span>p3 = <a class="self" href="../../../src/competitive/num/quad_double.rs.html#181">self</a>.<span class="number">3 </span>* <a href="../../../src/competitive/num/quad_double.rs.html#181">rhs</a>;
 
-        <span class="kw">let </span>(t1, e4) = two_sum(p1, e0);
-        <span class="kw">let </span>(t2, e5, e6) = three_three_sum(p2, e1, e4);
-        <span class="kw">let </span>(t3, e7) = three_two_sum(p3, e2, e5);
-        <span class="kw">let </span>t4 = e7 + e6;
-        <span class="self">Self</span>::renormalize(t0, t1, t2, t3, t4)
+        <span class="kw">let </span>(t1, e4) = <a href="../../../src/competitive/num/quad_double.rs.html#41">two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#183">p1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#182">e0</a>);
+        <span class="kw">let </span>(t2, e5, e6) = <a href="../../../src/competitive/num/quad_double.rs.html#63">three_three_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#184">p2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#183">e1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#187">e4</a>);
+        <span class="kw">let </span>(t3, e7) = <a href="../../../src/competitive/num/quad_double.rs.html#70">three_two_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#185">p3</a>, <a href="../../../src/competitive/num/quad_double.rs.html#184">e2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#188">e5</a>);
+        <span class="kw">let </span>t4 = <a href="../../../src/competitive/num/quad_double.rs.html#189">e7</a> + <a href="../../../src/competitive/num/quad_double.rs.html#188">e6</a>;
+        <span class="self">Self</span>::renormalize(<a href="../../../src/competitive/num/quad_double.rs.html#182">t0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#187">t1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#188">t2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#189">t3</a>, <a href="../../../src/competitive/num/quad_double.rs.html#190">t4</a>)
     }
 }
 
-<span class="kw">impl </span>Mul&lt;QuadDouble&gt; <span class="kw">for </span>QuadDouble {
+<span class="kw">impl </span>Mul&lt;<a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a>&gt; <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-        <span class="kw">let </span>(t0, q00) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs.<span class="number">0</span>);
+        <span class="kw">let </span>(t0, q00) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">0</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">0</span>);
 
-        <span class="kw">let </span>(p01, q01) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs.<span class="number">1</span>);
-        <span class="kw">let </span>(p10, q10) = two_prod(<span class="self">self</span>.<span class="number">1</span>, rhs.<span class="number">0</span>);
+        <span class="kw">let </span>(p01, q01) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">0</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">1</span>);
+        <span class="kw">let </span>(p10, q10) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">1</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">0</span>);
 
-        <span class="kw">let </span>(p02, q02) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs.<span class="number">2</span>);
-        <span class="kw">let </span>(p11, q11) = two_prod(<span class="self">self</span>.<span class="number">1</span>, rhs.<span class="number">1</span>);
-        <span class="kw">let </span>(p20, q20) = two_prod(<span class="self">self</span>.<span class="number">2</span>, rhs.<span class="number">0</span>);
+        <span class="kw">let </span>(p02, q02) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">0</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">2</span>);
+        <span class="kw">let </span>(p11, q11) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">1</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">1</span>);
+        <span class="kw">let </span>(p20, q20) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">2</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">0</span>);
 
-        <span class="kw">let </span>(p03, q03) = two_prod(<span class="self">self</span>.<span class="number">0</span>, rhs.<span class="number">3</span>);
-        <span class="kw">let </span>(p12, q12) = two_prod(<span class="self">self</span>.<span class="number">1</span>, rhs.<span class="number">2</span>);
-        <span class="kw">let </span>(p21, q21) = two_prod(<span class="self">self</span>.<span class="number">2</span>, rhs.<span class="number">1</span>);
-        <span class="kw">let </span>(p30, q30) = two_prod(<span class="self">self</span>.<span class="number">3</span>, rhs.<span class="number">0</span>);
+        <span class="kw">let </span>(p03, q03) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">0</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">3</span>);
+        <span class="kw">let </span>(p12, q12) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">1</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">2</span>);
+        <span class="kw">let </span>(p21, q21) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">2</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">1</span>);
+        <span class="kw">let </span>(p30, q30) = <a href="../../../src/competitive/num/quad_double.rs.html#55">two_prod</a>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">3</span>, <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">0</span>);
 
-        <span class="kw">let </span>p13 = <span class="self">self</span>.<span class="number">1 </span>* rhs.<span class="number">3</span>;
-        <span class="kw">let </span>p22 = <span class="self">self</span>.<span class="number">2 </span>* rhs.<span class="number">2</span>;
-        <span class="kw">let </span>p31 = <span class="self">self</span>.<span class="number">3 </span>* rhs.<span class="number">1</span>;
+        <span class="kw">let </span>p13 = <a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">1 </span>* <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">3</span>;
+        <span class="kw">let </span>p22 = <a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">2 </span>* <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">2</span>;
+        <span class="kw">let </span>p31 = <a class="self" href="../../../src/competitive/num/quad_double.rs.html#197">self</a>.<span class="number">3 </span>* <a href="../../../src/competitive/num/quad_double.rs.html#197">rhs</a>.<span class="number">1</span>;
 
-        <span class="kw">let </span>(t1, e1, e2) = three_three_sum(q00, p01, p10);
-        <span class="kw">let </span>(t2, e3, e4) = multiple_three_sum(<span class="kw-2">&amp;</span>[e1, q01, q10, p02, p11, p20]);
-        <span class="kw">let </span>(t3, e5) = multiple_two_sum(<span class="kw-2">&amp;</span>[e2, e3, q02, q11, q20, p03, p12, p21, p30]);
-        <span class="kw">let </span>t4 = e4 + e5 + q03 + q12 + q21 + q30 + p13 + p22 + p31;
-        <span class="self">Self</span>::renormalize(t0, t1, t2, t3, t4)
+        <span class="kw">let </span>(t1, e1, e2) = <a href="../../../src/competitive/num/quad_double.rs.html#63">three_three_sum</a>(<a href="../../../src/competitive/num/quad_double.rs.html#198">q00</a>, <a href="../../../src/competitive/num/quad_double.rs.html#200">p01</a>, <a href="../../../src/competitive/num/quad_double.rs.html#201">p10</a>);
+        <span class="kw">let </span>(t2, e3, e4) = <a href="../../../src/competitive/num/quad_double.rs.html#77">multiple_three_sum</a>(<span class="kw-2">&amp;</span>[<a href="../../../src/competitive/num/quad_double.rs.html#216">e1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#200">q01</a>, <a href="../../../src/competitive/num/quad_double.rs.html#201">q10</a>, <a href="../../../src/competitive/num/quad_double.rs.html#203">p02</a>, <a href="../../../src/competitive/num/quad_double.rs.html#204">p11</a>, <a href="../../../src/competitive/num/quad_double.rs.html#205">p20</a>]);
+        <span class="kw">let </span>(t3, e5) = <a href="../../../src/competitive/num/quad_double.rs.html#89">multiple_two_sum</a>(<span class="kw-2">&amp;</span>[<a href="../../../src/competitive/num/quad_double.rs.html#216">e2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#217">e3</a>, <a href="../../../src/competitive/num/quad_double.rs.html#203">q02</a>, <a href="../../../src/competitive/num/quad_double.rs.html#204">q11</a>, <a href="../../../src/competitive/num/quad_double.rs.html#205">q20</a>, <a href="../../../src/competitive/num/quad_double.rs.html#207">p03</a>, <a href="../../../src/competitive/num/quad_double.rs.html#208">p12</a>, <a href="../../../src/competitive/num/quad_double.rs.html#209">p21</a>, <a href="../../../src/competitive/num/quad_double.rs.html#210">p30</a>]);
+        <span class="kw">let </span>t4 = <a href="../../../src/competitive/num/quad_double.rs.html#217">e4</a> + <a href="../../../src/competitive/num/quad_double.rs.html#218">e5</a> + <a href="../../../src/competitive/num/quad_double.rs.html#207">q03</a> + <a href="../../../src/competitive/num/quad_double.rs.html#208">q12</a> + <a href="../../../src/competitive/num/quad_double.rs.html#209">q21</a> + <a href="../../../src/competitive/num/quad_double.rs.html#210">q30</a> + <a href="../../../src/competitive/num/quad_double.rs.html#212">p13</a> + <a href="../../../src/competitive/num/quad_double.rs.html#213">p22</a> + <a href="../../../src/competitive/num/quad_double.rs.html#214">p31</a>;
+        <span class="self">Self</span>::renormalize(<a href="../../../src/competitive/num/quad_double.rs.html#198">t0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#216">t1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#217">t2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#218">t3</a>, <a href="../../../src/competitive/num/quad_double.rs.html#219">t4</a>)
     }
 }
 
-<span class="kw">impl </span>Div&lt;QuadDouble&gt; <span class="kw">for </span>QuadDouble {
+<span class="kw">impl </span>Div&lt;<a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a>&gt; <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>div(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-        <span class="kw">let </span>q0 = <span class="self">self</span>.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
-        <span class="kw">let </span>r = <span class="self">self </span>- rhs * q0;
-        <span class="kw">let </span>q1 = r.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
-        <span class="kw">let </span>r = r - rhs * q1;
-        <span class="kw">let </span>q2 = r.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
-        <span class="kw">let </span>r = r - rhs * q2;
-        <span class="kw">let </span>q3 = r.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
-        <span class="kw">let </span>r = r - rhs * q3;
-        <span class="kw">let </span>q4 = r.<span class="number">0 </span>/ rhs.<span class="number">0</span>;
-        <span class="self">Self</span>::renormalize(q0, q1, q2, q3, q4)
+        <span class="kw">let </span>q0 = <a class="self" href="../../../src/competitive/num/quad_double.rs.html#226">self</a>.<span class="number">0 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a>.<span class="number">0</span>;
+        <span class="kw">let </span>r = <span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#226">self</a> </span>- <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a> * <a href="../../../src/competitive/num/quad_double.rs.html#227">q0</a>;
+        <span class="kw">let </span>q1 = <a href="../../../src/competitive/num/quad_double.rs.html#228">r</a>.<span class="number">0 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a>.<span class="number">0</span>;
+        <span class="kw">let </span>r = <a href="../../../src/competitive/num/quad_double.rs.html#228">r</a> - <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a> * <a href="../../../src/competitive/num/quad_double.rs.html#229">q1</a>;
+        <span class="kw">let </span>q2 = <a href="../../../src/competitive/num/quad_double.rs.html#230">r</a>.<span class="number">0 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a>.<span class="number">0</span>;
+        <span class="kw">let </span>r = <a href="../../../src/competitive/num/quad_double.rs.html#230">r</a> - <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a> * <a href="../../../src/competitive/num/quad_double.rs.html#231">q2</a>;
+        <span class="kw">let </span>q3 = <a href="../../../src/competitive/num/quad_double.rs.html#232">r</a>.<span class="number">0 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a>.<span class="number">0</span>;
+        <span class="kw">let </span>r = <a href="../../../src/competitive/num/quad_double.rs.html#232">r</a> - <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a> * <a href="../../../src/competitive/num/quad_double.rs.html#233">q3</a>;
+        <span class="kw">let </span>q4 = <a href="../../../src/competitive/num/quad_double.rs.html#234">r</a>.<span class="number">0 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#226">rhs</a>.<span class="number">0</span>;
+        <span class="self">Self</span>::renormalize(<a href="../../../src/competitive/num/quad_double.rs.html#227">q0</a>, <a href="../../../src/competitive/num/quad_double.rs.html#229">q1</a>, <a href="../../../src/competitive/num/quad_double.rs.html#231">q2</a>, <a href="../../../src/competitive/num/quad_double.rs.html#233">q3</a>, <a href="../../../src/competitive/num/quad_double.rs.html#235">q4</a>)
     }
 }
 
-<span class="kw">impl </span>Index&lt;usize&gt; <span class="kw">for </span>QuadDouble {
-    <span class="kw">type </span>Output = f64;
-    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
-        <span class="kw">match </span>index {
-            <span class="number">0 </span>=&gt; <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>,
-            <span class="number">1 </span>=&gt; <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">1</span>,
-            <span class="number">2 </span>=&gt; <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">2</span>,
-            <span class="number">3 </span>=&gt; <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">3</span>,
-            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(),
+<span class="kw">impl </span>Index&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
+    <span class="kw">type </span>Output = <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>;
+    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+        <span class="kw">match </span><a href="../../../src/competitive/num/quad_double.rs.html#242">index</a> {
+            <span class="number">0 </span>=&gt; <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/num/quad_double.rs.html#242">self</a>.<span class="number">0</span>,
+            <span class="number">1 </span>=&gt; <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/num/quad_double.rs.html#242">self</a>.<span class="number">1</span>,
+            <span class="number">2 </span>=&gt; <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/num/quad_double.rs.html#242">self</a>.<span class="number">2</span>,
+            <span class="number">3 </span>=&gt; <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/num/quad_double.rs.html#242">self</a>.<span class="number">3</span>,
+            <span class="kw">_ </span>=&gt; <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.panic.html">panic!</a>(),
         }
     }
 }
 
-<span class="kw">impl </span>From&lt;QuadDouble&gt; <span class="kw">for </span>f64 {
-    <span class="kw">fn </span>from(x: QuadDouble) -&gt; f64 {
-        x.<span class="number">3 </span>+ x.<span class="number">2 </span>+ x.<span class="number">1 </span>+ x.<span class="number">0
+<span class="kw">impl </span>From&lt;<a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a>&gt; <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a> {
+    <span class="kw">fn </span>from(x: <a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a> {
+        <a href="../../../src/competitive/num/quad_double.rs.html#254">x</a>.<span class="number">3 </span>+ <a href="../../../src/competitive/num/quad_double.rs.html#254">x</a>.<span class="number">2 </span>+ <a href="../../../src/competitive/num/quad_double.rs.html#254">x</a>.<span class="number">1 </span>+ <a href="../../../src/competitive/num/quad_double.rs.html#254">x</a>.<span class="number">0
     </span>}
 }
 
-<span class="kw">impl </span>From&lt;QuadDouble&gt; <span class="kw">for </span>i64 {
-    <span class="kw">fn </span>from(<span class="kw-2">mut </span>x: QuadDouble) -&gt; i64 {
-        <span class="kw">let </span>is_neg = x.<span class="number">0</span>.is_sign_negative();
+<span class="kw">impl </span>From&lt;<a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a>&gt; <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
+    <span class="kw">fn </span>from(<span class="kw-2">mut </span>x: <a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
+        <span class="kw">let </span>is_neg = <a href="../../../src/competitive/num/quad_double.rs.html#260">x</a>.<span class="number">0</span>.is_sign_negative();
         <span class="kw">if </span>is_neg {
-            x = -x;
+            <a href="../../../src/competitive/num/quad_double.rs.html#260">x</a> = -<a href="../../../src/competitive/num/quad_double.rs.html#260">x</a>;
         }
         <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0i64</span>;
         <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">1</span>..<span class="number">64</span>).rev() {
@@ -610,56 +610,56 @@
                 i += <span class="number">1 </span>&lt;&lt; k;
             }
         }
-        i += x.<span class="number">0</span>.round() <span class="kw">as </span>i64;
+        <a href="../../../src/competitive/num/quad_double.rs.html#265">i</a> += <a href="../../../src/competitive/num/quad_double.rs.html#260">x</a>.<span class="number">0</span>.round() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>;
         <span class="kw">if </span>is_neg {
-            i = -i;
+            <a href="../../../src/competitive/num/quad_double.rs.html#265">i</a> = -<a href="../../../src/competitive/num/quad_double.rs.html#265">i</a>;
         }
-        i
+        <a href="../../../src/competitive/num/quad_double.rs.html#265">i</a>
     }
 }
 
-<span class="kw">impl </span>From&lt;f64&gt; <span class="kw">for </span>QuadDouble {
-    <span class="kw">fn </span>from(x: f64) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(x, <span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>)
+<span class="kw">impl </span>From&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt; <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
+    <span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(<a href="../../../src/competitive/num/quad_double.rs.html#282">x</a>, <span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>)
     }
 }
 
-<span class="kw">impl </span>Display <span class="kw">for </span>QuadDouble {
-    <span class="kw">fn </span>fmt&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">3 </span>+ <span class="self">self</span>.<span class="number">2 </span>+ <span class="self">self</span>.<span class="number">1 </span>+ <span class="self">self</span>.<span class="number">0</span>)
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a> <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
+    <span class="kw">fn </span>fmt&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.write.html">write!</a>(<a href="../../../src/competitive/num/quad_double.rs.html#288">f</a>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">3 </span>+ <span class="self">self</span>.<span class="number">2 </span>+ <span class="self">self</span>.<span class="number">1 </span>+ <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
-<span class="kw">impl </span>FromStr <span class="kw">for </span>QuadDouble {
-    <span class="kw">type </span><span class="prelude-val">Err </span>= ParseFloatError;
-    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
-        s.parse::&lt;f64&gt;().map(<span class="self">Self</span>::from)
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/str/traits/trait.FromStr.html">FromStr</a> <span class="kw">for </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
+    <span class="kw">type </span><span class="prelude-val">Err </span>= <a href="https://doc.rust-lang.org/nightly/core/num/dec2flt/struct.ParseFloatError.html">ParseFloatError</a>;
+    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+        <a href="../../../src/competitive/num/quad_double.rs.html#295">s</a>.parse::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;().map(<span class="self">Self</span>::from)
     }
 }
 
-<span class="kw">impl </span>QuadDouble {
-    <span class="kw">pub fn </span>is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.<span class="number">0 </span>== <span class="number">0.
+<span class="kw">impl </span><a href="../../../src/competitive/num/quad_double.rs.html#12">QuadDouble</a> {
+    <span class="kw">pub fn </span>is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a class="self" href="../../../src/competitive/num/quad_double.rs.html#301">self</a>.<span class="number">0 </span>== <span class="number">0.
     </span>}
     <span class="kw">pub fn </span>sqrt(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">if </span><span class="self">self</span>.is_zero() {
             <span class="kw">return </span><span class="self">Self</span>::from(<span class="number">0.</span>);
         }
-        <span class="kw">let </span>x = <span class="self">Self</span>::from(<span class="number">1. </span>/ <span class="self">self</span>.<span class="number">0</span>.sqrt());
-        <span class="kw">let </span>x = x + x * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self">self </span>* x * x).div2(<span class="number">2.</span>);
-        <span class="kw">let </span>x = x + x * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self">self </span>* x * x).div2(<span class="number">2.</span>);
-        <span class="kw">let </span>x = x + x * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self">self </span>* x * x).div2(<span class="number">2.</span>);
-        x * <span class="self">self
+        <span class="kw">let </span>x = <span class="self">Self</span>::from(<span class="number">1. </span>/ <a class="self" href="../../../src/competitive/num/quad_double.rs.html#304">self</a>.<span class="number">0</span>.sqrt());
+        <span class="kw">let </span>x = <a href="../../../src/competitive/num/quad_double.rs.html#308">x</a> + <a href="../../../src/competitive/num/quad_double.rs.html#308">x</a> * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#304">self</a> </span>* <a href="../../../src/competitive/num/quad_double.rs.html#308">x</a> * <a href="../../../src/competitive/num/quad_double.rs.html#308">x</a>).<a href="../../../src/competitive/num/quad_double.rs.html#321">div2</a>(<span class="number">2.</span>);
+        <span class="kw">let </span>x = <a href="../../../src/competitive/num/quad_double.rs.html#309">x</a> + <a href="../../../src/competitive/num/quad_double.rs.html#309">x</a> * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#304">self</a> </span>* <a href="../../../src/competitive/num/quad_double.rs.html#309">x</a> * <a href="../../../src/competitive/num/quad_double.rs.html#309">x</a>).<a href="../../../src/competitive/num/quad_double.rs.html#321">div2</a>(<span class="number">2.</span>);
+        <span class="kw">let </span>x = <a href="../../../src/competitive/num/quad_double.rs.html#310">x</a> + <a href="../../../src/competitive/num/quad_double.rs.html#310">x</a> * (<span class="self">Self</span>::from(<span class="number">1.</span>) - <span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#304">self</a> </span>* <a href="../../../src/competitive/num/quad_double.rs.html#310">x</a> * <a href="../../../src/competitive/num/quad_double.rs.html#310">x</a>).<a href="../../../src/competitive/num/quad_double.rs.html#321">div2</a>(<span class="number">2.</span>);
+        <a href="../../../src/competitive/num/quad_double.rs.html#311">x</a> * <span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#304">self</a>
     </span>}
     <span class="kw">pub fn </span>abs(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">if </span><span class="self">self</span>.<span class="number">0</span>.is_sign_negative() {
-            -<span class="self">self
+            -<span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#314">self</a>
         </span>} <span class="kw">else </span>{
-            <span class="self">self
+            <span class="self"><a href="../../../src/competitive/num/quad_double.rs.html#314">self</a>
         </span>}
     }
-    <span class="kw">fn </span>div2(<span class="self">self</span>, rhs: f64) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(<span class="self">self</span>.<span class="number">0 </span>/ rhs, <span class="self">self</span>.<span class="number">1 </span>/ rhs, <span class="self">self</span>.<span class="number">2 </span>/ rhs, <span class="self">self</span>.<span class="number">3 </span>/ rhs)
+    <span class="kw">fn </span>div2(<span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(<a class="self" href="../../../src/competitive/num/quad_double.rs.html#321">self</a>.<span class="number">0 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#321">rhs</a>, <a class="self" href="../../../src/competitive/num/quad_double.rs.html#321">self</a>.<span class="number">1 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#321">rhs</a>, <a class="self" href="../../../src/competitive/num/quad_double.rs.html#321">self</a>.<span class="number">2 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#321">rhs</a>, <a class="self" href="../../../src/competitive/num/quad_double.rs.html#321">self</a>.<span class="number">3 </span>/ <a href="../../../src/competitive/num/quad_double.rs.html#321">rhs</a>)
     }
 }
 </code></pre></div>

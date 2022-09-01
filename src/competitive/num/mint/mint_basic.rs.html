@@ -302,7 +302,7 @@
 <span id="286">286</span>
 <span id="287">287</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
-<span class="kw">use </span>std::{cell::UnsafeCell, mem::swap};
+<span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/cell/struct.UnsafeCell.html">cell::UnsafeCell</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>};
 
 <span class="attribute">#[macro_export]
 </span><span class="macro">macro_rules! </span>define_basic_mintbase {
@@ -428,68 +428,68 @@
     };
 }
 
-<span class="macro">thread_local!</span>(<span class="kw">static </span>DYN_MODULUS_U32: UnsafeCell&lt;BarrettReduction&lt;u64&gt;&gt; = UnsafeCell::new(BarrettReduction::&lt;u64&gt;::new(<span class="number">1_000_000_007</span>)));
-<span class="kw">impl </span>DynModuloU32 {
-    <span class="kw">pub fn </span>set_mod(m: u32) {
-        DYN_MODULUS_U32
-            .with(|cell| <span class="kw">unsafe </span>{ <span class="kw-2">*</span>cell.get() = BarrettReduction::&lt;u64&gt;::new(m <span class="kw">as </span>u64) });
+<a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.thread_local.html">thread_local!</a>(<span class="kw">static </span>DYN_MODULUS_U32: UnsafeCell&lt;BarrettReduction&lt;u64&gt;&gt; = UnsafeCell::new(BarrettReduction::&lt;u64&gt;::new(<span class="number">1_000_000_007</span>)));
+<span class="kw">impl </span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#166-174">DynModuloU32</a> {
+    <span class="kw">pub fn </span>set_mod(m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) {
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#128">DYN_MODULUS_U32</a>
+            .with(|cell| <span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#132">cell</a>.get() = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new(<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#130">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) });
     }
-    <span class="kw">fn </span>rem(x: u64) -&gt; u64 {
-        DYN_MODULUS_U32.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span>cell.get()).rem(x) })
-    }
-}
-<span class="kw">impl </span>DynMIntU32 {
-    <span class="kw">pub fn </span>set_mod(m: u32) {
-        DynModuloU32::set_mod(m)
+    <span class="kw">fn </span>rem(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#128">DYN_MODULUS_U32</a>.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#135">cell</a>.get()).<a href="../../../../src/competitive/num/barrett_reduction.rs.html#38">rem</a>(<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#134">x</a>) })
     }
 }
-
-<span class="macro">thread_local!</span>(<span class="kw">static </span>DYN_MODULUS_U64: UnsafeCell&lt;BarrettReduction&lt;u128&gt;&gt; = UnsafeCell::new(BarrettReduction::&lt;u128&gt;::new(<span class="number">1_000_000_007</span>)));
-<span class="kw">impl </span>DynModuloU64 {
-    <span class="kw">pub fn </span>set_mod(m: u64) {
-        DYN_MODULUS_U64
-            .with(|cell| <span class="kw">unsafe </span>{ <span class="kw-2">*</span>cell.get() = BarrettReduction::&lt;u128&gt;::new(m <span class="kw">as </span>u128) })
-    }
-    <span class="kw">fn </span>rem(x: u128) -&gt; u128 {
-        DYN_MODULUS_U64.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span>cell.get()).rem(x) })
-    }
-}
-<span class="kw">impl </span>DynMIntU64 {
-    <span class="kw">pub fn </span>set_mod(m: u64) {
-        DynModuloU64::set_mod(m)
+<span class="kw">impl </span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#175">DynMIntU32</a> {
+    <span class="kw">pub fn </span>set_mod(m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) {
+        DynModuloU32::set_mod(<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#139">m</a>)
     }
 }
 
-<span class="macro">define_basic_mint32!</span>(
+<a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.thread_local.html">thread_local!</a>(<span class="kw">static </span>DYN_MODULUS_U64: UnsafeCell&lt;BarrettReduction&lt;u128&gt;&gt; = UnsafeCell::new(BarrettReduction::&lt;u128&gt;::new(<span class="number">1_000_000_007</span>)));
+<span class="kw">impl </span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#176-184">DynModuloU64</a> {
+    <span class="kw">pub fn </span>set_mod(m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#144">DYN_MODULUS_U64</a>
+            .with(|cell| <span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#148">cell</a>.get() = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#146">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) })
+    }
+    <span class="kw">fn </span>rem(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> {
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#144">DYN_MODULUS_U64</a>.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#151">cell</a>.get()).<a href="../../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#150">x</a>) })
+    }
+}
+<span class="kw">impl </span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#185">DynMIntU64</a> {
+    <span class="kw">pub fn </span>set_mod(m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
+        DynModuloU64::set_mod(<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#155">m</a>)
+    }
+}
+
+<a class="macro" href="../../../../src/competitive/num/mint/mint_basic.rs.html#108-126">define_basic_mint32!</a>(
     [Modulo998244353, <span class="number">998_244_353</span>, MInt998244353],
     [Modulo1000000007, <span class="number">1_000_000_007</span>, MInt1000000007],
     [Modulo1000000009, <span class="number">1_000_000_009</span>, MInt1000000009]
 );
 
-<span class="macro">define_basic_mintbase!</span>(
+<a class="macro" href="../../../../src/competitive/num/mint/mint_basic.rs.html#5-105">define_basic_mintbase!</a>(
     DynModuloU32,
     DYN_MODULUS_U32.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span>cell.get()).get_mod() <span class="kw">as </span>u32 }),
-    u32,
+    <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>,
     i32,
     u64,
-    [u32, u64, u128, usize],
-    [i32, i64, i128, isize]
+    [<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>],
+    [<a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>]
 );
-<span class="kw">pub type </span>DynMIntU32 = MInt&lt;DynModuloU32&gt;;
-<span class="macro">define_basic_mintbase!</span>(
+<span class="kw">pub type </span>DynMIntU32 = MInt&lt;<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#166-174">DynModuloU32</a>&gt;;
+<a class="macro" href="../../../../src/competitive/num/mint/mint_basic.rs.html#5-105">define_basic_mintbase!</a>(
     DynModuloU64,
     DYN_MODULUS_U64.with(|cell| <span class="kw">unsafe </span>{ (<span class="kw-2">*</span>cell.get()).get_mod() <span class="kw">as </span>u64 }),
-    u64,
+    <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
     i64,
     u128,
-    [u64, u128, usize],
-    [i64, i128, isize]
+    [<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>],
+    [<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>]
 );
-<span class="kw">pub type </span>DynMIntU64 = MInt&lt;DynModuloU64&gt;;
+<span class="kw">pub type </span>DynMIntU64 = MInt&lt;<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#176-184">DynModuloU64</a>&gt;;
 
 <span class="kw">pub struct </span>Modulo2;
-<span class="kw">impl </span>MIntBase <span class="kw">for </span>Modulo2 {
-    <span class="kw">type </span>Inner = u32;
+<span class="kw">impl </span><a href="../../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a> <span class="kw">for </span><a href="../../../../src/competitive/num/mint/mint_basic.rs.html#187">Modulo2</a> {
+    <span class="kw">type </span>Inner = <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>get_mod() -&gt; <span class="self">Self</span>::Inner {
         <span class="number">2
@@ -504,36 +504,36 @@
     </span>}
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_add(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        x ^ y
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#203">x</a> ^ <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#203">y</a>
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_sub(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        x ^ y
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#207">x</a> ^ <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#207">y</a>
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_mul(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        x &amp; y
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#211">x</a> &amp; <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#211">y</a>
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_div(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="macro">assert_ne!</span>(y, <span class="number">0</span>);
-        x
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(y, <span class="number">0</span>);
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#215">x</a>
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_neg(x: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        x
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#220">x</a>
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>mod_inv(x: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="macro">assert_ne!</span>(x, <span class="number">0</span>);
-        x
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(x, <span class="number">0</span>);
+        <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#224">x</a>
     }
     <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>mod_pow(x: <span class="self">Self</span>::Inner, y: usize) -&gt; <span class="self">Self</span>::Inner {
+    </span><span class="kw">fn </span>mod_pow(x: <span class="self">Self</span>::Inner, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::Inner {
         <span class="kw">if </span>y == <span class="number">0 </span>{
             <span class="number">1
         </span>} <span class="kw">else </span>{
-            x
+            <a href="../../../../src/competitive/num/mint/mint_basic.rs.html#229">x</a>
         }
     }
 }
@@ -555,12 +555,12 @@
         })*
     };
 }
-<span class="macro">impl_to_mint_base_for_modulo2!</span>(
+<a class="macro" href="../../../../src/competitive/num/mint/mint_basic.rs.html#237-254">impl_to_mint_base_for_modulo2!</a>(
     Modulo2,
     u32,
-    [u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize]
+    [<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>]
 );
-<span class="kw">pub type </span>MInt2 = MInt&lt;Modulo2&gt;;
+<span class="kw">pub type </span>MInt2 = MInt&lt;<a href="../../../../src/competitive/num/mint/mint_basic.rs.html#187">Modulo2</a>&gt;;
 
 <span class="attribute">#[cfg(test)]
 </span><span class="kw">mod </span>tests {

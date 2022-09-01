@@ -70,7 +70,7 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, hash::Hash};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">collections::HashMap</a>, <a href="https://doc.rust-lang.org/nightly/core/hash/macros/derive.Hash.html">hash::Hash</a>};
 
 <span class="doccomment">/// $P_0 =$ `init`, $P_{i+1} = next(P_i)$
 ///
@@ -84,45 +84,45 @@
     <span class="doccomment">/// build rho path
     </span><span class="kw">pub fn </span>build&lt;F&gt;(init: T, next: F) -&gt; <span class="self">Self
     </span><span class="kw">where
-        </span>T: Clone + Eq + Hash,
+        </span>T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
         F: Fn(<span class="kw-2">&amp;</span>T) -&gt; T,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>path = <span class="macro">vec!</span>[init.clone()];
+        <span class="kw">let </span><span class="kw-2">mut </span>path = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[init.clone()];
         <span class="kw">let </span><span class="kw-2">mut </span>visited = HashMap::new();
-        visited.insert(init, <span class="number">0</span>);
+        <a href="../../../src/competitive/algorithm/rho_path.rs.html#19">visited</a>.insert(<a href="../../../src/competitive/algorithm/rho_path.rs.html#13">init</a>, <span class="number">0</span>);
         <span class="kw">let </span>loop_start = <span class="kw">loop </span>{
-            <span class="kw">let </span>next_val = next(path.last().unwrap());
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>idx) = visited.get(<span class="kw-2">&amp;</span>next_val) {
-                <span class="kw">break </span>idx;
+            <span class="kw">let </span>next_val = <a href="../../../src/competitive/algorithm/rho_path.rs.html#13">next</a>(<a href="../../../src/competitive/algorithm/rho_path.rs.html#18">path</a>.last().unwrap());
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>idx) = <a href="../../../src/competitive/algorithm/rho_path.rs.html#19">visited</a>.get(<span class="kw-2">&amp;</span><a href="../../../src/competitive/algorithm/rho_path.rs.html#22">next_val</a>) {
+                <span class="kw">break </span><a href="../../../src/competitive/algorithm/rho_path.rs.html#23">idx</a>;
             }
-            <span class="kw">let </span>cnt = path.len();
-            path.push(next_val.clone());
-            visited.insert(next_val, cnt);
+            <span class="kw">let </span>cnt = <a href="../../../src/competitive/algorithm/rho_path.rs.html#18">path</a>.len();
+            <a href="../../../src/competitive/algorithm/rho_path.rs.html#18">path</a>.push(<a href="../../../src/competitive/algorithm/rho_path.rs.html#22">next_val</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>());
+            <a href="../../../src/competitive/algorithm/rho_path.rs.html#19">visited</a>.insert(<a href="../../../src/competitive/algorithm/rho_path.rs.html#22">next_val</a>, <a href="../../../src/competitive/algorithm/rho_path.rs.html#26">cnt</a>);
         };
-        <span class="kw">let </span>looped = path.split_off(loop_start);
-        <span class="self">Self </span>{ f: path, g: looped }
+        <span class="kw">let </span>looped = <a href="../../../src/competitive/algorithm/rho_path.rs.html#18">path</a>.split_off(<a href="../../../src/competitive/algorithm/rho_path.rs.html#21">loop_start</a>);
+        <span class="self">Self </span>{ f: <a href="../../../src/competitive/algorithm/rho_path.rs.html#18">path</a>, g: <a href="../../../src/competitive/algorithm/rho_path.rs.html#30">looped</a> }
     }
     <span class="doccomment">/// rho path that index of rho path
-    </span><span class="kw">pub fn </span>build_rho&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, init: usize, next: F) -&gt; RhoPath&lt;usize&gt;
+    </span><span class="kw">pub fn </span>build_rho&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, init: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, next: F) -&gt; RhoPath&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>usize) -&gt; usize,
+        </span>F: Fn(<span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     {
-        <span class="kw">let </span>(n, m) = (<span class="self">self</span>.f.len(), <span class="self">self</span>.g.len());
-        RhoPath::build(init, |x| {
-            <span class="kw">let </span>y = next(x);
+        <span class="kw">let </span>(n, m) = (<a class="self" href="../../../src/competitive/algorithm/rho_path.rs.html#34">self</a>.f.len(), <a class="self" href="../../../src/competitive/algorithm/rho_path.rs.html#34">self</a>.g.len());
+        RhoPath::build(<a href="../../../src/competitive/algorithm/rho_path.rs.html#34">init</a>, |x| {
+            <span class="kw">let </span>y = <a href="../../../src/competitive/algorithm/rho_path.rs.html#34">next</a>(<a href="../../../src/competitive/algorithm/rho_path.rs.html#39">x</a>);
             <span class="kw">if </span>y &lt; n {
-                y
+                <a href="../../../src/competitive/algorithm/rho_path.rs.html#40">y</a>
             } <span class="kw">else </span>{
-                (y - n) % m + n
+                (<a href="../../../src/competitive/algorithm/rho_path.rs.html#40">y</a> - <a href="../../../src/competitive/algorithm/rho_path.rs.html#38">n</a>) % <a href="../../../src/competitive/algorithm/rho_path.rs.html#38">m</a> + <a href="../../../src/competitive/algorithm/rho_path.rs.html#38">n</a>
             }
         })
     }
     <span class="doccomment">/// get i-th value of rho path
-    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;</span>T {
+    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="kw-2">&amp;</span>T {
         <span class="kw">if </span>index &lt; <span class="self">self</span>.f.len() {
-            <span class="kw-2">&amp;</span><span class="self">self</span>.f[index]
+            <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/algorithm/rho_path.rs.html#49">self</a>.f[<a href="../../../src/competitive/algorithm/rho_path.rs.html#49">index</a>]
         } <span class="kw">else </span>{
-            <span class="kw-2">&amp;</span><span class="self">self</span>.g[(index - <span class="self">self</span>.f.len()) % <span class="self">self</span>.g.len()]
+            <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/algorithm/rho_path.rs.html#49">self</a>.g[(<a href="../../../src/competitive/algorithm/rho_path.rs.html#49">index</a> - <a class="self" href="../../../src/competitive/algorithm/rho_path.rs.html#49">self</a>.f.len()) % <a class="self" href="../../../src/competitive/algorithm/rho_path.rs.html#49">self</a>.g.len()]
         }
     }
 }

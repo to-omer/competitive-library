@@ -60,43 +60,43 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Group;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/algebra/magma.rs.html#73"><span class="kw">super</span>::Group</a>;
 
 <span class="doccomment">/// $\min\{1\le i \le n | x^i=a\}$
 </span><span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>BabyStepGiantStep&lt;G&gt;
 <span class="kw">where
-    </span>G: Group,
-    G::T: Eq + std::hash::Hash,
+    </span>G: <a href="../../../src/competitive/algebra/magma.rs.html#73">Group</a>,
+    G::T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">std::hash::Hash</a>,
 {
-    block_size: usize,
-    baby: std::collections::HashMap&lt;G::T, usize&gt;,
+    block_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    baby: std::collections::HashMap&lt;G::T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     xi: G::T,
 }
 <span class="kw">impl</span>&lt;G&gt; BabyStepGiantStep&lt;G&gt;
 <span class="kw">where
-    </span>G: Group,
-    G::T: Eq + std::hash::Hash,
+    </span>G: <a href="../../../src/competitive/algebra/magma.rs.html#73">Group</a>,
+    G::T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">std::hash::Hash</a>,
 {
-    <span class="kw">pub fn </span>new(n: usize, x: G::T) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>block_size = (n <span class="kw">as </span>f64).sqrt().ceil() <span class="kw">as </span>usize;
-        <span class="kw">let </span><span class="kw-2">mut </span>baby = std::collections::HashMap::&lt;G::T, usize&gt;::new();
-        <span class="kw">let </span><span class="kw-2">mut </span>xj = x.clone();
+    <span class="kw">pub fn </span>new(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: G::T) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>block_size = (<a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#19">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt().ceil() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+        <span class="kw">let </span><span class="kw-2">mut </span>baby = std::collections::HashMap::&lt;G::T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>xj = <a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#19">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
         <span class="kw">for </span>j <span class="kw">in </span><span class="number">1</span>..block_size {
             <span class="kw">let </span>nxj = G::operate(<span class="kw-2">&amp;</span>xj, <span class="kw-2">&amp;</span>x);
             baby.entry(xj).or_insert(j);
             xj = nxj;
         }
-        <span class="kw">let </span>xi = G::inverse(<span class="kw-2">&amp;</span>xj);
-        baby.entry(xj).or_insert(block_size);
+        <span class="kw">let </span>xi = G::inverse(<span class="kw-2">&amp;</span><a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#22">xj</a>);
+        <a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#21">baby</a>.entry(<a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#22">xj</a>).or_insert(<a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#20">block_size</a>);
         <span class="self">Self </span>{
-            block_size,
-            baby,
-            xi,
+            <a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#20">block_size</a>,
+            <a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#21">baby</a>,
+            <a href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#28">xi</a>,
         }
     }
-    <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>a: G::T) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
-        <span class="kw">let </span>bs = <span class="self">self</span>.block_size;
+    <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>a: G::T) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
+        <span class="kw">let </span>bs = <a class="self" href="../../../src/competitive/algorithm/baby_step_giant_step.rs.html#36">self</a>.block_size;
         <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..bs * bs).step_by(bs) {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(j) = <span class="self">self</span>.baby.get(<span class="kw-2">&amp;</span>a) {
                 <span class="kw">return </span><span class="prelude-val">Some</span>(i + j);

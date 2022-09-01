@@ -77,16 +77,16 @@
 </pre><pre class="rust"><code><span class="attribute">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>SuffixArray&lt;T&gt; {
     pat: Vec&lt;T&gt;,
-    sa: Vec&lt;usize&gt;,
-    rank: Vec&lt;usize&gt;,
+    sa: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    rank: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 }
-<span class="kw">impl</span>&lt;T: Ord&gt; SuffixArray&lt;T&gt; {
+<span class="kw">impl</span>&lt;T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>&gt; SuffixArray&lt;T&gt; {
     <span class="kw">pub fn </span>new(pat: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>n = pat.len();
-        <span class="kw">let </span><span class="kw-2">mut </span>sa = (<span class="number">0</span>..n + <span class="number">1</span>).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="kw">let </span><span class="kw-2">mut </span>rank = <span class="macro">vec!</span>[<span class="number">0</span>; n + <span class="number">1</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>ford = (<span class="number">0</span>..n).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-        ford.sort_by_key(|<span class="kw-2">&amp;</span>i| <span class="kw-2">&amp;</span>pat[i]);
+        <span class="kw">let </span>n = <a href="../../../src/competitive/string/suffix_array.rs.html#8">pat</a>.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>sa = (<span class="number">0</span>..<a href="../../../src/competitive/string/suffix_array.rs.html#9">n</a> + <span class="number">1</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="kw">let </span><span class="kw-2">mut </span>rank = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; n + <span class="number">1</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>ford = (<span class="number">0</span>..<a href="../../../src/competitive/string/suffix_array.rs.html#9">n</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <a href="../../../src/competitive/string/suffix_array.rs.html#12">ford</a>.sort_by_key(|<span class="kw-2">&amp;</span>i| <span class="kw-2">&amp;</span><a href="../../../src/competitive/string/suffix_array.rs.html#8">pat</a>[<a href="../../../src/competitive/string/suffix_array.rs.html#13">i</a>]);
         <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">1</span>;
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
             rank[ford[i]] = c;
@@ -109,12 +109,12 @@
             rank = tmp;
             k <span class="kw-2">*</span>= <span class="number">2</span>;
         }
-        <span class="self">Self </span>{ pat, sa, rank }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/string/suffix_array.rs.html#8">pat</a>, <a href="../../../src/competitive/string/suffix_array.rs.html#10">sa</a>, <a href="../../../src/competitive/string/suffix_array.rs.html#11">rank</a> }
     }
-    <span class="kw">pub fn </span>longest_common_prefix_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;usize&gt; {
-        <span class="kw">let </span>n = <span class="self">self</span>.pat.len();
+    <span class="kw">pub fn </span>longest_common_prefix_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
+        <span class="kw">let </span>n = <a class="self" href="../../../src/competitive/string/suffix_array.rs.html#38">self</a>.pat.len();
         <span class="kw">let </span><span class="kw-2">mut </span>h = <span class="number">0</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>lcp = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+        <span class="kw">let </span><span class="kw-2">mut </span>lcp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; n];
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
             <span class="kw">let </span>j = <span class="self">self</span>[<span class="self">self</span>.rank[i] - <span class="number">2</span>];
             <span class="kw">if </span>h &gt; <span class="number">0 </span>{
@@ -125,13 +125,13 @@
             }
             lcp[<span class="self">self</span>.rank[i] - <span class="number">2</span>] = h;
         }
-        lcp
+        <a href="../../../src/competitive/string/suffix_array.rs.html#41">lcp</a>
     }
 }
-<span class="kw">impl</span>&lt;T&gt; std::ops::Index&lt;usize&gt; <span class="kw">for </span>SuffixArray&lt;T&gt; {
-    <span class="kw">type </span>Output = usize;
-    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.sa[index]
+<span class="kw">impl</span>&lt;T&gt; std::ops::Index&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span>SuffixArray&lt;T&gt; {
+    <span class="kw">type </span>Output = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+        <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/string/suffix_array.rs.html#57">self</a>.sa[<a href="../../../src/competitive/string/suffix_array.rs.html#57">index</a>]
     }
 }
 </code></pre></div>

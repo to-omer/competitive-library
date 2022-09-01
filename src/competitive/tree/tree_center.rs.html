@@ -141,31 +141,31 @@
 <span id="125">125</span>
 <span id="126">126</span>
 <span id="127">127</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::graph::UndirectedSparseGraph;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161"><span class="kw">crate</span>::graph::UndirectedSparseGraph</a>;
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_center&quot;</span>)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 </span><span class="kw">pub enum </span>TreeCenter {
-    One(usize),
-    Two(usize, usize),
+    One(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),
+    Two(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),
 }
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;tree_center&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]
-</span><span class="kw">impl </span>UndirectedSparseGraph {
+</span><span class="kw">impl </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a> {
     <span class="doccomment">/// tree center
-    </span><span class="kw">pub fn </span>tree_center(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TreeCenter {
-        <span class="kw">let </span>n = <span class="self">self</span>.vertices_size();
-        <span class="macro">assert_ne!</span>(n, <span class="number">0</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>deq = std::collections::VecDeque::with_capacity(n);
-        <span class="kw">let </span><span class="kw-2">mut </span>deg: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.vertices().map(|u| <span class="self">self</span>.adjacencies(u).len()).collect();
+    </span><span class="kw">pub fn </span>tree_center(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="../../../src/competitive/tree/tree_center.rs.html#5">TreeCenter</a> {
+        <span class="kw">let </span>n = <a class="self" href="../../../src/competitive/tree/tree_center.rs.html#12">self</a>.<a href="../../../src/competitive/graph/sparse_graph.rs.html#39">vertices_size</a>();
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(n, <span class="number">0</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = std::collections::VecDeque::with_capacity(<a href="../../../src/competitive/tree/tree_center.rs.html#13">n</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>deg: Vec&lt;<span class="kw">_</span>&gt; = <a class="self" href="../../../src/competitive/tree/tree_center.rs.html#12">self</a>.<a href="../../../src/competitive/graph/sparse_graph.rs.html#47">vertices</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|u| <a class="self" href="../../../src/competitive/tree/tree_center.rs.html#12">self</a>.<a href="../../../src/competitive/graph/sparse_graph.rs.html#51">adjacencies</a>(<a href="../../../src/competitive/tree/tree_center.rs.html#16">u</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html">len</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
             <span class="kw">if </span><span class="self">self</span>.adjacencies(u).len() &lt;= <span class="number">1 </span>{
                 deq.push_back(u);
             }
         }
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>cnt = deq.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>cnt = <a href="../../../src/competitive/tree/tree_center.rs.html#15">deq</a>.len();
         <span class="kw">if </span>cnt &lt; n {
-            k = deq.len();
+            <a href="../../../src/competitive/tree/tree_center.rs.html#22">k</a> = <a href="../../../src/competitive/tree/tree_center.rs.html#15">deq</a>.len();
             <span class="lifetime">&#39;outer</span>: <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = deq.pop_front() {
                 k -= <span class="number">1</span>;
                 <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.adjacencies(u) {
@@ -184,14 +184,14 @@
             }
         }
         <span class="kw">if </span>deq.len() == k + <span class="number">1 </span>{
-            TreeCenter::One(<span class="kw-2">*</span>deq.back().unwrap())
+            <a href="../../../src/competitive/tree/tree_center.rs.html#6">TreeCenter::One</a>(<span class="kw-2">*</span><a href="../../../src/competitive/tree/tree_center.rs.html#15">deq</a>.back().unwrap())
         } <span class="kw">else </span>{
-            <span class="kw">let </span>u = deq.pop_back().unwrap();
-            <span class="kw">let </span>v = deq.pop_back().unwrap();
+            <span class="kw">let </span>u = <a href="../../../src/competitive/tree/tree_center.rs.html#15">deq</a>.pop_back().unwrap();
+            <span class="kw">let </span>v = <a href="../../../src/competitive/tree/tree_center.rs.html#15">deq</a>.pop_back().unwrap();
             <span class="kw">if </span>u &lt; v {
-                TreeCenter::Two(u, v)
+                <a href="../../../src/competitive/tree/tree_center.rs.html#7">TreeCenter::Two</a>(<a href="../../../src/competitive/tree/tree_center.rs.html#46">u</a>, <a href="../../../src/competitive/tree/tree_center.rs.html#47">v</a>)
             } <span class="kw">else </span>{
-                TreeCenter::Two(v, u)
+                <a href="../../../src/competitive/tree/tree_center.rs.html#7">TreeCenter::Two</a>(<a href="../../../src/competitive/tree/tree_center.rs.html#47">v</a>, <a href="../../../src/competitive/tree/tree_center.rs.html#46">u</a>)
             }
         }
     }

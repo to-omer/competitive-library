@@ -303,25 +303,25 @@
 <span id="287">287</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::{
-    cmp::{Ordering, Reverse},
-    collections::{BinaryHeap, VecDeque},
-    iter::once,
+    cmp::{<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>, Reverse},
+    collections::{<a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">BinaryHeap</a>, <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">VecDeque</a>},
+    <a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">iter::once</a>,
     marker::PhantomData,
 };
 
 <span class="kw">pub trait </span>ShortestPathSemiRing {
-    <span class="kw">type </span>T: Clone + Ord;
+    <span class="kw">type </span>T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>;
     <span class="kw">fn </span>source() -&gt; <span class="self">Self</span>::T;
     <span class="kw">fn </span>inf() -&gt; <span class="self">Self</span>::T;
     <span class="kw">fn </span>mul(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T;
-    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; bool;
+    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
 }
 
 <span class="kw">pub struct </span>StandardSp&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
-<span class="kw">impl</span>&lt;M&gt; ShortestPathSemiRing <span class="kw">for </span>StandardSp&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a> <span class="kw">for </span>StandardSp&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    M::T: Bounded + Ord,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    M::T: <a href="../../../src/competitive/num/bounded.rs.html#2">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">type </span>T = M::T;
     <span class="kw">fn </span>source() -&gt; <span class="self">Self</span>::T {
@@ -331,11 +331,11 @@
         M::T::maximum()
     }
     <span class="kw">fn </span>mul(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        M::operate(x, y)
+        M::operate(<a href="../../../src/competitive/graph/shortest_path.rs.html#30">x</a>, <a href="../../../src/competitive/graph/shortest_path.rs.html#30">y</a>)
     }
-    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; bool {
+    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <span class="kw">if </span><span class="kw-2">&amp;*</span>x &gt; y {
-            <span class="kw-2">*</span>x = y.clone();
+            <span class="kw-2">*</span><a href="../../../src/competitive/graph/shortest_path.rs.html#33">x</a> = <a href="../../../src/competitive/graph/shortest_path.rs.html#33">y</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
             <span class="bool-val">true
         </span>} <span class="kw">else </span>{
             <span class="bool-val">false
@@ -344,10 +344,10 @@
 }
 
 <span class="kw">pub struct </span>OptionSp&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
-<span class="kw">impl</span>&lt;M&gt; ShortestPathSemiRing <span class="kw">for </span>OptionSp&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a> <span class="kw">for </span>OptionSp&lt;M&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    M::T: Ord,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    M::T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">type </span>T = <span class="prelude-ty">Option</span>&lt;M::T&gt;;
     <span class="kw">fn </span>source() -&gt; <span class="self">Self</span>::T {
@@ -357,22 +357,22 @@
         <span class="prelude-val">None
     </span>}
     <span class="kw">fn </span>mul(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        <span class="kw">match </span>(x, y) {
-            (<span class="prelude-val">Some</span>(x), <span class="prelude-val">Some</span>(y)) =&gt; <span class="prelude-val">Some</span>(M::operate(x, y)),
+        <span class="kw">match </span>(<a href="../../../src/competitive/graph/shortest_path.rs.html#56">x</a>, <a href="../../../src/competitive/graph/shortest_path.rs.html#56">y</a>) {
+            (<span class="prelude-val">Some</span>(x), <span class="prelude-val">Some</span>(y)) =&gt; <span class="prelude-val">Some</span>(M::operate(<a href="../../../src/competitive/graph/shortest_path.rs.html#58">x</a>, <a href="../../../src/competitive/graph/shortest_path.rs.html#58">y</a>)),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
-    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; bool {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(y) = y {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = x {
+    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(y) = <a href="../../../src/competitive/graph/shortest_path.rs.html#62">y</a> {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = <a href="../../../src/competitive/graph/shortest_path.rs.html#62">x</a> {
                 <span class="kw">if </span><span class="kw-2">&amp;*</span>x &gt; y {
-                    <span class="kw-2">*</span>x = y.clone();
+                    <span class="kw-2">*</span><a href="../../../src/competitive/graph/shortest_path.rs.html#64">x</a> = <a href="../../../src/competitive/graph/shortest_path.rs.html#63">y</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
                     <span class="bool-val">true
                 </span>} <span class="kw">else </span>{
                     <span class="bool-val">false
                 </span>}
             } <span class="kw">else </span>{
-                <span class="kw-2">*</span>x = <span class="prelude-val">Some</span>(y.clone());
+                <span class="kw-2">*</span><a href="../../../src/competitive/graph/shortest_path.rs.html#62">x</a> = <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/shortest_path.rs.html#63">y</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>());
                 <span class="bool-val">true
             </span>}
         } <span class="kw">else </span>{
@@ -382,30 +382,30 @@
 }
 
 <span class="kw">pub struct </span>PathFoldingSp&lt;M, S&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; (M, S)&gt;);
-<span class="kw">impl</span>&lt;M, S&gt; ShortestPathSemiRing <span class="kw">for </span>PathFoldingSp&lt;M, S&gt;
+<span class="kw">impl</span>&lt;M, S&gt; <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a> <span class="kw">for </span>PathFoldingSp&lt;M, S&gt;
 <span class="kw">where
-    </span>M: Monoid,
-    M::T: Bounded + Ord,
-    S: SemiRing,
+    </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    M::T: <a href="../../../src/competitive/num/bounded.rs.html#2">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
+    S: <a href="../../../src/competitive/algebra/ring.rs.html#7">SemiRing</a>,
 {
     <span class="kw">type </span>T = PartialIgnoredOrd&lt;M::T, S::T&gt;;
     <span class="kw">fn </span>source() -&gt; <span class="self">Self</span>::T {
-        PartialIgnoredOrd(M::unit(), S::one())
+        <a href="../../../src/competitive/tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>(M::unit(), S::one())
     }
     <span class="kw">fn </span>inf() -&gt; <span class="self">Self</span>::T {
-        PartialIgnoredOrd(M::T::maximum(), S::zero())
+        <a href="../../../src/competitive/tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>(M::T::maximum(), S::zero())
     }
     <span class="kw">fn </span>mul(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        PartialIgnoredOrd(M::operate(<span class="kw-2">&amp;</span>x.<span class="number">0</span>, <span class="kw-2">&amp;</span>y.<span class="number">0</span>), S::mul(<span class="kw-2">&amp;</span>x.<span class="number">1</span>, <span class="kw-2">&amp;</span>y.<span class="number">1</span>))
+        <a href="../../../src/competitive/tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>(M::operate(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/shortest_path.rs.html#95">x</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/shortest_path.rs.html#95">y</a>.<span class="number">0</span>), S::mul(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/shortest_path.rs.html#95">x</a>.<span class="number">1</span>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/shortest_path.rs.html#95">y</a>.<span class="number">1</span>))
     }
-    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; bool {
-        <span class="kw">match </span>x.<span class="number">0</span>.cmp(<span class="kw-2">&amp;</span>y.<span class="number">0</span>) {
+    <span class="kw">fn </span>add_assign(x: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <span class="kw">match </span><a href="../../../src/competitive/graph/shortest_path.rs.html#98">x</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/shortest_path.rs.html#98">y</a>.<span class="number">0</span>) {
             Ordering::Equal =&gt; {
-                x.<span class="number">1 </span>= S::add(<span class="kw-2">&amp;</span>x.<span class="number">1</span>, <span class="kw-2">&amp;</span>y.<span class="number">1</span>);
+                <a href="../../../src/competitive/graph/shortest_path.rs.html#98">x</a>.<span class="number">1 </span>= S::add(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/shortest_path.rs.html#98">x</a>.<span class="number">1</span>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/shortest_path.rs.html#98">y</a>.<span class="number">1</span>);
                 <span class="bool-val">false
             </span>}
             Ordering::Greater =&gt; {
-                <span class="kw-2">*</span>x = y.clone();
+                <span class="kw-2">*</span><a href="../../../src/competitive/graph/shortest_path.rs.html#98">x</a> = <a href="../../../src/competitive/graph/shortest_path.rs.html#98">y</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
                 <span class="bool-val">true
             </span>}
             <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
@@ -421,9 +421,9 @@
     ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
         </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
-        S: ShortestPathSemiRing,
+        S: <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a>,
     {
-        <span class="self">self</span>.bfs_distance_ms::&lt;S, M, <span class="kw">_</span>&gt;(once(source), weight)
+        <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#115">self</a>.<a href="../../../src/competitive/graph/shortest_path.rs.html#125-133">bfs_distance_ms</a>::&lt;S, M, <span class="kw">_</span>&gt;(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(<a href="../../../src/competitive/graph/shortest_path.rs.html#116">source</a>), <a href="../../../src/competitive/graph/shortest_path.rs.html#117">weight</a>)
     }
     <span class="kw">fn </span>bfs_distance_ms&lt;<span class="lifetime">&#39;a</span>, S, M, I&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
@@ -432,10 +432,10 @@
     ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
         </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
-        S: ShortestPathSemiRing,
+        S: <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a>,
         I: IntoIterator&lt;Item = <span class="self">Self</span>::VIndex&gt;,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>cost = <span class="self">self</span>.construct_vmap(S::inf);
+        <span class="kw">let </span><span class="kw-2">mut </span>cost = <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#126">self</a>.<a href="../../../src/competitive/graph/graph_base.rs.html#210-212">construct_vmap</a>(S::inf);
         <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::new();
         <span class="kw">for </span>source <span class="kw">in </span>sources.into_iter() {
             <span class="kw-2">*</span><span class="self">self</span>.vmap_get_mut(<span class="kw-2">&amp;mut </span>cost, source) = S::source();
@@ -456,7 +456,7 @@
                 }
             }
         }
-        cost
+        <a href="../../../src/competitive/graph/shortest_path.rs.html#135">cost</a>
     }
     <span class="kw">fn </span>dijkstra_ss&lt;<span class="lifetime">&#39;a</span>, S, M&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
@@ -465,9 +465,9 @@
     ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
         </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
-        S: ShortestPathSemiRing,
+        S: <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a>,
     {
-        <span class="self">self</span>.dijkstra_ms::&lt;S, M, <span class="kw">_</span>&gt;(once(source), weight)
+        <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#159">self</a>.<a href="../../../src/competitive/graph/shortest_path.rs.html#169-177">dijkstra_ms</a>::&lt;S, M, <span class="kw">_</span>&gt;(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(<a href="../../../src/competitive/graph/shortest_path.rs.html#160">source</a>), <a href="../../../src/competitive/graph/shortest_path.rs.html#161">weight</a>)
     }
     <span class="kw">fn </span>dijkstra_ms&lt;<span class="lifetime">&#39;a</span>, S, M, I&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
@@ -476,10 +476,10 @@
     ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
         </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
-        S: ShortestPathSemiRing,
+        S: <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a>,
         I: IntoIterator&lt;Item = <span class="self">Self</span>::VIndex&gt;,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>cost = <span class="self">self</span>.construct_vmap(S::inf);
+        <span class="kw">let </span><span class="kw-2">mut </span>cost = <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#170">self</a>.<a href="../../../src/competitive/graph/graph_base.rs.html#210-212">construct_vmap</a>(S::inf);
         <span class="kw">let </span><span class="kw-2">mut </span>heap = BinaryHeap::new();
         <span class="kw">for </span>source <span class="kw">in </span>sources.into_iter() {
             <span class="kw-2">*</span><span class="self">self</span>.vmap_get_mut(<span class="kw-2">&amp;mut </span>cost, source) = S::source();
@@ -497,36 +497,36 @@
                 }
             }
         }
-        cost
+        <a href="../../../src/competitive/graph/shortest_path.rs.html#179">cost</a>
     }
     <span class="kw">fn </span>bellman_ford_ss&lt;<span class="lifetime">&#39;a</span>, S, M&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
         source: <span class="self">Self</span>::VIndex,
         weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
-        check: bool,
+        check: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap&gt;
     <span class="kw">where
         </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">&#39;g</span>&gt; + VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt; + VertexSize&lt;<span class="lifetime">&#39;g</span>&gt;,
-        S: ShortestPathSemiRing,
+        S: <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a>,
     {
-        <span class="self">self</span>.bellman_ford_ms::&lt;S, M, <span class="kw">_</span>&gt;(once(source), weight, check)
+        <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#200">self</a>.<a href="../../../src/competitive/graph/shortest_path.rs.html#211-220">bellman_ford_ms</a>::&lt;S, M, <span class="kw">_</span>&gt;(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(<a href="../../../src/competitive/graph/shortest_path.rs.html#201">source</a>), <a href="../../../src/competitive/graph/shortest_path.rs.html#202">weight</a>, <a href="../../../src/competitive/graph/shortest_path.rs.html#203">check</a>)
     }
     <span class="kw">fn </span>bellman_ford_ms&lt;<span class="lifetime">&#39;a</span>, S, M, I&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
         sources: I,
         weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
-        check: bool,
+        check: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap&gt;
     <span class="kw">where
         </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">&#39;g</span>&gt; + VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt; + VertexSize&lt;<span class="lifetime">&#39;g</span>&gt;,
-        S: ShortestPathSemiRing,
+        S: <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a>,
         I: IntoIterator&lt;Item = <span class="self">Self</span>::VIndex&gt;,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>cost = <span class="self">self</span>.construct_vmap(S::inf);
+        <span class="kw">let </span><span class="kw-2">mut </span>cost = <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#212">self</a>.<a href="../../../src/competitive/graph/graph_base.rs.html#210-212">construct_vmap</a>(S::inf);
         <span class="kw">for </span>source <span class="kw">in </span>sources.into_iter() {
             <span class="kw-2">*</span><span class="self">self</span>.vmap_get_mut(<span class="kw-2">&amp;mut </span>cost, source) = S::source();
         }
-        <span class="kw">let </span>vsize = <span class="self">self</span>.vsize();
+        <span class="kw">let </span>vsize = <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#212">self</a>.<a href="../../../src/competitive/graph/graph_base.rs.html#11">vsize</a>();
         <span class="kw">for _ in </span><span class="number">1</span>..vsize {
             <span class="kw">let </span><span class="kw-2">mut </span>updated = <span class="bool-val">false</span>;
             <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
@@ -551,7 +551,7 @@
                 }
             }
         }
-        <span class="prelude-val">Some</span>(cost)
+        <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/shortest_path.rs.html#222">cost</a>)
     }
     <span class="kw">fn </span>warshall_floyd_ap&lt;<span class="lifetime">&#39;a</span>, S, M&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
@@ -562,10 +562,10 @@
             + VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;
             + VertexMap&lt;<span class="lifetime">&#39;g</span>, &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap&gt;
             + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
-        &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap: Clone,
-        S: ShortestPathSemiRing,
+        &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+        S: <a href="../../../src/competitive/graph/shortest_path.rs.html#9">ShortestPathSemiRing</a>,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>cost = <span class="self">self</span>.construct_vmap(|| <span class="self">self</span>.construct_vmap(S::inf));
+        <span class="kw">let </span><span class="kw-2">mut </span>cost = <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#254">self</a>.<a href="../../../src/competitive/graph/graph_base.rs.html#210-212">construct_vmap</a>(|| <a class="self" href="../../../src/competitive/graph/shortest_path.rs.html#254">self</a>.<a href="../../../src/competitive/graph/graph_base.rs.html#210-212">construct_vmap</a>(S::inf));
         <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
             <span class="kw-2">*</span><span class="self">self</span>.vmap_get_mut(<span class="self">self</span>.vmap_get_mut(<span class="kw-2">&amp;mut </span>cost, u), u) = S::source();
         }
@@ -584,7 +584,7 @@
                 }
             }
         }
-        cost
+        <a href="../../../src/competitive/graph/shortest_path.rs.html#265">cost</a>
     }
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, G&gt; ShortestPathExt&lt;<span class="lifetime">&#39;g</span>&gt; <span class="kw">for </span>G <span class="kw">where </span>G: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {}

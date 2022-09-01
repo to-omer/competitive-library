@@ -159,47 +159,47 @@
 <span id="143">143</span>
 <span id="144">144</span>
 <span id="145">145</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::BidirectionalSparseGraph;
-<span class="kw">use </span>std::collections::VecDeque;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#162"><span class="kw">super</span>::BidirectionalSparseGraph</a>;
+<span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">std::collections::VecDeque</a>;
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>DinicBuilder {
-    vsize: usize,
-    edges: Vec&lt;(usize, usize)&gt;,
-    capacities: Vec&lt;u64&gt;,
+    vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    edges: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
+    capacities: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
 }
-<span class="kw">impl </span>DinicBuilder {
-    <span class="kw">pub fn </span>new(vsize: usize, esize_expect: usize) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span><a href="../../../src/competitive/graph/maximum_flow.rs.html#5">DinicBuilder</a> {
+    <span class="kw">pub fn </span>new(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            vsize,
-            edges: Vec::with_capacity(esize_expect),
-            capacities: Vec::with_capacity(esize_expect * <span class="number">2</span>),
+            <a href="../../../src/competitive/graph/maximum_flow.rs.html#11">vsize</a>,
+            edges: Vec::with_capacity(<a href="../../../src/competitive/graph/maximum_flow.rs.html#11">esize_expect</a>),
+            capacities: Vec::with_capacity(<a href="../../../src/competitive/graph/maximum_flow.rs.html#11">esize_expect</a> * <span class="number">2</span>),
         }
     }
-    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: usize, to: usize, cap: u64) {
-        <span class="self">self</span>.edges.push((from, to));
-        <span class="self">self</span>.capacities.push(cap);
-        <span class="self">self</span>.capacities.push(<span class="number">0</span>);
+    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, to: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#18">self</a>.edges.push((<a href="../../../src/competitive/graph/maximum_flow.rs.html#18">from</a>, <a href="../../../src/competitive/graph/maximum_flow.rs.html#18">to</a>));
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#18">self</a>.capacities.push(<a href="../../../src/competitive/graph/maximum_flow.rs.html#18">cap</a>);
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#18">self</a>.capacities.push(<span class="number">0</span>);
     }
-    <span class="kw">pub fn </span>gen_graph(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; BidirectionalSparseGraph {
-        <span class="kw">let </span>edges = std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.edges);
-        BidirectionalSparseGraph::from_edges(<span class="self">self</span>.vsize, edges)
+    <span class="kw">pub fn </span>gen_graph(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a> {
+        <span class="kw">let </span>edges = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#23">self</a>.edges);
+        BidirectionalSparseGraph::from_edges(<a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#23">self</a>.vsize, <a href="../../../src/competitive/graph/maximum_flow.rs.html#24">edges</a>)
     }
-    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span>BidirectionalSparseGraph) -&gt; Dinic&lt;<span class="lifetime">&#39;_</span>&gt; {
-        <span class="kw">let </span>DinicBuilder {
+    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a>) -&gt; Dinic&lt;<span class="lifetime">&#39;_</span>&gt; {
+        <span class="kw">let </span><a href="../../../src/competitive/graph/maximum_flow.rs.html#5">DinicBuilder</a> {
             vsize, capacities, ..
-        } = <span class="self">self</span>;
-        Dinic {
-            graph,
-            capacities,
-            iter: Vec::with_capacity(vsize),
-            level: Vec::with_capacity(vsize),
-            deq: VecDeque::with_capacity(vsize),
+        } = <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#27">self</a>;
+        <a href="../../../src/competitive/graph/maximum_flow.rs.html#49">Dinic</a> {
+            <a href="../../../src/competitive/graph/maximum_flow.rs.html#27">graph</a>,
+            <a href="../../../src/competitive/graph/maximum_flow.rs.html#29">capacities</a>,
+            iter: Vec::with_capacity(<a href="../../../src/competitive/graph/maximum_flow.rs.html#29">vsize</a>),
+            level: Vec::with_capacity(<a href="../../../src/competitive/graph/maximum_flow.rs.html#29">vsize</a>),
+            deq: VecDeque::with_capacity(<a href="../../../src/competitive/graph/maximum_flow.rs.html#29">vsize</a>),
         }
     }
 }
-<span class="kw">impl </span>Extend&lt;(usize, usize, u64)&gt; <span class="kw">for </span>DinicBuilder {
-    <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = (usize, usize, u64)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
+<span class="kw">impl </span>Extend&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; <span class="kw">for </span><a href="../../../src/competitive/graph/maximum_flow.rs.html#5">DinicBuilder</a> {
+    <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
         <span class="kw">for </span>(from, to, cap) <span class="kw">in </span>iter {
             <span class="self">self</span>.add_edge(from, to, cap)
         }
@@ -208,23 +208,23 @@
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Dinic&lt;<span class="lifetime">&#39;a</span>&gt; {
-    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BidirectionalSparseGraph,
-    capacities: Vec&lt;u64&gt;,
-    iter: Vec&lt;usize&gt;,
-    level: Vec&lt;usize&gt;,
-    deq: VecDeque&lt;usize&gt;,
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a>,
+    capacities: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+    iter: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    level: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    deq: VecDeque&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Dinic&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>builder(vsize: usize, esize_expect: usize) -&gt; DinicBuilder {
-        DinicBuilder::new(vsize, esize_expect)
+    <span class="kw">pub fn </span>builder(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="../../../src/competitive/graph/maximum_flow.rs.html#5">DinicBuilder</a> {
+        DinicBuilder::new(<a href="../../../src/competitive/graph/maximum_flow.rs.html#57">vsize</a>, <a href="../../../src/competitive/graph/maximum_flow.rs.html#57">esize_expect</a>)
     }
-    <span class="kw">fn </span>bfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize, t: usize) -&gt; bool {
+    <span class="kw">fn </span>bfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <span class="kw">use </span>std::usize::MAX;
-        <span class="self">self</span>.level.clear();
-        <span class="self">self</span>.level.resize(<span class="self">self</span>.graph.vertices_size(), MAX);
-        <span class="self">self</span>.level[s] = <span class="number">0</span>;
-        <span class="self">self</span>.deq.clear();
-        <span class="self">self</span>.deq.push_back(s);
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#60">self</a>.level.clear();
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#60">self</a>.level.resize(<a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#60">self</a>.graph.<a href="../../../src/competitive/graph/sparse_graph.rs.html#39">vertices_size</a>(), MAX);
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#60">self</a>.level[<a href="../../../src/competitive/graph/maximum_flow.rs.html#60">s</a>] = <span class="number">0</span>;
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#60">self</a>.deq.clear();
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#60">self</a>.deq.push_back(<a href="../../../src/competitive/graph/maximum_flow.rs.html#60">s</a>);
         <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
             <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
                 <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.level[a.to] == MAX {
@@ -236,11 +236,11 @@
                 }
             }
         }
-        <span class="self">self</span>.level[t] == MAX
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#60">self</a>.level[<a href="../../../src/competitive/graph/maximum_flow.rs.html#60">t</a>] == MAX
     }
-    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize, u: usize, upper: u64) -&gt; u64 {
+    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, upper: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
         <span class="kw">if </span>u == s {
-            <span class="kw">return </span>upper;
+            <span class="kw">return </span><a href="../../../src/competitive/graph/maximum_flow.rs.html#80">upper</a>;
         }
         <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="number">0</span>;
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).skip(<span class="self">self</span>.iter[u]) {
@@ -257,9 +257,9 @@
             }
             <span class="self">self</span>.iter[u] += <span class="number">1</span>;
         }
-        res
+        <a href="../../../src/competitive/graph/maximum_flow.rs.html#84">res</a>
     }
-    <span class="kw">pub fn </span>maximum_flow_limited(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize, t: usize, limit: u64) -&gt; u64 {
+    <span class="kw">pub fn </span>maximum_flow_limited(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, limit: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>flow = <span class="number">0</span>;
         <span class="kw">while </span>flow &lt; limit {
             <span class="kw">if </span><span class="self">self</span>.bfs(s, t) {
@@ -275,16 +275,16 @@
                 flow += f;
             }
         }
-        flow
+        <a href="../../../src/competitive/graph/maximum_flow.rs.html#102">flow</a>
     }
-    <span class="kw">pub fn </span>maximum_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize, t: usize) -&gt; u64 {
-        <span class="self">self</span>.maximum_flow_limited(s, t, std::u64::MAX)
+    <span class="kw">pub fn </span>maximum_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#119">self</a>.<a href="../../../src/competitive/graph/maximum_flow.rs.html#101">maximum_flow_limited</a>(<a href="../../../src/competitive/graph/maximum_flow.rs.html#119">s</a>, <a href="../../../src/competitive/graph/maximum_flow.rs.html#119">t</a>, std::u64::MAX)
     }
-    <span class="kw">pub fn </span>minimum_cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: usize) -&gt; Vec&lt;bool&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>visited = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.graph.vertices_size()];
-        visited[s] = <span class="bool-val">true</span>;
-        <span class="self">self</span>.deq.clear();
-        <span class="self">self</span>.deq.push_back(s);
+    <span class="kw">pub fn </span>minimum_cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>visited = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <span class="self">self</span>.graph.vertices_size()];
+        <a href="../../../src/competitive/graph/maximum_flow.rs.html#123">visited</a>[<a href="../../../src/competitive/graph/maximum_flow.rs.html#122">s</a>] = <span class="bool-val">true</span>;
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#122">self</a>.deq.clear();
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#122">self</a>.deq.push_back(<a href="../../../src/competitive/graph/maximum_flow.rs.html#122">s</a>);
         <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
             <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
                 <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; <span class="number">0 </span>&amp;&amp; !visited[a.to] {
@@ -293,15 +293,15 @@
                 }
             }
         }
-        visited
+        <a href="../../../src/competitive/graph/maximum_flow.rs.html#123">visited</a>
     }
-    <span class="kw">pub fn </span>get_flow(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: usize) -&gt; u64 {
-        <span class="self">self</span>.capacities[eid * <span class="number">2 </span>+ <span class="number">1</span>]
+    <span class="kw">pub fn </span>get_flow(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#137">self</a>.capacities[<a href="../../../src/competitive/graph/maximum_flow.rs.html#137">eid</a> * <span class="number">2 </span>+ <span class="number">1</span>]
     }
-    <span class="kw">pub fn </span>change_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eid: usize, cap: u64, flow: u64) {
-        <span class="macro">assert!</span>(flow &lt;= cap);
-        <span class="self">self</span>.capacities[eid * <span class="number">2</span>] = cap - flow;
-        <span class="self">self</span>.capacities[eid * <span class="number">2 </span>+ <span class="number">1</span>] = flow;
+    <span class="kw">pub fn </span>change_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, flow: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(flow &lt;= cap);
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#140">self</a>.capacities[<a href="../../../src/competitive/graph/maximum_flow.rs.html#140">eid</a> * <span class="number">2</span>] = <a href="../../../src/competitive/graph/maximum_flow.rs.html#140">cap</a> - <a href="../../../src/competitive/graph/maximum_flow.rs.html#140">flow</a>;
+        <a class="self" href="../../../src/competitive/graph/maximum_flow.rs.html#140">self</a>.capacities[<a href="../../../src/competitive/graph/maximum_flow.rs.html#140">eid</a> * <span class="number">2 </span>+ <span class="number">1</span>] = <a href="../../../src/competitive/graph/maximum_flow.rs.html#140">flow</a>;
     }
 }
 </code></pre></div>

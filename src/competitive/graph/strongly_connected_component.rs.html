@@ -115,33 +115,33 @@
 <span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::DirectedSparseGraph;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#160"><span class="kw">super</span>::DirectedSparseGraph</a>;
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>StronglyConnectedComponent&lt;<span class="lifetime">&#39;a</span>&gt; {
-    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>DirectedSparseGraph,
-    visited: Vec&lt;usize&gt;,
-    csize: usize,
-    low: Vec&lt;usize&gt;,
-    ord: Vec&lt;usize&gt;,
-    comp: Vec&lt;usize&gt;,
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#160">DirectedSparseGraph</a>,
+    visited: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    csize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    low: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    ord: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    comp: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 }
-<span class="kw">impl </span>std::ops::Index&lt;usize&gt; <span class="kw">for </span>StronglyConnectedComponent&lt;<span class="lifetime">&#39;_</span>&gt; {
-    <span class="kw">type </span>Output = usize;
-    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.comp[index]
+<span class="kw">impl </span>std::ops::Index&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span>StronglyConnectedComponent&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">type </span>Output = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+        <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#14">self</a>.comp[<a href="../../../src/competitive/graph/strongly_connected_component.rs.html#14">index</a>]
     }
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; StronglyConnectedComponent&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>DirectedSparseGraph) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#160">DirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>now_ord = <span class="number">0</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
-            graph,
+            <a href="../../../src/competitive/graph/strongly_connected_component.rs.html#19">graph</a>,
             csize: <span class="number">0</span>,
-            visited: Vec::with_capacity(graph.vertices_size()),
-            low: <span class="macro">vec!</span>[<span class="number">0</span>; graph.vertices_size()],
-            ord: <span class="macro">vec!</span>[std::usize::MAX; graph.vertices_size()],
-            comp: <span class="macro">vec!</span>[<span class="number">0</span>; graph.vertices_size()],
+            visited: Vec::with_capacity(<a href="../../../src/competitive/graph/strongly_connected_component.rs.html#19">graph</a>.<a href="../../../src/competitive/graph/sparse_graph.rs.html#39">vertices_size</a>()),
+            low: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; graph.vertices_size()],
+            ord: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[std::usize::MAX; graph.vertices_size()],
+            comp: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; graph.vertices_size()],
         };
         <span class="kw">for </span>u <span class="kw">in </span>graph.vertices() {
             <span class="kw">if </span>self_.ord[u] == std::usize::MAX {
@@ -151,15 +151,15 @@
         <span class="kw">for </span>x <span class="kw">in </span>self_.comp.iter_mut() {
             <span class="kw-2">*</span>x = self_.csize - <span class="number">1 </span>- <span class="kw-2">*</span>x;
         }
-        self_
+        <a href="../../../src/competitive/graph/strongly_connected_component.rs.html#21">self_</a>
     }
 }
 <span class="kw">impl </span>StronglyConnectedComponent&lt;<span class="lifetime">&#39;_</span>&gt; {
-    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: usize, now_ord: <span class="kw-2">&amp;mut </span>usize) {
-        <span class="self">self</span>.low[u] = <span class="kw-2">*</span>now_ord;
-        <span class="self">self</span>.ord[u] = <span class="kw-2">*</span>now_ord;
-        <span class="kw-2">*</span>now_ord += <span class="number">1</span>;
-        <span class="self">self</span>.visited.push(u);
+    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, now_ord: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">self</a>.low[<a href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">u</a>] = <span class="kw-2">*</span><a href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">now_ord</a>;
+        <a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">self</a>.ord[<a href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">u</a>] = <span class="kw-2">*</span><a href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">now_ord</a>;
+        <span class="kw-2">*</span><a href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">now_ord</a> += <span class="number">1</span>;
+        <a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">self</a>.visited.push(<a href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">u</a>);
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
             <span class="kw">if </span><span class="self">self</span>.ord[a.to] == std::usize::MAX {
                 <span class="self">self</span>.dfs(a.to, now_ord);
@@ -176,12 +176,12 @@
                     <span class="kw">break</span>;
                 }
             }
-            <span class="self">self</span>.csize += <span class="number">1</span>;
+            <a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#41">self</a>.csize += <span class="number">1</span>;
         }
     }
-    <span class="kw">pub fn </span>gen_cgraph(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DirectedSparseGraph {
+    <span class="kw">pub fn </span>gen_cgraph(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="../../../src/competitive/graph/sparse_graph.rs.html#160">DirectedSparseGraph</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>used = std::collections::HashSet::new();
-        <span class="kw">let </span><span class="kw-2">mut </span>edges = <span class="macro">vec!</span>[];
+        <span class="kw">let </span><span class="kw-2">mut </span>edges = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
         <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.graph.vertices() {
             <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
                 <span class="kw">if </span><span class="self">self</span>.comp[u] != <span class="self">self</span>.comp[a.to] {
@@ -193,27 +193,27 @@
                 }
             }
         }
-        DirectedSparseGraph::from_edges(<span class="self">self</span>.size(), edges)
+        DirectedSparseGraph::from_edges(<a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#65">self</a>.<a href="../../../src/competitive/graph/strongly_connected_component.rs.html#98">size</a>(), <a href="../../../src/competitive/graph/strongly_connected_component.rs.html#67">edges</a>)
     }
-    <span class="kw">pub fn </span>components(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Vec&lt;usize&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>counts = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="self">self</span>.size()];
+    <span class="kw">pub fn </span>components(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>counts = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <span class="self">self</span>.size()];
         <span class="kw">for </span><span class="kw-2">&amp;</span>x <span class="kw">in </span><span class="self">self</span>.comp.iter() {
             counts[x] += <span class="number">1</span>;
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>groups = <span class="macro">vec!</span>[<span class="macro">vec!</span>[]; <span class="self">self</span>.size()];
+        <span class="kw">let </span><span class="kw-2">mut </span>groups = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[]; <span class="self">self</span>.size()];
         <span class="kw">for </span>(g, c) <span class="kw">in </span>groups.iter_mut().zip(counts.into_iter()) {
             g.reserve(c);
         }
         <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.graph.vertices() {
             groups[<span class="self">self</span>[u]].push(u);
         }
-        groups
+        <a href="../../../src/competitive/graph/strongly_connected_component.rs.html#86">groups</a>
     }
-    <span class="kw">pub fn </span>has_loop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.graph.vertices_size() != <span class="self">self</span>.csize
+    <span class="kw">pub fn </span>has_loop(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#95">self</a>.graph.<a href="../../../src/competitive/graph/sparse_graph.rs.html#39">vertices_size</a>() != <a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#95">self</a>.csize
     }
-    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.csize
+    <span class="kw">pub fn </span>size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a class="self" href="../../../src/competitive/graph/strongly_connected_component.rs.html#98">self</a>.csize
     }
 }
 </code></pre></div>

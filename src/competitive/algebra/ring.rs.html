@@ -104,11 +104,11 @@
 </pre><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::{
     marker::PhantomData,
-    ops::{Add, Mul},
+    ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Mul</a>},
 };
 
 <span class="kw">pub trait </span>SemiRing {
-    <span class="kw">type </span>T: Clone;
+    <span class="kw">type </span>T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>;
     <span class="kw">type </span>Additive: AbelianMonoid&lt;T = <span class="self">Self</span>::T&gt;;
     <span class="kw">type </span>Multiplicative: Monoid&lt;T = <span class="self">Self</span>::T&gt;;
     <span class="doccomment">/// additive identity: $0$
@@ -121,68 +121,68 @@
     }
     <span class="doccomment">/// additive operaion: $+$
     </span><span class="kw">fn </span>add(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        &lt;<span class="self">Self</span>::Additive <span class="kw">as </span>Magma&gt;::operate(x, y)
+        &lt;<span class="self">Self</span>::Additive <span class="kw">as </span>Magma&gt;::operate(<a href="../../../src/competitive/algebra/ring.rs.html#20">x</a>, <a href="../../../src/competitive/algebra/ring.rs.html#20">y</a>)
     }
     <span class="doccomment">/// multiplicative operaion: $+$
     </span><span class="kw">fn </span>mul(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        &lt;<span class="self">Self</span>::Multiplicative <span class="kw">as </span>Magma&gt;::operate(x, y)
+        &lt;<span class="self">Self</span>::Multiplicative <span class="kw">as </span>Magma&gt;::operate(<a href="../../../src/competitive/algebra/ring.rs.html#24">x</a>, <a href="../../../src/competitive/algebra/ring.rs.html#24">y</a>)
     }
 }
 
-<span class="kw">pub trait </span>Ring: SemiRing
+<span class="kw">pub trait </span>Ring: <a href="../../../src/competitive/algebra/ring.rs.html#7">SemiRing</a>
 <span class="kw">where
-    </span><span class="self">Self</span>::Additive: Invertible,
+    </span><span class="self">Self</span>::Additive: <a href="../../../src/competitive/algebra/magma.rs.html#63">Invertible</a>,
 {
     <span class="doccomment">/// additive inverse: $-$
     </span><span class="kw">fn </span>neg(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        &lt;<span class="self">Self</span>::Additive <span class="kw">as </span>Invertible&gt;::inverse(x)
+        &lt;<span class="self">Self</span>::Additive <span class="kw">as </span>Invertible&gt;::inverse(<a href="../../../src/competitive/algebra/ring.rs.html#34">x</a>)
     }
     <span class="doccomment">/// additive right inversed operaion: $-$
     </span><span class="kw">fn </span>sub(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        <span class="self">Self</span>::add(x, <span class="kw-2">&amp;</span><span class="self">Self</span>::neg(y))
+        <span class="self">Self</span>::add(<a href="../../../src/competitive/algebra/ring.rs.html#38">x</a>, <span class="kw-2">&amp;</span><span class="self">Self</span>::neg(<a href="../../../src/competitive/algebra/ring.rs.html#38">y</a>))
     }
 }
 
-<span class="kw">impl</span>&lt;R&gt; Ring <span class="kw">for </span>R
+<span class="kw">impl</span>&lt;R&gt; <a href="../../../src/competitive/algebra/ring.rs.html#29">Ring</a> <span class="kw">for </span>R
 <span class="kw">where
-    </span>R: SemiRing,
-    R::Additive: Invertible,
+    </span>R: <a href="../../../src/competitive/algebra/ring.rs.html#7">SemiRing</a>,
+    R::Additive: <a href="../../../src/competitive/algebra/magma.rs.html#63">Invertible</a>,
 {
 }
 
-<span class="kw">pub trait </span>Field: Ring
+<span class="kw">pub trait </span>Field: <a href="../../../src/competitive/algebra/ring.rs.html#29">Ring</a>
 <span class="kw">where
-    </span><span class="self">Self</span>::Additive: Invertible,
-    <span class="self">Self</span>::Multiplicative: Invertible,
+    </span><span class="self">Self</span>::Additive: <a href="../../../src/competitive/algebra/magma.rs.html#63">Invertible</a>,
+    <span class="self">Self</span>::Multiplicative: <a href="../../../src/competitive/algebra/magma.rs.html#63">Invertible</a>,
 {
     <span class="doccomment">/// multiplicative inverse: $-$
     </span><span class="kw">fn </span>inv(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        &lt;<span class="self">Self</span>::Additive <span class="kw">as </span>Invertible&gt;::inverse(x)
+        &lt;<span class="self">Self</span>::Additive <span class="kw">as </span>Invertible&gt;::inverse(<a href="../../../src/competitive/algebra/ring.rs.html#56">x</a>)
     }
     <span class="doccomment">/// multiplicative right inversed operaion: $-$
     </span><span class="kw">fn </span>div(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-        <span class="self">Self</span>::mul(x, <span class="kw-2">&amp;</span><span class="self">Self</span>::inv(y))
+        <span class="self">Self</span>::mul(<a href="../../../src/competitive/algebra/ring.rs.html#60">x</a>, <span class="kw-2">&amp;</span><span class="self">Self</span>::inv(<a href="../../../src/competitive/algebra/ring.rs.html#60">y</a>))
     }
 }
 
-<span class="kw">impl</span>&lt;F&gt; Field <span class="kw">for </span>F
+<span class="kw">impl</span>&lt;F&gt; <a href="../../../src/competitive/algebra/ring.rs.html#50">Field</a> <span class="kw">for </span>F
 <span class="kw">where
-    </span>F: Ring,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
+    </span>F: <a href="../../../src/competitive/algebra/ring.rs.html#29">Ring</a>,
+    F::Additive: <a href="../../../src/competitive/algebra/magma.rs.html#63">Invertible</a>,
+    F::Multiplicative: <a href="../../../src/competitive/algebra/magma.rs.html#63">Invertible</a>,
 {
 }
 
 <span class="doccomment">/// $+,\times$
 </span><span class="kw">pub struct </span>AddMulOperation&lt;T&gt;
 <span class="kw">where
-    </span>T: Clone + Zero + One + Add&lt;Output = T&gt; + Mul&lt;Output = T&gt;,
+    </span>T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="../../../src/competitive/num/zero_one.rs.html#1">Zero</a> + <a href="../../../src/competitive/num/zero_one.rs.html#15">One</a> + Add&lt;Output = T&gt; + Mul&lt;Output = T&gt;,
 {
     _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
-<span class="kw">impl</span>&lt;T&gt; SemiRing <span class="kw">for </span>AddMulOperation&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="../../../src/competitive/algebra/ring.rs.html#7">SemiRing</a> <span class="kw">for </span>AddMulOperation&lt;T&gt;
 <span class="kw">where
-    </span>T: Clone + Zero + One + Add&lt;Output = T&gt; + Mul&lt;Output = T&gt;,
+    </span>T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="../../../src/competitive/num/zero_one.rs.html#1">Zero</a> + <a href="../../../src/competitive/num/zero_one.rs.html#15">One</a> + Add&lt;Output = T&gt; + Mul&lt;Output = T&gt;,
 {
     <span class="kw">type </span>T = T;
     <span class="kw">type </span>Additive = AdditiveOperation&lt;T&gt;;

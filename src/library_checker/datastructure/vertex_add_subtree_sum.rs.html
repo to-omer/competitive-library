@@ -49,27 +49,27 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
-</pre><pre class="rust"><code><span class="kw">use </span>competitive::prelude::<span class="kw-2">*</span>;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../competitive/prelude/index.html">competitive::prelude</a>::<span class="kw-2">*</span>;
 <span class="attribute">#[doc(no_inline)]
 </span><span class="kw">pub use </span>competitive::{
-    algebra::AdditiveOperation, data_structure::SegmentTree, graph::UndirectedSparseGraph,
-    tree::EulerTourForVertex,
+    <a href="../../../competitive/algebra/operations/additive_operation_impl/struct.AdditiveOperation.html">algebra::AdditiveOperation</a>, <a href="../../../competitive/data_structure/segment_tree/struct.SegmentTree.html">data_structure::SegmentTree</a>, <a href="../../../competitive/graph/sparse_graph/type.UndirectedSparseGraph.html">graph::UndirectedSparseGraph</a>,
+    <a href="../../../competitive/tree/euler_tour/struct.EulerTourForVertex.html">tree::EulerTourForVertex</a>,
 };
 
 <span class="attribute">#[verify::library_checker(<span class="string">&quot;vertex_add_subtree_sum&quot;</span>)]
-</span><span class="kw">pub fn </span>vertex_add_subtree_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-    <span class="kw">let </span>s = read_all_unchecked(reader);
-    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-    <span class="macro">scan!</span>(scanner, n, q, a: [u64; n], p: [usize]);
-    <span class="kw">let </span>edges = p.take(n - <span class="number">1</span>).enumerate().map(|(i, p)| (i + <span class="number">1</span>, p)).collect();
-    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(n, edges);
-    <span class="kw">let </span><span class="kw-2">mut </span>et = EulerTourForVertex::new(<span class="kw-2">&amp;</span>graph);
-    et.subtree_vertex_tour(<span class="number">0</span>, n);
-    <span class="kw">let </span><span class="kw-2">mut </span>b = <span class="macro">vec!</span>[<span class="number">0</span>; n];
+</span><span class="kw">pub fn </span>vertex_add_subtree_sum(reader: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html">Read</a>, <span class="kw-2">mut </span>writer: <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html">Write</a>) {
+    <span class="kw">let </span>s = read_all_unchecked(<a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#9">reader</a>);
+    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span><a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#10">s</a>);
+    <a class="macro" href="../../../competitive/competitive/macro.scan.html">scan!</a>(<a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#11">scanner</a>, n, q, a: [u64; <a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#12">n</a>], p: [usize]);
+    <span class="kw">let </span>edges = <a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#12">p</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">take</a>(<a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#12">n</a> - <span class="number">1</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|(i, p)| (<a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#13">i</a> + <span class="number">1</span>, <a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#13">p</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+    <span class="kw">let </span>graph = UndirectedSparseGraph::from_edges(<a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#12">n</a>, <a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#13">edges</a>);
+    <span class="kw">let </span><span class="kw-2">mut </span>et = EulerTourForVertex::new(<span class="kw-2">&amp;</span><a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#14">graph</a>);
+    <a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#15">et</a>.subtree_vertex_tour(<span class="number">0</span>, <a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#12">n</a>);
+    <span class="kw">let </span><span class="kw-2">mut </span>b = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; n];
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
         b[et.vidx[i].<span class="number">0</span>] = a[i];
     }
-    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(b);
+    <span class="kw">let </span><span class="kw-2">mut </span>seg = SegmentTree::&lt;AdditiveOperation&lt;<span class="kw">_</span>&gt;&gt;::from_vec(<a href="../../../src/library_checker/datastructure/vertex_add_subtree_sum.rs.html#17">b</a>);
     <span class="kw">for _ in </span><span class="number">0</span>..q {
         <span class="kw">match </span>scanner.scan::&lt;usize&gt;() {
             <span class="number">0 </span>=&gt; {

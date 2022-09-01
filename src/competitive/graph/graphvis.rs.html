@@ -83,19 +83,19 @@
 <span id="67">67</span>
 <span id="68">68</span>
 <span id="69">69</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{BidirectionalSparseGraph, DirectedSparseGraph, UndirectedSparseGraph};
-<span class="kw">use </span>std::{fmt::Display, fmt::Write};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a>, <a href="../../../src/competitive/graph/sparse_graph.rs.html#160">DirectedSparseGraph</a>, <a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>};
+<span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">fmt::Display</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Write.html">fmt::Write</a>};
 
-<span class="kw">impl </span>DirectedSparseGraph {
-    <span class="kw">pub fn </span>to_graphvis&lt;N, NA, E, EA&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, node_attr: N, edge_attr: E) -&gt; String
+<span class="kw">impl </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#160">DirectedSparseGraph</a> {
+    <span class="kw">pub fn </span>to_graphvis&lt;N, NA, E, EA&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, node_attr: N, edge_attr: E) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html">String</a>
     <span class="kw">where
-        </span>N: Fn(usize) -&gt; NA,
-        E: Fn(usize) -&gt; EA,
-        NA: Display,
-        EA: Display,
+        </span>N: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; NA,
+        E: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; EA,
+        NA: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a>,
+        EA: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a>,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
-        s.push_str(<span class="string">&quot;digraph G {\n    graph [ splines=false, layout=neato ];\n&quot;</span>);
+        <a href="../../../src/competitive/graph/graphvis.rs.html#12">s</a>.push_str(<span class="string">&quot;digraph G {\n    graph [ splines=false, layout=neato ];\n&quot;</span>);
         <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
             <span class="macro">writeln!</span>(s, <span class="string">&quot;    {} [{}];&quot;</span>, u, node_attr(u)).ok();
         }
@@ -104,42 +104,42 @@
                 <span class="macro">writeln!</span>(s, <span class="string">&quot;    {} -&gt; {} [{}];&quot;</span>, u, a.to, edge_attr(a.id)).ok();
             }
         }
-        s.push(<span class="string">&#39;}&#39;</span>);
-        s
+        <a href="../../../src/competitive/graph/graphvis.rs.html#12">s</a>.push(<span class="string">&#39;}&#39;</span>);
+        <a href="../../../src/competitive/graph/graphvis.rs.html#12">s</a>
     }
 }
 
-<span class="kw">impl </span>UndirectedSparseGraph {
-    <span class="kw">pub fn </span>to_graphvis&lt;N, NA, E, EA&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, node_attr: N, edge_attr: E) -&gt; String
+<span class="kw">impl </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a> {
+    <span class="kw">pub fn </span>to_graphvis&lt;N, NA, E, EA&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, node_attr: N, edge_attr: E) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html">String</a>
     <span class="kw">where
-        </span>N: Fn(usize) -&gt; NA,
-        E: Fn(usize) -&gt; EA,
-        NA: Display,
-        EA: Display,
+        </span>N: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; NA,
+        E: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; EA,
+        NA: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a>,
+        EA: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a>,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
-        s.push_str(<span class="string">&quot;graph G {\n    graph [ splines=false, layout=neato ];\n&quot;</span>);
+        <a href="../../../src/competitive/graph/graphvis.rs.html#35">s</a>.push_str(<span class="string">&quot;graph G {\n    graph [ splines=false, layout=neato ];\n&quot;</span>);
         <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
             <span class="macro">writeln!</span>(s, <span class="string">&quot;    {} [{}];&quot;</span>, u, node_attr(u)).ok();
         }
         <span class="kw">for </span>(i, (u, v)) <span class="kw">in </span><span class="self">self</span>.edges.iter().cloned().enumerate() {
             <span class="macro">writeln!</span>(s, <span class="string">&quot;    {} -- {} [{}];&quot;</span>, u, v, edge_attr(i)).ok();
         }
-        s.push(<span class="string">&#39;}&#39;</span>);
-        s
+        <a href="../../../src/competitive/graph/graphvis.rs.html#35">s</a>.push(<span class="string">&#39;}&#39;</span>);
+        <a href="../../../src/competitive/graph/graphvis.rs.html#35">s</a>
     }
 }
 
-<span class="kw">impl </span>BidirectionalSparseGraph {
-    <span class="kw">pub fn </span>to_graphvis&lt;N, NA, E, EA&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, node_attr: N, edge_attr: E) -&gt; String
+<span class="kw">impl </span><a href="../../../src/competitive/graph/sparse_graph.rs.html#162">BidirectionalSparseGraph</a> {
+    <span class="kw">pub fn </span>to_graphvis&lt;N, NA, E, EA&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, node_attr: N, edge_attr: E) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html">String</a>
     <span class="kw">where
-        </span>N: Fn(usize) -&gt; NA,
-        E: Fn(usize) -&gt; EA,
-        NA: Display,
-        EA: Display,
+        </span>N: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; NA,
+        E: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; EA,
+        NA: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a>,
+        EA: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">Display</a>,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
-        s.push_str(<span class="string">&quot;digraph G {\n    graph [ splines=false, layout=neato ];\n&quot;</span>);
+        <a href="../../../src/competitive/graph/graphvis.rs.html#56">s</a>.push_str(<span class="string">&quot;digraph G {\n    graph [ splines=false, layout=neato ];\n&quot;</span>);
         <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
             <span class="macro">writeln!</span>(s, <span class="string">&quot;    {} [{}];&quot;</span>, u, node_attr(u)).ok();
         }
@@ -148,8 +148,8 @@
                 <span class="macro">writeln!</span>(s, <span class="string">&quot;    {} -&gt; {} [{}];&quot;</span>, u, a.to, edge_attr(a.id)).ok();
             }
         }
-        s.push(<span class="string">&#39;}&#39;</span>);
-        s
+        <a href="../../../src/competitive/graph/graphvis.rs.html#56">s</a>.push(<span class="string">&#39;}&#39;</span>);
+        <a href="../../../src/competitive/graph/graphvis.rs.html#56">s</a>
     }
 }
 </code></pre></div>

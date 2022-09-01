@@ -123,16 +123,16 @@
 <span id="107">107</span>
 <span id="108">108</span>
 <span id="109">109</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{gcd, miller_rabin_with_br, BarrettReduction};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/math/gcd.rs.html#11">gcd</a>, <a href="../../../src/competitive/math/miller_rabin.rs.html#105">miller_rabin_with_br</a>, <a href="../../../src/competitive/num/barrett_reduction.rs.html#2">BarrettReduction</a>};
 
-<span class="kw">fn </span>find_factor(n: u64) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-    <span class="kw">let </span>br = BarrettReduction::&lt;u128&gt;::new(n <span class="kw">as </span>u128);
+<span class="kw">fn </span>find_factor(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
+    <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/prime_factors.rs.html#3">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
     <span class="kw">if </span>miller_rabin_with_br(n, <span class="kw-2">&amp;</span>br) {
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
-    <span class="kw">let </span>m = <span class="number">1u64 </span>&lt;&lt; ((<span class="number">63 </span>- n.leading_zeros()) / <span class="number">5</span>);
-    <span class="kw">let </span>sub = |x: u64, y: u64| <span class="kw">if </span>x &gt; y { x - y } <span class="kw">else </span>{ y - x };
-    <span class="kw">let </span>mul = |x: u64, y: u64| br.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+    <span class="kw">let </span>m = <span class="number">1u64 </span>&lt;&lt; ((<span class="number">63 </span>- <a href="../../../src/competitive/math/prime_factors.rs.html#3">n</a>.leading_zeros()) / <span class="number">5</span>);
+    <span class="kw">let </span>sub = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <span class="kw">if </span>x &gt; y { <a href="../../../src/competitive/math/prime_factors.rs.html#9">x</a> - <a href="../../../src/competitive/math/prime_factors.rs.html#9">y</a> } <span class="kw">else </span>{ <a href="../../../src/competitive/math/prime_factors.rs.html#9">y</a> - <a href="../../../src/competitive/math/prime_factors.rs.html#9">x</a> };
+    <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="../../../src/competitive/math/prime_factors.rs.html#4">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/prime_factors.rs.html#10">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/prime_factors.rs.html#10">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
     <span class="kw">for </span>c <span class="kw">in </span><span class="number">12</span>.. {
         <span class="kw">let </span>f = |x: u64| (br.rem(x <span class="kw">as </span>u128 * x <span class="kw">as </span>u128) + c) <span class="kw">as </span>u64;
         <span class="kw">let </span>(<span class="kw-2">mut </span>x, <span class="kw-2">mut </span>y, <span class="kw-2">mut </span>r, <span class="kw-2">mut </span>g, <span class="kw-2">mut </span>k, <span class="kw-2">mut </span>ys) = (<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);
@@ -164,18 +164,18 @@
             <span class="kw">return </span><span class="prelude-val">Some</span>(g);
         }
     }
-    <span class="macro">unreachable!</span>();
+    <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.unreachable.html">unreachable!</a>();
 }
 
-<span class="kw">pub fn </span>prime_factors_flatten(<span class="kw-2">mut </span>n: u64) -&gt; Vec&lt;u64&gt; {
+<span class="kw">pub fn </span>prime_factors_flatten(<span class="kw-2">mut </span>n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
     <span class="kw">if </span>n == <span class="number">0 </span>{
-        <span class="kw">return </span><span class="macro">vec!</span>[];
+        <span class="kw">return </span><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
     }
-    <span class="kw">let </span>k = n.trailing_zeros();
-    <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[<span class="number">2</span>; k <span class="kw">as </span>usize];
-    n &gt;&gt;= k;
+    <span class="kw">let </span>k = <a href="../../../src/competitive/math/prime_factors.rs.html#45">n</a>.trailing_zeros();
+    <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">2</span>; k <span class="kw">as </span>usize];
+    <a href="../../../src/competitive/math/prime_factors.rs.html#45">n</a> &gt;&gt;= <a href="../../../src/competitive/math/prime_factors.rs.html#49">k</a>;
     <span class="kw">if </span>n != <span class="number">1 </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[n];
+        <span class="kw">let </span><span class="kw-2">mut </span>c = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[n];
         <span class="kw">while let </span><span class="prelude-val">Some</span>(n) = c.pop() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = find_factor(n) {
                 c.push(m);
@@ -185,11 +185,11 @@
             }
         }
     }
-    res.sort_unstable();
-    res
+    <a href="../../../src/competitive/math/prime_factors.rs.html#50">res</a>.sort_unstable();
+    <a href="../../../src/competitive/math/prime_factors.rs.html#50">res</a>
 }
 
-<span class="kw">pub fn </span>prime_factors(n: u64) -&gt; Vec&lt;(u64, u32)&gt; {
+<span class="kw">pub fn </span>prime_factors(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::new();
     <span class="kw">for </span>a <span class="kw">in </span>prime_factors_flatten(n) {
         <span class="kw">if let </span><span class="prelude-val">Some</span>((p, len)) = res.last_mut() {
@@ -200,11 +200,11 @@
         }
         res.push((a, <span class="number">1</span>));
     }
-    res
+    <a href="../../../src/competitive/math/prime_factors.rs.html#68">res</a>
 }
 
-<span class="kw">pub fn </span>divisors(n: u64) -&gt; Vec&lt;u64&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>d = <span class="macro">vec!</span>[<span class="number">1u64</span>];
+<span class="kw">pub fn </span>divisors(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>d = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">1u64</span>];
     <span class="kw">for </span>(p, c) <span class="kw">in </span>prime_factors(n) {
         <span class="kw">let </span>k = d.len();
         <span class="kw">let </span><span class="kw-2">mut </span>acc = p;
@@ -215,8 +215,8 @@
             acc <span class="kw-2">*</span>= p;
         }
     }
-    d.sort_unstable();
-    d
+    <a href="../../../src/competitive/math/prime_factors.rs.html#82">d</a>.sort_unstable();
+    <a href="../../../src/competitive/math/prime_factors.rs.html#82">d</a>
 }
 
 <span class="attribute">#[test]

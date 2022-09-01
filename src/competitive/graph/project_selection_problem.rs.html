@@ -144,72 +144,72 @@
 <span id="128">128</span>
 <span id="129">129</span>
 <span id="130">130</span>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::Dinic;
-<span class="kw">use </span>std::{cmp::Ordering, collections::HashMap};
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/graph/maximum_flow.rs.html#49"><span class="kw">super</span>::Dinic</a>;
+<span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>, <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">collections::HashMap</a>};
 
 <span class="attribute">#[derive(Debug, Default, Clone)]
 </span><span class="kw">pub struct </span>ProjectSelectionProblem {
-    n_values: Vec&lt;usize&gt;,
-    start: Vec&lt;usize&gt;,
-    cost1: Vec&lt;Vec&lt;i64&gt;&gt;,
-    cost2: HashMap&lt;(usize, usize), u64&gt;,
-    totalcost: i64,
+    n_values: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    start: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    cost1: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;&gt;,
+    cost2: HashMap&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>), <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+    totalcost: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>,
 }
-<span class="kw">impl </span>ProjectSelectionProblem {
-    <span class="kw">pub fn </span>new(n_project: usize, n_value: usize) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span><a href="../../../src/competitive/graph/project_selection_problem.rs.html#5">ProjectSelectionProblem</a> {
+    <span class="kw">pub fn </span>new(n_project: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, n_value: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            n_values: <span class="macro">vec!</span>[n_value; n_project],
-            start: (<span class="number">0</span>..=n_project * (n_value - <span class="number">1</span>))
-                .step_by(n_value - <span class="number">1</span>)
-                .collect(),
-            cost1: <span class="macro">vec!</span>[<span class="macro">vec!</span>[<span class="number">0i64</span>; n_value]; n_project],
-            cost2: Default::default(),
+            n_values: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[n_value; n_project],
+            start: (<span class="number">0</span>..=<a href="../../../src/competitive/graph/project_selection_problem.rs.html#13">n_project</a> * (<a href="../../../src/competitive/graph/project_selection_problem.rs.html#13">n_value</a> - <span class="number">1</span>))
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">step_by</a>(<a href="../../../src/competitive/graph/project_selection_problem.rs.html#13">n_value</a> - <span class="number">1</span>)
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+            cost1: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[<span class="number">0i64</span>; n_value]; n_project],
+            cost2: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
             totalcost: <span class="number">0i64</span>,
         }
     }
-    <span class="kw">pub fn </span>with_n_values(n_values: Vec&lt;usize&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>start = Vec::with_capacity(n_values.len() + <span class="number">1</span>);
-        start.push(<span class="number">0usize</span>);
+    <span class="kw">pub fn </span>with_n_values(n_values: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>start = Vec::with_capacity(<a href="../../../src/competitive/graph/project_selection_problem.rs.html#24">n_values</a>.len() + <span class="number">1</span>);
+        <a href="../../../src/competitive/graph/project_selection_problem.rs.html#25">start</a>.push(<span class="number">0usize</span>);
         <span class="kw">for </span>nv <span class="kw">in </span>n_values.iter() {
             start.push(start.last().unwrap() + nv - <span class="number">1</span>);
         }
-        <span class="kw">let </span>cost1 = n_values.iter().map(|<span class="kw-2">&amp;</span>n| <span class="macro">vec!</span>[<span class="number">0i64</span>; n]).collect();
+        <span class="kw">let </span>cost1 = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#24">n_values</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw-2">&amp;</span>n| <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0i64</span>; n]).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="self">Self </span>{
-            n_values,
-            start,
-            cost1,
-            cost2: Default::default(),
+            <a href="../../../src/competitive/graph/project_selection_problem.rs.html#24">n_values</a>,
+            <a href="../../../src/competitive/graph/project_selection_problem.rs.html#25">start</a>,
+            <a href="../../../src/competitive/graph/project_selection_problem.rs.html#30">cost1</a>,
+            cost2: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
             totalcost: <span class="number">0i64</span>,
         }
     }
-    <span class="kw">pub fn </span>add_cost1(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p: usize, v: usize, c: i64) {
-        <span class="self">self</span>.cost1[p][v] += c;
+    <span class="kw">pub fn </span>add_cost1(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, v: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, c: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
+        <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#39">self</a>.cost1[<a href="../../../src/competitive/graph/project_selection_problem.rs.html#39">p</a>][<a href="../../../src/competitive/graph/project_selection_problem.rs.html#39">v</a>] += <a href="../../../src/competitive/graph/project_selection_problem.rs.html#39">c</a>;
     }
     <span class="doccomment">/// x1 &gt;= v1 &amp;&amp; x2 &lt; v2 (0 &lt; v1 &lt; nv1, 0 &lt; v2 &lt; nv2)
-    </span><span class="kw">pub fn </span>add_cost2_01(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p1: usize, p2: usize, v1: usize, v2: usize, c: u64) {
-        <span class="macro">debug_assert!</span>(<span class="number">0 </span>&lt; v1 &amp;&amp; v1 &lt; <span class="self">self</span>.n_values[p1]);
-        <span class="macro">debug_assert!</span>(<span class="number">0 </span>&lt; v2 &amp;&amp; v2 &lt; <span class="self">self</span>.n_values[p2]);
-        <span class="kw">let </span>key = (<span class="self">self</span>.start[p1] + v1 - <span class="number">1</span>, <span class="self">self</span>.start[p2] + v2 - <span class="number">1</span>);
+    </span><span class="kw">pub fn </span>add_cost2_01(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p1: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p2: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, v1: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, v2: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, c: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(<span class="number">0 </span>&lt; v1 &amp;&amp; v1 &lt; <span class="self">self</span>.n_values[p1]);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(<span class="number">0 </span>&lt; v2 &amp;&amp; v2 &lt; <span class="self">self</span>.n_values[p2]);
+        <span class="kw">let </span>key = (<a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#43">self</a>.start[<a href="../../../src/competitive/graph/project_selection_problem.rs.html#43">p1</a>] + <a href="../../../src/competitive/graph/project_selection_problem.rs.html#43">v1</a> - <span class="number">1</span>, <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#43">self</a>.start[<a href="../../../src/competitive/graph/project_selection_problem.rs.html#43">p2</a>] + <a href="../../../src/competitive/graph/project_selection_problem.rs.html#43">v2</a> - <span class="number">1</span>);
         <span class="kw">if </span>c &gt; <span class="number">0 </span>{
-            <span class="kw-2">*</span><span class="self">self</span>.cost2.entry(key).or_default() += c;
+            <span class="kw-2">*</span><a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#43">self</a>.cost2.entry(<a href="../../../src/competitive/graph/project_selection_problem.rs.html#46">key</a>).or_default() += <a href="../../../src/competitive/graph/project_selection_problem.rs.html#43">c</a>;
         }
     }
     <span class="doccomment">/// x1 &lt; v1 &amp;&amp; x2 &gt;= v2 (0 &lt; v1 &lt; nv1, 0 &lt; v2 &lt; nv2)
-    </span><span class="kw">pub fn </span>add_cost2_10(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p1: usize, p2: usize, v1: usize, v2: usize, c: u64) {
-        <span class="self">self</span>.add_cost2_01(p2, p1, v2, v1, c);
+    </span><span class="kw">pub fn </span>add_cost2_10(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p1: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p2: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, v1: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, v2: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, c: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
+        <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#52">self</a>.<a href="../../../src/competitive/graph/project_selection_problem.rs.html#43">add_cost2_01</a>(<a href="../../../src/competitive/graph/project_selection_problem.rs.html#52">p2</a>, <a href="../../../src/competitive/graph/project_selection_problem.rs.html#52">p1</a>, <a href="../../../src/competitive/graph/project_selection_problem.rs.html#52">v2</a>, <a href="../../../src/competitive/graph/project_selection_problem.rs.html#52">v1</a>, <a href="../../../src/competitive/graph/project_selection_problem.rs.html#52">c</a>);
     }
     <span class="doccomment">/// cost is monge: cost(v1-1, v2) + cost(v1, v2-1) &gt;= cost(v1, v2) + cost(v1-1, v2-1)
-    </span><span class="kw">pub fn </span>add_cost2&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p1: usize, p2: usize, <span class="kw-2">mut </span>cost: F)
+    </span><span class="kw">pub fn </span>add_cost2&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, p1: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p2: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>cost: F)
     <span class="kw">where
-        </span>F: FnMut(usize, usize) -&gt; i64,
+        </span>F: FnMut(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>,
     {
-        <span class="macro">debug_assert_ne!</span>(p1, p2);
-        <span class="kw">let </span>nv1 = <span class="self">self</span>.n_values[p1];
-        <span class="kw">let </span>nv2 = <span class="self">self</span>.n_values[p2];
-        <span class="macro">debug_assert_ne!</span>(nv1, <span class="number">0</span>);
-        <span class="macro">debug_assert_ne!</span>(nv2, <span class="number">0</span>);
-        <span class="kw">let </span>c00 = cost(<span class="number">0</span>, <span class="number">0</span>);
-        <span class="self">self</span>.totalcost += c00;
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert_ne.html">debug_assert_ne!</a>(p1, p2);
+        <span class="kw">let </span>nv1 = <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#56">self</a>.n_values[<a href="../../../src/competitive/graph/project_selection_problem.rs.html#56">p1</a>];
+        <span class="kw">let </span>nv2 = <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#56">self</a>.n_values[<a href="../../../src/competitive/graph/project_selection_problem.rs.html#56">p2</a>];
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert_ne.html">debug_assert_ne!</a>(nv1, <span class="number">0</span>);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert_ne.html">debug_assert_ne!</a>(nv2, <span class="number">0</span>);
+        <span class="kw">let </span>c00 = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#56">cost</a>(<span class="number">0</span>, <span class="number">0</span>);
+        <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#56">self</a>.totalcost += <a href="../../../src/competitive/graph/project_selection_problem.rs.html#65">c00</a>;
         <span class="kw">for </span>v1 <span class="kw">in </span><span class="number">1usize</span>..nv1 {
             <span class="self">self</span>.add_cost1(p1, v1, cost(v1, <span class="number">0</span>) - c00);
         }
@@ -230,13 +230,13 @@
             <span class="self">self</span>.add_cost1(p1, v1, acc);
         }
     }
-    <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (i64, Vec&lt;usize&gt;) {
-        <span class="kw">let </span>vsize = <span class="kw-2">*</span><span class="self">self</span>.start.last().unwrap();
-        <span class="kw">let </span>esize_expect = vsize * <span class="number">2 </span>+ <span class="self">self</span>.cost2.len();
-        <span class="kw">let </span><span class="kw-2">mut </span>builder = Dinic::builder(vsize + <span class="number">2</span>, esize_expect);
-        <span class="kw">let </span><span class="kw-2">mut </span>totalcost = <span class="self">self</span>.totalcost;
-        <span class="kw">let </span>s = vsize;
-        <span class="kw">let </span>t = s + <span class="number">1</span>;
+    <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) {
+        <span class="kw">let </span>vsize = <span class="kw-2">*</span><a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#87">self</a>.start.last().unwrap();
+        <span class="kw">let </span>esize_expect = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#88">vsize</a> * <span class="number">2 </span>+ <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#87">self</a>.cost2.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = Dinic::builder(<a href="../../../src/competitive/graph/project_selection_problem.rs.html#88">vsize</a> + <span class="number">2</span>, <a href="../../../src/competitive/graph/project_selection_problem.rs.html#89">esize_expect</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>totalcost = <a class="self" href="../../../src/competitive/graph/project_selection_problem.rs.html#87">self</a>.totalcost;
+        <span class="kw">let </span>s = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#88">vsize</a>;
+        <span class="kw">let </span>t = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#92">s</a> + <span class="number">1</span>;
         <span class="kw">for </span>(p, c) <span class="kw">in </span><span class="self">self</span>.cost1.iter().enumerate() {
             <span class="kw">let </span>nv = <span class="self">self</span>.n_values[p];
             totalcost += c[nv - <span class="number">1</span>];
@@ -261,17 +261,17 @@
         <span class="kw">for </span>(<span class="kw-2">&amp;</span>(x, y), <span class="kw-2">&amp;</span>c) <span class="kw">in </span><span class="self">self</span>.cost2.iter() {
             builder.add_edge(x, y, c);
         }
-        <span class="kw">let </span>dgraph = builder.gen_graph();
-        <span class="kw">let </span><span class="kw-2">mut </span>dinic = builder.build(<span class="kw-2">&amp;</span>dgraph);
-        <span class="kw">let </span>res = dinic.maximum_flow(s, t) <span class="kw">as </span>i64 + totalcost;
-        <span class="kw">let </span>visited = dinic.minimum_cut(s);
-        <span class="kw">let </span><span class="kw-2">mut </span>values = <span class="macro">vec!</span>[<span class="number">0usize</span>; <span class="self">self</span>.n_values.len()];
+        <span class="kw">let </span>dgraph = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#90">builder</a>.<a href="../../../src/competitive/graph/maximum_flow.rs.html#23">gen_graph</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>dinic = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#90">builder</a>.<a href="../../../src/competitive/graph/maximum_flow.rs.html#27">build</a>(<span class="kw-2">&amp;</span><a href="../../../src/competitive/graph/project_selection_problem.rs.html#118">dgraph</a>);
+        <span class="kw">let </span>res = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#119">dinic</a>.<a href="../../../src/competitive/graph/maximum_flow.rs.html#119">maximum_flow</a>(<a href="../../../src/competitive/graph/project_selection_problem.rs.html#92">s</a>, <a href="../../../src/competitive/graph/project_selection_problem.rs.html#93">t</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> + <a href="../../../src/competitive/graph/project_selection_problem.rs.html#91">totalcost</a>;
+        <span class="kw">let </span>visited = <a href="../../../src/competitive/graph/project_selection_problem.rs.html#119">dinic</a>.<a href="../../../src/competitive/graph/maximum_flow.rs.html#122">minimum_cut</a>(<a href="../../../src/competitive/graph/project_selection_problem.rs.html#92">s</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>values = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0usize</span>; <span class="self">self</span>.n_values.len()];
         <span class="kw">for </span>(p, <span class="kw-2">&amp;</span>nv) <span class="kw">in </span><span class="self">self</span>.n_values.iter().enumerate() {
             <span class="kw">for </span>v <span class="kw">in </span><span class="number">1usize</span>..nv {
                 values[p] += visited[<span class="self">self</span>.start[p] + v - <span class="number">1</span>] <span class="kw">as </span>usize;
             }
         }
-        (res, values)
+        (<a href="../../../src/competitive/graph/project_selection_problem.rs.html#120">res</a>, <a href="../../../src/competitive/graph/project_selection_problem.rs.html#122">values</a>)
     }
 }
 </code></pre></div>

@@ -386,58 +386,58 @@
 <span id="370">370</span>
 <span id="371">371</span>
 <span id="372">372</span>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::VecDeque, mem::swap};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">collections::VecDeque</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>};
 
 <span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>BipartiteMatching {
-    left_size: usize,
-    right_size: usize,
-    left_graph: Vec&lt;Vec&lt;usize&gt;&gt;,
-    left_match: Vec&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
-    right_match: Vec&lt;<span class="prelude-ty">Option</span>&lt;usize&gt;&gt;,
-    matching_size: usize,
+    left_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    right_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    left_graph: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;,
+    left_match: Vec&lt;<span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;,
+    right_match: Vec&lt;<span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;,
+    matching_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
 
-<span class="kw">impl </span>BipartiteMatching {
-    <span class="kw">pub fn </span>new(left_size: usize, right_size: usize) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span><a href="../../../src/competitive/graph/bipartite_matching.rs.html#4">BipartiteMatching</a> {
+    <span class="kw">pub fn </span>new(left_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            left_size,
-            right_size,
-            left_graph: <span class="macro">vec!</span>[<span class="macro">vec!</span>[]; left_size],
-            left_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; left_size],
-            right_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; right_size],
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#14">left_size</a>,
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#14">right_size</a>,
+            left_graph: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[]; left_size],
+            left_match: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="prelude-val">None</span>; left_size],
+            right_match: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="prelude-val">None</span>; right_size],
             matching_size: <span class="number">0</span>,
         }
     }
-    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: usize, r: usize) {
-        <span class="macro">assert!</span>(l &lt; <span class="self">self</span>.left_size);
-        <span class="macro">assert!</span>(r &lt; <span class="self">self</span>.right_size);
-        <span class="self">self</span>.left_graph[l].push(r);
-        <span class="self">self</span>.matching_size = !<span class="number">0</span>;
+    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(l &lt; <span class="self">self</span>.left_size);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(r &lt; <span class="self">self</span>.right_size);
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#24">self</a>.left_graph[<a href="../../../src/competitive/graph/bipartite_matching.rs.html#24">l</a>].push(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#24">r</a>);
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#24">self</a>.matching_size = !<span class="number">0</span>;
     }
-    <span class="kw">pub fn </span>from_edges(left_size: usize, right_size: usize, lr: <span class="kw-2">&amp;</span>[(usize, usize)]) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>deg = <span class="macro">vec!</span>[<span class="number">0usize</span>; left_size];
+    <span class="kw">pub fn </span>from_edges(left_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, lr: <span class="kw-2">&amp;</span>[(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>deg = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0usize</span>; left_size];
         <span class="kw">for </span><span class="kw-2">&amp;</span>(l, <span class="kw">_</span>) <span class="kw">in </span>lr {
             deg[l] += <span class="number">1</span>;
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>left_graph: Vec&lt;<span class="kw">_</span>&gt; = deg.into_iter().map(Vec::with_capacity).collect();
+        <span class="kw">let </span><span class="kw-2">mut </span>left_graph: Vec&lt;<span class="kw">_</span>&gt; = <a href="../../../src/competitive/graph/bipartite_matching.rs.html#31">deg</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(Vec::with_capacity).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="kw">for </span><span class="kw-2">&amp;</span>(l, r) <span class="kw">in </span>lr {
             <span class="macro">assert!</span>(l &lt; left_size);
             <span class="macro">assert!</span>(r &lt; right_size);
             left_graph[l].push(r);
         }
         <span class="self">Self </span>{
-            left_size,
-            right_size,
-            left_graph,
-            left_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; left_size],
-            right_match: <span class="macro">vec!</span>[<span class="prelude-val">None</span>; right_size],
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#30">left_size</a>,
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#30">right_size</a>,
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#35">left_graph</a>,
+            left_match: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="prelude-val">None</span>; left_size],
+            right_match: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="prelude-val">None</span>; right_size],
             matching_size: !<span class="number">0</span>,
         }
     }
     <span class="kw">pub fn </span>hopcroft_karp(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">fn </span>bfs(bm: <span class="kw-2">&amp;mut </span>BipartiteMatching, deq: <span class="kw-2">&amp;mut </span>VecDeque&lt;usize&gt;, level: <span class="kw-2">&amp;mut </span>[usize]) {
-            deq.clear();
+        <span class="kw">fn </span>bfs(bm: <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/graph/bipartite_matching.rs.html#4">BipartiteMatching</a>, deq: <span class="kw-2">&amp;mut </span>VecDeque&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, level: <span class="kw-2">&amp;mut </span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]) {
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#51">deq</a>.clear();
             <span class="kw">for </span>(i, r) <span class="kw">in </span>bm.left_match.iter().enumerate() {
                 <span class="kw">if </span>r.is_none() {
                     deq.push_back(i);
@@ -456,12 +456,12 @@
             }
         }
         <span class="kw">fn </span>dfs(
-            bm: <span class="kw-2">&amp;mut </span>BipartiteMatching,
-            l: usize,
-            level: <span class="kw-2">&amp;mut </span>[usize],
-            used: <span class="kw-2">&amp;mut </span>[bool],
-        ) -&gt; bool {
-            used[l] = <span class="bool-val">true</span>;
+            bm: <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/graph/bipartite_matching.rs.html#4">BipartiteMatching</a>,
+            l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+            level: <span class="kw-2">&amp;mut </span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>],
+            used: <span class="kw-2">&amp;mut </span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>],
+        ) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#74">used</a>[<a href="../../../src/competitive/graph/bipartite_matching.rs.html#72">l</a>] = <span class="bool-val">true</span>;
             <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..bm.left_graph[l].len() {
                 <span class="kw">let </span>r = bm.left_graph[l][i];
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(nl) = bm.right_match[r] {
@@ -478,13 +478,13 @@
         <span class="kw">if </span><span class="self">self</span>.matching_size != !<span class="number">0 </span>{
             <span class="kw">return</span>;
         }
-        <span class="self">self</span>.matching_size = <span class="self">self</span>.left_match.iter().filter(|r| r.is_some()).count();
-        <span class="kw">let </span><span class="kw-2">mut </span>used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.left_size];
-        <span class="kw">let </span><span class="kw-2">mut </span>level = <span class="macro">vec!</span>[!<span class="number">0</span>; <span class="self">self</span>.left_size];
-        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<span class="self">self</span>.left_size);
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#50">self</a>.matching_size = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#50">self</a>.left_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|r| <a href="../../../src/competitive/graph/bipartite_matching.rs.html#93">r</a>.is_some()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">count</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>used = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>level = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#50">self</a>.left_size);
         <span class="kw">loop </span>{
-            bfs(<span class="self">self</span>, <span class="kw-2">&amp;mut </span>deq, <span class="kw-2">&amp;mut </span>level);
-            <span class="kw">let </span>prev_size = <span class="self">self</span>.matching_size;
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#51">bfs</a>(<a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#50">self</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/graph/bipartite_matching.rs.html#96">deq</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/graph/bipartite_matching.rs.html#95">level</a>);
+            <span class="kw">let </span>prev_size = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#50">self</a>.matching_size;
             <span class="kw">for </span>l <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.left_size {
                 <span class="kw">if </span><span class="self">self</span>.left_match[l].is_none() {
                     <span class="self">self</span>.matching_size += dfs(<span class="self">self</span>, l, <span class="kw-2">&amp;mut </span>level, <span class="kw-2">&amp;mut </span>used) <span class="kw">as </span>usize;
@@ -505,10 +505,10 @@
         <span class="kw">if </span><span class="self">self</span>.matching_size != !<span class="number">0 </span>{
             <span class="kw">return</span>;
         }
-        <span class="self">self</span>.matching_size = <span class="self">self</span>.left_match.iter().filter(|r| r.is_some()).count();
-        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<span class="self">self</span>.left_size);
-        <span class="kw">let </span><span class="kw-2">mut </span>prev = <span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="self">self</span>.left_size];
-        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="macro">vec!</span>[!<span class="number">0usize</span>; <span class="self">self</span>.left_size];
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#116">self</a>.matching_size = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#116">self</a>.left_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|r| <a href="../../../src/competitive/graph/bipartite_matching.rs.html#120">r</a>.is_some()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">count</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#116">self</a>.left_size);
+        <span class="kw">let </span><span class="kw-2">mut </span>prev = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0usize</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>root = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0usize</span>; <span class="self">self</span>.left_size];
         <span class="kw">loop </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>changed = <span class="bool-val">false</span>;
             <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.left_match.iter().enumerate() {
@@ -556,19 +556,19 @@
             }
         }
     }
-    <span class="kw">pub fn </span>maximum_matching(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(usize, usize)&gt; {
-        <span class="self">self</span>.kuhn_multi_start_bfs();
-        <span class="self">self</span>.left_match
+    <span class="kw">pub fn </span>maximum_matching(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; {
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#171">self</a>.<a href="../../../src/competitive/graph/bipartite_matching.rs.html#116">kuhn_multi_start_bfs</a>();
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#171">self</a>.left_match
             .iter()
-            .enumerate()
-            .filter_map(|(l, r)| r.map(|r| (l, r)))
-            .collect()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(l, r)| <a href="../../../src/competitive/graph/bipartite_matching.rs.html#176">r</a>.map(|r| (<a href="../../../src/competitive/graph/bipartite_matching.rs.html#176">l</a>, <a href="../../../src/competitive/graph/bipartite_matching.rs.html#176">r</a>)))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
     }
-    <span class="kw">pub fn </span>minimum_edge_cover(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(usize, usize)&gt; {
-        <span class="self">self</span>.kuhn_multi_start_bfs();
-        <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::with_capacity(<span class="self">self</span>.left_size + <span class="self">self</span>.right_size - <span class="self">self</span>.matching_size);
-        <span class="kw">let </span><span class="kw-2">mut </span>left_used: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.left_match.iter().map(Option::is_some).collect();
-        <span class="kw">let </span><span class="kw-2">mut </span>right_used: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.right_match.iter().map(Option::is_some).collect();
+    <span class="kw">pub fn </span>minimum_edge_cover(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; {
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#179">self</a>.<a href="../../../src/competitive/graph/bipartite_matching.rs.html#116">kuhn_multi_start_bfs</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::with_capacity(<a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#179">self</a>.left_size + <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#179">self</a>.right_size - <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#179">self</a>.matching_size);
+        <span class="kw">let </span><span class="kw-2">mut </span>left_used: Vec&lt;<span class="kw">_</span>&gt; = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#179">self</a>.left_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(Option::is_some).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>right_used: Vec&lt;<span class="kw">_</span>&gt; = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#179">self</a>.right_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(Option::is_some).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="kw">for </span>(l, lg) <span class="kw">in </span><span class="self">self</span>.left_graph.iter().enumerate() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = <span class="self">self</span>.left_match[l] {
                 res.push((l, r));
@@ -581,17 +581,17 @@
                 }
             }
         }
-        res
+        <a href="../../../src/competitive/graph/bipartite_matching.rs.html#181">res</a>
     }
-    <span class="kw">fn </span>reachable(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;bool&gt;, Vec&lt;bool&gt;) {
+    <span class="kw">fn </span>reachable(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;) {
         <span class="attribute">#[derive(Clone, Copy)]
         </span><span class="kw">enum </span>Either {
-            Left(usize),
-            Right(usize),
+            Left(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),
+            Right(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),
         }
-        <span class="self">self</span>.kuhn_multi_start_bfs();
-        <span class="kw">let </span><span class="kw-2">mut </span>left_used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.left_size];
-        <span class="kw">let </span><span class="kw-2">mut </span>right_used = <span class="macro">vec!</span>[<span class="bool-val">false</span>; <span class="self">self</span>.right_size];
+        <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#198">self</a>.<a href="../../../src/competitive/graph/bipartite_matching.rs.html#116">kuhn_multi_start_bfs</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>left_used = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <span class="self">self</span>.left_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>right_used = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <span class="self">self</span>.right_size];
         <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::new();
         <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.left_match.iter().enumerate() {
             <span class="kw">if </span>r.is_none() {
@@ -600,8 +600,8 @@
             }
         }
         <span class="kw">loop </span>{
-            <span class="kw">match </span>deq.pop_front() {
-                <span class="prelude-val">Some</span>(Either::Left(l)) =&gt; {
+            <span class="kw">match </span><a href="../../../src/competitive/graph/bipartite_matching.rs.html#207">deq</a>.pop_front() {
+                <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#201">Either::Left</a>(l)) =&gt; {
                     <span class="kw">for </span><span class="kw-2">&amp;</span>r <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.left_graph[l] {
                         <span class="kw">if </span><span class="self">self</span>.left_match[l] != <span class="prelude-val">Some</span>(r) &amp;&amp; !right_used[r] {
                             right_used[r] = <span class="bool-val">true</span>;
@@ -609,47 +609,47 @@
                         }
                     }
                 }
-                <span class="prelude-val">Some</span>(Either::Right(r)) =&gt; {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(l) = <span class="self">self</span>.right_match[r] {
+                <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#202">Either::Right</a>(r)) =&gt; {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(l) = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#198">self</a>.right_match[<a href="../../../src/competitive/graph/bipartite_matching.rs.html#224">r</a>] {
                         <span class="kw">if </span>!left_used[l] {
-                            left_used[l] = <span class="bool-val">true</span>;
-                            deq.push_back(Either::Left(l));
+                            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#205">left_used</a>[<a href="../../../src/competitive/graph/bipartite_matching.rs.html#225">l</a>] = <span class="bool-val">true</span>;
+                            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#207">deq</a>.push_back(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#201">Either::Left</a>(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#225">l</a>));
                         }
                     }
                 }
                 <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
             }
         }
-        (left_used, right_used)
+        (<a href="../../../src/competitive/graph/bipartite_matching.rs.html#205">left_used</a>, <a href="../../../src/competitive/graph/bipartite_matching.rs.html#206">right_used</a>)
     }
-    <span class="kw">pub fn </span>minimum_vertex_cover(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;usize&gt;, Vec&lt;usize&gt;) {
-        <span class="kw">let </span>(left_used, right_used) = <span class="self">self</span>.reachable();
+    <span class="kw">pub fn </span>minimum_vertex_cover(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) {
+        <span class="kw">let </span>(left_used, right_used) = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#237">self</a>.<a href="../../../src/competitive/graph/bipartite_matching.rs.html#198">reachable</a>();
         (
-            left_used
-                .into_iter()
-                .enumerate()
-                .filter_map(|(l, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(l) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .collect(),
-            right_used
-                .into_iter()
-                .enumerate()
-                .filter_map(|(r, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(r) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .collect(),
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#238">left_used</a>
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(l, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#243">l</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#238">right_used</a>
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(r, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#248">r</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
         )
     }
-    <span class="kw">pub fn </span>maximum_independent_set(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;usize&gt;, Vec&lt;usize&gt;) {
-        <span class="kw">let </span>(left_used, right_used) = <span class="self">self</span>.reachable();
+    <span class="kw">pub fn </span>maximum_independent_set(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) {
+        <span class="kw">let </span>(left_used, right_used) = <a class="self" href="../../../src/competitive/graph/bipartite_matching.rs.html#252">self</a>.<a href="../../../src/competitive/graph/bipartite_matching.rs.html#198">reachable</a>();
         (
-            left_used
-                .into_iter()
-                .enumerate()
-                .filter_map(|(l, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(l) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .collect(),
-            right_used
-                .into_iter()
-                .enumerate()
-                .filter_map(|(r, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(r) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .collect(),
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#253">left_used</a>
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(l, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#258">l</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+            <a href="../../../src/competitive/graph/bipartite_matching.rs.html#253">right_used</a>
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(r, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(<a href="../../../src/competitive/graph/bipartite_matching.rs.html#263">r</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
         )
     }
 }

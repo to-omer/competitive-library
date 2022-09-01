@@ -47,37 +47,37 @@
 <span id="31">31</span>
 <span id="32">32</span>
 <span id="33">33</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{binary_search, MInt, MIntBase, One, Zero};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/algorithm/binary_search.rs.html#63-66">binary_search</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#13">MInt</a>, <a href="../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a>, <a href="../../../src/competitive/num/zero_one.rs.html#15">One</a>, <a href="../../../src/competitive/num/zero_one.rs.html#1">Zero</a>};
 
 <span class="attribute">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>IndependentSubSet&lt;M: MIntBase&gt; {
-    <span class="kw">pub </span>n: usize,
+</span><span class="kw">pub struct </span>IndependentSubSet&lt;M: <a href="../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a>&gt; {
+    <span class="kw">pub </span>n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     <span class="kw">pub </span>ind: Vec&lt;MInt&lt;M&gt;&gt;,
 }
-<span class="kw">impl</span>&lt;M: MIntBase&gt; IndependentSubSet&lt;M&gt; {
-    <span class="kw">pub fn </span>from_adj_graph(g: <span class="kw-2">&amp;</span>[usize]) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>n = g.len();
-        <span class="kw">let </span><span class="kw-2">mut </span>ind = Vec::with_capacity(<span class="number">1 </span>&lt;&lt; n);
-        ind.push(MInt::one());
+<span class="kw">impl</span>&lt;M: <a href="../../../src/competitive/num/mint/mint_base.rs.html#27">MIntBase</a>&gt; IndependentSubSet&lt;M&gt; {
+    <span class="kw">pub fn </span>from_adj_graph(g: <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>n = <a href="../../../src/competitive/algorithm/chromatic_number.rs.html#9">g</a>.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>ind = Vec::with_capacity(<span class="number">1 </span>&lt;&lt; <a href="../../../src/competitive/algorithm/chromatic_number.rs.html#10">n</a>);
+        <a href="../../../src/competitive/algorithm/chromatic_number.rs.html#11">ind</a>.push(MInt::one());
         <span class="kw">for </span>s <span class="kw">in </span><span class="number">1usize</span>..<span class="number">1 </span>&lt;&lt; n {
             <span class="kw">let </span>v = s.trailing_zeros() <span class="kw">as </span>usize;
             ind.push(ind[s - (<span class="number">1 </span>&lt;&lt; v)] + ind[s &amp; !(g[v] | <span class="number">1 </span>&lt;&lt; v)]);
         }
-        <span class="self">Self </span>{ n, ind }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/algorithm/chromatic_number.rs.html#10">n</a>, <a href="../../../src/competitive/algorithm/chromatic_number.rs.html#11">ind</a> }
     }
-    <span class="kw">pub fn </span>k_colorable(<span class="kw-2">&amp;</span><span class="self">self</span>, k: usize) -&gt; bool {
-        !<span class="self">self
+    <span class="kw">pub fn </span>k_colorable(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        !<span class="self"><a href="../../../src/competitive/algorithm/chromatic_number.rs.html#19">self</a>
             </span>.ind
             .iter()
-            .map(|d| d.pow(k))
-            .enumerate()
-            .map(|(s, d)| <span class="kw">if </span>s.count_ones() % <span class="number">2 </span>== <span class="number">0 </span>{ d } <span class="kw">else </span>{ -d })
-            .sum::&lt;MInt&lt;M&gt;&gt;()
-            .is_zero()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|d| <a href="../../../src/competitive/algorithm/chromatic_number.rs.html#23">d</a>.<a href="../../../src/competitive/num/mint/mint_base.rs.html#80">pow</a>(<a href="../../../src/competitive/algorithm/chromatic_number.rs.html#19">k</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|(s, d)| <span class="kw">if </span>s.count_ones() % <span class="number">2 </span>== <span class="number">0 </span>{ <a href="../../../src/competitive/algorithm/chromatic_number.rs.html#25">d</a> } <span class="kw">else </span>{ -<a href="../../../src/competitive/algorithm/chromatic_number.rs.html#25">d</a> })
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">sum</a>::&lt;MInt&lt;M&gt;&gt;()
+            .<a href="../../../src/competitive/num/zero_one.rs.html#4-6">is_zero</a>()
     }
     <span class="doccomment">/// The smallest number of colors needed to color a graph.
-    </span><span class="kw">pub fn </span>chromatic_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        binary_search(|<span class="kw-2">&amp;</span>k| <span class="self">self</span>.k_colorable(k), <span class="self">self</span>.n, <span class="number">0</span>)
+    </span><span class="kw">pub fn </span>chromatic_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="../../../src/competitive/algorithm/binary_search.rs.html#63-66">binary_search</a>(|<span class="kw-2">&amp;</span>k| <a class="self" href="../../../src/competitive/algorithm/chromatic_number.rs.html#30">self</a>.<a href="../../../src/competitive/algorithm/chromatic_number.rs.html#19">k_colorable</a>(<a href="../../../src/competitive/algorithm/chromatic_number.rs.html#31">k</a>), <a class="self" href="../../../src/competitive/algorithm/chromatic_number.rs.html#30">self</a>.n, <span class="number">0</span>)
     }
 }
 </code></pre></div>

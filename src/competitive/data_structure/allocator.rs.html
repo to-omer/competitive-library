@@ -174,8 +174,8 @@
 <span id="158">158</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     marker::PhantomData,
-    mem::{replace, size_of, take},
-    ptr::{<span class="self">self</span>, read, write, NonNull},
+    mem::{<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.size_of.html">size_of</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">take</a>},
+    ptr::{<a class="self" href="https://doc.rust-lang.org/nightly/core/ptr/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.read.html">read</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.write.html">write</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>},
 };
 
 <span class="kw">pub trait </span>Allocator&lt;T&gt; {
@@ -190,32 +190,32 @@
     unused: Vec&lt;NonNull&lt;T&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;T&gt; Default <span class="kw">for </span>MemoryPool&lt;T&gt; {
+<span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>MemoryPool&lt;T&gt; {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::with_capacity(CAP / <span class="number">1usize</span>.max(size_of::&lt;T&gt;()))
+        <span class="self">Self</span>::with_capacity(<a href="../../../src/competitive/data_structure/allocator.rs.html#25">CAP</a> / <span class="number">1usize</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(size_of::&lt;T&gt;()))
     }
 }
 
-<span class="kw">const </span>CAP: usize = <span class="number">1024</span>;
+<span class="kw">const </span>CAP: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = <span class="number">1024</span>;
 
 <span class="kw">impl</span>&lt;T&gt; MemoryPool&lt;T&gt; {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        Default::default()
+        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
     }
-    <span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>pool = Vec::with_capacity(capacity.max(<span class="number">1</span>));
+    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>pool = Vec::with_capacity(<a href="../../../src/competitive/data_structure/allocator.rs.html#31">capacity</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">1</span>));
         <span class="self">Self </span>{
-            pool,
+            <a href="../../../src/competitive/data_structure/allocator.rs.html#32">pool</a>,
             chunks: Vec::new(),
             unused: Vec::new(),
         }
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; Drop <span class="kw">for </span>MemoryPool&lt;T&gt; {
+<span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html">Drop</a> <span class="kw">for </span>MemoryPool&lt;T&gt; {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.chunks.push(take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.pool));
-        <span class="kw">let </span><span class="kw-2">mut </span>removed = <span class="macro">vec!</span>[<span class="macro">vec!</span>[]; <span class="self">self</span>.chunks.len()];
+        <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#42">self</a>.chunks.push(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#42">self</a>.pool));
+        <span class="kw">let </span><span class="kw-2">mut </span>removed = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="macro">vec!</span>[]; <span class="self">self</span>.chunks.len()];
         <span class="kw">for </span>p <span class="kw">in </span><span class="self">self</span>.unused.iter() {
             <span class="kw">let </span>p = p.as_ptr();
             <span class="kw">for </span>(chunk, removed) <span class="kw">in </span><span class="self">self</span>.chunks.iter().zip(<span class="kw-2">&amp;mut </span>removed).rev() {
@@ -242,26 +242,26 @@
 
 <span class="kw">impl</span>&lt;T&gt; Allocator&lt;T&gt; <span class="kw">for </span>MemoryPool&lt;T&gt; {
     <span class="kw">fn </span>allocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: T) -&gt; NonNull&lt;T&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>ptr) = <span class="self">self</span>.unused.pop() {
-            <span class="kw">unsafe </span>{ write(ptr.as_mut(), value) };
-            ptr
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>ptr) = <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.unused.pop() {
+            <span class="kw">unsafe </span>{ <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.write.html">write</a>(<a href="../../../src/competitive/data_structure/allocator.rs.html#71">ptr</a>.as_mut(), <a href="../../../src/competitive/data_structure/allocator.rs.html#70">value</a>) };
+            <a href="../../../src/competitive/data_structure/allocator.rs.html#71">ptr</a>
         } <span class="kw">else </span>{
-            <span class="kw">let </span>len = <span class="self">self</span>.pool.len();
+            <span class="kw">let </span>len = <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.pool.len();
             <span class="kw">if </span>len &gt;= <span class="self">self</span>.pool.capacity() {
-                <span class="kw">let </span>new_capacity = <span class="self">self</span>.pool.capacity() * <span class="number">2</span>;
-                <span class="kw">let </span>new_pool = Vec::with_capacity(new_capacity);
-                <span class="self">self</span>.chunks.push(replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.pool, new_pool));
+                <span class="kw">let </span>new_capacity = <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.pool.capacity() * <span class="number">2</span>;
+                <span class="kw">let </span>new_pool = Vec::with_capacity(<a href="../../../src/competitive/data_structure/allocator.rs.html#77">new_capacity</a>);
+                <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.chunks.push(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.pool, <a href="../../../src/competitive/data_structure/allocator.rs.html#78">new_pool</a>));
             }
-            <span class="kw">let </span>len = <span class="self">self</span>.pool.len();
-            <span class="macro">debug_assert!</span>(len &lt; <span class="self">self</span>.pool.capacity());
-            <span class="self">self</span>.pool.push(value);
-            <span class="kw">unsafe </span>{ NonNull::new_unchecked(<span class="self">self</span>.pool.as_mut_ptr().add(len)) }
+            <span class="kw">let </span>len = <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.pool.len();
+            <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(len &lt; <span class="self">self</span>.pool.capacity());
+            <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.pool.push(<a href="../../../src/competitive/data_structure/allocator.rs.html#70">value</a>);
+            <span class="kw">unsafe </span>{ NonNull::new_unchecked(<a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#70">self</a>.pool.as_mut_ptr().add(<a href="../../../src/competitive/data_structure/allocator.rs.html#81">len</a>)) }
         }
     }
 
     <span class="kw">fn </span>deallocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ptr: NonNull&lt;T&gt;) -&gt; T {
-        <span class="self">self</span>.unused.push(ptr);
-        <span class="kw">unsafe </span>{ read(ptr.as_ptr()) }
+        <a class="self" href="../../../src/competitive/data_structure/allocator.rs.html#88">self</a>.unused.push(<a href="../../../src/competitive/data_structure/allocator.rs.html#88">ptr</a>);
+        <span class="kw">unsafe </span>{ <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.read.html">read</a>(<a href="../../../src/competitive/data_structure/allocator.rs.html#88">ptr</a>.as_ptr()) }
     }
 }
 
@@ -269,10 +269,10 @@
 </span><span class="kw">pub struct </span>BoxAllocator&lt;T&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;);
 <span class="kw">impl</span>&lt;T&gt; Allocator&lt;T&gt; <span class="kw">for </span>BoxAllocator&lt;T&gt; {
     <span class="kw">fn </span>allocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: T) -&gt; NonNull&lt;T&gt; {
-        <span class="kw">unsafe </span>{ NonNull::new_unchecked(Box::leak(Box::new(value))) }
+        <span class="kw">unsafe </span>{ NonNull::new_unchecked(Box::leak(Box::new(<a href="../../../src/competitive/data_structure/allocator.rs.html#97">value</a>))) }
     }
     <span class="kw">fn </span>deallocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ptr: NonNull&lt;T&gt;) -&gt; T {
-        <span class="kw">unsafe </span>{ <span class="kw-2">*</span>Box::from_raw(ptr.as_ptr()) }
+        <span class="kw">unsafe </span>{ <span class="kw-2">*</span>Box::from_raw(<a href="../../../src/competitive/data_structure/allocator.rs.html#100">ptr</a>.as_ptr()) }
     }
 }
 
