@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["scc","✅  AC  242ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["scc","✅  AC  215ms"]]};
