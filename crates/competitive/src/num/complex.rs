@@ -103,6 +103,10 @@ impl Complex<f64> {
     pub fn polar(r: f64, theta: f64) -> Self {
         Self::new(r * theta.cos(), r * theta.sin())
     }
+    pub fn primitive_nth_root_of_unity(n: f64) -> Self {
+        let theta = std::f64::consts::PI * 2. / n;
+        Self::new(theta.cos(), theta.sin())
+    }
     pub fn abs(self) -> f64 {
         self.re.hypot(self.im)
     }

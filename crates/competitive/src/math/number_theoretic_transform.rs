@@ -1,7 +1,8 @@
-use super::{montgomery::*, AssociatedValue, MInt, MIntBase, MIntConvert, One, Zero};
+use super::{
+    montgomery::*, AssociatedValue, ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero,
+};
 use std::marker::PhantomData;
 
-pub struct NumberTheoreticTransform<M>(PhantomData<fn() -> M>);
 pub trait NttModulus:
     'static + Sized + MIntBase<Inner = u32> + MIntConvert<u32> + AssociatedValue<T = NttCache<Self>>
 {
@@ -12,21 +13,6 @@ pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<Modulo998244353>;
 pub type MIntConvolve<M> = Convolve<(M, (Modulo2013265921, Modulo1811939329, Modulo2113929217))>;
 
-pub trait ConvolveSteps {
-    type T;
-    type F;
-    fn length(t: &Self::T) -> usize;
-    fn transform(t: Self::T, len: usize) -> Self::F;
-    fn inverse_transform(f: Self::F, len: usize) -> Self::T;
-    fn multiply(f: &mut Self::F, g: &Self::F);
-    fn convolve(a: Self::T, b: Self::T) -> Self::T {
-        let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
-        let mut a = Self::transform(a, len);
-        let b = Self::transform(b, len);
-        Self::multiply(&mut a, &b);
-        Self::inverse_transform(a, len)
-    }
-}
 macro_rules! impl_ntt_modulus {
     ($([$name:ident, $g:expr]),*) => {
         $(
@@ -105,7 +91,7 @@ where
         assert_eq!(self.cache.len(), n);
     }
 }
-impl<M> NumberTheoreticTransform<M>
+impl<M> NttCache<M>
 where
     M: NttModulus,
 {
@@ -157,11 +143,11 @@ where
     }
     fn transform(mut t: Self::T, len: usize) -> Self::F {
         t.resize_with(len.max(2).next_power_of_two(), Zero::zero);
-        NumberTheoreticTransform::<M>::ntt(&mut t);
+        NttCache::<M>::ntt(&mut t);
         t
     }
     fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
-        NumberTheoreticTransform::<M>::intt(&mut f);
+        NttCache::<M>::intt(&mut f);
         f.truncate(len);
         let inv = MInt::from(len.max(2).next_power_of_two() as u32).inv();
         for f in f.iter_mut() {
@@ -204,9 +190,9 @@ where
         f.0.resize_with(npot, Zero::zero);
         f.1.resize_with(npot, Zero::zero);
         f.2.resize_with(npot, Zero::zero);
-        NumberTheoreticTransform::<N1>::ntt(&mut f.0);
-        NumberTheoreticTransform::<N2>::ntt(&mut f.1);
-        NumberTheoreticTransform::<N3>::ntt(&mut f.2);
+        NttCache::<N1>::ntt(&mut f.0);
+        NttCache::<N2>::ntt(&mut f.1);
+        NttCache::<N3>::ntt(&mut f.2);
         f
     }
     fn inverse_transform(f: Self::F, len: usize) -> Self::T {

@@ -1,4 +1,7 @@
-use super::{AssociatedValue, Complex, One, Zero};
+use super::{AssociatedValue, Complex, ConvolveSteps, One, Zero};
+
+pub enum ConvolveRealFft {}
+
 enum RotateCache {}
 impl RotateCache {
     fn ensure(n: usize) {
@@ -19,7 +22,7 @@ impl RotateCache {
                 m += 1;
             }
             while m < n {
-                let p = Complex::polar(1., -std::f64::consts::PI / (m * 2) as f64);
+                let p = Complex::primitive_nth_root_of_unity(-((m * 4) as f64));
                 for i in 0..m {
                     cache.push(cache[i] * p);
                 }
@@ -30,115 +33,165 @@ impl RotateCache {
     }
 }
 crate::impl_assoc_value!(RotateCache, Vec<Complex<f64>>, vec![Complex::one()]);
-pub fn convolve_fft<IA, T, IB, U>(a: IA, b: IB) -> Vec<i64>
-where
-    T: Into<f64>,
-    U: Into<f64>,
-    IA: IntoIterator<Item = T>,
-    IA::IntoIter: ExactSizeIterator,
-    IB: IntoIterator<Item = U>,
-    IB::IntoIter: ExactSizeIterator,
-{
-    let a = a.into_iter();
-    let b = b.into_iter();
-    let alen = a.len();
-    let blen = b.len();
-    assert_ne!(alen, 0, "empty sequence on first argument");
-    assert_ne!(blen, 0, "empty sequence on second argument");
-    let m = alen + blen - 1;
-    let n = (std::cmp::max(m, 2)).next_power_of_two();
-    let mut c = vec![Complex::zero(); n];
-    for (c, a) in c.iter_mut().zip(a) {
-        c.re = a.into();
-    }
-    for (c, b) in c.iter_mut().zip(b) {
-        c.im = b.into();
-    }
 
+fn bit_reverse<T>(f: &mut [T]) {
+    let mut ip = vec![0u32];
+    let mut k = f.len();
+    let mut m = 1;
+    while 2 * m < k {
+        k /= 2;
+        for j in 0..m {
+            ip.push(ip[j] + k as u32);
+        }
+        m *= 2;
+    }
+    if m == k {
+        for i in 1..m {
+            for j in 0..i {
+                let ji = j + ip[i] as usize;
+                let ij = i + ip[j] as usize;
+                f.swap(ji, ij);
+            }
+        }
+    } else {
+        for i in 1..m {
+            for j in 0..i {
+                let ji = j + ip[i] as usize;
+                let ij = i + ip[j] as usize;
+                f.swap(ji, ij);
+                f.swap(ji + m, ij + m);
+            }
+        }
+    }
+}
+
+impl ConvolveSteps for ConvolveRealFft {
+    type T = Vec<i64>;
+    type F = Vec<Complex<f64>>;
+    fn length(t: &Self::T) -> usize {
+        t.len()
+    }
+    fn transform(t: Self::T, len: usize) -> Self::F {
+        let n = len.max(4).next_power_of_two();
+        let mut f = vec![Complex::zero(); n / 2];
+        for (i, t) in t.into_iter().enumerate() {
+            if i & 1 == 0 {
+                f[i / 2].re = t as f64;
+            } else {
+                f[i / 2].im = t as f64;
+            }
+        }
+        fft(&mut f);
+        bit_reverse(&mut f);
+        f[0] = Complex::new(f[0].re + f[0].im, f[0].re - f[0].im);
+        f[n / 4] = f[n / 4].conjugate();
+        let w = Complex::primitive_nth_root_of_unity(-(n as f64));
+        let mut wk = Complex::<f64>::one();
+        for k in 1..n / 4 {
+            wk *= w;
+            let c = wk.conjugate().transpose() + 1.;
+            let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
+            f[k] -= d;
+            f[n / 2 - k] += d.conjugate();
+        }
+        f
+    }
+    fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
+        let n = len.max(4).next_power_of_two();
+        assert_eq!(f.len(), n / 2);
+        f[0] = Complex::new((f[0].re + f[0].im) * 0.5, (f[0].re - f[0].im) * 0.5);
+        f[n / 4] = f[n / 4].conjugate();
+        let w = Complex::primitive_nth_root_of_unity(n as f64);
+        let mut wk = Complex::<f64>::one();
+        for k in 1..n / 4 {
+            wk *= w;
+            let c = wk.transpose().conjugate() + 1.;
+            let d = c * (f[k] - f[n / 2 - k].conjugate()) * 0.5;
+            f[k] -= d;
+            f[n / 2 - k] += d.conjugate();
+        }
+        bit_reverse(&mut f);
+        ifft(&mut f);
+        let inv = 1. / (n / 2) as f64;
+        (0..len)
+            .map(|i| (inv * if i & 1 == 0 { f[i / 2].re } else { f[i / 2].im }).round() as i64)
+            .collect()
+    }
+    fn multiply(f: &mut Self::F, g: &Self::F) {
+        assert_eq!(f.len(), g.len());
+        f[0].re *= g[0].re;
+        f[0].im *= g[0].im;
+        for (f, g) in f.iter_mut().zip(g.iter()).skip(1) {
+            *f *= *g;
+        }
+    }
+}
+
+pub fn fft(a: &mut [Complex<f64>]) {
+    let n = a.len();
     RotateCache::ensure(n / 2);
     RotateCache::with(|cache| {
-        fft(&mut c, cache);
-
-        c[0] = Complex::new(0., c[0].re * c[0].im);
-        c[1] = Complex::new(0., c[1].re * c[1].im);
-        for i in (2..n).step_by(2) {
-            let j = {
-                let y = 1 << (63 - i.leading_zeros());
-                (!i & (y - 1)) ^ y
-            };
-            c[i] = (c[i] + c[j].conjugate()) * (c[i] - c[j].conjugate()) / 4.;
-            c[j] = -c[i].conjugate();
+        let mut v = n / 2;
+        while v > 0 {
+            for (a, wj) in a.chunks_exact_mut(v << 1).zip(cache) {
+                let (l, r) = a.split_at_mut(v);
+                for (x, y) in l.iter_mut().zip(r) {
+                    let ajv = wj * *y;
+                    *y = *x - ajv;
+                    *x += ajv;
+                }
+            }
+            v >>= 1;
         }
-
-        for i in 0..n / 2 {
-            let mut wi = cache[i] * Complex::i();
-            wi.re += 1.;
-            c[i] = c[i * 2] - (c[i * 2] - c[i * 2 + 1]) * wi / 2.;
-        }
-
-        ifft(&mut c[..n / 2], cache);
     });
+}
 
-    (0..m)
-        .map(|i| {
-            (if i & 1 == 0 {
-                c[i / 2].im
-            } else {
-                c[i / 2 + 1].re
-            } / ((n / 2) as f64))
-                .round() as _
-        })
-        .collect()
-}
-fn fft(a: &mut [Complex<f64>], cache: &[Complex<f64>]) {
+pub fn ifft(a: &mut [Complex<f64>]) {
     let n = a.len();
-    let mut v = n / 2;
-    while v > 0 {
-        for (a, wj) in a.chunks_exact_mut(v << 1).zip(cache) {
-            let (l, r) = a.split_at_mut(v);
-            for (x, y) in l.iter_mut().zip(r) {
-                let ajv = wj * *y;
-                *y = *x - ajv;
-                *x += ajv;
+    RotateCache::ensure(n / 2);
+    RotateCache::with(|cache| {
+        let mut v = 1;
+        while v < n {
+            for (a, wj) in a
+                .chunks_exact_mut(v << 1)
+                .zip(cache.iter().map(|wj| wj.conjugate()))
+            {
+                let (l, r) = a.split_at_mut(v);
+                for (x, y) in l.iter_mut().zip(r) {
+                    let ajv = *x - *y;
+                    *x += *y;
+                    *y = wj * ajv;
+                }
             }
+            v <<= 1;
         }
-        v >>= 1;
-    }
-}
-fn ifft(a: &mut [Complex<f64>], cache: &[Complex<f64>]) {
-    let n = a.len();
-    let mut v = 1;
-    while v < n {
-        for (a, wj) in a
-            .chunks_exact_mut(v << 1)
-            .zip(cache.iter().map(|wj| wj.conjugate()))
-        {
-            let (l, r) = a.split_at_mut(v);
-            for (x, y) in l.iter_mut().zip(r) {
-                let ajv = *x - *y;
-                *x += *y;
-                *y = wj * ajv;
-            }
-        }
-        v <<= 1;
-    }
+    });
 }
 
 #[test]
 fn test_convolve_fft() {
     use crate::{rand, tools::Xorshift};
-    for n in 0..=10 {
-        let n = 2usize.pow(n);
-        const A: i32 = 100_000;
-        let mut rng = Xorshift::default();
-        rand!(rng, a: [-A..=A; n], b: [-A..=A; n]);
-        let mut c = vec![0; n * 2 - 1];
-        for i in 0..n {
-            for j in 0..n {
-                c[i + j] += a[i] as i64 * b[j] as i64;
+    let mut rng = Xorshift::default();
+    for n in 0..10 {
+        for m in 0..10 {
+            for rn in 0..2 {
+                for rm in 0..2 {
+                    let n = 2usize.pow(n);
+                    let m = 2usize.pow(m);
+                    let n = n - rng.gen(0..n) * rn;
+                    let m = m - rng.gen(0..m) * rm;
+                    const A: i64 = 100_000;
+                    rand!(rng, a: [-A..=A; n], b: [-A..=A; m]);
+                    let mut c = vec![0; n + m - 1];
+                    for i in 0..n {
+                        for j in 0..m {
+                            c[i + j] += a[i] * b[j];
+                        }
+                    }
+                    let d = ConvolveRealFft::convolve(a, b);
+                    assert_eq!(c, d);
+                }
             }
         }
-        let d = convolve_fft(a, b);
-        assert_eq!(c, d);
     }
 }

@@ -5,11 +5,13 @@ use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
+#[codesnip::entry("ConvolveSteps")]
+pub use self::convolve_steps::ConvolveSteps;
 #[codesnip::entry("discrete_logarithm")]
 pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
 pub use self::factorial::*;
 #[codesnip::entry("fast_fourier_transform")]
-pub use self::fast_fourier_transform::convolve_fft;
+pub use self::fast_fourier_transform::ConvolveRealFft;
 #[codesnip::entry("FormalPowerSeries")]
 pub use self::formal_power_series::{
     FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
@@ -23,9 +25,7 @@ pub use self::matrix::Matrix;
 #[codesnip::entry("miller_rabin")]
 pub use self::miller_rabin::{miller_rabin, miller_rabin_with_br};
 #[codesnip::entry("NumberTheoreticTransform")]
-pub use self::number_theoretic_transform::{
-    Convolve, Convolve998244353, ConvolveSteps, MIntConvolve,
-};
+pub use self::number_theoretic_transform::{Convolve, Convolve998244353, MIntConvolve};
 pub use self::nums::*;
 pub use self::polynomial::*;
 pub use self::prime::*;
@@ -41,6 +41,8 @@ pub use self::special_modulo::*;
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
+#[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
+mod convolve_steps;
 #[cfg_attr(
     nightly,
     codesnip::entry(
@@ -59,7 +61,10 @@ mod discrete_logarithm;
 mod factorial;
 #[cfg_attr(
     nightly,
-    codesnip::entry("fast_fourier_transform", include("Complex", "AssociatedValue"))
+    codesnip::entry(
+        "fast_fourier_transform",
+        include("Complex", "AssociatedValue", "ConvolveSteps")
+    )
 )]
 mod fast_fourier_transform;
 #[cfg_attr(
@@ -91,7 +96,10 @@ mod miller_rabin;
 mod mod_sqrt;
 #[cfg_attr(
     nightly,
-    codesnip::entry("NumberTheoreticTransform", include("montgomery", "AssociatedValue"))
+    codesnip::entry(
+        "NumberTheoreticTransform",
+        include("montgomery", "AssociatedValue", "ConvolveSteps")
+    )
 )]
 mod number_theoretic_transform;
 mod nums;
