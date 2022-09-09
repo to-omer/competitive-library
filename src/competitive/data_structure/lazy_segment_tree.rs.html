@@ -372,9 +372,6 @@
 <span id="356">356</span>
 <span id="357">357</span>
 <span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
 </pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/algebra/monoid_action.rs.html#5"><span class="kw">super</span>::MonoidAction</a>;
 <span class="kw">use </span>std::{
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>},
@@ -384,7 +381,6 @@
 <span class="kw">pub struct </span>LazySegmentTree&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
-    M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>,
 {
     n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     seg: Vec&lt;(M::Agg, M::Act)&gt;,
@@ -393,12 +389,11 @@
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>LazySegmentTree&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
-    M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>,
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            n: <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#21">self</a>.n,
-            seg: <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#21">self</a>.seg.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            n: <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#19">self</a>.n,
+            seg: <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#19">self</a>.seg.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
         }
     }
 }
@@ -407,12 +402,12 @@
 <span class="kw">where
     </span>M: <a href="../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
     M::Agg: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
-    M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
+    M::Act: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#35">f</a>.debug_struct(<span class="string">&quot;LazySegmentTree&quot;</span>)
-            .field(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#35">self</a>.n)
-            .field(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#35">self</a>.seg)
+        <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#33">f</a>.debug_struct(<span class="string">&quot;LazySegmentTree&quot;</span>)
+            .field(<span class="string">&quot;n&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#33">self</a>.n)
+            .field(<span class="string">&quot;seg&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#33">self</a>.seg)
             .finish()
     }
 }
@@ -420,14 +415,13 @@
 <span class="kw">impl</span>&lt;M&gt; LazySegmentTree&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
-    M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>,
 {
     <span class="kw">pub fn </span>new(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>seg = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(M::agg_unit(), M::act_unit()); <span class="number">2 </span>* n];
-        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#48">n</a>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#49">seg</a> }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#45">n</a>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#46">seg</a> }
     }
     <span class="kw">pub fn </span>from_vec(v: Vec&lt;M::Agg&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>n = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#52">v</a>.len();
+        <span class="kw">let </span>n = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#49">v</a>.len();
         <span class="kw">let </span><span class="kw-2">mut </span>seg = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(M::agg_unit(), M::act_unit()); <span class="number">2 </span>* n];
         <span class="kw">for </span>(i, x) <span class="kw">in </span>v.into_iter().enumerate() {
             seg[i + n].<span class="number">0 </span>= x;
@@ -435,37 +429,37 @@
         <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..n).rev() {
             seg[i].<span class="number">0 </span>= M::agg_operate(<span class="kw-2">&amp;</span>seg[<span class="number">2 </span>* i].<span class="number">0</span>, <span class="kw-2">&amp;</span>seg[<span class="number">2 </span>* i + <span class="number">1</span>].<span class="number">0</span>);
         }
-        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#53">n</a>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#54">seg</a> }
+        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#50">n</a>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#51">seg</a> }
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: <span class="kw-2">&amp;</span>M::Act) {
-        <span class="kw">let </span>nx = M::act_agg(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">k</a>].<span class="number">0</span>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">x</a>);
+        <span class="kw">let </span>nx = M::act_agg(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">k</a>].<span class="number">0</span>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">x</a>);
         <span class="kw">if </span>k &lt; <span class="self">self</span>.n {
-            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">k</a>].<span class="number">1 </span>= M::act_operate(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">k</a>].<span class="number">1</span>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">x</a>);
+            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">k</a>].<span class="number">1 </span>= M::act_operate(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">k</a>].<span class="number">1</span>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">x</a>);
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(nx) = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#65">nx</a> {
-            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">k</a>].<span class="number">0 </span>= <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#69">nx</a>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(nx) = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#62">nx</a> {
+            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">k</a>].<span class="number">0 </span>= <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#66">nx</a>;
         } <span class="kw">else if </span>k &lt; <span class="self">self</span>.n {
-            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#83">propagate_at</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">k</a>);
-            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#79">recalc_at</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">k</a>);
+            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#80">propagate_at</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">k</a>);
+            <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#76">recalc_at</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">k</a>);
         } <span class="kw">else </span>{
             <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.panic.html">panic!</a>(<span class="string">&quot;act failed on leaf&quot;</span>);
         }
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>recalc_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#79">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#79">k</a>].<span class="number">0 </span>= M::agg_operate(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#79">self</a>.seg[<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#79">k</a>].<span class="number">0</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#79">self</a>.seg[<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#79">k</a> + <span class="number">1</span>].<span class="number">0</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#76">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#76">k</a>].<span class="number">0 </span>= M::agg_operate(<span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#76">self</a>.seg[<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#76">k</a>].<span class="number">0</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#76">self</a>.seg[<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#76">k</a> + <span class="number">1</span>].<span class="number">0</span>);
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(k &lt; <span class="self">self</span>.n);
-        <span class="kw">let </span>x = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#83">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#83">k</a>].<span class="number">1</span>, M::act_unit());
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#83">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">update_at</a>(<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#83">k</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#85">x</a>);
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#83">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#64">update_at</a>(<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#83">k</a> + <span class="number">1</span>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#85">x</a>);
+        <span class="kw">let </span>x = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#80">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#80">k</a>].<span class="number">1</span>, M::act_unit());
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#80">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">update_at</a>(<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#80">k</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#82">x</a>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#80">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#61">update_at</a>(<span class="number">2 </span>* <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#80">k</a> + <span class="number">1</span>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#82">x</a>);
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>propagate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>, nofilt: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
-        <span class="kw">let </span>right = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">right</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+        <span class="kw">let </span>right = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">right</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
         <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..(k + <span class="number">1 </span>- right).next_power_of_two().trailing_zeros()).rev() {
             <span class="kw">if </span>nofilt || (k &gt;&gt; i) &lt;&lt; i != k {
                 <span class="self">self</span>.propagate_at((k - right) &gt;&gt; i);
@@ -474,7 +468,7 @@
     }
     <span class="attribute">#[inline]
     </span><span class="kw">fn </span>recalc(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>, nofilt: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
-        <span class="kw">let </span>right = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#99">right</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+        <span class="kw">let </span>right = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#96">right</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..(k + <span class="number">1 </span>- right).next_power_of_two().trailing_zeros() {
             <span class="kw">if </span>nofilt || (k &gt;&gt; i) &lt;&lt; i != k {
                 <span class="self">self</span>.recalc_at((k - right) &gt;&gt; i);
@@ -484,10 +478,10 @@
     <span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::Act) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(l &lt;= r);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(r &lt;= <span class="self">self</span>.n);
-        <span class="kw">let </span><span class="kw-2">mut </span>a = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.n;
-        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.n;
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#110">a</a>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#111">b</a>, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.n;
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">a</a>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#108">b</a>, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
         <span class="kw">while </span>a &lt; b {
             <span class="kw">if </span>a &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
                 <span class="self">self</span>.update_at(a, <span class="kw-2">&amp;</span>x);
@@ -500,16 +494,16 @@
             a /= <span class="number">2</span>;
             b /= <span class="number">2</span>;
         }
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#99">recalc</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.n, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#99">recalc</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#107">self</a>.n, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#96">recalc</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.n, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#96">recalc</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#104">self</a>.n, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
     }
     <span class="kw">pub fn </span>fold(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::Agg {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(l &lt;= r);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(r &lt;= <span class="self">self</span>.n);
-        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">self</a>.n;
-        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">self</a>.n;
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#132">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#133">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">self</a>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">self</a>.n;
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#130">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>vl = M::agg_unit();
         <span class="kw">let </span><span class="kw-2">mut </span>vr = M::agg_unit();
         <span class="kw">while </span>l &lt; r {
@@ -524,19 +518,19 @@
             l /= <span class="number">2</span>;
             r /= <span class="number">2</span>;
         }
-        M::agg_operate(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#136">vl</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#137">vr</a>)
+        M::agg_operate(<span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#133">vl</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#134">vr</a>)
     }
     <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::Agg) {
-        <span class="kw">let </span>k = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#152">k</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#152">self</a>.n;
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#152">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#153">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#152">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#153">k</a>] = (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#152">x</a>, M::act_unit());
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#152">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#99">recalc</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#153">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <span class="kw">let </span>k = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#149">k</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#149">self</a>.n;
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#149">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#150">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#149">self</a>.seg[<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#150">k</a>] = (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#149">x</a>, M::act_unit());
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#149">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#96">recalc</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#150">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
     }
     <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::Agg {
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#158">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">fold</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#158">k</a>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#158">k</a> + <span class="number">1</span>)
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#155">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">fold</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#155">k</a>, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#155">k</a> + <span class="number">1</span>)
     }
     <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; M::Agg {
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#161">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#129">fold</a>(<span class="number">0</span>, <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#161">self</a>.n)
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#158">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#126">fold</a>(<span class="number">0</span>, <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#158">self</a>.n)
     }
     <span class="kw">fn </span>bisect_perfect&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>pos: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>acc: M::Agg, p: P) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, M::Agg)
     <span class="kw">where
@@ -551,7 +545,7 @@
                 pos += <span class="number">1</span>;
             }
         }
-        (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#164">pos</a> - <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#164">self</a>.n, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#164">acc</a>)
+        (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#161">pos</a> - <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#161">self</a>.n, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#161">acc</a>)
     }
     <span class="kw">fn </span>rbisect_perfect&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>pos: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>acc: M::Agg, p: P) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, M::Agg)
     <span class="kw">where
@@ -566,17 +560,17 @@
                 pos -= <span class="number">1</span>;
             }
         }
-        (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#179">pos</a> - <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#179">self</a>.n, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#179">acc</a>)
+        (<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#176">pos</a> - <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#176">self</a>.n, <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#176">acc</a>)
     }
     <span class="doccomment">/// Returns the first index that satisfies a accumlative predicate.
     </span><span class="kw">pub fn </span>position_acc&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p: P) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
         </span>P: Fn(<span class="kw-2">&amp;</span>M::Agg) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#195">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#195">self</a>.n;
-        <span class="kw">let </span>r = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#195">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#195">self</a>.n;
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#195">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#199">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#195">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#200">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#192">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#192">self</a>.n;
+        <span class="kw">let </span>r = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#192">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#192">self</a>.n;
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#192">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#196">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#192">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#197">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
         <span class="kw">while </span>l &lt; r &gt;&gt; k {
@@ -608,10 +602,10 @@
     <span class="kw">where
         </span>P: Fn(<span class="kw-2">&amp;</span>M::Agg) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#230">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#230">self</a>.n;
-        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#230">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#230">self</a>.n;
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#230">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#234">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#230">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#90">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#235">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#227">l</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#227">self</a>.n;
+        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#227">r</a> + <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#227">self</a>.n;
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#227">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#231">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#227">self</a>.<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#87">propagate</a>(<a href="../../../src/competitive/data_structure/lazy_segment_tree.rs.html#232">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
@@ -737,4 +731,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (78a891d36 2022-09-06)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (1120c5e01 2022-09-08)" ></div></body></html>

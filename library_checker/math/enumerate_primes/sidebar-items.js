@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["enumerate_primes","✅  AC  1635ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["enumerate_primes","✅  AC  1266ms"]]};
