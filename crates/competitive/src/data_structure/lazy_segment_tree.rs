@@ -7,7 +7,6 @@ use std::{
 pub struct LazySegmentTree<M>
 where
     M: MonoidAction,
-    M::Act: PartialEq,
 {
     n: usize,
     seg: Vec<(M::Agg, M::Act)>,
@@ -16,7 +15,6 @@ where
 impl<M> Clone for LazySegmentTree<M>
 where
     M: MonoidAction,
-    M::Act: PartialEq,
 {
     fn clone(&self) -> Self {
         Self {
@@ -30,7 +28,7 @@ impl<M> Debug for LazySegmentTree<M>
 where
     M: MonoidAction,
     M::Agg: Debug,
-    M::Act: PartialEq + Debug,
+    M::Act: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazySegmentTree")
@@ -43,7 +41,6 @@ where
 impl<M> LazySegmentTree<M>
 where
     M: MonoidAction,
-    M::Act: PartialEq,
 {
     pub fn new(n: usize) -> Self {
         let seg = vec![(M::agg_unit(), M::act_unit()); 2 * n];

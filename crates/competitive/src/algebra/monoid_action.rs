@@ -189,7 +189,7 @@ pub mod monoid_action_impls {
         }
     }
 
-    #[derive(Debug, Clone, PartialEq)]
+    #[derive(Debug, Clone)]
     pub struct RangeChminChmaxAdd<T> {
         lb: T,
         ub: T,
@@ -251,7 +251,7 @@ pub mod monoid_action_impls {
         }
     }
 
-    #[derive(Debug, Clone, PartialEq)]
+    #[derive(Debug, Clone)]
     pub struct RangeSumRangeChminChmaxAdd<T> {
         min: T,
         max: T,
