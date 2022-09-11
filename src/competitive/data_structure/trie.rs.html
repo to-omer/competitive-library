@@ -109,38 +109,72 @@
 <span id="93">93</span>
 <span id="94">94</span>
 <span id="95">95</span>
-</pre><pre class="rust"><code><span class="attribute">#[derive(Debug, Clone)]
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/algebra/magma.rs.html#45"><span class="kw">super</span>::Monoid</a>;
+<span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">std::collections::VecDeque</a>;
+
+<span class="attribute">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Trie {
     child: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     node_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     char_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
-<span class="kw">impl </span><a href="../../../src/competitive/data_structure/trie.rs.html#2">Trie</a> {
+<span class="kw">impl </span><a href="../../../src/competitive/data_structure/trie.rs.html#5">Trie</a> {
     <span class="kw">pub fn </span>new(char_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            child: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; char_size],
+            child: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0</span>; char_size],
             node_size: <span class="number">1</span>,
-            <a href="../../../src/competitive/data_structure/trie.rs.html#8">char_size</a>,
+            <a href="../../../src/competitive/data_structure/trie.rs.html#11">char_size</a>,
         }
     }
     <span class="kw">pub fn </span>with_capacity(char_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>child = Vec::with_capacity(<a href="../../../src/competitive/data_structure/trie.rs.html#15">capacity</a> * <a href="../../../src/competitive/data_structure/trie.rs.html#15">char_size</a>);
-        <a href="../../../src/competitive/data_structure/trie.rs.html#16">child</a>.resize_with(<a href="../../../src/competitive/data_structure/trie.rs.html#15">char_size</a>, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>child = Vec::with_capacity(<a href="../../../src/competitive/data_structure/trie.rs.html#18">capacity</a> * <a href="../../../src/competitive/data_structure/trie.rs.html#18">char_size</a>);
+        <a href="../../../src/competitive/data_structure/trie.rs.html#19">child</a>.resize(<a href="../../../src/competitive/data_structure/trie.rs.html#18">char_size</a>, !<span class="number">0</span>);
         <span class="self">Self </span>{
-            <a href="../../../src/competitive/data_structure/trie.rs.html#16">child</a>,
+            <a href="../../../src/competitive/data_structure/trie.rs.html#19">child</a>,
             node_size: <span class="number">1</span>,
-            <a href="../../../src/competitive/data_structure/trie.rs.html#15">char_size</a>,
+            <a href="../../../src/competitive/data_structure/trie.rs.html#18">char_size</a>,
         }
     }
     <span class="kw">pub fn </span>insert_once_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, ch: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <span class="kw">let </span>index = <a href="../../../src/competitive/data_structure/trie.rs.html#24">node</a> * <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.char_size + <a href="../../../src/competitive/data_structure/trie.rs.html#24">ch</a>;
-        <span class="kw">if </span><span class="self">self</span>.child[index] == <span class="number">0 </span>{
-            <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.child[<a href="../../../src/competitive/data_structure/trie.rs.html#25">index</a>] = <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.node_size;
-            <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.child
-                .resize_with(<a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.child.len() + <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.char_size, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>);
-            <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.node_size += <span class="number">1</span>;
+        <span class="kw">let </span>index = <a href="../../../src/competitive/data_structure/trie.rs.html#27">node</a> * <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.char_size + <a href="../../../src/competitive/data_structure/trie.rs.html#27">ch</a>;
+        <span class="kw">if </span><span class="self">self</span>.child[index] == !<span class="number">0 </span>{
+            <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.child[<a href="../../../src/competitive/data_structure/trie.rs.html#28">index</a>] = <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.node_size;
+            <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.child.resize(<a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.child.len() + <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.char_size, !<span class="number">0</span>);
+            <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.node_size += <span class="number">1</span>;
         }
-        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#24">self</a>.child[<a href="../../../src/competitive/data_structure/trie.rs.html#25">index</a>]
+        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#27">self</a>.child[<a href="../../../src/competitive/data_structure/trie.rs.html#28">index</a>]
     }
     <span class="kw">pub fn </span>insert_at&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>node: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, iter: I) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
@@ -151,14 +185,14 @@
             path.push(node);
             node = <span class="self">self</span>.insert_once_at(node, ch);
         }
-        <a href="../../../src/competitive/data_structure/trie.rs.html#38">path</a>.push(<a href="../../../src/competitive/data_structure/trie.rs.html#34">node</a>);
-        <a href="../../../src/competitive/data_structure/trie.rs.html#38">path</a>
+        <a href="../../../src/competitive/data_structure/trie.rs.html#40">path</a>.push(<a href="../../../src/competitive/data_structure/trie.rs.html#36">node</a>);
+        <a href="../../../src/competitive/data_structure/trie.rs.html#40">path</a>
     }
     <span class="kw">pub fn </span>insert&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
         </span>I: IntoIterator&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#46">self</a>.<a href="../../../src/competitive/data_structure/trie.rs.html#34-36">insert_at</a>(<span class="number">0</span>, <a href="../../../src/competitive/data_structure/trie.rs.html#46">iter</a>)
+        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#48">self</a>.<a href="../../../src/competitive/data_structure/trie.rs.html#36-38">insert_at</a>(<span class="number">0</span>, <a href="../../../src/competitive/data_structure/trie.rs.html#48">iter</a>)
     }
     <span class="kw">pub fn </span>find_at&lt;I&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>node: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, iter: I) -&gt; <span class="prelude-ty">Result</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
@@ -171,27 +205,27 @@
                 <span class="kw">return </span><span class="prelude-val">Err</span>(node);
             }
         }
-        <span class="prelude-val">Ok</span>(<a href="../../../src/competitive/data_structure/trie.rs.html#52">node</a>)
+        <span class="prelude-val">Ok</span>(<a href="../../../src/competitive/data_structure/trie.rs.html#54">node</a>)
     }
     <span class="kw">pub fn </span>find&lt;I&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, iter: I) -&gt; <span class="prelude-ty">Result</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;
     <span class="kw">where
         </span>I: IntoIterator&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#65">self</a>.<a href="../../../src/competitive/data_structure/trie.rs.html#52-54">find_at</a>(<span class="number">0</span>, <a href="../../../src/competitive/data_structure/trie.rs.html#65">iter</a>)
+        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#67">self</a>.<a href="../../../src/competitive/data_structure/trie.rs.html#54-56">find_at</a>(<span class="number">0</span>, <a href="../../../src/competitive/data_structure/trie.rs.html#67">iter</a>)
     }
     <span class="kw">pub fn </span>next_node(<span class="kw-2">&amp;</span><span class="self">self</span>, node: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, ch: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
-        <span class="kw">let </span>index = <a href="../../../src/competitive/data_structure/trie.rs.html#71">node</a> * <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#71">self</a>.char_size + <a href="../../../src/competitive/data_structure/trie.rs.html#71">ch</a>;
-        <span class="kw">if </span><span class="self">self</span>.child[index] == <span class="number">0 </span>{
+        <span class="kw">let </span>index = <a href="../../../src/competitive/data_structure/trie.rs.html#73">node</a> * <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#73">self</a>.char_size + <a href="../../../src/competitive/data_structure/trie.rs.html#73">ch</a>;
+        <span class="kw">if </span><span class="self">self</span>.child[index] == !<span class="number">0 </span>{
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{
-            <span class="prelude-val">Some</span>(<a class="self" href="../../../src/competitive/data_structure/trie.rs.html#71">self</a>.child[<a href="../../../src/competitive/data_structure/trie.rs.html#72">index</a>])
+            <span class="prelude-val">Some</span>(<a class="self" href="../../../src/competitive/data_structure/trie.rs.html#73">self</a>.child[<a href="../../../src/competitive/data_structure/trie.rs.html#74">index</a>])
         }
     }
     <span class="kw">pub fn </span>node_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#79">self</a>.node_size
+        <a class="self" href="../../../src/competitive/data_structure/trie.rs.html#81">self</a>.node_size
     }
     <span class="kw">pub fn </span>edges(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>edges = Vec::with_capacity(<a class="self" href="../../../src/competitive/data_structure/trie.rs.html#82">self</a>.node_size - <span class="number">1</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>edges = Vec::with_capacity(<a class="self" href="../../../src/competitive/data_structure/trie.rs.html#84">self</a>.node_size - <span class="number">1</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>stack = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0usize</span>];
         <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
             <span class="kw">for </span>ch <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.char_size).rev() {
@@ -201,8 +235,38 @@
                 }
             }
         }
-        <a href="../../../src/competitive/data_structure/trie.rs.html#83">edges</a>
+        <a href="../../../src/competitive/data_structure/trie.rs.html#85">edges</a>
+    }
+    <span class="kw">pub fn </span>build_failure&lt;M&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, dp: <span class="kw-2">&amp;mut </span>[M::T])
+    <span class="kw">where
+        </span>M: <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>,
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>fail = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0usize</span>; <span class="self">self</span>.node_size];
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::new();
+        <span class="kw">for </span>ch <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.char_size {
+            <span class="kw">if </span><span class="self">self</span>.child[ch] != !<span class="number">0 </span>{
+                deq.push_back(<span class="self">self</span>.child[ch]);
+            } <span class="kw">else </span>{
+                <span class="self">self</span>.child[ch] = <span class="number">0</span>;
+            }
+        }
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = deq.pop_front() {
+            <span class="kw">let </span>f = fail[node];
+            dp[node] = M::operate(<span class="kw-2">&amp;</span>dp[node], <span class="kw-2">&amp;</span>dp[f]);
+            <span class="kw">let </span>base = node * <span class="self">self</span>.char_size;
+            <span class="kw">let </span>fbase = f * <span class="self">self</span>.char_size;
+            <span class="kw">for </span>ch <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.char_size {
+                <span class="kw">let </span>index = base + ch;
+                <span class="kw">let </span>nnode = <span class="self">self</span>.child[index];
+                <span class="kw">if </span>nnode != !<span class="number">0 </span>{
+                    deq.push_back(nnode);
+                    fail[nnode] = <span class="self">self</span>.child[fbase + ch];
+                } <span class="kw">else </span>{
+                    <span class="self">self</span>.child[index] = <span class="self">self</span>.child[fbase + ch];
+                }
+            }
+        }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (1120c5e01 2022-09-08)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (228710758 2022-09-10)" ></div></body></html>
