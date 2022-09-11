@@ -1,3 +1,6 @@
+use super::Monoid;
+use std::collections::VecDeque;
+
 #[derive(Debug, Clone)]
 pub struct Trie {
     child: Vec<usize>,
@@ -7,14 +10,14 @@ pub struct Trie {
 impl Trie {
     pub fn new(char_size: usize) -> Self {
         Self {
-            child: vec![0; char_size],
+            child: vec![!0; char_size],
             node_size: 1,
             char_size,
         }
     }
     pub fn with_capacity(char_size: usize, capacity: usize) -> Self {
         let mut child = Vec::with_capacity(capacity * char_size);
-        child.resize_with(char_size, Default::default);
+        child.resize(char_size, !0);
         Self {
             child,
             node_size: 1,
@@ -23,10 +26,9 @@ impl Trie {
     }
     pub fn insert_once_at(&mut self, node: usize, ch: usize) -> usize {
         let index = node * self.char_size + ch;
-        if self.child[index] == 0 {
+        if self.child[index] == !0 {
             self.child[index] = self.node_size;
-            self.child
-                .resize_with(self.child.len() + self.char_size, Default::default);
+            self.child.resize(self.child.len() + self.char_size, !0);
             self.node_size += 1;
         }
         self.child[index]
@@ -70,7 +72,7 @@ impl Trie {
     }
     pub fn next_node(&self, node: usize, ch: usize) -> Option<usize> {
         let index = node * self.char_size + ch;
-        if self.child[index] == 0 {
+        if self.child[index] == !0 {
             None
         } else {
             Some(self.child[index])
@@ -91,5 +93,35 @@ impl Trie {
             }
         }
         edges
+    }
+    pub fn build_failure<M>(&mut self, dp: &mut [M::T])
+    where
+        M: Monoid,
+    {
+        let mut fail = vec![0usize; self.node_size];
+        let mut deq = VecDeque::new();
+        for ch in 0..self.char_size {
+            if self.child[ch] != !0 {
+                deq.push_back(self.child[ch]);
+            } else {
+                self.child[ch] = 0;
+            }
+        }
+        while let Some(node) = deq.pop_front() {
+            let f = fail[node];
+            dp[node] = M::operate(&dp[node], &dp[f]);
+            let base = node * self.char_size;
+            let fbase = f * self.char_size;
+            for ch in 0..self.char_size {
+                let index = base + ch;
+                let nnode = self.child[index];
+                if nnode != !0 {
+                    deq.push_back(nnode);
+                    fail[nnode] = self.child[fbase + ch];
+                } else {
+                    self.child[index] = self.child[fbase + ch];
+                }
+            }
+        }
     }
 }
