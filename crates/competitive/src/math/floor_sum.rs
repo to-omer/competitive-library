@@ -70,7 +70,7 @@ pub fn floor_sum_i64(l: i64, r: i64, a: i64, b: i64, m: u64) -> i64 {
 }
 
 pub fn floor_sum_range_freq(l: i64, r: i64, a: i64, b: i64, m: u64, range: Range<i64>) -> i64 {
-    if range.is_empty() {
+    if range.start >= range.end {
         return 0;
     }
     assert!(0 <= range.start && range.end <= m as i64);
