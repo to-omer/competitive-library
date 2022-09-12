@@ -15,30 +15,6 @@ pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(
     one
 }
 
-/// Sum of Floor of Linear
-///
-/// $$\sum_{i=0}^{n-1}\left\lfloor\frac{a\times i+b}{m}\right\rfloor$$
-#[codesnip::entry]
-pub fn floor_sum(n: u64, m: u64, mut a: u64, mut b: u64) -> u64 {
-    let mut ans = 0u64;
-    if a >= m {
-        ans += (n - 1) * n * (a / m) / 2;
-        a %= m;
-    }
-    if b >= m {
-        ans += n * (b / m);
-        b %= m;
-    }
-    let y_max = (a * n + b) / m;
-    if y_max == 0 {
-        return ans;
-    }
-    let x_max = y_max * m - b;
-    ans += (n - (x_max + a - 1) / a) * y_max;
-    ans += floor_sum(y_max, a, m, (a - x_max % a) % a);
-    ans
-}
-
 /// return: (y,z)
 ///
 /// forall (a,b,m), ax = b mod m, where x = y mod z

@@ -12,6 +12,8 @@ pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_
 pub use self::factorial::*;
 #[codesnip::entry("fast_fourier_transform")]
 pub use self::fast_fourier_transform::ConvolveRealFft;
+#[codesnip::entry("floor_sum")]
+pub use self::floor_sum::{floor_sum, floor_sum_i64, floor_sum_range_freq};
 #[codesnip::entry("FormalPowerSeries")]
 pub use self::formal_power_series::{
     FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
@@ -67,6 +69,8 @@ mod factorial;
     )
 )]
 mod fast_fourier_transform;
+#[cfg_attr(nightly, codesnip::entry("floor_sum", include("BarrettReduction")))]
+mod floor_sum;
 #[cfg_attr(
     nightly,
     codesnip::entry(
