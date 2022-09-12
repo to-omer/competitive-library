@@ -64,11 +64,10 @@ pub fn permutations<T: Clone, F>(n: &[T], r: usize, mut f: F)
 where
     F: FnMut(&[T]),
 {
-    use std::collections::BTreeSet;
     fn permutations_inner<T: Clone, F>(
         n: &[T],
         mut r: usize,
-        rem: &mut BTreeSet<usize>,
+        rem: &mut std::collections::BTreeSet<usize>,
         buf: &mut Vec<T>,
         f: &mut F,
     ) where
@@ -90,7 +89,7 @@ where
 
     if r <= n.len() {
         let mut v = Vec::with_capacity(r);
-        let mut rem: BTreeSet<usize> = (0..n.len()).collect();
+        let mut rem: std::collections::BTreeSet<usize> = (0..n.len()).collect();
         permutations_inner(n, r, &mut rem, &mut v, &mut f);
     }
 }
