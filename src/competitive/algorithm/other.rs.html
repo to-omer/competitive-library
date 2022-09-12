@@ -89,13 +89,17 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
 </pre><pre class="rust"><code><span class="attribute">#[codesnip::entry]
 </span><span class="doccomment">/// return: \[(elem, length)\]
-</span><span class="kw">pub fn </span>run_length_encoding&lt;T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>, I: Iterator&lt;Item = T&gt;&gt;(
-    iter: I,
-) -&gt; Vec&lt;(T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; {
+</span><span class="kw">pub fn </span>run_length_encoding&lt;T, I&gt;(iter: I) -&gt; Vec&lt;(T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;
+<span class="kw">where
+    </span>T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>,
+    I: IntoIterator&lt;Item = T&gt;,
+{
     <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::new();
-    <span class="kw">for </span>a <span class="kw">in </span>iter {
+    <span class="kw">for </span>a <span class="kw">in </span>iter.into_iter() {
         <span class="kw">if let </span><span class="prelude-val">Some</span>((p, len)) = res.last_mut() {
             <span class="kw">if </span>p == <span class="kw-2">&amp;</span>a {
                 <span class="kw-2">*</span>len += <span class="number">1</span>;
@@ -104,7 +108,7 @@
         }
         res.push((a, <span class="number">1</span>));
     }
-    <a href="../../../src/competitive/algorithm/other.rs.html#6">res</a>
+    <a href="../../../src/competitive/algorithm/other.rs.html#8">res</a>
 }
 
 <span class="attribute">#[codesnip::entry]
@@ -112,18 +116,18 @@
 ///
 /// segments that have same x or y
 </span><span class="kw">pub fn </span>floor_kernel(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
-    <span class="kw">let </span>m = (<a href="../../../src/competitive/algorithm/other.rs.html#23">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
-    <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::with_capacity(<a href="../../../src/competitive/algorithm/other.rs.html#24">m</a> * <span class="number">2 </span>+ <span class="number">1</span>);
+    <span class="kw">let </span>m = (<a href="../../../src/competitive/algorithm/other.rs.html#25">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+    <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::with_capacity(<a href="../../../src/competitive/algorithm/other.rs.html#26">m</a> * <span class="number">2 </span>+ <span class="number">1</span>);
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=m {
         res.push(i);
     }
     <span class="kw">if </span>n / m + <span class="number">1 </span>!= m + <span class="number">1 </span>{
-        <a href="../../../src/competitive/algorithm/other.rs.html#25">res</a>.push(<a href="../../../src/competitive/algorithm/other.rs.html#24">m</a> + <span class="number">1</span>);
+        <a href="../../../src/competitive/algorithm/other.rs.html#27">res</a>.push(<a href="../../../src/competitive/algorithm/other.rs.html#26">m</a> + <span class="number">1</span>);
     }
     <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">1</span>..=m).rev() {
         res.push(n / i + <span class="number">1</span>);
     }
-    <a href="../../../src/competitive/algorithm/other.rs.html#25">res</a>
+    <a href="../../../src/competitive/algorithm/other.rs.html#27">res</a>
 }
 
 <span class="attribute">#[cfg(test)]
@@ -165,4 +169,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (228710758 2022-09-10)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (59e7a308e 2022-09-11)" ></div></body></html>

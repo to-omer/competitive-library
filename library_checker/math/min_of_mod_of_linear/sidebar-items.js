@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["min_of_mod_of_linear","❌  IE  0ms"]]};

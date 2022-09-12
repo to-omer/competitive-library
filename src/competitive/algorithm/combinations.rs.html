@@ -207,7 +207,6 @@
 <span id="191">191</span>
 <span id="192">192</span>
 <span id="193">193</span>
-<span id="194">194</span>
 </pre><pre class="rust"><code><span class="doccomment">/// choose `r` elements from `n` independently
 ///
 /// # Example
@@ -274,20 +273,19 @@
 <span class="kw">where
     </span>F: FnMut(<span class="kw-2">&amp;</span>[T]),
 {
-    <span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/set/struct.BTreeSet.html">std::collections::BTreeSet</a>;
     <span class="kw">fn </span>permutations_inner&lt;T: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>, F&gt;(
         n: <span class="kw-2">&amp;</span>[T],
         <span class="kw-2">mut </span>r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
-        rem: <span class="kw-2">&amp;mut </span>BTreeSet&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+        rem: <span class="kw-2">&amp;mut </span>std::collections::BTreeSet&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
         buf: <span class="kw-2">&amp;mut </span>Vec&lt;T&gt;,
         f: <span class="kw-2">&amp;mut </span>F,
     ) <span class="kw">where
         </span>F: FnMut(<span class="kw-2">&amp;</span>[T]),
     {
         <span class="kw">if </span>r == <span class="number">0 </span>{
-            <a href="../../../src/competitive/algorithm/combinations.rs.html#73">f</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#72">buf</a>.as_slice());
+            <a href="../../../src/competitive/algorithm/combinations.rs.html#72">f</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#71">buf</a>.as_slice());
         } <span class="kw">else </span>{
-            <a href="../../../src/competitive/algorithm/combinations.rs.html#70">r</a> -= <span class="number">1</span>;
+            <a href="../../../src/competitive/algorithm/combinations.rs.html#69">r</a> -= <span class="number">1</span>;
             <span class="kw">for </span>i <span class="kw">in </span>rem.iter().cloned().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;() {
                 buf.push(n[i].clone());
                 rem.remove(<span class="kw-2">&amp;</span>i);
@@ -300,8 +298,8 @@
 
     <span class="kw">if </span>r &lt;= n.len() {
         <span class="kw">let </span><span class="kw-2">mut </span>v = Vec::with_capacity(<a href="../../../src/competitive/algorithm/combinations.rs.html#63">r</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>rem: BTreeSet&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; = (<span class="number">0</span>..<a href="../../../src/competitive/algorithm/combinations.rs.html#63">n</a>.len()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
-        <a href="../../../src/competitive/algorithm/combinations.rs.html#68-75">permutations_inner</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#63">n</a>, <a href="../../../src/competitive/algorithm/combinations.rs.html#63">r</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#93">rem</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#92">v</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#63">f</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>rem: std::collections::BTreeSet&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; = (<span class="number">0</span>..<a href="../../../src/competitive/algorithm/combinations.rs.html#63">n</a>.len()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <a href="../../../src/competitive/algorithm/combinations.rs.html#67-74">permutations_inner</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#63">n</a>, <a href="../../../src/competitive/algorithm/combinations.rs.html#63">r</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#92">rem</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#91">v</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#63">f</a>);
     }
 }
 
@@ -337,9 +335,9 @@
         </span>F: FnMut(<span class="kw-2">&amp;</span>[T]),
     {
         <span class="kw">if </span>r == <span class="number">0 </span>{
-            <a href="../../../src/competitive/algorithm/combinations.rs.html#125">f</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#124">buf</a>.as_slice());
+            <a href="../../../src/competitive/algorithm/combinations.rs.html#124">f</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#123">buf</a>.as_slice());
         } <span class="kw">else </span>{
-            <a href="../../../src/competitive/algorithm/combinations.rs.html#122">r</a> -= <span class="number">1</span>;
+            <a href="../../../src/competitive/algorithm/combinations.rs.html#121">r</a> -= <span class="number">1</span>;
             <span class="kw">for </span>i <span class="kw">in </span>start..n.len() - r {
                 buf.push(n[i].clone());
                 combinations_inner(n, r, i + <span class="number">1</span>, buf, f);
@@ -349,8 +347,8 @@
     }
 
     <span class="kw">if </span>r &lt;= n.len() {
-        <span class="kw">let </span><span class="kw-2">mut </span>v = Vec::with_capacity(<a href="../../../src/competitive/algorithm/combinations.rs.html#116">r</a>);
-        <a href="../../../src/competitive/algorithm/combinations.rs.html#120-127">combinations_inner</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#116">n</a>, <a href="../../../src/competitive/algorithm/combinations.rs.html#116">r</a>, <span class="number">0</span>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#142">v</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#116">f</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>v = Vec::with_capacity(<a href="../../../src/competitive/algorithm/combinations.rs.html#115">r</a>);
+        <a href="../../../src/competitive/algorithm/combinations.rs.html#119-126">combinations_inner</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#115">n</a>, <a href="../../../src/competitive/algorithm/combinations.rs.html#115">r</a>, <span class="number">0</span>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#141">v</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#115">f</a>);
     }
 }
 
@@ -386,9 +384,9 @@
         </span>F: FnMut(<span class="kw-2">&amp;</span>[T]),
     {
         <span class="kw">if </span>r == <span class="number">0 </span>{
-            <a href="../../../src/competitive/algorithm/combinations.rs.html#174">f</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#173">buf</a>.as_slice());
+            <a href="../../../src/competitive/algorithm/combinations.rs.html#173">f</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#172">buf</a>.as_slice());
         } <span class="kw">else </span>{
-            <a href="../../../src/competitive/algorithm/combinations.rs.html#171">r</a> -= <span class="number">1</span>;
+            <a href="../../../src/competitive/algorithm/combinations.rs.html#170">r</a> -= <span class="number">1</span>;
             <span class="kw">for </span>i <span class="kw">in </span>start..n.len() {
                 buf.push(n[i].clone());
                 combinations_with_replacement_inner(n, r, i, buf, f);
@@ -398,9 +396,9 @@
     }
 
     <span class="kw">if </span>r &lt;= n.len() {
-        <span class="kw">let </span><span class="kw-2">mut </span>v = Vec::with_capacity(<a href="../../../src/competitive/algorithm/combinations.rs.html#165">r</a>);
-        <a href="../../../src/competitive/algorithm/combinations.rs.html#169-176">combinations_with_replacement_inner</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#165">n</a>, <a href="../../../src/competitive/algorithm/combinations.rs.html#165">r</a>, <span class="number">0</span>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#191">v</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#165">f</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>v = Vec::with_capacity(<a href="../../../src/competitive/algorithm/combinations.rs.html#164">r</a>);
+        <a href="../../../src/competitive/algorithm/combinations.rs.html#168-175">combinations_with_replacement_inner</a>(<a href="../../../src/competitive/algorithm/combinations.rs.html#164">n</a>, <a href="../../../src/competitive/algorithm/combinations.rs.html#164">r</a>, <span class="number">0</span>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#190">v</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/algorithm/combinations.rs.html#164">f</a>);
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (228710758 2022-09-10)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (59e7a308e 2022-09-11)" ></div></body></html>
