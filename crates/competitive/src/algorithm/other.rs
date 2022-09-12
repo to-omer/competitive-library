@@ -1,10 +1,12 @@
 #[codesnip::entry]
 /// return: \[(elem, length)\]
-pub fn run_length_encoding<T: Clone + PartialEq, I: Iterator<Item = T>>(
-    iter: I,
-) -> Vec<(T, usize)> {
+pub fn run_length_encoding<T, I>(iter: I) -> Vec<(T, usize)>
+where
+    T: Clone + PartialEq,
+    I: IntoIterator<Item = T>,
+{
     let mut res = Vec::new();
-    for a in iter {
+    for a in iter.into_iter() {
         if let Some((p, len)) = res.last_mut() {
             if p == &a {
                 *len += 1;
