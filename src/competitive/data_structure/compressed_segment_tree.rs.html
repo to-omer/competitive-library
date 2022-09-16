@@ -286,9 +286,6 @@
 <span id="270">270</span>
 <span id="271">271</span>
 <span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/tools/slice.rs.html#2">GetDistinctMut</a>, <a href="../../../src/competitive/algebra/magma.rs.html#45">Monoid</a>, <a href="../../../src/competitive/algorithm/binary_search.rs.html#80">SliceBisectExt</a>};
 <span class="kw">use </span>std::{
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>},
@@ -459,12 +456,12 @@
                     Bound::Included(index) =&gt; <span class="self">self</span>.compress.position_bisect(|x| x &gt;= <span class="kw-2">&amp;</span>index),
                     Bound::Excluded(index) =&gt; <span class="self">self</span>.compress.position_bisect(|x| x &gt; <span class="kw-2">&amp;</span>index),
                     Bound::Unbounded =&gt; <span class="number">0</span>,
-                }  + <span class="self">self</span>.compress.len();
+                } + <span class="self">self</span>.compress.len();
                 <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="kw">match </span>range.<span class="number">0</span>.end_bound() {
                     Bound::Included(index) =&gt; <span class="self">self</span>.compress.position_bisect(|x| x &gt; <span class="kw-2">&amp;</span>index),
                     Bound::Excluded(index) =&gt; <span class="self">self</span>.compress.position_bisect(|x| x &gt;= <span class="kw-2">&amp;</span>index),
                     Bound::Unbounded =&gt; <span class="self">self</span>.compress.len(),
-                }  + <span class="self">self</span>.compress.len();
+                } + <span class="self">self</span>.compress.len();
                 <span class="kw">let </span><span class="kw-2">mut </span>x = M::unit();
                 <span class="kw">while </span>l &lt; r {
                     <span class="kw">if </span>l &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
@@ -497,25 +494,22 @@
         <span class="macro">impl_compressed_segment_tree!</span>(@<span class="kw">impl </span><span class="macro-nonterminal">$C </span>$(<span class="macro-nonterminal">$T</span>)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$Q</span>)<span class="kw-2">*</span>);
         <span class="macro">impl_compressed_segment_tree!</span>(@inner [<span class="macro-nonterminal">$D</span>][$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>][$(<span class="macro-nonterminal">$Q</span>)* <span class="macro-nonterminal">$R</span>][$(<span class="macro-nonterminal">$Rest</span>)<span class="kw-2">*</span>]);
     };
-    (<span class="macro-nonterminal">$C</span>:ident <span class="macro-nonterminal">$T</span>:ident <span class="macro-nonterminal">$Q</span>:ident $(<span class="macro-nonterminal">$Rest</span>:ident)<span class="kw-2">*</span>) =&gt; {
+    (<span class="macro-nonterminal">$C</span>:ident <span class="macro-nonterminal">$T</span>:ident <span class="macro-nonterminal">$Q</span>:ident $(<span class="macro-nonterminal">$Rest</span>:ident)* $(;$(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)<span class="question-mark">?</span>) =&gt; {
         <span class="macro">impl_compressed_segment_tree!</span>(@inner [<span class="macro-nonterminal">$C</span>][<span class="macro-nonterminal">$T</span>][<span class="macro-nonterminal">$Q</span>][$(<span class="macro-nonterminal">$Rest</span>)<span class="kw-2">*</span>]);
     };
-    ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro">compile_error!</span>($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)
-    }
 }
 
-<a class="macro" href="../../../src/competitive/data_structure/compressed_segment_tree.rs.html#85-215">impl_compressed_segment_tree!</a>(
+<a class="macro" href="../../../src/competitive/data_structure/compressed_segment_tree.rs.html#85-212">impl_compressed_segment_tree!</a>(
     CompressedSegmentTree1d T1 Q1
     CompressedSegmentTree2d T2 Q2
     CompressedSegmentTree3d T3 Q3
-    CompressedSegmentTree4d T4 Q4
-    <span class="comment">// CompressedSegmentTree5d T5 Q5
-    // CompressedSegmentTree6d T6 Q6
-    // CompressedSegmentTree7d T7 Q7
-    // CompressedSegmentTree8d T8 Q8
-    // CompressedSegmentTree9d T9 Q9
-</span>);
+    CompressedSegmentTree4d T4 Q4;
+    CompressedSegmentTree5d T5 Q5
+    CompressedSegmentTree6d T6 Q6
+    CompressedSegmentTree7d T7 Q7
+    CompressedSegmentTree8d T8 Q8
+    CompressedSegmentTree9d T9 Q9
+);
 
 <span class="attribute">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
@@ -531,7 +525,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
         <span class="kw">const </span>N: usize = <span class="number">100</span>;
         <span class="kw">const </span>Q: usize = <span class="number">5000</span>;
-        <span class="kw">const </span>A: Range&lt;i64&gt; = -<span class="number">1_000_000_000</span>..<span class="number">1_000_000_000</span>;
+        <span class="kw">const </span>A: Range&lt;i64&gt; = -<span class="number">1_000</span>..<span class="number">1_000</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>points: Vec&lt;<span class="kw">_</span>&gt; = rng.gen_iter(((A), (A, (A, (A,))))).take(N).collect();
         points.sort();
         points.dedup();
