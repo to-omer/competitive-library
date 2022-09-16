@@ -65,4 +65,4 @@ impl Default for Xorshift {
 )]
 mod random_generator;
 #[codesnip::entry("random_generator")]
-pub use random_generator::{NotEmptySegment, RandIter, RandomSpec};
+pub use random_generator::{NotEmptySegment, RandIter, RandRange, RandomSpec};

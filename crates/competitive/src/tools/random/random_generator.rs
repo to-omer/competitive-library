@@ -4,7 +4,8 @@ use crate::num::Bounded;
 use super::*;
 use std::{
     marker::PhantomData,
-    ops::{Range, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive},
+    mem::swap,
+    ops::{Bound, Range, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive},
 };
 
 /// Trait for spec of generating random value.
@@ -180,12 +181,55 @@ impl NotEmptyStep64 for char {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 /// Left-close Right-open No Empty Segment
 pub struct NotEmptySegment<T>(pub T);
-impl<T: RandomSpec<usize>> RandomSpec<(usize, usize)> for NotEmptySegment<T> {
+impl<T> RandomSpec<(usize, usize)> for NotEmptySegment<T>
+where
+    T: RandomSpec<usize>,
+{
     fn rand(&self, rng: &mut Xorshift) -> (usize, usize) {
         let n = rng.gen(&self.0) as u64;
         let k = randint_uniform(rng, n);
         let l = randint_uniform(rng, n - k) as usize;
         (l, l + k as usize + 1)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// Left-close Right-open No Empty Segment
+pub struct RandRange<Q, T> {
+    data: Q,
+    _marker: PhantomData<fn() -> T>,
+}
+impl<Q, T> RandRange<Q, T> {
+    pub fn new(data: Q) -> Self {
+        Self {
+            data,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<Q, T> RandomSpec<(Bound<T>, Bound<T>)> for RandRange<Q, T>
+where
+    Q: RandomSpec<T>,
+    T: Ord,
+{
+    fn rand(&self, rng: &mut Xorshift) -> (Bound<T>, Bound<T>) {
+        let mut l = rng.gen(&self.data);
+        let mut r = rng.gen(&self.data);
+        if l > r {
+            swap(&mut l, &mut r);
+        }
+        (
+            match rng.rand(3) {
+                0 => Bound::Excluded(l),
+                1 => Bound::Included(l),
+                _ => Bound::Unbounded,
+            },
+            match rng.rand(3) {
+                0 => Bound::Excluded(r),
+                1 => Bound::Included(r),
+                _ => Bound::Unbounded,
+            },
+        )
     }
 }
 

@@ -21,6 +21,11 @@ pub use self::bit_vector::{BitVector, RankSelectDictionaries};
 pub use self::bitset::BitSet;
 #[codesnip::entry("compress")]
 pub use self::compress::{Compressor, HashCompress, VecCompress};
+#[codesnip::entry("CompressedSegmentTree")]
+pub use self::compressed_segment_tree::{
+    CompressedSegmentTree, CompressedSegmentTree1d, CompressedSegmentTree2d,
+    CompressedSegmentTree3d, CompressedSegmentTree4d,
+};
 #[codesnip::entry("Counter")]
 pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DisjointSparseTable")]
@@ -78,6 +83,8 @@ mod bit_vector;
 mod bitset;
 #[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
 mod compress;
+#[cfg_attr(nightly, codesnip::entry("CompressedSegmentTree", include("algebra")))]
+mod compressed_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("Counter"))]
 mod counter;
 #[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
