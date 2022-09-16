@@ -194,7 +194,6 @@ where
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-/// Left-close Right-open No Empty Segment
 pub struct RandRange<Q, T> {
     data: Q,
     _marker: PhantomData<fn() -> T>,

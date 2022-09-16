@@ -21,6 +21,11 @@ pub use self::bit_vector::{BitVector, RankSelectDictionaries};
 pub use self::bitset::BitSet;
 #[codesnip::entry("compress")]
 pub use self::compress::{Compressor, HashCompress, VecCompress};
+#[codesnip::entry("CompressedBinaryIndexedTree")]
+pub use self::compressed_binary_indexed_tree::{
+    CompressedBinaryIndexedTree, CompressedBinaryIndexedTree1d, CompressedBinaryIndexedTree2d,
+    CompressedBinaryIndexedTree3d, CompressedBinaryIndexedTree4d,
+};
 #[codesnip::entry("CompressedSegmentTree")]
 pub use self::compressed_segment_tree::{
     CompressedSegmentTree, CompressedSegmentTree1d, CompressedSegmentTree2d,
@@ -81,6 +86,14 @@ mod bit_vector;
 mod bitset;
 #[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
 mod compress;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "CompressedBinaryIndexedTree",
+        include("algebra", "binary_search", "GetDistinctMut")
+    )
+)]
+mod compressed_binary_indexed_tree;
 #[cfg_attr(
     nightly,
     codesnip::entry(
