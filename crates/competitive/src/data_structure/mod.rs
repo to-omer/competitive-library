@@ -83,7 +83,13 @@ mod bit_vector;
 mod bitset;
 #[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
 mod compress;
-#[cfg_attr(nightly, codesnip::entry("CompressedSegmentTree", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "CompressedSegmentTree",
+        include("algebra", "binary_search", "GetDistinctMut")
+    )
+)]
 mod compressed_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("Counter"))]
 mod counter;
