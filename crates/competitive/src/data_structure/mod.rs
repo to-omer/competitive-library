@@ -19,6 +19,8 @@ pub use self::binary_indexed_tree_2d::BinaryIndexedTree2D;
 pub use self::bit_vector::{BitVector, RankSelectDictionaries};
 #[codesnip::entry("BitSet")]
 pub use self::bitset::BitSet;
+#[codesnip::entry("compress")]
+pub use self::compress::{Compressor, HashCompress, VecCompress};
 #[codesnip::entry("Counter")]
 pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DisjointSparseTable")]
@@ -74,6 +76,8 @@ mod binary_indexed_tree_2d;
 mod bit_vector;
 #[cfg_attr(nightly, codesnip::entry("BitSet"))]
 mod bitset;
+#[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
+mod compress;
 #[cfg_attr(nightly, codesnip::entry("Counter"))]
 mod counter;
 #[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
