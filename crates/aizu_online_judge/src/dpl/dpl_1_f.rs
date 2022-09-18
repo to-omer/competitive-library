@@ -6,8 +6,8 @@ use competitive::prelude::*;
 pub fn dpl_1_f(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, w, vw: [(usize, usize); n]);
+    scan!(scanner, n, w: i64, vw: [(usize, i64); n]);
     let mut knapsack = KnapsackPloblemSmallValue::new(vw.iter().map(|&(v, _)| v).sum::<usize>());
     knapsack.extend01(vw);
-    writeln!(writer, "{}", knapsack.solve(w)).ok();
+    writeln!(writer, "{}", knapsack.solve(w).unwrap_or_default()).ok();
 }

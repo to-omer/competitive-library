@@ -1,58 +1,68 @@
-use std::{cmp::Ordering, mem::swap, ops::Add};
+use std::{
+    cmp::Ordering,
+    collections::VecDeque,
+    mem::swap,
+    ops::{Add, Neg},
+};
 
 #[derive(Debug, Clone)]
 pub struct KnapsackPloblemSmallWeight {
-    pub dp: Vec<usize>,
+    pub dp: Vec<i64>,
 }
 
 impl KnapsackPloblemSmallWeight {
     pub fn new(max_weight: usize) -> Self {
-        Self {
-            dp: vec![0; max_weight + 1],
-        }
+        let mut dp = vec![std::i64::MIN; max_weight + 1];
+        dp[0] = 0;
+        Self { dp }
     }
     pub fn max_weight(&self) -> usize {
         self.dp.len() - 1
     }
-    pub fn insert(&mut self, value: usize, weight: usize) {
+    pub fn insert(&mut self, value: i64, weight: usize) {
         for i in weight..self.dp.len() {
-            self.dp[i] = self.dp[i].max(self.dp[i - weight] + value);
+            if self.dp[i - weight] != std::i64::MIN {
+                self.dp[i] = self.dp[i].max(self.dp[i - weight] + value);
+            }
         }
     }
     pub fn extend<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (usize, usize)>,
+        I: IntoIterator<Item = (i64, usize)>,
     {
         for (value, weight) in iter.into_iter() {
             self.insert(value, weight);
         }
     }
-    pub fn insert01(&mut self, value: usize, weight: usize) {
+    pub fn insert01(&mut self, value: i64, weight: usize) {
         for i in (weight..self.dp.len()).rev() {
-            self.dp[i] = self.dp[i].max(self.dp[i - weight] + value);
+            if self.dp[i - weight] != std::i64::MIN {
+                self.dp[i] = self.dp[i].max(self.dp[i - weight] + value);
+            }
         }
     }
     pub fn extend01<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (usize, usize)>,
+        I: IntoIterator<Item = (i64, usize)>,
     {
         for (value, weight) in iter.into_iter() {
             self.insert01(value, weight);
         }
     }
-    pub fn insert_limitation(&mut self, value: usize, weight: usize, count: usize) {
-        use std::collections::VecDeque;
+    pub fn insert_limitation(&mut self, value: i64, weight: usize, count: usize) {
         for i in 0..weight {
             let mut deq = VecDeque::new();
             let mut j = 0;
             while j * weight + i < self.dp.len() {
-                let v = self.dp[j * weight + i] as i64 - (j * value) as i64;
-                while deq.back().map(|&(_, x)| x <= v).unwrap_or_default() {
-                    deq.pop_back();
+                if self.dp[j * weight + i] != std::i64::MIN {
+                    let v = self.dp[j * weight + i] - j as i64 * value;
+                    while deq.back().map(|&(_, x)| x <= v).unwrap_or_default() {
+                        deq.pop_back();
+                    }
+                    deq.push_back((j, v));
                 }
-                deq.push_back((j, v));
                 if let Some((l, v)) = deq.front() {
-                    self.dp[j * weight + i] = (v + (j * value) as i64) as usize;
+                    self.dp[j * weight + i] = v + j as i64 * value;
                     if l + count == j {
                         deq.pop_front();
                     }
@@ -63,104 +73,129 @@ impl KnapsackPloblemSmallWeight {
     }
     pub fn extend_limitation<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (usize, usize, usize)>,
+        I: IntoIterator<Item = (i64, usize, usize)>,
     {
         for (value, weight, count) in iter.into_iter() {
             self.insert_limitation(value, weight, count);
         }
     }
-    pub fn insert_limitation2(&mut self, value: usize, weight: usize, mut count: usize) {
+    pub fn insert_limitation2(&mut self, value: i64, weight: usize, mut count: usize) {
         let mut b = 1;
         while count > 0 {
             let k = b.min(count);
             count -= k;
             for i in (weight * k..self.dp.len()).rev() {
-                self.dp[i] = self.dp[i].max(self.dp[i - weight * k] + value * k);
+                if self.dp[i - weight * k] != std::i64::MIN {
+                    self.dp[i] = self.dp[i].max(self.dp[i - weight * k] + value * k as i64);
+                }
             }
             b *= 2;
         }
     }
     pub fn extend_limitation2<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (usize, usize, usize)>,
+        I: IntoIterator<Item = (i64, usize, usize)>,
     {
         for (value, weight, count) in iter.into_iter() {
             self.insert_limitation2(value, weight, count);
         }
     }
-    pub fn solve(&self) -> usize {
-        self.dp.iter().max().cloned().unwrap_or_default()
+    pub fn solve(&self) -> Option<i64> {
+        self.dp
+            .iter()
+            .filter(|&&dp| dp != std::i64::MIN)
+            .max()
+            .cloned()
+    }
+    pub fn get(&self, weight: usize) -> Option<i64> {
+        if self.dp[weight] != std::i64::MIN {
+            Some(self.dp[weight])
+        } else {
+            None
+        }
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct KnapsackPloblemSmallValue {
-    pub dp: Vec<usize>,
+    pub dp: Vec<i64>,
 }
 
 impl KnapsackPloblemSmallValue {
     pub fn new(max_value: usize) -> Self {
-        let mut dp = vec![std::usize::MAX; max_value + 1];
+        let mut dp = vec![std::i64::MAX; max_value + 1];
         dp[0] = 0;
         Self { dp }
     }
-    pub fn insert(&mut self, value: usize, weight: usize) {
+    pub fn insert(&mut self, value: usize, weight: i64) {
         for i in value..self.dp.len() {
-            self.dp[i] = self.dp[i].min(self.dp[i - value].saturating_add(weight));
+            if self.dp[i - value] != std::i64::MAX {
+                self.dp[i] = self.dp[i].min(self.dp[i - value] + weight);
+            }
         }
     }
     pub fn extend<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (usize, usize)>,
+        I: IntoIterator<Item = (usize, i64)>,
     {
         for (value, weight) in iter.into_iter() {
             self.insert(value, weight);
         }
     }
-    pub fn insert01(&mut self, value: usize, weight: usize) {
+    pub fn insert01(&mut self, value: usize, weight: i64) {
         for i in (value..self.dp.len()).rev() {
-            self.dp[i] = self.dp[i].min(self.dp[i - value].saturating_add(weight));
+            if self.dp[i - value] != std::i64::MAX {
+                self.dp[i] = self.dp[i].min(self.dp[i - value] + weight);
+            }
         }
     }
     pub fn extend01<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (usize, usize)>,
+        I: IntoIterator<Item = (usize, i64)>,
     {
         for (value, weight) in iter.into_iter() {
             self.insert01(value, weight);
         }
     }
-    pub fn insert_limitation(&mut self, value: usize, weight: usize, mut count: usize) {
+    pub fn insert_limitation(&mut self, value: usize, weight: i64, mut count: usize) {
         let mut b = 1;
         while count > 0 {
             let k = b.min(count);
             count -= k;
             for i in (value * k..self.dp.len()).rev() {
-                self.dp[i] = self.dp[i].min(self.dp[i - value * k].saturating_add(weight * k));
+                if self.dp[i - value * k] != std::i64::MAX {
+                    self.dp[i] = self.dp[i].min(self.dp[i - value * k] + weight * k as i64);
+                }
             }
             b *= 2;
         }
     }
     pub fn extend_limitation<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (usize, usize, usize)>,
+        I: IntoIterator<Item = (usize, i64, usize)>,
     {
         for (value, weight, count) in iter.into_iter() {
             self.insert_limitation(value, weight, count);
         }
     }
-    pub fn solve(&self, max_weight: usize) -> usize {
+    pub fn solve(&self, max_weight: i64) -> Option<usize> {
         (0..self.dp.len())
             .filter(|&i| self.dp[i] <= max_weight)
             .max()
-            .unwrap_or_default()
+    }
+    pub fn get(&self, value: usize) -> Option<i64> {
+        if self.dp[value] != std::i64::MAX {
+            Some(self.dp[value])
+        } else {
+            None
+        }
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct ZeroOneKnapsackProblemSmallItems {
-    a: Vec<(u64, u64)>,
-    b: Vec<(u64, u64)>,
+    a: Vec<(i64, i64)>,
+    b: Vec<(i64, i64)>,
 }
 
 impl Default for ZeroOneKnapsackProblemSmallItems {
@@ -176,7 +211,7 @@ impl ZeroOneKnapsackProblemSmallItems {
     pub fn new() -> Self {
         Default::default()
     }
-    pub fn insert(&mut self, value: u64, weight: u64) {
+    pub fn insert(&mut self, value: i64, weight: i64) {
         let mut a_iter = self.a.iter().cloned();
         let mut b_iter = self.a.iter().map(|&(v, w)| (v + value, w + weight));
         let mut c = Vec::with_capacity(self.a.len() * 2);
@@ -216,13 +251,13 @@ impl ZeroOneKnapsackProblemSmallItems {
     }
     pub fn extend<I>(&mut self, iter: I)
     where
-        I: IntoIterator<Item = (u64, u64)>,
+        I: IntoIterator<Item = (i64, i64)>,
     {
         for (value, weight) in iter.into_iter() {
             self.insert(value, weight);
         }
     }
-    pub fn solve(&self, max_weight: u64) -> u64 {
+    pub fn solve(&self, max_weight: i64) -> i64 {
         let mut ans = 0;
         let mut max = 0;
         let mut i = 0;
@@ -242,15 +277,16 @@ impl ZeroOneKnapsackProblemSmallItems {
 #[derive(Debug, Clone)]
 pub struct ZeroOneKnapsackPloblemBranchAndBound {
     items: Vec<Item>,
+    gap: Item,
 }
 
 #[derive(Copy, Clone, Default, Debug)]
 struct Item {
-    value: u64,
-    weight: u64,
+    value: i64,
+    weight: i64,
 }
-impl From<(u64, u64)> for Item {
-    fn from(vw: (u64, u64)) -> Self {
+impl From<(i64, i64)> for Item {
+    fn from(vw: (i64, i64)) -> Self {
         Self {
             value: vw.0,
             weight: vw.1,
@@ -266,17 +302,36 @@ impl Add for Item {
         }
     }
 }
-impl ZeroOneKnapsackPloblemBranchAndBound {
-    pub fn new(iter: impl IntoIterator<Item = (u64, u64)>) -> Self {
-        let mut items: Vec<Item> = iter.into_iter().map(From::from).collect();
-        items.sort_by(|i1, i2| {
-            (i2.value as u128 * i1.weight as u128, i2.value)
-                .cmp(&(i1.value as u128 * i2.weight as u128, i1.value))
-        });
-        Self { items }
+impl Neg for Item {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        Self {
+            value: -self.value,
+            weight: -self.weight,
+        }
     }
-    fn solve_relax(&self, i: usize, mut max_weight: u64) -> Result<u64, f64> {
-        let mut ans = 0u64;
+}
+impl ZeroOneKnapsackPloblemBranchAndBound {
+    pub fn new<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = (i64, i64)>,
+    {
+        let mut items: Vec<Item> = iter.into_iter().map(From::from).collect();
+        let mut gap = Item::default();
+        for item in &mut items {
+            if item.weight < 0 {
+                gap = gap + *item;
+                *item = -*item;
+            }
+        }
+        items.sort_by(|i1, i2| {
+            (i2.value as i128 * i1.weight as i128, i2.value)
+                .cmp(&(i1.value as i128 * i2.weight as i128, i1.value))
+        });
+        Self { items, gap }
+    }
+    fn solve_relax(&self, i: usize, mut max_weight: i64) -> Result<i64, f64> {
+        let mut ans = 0i64;
         for &Item { value, weight } in self.items[i..].iter() {
             if max_weight == 0 {
                 break;
@@ -290,7 +345,7 @@ impl ZeroOneKnapsackPloblemBranchAndBound {
         }
         Ok(ans)
     }
-    fn dfs(&self, i: usize, cur: Item, max_weight: u64, max_value: &mut u64) -> u64 {
+    fn dfs(&self, i: usize, cur: Item, max_weight: i64, max_value: &mut i64) -> i64 {
         if i == self.items.len() {
             *max_value = cur.value.max(*max_value);
             return cur.value;
@@ -306,13 +361,18 @@ impl ZeroOneKnapsackPloblemBranchAndBound {
                 }
             }
         }
-        let mut ans = 0u64;
+        let mut ans = 0i64;
         if cur.weight + self.items[i].weight <= max_weight {
             ans = ans.max(self.dfs(i + 1, cur + self.items[i], max_weight, max_value));
         }
         ans.max(self.dfs(i + 1, cur, max_weight, max_value))
     }
-    pub fn solve(&self, max_weight: u64) -> u64 {
-        self.dfs(0, Default::default(), max_weight, &mut 0u64)
+    pub fn solve(&self, max_weight: i64) -> i64 {
+        self.dfs(
+            0,
+            Default::default(),
+            max_weight - self.gap.weight,
+            &mut 0i64,
+        ) + self.gap.value
     }
 }

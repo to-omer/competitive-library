@@ -6,7 +6,7 @@ use competitive::prelude::*;
 pub fn dpl_1_h(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, w: u64, vw: [(u64, u64)]);
+    scan!(scanner, n, w: i64, vw: [(i64, i64)]);
     let mut knapsack = ZeroOneKnapsackProblemSmallItems::new();
     knapsack.extend(vw.take(n));
     writeln!(writer, "{}", knapsack.solve(w)).ok();

@@ -6,7 +6,7 @@ use competitive::prelude::*;
 pub fn dpl_1_i(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
-    scan!(scanner, n, w: u64, vwm: [(u64, u64, u64)]);
+    scan!(scanner, n, w: i64, vwm: [(i64, i64, i64)]);
     let mut item = vec![];
     for (v, w, mut m) in vwm.take(n) {
         let mut b = 1;
