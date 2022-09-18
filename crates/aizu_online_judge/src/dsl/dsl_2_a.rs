@@ -13,7 +13,7 @@ pub fn dsl_2_a(reader: impl Read, mut writer: impl Write) {
         if ty == 0 {
             seg.set(x, y as i32);
         } else {
-            writeln!(writer, "{}", seg.fold(x, y + 1)).ok();
+            writeln!(writer, "{}", seg.fold(x..=y)).ok();
         }
     }
 }

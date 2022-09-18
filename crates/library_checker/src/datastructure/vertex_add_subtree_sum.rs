@@ -27,7 +27,7 @@ pub fn vertex_add_subtree_sum(reader: impl Read, mut writer: impl Write) {
             }
             1 => {
                 scan!(scanner, u);
-                writeln!(writer, "{}", et.subtree_query(u, |l, r| seg.fold(l, r))).ok();
+                writeln!(writer, "{}", et.subtree_query(u, |l, r| seg.fold(l..r))).ok();
             }
             _ => panic!("unknown query"),
         }

@@ -9,11 +9,11 @@ pub fn dsl_2_b(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, n, q);
     let mut seg = SegmentTree::<AdditiveOperation<_>>::new(n);
     for _ in 0..q {
-        scan!(scanner, ty, x, y);
+        scan!(scanner, ty, x: Usize1, y);
         if ty == 0 {
-            seg.update(x - 1, y as i32);
+            seg.update(x, y as i32);
         } else {
-            writeln!(writer, "{}", seg.fold(x - 1, y)).ok();
+            writeln!(writer, "{}", seg.fold(x..y)).ok();
         }
     }
 }

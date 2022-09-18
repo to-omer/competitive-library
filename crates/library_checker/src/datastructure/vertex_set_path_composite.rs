@@ -33,8 +33,8 @@ pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
                     u,
                     v,
                     false,
-                    |l, r| seg1.fold(l, r),
-                    |l, r| seg2.fold(l, r),
+                    |l, r| seg1.fold(l..r),
+                    |l, r| seg2.fold(l..r),
                 );
                 writeln!(writer, "{}", a * x + b).ok();
             }

@@ -20,7 +20,7 @@ pub fn point_set_range_composite(reader: impl Read, mut writer: impl Write) {
             }
             1 => {
                 scan!(scanner, l, r, x: MInt998244353);
-                let (a, b) = seg.fold(l, r);
+                let (a, b) = seg.fold(l..r);
                 writeln!(writer, "{}", a * x + b).ok();
             }
             _ => panic!("unknown query"),

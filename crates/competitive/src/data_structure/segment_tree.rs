@@ -1,5 +1,8 @@
-use super::{AbelianMonoid, Monoid};
-use std::fmt::{self, Debug, Formatter};
+use super::{AbelianMonoid, Monoid, RangeBoundsExt};
+use std::{
+    fmt::{self, Debug, Formatter},
+    ops::RangeBounds,
+};
 
 pub struct SegmentTree<M>
 where
@@ -77,11 +80,14 @@ where
         debug_assert!(k < self.n);
         self.seg[k + self.n].clone()
     }
-    pub fn fold(&self, l: usize, r: usize) -> M::T {
-        debug_assert!(r <= self.n);
-        debug_assert!(l <= r);
-        let mut l = l + self.n;
-        let mut r = r + self.n;
+    pub fn fold<R>(&self, range: R) -> M::T
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range.to_range();
+        debug_assert!(range.end <= self.n);
+        let mut l = range.start + self.n;
+        let mut r = range.end + self.n;
         let mut vl = M::unit();
         let mut vr = M::unit();
         while l < r {
@@ -127,12 +133,15 @@ where
         (pos - self.n, acc)
     }
     /// Returns the first index that satisfies a accumlative predicate.
-    pub fn position_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    pub fn position_acc<R, F>(&self, range: R, f: F) -> Option<usize>
     where
+        R: RangeBounds<usize>,
         F: Fn(&M::T) -> bool,
     {
-        let mut l = l + self.n;
-        let r = r + self.n;
+        let range = range.to_range();
+        debug_assert!(range.end <= self.n);
+        let mut l = range.start + self.n;
+        let r = range.end + self.n;
         let mut k = 0usize;
         let mut acc = M::unit();
         while l < r >> k {
@@ -160,12 +169,15 @@ where
         None
     }
     /// Returns the last index that satisfies a accumlative predicate.
-    pub fn rposition_acc<F>(&self, l: usize, r: usize, f: F) -> Option<usize>
+    pub fn rposition_acc<R, F>(&self, range: R, f: F) -> Option<usize>
     where
+        R: RangeBounds<usize>,
         F: Fn(&M::T) -> bool,
     {
-        let mut l = l + self.n;
-        let mut r = r + self.n;
+        let range = range.to_range();
+        debug_assert!(range.end <= self.n);
+        let mut l = range.start + self.n;
+        let mut r = range.end + self.n;
         let mut c = 0usize;
         let mut k = 0usize;
         let mut acc = M::unit();
@@ -241,22 +253,22 @@ mod tests {
         }
         for i in 0..N {
             for j in i + 1..N + 1 {
-                assert_eq!(seg.fold(i, j), arr[j] - arr[i]);
+                assert_eq!(seg.fold(i..j), arr[j] - arr[i]);
             }
         }
         for v in rng.gen_iter(1..=A * N as i64).take(Q) {
             assert_eq!(
-                seg.position_acc(0, N, |&x| v <= x).unwrap_or(N),
+                seg.position_acc(0..N, |&x| v <= x).unwrap_or(N),
                 arr[1..].position_bisect(|&x| x >= v)
             );
         }
         for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
             assert_eq!(
-                seg.position_acc(l, r, |&x| v <= x).unwrap_or(r),
+                seg.position_acc(l..r, |&x| v <= x).unwrap_or(r),
                 arr[l + 1..r + 1].position_bisect(|&x| x - arr[l] >= v) + l
             );
             assert_eq!(
-                seg.rposition_acc(l, r, |&x| v <= x).map_or(l, |i| i + 1),
+                seg.rposition_acc(l..r, |&x| v <= x).map_or(l, |i| i + 1),
                 arr[l..r].rposition_bisect(|&x| arr[r] - x >= v) + l
             );
         }
@@ -269,7 +281,7 @@ mod tests {
         }
         for (l, r) in rng.gen_iter(Nes(N)).take(Q) {
             let res = arr[l..r].iter().max().cloned().unwrap_or_default();
-            assert_eq!(seg.fold(l, r), res);
+            assert_eq!(seg.fold(l..r), res);
         }
     }
 }

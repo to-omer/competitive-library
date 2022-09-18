@@ -2,7 +2,7 @@
 
 use crate::algebra::{AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup};
 use crate::algorithm::SliceBisectExt;
-use crate::num::Bounded;
+use crate::num::{Bounded, RangeBoundsExt};
 use crate::tools::GetDistinctMut;
 
 #[codesnip::entry("Accumulate")]
@@ -125,9 +125,15 @@ mod merging_union_find;
 mod range_ap_add;
 #[cfg_attr(nightly, codesnip::entry("RangeMap"))]
 mod range_map;
-#[cfg_attr(nightly, codesnip::entry("SegmentTree", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SegmentTree", include("algebra", "discrete_steps"))
+)]
 mod segment_tree;
-#[cfg_attr(nightly, codesnip::entry("SegmentTreeMap", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SegmentTreeMap", include("algebra", "discrete_steps"))
+)]
 mod segment_tree_map;
 #[cfg_attr(
     nightly,

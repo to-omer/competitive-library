@@ -43,7 +43,7 @@ pub fn point_add_range_sum_segment_tree(reader: impl Read, mut writer: impl Writ
             }
             1 => {
                 scan!(scanner, l, r);
-                writeln!(writer, "{}", seg.fold(l, r)).ok();
+                writeln!(writer, "{}", seg.fold(l..r)).ok();
             }
             _ => panic!("unknown query"),
         }
