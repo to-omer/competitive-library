@@ -342,7 +342,7 @@
 <span id="326">326</span>
 <span id="327">327</span>
 </pre><pre class="rust"><code><span class="attribute">#[codesnip::skip]
-</span><span class="kw">use </span><a href="../../../../src/competitive/num/bounded.rs.html#2"><span class="kw">crate</span>::num::Bounded</a>;
+</span><span class="kw">use </span><a href="../../num/bounded.rs.html#2"><span class="kw">crate</span>::num::Bounded</a>;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span>std::{
@@ -354,76 +354,76 @@
 <span class="doccomment">/// Trait for spec of generating random value.
 </span><span class="kw">pub trait </span>RandomSpec&lt;T&gt;: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a> {
     <span class="doccomment">/// Return a random value.
-    </span><span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T;
+    </span><span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T;
     <span class="doccomment">/// Return an iterator that generates random values.
-    </span><span class="kw">fn </span>rand_iter(<span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; RandIter&lt;<span class="lifetime">&#39;_</span>, T, <span class="self">Self</span>&gt; {
-        <a href="../../../../src/competitive/tools/random/random_generator.rs.html#35">RandIter</a> {
-            spec: <a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#16">self</a>,
-            <a href="../../../../src/competitive/tools/random/random_generator.rs.html#16">rng</a>,
+    </span><span class="kw">fn </span>rand_iter(<span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; RandIter&lt;<span class="lifetime">&#39;_</span>, T, <span class="self">Self</span>&gt; {
+        <a href="#35">RandIter</a> {
+            spec: <a class="self" href="#16">self</a>,
+            <a href="#16">rng</a>,
             _marker: PhantomData,
         }
     }
 }
 
-<span class="kw">impl </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a> {
+<span class="kw">impl </span><a href="mod.rs.html#3">Xorshift</a> {
     <span class="kw">pub fn </span>gen&lt;T, R: RandomSpec&lt;T&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, spec: R) -&gt; T {
-        <a href="../../../../src/competitive/tools/random/random_generator.rs.html#26">spec</a>.<a href="../../../../src/competitive/tools/random/random_generator.rs.html#14">rand</a>(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#26">self</a>)
+        <a href="#26">spec</a>.<a href="#14">rand</a>(<a class="self" href="#26">self</a>)
     }
     <span class="kw">pub fn </span>gen_iter&lt;T, R: RandomSpec&lt;T&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, spec: R) -&gt; RandIter&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {
-        <a href="../../../../src/competitive/tools/random/random_generator.rs.html#29">spec</a>.<a href="../../../../src/competitive/tools/random/random_generator.rs.html#16">rand_iter</a>(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#29">self</a>)
+        <a href="#29">spec</a>.<a href="#16">rand_iter</a>(<a class="self" href="#29">self</a>)
     }
 }
 
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>RandIter&lt;<span class="lifetime">&#39;r</span>, T, R: RandomSpec&lt;T&gt;&gt; {
     spec: R,
-    rng: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="kw-2">mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>,
+    rng: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="kw-2">mut </span><a href="mod.rs.html#3">Xorshift</a>,
     _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
 <span class="kw">impl</span>&lt;T, R: RandomSpec&lt;T&gt;&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a> <span class="kw">for </span>RandIter&lt;<span class="lifetime">&#39;_</span>, T, R&gt; {
     <span class="kw">type </span>Item = T;
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="prelude-val">Some</span>(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#42">self</a>.spec.<a href="../../../../src/competitive/tools/random/random_generator.rs.html#14">rand</a>(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#42">self</a>.rng))
+        <span class="prelude-val">Some</span>(<a class="self" href="#42">self</a>.spec.<a href="#14">rand</a>(<a class="self" href="#42">self</a>.rng))
     }
 }
 
-<span class="kw">impl</span>&lt;T: <a href="../../../../src/competitive/tools/random/random_generator.rs.html#132">NotEmptyStep64</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>Range&lt;T&gt; {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T {
-        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#48">self</a>.start, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#48">self</a>.end);
+<span class="kw">impl</span>&lt;T: <a href="#132">NotEmptyStep64</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>Range&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span><a class="self" href="#48">self</a>.start, <span class="kw-2">&amp;</span><a class="self" href="#48">self</a>.end);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(count, <span class="number">0</span>, <span class="string">&quot;empty range in `RandomSpec&lt;T&gt; for Range&lt;T&gt;`&quot;</span>);
-        <span class="kw">let </span>count = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">randint_uniform</a>(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#48">rng</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#49">count</a>);
-        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#48">self</a>.start, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#51">count</a>)
+        <span class="kw">let </span>count = <a href="#236">randint_uniform</a>(<a href="#48">rng</a>, <a href="#49">count</a>);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span><a class="self" href="#48">self</a>.start, <a href="#51">count</a>)
     }
 }
-<span class="kw">impl</span>&lt;T: <a href="../../../../src/competitive/tools/random/random_generator.rs.html#132">NotEmptyStep64</a> + <a href="../../../../src/competitive/num/bounded.rs.html#2">Bounded</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeFrom&lt;T&gt; {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T {
-        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#56">self</a>.start, <span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::maximum())
+<span class="kw">impl</span>&lt;T: <a href="#132">NotEmptyStep64</a> + <a href="../../num/bounded.rs.html#2">Bounded</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeFrom&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span><a class="self" href="#56">self</a>.start, <span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::maximum())
             .wrapping_add(<span class="number">1</span>);
-        <span class="kw">let </span>count = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">randint_uniform</a>(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#56">rng</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#57">count</a>);
-        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#56">self</a>.start, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#59">count</a>)
+        <span class="kw">let </span>count = <a href="#236">randint_uniform</a>(<a href="#56">rng</a>, <a href="#57">count</a>);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span><a class="self" href="#56">self</a>.start, <a href="#59">count</a>)
     }
 }
-<span class="kw">impl</span>&lt;T: <a href="../../../../src/competitive/tools/random/random_generator.rs.html#132">NotEmptyStep64</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeInclusive&lt;T&gt; {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T {
-        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#64">self</a>.start(), <a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#64">self</a>.end()).wrapping_add(<span class="number">1</span>);
-        <span class="kw">let </span>count = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">randint_uniform</a>(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#64">rng</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#65">count</a>);
-        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#64">self</a>.start(), <a href="../../../../src/competitive/tools/random/random_generator.rs.html#66">count</a>)
+<span class="kw">impl</span>&lt;T: <a href="#132">NotEmptyStep64</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeInclusive&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<a class="self" href="#64">self</a>.start(), <a class="self" href="#64">self</a>.end()).wrapping_add(<span class="number">1</span>);
+        <span class="kw">let </span>count = <a href="#236">randint_uniform</a>(<a href="#64">rng</a>, <a href="#65">count</a>);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<a class="self" href="#64">self</a>.start(), <a href="#66">count</a>)
     }
 }
-<span class="kw">impl</span>&lt;T: <a href="../../../../src/competitive/tools/random/random_generator.rs.html#132">NotEmptyStep64</a> + <a href="../../../../src/competitive/num/bounded.rs.html#2">Bounded</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeTo&lt;T&gt; {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T {
-        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#71">self</a>.end);
+<span class="kw">impl</span>&lt;T: <a href="#132">NotEmptyStep64</a> + <a href="../../num/bounded.rs.html#2">Bounded</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeTo&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <span class="kw-2">&amp;</span><a class="self" href="#71">self</a>.end);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(count, <span class="number">0</span>, <span class="string">&quot;empty range in `RandomSpec&lt;T&gt; for RangeTo&lt;T&gt;`&quot;</span>);
-        <span class="kw">let </span>count = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">randint_uniform</a>(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#71">rng</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#72">count</a>);
-        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <a href="../../../../src/competitive/tools/random/random_generator.rs.html#74">count</a>)
+        <span class="kw">let </span>count = <a href="#236">randint_uniform</a>(<a href="#71">rng</a>, <a href="#72">count</a>);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <a href="#74">count</a>)
     }
 }
-<span class="kw">impl</span>&lt;T: <a href="../../../../src/competitive/tools/random/random_generator.rs.html#132">NotEmptyStep64</a> + <a href="../../../../src/competitive/num/bounded.rs.html#2">Bounded</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeToInclusive&lt;T&gt; {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T {
-        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#79">self</a>.end)
+<span class="kw">impl</span>&lt;T: <a href="#132">NotEmptyStep64</a> + <a href="../../num/bounded.rs.html#2">Bounded</a>&gt; RandomSpec&lt;T&gt; <span class="kw">for </span>RangeToInclusive&lt;T&gt; {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T {
+        <span class="kw">let </span>count = &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::steps_between(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <span class="kw-2">&amp;</span><a class="self" href="#79">self</a>.end)
             .wrapping_add(<span class="number">1</span>);
-        <span class="kw">let </span>count = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">randint_uniform</a>(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#79">rng</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#80">count</a>);
-        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <a href="../../../../src/competitive/tools/random/random_generator.rs.html#82">count</a>)
+        <span class="kw">let </span>count = <a href="#236">randint_uniform</a>(<a href="#79">rng</a>, <a href="#80">count</a>);
+        &lt;T <span class="kw">as </span>NotEmptyStep64&gt;::forward_unchecked(<span class="kw-2">&amp;</span>&lt;T <span class="kw">as </span>Bounded&gt;::minimum(), <a href="#82">count</a>)
     }
 }
 <span class="macro">macro_rules! </span>random_spec_tuple_impls {
@@ -439,16 +439,16 @@
         }
     };
 }
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A, RA, a);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B, RA RB, a b);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C, RA RB RC, a b c);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C D, RA RB RC RD, a b c d);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C D E, RA RB RC RD RE, a b c d e);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C D E F, RA RB RC RD RE RF, a b c d e f);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C D E F G, RA RB RC RD RE RF RG, a b c d e f g);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C D E F G H, RA RB RC RD RE RF RG RH, a b c d e f g h);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C D E F G H I, RA RB RC RD RE RF RG RH RI, a b c d e f g h i);
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#86-98">random_spec_tuple_impls!</a>(A B C D E F G H I J, RA RB RC RD RE RF RG RH RI RJ, a b c d e f g h i j);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A, RA, a);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B, RA RB, a b);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C, RA RB RC, a b c);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C D, RA RB RC RD, a b c d);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C D E, RA RB RC RD RE, a b c d e);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C D E F, RA RB RC RD RE RF, a b c d e f);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C D E F G, RA RB RC RD RE RF RG, a b c d e f g);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C D E F G H, RA RB RC RD RE RF RG RH, a b c d e f g h);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C D E F G H I, RA RB RC RD RE RF RG RH RI, a b c d e f g h i);
+<a class="macro" href="#86-98">random_spec_tuple_impls!</a>(A B C D E F G H I J, RA RB RC RD RE RF RG RH RI RJ, a b c d e f g h i j);
 
 <span class="macro">macro_rules! </span>random_spec_primitive_impls {
     ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
@@ -459,16 +459,16 @@
         })*
     };
 }
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#110-118">random_spec_primitive_impls!</a>(() <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a>);
+<a class="macro" href="#110-118">random_spec_primitive_impls!</a>(() <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a>);
 
 <span class="kw">impl</span>&lt;T, R: RandomSpec&lt;T&gt;&gt; RandomSpec&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>R {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T {
-        &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#122">self</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#122">rng</a>)
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T {
+        &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<a class="self" href="#122">self</a>, <a href="#122">rng</a>)
     }
 }
 <span class="kw">impl</span>&lt;T, R: RandomSpec&lt;T&gt;&gt; RandomSpec&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;mut </span>R {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; T {
-        &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#127">self</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#127">rng</a>)
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; T {
+        &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<a class="self" href="#127">self</a>, <a href="#127">rng</a>)
     }
 }
 
@@ -505,19 +505,19 @@
         })*
     };
 }
-<a class="macro" href="../../../../src/competitive/tools/random/random_generator.rs.html#137-164">step64_impls!</a>([<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>], [<a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>]);
-<span class="kw">impl </span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#132">NotEmptyStep64</a> <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a> {
+<a class="macro" href="#137-164">step64_impls!</a>([<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>], [<a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>]);
+<span class="kw">impl </span><a href="#132">NotEmptyStep64</a> <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a> {
     <span class="kw">fn </span>steps_between(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, end: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-        <span class="kw">let </span>start = <span class="kw-2">*</span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#167">start</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>;
-        <span class="kw">let </span>end = <span class="kw-2">*</span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#167">end</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>;
+        <span class="kw">let </span>start = <span class="kw-2">*</span><a href="#167">start</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>;
+        <span class="kw">let </span>end = <span class="kw-2">*</span><a href="#167">end</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>;
         <span class="kw">if </span>start &lt;= end {
-            (<a href="../../../../src/competitive/tools/random/random_generator.rs.html#169">end</a> - <a href="../../../../src/competitive/tools/random/random_generator.rs.html#168">start</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
+            (<a href="#169">end</a> - <a href="#168">start</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         } <span class="kw">else </span>{
             <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.panic.html">panic!</a>(<span class="string">&quot;empty range in `NotEmptyStep64`&quot;</span>);
         }
     }
     <span class="kw">fn </span>forward_unchecked(start: <span class="kw-2">&amp;</span><span class="self">Self</span>, count: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="self">Self </span>{
-        <a href="../../../../src/competitive/tools/random/random_generator.rs.html#134">NotEmptyStep64::forward_unchecked</a>(<span class="kw-2">&amp;</span>(<span class="kw-2">*</span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#176">start</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>), <a href="../../../../src/competitive/tools/random/random_generator.rs.html#176">count</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a>
+        <a href="#134">NotEmptyStep64::forward_unchecked</a>(<span class="kw-2">&amp;</span>(<span class="kw-2">*</span><a href="#176">start</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>), <a href="#176">count</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a>
     }
 }
 
@@ -528,11 +528,11 @@
 <span class="kw">where
     </span>T: RandomSpec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-        <span class="kw">let </span>n = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#188">rng</a>.<a href="../../../../src/competitive/tools/random/random_generator.rs.html#26">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#188">self</a>.<span class="number">0</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-        <span class="kw">let </span>k = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">randint_uniform</a>(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#188">rng</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#189">n</a>);
-        <span class="kw">let </span>l = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">randint_uniform</a>(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#188">rng</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#189">n</a> - <a href="../../../../src/competitive/tools/random/random_generator.rs.html#190">k</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
-        (<a href="../../../../src/competitive/tools/random/random_generator.rs.html#191">l</a>, <a href="../../../../src/competitive/tools/random/random_generator.rs.html#191">l</a> + <a href="../../../../src/competitive/tools/random/random_generator.rs.html#190">k</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>)
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+        <span class="kw">let </span>n = <a href="#188">rng</a>.<a href="#26">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="#188">self</a>.<span class="number">0</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span>k = <a href="#236">randint_uniform</a>(<a href="#188">rng</a>, <a href="#189">n</a>);
+        <span class="kw">let </span>l = <a href="#236">randint_uniform</a>(<a href="#188">rng</a>, <a href="#189">n</a> - <a href="#190">k</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+        (<a href="#191">l</a>, <a href="#191">l</a> + <a href="#190">k</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>)
     }
 }
 
@@ -544,7 +544,7 @@
 <span class="kw">impl</span>&lt;Q, T&gt; RandRange&lt;Q, T&gt; {
     <span class="kw">pub fn </span>new(data: Q) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="../../../../src/competitive/tools/random/random_generator.rs.html#202">data</a>,
+            <a href="#202">data</a>,
             _marker: PhantomData,
         }
     }
@@ -554,21 +554,21 @@
     </span>Q: RandomSpec&lt;T&gt;,
     T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>) -&gt; (Bound&lt;T&gt;, Bound&lt;T&gt;) {
-        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#214">rng</a>.<a href="../../../../src/competitive/tools/random/random_generator.rs.html#26">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#214">self</a>.data);
-        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#214">rng</a>.<a href="../../../../src/competitive/tools/random/random_generator.rs.html#26">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/tools/random/random_generator.rs.html#214">self</a>.data);
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>) -&gt; (Bound&lt;T&gt;, Bound&lt;T&gt;) {
+        <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="#214">rng</a>.<a href="#26">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="#214">self</a>.data);
+        <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="#214">rng</a>.<a href="#26">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="#214">self</a>.data);
         <span class="kw">if </span>l &gt; r {
-            <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#215">l</a>, <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#216">r</a>);
+            <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a href="#215">l</a>, <span class="kw-2">&amp;mut </span><a href="#216">r</a>);
         }
         (
-            <span class="kw">match </span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#214">rng</a>.<a href="../../../../src/competitive/tools/random/mod.rs.html#27">rand</a>(<span class="number">3</span>) {
-                <span class="number">0 </span>=&gt; Bound::Excluded(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#215">l</a>),
-                <span class="number">1 </span>=&gt; Bound::Included(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#215">l</a>),
+            <span class="kw">match </span><a href="#214">rng</a>.<a href="mod.rs.html#27">rand</a>(<span class="number">3</span>) {
+                <span class="number">0 </span>=&gt; Bound::Excluded(<a href="#215">l</a>),
+                <span class="number">1 </span>=&gt; Bound::Included(<a href="#215">l</a>),
                 <span class="kw">_ </span>=&gt; Bound::Unbounded,
             },
-            <span class="kw">match </span><a href="../../../../src/competitive/tools/random/random_generator.rs.html#214">rng</a>.<a href="../../../../src/competitive/tools/random/mod.rs.html#27">rand</a>(<span class="number">3</span>) {
-                <span class="number">0 </span>=&gt; Bound::Excluded(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#216">r</a>),
-                <span class="number">1 </span>=&gt; Bound::Included(<a href="../../../../src/competitive/tools/random/random_generator.rs.html#216">r</a>),
+            <span class="kw">match </span><a href="#214">rng</a>.<a href="mod.rs.html#27">rand</a>(<span class="number">3</span>) {
+                <span class="number">0 </span>=&gt; Bound::Excluded(<a href="#216">r</a>),
+                <span class="number">1 </span>=&gt; Bound::Included(<a href="#216">r</a>),
                 <span class="kw">_ </span>=&gt; Bound::Unbounded,
             },
         )
@@ -576,12 +576,12 @@
 }
 
 <span class="attribute">#[inline]
-</span><span class="kw">fn </span>randint_uniform(rng: <span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-    <span class="kw">let </span><span class="kw-2">mut </span>v = <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">rng</a>.<a href="../../../../src/competitive/tools/random/mod.rs.html#20">rand64</a>();
+</span><span class="kw">fn </span>randint_uniform(rng: <span class="kw-2">&amp;mut </span><a href="mod.rs.html#3">Xorshift</a>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
+    <span class="kw">let </span><span class="kw-2">mut </span>v = <a href="#236">rng</a>.<a href="mod.rs.html#20">rand64</a>();
     <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-        <a href="../../../../src/competitive/tools/random/random_generator.rs.html#237">v</a> %= <a href="../../../../src/competitive/tools/random/random_generator.rs.html#236">k</a>;
+        <a href="#237">v</a> %= <a href="#236">k</a>;
     }
-    <a href="../../../../src/competitive/tools/random/random_generator.rs.html#237">v</a>
+    <a href="#237">v</a>
 }
 
 <span class="attribute">#[macro_export]
@@ -669,4 +669,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (cf9ed0dd5 2022-09-15)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (98ad6a551 2022-09-17)" ></div></body></html>

@@ -105,7 +105,7 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
-</pre><pre class="rust"><code><span class="kw">use </span><a href="../../../src/competitive/tools/random/mod.rs.html#3"><span class="kw">super</span>::Xorshift</a>;
+</pre><pre class="rust"><code><span class="kw">use </span><a href="random/mod.rs.html#3"><span class="kw">super</span>::Xorshift</a>;
 
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">pub struct </span>SimuratedAnnealing {
@@ -114,7 +114,7 @@
     <span class="kw">pub </span>time: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>,
     <span class="kw">pub </span>temperture: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>,
     <span class="kw">pub </span>log_table: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;,
-    <span class="kw">pub </span>rand: <a href="../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>,
+    <span class="kw">pub </span>rand: <a href="random/mod.rs.html#3">Xorshift</a>,
 
     <span class="kw">pub </span>is_maximize: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     <span class="kw">pub </span>start_temp: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>,
@@ -122,18 +122,18 @@
     <span class="kw">pub </span>time_limit: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>,
     <span class="kw">pub </span>update_interval: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
-<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="../../../src/competitive/tools/heuristics.rs.html#4">SimuratedAnnealing</a> {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="#4">SimuratedAnnealing</a> {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>now = std::time::Instant::now();
         <span class="kw">let </span>log_table = (<span class="number">0</span>..<span class="self">Self</span>::LOG_TABLE_SIZE)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| ((<a href="../../../src/competitive/tools/heuristics.rs.html#22">i</a> * <span class="number">2 </span>+ <span class="number">1</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a> / (<span class="self">Self</span>::LOG_TABLE_SIZE * <span class="number">2</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).ln())
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| ((<a href="#22">i</a> * <span class="number">2 </span>+ <span class="number">1</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a> / (<span class="self">Self</span>::LOG_TABLE_SIZE * <span class="number">2</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).ln())
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="self">Self </span>{
             iter_count: <span class="number">0</span>,
-            <a href="../../../src/competitive/tools/heuristics.rs.html#20">now</a>,
+            <a href="#20">now</a>,
             time: <span class="number">0.</span>,
             temperture: <span class="number">3e3</span>,
-            <a href="../../../src/competitive/tools/heuristics.rs.html#21">log_table</a>,
+            <a href="#21">log_table</a>,
             rand: Xorshift::new(<span class="self">Self</span>::SEED),
             is_maximize: <span class="bool-val">true</span>,
             start_temp: <span class="number">3e3</span>,
@@ -143,7 +143,7 @@
         }
     }
 }
-<span class="kw">impl </span><a href="../../../src/competitive/tools/heuristics.rs.html#4">SimuratedAnnealing</a> {
+<span class="kw">impl </span><a href="#4">SimuratedAnnealing</a> {
     <span class="kw">pub const </span>LOG_TABLE_SIZE: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = <span class="number">0x10000</span>;
     <span class="kw">pub const </span>SEED: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = <span class="number">0xbeef_cafe</span>;
 
@@ -151,50 +151,50 @@
         <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
     }
     <span class="kw">pub fn </span>minimize(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-        <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#46">self</a>.is_maximize = <span class="bool-val">false</span>;
-        <span class="self"><a href="../../../src/competitive/tools/heuristics.rs.html#46">self</a>
+        <a class="self" href="#46">self</a>.is_maximize = <span class="bool-val">false</span>;
+        <span class="self"><a href="#46">self</a>
     </span>}
     <span class="kw">pub fn </span>set_start_temp(<span class="kw-2">mut </span><span class="self">self</span>, start_temp: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self </span>{
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(<span class="self">self</span>.iter_count, <span class="number">0</span>);
-        <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#50">self</a>.start_temp = <a href="../../../src/competitive/tools/heuristics.rs.html#50">start_temp</a>;
-        <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#50">self</a>.temperture = <a href="../../../src/competitive/tools/heuristics.rs.html#50">start_temp</a>;
-        <span class="self"><a href="../../../src/competitive/tools/heuristics.rs.html#50">self</a>
+        <a class="self" href="#50">self</a>.start_temp = <a href="#50">start_temp</a>;
+        <a class="self" href="#50">self</a>.temperture = <a href="#50">start_temp</a>;
+        <span class="self"><a href="#50">self</a>
     </span>}
     <span class="kw">pub fn </span>set_end_temp(<span class="kw-2">mut </span><span class="self">self</span>, end_temp: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self </span>{
-        <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#56">self</a>.end_temp = <a href="../../../src/competitive/tools/heuristics.rs.html#56">end_temp</a>;
-        <span class="self"><a href="../../../src/competitive/tools/heuristics.rs.html#56">self</a>
+        <a class="self" href="#56">self</a>.end_temp = <a href="#56">end_temp</a>;
+        <span class="self"><a href="#56">self</a>
     </span>}
     <span class="kw">pub fn </span>set_time_limit(<span class="kw-2">mut </span><span class="self">self</span>, time_limit: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <span class="self">Self </span>{
-        <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#60">self</a>.time_limit = <a href="../../../src/competitive/tools/heuristics.rs.html#60">time_limit</a>;
-        <span class="self"><a href="../../../src/competitive/tools/heuristics.rs.html#60">self</a>
+        <a class="self" href="#60">self</a>.time_limit = <a href="#60">time_limit</a>;
+        <span class="self"><a href="#60">self</a>
     </span>}
     <span class="kw">pub fn </span>set_update_interval(<span class="kw-2">mut </span><span class="self">self</span>, update_interval: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(update_interval &gt; <span class="number">0</span>);
-        <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#64">self</a>.update_interval = <a href="../../../src/competitive/tools/heuristics.rs.html#64">update_interval</a>;
-        <span class="self"><a href="../../../src/competitive/tools/heuristics.rs.html#64">self</a>
+        <a class="self" href="#64">self</a>.update_interval = <a href="#64">update_interval</a>;
+        <span class="self"><a href="#64">self</a>
     </span>}
     <span class="kw">pub fn </span>is_accepted(<span class="kw-2">&amp;mut </span><span class="self">self</span>, current_score: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>, next_score: <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <span class="kw">let </span>diff = <span class="kw">if </span><span class="self">self</span>.is_maximize {
-            <a href="../../../src/competitive/tools/heuristics.rs.html#69">next_score</a> - <a href="../../../src/competitive/tools/heuristics.rs.html#69">current_score</a>
+            <a href="#69">next_score</a> - <a href="#69">current_score</a>
         } <span class="kw">else </span>{
-            <a href="../../../src/competitive/tools/heuristics.rs.html#69">current_score</a> - <a href="../../../src/competitive/tools/heuristics.rs.html#69">next_score</a>
+            <a href="#69">current_score</a> - <a href="#69">next_score</a>
         };
-        <a href="../../../src/competitive/tools/heuristics.rs.html#70">diff</a> &gt;= <span class="number">0.
-            </span>|| <a href="../../../src/competitive/tools/heuristics.rs.html#70">diff</a>
-                &gt; <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#69">self</a>.log_table[<a class="self" href="../../../src/competitive/tools/heuristics.rs.html#69">self</a>.rand.<a href="../../../src/competitive/tools/random/mod.rs.html#27">rand</a>(<span class="self">Self</span>::LOG_TABLE_SIZE <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]
-                    * <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#69">self</a>.temperture
+        <a href="#70">diff</a> &gt;= <span class="number">0.
+            </span>|| <a href="#70">diff</a>
+                &gt; <a class="self" href="#69">self</a>.log_table[<a class="self" href="#69">self</a>.rand.<a href="random/mod.rs.html#27">rand</a>(<span class="self">Self</span>::LOG_TABLE_SIZE <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]
+                    * <a class="self" href="#69">self</a>.temperture
     }
     <span class="kw">pub fn </span>is_end(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.iter_count += <span class="number">1</span>;
+        <a class="self" href="#80">self</a>.iter_count += <span class="number">1</span>;
         <span class="kw">if </span><span class="self">self</span>.iter_count % <span class="self">self</span>.update_interval == <span class="number">0 </span>{
-            <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.time = <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.now.elapsed().as_secs_f64();
-            <span class="kw">let </span>temp_ratio = (<a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.end_temp - <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.start_temp) / <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.time_limit;
-            <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.temperture = <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.start_temp + <a href="../../../src/competitive/tools/heuristics.rs.html#84">temp_ratio</a> * <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.time;
-            <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.time &gt;= <a class="self" href="../../../src/competitive/tools/heuristics.rs.html#80">self</a>.time_limit
+            <a class="self" href="#80">self</a>.time = <a class="self" href="#80">self</a>.now.elapsed().as_secs_f64();
+            <span class="kw">let </span>temp_ratio = (<a class="self" href="#80">self</a>.end_temp - <a class="self" href="#80">self</a>.start_temp) / <a class="self" href="#80">self</a>.time_limit;
+            <a class="self" href="#80">self</a>.temperture = <a class="self" href="#80">self</a>.start_temp + <a href="#84">temp_ratio</a> * <a class="self" href="#80">self</a>.time;
+            <a class="self" href="#80">self</a>.time &gt;= <a class="self" href="#80">self</a>.time_limit
         } <span class="kw">else </span>{
             <span class="bool-val">false
         </span>}
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (cf9ed0dd5 2022-09-15)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (98ad6a551 2022-09-17)" ></div></body></html>

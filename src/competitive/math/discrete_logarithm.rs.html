@@ -660,13 +660,13 @@
 <span id="644">644</span>
 <span id="645">645</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{
-    <a href="../../../src/competitive/math/primitive_root.rs.html#15-20">check_primitive_root</a>, <a href="../../../src/competitive/math/gcd.rs.html#11">gcd</a>, <a href="../../../src/competitive/math/gcd.rs.html#34">lcm</a>, <a href="../../../src/competitive/math/gcd.rs.html#111">modinv</a>, <a href="../../../src/competitive/math/prime_factors.rs.html#67">prime_factors</a>, <a href="../../../src/competitive/math/primitive_root.rs.html#3">primitive_root</a>, <a href="../../../src/competitive/num/barrett_reduction.rs.html#2">BarrettReduction</a>,
-    <a href="../../../src/competitive/math/prime_list.rs.html#4">PrimeList</a>, <a href="../../../src/competitive/tools/random/mod.rs.html#3">Xorshift</a>,
+    <a href="primitive_root.rs.html#15-20">check_primitive_root</a>, <a href="gcd.rs.html#11">gcd</a>, <a href="gcd.rs.html#34">lcm</a>, <a href="gcd.rs.html#111">modinv</a>, <a href="prime_factors.rs.html#67">prime_factors</a>, <a href="primitive_root.rs.html#3">primitive_root</a>, <a href="../num/barrett_reduction.rs.html#2">BarrettReduction</a>,
+    <a href="prime_list.rs.html#4">PrimeList</a>, <a href="../tools/random/mod.rs.html#3">Xorshift</a>,
 };
 <span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/cell/struct.UnsafeCell.html">cell::UnsafeCell</a>, <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">collections::HashMap</a>};
 
 <span class="kw">fn </span>pow(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <span class="kw-2">mut </span>y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-    <span class="kw">let </span><span class="kw-2">mut </span>x = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#7">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>;
+    <span class="kw">let </span><span class="kw-2">mut </span>x = <a href="#7">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>;
     <span class="kw">let </span><span class="kw-2">mut </span>z: <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> = <span class="number">1</span>;
     <span class="kw">while </span>y &gt; <span class="number">0 </span>{
         <span class="kw">if </span>y &amp; <span class="number">1 </span>== <span class="number">1 </span>{
@@ -675,16 +675,16 @@
         x = br.rem(x * x);
         y &gt;&gt;= <span class="number">1</span>;
     }
-    <a href="../../../src/competitive/math/discrete_logarithm.rs.html#9">z</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
+    <a href="#9">z</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
 }
 
 <span class="kw">fn </span>solve_linear_congruence(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; {
-    <span class="kw">let </span>g = <a href="../../../src/competitive/math/gcd.rs.html#11">gcd</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#20">a</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#20">m</a>);
+    <span class="kw">let </span>g = <a href="gcd.rs.html#11">gcd</a>(<a href="#20">a</a>, <a href="#20">m</a>);
     <span class="kw">if </span>b % g != <span class="number">0 </span>{
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
-    <span class="kw">let </span>(a, b, m) = (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#20">a</a> / <a href="../../../src/competitive/math/discrete_logarithm.rs.html#21">g</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#20">b</a> / <a href="../../../src/competitive/math/discrete_logarithm.rs.html#21">g</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#20">m</a> / <a href="../../../src/competitive/math/discrete_logarithm.rs.html#21">g</a>);
-    <span class="prelude-val">Some</span>(((<a href="../../../src/competitive/math/discrete_logarithm.rs.html#25">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/gcd.rs.html#111">modinv</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#25">a</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#25">m</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> % <a href="../../../src/competitive/math/discrete_logarithm.rs.html#25">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as _</span>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#25">m</a>))
+    <span class="kw">let </span>(a, b, m) = (<a href="#20">a</a> / <a href="#21">g</a>, <a href="#20">b</a> / <a href="#21">g</a>, <a href="#20">m</a> / <a href="#21">g</a>);
+    <span class="prelude-val">Some</span>(((<a href="#25">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="gcd.rs.html#111">modinv</a>(<a href="#25">a</a>, <a href="#25">m</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> % <a href="#25">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as _</span>, <a href="#25">m</a>))
 }
 
 <span class="kw">fn </span>solve_linear_congruences&lt;I&gt;(abm: I) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt;
@@ -707,17 +707,17 @@
         x += (b <span class="kw">as </span>u128 * modinv(a, m) <span class="kw">as </span>u128 % m <span class="kw">as </span>u128 * m0 <span class="kw">as </span>u128) <span class="kw">as </span>u64;
         m0 <span class="kw-2">*</span>= m;
     }
-    <span class="prelude-val">Some</span>((<a href="../../../src/competitive/math/discrete_logarithm.rs.html#33">x</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#34">m0</a>))
+    <span class="prelude-val">Some</span>((<a href="#33">x</a>, <a href="#34">m0</a>))
 }
 
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">struct </span>IndexCalculus {
-    primes: <a href="../../../src/competitive/math/prime_list.rs.html#4">PrimeList</a>,
+    primes: <a href="prime_list.rs.html#4">PrimeList</a>,
     br_primes: Vec&lt;BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;&gt;,
-    ic: HashMap&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#250">IndexCalculusWithPrimitiveRoot</a>&gt;,
+    ic: HashMap&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="#250">IndexCalculusWithPrimitiveRoot</a>&gt;,
 }
 
-<span class="kw">impl </span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#53">IndexCalculus</a> {
+<span class="kw">impl </span><a href="#53">IndexCalculus</a> {
     <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             primes: PrimeList::new(<span class="number">2</span>),
@@ -726,19 +726,19 @@
         }
     }
     <span class="kw">fn </span>discrete_logarithm(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; {
-        <span class="kw">let </span>lim = ((((<a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).log2() * (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).log2().log2()).sqrt() / <span class="number">2.0 </span>+ <span class="number">1.</span>).exp2() * <span class="number">0.9</span>)
+        <span class="kw">let </span>lim = ((((<a href="#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).log2() * (<a href="#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).log2().log2()).sqrt() / <span class="number">2.0 </span>+ <span class="number">1.</span>).exp2() * <span class="number">0.9</span>)
             <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-        <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#67">self</a>.primes.<a href="../../../src/competitive/math/prime_list.rs.html#60">reserve</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#68">lim</a>);
-        <span class="kw">let </span>primes = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#67">self</a>.primes.<a href="../../../src/competitive/math/prime_list.rs.html#17">primes_lte</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#68">lim</a>);
+        <a class="self" href="#67">self</a>.primes.<a href="prime_list.rs.html#60">reserve</a>(<a href="#68">lim</a>);
+        <span class="kw">let </span>primes = <a class="self" href="#67">self</a>.primes.<a href="prime_list.rs.html#17">primes_lte</a>(<a href="#68">lim</a>);
         <span class="kw">while </span><span class="self">self</span>.br_primes.len() &lt; primes.len() {
             <span class="kw">let </span>br = BarrettReduction::&lt;u64&gt;::new(primes[<span class="self">self</span>.br_primes.len()]);
             <span class="self">self</span>.br_primes.push(br);
         }
-        <span class="kw">let </span>br_primes = <span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#67">self</a>.br_primes[..<a href="../../../src/competitive/math/discrete_logarithm.rs.html#71">primes</a>.len()];
-        <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#67">self</a>.ic
-            .entry(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">p</a>)
-            .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">p</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#76">br_primes</a>))
-            .<a href="../../../src/competitive/math/discrete_logarithm.rs.html#313-318">discrete_logarithm</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">a</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">b</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#76">br_primes</a>)
+        <span class="kw">let </span>br_primes = <span class="kw-2">&amp;</span><a class="self" href="#67">self</a>.br_primes[..<a href="#71">primes</a>.len()];
+        <a class="self" href="#67">self</a>.ic
+            .entry(<a href="#67">p</a>)
+            .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(<a href="#67">p</a>, <a href="#76">br_primes</a>))
+            .<a href="#313-318">discrete_logarithm</a>(<a href="#67">a</a>, <a href="#67">b</a>, <a href="#76">br_primes</a>)
     }
 }
 
@@ -767,7 +767,7 @@
             <span class="kw">break</span>;
         }
     }
-    <a href="../../../src/competitive/math/discrete_logarithm.rs.html#94">x</a> == <span class="number">1
+    <a href="#94">x</a> == <span class="number">1
 </span>}
 
 <span class="attribute">#[derive(Debug)]
@@ -779,64 +779,64 @@
     p3: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
 }
 
-<span class="kw">impl </span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#113">QdrtPowPrec</a> {
+<span class="kw">impl </span><a href="#113">QdrtPowPrec</a> {
     <span class="kw">fn </span>new(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, ord: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>qdrt = (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#122">ord</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).powf(<span class="number">0.25</span>).ceil() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-        <span class="kw">let </span>br_qdrt = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#123">qdrt</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p2 = Vec::with_capacity(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p3 = Vec::with_capacity(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span>qdrt = (<a href="#122">ord</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).powf(<span class="number">0.25</span>).ceil() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span>br_qdrt = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new(<a href="#123">qdrt</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p2 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p3 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1u64</span>;
         <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
             p0.push(acc);
             acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
         }
-        <span class="kw">let </span>a = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#129">acc</a>;
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#129">acc</a> = <span class="number">1</span>;
+        <span class="kw">let </span>a = <a href="#129">acc</a>;
+        <a href="#129">acc</a> = <span class="number">1</span>;
         <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
             p1.push(acc);
             acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
         }
-        <span class="kw">let </span>a = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#129">acc</a>;
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#129">acc</a> = <span class="number">1</span>;
+        <span class="kw">let </span>a = <a href="#129">acc</a>;
+        <a href="#129">acc</a> = <span class="number">1</span>;
         <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
             p2.push(acc);
             acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
         }
-        <span class="kw">let </span>a = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#129">acc</a>;
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#129">acc</a> = <span class="number">1</span>;
+        <span class="kw">let </span>a = <a href="#129">acc</a>;
+        <a href="#129">acc</a> = <span class="number">1</span>;
         <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
             p3.push(acc);
             acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
         }
         <span class="self">Self </span>{
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#124">br_qdrt</a>,
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#125">p0</a>,
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#126">p1</a>,
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#127">p2</a>,
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#128">p3</a>,
+            <a href="#124">br_qdrt</a>,
+            <a href="#125">p0</a>,
+            <a href="#126">p1</a>,
+            <a href="#127">p2</a>,
+            <a href="#128">p3</a>,
         }
     }
     <span class="kw">fn </span>pow(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-        <span class="kw">let </span>(a, b) = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.br_qdrt.<a href="../../../src/competitive/num/barrett_reduction.rs.html#38">div_rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">k</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>x = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.p0[<a href="../../../src/competitive/math/discrete_logarithm.rs.html#161">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>];
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">k</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#161">a</a>;
+        <span class="kw">let </span>(a, b) = <a class="self" href="#160">self</a>.br_qdrt.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#160">k</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <a class="self" href="#160">self</a>.p0[<a href="#161">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>];
+        <a href="#160">k</a> = <a href="#161">a</a>;
         <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-            <span class="kw">let </span>(a, b) = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.br_qdrt.<a href="../../../src/competitive/num/barrett_reduction.rs.html#38">div_rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">k</a>);
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#162">x</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#162">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.p1[<a href="../../../src/competitive/math/discrete_logarithm.rs.html#165">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>] <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">k</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#165">a</a>;
+            <span class="kw">let </span>(a, b) = <a class="self" href="#160">self</a>.br_qdrt.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#160">k</a>);
+            <a href="#162">x</a> = <a href="#160">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#162">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a class="self" href="#160">self</a>.p1[<a href="#165">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>] <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+            <a href="#160">k</a> = <a href="#165">a</a>;
         }
         <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-            <span class="kw">let </span>(a, b) = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.br_qdrt.<a href="../../../src/competitive/num/barrett_reduction.rs.html#38">div_rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">k</a>);
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#162">x</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#162">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.p2[<a href="../../../src/competitive/math/discrete_logarithm.rs.html#170">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>] <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">k</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#170">a</a>;
+            <span class="kw">let </span>(a, b) = <a class="self" href="#160">self</a>.br_qdrt.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#160">k</a>);
+            <a href="#162">x</a> = <a href="#160">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#162">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a class="self" href="#160">self</a>.p2[<a href="#170">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>] <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+            <a href="#160">k</a> = <a href="#170">a</a>;
         }
         <span class="kw">if </span>k &gt; <span class="number">0 </span>{
-            <span class="kw">let </span>(<span class="kw">_</span>, b) = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.br_qdrt.<a href="../../../src/competitive/num/barrett_reduction.rs.html#38">div_rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">k</a>);
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#162">x</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#162">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#160">self</a>.p3[<a href="../../../src/competitive/math/discrete_logarithm.rs.html#175">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>] <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+            <span class="kw">let </span>(<span class="kw">_</span>, b) = <a class="self" href="#160">self</a>.br_qdrt.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#160">k</a>);
+            <a href="#162">x</a> = <a href="#160">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#162">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a class="self" href="#160">self</a>.p3[<a href="#175">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>] <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         }
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#162">x</a>
+        <a href="#162">x</a>
     }
 }
 
@@ -844,18 +844,18 @@
     p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
     ord: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
     br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;],
-    prec: <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#113">QdrtPowPrec</a>,
+    prec: <span class="kw-2">&amp;</span><a href="#113">QdrtPowPrec</a>,
 ) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
-    <span class="kw">let </span>br_ord = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#184">ord</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
-    <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="../../../src/competitive/math/discrete_logarithm.rs.html#188">br_ord</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#189">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/discrete_logarithm.rs.html#189">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-    <span class="kw">let </span>sub = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <span class="kw">if </span>x &lt; y { <a href="../../../src/competitive/math/discrete_logarithm.rs.html#190">x</a> + <a href="../../../src/competitive/math/discrete_logarithm.rs.html#184">ord</a> - <a href="../../../src/competitive/math/discrete_logarithm.rs.html#190">y</a> } <span class="kw">else </span>{ <a href="../../../src/competitive/math/discrete_logarithm.rs.html#190">x</a> - <a href="../../../src/competitive/math/discrete_logarithm.rs.html#190">y</a> };
+    <span class="kw">let </span>br_ord = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#184">ord</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
+    <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="#188">br_ord</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#189">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#189">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+    <span class="kw">let </span>sub = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <span class="kw">if </span>x &lt; y { <a href="#190">x</a> + <a href="#184">ord</a> - <a href="#190">y</a> } <span class="kw">else </span>{ <a href="#190">x</a> - <a href="#190">y</a> };
 
-    <span class="kw">let </span>pc = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#185">br_primes</a>.len();
+    <span class="kw">let </span>pc = <a href="#185">br_primes</a>.len();
     <span class="kw">let </span><span class="kw-2">mut </span>mat: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;&gt; = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
     <span class="kw">let </span><span class="kw-2">mut </span>rows: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;&gt; = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
 
     <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-    <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#183">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
+    <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#183">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
 
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..pc {
         <span class="kw">for </span>ri <span class="kw">in </span><span class="number">0usize</span>.. {
@@ -904,36 +904,36 @@
         }
         mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
     }
-    (<span class="number">0</span>..<a href="../../../src/competitive/math/discrete_logarithm.rs.html#192">pc</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#193">mat</a>[<a href="../../../src/competitive/math/discrete_logarithm.rs.html#246">i</a>][<a href="../../../src/competitive/math/discrete_logarithm.rs.html#192">pc</a>])).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
+    (<span class="number">0</span>..<a href="#192">pc</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| (<a href="#193">mat</a>[<a href="#246">i</a>][<a href="#192">pc</a>])).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
 }
 
 <span class="attribute">#[derive(Debug)]
 </span><span class="kw">struct </span>IndexCalculusWithPrimitiveRoot {
     p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
     ord: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
-    prec: <a href="../../../src/competitive/math/discrete_logarithm.rs.html#113">QdrtPowPrec</a>,
+    prec: <a href="#113">QdrtPowPrec</a>,
     coeff: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
 }
 
-<span class="kw">impl </span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#250">IndexCalculusWithPrimitiveRoot</a> {
+<span class="kw">impl </span><a href="#250">IndexCalculusWithPrimitiveRoot</a> {
     <span class="kw">fn </span>new(p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;]) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>ord = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#258">p</a> - <span class="number">1</span>;
-        <span class="kw">let </span>g = <a href="../../../src/competitive/math/primitive_root.rs.html#3">primitive_root</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#258">p</a>);
-        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#258">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
-        <span class="kw">let </span>prec = QdrtPowPrec::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#260">g</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#259">ord</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#261">br</a>);
-        <span class="kw">let </span>coeff = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#182-187">index_calculus_for_primitive_root</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#258">p</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#259">ord</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#258">br_primes</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#262">prec</a>);
+        <span class="kw">let </span>ord = <a href="#258">p</a> - <span class="number">1</span>;
+        <span class="kw">let </span>g = <a href="primitive_root.rs.html#3">primitive_root</a>(<a href="#258">p</a>);
+        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#258">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
+        <span class="kw">let </span>prec = QdrtPowPrec::new(<a href="#260">g</a>, <a href="#259">ord</a>, <span class="kw-2">&amp;</span><a href="#261">br</a>);
+        <span class="kw">let </span>coeff = <a href="#182-187">index_calculus_for_primitive_root</a>(<a href="#258">p</a>, <a href="#259">ord</a>, <a href="#258">br_primes</a>, <span class="kw-2">&amp;</span><a href="#262">prec</a>);
         <span class="self">Self </span>{
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#258">p</a>,
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#259">ord</a>,
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#262">prec</a>,
-            <a href="../../../src/competitive/math/discrete_logarithm.rs.html#263">coeff</a>,
+            <a href="#258">p</a>,
+            <a href="#259">ord</a>,
+            <a href="#262">prec</a>,
+            <a href="#263">coeff</a>,
         }
     }
     <span class="kw">fn </span>index_calculus(<span class="kw-2">&amp;</span><span class="self">self</span>, a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;]) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
-        <span class="kw">let </span>p = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#271">self</a>.p;
-        <span class="kw">let </span>ord = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#271">self</a>.ord;
-        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#272">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
-        <span class="kw">let </span>a = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#274">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#271">a</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span>p = <a class="self" href="#271">self</a>.p;
+        <span class="kw">let </span>ord = <a class="self" href="#271">self</a>.ord;
+        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#272">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
+        <span class="kw">let </span>a = <a href="#274">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#271">a</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">if </span>a == <span class="number">1 </span>{
             <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="number">0</span>);
         }
@@ -943,13 +943,13 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::time();
         <span class="kw">let </span><span class="kw-2">mut </span>row = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0u64</span>; br_primes.len()];
-        <span class="kw">let </span><span class="kw-2">mut </span>kk = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#283">rng</a>.<a href="../../../src/competitive/tools/random/mod.rs.html#27">rand</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#273">ord</a> - <span class="number">1</span>) + <span class="number">1</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>gkk = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#271">self</a>.prec.<a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">pow</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#285">kk</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#274">br</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#285">kk</a>;
-        <span class="kw">let </span><span class="kw-2">mut </span>gk = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#274">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#286">gkk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/discrete_logarithm.rs.html#275">a</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span><span class="kw-2">mut </span>kk = <a href="#283">rng</a>.<a href="../tools/random/mod.rs.html#27">rand</a>(<a href="#273">ord</a> - <span class="number">1</span>) + <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>gkk = <a class="self" href="#271">self</a>.prec.<a href="#160">pow</a>(<a href="#285">kk</a>, <span class="kw-2">&amp;</span><a href="#274">br</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="#285">kk</a>;
+        <span class="kw">let </span><span class="kw-2">mut </span>gk = <a href="#274">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#286">gkk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#275">a</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">loop </span>{
             <span class="kw">if </span>factorize_smooth(gk, <span class="kw-2">&amp;mut </span>row, br_primes) {
-                <span class="kw">let </span><span class="kw-2">mut </span>res = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#273">ord</a> - <a href="../../../src/competitive/math/discrete_logarithm.rs.html#287">k</a>;
+                <span class="kw">let </span><span class="kw-2">mut </span>res = <a href="#273">ord</a> - <a href="#287">k</a>;
                 <span class="kw">for </span>(<span class="kw-2">&amp;</span>c, <span class="kw-2">&amp;</span>r) <span class="kw">in </span><span class="self">self</span>.coeff.iter().zip(<span class="kw-2">&amp;</span>row) {
                     <span class="kw">for _ in </span><span class="number">0</span>..r {
                         res += c;
@@ -958,16 +958,16 @@
                         }
                     }
                 }
-                <span class="kw">return </span><span class="prelude-val">Some</span>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#291">res</a>);
+                <span class="kw">return </span><span class="prelude-val">Some</span>(<a href="#291">res</a>);
             }
             <span class="kw">if </span>k + kk &lt; ord {
-                <a href="../../../src/competitive/math/discrete_logarithm.rs.html#287">k</a> += <a href="../../../src/competitive/math/discrete_logarithm.rs.html#285">kk</a>;
-                <a href="../../../src/competitive/math/discrete_logarithm.rs.html#288">gk</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#274">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#288">gk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/discrete_logarithm.rs.html#286">gkk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+                <a href="#287">k</a> += <a href="#285">kk</a>;
+                <a href="#288">gk</a> = <a href="#274">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#288">gk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#286">gkk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
             } <span class="kw">else </span>{
-                <a href="../../../src/competitive/math/discrete_logarithm.rs.html#285">kk</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#283">rng</a>.<a href="../../../src/competitive/tools/random/mod.rs.html#27">rand</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#273">ord</a> - <span class="number">1</span>) + <span class="number">1</span>;
-                <a href="../../../src/competitive/math/discrete_logarithm.rs.html#286">gkk</a> = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#271">self</a>.prec.<a href="../../../src/competitive/math/discrete_logarithm.rs.html#160">pow</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#285">kk</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#274">br</a>);
-                <a href="../../../src/competitive/math/discrete_logarithm.rs.html#287">k</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#285">kk</a>;
-                <a href="../../../src/competitive/math/discrete_logarithm.rs.html#288">gk</a> = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#274">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#286">gkk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/discrete_logarithm.rs.html#275">a</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+                <a href="#285">kk</a> = <a href="#283">rng</a>.<a href="../tools/random/mod.rs.html#27">rand</a>(<a href="#273">ord</a> - <span class="number">1</span>) + <span class="number">1</span>;
+                <a href="#286">gkk</a> = <a class="self" href="#271">self</a>.prec.<a href="#160">pow</a>(<a href="#285">kk</a>, <span class="kw-2">&amp;</span><a href="#274">br</a>);
+                <a href="#287">k</a> = <a href="#285">kk</a>;
+                <a href="#288">gk</a> = <a href="#274">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#286">gkk</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#275">a</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
             }
         }
     }
@@ -977,11 +977,11 @@
         b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
         br_primes: <span class="kw-2">&amp;</span>[BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;],
     ) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; {
-        <span class="kw">let </span>p = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#314">self</a>.p;
-        <span class="kw">let </span>ord = <a class="self" href="../../../src/competitive/math/discrete_logarithm.rs.html#314">self</a>.ord;
-        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#319">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
-        <span class="kw">let </span>a = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#321">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#315">a</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-        <span class="kw">let </span>b = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#321">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#316">b</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span>p = <a class="self" href="#314">self</a>.p;
+        <span class="kw">let </span>ord = <a class="self" href="#314">self</a>.ord;
+        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#319">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
+        <span class="kw">let </span>a = <a href="#321">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#315">a</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span>b = <a href="#321">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#316">b</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">if </span>a == <span class="number">0 </span>{
             <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
         }
@@ -991,7 +991,7 @@
 
         <span class="kw">let </span>x = <span class="self">self</span>.index_calculus(a, br_primes)<span class="question-mark">?</span>;
         <span class="kw">let </span>y = <span class="self">self</span>.index_calculus(b, br_primes)<span class="question-mark">?</span>;
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#20">solve_linear_congruence</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#331">x</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#332">y</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#320">ord</a>)
+        <a href="#20">solve_linear_congruence</a>(<a href="#331">x</a>, <a href="#332">y</a>, <a href="#320">ord</a>)
     }
 }
 
@@ -1000,23 +1000,23 @@
 );
 
 <span class="kw">pub fn </span>discrete_logarithm_prime_mod(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
-    <a href="../../../src/competitive/math/discrete_logarithm.rs.html#337-339">IC</a>.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#342">ic</a>.get() }.<a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">discrete_logarithm</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#341">a</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#341">b</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#341">p</a>))
-        .map(|t| <a href="../../../src/competitive/math/discrete_logarithm.rs.html#343">t</a>.<span class="number">0</span>)
+    <a href="#337-339">IC</a>.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="#342">ic</a>.get() }.<a href="#67">discrete_logarithm</a>(<a href="#341">a</a>, <a href="#341">b</a>, <a href="#341">p</a>))
+        .map(|t| <a href="#343">t</a>.<span class="number">0</span>)
 }
 
 <span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
 </span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, e: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
-    <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#347">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
-    <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="../../../src/competitive/math/discrete_logarithm.rs.html#348">br</a>.<a href="../../../src/competitive/num/barrett_reduction.rs.html#39-52">rem</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#349">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/discrete_logarithm.rs.html#349">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-    <span class="kw">let </span>block_size = (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#347">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt().ceil() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+    <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#347">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
+    <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="#348">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#349">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#349">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+    <span class="kw">let </span>block_size = (<a href="#347">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt().ceil() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
     <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new();
-    <span class="kw">let </span>g = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#7">pow</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#347">a</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#347">p</a>.pow(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#347">e</a> - <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#348">br</a>);
+    <span class="kw">let </span>g = <a href="#7">pow</a>(<a href="#347">a</a>, <a href="#347">p</a>.pow(<a href="#347">e</a> - <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="#348">br</a>);
     <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
     <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..block_size {
         baby.entry(xj).or_insert(j);
         xj = mul(xj, g);
     }
-    <span class="kw">let </span>xi = <a href="../../../src/competitive/math/gcd.rs.html#111">modinv</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#353">xj</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#347">n</a>);
+    <span class="kw">let </span>xi = <a href="gcd.rs.html#111">modinv</a>(<a href="#353">xj</a>, <a href="#347">n</a>);
     <span class="kw">let </span><span class="kw-2">mut </span>t = <span class="number">0u64</span>;
     <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..e {
         <span class="kw">let </span><span class="kw-2">mut </span>h = pow(mul(modinv(pow(a, t, <span class="kw-2">&amp;</span>br), n), b), p.pow(e - <span class="number">1 </span>- k), <span class="kw-2">&amp;</span>br);
@@ -1033,14 +1033,14 @@
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
     }
-    <span class="prelude-val">Some</span>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#359">t</a>)
+    <span class="prelude-val">Some</span>(<a href="#359">t</a>)
 }
 
 <span class="doccomment">/// a^x ≡ b (mod p^e)
 </span><span class="kw">fn </span>discrete_logarithm_prime_power(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, e: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; {
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(p, <span class="number">0</span>);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(e, <span class="number">0</span>);
-    <span class="kw">let </span>n = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">p</a>.pow(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">e</a>);
+    <span class="kw">let </span>n = <a href="#379">p</a>.pow(<a href="#379">e</a>);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(a &lt; n);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(b &lt; n);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(gcd(a, p), <span class="number">1</span>);
@@ -1054,25 +1054,25 @@
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
     <span class="kw">if </span>e == <span class="number">1 </span>{
-        <span class="kw">return </span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#337-339">IC</a>.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#396">ic</a>.get() }.<a href="../../../src/competitive/math/discrete_logarithm.rs.html#67">discrete_logarithm</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">a</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">b</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">p</a>));
+        <span class="kw">return </span><a href="#337-339">IC</a>.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="#396">ic</a>.get() }.<a href="#67">discrete_logarithm</a>(<a href="#379">a</a>, <a href="#379">b</a>, <a href="#379">p</a>));
     }
-    <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#382">n</a> <span class="kw">as _</span>);
+    <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#382">n</a> <span class="kw">as _</span>);
     <span class="kw">if </span>p == <span class="number">2 </span>{
         <span class="kw">if </span>e &gt;= <span class="number">3 </span>{
             <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>&amp;&amp; b % <span class="number">4 </span>!= <span class="number">1 </span>{
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
-            <span class="kw">let </span>aa = <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">a</a> } <span class="kw">else </span>{ <a href="../../../src/competitive/math/discrete_logarithm.rs.html#382">n</a> - <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">a</a> };
-            <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">b</a> } <span class="kw">else </span>{ <a href="../../../src/competitive/math/discrete_logarithm.rs.html#382">n</a> - <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">b</a> };
+            <span class="kw">let </span>aa = <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="#379">a</a> } <span class="kw">else </span>{ <a href="#382">n</a> - <a href="#379">a</a> };
+            <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="#379">b</a> } <span class="kw">else </span>{ <a href="#382">n</a> - <a href="#379">b</a> };
             <span class="kw">let </span>g = <span class="number">5</span>;
-            <span class="kw">let </span>ord = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#382">n</a> / <span class="number">4</span>;
+            <span class="kw">let </span>ord = <a href="#382">n</a> / <span class="number">4</span>;
             <span class="kw">let </span>x = pohlig_hellman_prime_power_order(g, aa, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
             <span class="kw">let </span>y = pohlig_hellman_prime_power_order(g, bb, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
             <span class="kw">let </span>t = solve_linear_congruence(x, y, ord)<span class="question-mark">?</span>;
-            <span class="kw">match </span>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">a</a> % <span class="number">4 </span>== <span class="number">1</span>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">b</a> % <span class="number">4 </span>== <span class="number">1</span>) {
-                (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#410">t</a>),
-                (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="kw">if </span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>=&gt; <span class="prelude-val">Some</span>((<a href="../../../src/competitive/math/discrete_logarithm.rs.html#410">t</a>.<span class="number">0</span>, <a href="../../../src/competitive/math/gcd.rs.html#34">lcm</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
-                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">1 </span>=&gt; <span class="prelude-val">Some</span>((<a href="../../../src/competitive/math/discrete_logarithm.rs.html#410">t</a>.<span class="number">0</span>, <a href="../../../src/competitive/math/gcd.rs.html#34">lcm</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
+            <span class="kw">match </span>(<a href="#379">a</a> % <span class="number">4 </span>== <span class="number">1</span>, <a href="#379">b</a> % <span class="number">4 </span>== <span class="number">1</span>) {
+                (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>(<a href="#410">t</a>),
+                (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="kw">if </span><a href="#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>=&gt; <span class="prelude-val">Some</span>((<a href="#410">t</a>.<span class="number">0</span>, <a href="gcd.rs.html#34">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
+                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span><a href="#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">1 </span>=&gt; <span class="prelude-val">Some</span>((<a href="#410">t</a>.<span class="number">0</span>, <a href="gcd.rs.html#34">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
                 <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
             }
         } <span class="kw">else if </span>a == <span class="number">1 </span>{
@@ -1092,13 +1092,13 @@
             </span>}
         }
     } <span class="kw">else </span>{
-        <span class="kw">let </span>ord = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#382">n</a> - <a href="../../../src/competitive/math/discrete_logarithm.rs.html#382">n</a> / <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">p</a>;
-        <span class="kw">let </span>pf_ord = <a href="../../../src/competitive/math/prime_factors.rs.html#67">prime_factors</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#434">ord</a>);
+        <span class="kw">let </span>ord = <a href="#382">n</a> - <a href="#382">n</a> / <a href="#379">p</a>;
+        <span class="kw">let </span>pf_ord = <a href="prime_factors.rs.html#67">prime_factors</a>(<a href="#434">ord</a>);
         <span class="kw">let </span>g = (<span class="number">2</span>..)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">find</a>(|<span class="kw-2">&amp;</span>g| <a href="../../../src/competitive/math/primitive_root.rs.html#15-20">check_primitive_root</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#437">g</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#434">ord</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#398">br</a>, <span class="kw-2">&amp;</span><a href="../../../src/competitive/math/discrete_logarithm.rs.html#435">pf_ord</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">find</a>(|<span class="kw-2">&amp;</span>g| <a href="primitive_root.rs.html#15-20">check_primitive_root</a>(<a href="#437">g</a>, <a href="#434">ord</a>, <span class="kw-2">&amp;</span><a href="#398">br</a>, <span class="kw-2">&amp;</span><a href="#435">pf_ord</a>))
             .unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>pf_p = <a href="../../../src/competitive/math/prime_factors.rs.html#67">prime_factors</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">p</a> - <span class="number">1</span>);
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#439">pf_p</a>.push((<a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">p</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#379">e</a> - <span class="number">1</span>));
+        <span class="kw">let </span><span class="kw-2">mut </span>pf_p = <a href="prime_factors.rs.html#67">prime_factors</a>(<a href="#379">p</a> - <span class="number">1</span>);
+        <a href="#439">pf_p</a>.push((<a href="#379">p</a>, <a href="#379">e</a> - <span class="number">1</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>abm = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
         <span class="kw">for </span>(q, c) <span class="kw">in </span>pf_p {
             <span class="kw">let </span>m = q.pow(c);
@@ -1110,36 +1110,36 @@
             <span class="kw">let </span>y = pohlig_hellman_prime_power_order(gg, bb, n, q, c)<span class="question-mark">?</span>;
             abm.push((x, y, m));
         }
-        <a href="../../../src/competitive/math/discrete_logarithm.rs.html#29-31">solve_linear_congruences</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#441">abm</a>)
+        <a href="#29-31">solve_linear_congruences</a>(<a href="#441">abm</a>)
     }
 }
 
 <span class="doccomment">/// a^x ≡ b (mod n)
 </span><span class="kw">pub fn </span>discrete_logarithm(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
-    <span class="kw">let </span>a = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">a</a> % <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">n</a>;
-    <span class="kw">let </span>b = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">b</a> % <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">n</a>;
-    <span class="kw">let </span>d = <span class="number">2</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">64 </span>- <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">n</a>.leading_zeros() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
-    <span class="kw">let </span><span class="kw-2">mut </span>pw = <span class="number">1 </span>% <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">n</a>;
+    <span class="kw">let </span>a = <a href="#457">a</a> % <a href="#457">n</a>;
+    <span class="kw">let </span>b = <a href="#457">b</a> % <a href="#457">n</a>;
+    <span class="kw">let </span>d = <span class="number">2</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">64 </span>- <a href="#457">n</a>.leading_zeros() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
+    <span class="kw">let </span><span class="kw-2">mut </span>pw = <span class="number">1 </span>% <a href="#457">n</a>;
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..d {
         <span class="kw">if </span>pw == b {
             <span class="kw">return </span><span class="prelude-val">Some</span>(i);
         }
         pw = (pw <span class="kw">as </span>u128 * a <span class="kw">as </span>u128 % n <span class="kw">as </span>u128) <span class="kw">as </span>u64;
     }
-    <span class="kw">let </span>g = <a href="../../../src/competitive/math/gcd.rs.html#11">gcd</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#461">pw</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">n</a>);
+    <span class="kw">let </span>g = <a href="gcd.rs.html#11">gcd</a>(<a href="#461">pw</a>, <a href="#457">n</a>);
     <span class="kw">if </span>b % g != <span class="number">0 </span>{
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
-    <span class="kw">let </span>n = <a href="../../../src/competitive/math/discrete_logarithm.rs.html#457">n</a> / <a href="../../../src/competitive/math/discrete_logarithm.rs.html#468">g</a>;
-    <span class="kw">let </span>b = (<a href="../../../src/competitive/math/discrete_logarithm.rs.html#459">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="../../../src/competitive/math/gcd.rs.html#111">modinv</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#461">pw</a>, <a href="../../../src/competitive/math/discrete_logarithm.rs.html#472">n</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> % <a href="../../../src/competitive/math/discrete_logarithm.rs.html#472">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-    <span class="kw">let </span>pf = <a href="../../../src/competitive/math/prime_factors.rs.html#67">prime_factors</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#472">n</a>);
+    <span class="kw">let </span>n = <a href="#457">n</a> / <a href="#468">g</a>;
+    <span class="kw">let </span>b = (<a href="#459">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="gcd.rs.html#111">modinv</a>(<a href="#461">pw</a>, <a href="#472">n</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> % <a href="#472">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+    <span class="kw">let </span>pf = <a href="prime_factors.rs.html#67">prime_factors</a>(<a href="#472">n</a>);
     <span class="kw">let </span><span class="kw-2">mut </span>abm = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
     <span class="kw">for </span>(p, e) <span class="kw">in </span>pf {
         <span class="kw">let </span>q = p.pow(e);
         <span class="kw">let </span>x = discrete_logarithm_prime_power(a % q, b % q, p, e)<span class="question-mark">?</span>;
         abm.push((<span class="number">1</span>, x.<span class="number">0</span>, x.<span class="number">1</span>));
     }
-    <a href="../../../src/competitive/math/discrete_logarithm.rs.html#29-31">solve_linear_congruences</a>(<a href="../../../src/competitive/math/discrete_logarithm.rs.html#475">abm</a>).map(|x| <a href="../../../src/competitive/math/discrete_logarithm.rs.html#481">x</a>.<span class="number">0 </span>+ <a href="../../../src/competitive/math/discrete_logarithm.rs.html#460">d</a>)
+    <a href="#29-31">solve_linear_congruences</a>(<a href="#475">abm</a>).map(|x| <a href="#481">x</a>.<span class="number">0 </span>+ <a href="#460">d</a>)
 }
 
 <span class="attribute">#[cfg(test)]
@@ -1305,4 +1305,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (cf9ed0dd5 2022-09-15)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (98ad6a551 2022-09-17)" ></div></body></html>

@@ -207,56 +207,56 @@
 <span class="attribute">#[cfg(target_pointer_width = <span class="string">&quot;32&quot;</span>)]
 </span><span class="kw">pub type </span>FibonacciHasher = FibonacciHasheru32;
 <span class="attribute">#[cfg(not(target_pointer_width = <span class="string">&quot;32&quot;</span>))]
-</span><span class="kw">pub type </span>FibonacciHasher = <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#90">FibonacciHasheru64</a>;
-<span class="kw">pub type </span>FibHashMap&lt;K, V&gt; = HashMap&lt;K, V, BuildHasherDefault&lt;<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#10">FibonacciHasher</a>&gt;&gt;;
-<span class="kw">pub type </span>FibHashSet&lt;V&gt; = HashSet&lt;V, BuildHasherDefault&lt;<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#10">FibonacciHasher</a>&gt;&gt;;
+</span><span class="kw">pub type </span>FibonacciHasher = <a href="#90">FibonacciHasheru64</a>;
+<span class="kw">pub type </span>FibHashMap&lt;K, V&gt; = HashMap&lt;K, V, BuildHasherDefault&lt;<a href="#10">FibonacciHasher</a>&gt;&gt;;
+<span class="kw">pub type </span>FibHashSet&lt;V&gt; = HashSet&lt;V, BuildHasherDefault&lt;<a href="#10">FibonacciHasher</a>&gt;&gt;;
 
 <span class="attribute">#[derive(Debug, Default)]
 </span><span class="kw">pub struct </span>FibonacciHasheru32 {
     hash: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>,
 }
-<span class="kw">impl </span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#15">FibonacciHasheru32</a> {
+<span class="kw">impl </span><a href="#15">FibonacciHasheru32</a> {
     <span class="kw">const </span>A: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> = <span class="number">2654435769</span>;
     <span class="kw">const </span>B: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> = <span class="number">5</span>;
     <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">self</a>.hash = (<a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">self</a>.hash.rotate_right(<span class="self">Self</span>::B) ^ <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">x</a>).wrapping_mul(<span class="self">Self</span>::A);
+        <a class="self" href="#21">self</a>.hash = (<a class="self" href="#21">self</a>.hash.rotate_right(<span class="self">Self</span>::B) ^ <a href="#21">x</a>).wrapping_mul(<span class="self">Self</span>::A);
     }
 }
-<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">Hasher</a> <span class="kw">for </span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#15">FibonacciHasheru32</a> {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">Hasher</a> <span class="kw">for </span><a href="#15">FibonacciHasheru32</a> {
     <span class="kw">fn </span>finish(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#26">self</a>.hash <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
+        <a class="self" href="#26">self</a>.hash <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
     }
     <span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>bytes: <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]) {
         <span class="kw">if </span>bytes.len() % <span class="number">4 </span>&gt;= <span class="number">2 </span>{
-            <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>(u16::from_ne_bytes(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">bytes</a>[..<span class="number">2</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
-            <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">bytes</a> = <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">bytes</a>[<span class="number">2</span>..];
+            <a class="self" href="#29">self</a>.<a href="#21">push</a>(u16::from_ne_bytes(<a href="#29">bytes</a>[..<span class="number">2</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+            <a href="#29">bytes</a> = <span class="kw-2">&amp;</span><a href="#29">bytes</a>[<span class="number">2</span>..];
         }
         <span class="kw">if </span>bytes.len() % <span class="number">2 </span>&gt;= <span class="number">1 </span>{
-            <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>(u16::from_ne_bytes(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">bytes</a>[..<span class="number">1</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
-            <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">bytes</a> = <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#29">bytes</a>[<span class="number">1</span>..];
+            <a class="self" href="#29">self</a>.<a href="#21">push</a>(u16::from_ne_bytes(<a href="#29">bytes</a>[..<span class="number">1</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+            <a href="#29">bytes</a> = <span class="kw-2">&amp;</span><a href="#29">bytes</a>[<span class="number">1</span>..];
         }
         <span class="kw">for </span>chunk <span class="kw">in </span>bytes.chunks(<span class="number">4</span>) {
             <span class="self">self</span>.push(u32::from_ne_bytes(chunk.try_into().unwrap()));
         }
     }
     <span class="kw">fn </span>write_u8(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#42">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#42">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
+        <a class="self" href="#42">self</a>.<a href="#21">push</a>(<a href="#42">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
     }
     <span class="kw">fn </span>write_u16(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#45">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#45">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
+        <a class="self" href="#45">self</a>.<a href="#21">push</a>(<a href="#45">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
     }
     <span class="kw">fn </span>write_u32(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#48">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#48">i</a>)
+        <a class="self" href="#48">self</a>.<a href="#21">push</a>(<a href="#48">i</a>)
     }
     <span class="kw">fn </span>write_u64(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#51">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#51">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#51">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>((<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#51">i</a> &gt;&gt; <span class="number">32</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+        <a class="self" href="#51">self</a>.<a href="#21">push</a>(<a href="#51">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+        <a class="self" href="#51">self</a>.<a href="#21">push</a>((<a href="#51">i</a> &gt;&gt; <span class="number">32</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
     }
     <span class="kw">fn </span>write_u128(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>((<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">i</a> &gt;&gt; <span class="number">32</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>((<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">i</a> &gt;&gt; <span class="number">64</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#21">push</a>((<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#55">i</a> &gt;&gt; <span class="number">96</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+        <a class="self" href="#55">self</a>.<a href="#21">push</a>(<a href="#55">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+        <a class="self" href="#55">self</a>.<a href="#21">push</a>((<a href="#55">i</a> &gt;&gt; <span class="number">32</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+        <a class="self" href="#55">self</a>.<a href="#21">push</a>((<a href="#55">i</a> &gt;&gt; <span class="number">64</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
+        <a class="self" href="#55">self</a>.<a href="#21">push</a>((<a href="#55">i</a> &gt;&gt; <span class="number">96</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>);
     }
     <span class="attribute">#[cfg(target_pointer_width = <span class="string">&quot;32&quot;</span>)]
     </span><span class="kw">fn </span>write_usize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize) {
@@ -264,25 +264,25 @@
     }
     <span class="attribute">#[cfg(target_pointer_width = <span class="string">&quot;64&quot;</span>)]
     </span><span class="kw">fn </span>write_usize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#66">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#66">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a class="self" href="#66">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="#66">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>write_i8(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#69">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u8</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#69">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)
+        <a class="self" href="#69">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u8</a>(<a href="#69">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)
     }
     <span class="kw">fn </span>write_i16(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#72">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u16</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#72">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>)
+        <a class="self" href="#72">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u16</a>(<a href="#72">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>)
     }
     <span class="kw">fn </span>write_i32(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#75">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u32</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#75">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
+        <a class="self" href="#75">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u32</a>(<a href="#75">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
     }
     <span class="kw">fn </span>write_i64(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#78">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#78">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a class="self" href="#78">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="#78">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>write_i128(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#81">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u128</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#81">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>)
+        <a class="self" href="#81">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u128</a>(<a href="#81">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>)
     }
     <span class="kw">fn </span>write_isize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#84">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_usize</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#84">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
+        <a class="self" href="#84">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_usize</a>(<a href="#84">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
     }
 }
 
@@ -290,70 +290,70 @@
 </span><span class="kw">pub struct </span>FibonacciHasheru64 {
     hash: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
 }
-<span class="kw">impl </span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#90">FibonacciHasheru64</a> {
+<span class="kw">impl </span><a href="#90">FibonacciHasheru64</a> {
     <span class="kw">const </span>A: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = <span class="number">11400714819323198485</span>;
     <span class="kw">const </span>B: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> = <span class="number">5</span>;
     <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">self</a>.hash = (<a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">self</a>.hash.rotate_right(<span class="self">Self</span>::B) ^ <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">x</a>).wrapping_mul(<span class="self">Self</span>::A);
+        <a class="self" href="#96">self</a>.hash = (<a class="self" href="#96">self</a>.hash.rotate_right(<span class="self">Self</span>::B) ^ <a href="#96">x</a>).wrapping_mul(<span class="self">Self</span>::A);
     }
 }
-<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">Hasher</a> <span class="kw">for </span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#90">FibonacciHasheru64</a> {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">Hasher</a> <span class="kw">for </span><a href="#90">FibonacciHasheru64</a> {
     <span class="kw">fn </span>finish(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#101">self</a>.hash
+        <a class="self" href="#101">self</a>.hash
     }
     <span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>bytes: <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>]) {
         <span class="kw">if </span>bytes.len() % <span class="number">8 </span>&gt;= <span class="number">4 </span>{
-            <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(u16::from_ne_bytes(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a>[..<span class="number">4</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
-            <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a> = <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a>[<span class="number">4</span>..];
+            <a class="self" href="#104">self</a>.<a href="#96">push</a>(u16::from_ne_bytes(<a href="#104">bytes</a>[..<span class="number">4</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
+            <a href="#104">bytes</a> = <span class="kw-2">&amp;</span><a href="#104">bytes</a>[<span class="number">4</span>..];
         }
         <span class="kw">if </span>bytes.len() % <span class="number">4 </span>&gt;= <span class="number">2 </span>{
-            <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(u16::from_ne_bytes(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a>[..<span class="number">2</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
-            <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a> = <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a>[<span class="number">2</span>..];
+            <a class="self" href="#104">self</a>.<a href="#96">push</a>(u16::from_ne_bytes(<a href="#104">bytes</a>[..<span class="number">2</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
+            <a href="#104">bytes</a> = <span class="kw-2">&amp;</span><a href="#104">bytes</a>[<span class="number">2</span>..];
         }
         <span class="kw">if </span>bytes.len() % <span class="number">2 </span>&gt;= <span class="number">1 </span>{
-            <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(u16::from_ne_bytes(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a>[..<span class="number">1</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
-            <a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a> = <span class="kw-2">&amp;</span><a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#104">bytes</a>[<span class="number">1</span>..];
+            <a class="self" href="#104">self</a>.<a href="#96">push</a>(u16::from_ne_bytes(<a href="#104">bytes</a>[..<span class="number">1</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html">try_into</a>().unwrap()) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
+            <a href="#104">bytes</a> = <span class="kw-2">&amp;</span><a href="#104">bytes</a>[<span class="number">1</span>..];
         }
         <span class="kw">for </span>chunk <span class="kw">in </span>bytes.chunks(<span class="number">8</span>) {
             <span class="self">self</span>.push(u64::from_ne_bytes(chunk.try_into().unwrap()));
         }
     }
     <span class="kw">fn </span>write_u8(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#121">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#121">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a class="self" href="#121">self</a>.<a href="#96">push</a>(<a href="#121">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>write_u16(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#124">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#124">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a class="self" href="#124">self</a>.<a href="#96">push</a>(<a href="#124">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>write_u32(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#127">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#127">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a class="self" href="#127">self</a>.<a href="#96">push</a>(<a href="#127">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>write_u64(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#130">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#130">i</a>);
+        <a class="self" href="#130">self</a>.<a href="#96">push</a>(<a href="#130">i</a>);
     }
     <span class="kw">fn </span>write_u128(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#133">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#133">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#133">self</a>.<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#96">push</a>((<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#133">i</a> &gt;&gt; <span class="number">64</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
+        <a class="self" href="#133">self</a>.<a href="#96">push</a>(<a href="#133">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
+        <a class="self" href="#133">self</a>.<a href="#96">push</a>((<a href="#133">i</a> &gt;&gt; <span class="number">64</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
     }
     <span class="kw">fn </span>write_usize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#137">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#137">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a class="self" href="#137">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="#137">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>write_i8(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#140">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u8</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#140">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)
+        <a class="self" href="#140">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u8</a>(<a href="#140">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>)
     }
     <span class="kw">fn </span>write_i16(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#143">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u16</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#143">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>)
+        <a class="self" href="#143">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u16</a>(<a href="#143">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a>)
     }
     <span class="kw">fn </span>write_i32(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#146">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u32</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#146">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
+        <a class="self" href="#146">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u32</a>(<a href="#146">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)
     }
     <span class="kw">fn </span>write_i64(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#149">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#149">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a class="self" href="#149">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u64</a>(<a href="#149">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>write_i128(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#152">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u128</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#152">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>)
+        <a class="self" href="#152">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_u128</a>(<a href="#152">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>)
     }
     <span class="kw">fn </span>write_isize(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>) {
-        <a class="self" href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#155">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_usize</a>(<a href="../../../src/competitive/data_structure/fibonacci_hash.rs.html#155">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
+        <a class="self" href="#155">self</a>.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">write_usize</a>(<a href="#155">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
     }
 }
 
@@ -383,4 +383,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (cf9ed0dd5 2022-09-15)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (98ad6a551 2022-09-17)" ></div></body></html>

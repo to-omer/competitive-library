@@ -211,16 +211,16 @@
 <span id="195">195</span>
 <span id="196">196</span>
 <span id="197">197</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../../../src/competitive/tools/associated_value.rs.html#2">AssociatedValue</a>, <a href="../../../src/competitive/num/complex.rs.html#9">Complex</a>, <a href="../../../src/competitive/math/convolve_steps.rs.html#1">ConvolveSteps</a>, <a href="../../../src/competitive/num/zero_one.rs.html#15">One</a>, <a href="../../../src/competitive/num/zero_one.rs.html#1">Zero</a>};
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../tools/associated_value.rs.html#2">AssociatedValue</a>, <a href="../num/complex.rs.html#9">Complex</a>, <a href="convolve_steps.rs.html#1">ConvolveSteps</a>, <a href="../num/zero_one.rs.html#15">One</a>, <a href="../num/zero_one.rs.html#1">Zero</a>};
 
 <span class="kw">pub enum </span>ConvolveRealFft {}
 
 <span class="kw">enum </span>RotateCache {}
-<span class="kw">impl </span><a href="../../../src/competitive/math/fast_fourier_transform.rs.html#5">RotateCache</a> {
+<span class="kw">impl </span><a href="#5">RotateCache</a> {
     <span class="kw">fn </span>ensure(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(n.count_ones(), <span class="number">1</span>, <span class="string">&quot;call with power of two but {}&quot;</span>, n);
         <span class="self">Self</span>::modify(|cache| {
-            <span class="kw">let </span><span class="kw-2">mut </span>m = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#9">cache</a>.len();
+            <span class="kw">let </span><span class="kw-2">mut </span>m = <a href="#9">cache</a>.len();
             <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
                 m.count_ones() &lt;= <span class="number">1</span>,
                 <span class="string">&quot;length might be power of two but {}&quot;</span>,
@@ -229,10 +229,10 @@
             <span class="kw">if </span>m &gt;= n {
                 <span class="kw">return</span>;
             }
-            <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#9">cache</a>.reserve_exact(<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#7">n</a> - <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#10">m</a>);
+            <a href="#9">cache</a>.reserve_exact(<a href="#7">n</a> - <a href="#10">m</a>);
             <span class="kw">if </span>cache.is_empty() {
-                <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#9">cache</a>.push(Complex::one());
-                <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#10">m</a> += <span class="number">1</span>;
+                <a href="#9">cache</a>.push(Complex::one());
+                <a href="#10">m</a> += <span class="number">1</span>;
             }
             <span class="kw">while </span>m &lt; n {
                 <span class="kw">let </span>p = Complex::primitive_nth_root_of_unity(-((m * <span class="number">4</span>) <span class="kw">as </span>f64));
@@ -245,11 +245,11 @@
         });
     }
 }
-<a class="macro" href="../../../src/competitive/tools/associated_value.rs.html#54-68">crate::impl_assoc_value!</a>(RotateCache, Vec&lt;Complex&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;&gt;, <span class="macro">vec!</span>[Complex::one()]);
+<a class="macro" href="../tools/associated_value.rs.html#54-68">crate::impl_assoc_value!</a>(RotateCache, Vec&lt;Complex&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;&gt;, <span class="macro">vec!</span>[Complex::one()]);
 
 <span class="kw">fn </span>bit_reverse&lt;T&gt;(f: <span class="kw-2">&amp;mut </span>[T]) {
     <span class="kw">let </span><span class="kw-2">mut </span>ip = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0u32</span>];
-    <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#37">f</a>.len();
+    <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="#37">f</a>.len();
     <span class="kw">let </span><span class="kw-2">mut </span>m = <span class="number">1</span>;
     <span class="kw">while </span><span class="number">2 </span>* m &lt; k {
         k /= <span class="number">2</span>;
@@ -278,14 +278,14 @@
     }
 }
 
-<span class="kw">impl </span><a href="../../../src/competitive/math/convolve_steps.rs.html#1">ConvolveSteps</a> <span class="kw">for </span><a href="../../../src/competitive/math/fast_fourier_transform.rs.html#3">ConvolveRealFft</a> {
+<span class="kw">impl </span><a href="convolve_steps.rs.html#1">ConvolveSteps</a> <span class="kw">for </span><a href="#3">ConvolveRealFft</a> {
     <span class="kw">type </span>T = Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;;
     <span class="kw">type </span>F = Vec&lt;Complex&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;&gt;;
     <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#71">t</a>.len()
+        <a href="#71">t</a>.len()
     }
     <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::F {
-        <span class="kw">let </span>n = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#74">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">4</span>).next_power_of_two();
+        <span class="kw">let </span>n = <a href="#74">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">4</span>).next_power_of_two();
         <span class="kw">let </span><span class="kw-2">mut </span>f = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[Complex::zero(); n / <span class="number">2</span>];
         <span class="kw">for </span>(i, t) <span class="kw">in </span>t.into_iter().enumerate() {
             <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{
@@ -294,11 +294,11 @@
                 f[i / <span class="number">2</span>].im = t <span class="kw">as </span>f64;
             }
         }
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#130">fft</a>(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>);
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#37">bit_reverse</a>(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>);
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>[<span class="number">0</span>] = Complex::new(<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>[<span class="number">0</span>].re + <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>[<span class="number">0</span>].im, <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>[<span class="number">0</span>].re - <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>[<span class="number">0</span>].im);
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>[<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#75">n</a> / <span class="number">4</span>] = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>[<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#75">n</a> / <span class="number">4</span>].<a href="../../../src/competitive/num/complex.rs.html#53">conjugate</a>();
-        <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(-(<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#75">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>));
+        <a href="#130">fft</a>(<span class="kw-2">&amp;mut </span><a href="#76">f</a>);
+        <a href="#37">bit_reverse</a>(<span class="kw-2">&amp;mut </span><a href="#76">f</a>);
+        <a href="#76">f</a>[<span class="number">0</span>] = Complex::new(<a href="#76">f</a>[<span class="number">0</span>].re + <a href="#76">f</a>[<span class="number">0</span>].im, <a href="#76">f</a>[<span class="number">0</span>].re - <a href="#76">f</a>[<span class="number">0</span>].im);
+        <a href="#76">f</a>[<a href="#75">n</a> / <span class="number">4</span>] = <a href="#76">f</a>[<a href="#75">n</a> / <span class="number">4</span>].<a href="../num/complex.rs.html#53">conjugate</a>();
+        <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(-(<a href="#75">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>));
         <span class="kw">let </span><span class="kw-2">mut </span>wk = Complex::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;::one();
         <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..n / <span class="number">4 </span>{
             wk <span class="kw-2">*</span>= w;
@@ -307,14 +307,14 @@
             f[k] -= d;
             f[n / <span class="number">2 </span>- k] += d.conjugate();
         }
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#76">f</a>
+        <a href="#76">f</a>
     }
     <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::T {
-        <span class="kw">let </span>n = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">4</span>).next_power_of_two();
+        <span class="kw">let </span>n = <a href="#99">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">4</span>).next_power_of_two();
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(f.len(), n / <span class="number">2</span>);
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<span class="number">0</span>] = Complex::new((<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<span class="number">0</span>].re + <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<span class="number">0</span>].im) * <span class="number">0.5</span>, (<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<span class="number">0</span>].re - <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<span class="number">0</span>].im) * <span class="number">0.5</span>);
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#100">n</a> / <span class="number">4</span>] = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#100">n</a> / <span class="number">4</span>].<a href="../../../src/competitive/num/complex.rs.html#53">conjugate</a>();
-        <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#100">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>);
+        <a href="#99">f</a>[<span class="number">0</span>] = Complex::new((<a href="#99">f</a>[<span class="number">0</span>].re + <a href="#99">f</a>[<span class="number">0</span>].im) * <span class="number">0.5</span>, (<a href="#99">f</a>[<span class="number">0</span>].re - <a href="#99">f</a>[<span class="number">0</span>].im) * <span class="number">0.5</span>);
+        <a href="#99">f</a>[<a href="#100">n</a> / <span class="number">4</span>] = <a href="#99">f</a>[<a href="#100">n</a> / <span class="number">4</span>].<a href="../num/complex.rs.html#53">conjugate</a>();
+        <span class="kw">let </span>w = Complex::primitive_nth_root_of_unity(<a href="#100">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>wk = Complex::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;::one();
         <span class="kw">for </span>k <span class="kw">in </span><span class="number">1</span>..n / <span class="number">4 </span>{
             wk <span class="kw-2">*</span>= w;
@@ -323,17 +323,17 @@
             f[k] -= d;
             f[n / <span class="number">2 </span>- k] += d.conjugate();
         }
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#37">bit_reverse</a>(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>);
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#149">ifft</a>(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>);
-        <span class="kw">let </span>inv = <span class="number">1. </span>/ (<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#100">n</a> / <span class="number">2</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>;
-        (<span class="number">0</span>..<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">len</a>)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| (<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#115">inv</a> * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#117">i</a> / <span class="number">2</span>].re } <span class="kw">else </span>{ <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#99">f</a>[<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#117">i</a> / <span class="number">2</span>].im }).round() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)
+        <a href="#37">bit_reverse</a>(<span class="kw-2">&amp;mut </span><a href="#99">f</a>);
+        <a href="#149">ifft</a>(<span class="kw-2">&amp;mut </span><a href="#99">f</a>);
+        <span class="kw">let </span>inv = <span class="number">1. </span>/ (<a href="#100">n</a> / <span class="number">2</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>;
+        (<span class="number">0</span>..<a href="#99">len</a>)
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| (<a href="#115">inv</a> * <span class="kw">if </span>i &amp; <span class="number">1 </span>== <span class="number">0 </span>{ <a href="#99">f</a>[<a href="#117">i</a> / <span class="number">2</span>].re } <span class="kw">else </span>{ <a href="#99">f</a>[<a href="#117">i</a> / <span class="number">2</span>].im }).round() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
     }
     <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(f.len(), g.len());
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#120">f</a>[<span class="number">0</span>].re <span class="kw-2">*</span>= <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#120">g</a>[<span class="number">0</span>].re;
-        <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#120">f</a>[<span class="number">0</span>].im <span class="kw-2">*</span>= <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#120">g</a>[<span class="number">0</span>].im;
+        <a href="#120">f</a>[<span class="number">0</span>].re <span class="kw-2">*</span>= <a href="#120">g</a>[<span class="number">0</span>].re;
+        <a href="#120">f</a>[<span class="number">0</span>].im <span class="kw-2">*</span>= <a href="#120">g</a>[<span class="number">0</span>].im;
         <span class="kw">for </span>(f, g) <span class="kw">in </span>f.iter_mut().zip(g.iter()).skip(<span class="number">1</span>) {
             <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
         }
@@ -341,10 +341,10 @@
 }
 
 <span class="kw">pub fn </span>fft(a: <span class="kw-2">&amp;mut </span>[Complex&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;]) {
-    <span class="kw">let </span>n = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#130">a</a>.len();
-    RotateCache::ensure(<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#131">n</a> / <span class="number">2</span>);
+    <span class="kw">let </span>n = <a href="#130">a</a>.len();
+    RotateCache::ensure(<a href="#131">n</a> / <span class="number">2</span>);
     RotateCache::with(|cache| {
-        <span class="kw">let </span><span class="kw-2">mut </span>v = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#131">n</a> / <span class="number">2</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>v = <a href="#131">n</a> / <span class="number">2</span>;
         <span class="kw">while </span>v &gt; <span class="number">0 </span>{
             <span class="kw">for </span>(a, wj) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(cache) {
                 <span class="kw">let </span>(l, r) = a.split_at_mut(v);
@@ -360,8 +360,8 @@
 }
 
 <span class="kw">pub fn </span>ifft(a: <span class="kw-2">&amp;mut </span>[Complex&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt;]) {
-    <span class="kw">let </span>n = <a href="../../../src/competitive/math/fast_fourier_transform.rs.html#149">a</a>.len();
-    RotateCache::ensure(<a href="../../../src/competitive/math/fast_fourier_transform.rs.html#150">n</a> / <span class="number">2</span>);
+    <span class="kw">let </span>n = <a href="#149">a</a>.len();
+    RotateCache::ensure(<a href="#150">n</a> / <span class="number">2</span>);
     RotateCache::with(|cache| {
         <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
         <span class="kw">while </span>v &lt; n {
@@ -409,4 +409,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (cf9ed0dd5 2022-09-15)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (98ad6a551 2022-09-17)" ></div></body></html>

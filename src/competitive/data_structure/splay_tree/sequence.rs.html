@@ -322,8 +322,8 @@
 <span id="306">306</span>
 <span id="307">307</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{
-    node::{<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#702">marker</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#65">Node</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#628">NodeRange</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#81">NodeRef</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#89">Root</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#20">SplaySeeker</a>, <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#11">SplaySpec</a>},
-    <a href="../../../../src/competitive/data_structure/allocator.rs.html#7">Allocator</a>, <a href="../../../../src/competitive/data_structure/allocator.rs.html#13">MemoryPool</a>, <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    node::{<a href="node.rs.html#702">marker</a>, <a href="node.rs.html#65">Node</a>, <a href="node.rs.html#628">NodeRange</a>, <a href="node.rs.html#81">NodeRef</a>, <a href="node.rs.html#89">Root</a>, <a href="node.rs.html#20">SplaySeeker</a>, <a href="node.rs.html#11">SplaySpec</a>},
+    <a href="../allocator.rs.html#7">Allocator</a>, <a href="../allocator.rs.html#13">MemoryPool</a>, <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
 };
 <span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>,
@@ -335,7 +335,7 @@
 
 <span class="kw">pub struct </span>LazyAggElement&lt;T&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
 {
     key: T::Key,
     agg: T::Agg,
@@ -346,17 +346,17 @@
 
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>LazyAggElement&lt;T&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
     T::Key: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     T::Agg: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     T::Act: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#31">f</a>.debug_struct(<span class="string">&quot;LazyAggElement&quot;</span>)
-            .field(<span class="string">&quot;key&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#31">self</a>.key)
-            .field(<span class="string">&quot;agg&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#31">self</a>.agg)
-            .field(<span class="string">&quot;lazy&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#31">self</a>.lazy)
-            .field(<span class="string">&quot;size&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#31">self</a>.size)
+        <a href="#31">f</a>.debug_struct(<span class="string">&quot;LazyAggElement&quot;</span>)
+            .field(<span class="string">&quot;key&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.key)
+            .field(<span class="string">&quot;agg&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.agg)
+            .field(<span class="string">&quot;lazy&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.lazy)
+            .field(<span class="string">&quot;size&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.size)
             .finish()
     }
 }
@@ -367,74 +367,74 @@
 
 <span class="kw">impl</span>&lt;T&gt; LazyAggSplay&lt;T&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
 {
     <span class="kw">pub fn </span>update_lazy(<span class="kw-2">mut </span>node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;, lazy: <span class="kw-2">&amp;</span>T::Act) {
-        T::act_operate_assign(<span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().lazy, <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">lazy</a>);
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().key = T::act_key(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>().key, <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">lazy</a>);
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(nxlazy) = T::act_agg(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>().agg, <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">lazy</a>) {
-            <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().agg = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#52">nxlazy</a>;
+        T::act_operate_assign(<span class="kw-2">&amp;mut </span><a href="#49">node</a>.<a href="node.rs.html#208">data_mut</a>().lazy, <a href="#49">lazy</a>);
+        <a href="#49">node</a>.<a href="node.rs.html#208">data_mut</a>().key = T::act_key(<span class="kw-2">&amp;</span><a href="#49">node</a>.<a href="node.rs.html#205">data</a>().key, <a href="#49">lazy</a>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(nxlazy) = T::act_agg(<span class="kw-2">&amp;</span><a href="#49">node</a>.<a href="node.rs.html#205">data</a>().agg, <a href="#49">lazy</a>) {
+            <a href="#49">node</a>.<a href="node.rs.html#208">data_mut</a>().agg = <a href="#52">nxlazy</a>;
         } <span class="kw">else </span>{
-            <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a> = <span class="self">Self</span>::propagate(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a>);
-            <span class="self">Self</span>::recalc(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#49">node</a>);
+            <a href="#49">node</a> = <span class="self">Self</span>::propagate(<a href="#49">node</a>);
+            <span class="self">Self</span>::recalc(<a href="#49">node</a>);
         }
     }
     <span class="kw">pub fn </span>reverse(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) {
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#59">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#225">reverse</a>();
-        T::toggle(<span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#59">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().agg);
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#59">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().rev ^= <span class="bool-val">true</span>;
+        <a href="#59">node</a>.<a href="node.rs.html#225">reverse</a>();
+        T::toggle(<span class="kw-2">&amp;mut </span><a href="#59">node</a>.<a href="node.rs.html#208">data_mut</a>().agg);
+        <a href="#59">node</a>.<a href="node.rs.html#208">data_mut</a>().rev ^= <span class="bool-val">true</span>;
     }
     <span class="kw">fn </span>propagate(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) -&gt; NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt; {
-        <span class="kw">let </span>lazy = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#64">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>().lazy, T::act_unit());
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#64">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#211">left</a>() {
-            <span class="self">Self</span>::update_lazy(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#66">left</a>, <span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#65">lazy</a>);
+        <span class="kw">let </span>lazy = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a href="#64">node</a>.<a href="node.rs.html#208">data_mut</a>().lazy, T::act_unit());
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="#64">node</a>.<a href="node.rs.html#211">left</a>() {
+            <span class="self">Self</span>::update_lazy(<a href="#66">left</a>, <span class="kw-2">&amp;</span><a href="#65">lazy</a>);
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#64">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#218">right</a>() {
-            <span class="self">Self</span>::update_lazy(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#69">right</a>, <span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#65">lazy</a>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a href="#64">node</a>.<a href="node.rs.html#218">right</a>() {
+            <span class="self">Self</span>::update_lazy(<a href="#69">right</a>, <span class="kw-2">&amp;</span><a href="#65">lazy</a>);
         }
         <span class="kw">if </span>replace(<span class="kw-2">&amp;mut </span>node.data_mut().rev, <span class="bool-val">false</span>) {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#64">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#211">left</a>() {
-                <span class="self">Self</span>::reverse(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#73">left</a>);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="#64">node</a>.<a href="node.rs.html#211">left</a>() {
+                <span class="self">Self</span>::reverse(<a href="#73">left</a>);
             }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#64">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#218">right</a>() {
-                <span class="self">Self</span>::reverse(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#76">right</a>);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a href="#64">node</a>.<a href="node.rs.html#218">right</a>() {
+                <span class="self">Self</span>::reverse(<a href="#76">right</a>);
             }
         }
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#64">node</a>
+        <a href="#64">node</a>
     }
     <span class="kw">fn </span>recalc(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) -&gt; NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>agg = T::single_agg(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#82">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>().key);
+        <span class="kw">let </span><span class="kw-2">mut </span>agg = T::single_agg(<span class="kw-2">&amp;</span><a href="#82">node</a>.<a href="node.rs.html#205">data</a>().key);
         <span class="kw">let </span><span class="kw-2">mut </span>size = <span class="number">1</span>;
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#82">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#211">left</a>() {
-            <span class="kw">let </span>data = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#85">left</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>();
-            <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#83">agg</a> = T::agg_operate(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#86">data</a>.agg, <span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#83">agg</a>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="#82">node</a>.<a href="node.rs.html#211">left</a>() {
+            <span class="kw">let </span>data = <a href="#85">left</a>.<a href="node.rs.html#205">data</a>();
+            <a href="#83">agg</a> = T::agg_operate(<span class="kw-2">&amp;</span><a href="#86">data</a>.agg, <span class="kw-2">&amp;</span><a href="#83">agg</a>);
             <span class="comment">// agg = &lt;T::AggMonoid as Magma&gt;::operate(&amp;data.agg, &amp;agg);
-            </span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#84">size</a> += <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#86">data</a>.size;
+            </span><a href="#84">size</a> += <a href="#86">data</a>.size;
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#82">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#218">right</a>() {
-            <span class="kw">let </span>data = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#91">right</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#205">data</a>();
-            <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#83">agg</a> = T::agg_operate(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#83">agg</a>, <span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#92">data</a>.agg);
-            <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#84">size</a> += <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#92">data</a>.size;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a href="#82">node</a>.<a href="node.rs.html#218">right</a>() {
+            <span class="kw">let </span>data = <a href="#91">right</a>.<a href="node.rs.html#205">data</a>();
+            <a href="#83">agg</a> = T::agg_operate(<span class="kw-2">&amp;</span><a href="#83">agg</a>, <span class="kw-2">&amp;</span><a href="#92">data</a>.agg);
+            <a href="#84">size</a> += <a href="#92">data</a>.size;
         }
-        <span class="kw">let </span>data = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#82">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>();
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#96">data</a>.agg = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#83">agg</a>;
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#96">data</a>.size = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#84">size</a>;
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#82">node</a>
+        <span class="kw">let </span>data = <a href="#82">node</a>.<a href="node.rs.html#208">data_mut</a>();
+        <a href="#96">data</a>.agg = <a href="#83">agg</a>;
+        <a href="#96">data</a>.size = <a href="#84">size</a>;
+        <a href="#82">node</a>
     }
 }
-<span class="kw">impl</span>&lt;T&gt; <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#11">SplaySpec</a> <span class="kw">for </span>LazyAggSplay&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="node.rs.html#11">SplaySpec</a> <span class="kw">for </span>LazyAggSplay&lt;T&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
 {
     <span class="kw">type </span>T = LazyAggElement&lt;T&gt;;
     <span class="kw">fn </span>has_bottom_up() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <span class="bool-val">true
     </span>}
     <span class="kw">fn </span>top_down(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) {
-        <span class="self">Self</span>::propagate(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#110">node</a>);
+        <span class="self">Self</span>::propagate(<a href="#110">node</a>);
     }
     <span class="kw">fn </span>bottom_up(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) {
-        <span class="self">Self</span>::recalc(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#113">node</a>);
+        <span class="self">Self</span>::recalc(<a href="#113">node</a>);
     }
 }
 
@@ -445,29 +445,29 @@
 <span class="kw">impl</span>&lt;T&gt; SeekBySize&lt;T&gt; {
     <span class="kw">fn </span>new(index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#123">index</a>,
+            <a href="#123">index</a>,
             _marker: PhantomData,
         }
     }
 }
-<span class="kw">impl</span>&lt;T&gt; <a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#20">SplaySeeker</a> <span class="kw">for </span>SeekBySize&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="node.rs.html#20">SplaySeeker</a> <span class="kw">for </span>SeekBySize&lt;T&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
 {
     <span class="kw">type </span>S = LazyAggSplay&lt;T&gt;;
     <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
-        <span class="kw">let </span>lsize = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#135">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#171">left</a>().map(|l| <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#136">l</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#168">data</a>().size).unwrap_or_default();
-        <span class="kw">let </span>ord = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#135">self</a>.index.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#136">lsize</a>);
+        <span class="kw">let </span>lsize = <a href="#135">node</a>.<a href="node.rs.html#171">left</a>().map(|l| <a href="#136">l</a>.<a href="node.rs.html#168">data</a>().size).unwrap_or_default();
+        <span class="kw">let </span>ord = <a class="self" href="#135">self</a>.index.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#136">lsize</a>);
         <span class="kw">if </span><a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(ord, Ordering::Greater) {
-            <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#135">self</a>.index -= <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#136">lsize</a> + <span class="number">1</span>;
+            <a class="self" href="#135">self</a>.index -= <a href="#136">lsize</a> + <span class="number">1</span>;
         }
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#137">ord</a>
+        <a href="#137">ord</a>
     }
 }
 
 <span class="kw">pub struct </span>SplaySequence&lt;T, A = MemoryPool&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt;&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
     A: Allocator&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt;,
 {
     root: Root&lt;LazyAggSplay&lt;T&gt;&gt;,
@@ -477,23 +477,23 @@
 
 <span class="kw">impl</span>&lt;T, A&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>SplaySequence&lt;T, A&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
     T::Key: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     T::Agg: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     T::Act: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     A: Allocator&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt;,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#163">f</a>.debug_struct(<span class="string">&quot;SplayMap&quot;</span>)
-            .field(<span class="string">&quot;root&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#163">self</a>.root)
-            .field(<span class="string">&quot;length&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#163">self</a>.length)
+        <a href="#163">f</a>.debug_struct(<span class="string">&quot;SplayMap&quot;</span>)
+            .field(<span class="string">&quot;root&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#163">self</a>.root)
+            .field(<span class="string">&quot;length&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#163">self</a>.length)
             .finish()
     }
 }
 
 <span class="kw">impl</span>&lt;T, A&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html">Drop</a> <span class="kw">for </span>SplaySequence&lt;T, A&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
     A: Allocator&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt;,
 {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
@@ -501,14 +501,14 @@
             <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = <span class="self">self</span>.root.take_first() {
                 <span class="self">self</span>.alloc.deallocate(node.into_dying().into_inner());
             }
-            ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#176">self</a>.alloc);
+            ManuallyDrop::drop(<span class="kw-2">&amp;mut </span><a class="self" href="#176">self</a>.alloc);
         }
     }
 }
 
 <span class="kw">impl</span>&lt;T, A&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>SplaySequence&lt;T, A&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
     A: Allocator&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt; + <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a>,
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
@@ -522,7 +522,7 @@
 
 <span class="kw">impl</span>&lt;T&gt; SplaySequence&lt;T&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
 {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
@@ -531,45 +531,45 @@
         <span class="self">Self </span>{
             root: Root::default(),
             length: <span class="number">0</span>,
-            alloc: ManuallyDrop::new(MemoryPool::with_capacity(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#207">capacity</a>)),
+            alloc: ManuallyDrop::new(MemoryPool::with_capacity(<a href="#207">capacity</a>)),
         }
     }
 }
 <span class="kw">impl</span>&lt;T, A&gt; SplaySequence&lt;T, A&gt;
 <span class="kw">where
-    </span>T: <a href="../../../../src/competitive/algebra/monoid_action.rs.html#5">MonoidAction</a>,
+    </span>T: <a href="../../algebra/monoid_action.rs.html#5">MonoidAction</a>,
     A: Allocator&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt;,
 {
     <span class="kw">fn </span>range&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; NodeRange&lt;<span class="lifetime">&#39;_</span>, LazyAggSplay&lt;T&gt;&gt;
     <span class="kw">where
         </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <span class="kw">let </span>start = <span class="kw">match </span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#220">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">start_bound</a>() {
-            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#225">index</a>)),
-            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#226">index</a>)),
+        <span class="kw">let </span>start = <span class="kw">match </span><a href="#220">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">start_bound</a>() {
+            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(<a href="#225">index</a>)),
+            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(<a href="#226">index</a>)),
             Bound::Unbounded =&gt; Bound::Unbounded,
         };
-        <span class="kw">let </span>end = <span class="kw">match </span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#220">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">end_bound</a>() {
-            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#230">index</a>)),
-            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#231">index</a>)),
+        <span class="kw">let </span>end = <span class="kw">match </span><a href="#220">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">end_bound</a>() {
+            Bound::Included(<span class="kw-2">&amp;</span>index) =&gt; Bound::Included(SeekBySize::new(<a href="#230">index</a>)),
+            Bound::Excluded(<span class="kw-2">&amp;</span>index) =&gt; Bound::Excluded(SeekBySize::new(<a href="#231">index</a>)),
             Bound::Unbounded =&gt; Bound::Unbounded,
         };
-        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#220">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#559-561">range</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#224">start</a>, <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#229">end</a>)
+        <a class="self" href="#220">self</a>.root.<a href="node.rs.html#559-561">range</a>(<a href="#224">start</a>, <a href="#229">end</a>)
     }
     <span class="kw">pub fn </span>update&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R, x: T::Act)
     <span class="kw">where
         </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#236">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#220-222">range</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#236">range</a>).<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#686">root</a>().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#466">root_data_mut</a>() {
-            LazyAggSplay::&lt;T&gt;::update_lazy(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#240">root</a>, <span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#236">x</a>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <a class="self" href="#236">self</a>.<a href="#220-222">range</a>(<a href="#236">range</a>).<a href="node.rs.html#686">root</a>().<a href="node.rs.html#466">root_data_mut</a>() {
+            LazyAggSplay::&lt;T&gt;::update_lazy(<a href="#240">root</a>, <span class="kw-2">&amp;</span><a href="#236">x</a>);
         }
     }
     <span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; T::Agg
     <span class="kw">where
         </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#244">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#220-222">range</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#244">range</a>).<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#686">root</a>().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#463">root</a>() {
-            <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#248">root</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#168">data</a>().agg.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <a class="self" href="#244">self</a>.<a href="#220-222">range</a>(<a href="#244">range</a>).<a href="node.rs.html#686">root</a>().<a href="node.rs.html#463">root</a>() {
+            <a href="#248">root</a>.<a href="node.rs.html#168">data</a>().agg.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
         } <span class="kw">else </span>{
             T::agg_unit()
         }
@@ -578,55 +578,55 @@
     <span class="kw">where
         </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#254">self</a>.<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#220-222">range</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#254">range</a>).<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#686">root</a>().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#466">root_data_mut</a>() {
-            LazyAggSplay::&lt;T&gt;::reverse(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#258">root</a>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <a class="self" href="#254">self</a>.<a href="#220-222">range</a>(<a href="#254">range</a>).<a href="node.rs.html#686">root</a>().<a href="node.rs.html#466">root_data_mut</a>() {
+            LazyAggSplay::&lt;T&gt;::reverse(<a href="#258">root</a>);
         }
     }
     <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T::Key&gt; {
         <span class="self">self</span>.root.splay_by(SeekBySize::new(index))<span class="question-mark">?</span>;
-        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#262">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#463">root</a>().map(|root| <span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#264">root</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#168">data</a>().key)
+        <a class="self" href="#262">self</a>.root.<a href="node.rs.html#463">root</a>().map(|root| <span class="kw-2">&amp;</span><a href="#264">root</a>.<a href="node.rs.html#168">data</a>().key)
     }
     <span class="kw">pub fn </span>modify&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, f: F)
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;</span>T::Key) -&gt; T::Key,
     {
-        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#266">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#469-471">splay_by</a>(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#266">index</a>)).unwrap();
-        <span class="kw">let </span>data = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#266">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#466">root_data_mut</a>().unwrap().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#208">data_mut</a>();
-        <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#271">data</a>.key = <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#266">f</a>(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#271">data</a>.key);
-        LazyAggSplay::&lt;T&gt;::bottom_up(<a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#266">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#466">root_data_mut</a>().unwrap());
+        <a class="self" href="#266">self</a>.root.<a href="node.rs.html#469-471">splay_by</a>(SeekBySize::new(<a href="#266">index</a>)).unwrap();
+        <span class="kw">let </span>data = <a class="self" href="#266">self</a>.root.<a href="node.rs.html#466">root_data_mut</a>().unwrap().<a href="node.rs.html#208">data_mut</a>();
+        <a href="#271">data</a>.key = <a href="#266">f</a>(<span class="kw-2">&amp;</span><a href="#271">data</a>.key);
+        LazyAggSplay::&lt;T&gt;::bottom_up(<a class="self" href="#266">self</a>.root.<a href="node.rs.html#466">root_data_mut</a>().unwrap());
     }
     <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: T::Key) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(index &lt;= <span class="self">self</span>.length);
-        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#469-471">splay_by</a>(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">index</a>));
-        <span class="kw">let </span>agg = T::single_agg(<span class="kw-2">&amp;</span><a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">x</a>);
+        <a class="self" href="#275">self</a>.root.<a href="node.rs.html#469-471">splay_by</a>(SeekBySize::new(<a href="#275">index</a>));
+        <span class="kw">let </span>agg = T::single_agg(<span class="kw-2">&amp;</span><a href="#275">x</a>);
         <span class="kw">unsafe </span>{
             <span class="kw">let </span>node = NodeRef::from_data(
-                <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#13">LazyAggElement</a> {
-                    key: <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">x</a>,
-                    <a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#278">agg</a>,
+                <a href="#13">LazyAggElement</a> {
+                    key: <a href="#275">x</a>,
+                    <a href="#278">agg</a>,
                     lazy: T::act_unit(),
                     size: <span class="number">1</span>,
                     rev: <span class="bool-val">false</span>,
                 },
-                <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>(),
+                <a class="self" href="#275">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>(),
             );
             <span class="kw">if </span>index == <span class="self">self</span>.length {
-                <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#486">insert_right</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#280">node</a>);
+                <a class="self" href="#275">self</a>.root.<a href="node.rs.html#486">insert_right</a>(<a href="#280">node</a>);
             } <span class="kw">else </span>{
-                <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#477">insert_left</a>(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#280">node</a>);
+                <a class="self" href="#275">self</a>.root.<a href="node.rs.html#477">insert_left</a>(<a href="#280">node</a>);
             }
         }
-        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#275">self</a>.length += <span class="number">1</span>;
+        <a class="self" href="#275">self</a>.length += <span class="number">1</span>;
     }
     <span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;T::Key&gt; {
         <span class="kw">if </span>index &gt;= <span class="self">self</span>.length {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
-        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#298">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#469-471">splay_by</a>(SeekBySize::new(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#298">index</a>));
-        <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#298">self</a>.length -= <span class="number">1</span>;
-        <span class="kw">let </span>node = <a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#298">self</a>.root.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#513">take_root</a>().unwrap().<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#158">into_dying</a>();
-        <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>(<a href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#304">node</a>.<a href="../../../../src/competitive/data_structure/splay_tree/node.rs.html#268-270">into_data</a>(<a class="self" href="../../../../src/competitive/data_structure/splay_tree/sequence.rs.html#298">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>()).key) }
+        <a class="self" href="#298">self</a>.root.<a href="node.rs.html#469-471">splay_by</a>(SeekBySize::new(<a href="#298">index</a>));
+        <a class="self" href="#298">self</a>.length -= <span class="number">1</span>;
+        <span class="kw">let </span>node = <a class="self" href="#298">self</a>.root.<a href="node.rs.html#513">take_root</a>().unwrap().<a href="node.rs.html#158">into_dying</a>();
+        <span class="kw">unsafe </span>{ <span class="prelude-val">Some</span>(<a href="#304">node</a>.<a href="node.rs.html#268-270">into_data</a>(<a class="self" href="#298">self</a>.alloc.<a href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.DerefMut.html">deref_mut</a>()).key) }
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (cf9ed0dd5 2022-09-15)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (98ad6a551 2022-09-17)" ></div></body></html>

@@ -148,12 +148,12 @@
 }
 <span class="kw">impl</span>&lt;T&gt; RootData&lt;T&gt; {
     <span class="kw">pub fn </span>new(data: T, size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#22">data</a>, <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#22">size</a> }
+        <span class="self">Self </span>{ <a href="#22">data</a>, <a href="#22">size</a> }
     }
 }
 <span class="kw">impl</span>&lt;T&gt; UfCell&lt;T&gt; {
     <span class="kw">pub fn </span>is_root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <span class="kw">match </span><span class="self"><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#27">self</a> </span>{
+        <span class="kw">match </span><span class="self"><a href="#27">self</a> </span>{
             <span class="self">Self</span>::Child(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
             <span class="self">Self</span>::Root(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,
         }
@@ -161,69 +161,69 @@
 }
 <span class="kw">impl</span>&lt;T, F: Fn(<span class="kw-2">&amp;mut </span>T, <span class="kw-2">&amp;mut </span>T)&gt; MergingUnionFind&lt;T, F&gt; {
     <span class="kw">pub fn </span>new&lt;I: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T&gt;(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, init: I, merge: F) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#35">n</a>)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#14">UfCell::Root</a>(RefCell::new(RootData::new(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#35">init</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#37">i</a>), <span class="number">1</span>))))
+        <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<a href="#35">n</a>)
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| <a href="#14">UfCell::Root</a>(RefCell::new(RootData::new(<a href="#35">init</a>(<a href="#37">i</a>), <span class="number">1</span>))))
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
-        <span class="self">Self </span>{ <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#36">cells</a>, <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#35">merge</a> }
+        <span class="self">Self </span>{ <a href="#36">cells</a>, <a href="#35">merge</a> }
     }
     <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <span class="kw">let </span>p = <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">self</a>.cells[<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">x</a>] {
-            <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#13">UfCell::Child</a>(p) =&gt; <span class="kw-2">*</span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#43">p</a>,
-            <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#14">UfCell::Root</a>(<span class="kw">_</span>) =&gt; <span class="kw">return </span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">x</a>,
+        <span class="kw">let </span>p = <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="#41">self</a>.cells[<a href="#41">x</a>] {
+            <a href="#13">UfCell::Child</a>(p) =&gt; <span class="kw-2">*</span><a href="#43">p</a>,
+            <a href="#14">UfCell::Root</a>(<span class="kw">_</span>) =&gt; <span class="kw">return </span><a href="#41">x</a>,
         };
-        <span class="kw">let </span>y = <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">find</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#42">p</a>);
-        <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">self</a>.cells[<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">x</a>] = <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#13">UfCell::Child</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#46">y</a>);
-        <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#46">y</a>
+        <span class="kw">let </span>y = <a class="self" href="#41">self</a>.<a href="#41">find</a>(<a href="#42">p</a>);
+        <a class="self" href="#41">self</a>.cells[<a href="#41">x</a>] = <a href="#13">UfCell::Child</a>(<a href="#46">y</a>);
+        <a href="#46">y</a>
     }
     <span class="kw">pub fn </span>find_root(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Ref&lt;RootData&lt;T&gt;&gt; {
         <span class="kw">loop </span>{
-            <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#50">self</a>.cells[<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#50">x</a>] {
-                <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#13">UfCell::Child</a>(p) =&gt; <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#50">x</a> = <span class="kw-2">*</span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#53">p</a>,
-                <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#14">UfCell::Root</a>(cell) =&gt; <span class="kw">return </span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#54">cell</a>.borrow(),
+            <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="#50">self</a>.cells[<a href="#50">x</a>] {
+                <a href="#13">UfCell::Child</a>(p) =&gt; <a href="#50">x</a> = <span class="kw-2">*</span><a href="#53">p</a>,
+                <a href="#14">UfCell::Root</a>(cell) =&gt; <span class="kw">return </span><a href="#54">cell</a>.borrow(),
             }
         }
     }
     <span class="kw">pub fn </span>find_root_mut(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; RefMut&lt;RootData&lt;T&gt;&gt; {
         <span class="kw">loop </span>{
-            <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#58">self</a>.cells[<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#58">x</a>] {
-                <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#13">UfCell::Child</a>(p) =&gt; <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#58">x</a> = <span class="kw-2">*</span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#61">p</a>,
-                <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#14">UfCell::Root</a>(cell) =&gt; <span class="kw">return </span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#62">cell</a>.borrow_mut(),
+            <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="#58">self</a>.cells[<a href="#58">x</a>] {
+                <a href="#13">UfCell::Child</a>(p) =&gt; <a href="#58">x</a> = <span class="kw-2">*</span><a href="#61">p</a>,
+                <a href="#14">UfCell::Root</a>(cell) =&gt; <span class="kw">return </span><a href="#62">cell</a>.borrow_mut(),
             }
         }
     }
     <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <span class="kw">let </span><span class="kw-2">mut </span>x = <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">find</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">x</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>y = <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">find</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">y</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <a class="self" href="#66">self</a>.<a href="#41">find</a>(<a href="#66">x</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>y = <a class="self" href="#66">self</a>.<a href="#41">find</a>(<a href="#66">y</a>);
         <span class="kw">if </span>x == y {
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
         <span class="kw">if </span><span class="self">self</span>.size(x) &lt; <span class="self">self</span>.size(y) {
-            <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">std::mem::swap</a>(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#67">x</a>, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#68">y</a>);
+            <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">std::mem::swap</a>(<span class="kw-2">&amp;mut </span><a href="#67">x</a>, <span class="kw-2">&amp;mut </span><a href="#68">y</a>);
         }
         {
-            <span class="kw">let </span><span class="kw-2">mut </span>cx = <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#58">find_root_mut</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#67">x</a>);
-            <span class="kw">let </span><span class="kw-2">mut </span>cy = <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#58">find_root_mut</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#68">y</a>);
-            (<a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">self</a>.merge)(<span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#76">cx</a>.data, <span class="kw-2">&amp;mut </span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#77">cy</a>.data);
-            <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#76">cx</a>.size += <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#77">cy</a>.size;
+            <span class="kw">let </span><span class="kw-2">mut </span>cx = <a class="self" href="#66">self</a>.<a href="#58">find_root_mut</a>(<a href="#67">x</a>);
+            <span class="kw">let </span><span class="kw-2">mut </span>cy = <a class="self" href="#66">self</a>.<a href="#58">find_root_mut</a>(<a href="#68">y</a>);
+            (<a class="self" href="#66">self</a>.merge)(<span class="kw-2">&amp;mut </span><a href="#76">cx</a>.data, <span class="kw-2">&amp;mut </span><a href="#77">cy</a>.data);
+            <a href="#76">cx</a>.size += <a href="#77">cy</a>.size;
         }
-        <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#66">self</a>.cells[<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#68">y</a>] = <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#13">UfCell::Child</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#67">x</a>);
+        <a class="self" href="#66">self</a>.cells[<a href="#68">y</a>] = <a href="#13">UfCell::Child</a>(<a href="#67">x</a>);
         <span class="bool-val">true
     </span>}
     <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#84">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#50">find_root</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#84">x</a>).size
+        <a class="self" href="#84">self</a>.<a href="#50">find_root</a>(<a href="#84">x</a>).size
     }
     <span class="kw">pub fn </span>same(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#87">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">find</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#87">x</a>) == <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#87">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">find</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#87">y</a>)
+        <a class="self" href="#87">self</a>.<a href="#41">find</a>(<a href="#87">x</a>) == <a class="self" href="#87">self</a>.<a href="#41">find</a>(<a href="#87">y</a>)
     }
     <span class="kw">pub fn </span>members(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
-        <span class="kw">let </span>root = <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#90">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">find</a>(<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#90">x</a>);
-        (<span class="number">0</span>..<a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#90">self</a>.cells.len())
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|i| <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#90">self</a>.<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#41">find</a>(<span class="kw-2">*</span><a href="../../../src/competitive/data_structure/merging_union_find.rs.html#93">i</a>) == <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#91">root</a>)
+        <span class="kw">let </span>root = <a class="self" href="#90">self</a>.<a href="#41">find</a>(<a href="#90">x</a>);
+        (<span class="number">0</span>..<a class="self" href="#90">self</a>.cells.len())
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|i| <a class="self" href="#90">self</a>.<a href="#41">find</a>(<span class="kw-2">*</span><a href="#93">i</a>) == <a href="#91">root</a>)
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>::&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;()
     }
     <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
-        (<span class="number">0</span>..<a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#96">self</a>.cells.len())
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|<span class="kw-2">&amp;</span>i| <a class="self" href="../../../src/competitive/data_structure/merging_union_find.rs.html#96">self</a>.cells[<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#98">i</a>].<a href="../../../src/competitive/data_structure/merging_union_find.rs.html#27">is_root</a>())
+        (<span class="number">0</span>..<a class="self" href="#96">self</a>.cells.len())
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|<span class="kw-2">&amp;</span>i| <a class="self" href="#96">self</a>.cells[<a href="#98">i</a>].<a href="#27">is_root</a>())
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>::&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt;()
     }
     <span class="kw">pub fn </span>all_group_members(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt; {
@@ -235,8 +235,8 @@
                 .or_insert_with(|| Vec::with_capacity(<span class="self">self</span>.size(r)))
                 .push(x);
         }
-        <a href="../../../src/competitive/data_structure/merging_union_find.rs.html#102">groups_map</a>
+        <a href="#102">groups_map</a>
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0-nightly (cf9ed0dd5 2022-09-15)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (98ad6a551 2022-09-17)" ></div></body></html>
