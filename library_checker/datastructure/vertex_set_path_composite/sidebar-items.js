@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["vertex_set_path_composite","✅  AC  300ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["vertex_set_path_composite","✅  AC  179ms"]]};
