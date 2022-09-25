@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["sqrt_mod","✅  AC  70ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["sqrt_mod","✅  AC  77ms"]]};
