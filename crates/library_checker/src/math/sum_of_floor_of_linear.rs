@@ -8,6 +8,6 @@ pub fn sum_of_floor_of_linear(reader: impl Read, mut writer: impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, t, query: [(u64, u64, u64, u64)]);
     for (n, m, a, b) in query.take(t) {
-        writeln!(writer, "{}", floor_sum(n, m, a, b)).ok();
+        writeln!(writer, "{}", floor_sum(n, a, b, m)).ok();
     }
 }

@@ -1,6 +1,14 @@
 use super::BarrettReduction;
 use std::{mem::swap, num::Wrapping, ops::Range};
 
+fn choose2(n: Wrapping<u64>) -> Wrapping<u64> {
+    if n.0 % 2 == 0 {
+        n / Wrapping(2) * (n - Wrapping(1))
+    } else {
+        (n - Wrapping(1)) / Wrapping(2) * n
+    }
+}
+
 /// Sum of Floor of Linear mod 2^64
 ///
 /// $$\sum_{i=0}^{n-1}\left\lfloor\frac{a\times i+b}{m}\right\rfloor$$
@@ -11,12 +19,7 @@ pub fn floor_sum(n: u64, a: u64, b: u64, m: u64) -> u64 {
         let br = BarrettReduction::<u64>::new(m.0);
         if a >= m {
             let (q, r) = br.div_rem(a.0);
-            let nc2 = if n.0 % 2 == 0 {
-                n / Wrapping(2) * (n - Wrapping(1))
-            } else {
-                (n - Wrapping(1)) / Wrapping(2) * n
-            };
-            ans += nc2 * Wrapping(q);
+            ans += choose2(n) * Wrapping(q);
             a = Wrapping(r);
         }
         if b >= m {
@@ -42,31 +45,27 @@ pub fn floor_sum(n: u64, a: u64, b: u64, m: u64) -> u64 {
 pub fn floor_sum_i64(l: i64, r: i64, a: i64, b: i64, m: u64) -> i64 {
     let mut ans = Wrapping(0i64);
     let (n, m, a, b) = (
-        Wrapping(r - l),
+        Wrapping((r - l) as u64),
         Wrapping(m as i64),
         Wrapping(a),
         Wrapping(b) + Wrapping(l) * Wrapping(a),
     );
-    let a = (if a.0 < 0 {
+    let a = if a.0 < 0 {
         let r = a.0.rem_euclid(m.0);
-        let nc2 = if n.0 % 2 == 0 {
-            n / Wrapping(2) * (n - Wrapping(1))
-        } else {
-            (n - Wrapping(1)) / Wrapping(2) * n
-        };
-        ans -= nc2 * ((Wrapping(r) - a) / m);
+        let nc2 = choose2(n);
+        ans -= Wrapping(nc2.0 as _) * ((Wrapping(r) - a) / m);
         r
     } else {
         a.0
-    }) as u64;
-    let b = (if b.0 < 0 {
+    };
+    let b = if b.0 < 0 {
         let r = b.0.rem_euclid(m.0);
-        ans -= n * ((Wrapping(r) - b) / m);
+        ans -= Wrapping(n.0 as _) * ((Wrapping(r) - b) / m);
         r
     } else {
         b.0
-    }) as u64;
-    (ans + Wrapping(floor_sum(n.0 as u64, a, b, m.0 as u64) as i64)).0
+    };
+    (ans + Wrapping(floor_sum(n.0, a as u64, b as u64, m.0 as u64) as i64)).0
 }
 
 pub fn floor_sum_range_freq(l: i64, r: i64, a: i64, b: i64, m: u64, range: Range<i64>) -> i64 {
