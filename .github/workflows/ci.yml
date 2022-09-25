@@ -57,9 +57,10 @@ jobs:
 
     - name: cargo-clippy
       uses: actions-rs/cargo@v1
+      if: ${{ !startsWith(matrix.toolchain, '1.42.0') }}
       with:
         command: clippy
-        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive' || '--workspace' }} --lib --tests
+        args: '--workspace' --lib --tests
 
     - name: cargo-build
       uses: actions-rs/cargo@v1

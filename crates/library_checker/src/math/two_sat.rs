@@ -12,11 +12,11 @@ pub fn two_sat(reader: impl Read, mut writer: impl Write) {
         _cnf: String,
         n,
         m,
-        ab: [(i32, i32, i32)]
+        ab: [(isize, isize, isize)]
     );
     let mut two_sat = TwoSatisfiability::new(n);
     for (a, b, _) in ab.take(m) {
-        two_sat.add_clause(a.abs() as usize - 1, a >= 0, b.abs() as usize - 1, b >= 0);
+        two_sat.add_clause(a.unsigned_abs() - 1, a >= 0, b.unsigned_abs() - 1, b >= 0);
     }
     if let Some(v) = two_sat.two_satisfiability() {
         writeln!(writer, "s SATISFIABLE").ok();
