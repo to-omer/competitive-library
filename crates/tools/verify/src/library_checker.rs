@@ -62,7 +62,7 @@ impl CheckerBinary {
         result: &Path,
     ) -> Result<VerifyStatus, Box<dyn 'static + std::error::Error>> {
         let output = Command::new(self.checker.as_os_str())
-            .args(&[input.as_os_str(), result.as_os_str(), output.as_os_str()])
+            .args([input.as_os_str(), result.as_os_str(), output.as_os_str()])
             .output()?;
         match output.status.code() {
             Some(0) => Ok(VerifyStatus::Accepted),
@@ -122,7 +122,7 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
             .output()?;
     } else {
         Command::new("git")
-            .args(&[
+            .args([
                 "clone",
                 "https://github.com/yosupo06/library-checker-problems",
             ])

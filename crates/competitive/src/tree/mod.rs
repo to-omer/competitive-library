@@ -12,7 +12,6 @@ pub use self::heavy_light_decomposition::*;
 pub use self::rerooting::ReRooting;
 pub use self::tree_center::*;
 pub use self::tree_hash::TreeHasher;
-pub use self::tree_rec::TreeRec;
 
 mod depth;
 mod euler_tour;
@@ -27,4 +26,3 @@ mod tree_center;
 mod tree_dp;
 mod tree_hash;
 mod tree_order;
-mod tree_rec;

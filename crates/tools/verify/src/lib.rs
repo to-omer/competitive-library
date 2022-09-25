@@ -35,7 +35,7 @@ fn get_workspace_root() -> Option<PathBuf> {
         workspace_root: String,
     }
     let output = Command::new(env!("CARGO"))
-        .args(&["metadata", "--quiet", "--no-deps"])
+        .args(["metadata", "--quiet", "--no-deps"])
         .output()
         .ok()?;
     if output.status.success() {
