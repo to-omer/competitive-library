@@ -127,43 +127,45 @@
 <span id="111">111</span>
 <span id="112">112</span>
 <span id="113">113</span>
-<span id="114">114</span>
 </pre><pre class="rust"><code><span class="kw">use </span><a href="../num/barrett_reduction.rs.html#2"><span class="kw">super</span>::BarrettReduction</a>;
 <span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>, num::Wrapping, <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.Range.html">ops::Range</a>};
+
+<span class="kw">fn </span>choose2(n: Wrapping&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;) -&gt; Wrapping&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
+    <span class="kw">if </span>n.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>{
+        <a href="#4">n</a> / Wrapping(<span class="number">2</span>) * (<a href="#4">n</a> - Wrapping(<span class="number">1</span>))
+    } <span class="kw">else </span>{
+        (<a href="#4">n</a> - Wrapping(<span class="number">1</span>)) / Wrapping(<span class="number">2</span>) * <a href="#4">n</a>
+    }
+}
 
 <span class="doccomment">/// Sum of Floor of Linear mod 2^64
 ///
 /// $$\sum_{i=0}^{n-1}\left\lfloor\frac{a\times i+b}{m}\right\rfloor$$
 </span><span class="kw">pub fn </span>floor_sum(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
     <span class="kw">let </span><span class="kw-2">mut </span>ans = Wrapping(<span class="number">0u64</span>);
-    <span class="kw">let </span>(<span class="kw-2">mut </span>n, <span class="kw-2">mut </span>m, <span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (Wrapping(<a href="#7">n</a>), Wrapping(<a href="#7">m</a>), Wrapping(<a href="#7">a</a>), Wrapping(<a href="#7">b</a>));
+    <span class="kw">let </span>(<span class="kw-2">mut </span>n, <span class="kw-2">mut </span>m, <span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (Wrapping(<a href="#15">n</a>), Wrapping(<a href="#15">m</a>), Wrapping(<a href="#15">a</a>), Wrapping(<a href="#15">b</a>));
     <span class="kw">loop </span>{
-        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new(<a href="#9">m</a>.<span class="number">0</span>);
+        <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new(<a href="#17">m</a>.<span class="number">0</span>);
         <span class="kw">if </span>a &gt;= m {
-            <span class="kw">let </span>(q, r) = <a href="#11">br</a>.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#9">a</a>.<span class="number">0</span>);
-            <span class="kw">let </span>nc2 = <span class="kw">if </span>n.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>{
-                <a href="#9">n</a> / Wrapping(<span class="number">2</span>) * (<a href="#9">n</a> - Wrapping(<span class="number">1</span>))
-            } <span class="kw">else </span>{
-                (<a href="#9">n</a> - Wrapping(<span class="number">1</span>)) / Wrapping(<span class="number">2</span>) * <a href="#9">n</a>
-            };
-            <a href="#8">ans</a> += <a href="#14">nc2</a> * Wrapping(<a href="#13">q</a>);
-            <a href="#9">a</a> = Wrapping(<a href="#13">r</a>);
+            <span class="kw">let </span>(q, r) = <a href="#19">br</a>.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#17">a</a>.<span class="number">0</span>);
+            <a href="#16">ans</a> += <a href="#4">choose2</a>(<a href="#17">n</a>) * Wrapping(<a href="#21">q</a>);
+            <a href="#17">a</a> = Wrapping(<a href="#21">r</a>);
         }
         <span class="kw">if </span>b &gt;= m {
-            <span class="kw">let </span>(q, r) = <a href="#11">br</a>.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#9">b</a>.<span class="number">0</span>);
-            <a href="#8">ans</a> += <a href="#9">n</a> * Wrapping(<a href="#23">q</a>);
-            <a href="#9">b</a> = Wrapping(<a href="#23">r</a>);
+            <span class="kw">let </span>(q, r) = <a href="#19">br</a>.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#17">b</a>.<span class="number">0</span>);
+            <a href="#16">ans</a> += <a href="#17">n</a> * Wrapping(<a href="#26">q</a>);
+            <a href="#17">b</a> = Wrapping(<a href="#26">r</a>);
         }
-        <span class="kw">let </span>y_max = <a href="#9">a</a> * <a href="#9">n</a> + <a href="#9">b</a>;
+        <span class="kw">let </span>y_max = <a href="#17">a</a> * <a href="#17">n</a> + <a href="#17">b</a>;
         <span class="kw">if </span>y_max &lt; m {
             <span class="kw">break</span>;
         }
-        <span class="kw">let </span>(q, r) = <a href="#11">br</a>.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#27">y_max</a>.<span class="number">0</span>);
-        <a href="#9">n</a> = Wrapping(<a href="#31">q</a>);
-        <a href="#9">b</a> = Wrapping(<a href="#31">r</a>);
-        <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a href="#9">m</a>, <span class="kw-2">&amp;mut </span><a href="#9">a</a>);
+        <span class="kw">let </span>(q, r) = <a href="#19">br</a>.<a href="../num/barrett_reduction.rs.html#38">div_rem</a>(<a href="#30">y_max</a>.<span class="number">0</span>);
+        <a href="#17">n</a> = Wrapping(<a href="#34">q</a>);
+        <a href="#17">b</a> = Wrapping(<a href="#34">r</a>);
+        <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a href="#17">m</a>, <span class="kw-2">&amp;mut </span><a href="#17">a</a>);
     }
-    <a href="#8">ans</a>.<span class="number">0
+    <a href="#16">ans</a>.<span class="number">0
 </span>}
 
 <span class="doccomment">/// Sum of Floor of Linear mod 2^64
@@ -172,31 +174,27 @@
 </span><span class="kw">pub fn </span>floor_sum_i64(l: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, a: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
     <span class="kw">let </span><span class="kw-2">mut </span>ans = Wrapping(<span class="number">0i64</span>);
     <span class="kw">let </span>(n, m, a, b) = (
-        Wrapping(<a href="#42">r</a> - <a href="#42">l</a>),
-        Wrapping(<a href="#42">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>),
-        Wrapping(<a href="#42">a</a>),
-        Wrapping(<a href="#42">b</a>) + Wrapping(<a href="#42">l</a>) * Wrapping(<a href="#42">a</a>),
+        Wrapping((<a href="#45">r</a> - <a href="#45">l</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>),
+        Wrapping(<a href="#45">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>),
+        Wrapping(<a href="#45">a</a>),
+        Wrapping(<a href="#45">b</a>) + Wrapping(<a href="#45">l</a>) * Wrapping(<a href="#45">a</a>),
     );
-    <span class="kw">let </span>a = (<span class="kw">if </span>a.<span class="number">0 </span>&lt; <span class="number">0 </span>{
-        <span class="kw">let </span>r = <a href="#44">a</a>.<span class="number">0</span>.rem_euclid(<a href="#44">m</a>.<span class="number">0</span>);
-        <span class="kw">let </span>nc2 = <span class="kw">if </span>n.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>{
-            <a href="#44">n</a> / Wrapping(<span class="number">2</span>) * (<a href="#44">n</a> - Wrapping(<span class="number">1</span>))
-        } <span class="kw">else </span>{
-            (<a href="#44">n</a> - Wrapping(<span class="number">1</span>)) / Wrapping(<span class="number">2</span>) * <a href="#44">n</a>
-        };
-        <a href="#43">ans</a> -= <a href="#52">nc2</a> * ((Wrapping(<a href="#51">r</a>) - <a href="#44">a</a>) / <a href="#44">m</a>);
-        <a href="#51">r</a>
+    <span class="kw">let </span>a = <span class="kw">if </span>a.<span class="number">0 </span>&lt; <span class="number">0 </span>{
+        <span class="kw">let </span>r = <a href="#47">a</a>.<span class="number">0</span>.rem_euclid(<a href="#47">m</a>.<span class="number">0</span>);
+        <span class="kw">let </span>nc2 = <a href="#4">choose2</a>(<a href="#47">n</a>);
+        <a href="#46">ans</a> -= Wrapping(<a href="#55">nc2</a>.<span class="number">0 </span><span class="kw">as _</span>) * ((Wrapping(<a href="#54">r</a>) - <a href="#47">a</a>) / <a href="#47">m</a>);
+        <a href="#54">r</a>
     } <span class="kw">else </span>{
-        <a href="#44">a</a>.<span class="number">0
-    </span>}) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-    <span class="kw">let </span>b = (<span class="kw">if </span>b.<span class="number">0 </span>&lt; <span class="number">0 </span>{
-        <span class="kw">let </span>r = <a href="#44">b</a>.<span class="number">0</span>.rem_euclid(<a href="#44">m</a>.<span class="number">0</span>);
-        <a href="#43">ans</a> -= <a href="#44">n</a> * ((Wrapping(<a href="#63">r</a>) - <a href="#44">b</a>) / <a href="#44">m</a>);
-        <a href="#63">r</a>
+        <a href="#47">a</a>.<span class="number">0
+    </span>};
+    <span class="kw">let </span>b = <span class="kw">if </span>b.<span class="number">0 </span>&lt; <span class="number">0 </span>{
+        <span class="kw">let </span>r = <a href="#47">b</a>.<span class="number">0</span>.rem_euclid(<a href="#47">m</a>.<span class="number">0</span>);
+        <a href="#46">ans</a> -= Wrapping(<a href="#47">n</a>.<span class="number">0 </span><span class="kw">as _</span>) * ((Wrapping(<a href="#62">r</a>) - <a href="#47">b</a>) / <a href="#47">m</a>);
+        <a href="#62">r</a>
     } <span class="kw">else </span>{
-        <a href="#44">b</a>.<span class="number">0
-    </span>}) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-    (<a href="#43">ans</a> + Wrapping(<a href="#7">floor_sum</a>(<a href="#44">n</a>.<span class="number">0 </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="#50">a</a>, <a href="#62">b</a>, <a href="#44">m</a>.<span class="number">0 </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)).<span class="number">0
+        <a href="#47">b</a>.<span class="number">0
+    </span>};
+    (<a href="#46">ans</a> + Wrapping(<a href="#15">floor_sum</a>(<a href="#47">n</a>.<span class="number">0</span>, <a href="#53">a</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="#61">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="#47">m</a>.<span class="number">0 </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)).<span class="number">0
 </span>}
 
 <span class="kw">pub fn </span>floor_sum_range_freq(l: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, a: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, range: Range&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
@@ -204,9 +202,9 @@
         <span class="kw">return </span><span class="number">0</span>;
     }
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(<span class="number">0 </span>&lt;= range.start &amp;&amp; range.end &lt;= m <span class="kw">as </span>i64);
-    <span class="kw">let </span>x1 = <a href="#42">floor_sum_i64</a>(<a href="#72">l</a>, <a href="#72">r</a>, <a href="#72">a</a>, <a href="#72">b</a> - <a href="#72">range</a>.start, <a href="#72">m</a>);
-    <span class="kw">let </span>x2 = <a href="#42">floor_sum_i64</a>(<a href="#72">l</a>, <a href="#72">r</a>, <a href="#72">a</a>, <a href="#72">b</a> - <a href="#72">range</a>.end, <a href="#72">m</a>);
-    <a href="#77">x1</a> - <a href="#78">x2</a>
+    <span class="kw">let </span>x1 = <a href="#45">floor_sum_i64</a>(<a href="#71">l</a>, <a href="#71">r</a>, <a href="#71">a</a>, <a href="#71">b</a> - <a href="#71">range</a>.start, <a href="#71">m</a>);
+    <span class="kw">let </span>x2 = <a href="#45">floor_sum_i64</a>(<a href="#71">l</a>, <a href="#71">r</a>, <a href="#71">a</a>, <a href="#71">b</a> - <a href="#71">range</a>.end, <a href="#71">m</a>);
+    <a href="#76">x1</a> - <a href="#77">x2</a>
 }
 
 <span class="attribute">#[test]

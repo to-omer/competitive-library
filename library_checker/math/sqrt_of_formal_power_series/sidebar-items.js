@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["sqrt_of_formal_power_series","✅  AC  402ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["sqrt_of_formal_power_series","✅  AC  378ms"]]};

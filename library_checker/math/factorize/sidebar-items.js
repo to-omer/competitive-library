@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["factorize","✅  AC  86ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["factorize","✅  AC  96ms"]]};
