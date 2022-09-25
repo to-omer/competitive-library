@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["sum_of_floor_of_linear","❌  RE  40ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["sum_of_floor_of_linear","❌  RE  31ms"]]};
