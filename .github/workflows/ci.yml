@@ -15,12 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         toolchain:
-          - 1.42.0-x86_64-unknown-linux-gnu
           - stable-x86_64-unknown-linux-gnu
           - nightly-x86_64-unknown-linux-gnu
 
     name: Build (${{ matrix.toolchain }})
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
 
@@ -53,11 +52,10 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: fmt
-        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive' || '--all' }} -- --check
+        args: --all -- --check
 
     - name: cargo-clippy
       uses: actions-rs/cargo@v1
-      if: ${{ !startsWith(matrix.toolchain, '1.42.0') }}
       with:
         command: clippy
         args: --workspace --lib --tests
@@ -66,24 +64,31 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: build
-        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive' || '--workspace' }} --lib --tests
+        args: --workspace --lib --tests
 
     - name: cargo-test
       uses: actions-rs/cargo@v1
       with:
         command: test
-        args: ${{ startsWith(matrix.toolchain, '1.42.0') && '-p competitive' || '--workspace' }} --no-fail-fast
+        args: --workspace --no-fail-fast
 
 
   snippet:
     name: Snippet
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: Setup `1.42.0-x86_64-unknown-linux-gnu`
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: 1.42.0-x86_64-unknown-linux-gnu
+        override: false
+        profile: minimal
 
     - name: Setup `stable-x86_64-unknown-linux-gnu`
       uses: actions-rs/toolchain@v1
@@ -108,7 +113,7 @@ jobs:
       uses: actions-rs/cargo@v1
       with:
         command: codesnip
-        args: --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly verify --verbose
+        args: --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly verify --verbose --toolchain=1.42.0
 
 
   verify:
@@ -118,7 +123,7 @@ jobs:
         job-id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
     name: Verify
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
 
@@ -173,7 +178,7 @@ jobs:
       fail-fast: false
 
     name: Benchmark
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
 
@@ -216,7 +221,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
 
     name: Generate Doc
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
 
