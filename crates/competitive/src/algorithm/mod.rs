@@ -21,6 +21,8 @@ pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer}
 #[codesnip::entry("RhoPath")]
 pub use self::rho_path::RhoPath;
 pub use self::slide_minimum::*;
+#[codesnip::entry("sort")]
+pub use self::sort::SliceSortExt;
 #[codesnip::entry("SqrtDecomposition")]
 pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
 #[codesnip::entry("ternary_search")]
@@ -53,6 +55,8 @@ mod partisan_game;
 #[cfg_attr(nightly, codesnip::entry("RhoPath"))]
 mod rho_path;
 mod slide_minimum;
+#[cfg_attr(nightly, codesnip::entry("sort"))]
+mod sort;
 #[cfg_attr(nightly, codesnip::entry("SqrtDecomposition", include("algebra")))]
 mod sqrt_decomposition;
 #[cfg_attr(nightly, codesnip::entry)]
