@@ -1,12 +1,15 @@
 use super::Monoid;
-use std::fmt::{self, Debug, Formatter};
+use std::{
+    collections::VecDeque,
+    fmt::{self, Debug, Formatter},
+};
 
 pub struct QueueAggregation<M>
 where
     M: Monoid,
 {
-    front_stack: Vec<(M::T, M::T)>,
-    back_stack: Vec<(M::T, M::T)>,
+    deque: VecDeque<(M::T, M::T)>,
+    mid: usize,
 }
 
 impl<M> Clone for QueueAggregation<M>
@@ -15,8 +18,8 @@ where
 {
     fn clone(&self) -> Self {
         Self {
-            front_stack: self.front_stack.clone(),
-            back_stack: self.back_stack.clone(),
+            deque: self.deque.clone(),
+            mid: self.mid,
         }
     }
 }
@@ -28,8 +31,8 @@ where
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("QueueAggregation")
-            .field("front_stack", &self.front_stack)
-            .field("back_stack", &self.back_stack)
+            .field("deque", &self.deque)
+            .field("mid", &self.mid)
             .finish()
     }
 }
@@ -40,8 +43,8 @@ where
 {
     fn default() -> Self {
         Self {
-            front_stack: Vec::new(),
-            back_stack: Vec::new(),
+            deque: Default::default(),
+            mid: 0,
         }
     }
 }
@@ -53,53 +56,65 @@ where
     pub fn new() -> Self {
         Self::default()
     }
-    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            deque: VecDeque::with_capacity(capacity),
+            mid: 0,
+        }
+    }
     pub fn len(&self) -> usize {
-        self.front_stack.len() + self.back_stack.len()
+        self.deque.len()
     }
-    #[inline]
     pub fn is_empty(&self) -> bool {
-        self.front_stack.is_empty() && self.back_stack.is_empty()
+        self.deque.is_empty()
     }
-    #[inline]
     pub fn fold_all(&self) -> M::T {
-        M::operate(
-            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-        )
+        match (self.mid > 0, self.mid < self.len()) {
+            (true, true) => M::operate(
+                &self.deque.front().unwrap().0,
+                &self.deque.back().unwrap().0,
+            ),
+            (true, false) => self.deque.front().unwrap().0.clone(),
+            (false, true) => self.deque.back().unwrap().0.clone(),
+            (false, false) => M::unit(),
+        }
     }
-    #[inline]
+    pub fn first(&self) -> Option<&M::T> {
+        self.deque.front().map(|t| &t.1)
+    }
     pub fn last(&self) -> Option<&M::T> {
-        self.back_stack
-            .last()
-            .or_else(|| self.front_stack.first())
-            .map(|t| &t.1)
+        self.deque.back().map(|t| &t.1)
     }
-    #[inline]
+    pub fn push_first(&mut self, value: M::T) {
+        let x = if self.mid > 0 {
+            M::operate(&value, &self.deque.front().unwrap().0)
+        } else {
+            value.clone()
+        };
+        self.mid += 1;
+        self.deque.push_front((x, value));
+    }
     pub fn push(&mut self, value: M::T) {
-        let x = M::operate(
-            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-            &value,
-        );
-        self.back_stack.push((x, value));
+        let x = if self.mid < self.len() {
+            M::operate(&self.deque.back().unwrap().0.clone(), &value)
+        } else {
+            value.clone()
+        };
+        self.deque.push_back((x, value));
     }
-    #[inline]
-    fn push_front(&mut self, value: M::T) {
-        let x = M::operate(
-            &value,
-            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-        );
-        self.front_stack.push((x, value));
-    }
-    #[inline]
     pub fn pop(&mut self) -> Option<M::T> {
-        if self.front_stack.is_empty() {
-            let mut back_stack = std::mem::take(&mut self.back_stack);
-            for x in back_stack.drain(..).map(|t| t.1).rev() {
-                self.push_front(x);
+        if self.mid == 0 {
+            self.mid = self.len();
+            let mut acc = M::unit();
+            for (x, y) in self.deque.range_mut(..).rev() {
+                acc = M::operate(y, &acc);
+                *x = acc.clone();
             }
         }
-        self.front_stack.pop().map(|t| t.1)
+        if self.mid > 0 {
+            self.mid -= 1;
+        }
+        self.deque.pop_front().map(|t| t.1)
     }
 }
 
@@ -107,8 +122,8 @@ pub struct DequeAggregation<M>
 where
     M: Monoid,
 {
-    front_stack: Vec<(M::T, M::T)>,
-    back_stack: Vec<(M::T, M::T)>,
+    deque: VecDeque<(M::T, M::T)>,
+    mid: usize,
 }
 
 impl<M> Clone for DequeAggregation<M>
@@ -117,8 +132,8 @@ where
 {
     fn clone(&self) -> Self {
         Self {
-            front_stack: self.front_stack.clone(),
-            back_stack: self.back_stack.clone(),
+            deque: self.deque.clone(),
+            mid: self.mid,
         }
     }
 }
@@ -130,8 +145,8 @@ where
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("DequeAggregation")
-            .field("front_stack", &self.front_stack)
-            .field("back_stack", &self.back_stack)
+            .field("deque", &self.deque)
+            .field("mid", &self.mid)
             .finish()
     }
 }
@@ -142,8 +157,8 @@ where
 {
     fn default() -> Self {
         Self {
-            front_stack: Vec::new(),
-            back_stack: Vec::new(),
+            deque: Default::default(),
+            mid: 0,
         }
     }
 }
@@ -155,79 +170,79 @@ where
     pub fn new() -> Self {
         Self::default()
     }
-    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            deque: VecDeque::with_capacity(capacity),
+            mid: 0,
+        }
+    }
     pub fn len(&self) -> usize {
-        self.front_stack.len() + self.back_stack.len()
+        self.deque.len()
     }
-    #[inline]
     pub fn is_empty(&self) -> bool {
-        self.front_stack.is_empty() && self.back_stack.is_empty()
+        self.deque.is_empty()
     }
-    #[inline]
     pub fn fold_all(&self) -> M::T {
-        M::operate(
-            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-        )
+        match (self.mid > 0, self.mid < self.len()) {
+            (true, true) => M::operate(
+                &self.deque.front().unwrap().0,
+                &self.deque.back().unwrap().0,
+            ),
+            (true, false) => self.deque.front().unwrap().0.clone(),
+            (false, true) => self.deque.back().unwrap().0.clone(),
+            (false, false) => M::unit(),
+        }
     }
-    #[inline]
     pub fn front(&self) -> Option<&M::T> {
-        self.front_stack
-            .last()
-            .or_else(|| self.back_stack.first())
-            .map(|t| &t.1)
+        self.deque.front().map(|t| &t.1)
     }
-    #[inline]
     pub fn back(&self) -> Option<&M::T> {
-        self.back_stack
-            .last()
-            .or_else(|| self.front_stack.first())
-            .map(|t| &t.1)
+        self.deque.back().map(|t| &t.1)
     }
-    #[inline]
     pub fn push_front(&mut self, value: M::T) {
-        let x = M::operate(
-            &value,
-            self.front_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-        );
-        self.front_stack.push((x, value));
+        let x = if self.mid > 0 {
+            M::operate(&value, &self.deque.front().unwrap().0)
+        } else {
+            value.clone()
+        };
+        self.mid += 1;
+        self.deque.push_front((x, value));
     }
-    #[inline]
     pub fn push_back(&mut self, value: M::T) {
-        let x = M::operate(
-            self.back_stack.last().map(|t| &t.0).unwrap_or(&M::unit()),
-            &value,
-        );
-        self.back_stack.push((x, value));
+        let x = if self.mid < self.len() {
+            M::operate(&self.deque.back().unwrap().0.clone(), &value)
+        } else {
+            value.clone()
+        };
+        self.deque.push_back((x, value));
+    }
+    fn rebuild(&mut self) {
+        let mut acc = M::unit();
+        for (x, y) in self.deque.range_mut(self.mid..) {
+            acc = M::operate(&acc, y);
+            *x = acc.clone();
+        }
+        let mut acc = M::unit();
+        for (x, y) in self.deque.range_mut(..self.mid).rev() {
+            acc = M::operate(y, &acc);
+            *x = acc.clone();
+        }
     }
     pub fn pop_front(&mut self) -> Option<M::T> {
-        if self.front_stack.is_empty() {
-            let n = self.back_stack.len();
-            let mut back_stack = std::mem::take(&mut self.back_stack);
-            for x in back_stack.drain(..(n + 1) / 2).map(|t| t.1).rev() {
-                self.push_front(x);
-            }
-            for x in back_stack.drain(..).map(|t| t.1) {
-                self.push_back(x);
-            }
+        if self.mid == 0 {
+            self.mid = (self.len() + 1) / 2;
+            self.rebuild();
         }
-        self.front_stack.pop().map(|t| t.1)
+        if self.mid > 0 {
+            self.mid -= 1;
+        }
+        self.deque.pop_front().map(|t| t.1)
     }
     pub fn pop_back(&mut self) -> Option<M::T> {
-        if self.back_stack.is_empty() {
-            let n = self.front_stack.len();
-            let mut front_stack = std::mem::take(&mut self.front_stack);
-            for x in front_stack.drain(..(n + 1) / 2).map(|t| t.1).rev() {
-                self.push_back(x);
-            }
-            for x in front_stack.drain(..).map(|t| t.1) {
-                self.push_front(x);
-            }
+        if self.mid == self.len() {
+            self.mid = self.len() / 2;
+            self.rebuild();
         }
-        self.back_stack.pop().map(|t| t.1)
-    }
-    #[inline]
-    pub fn reverse(&mut self) {
-        std::mem::swap(&mut self.back_stack, &mut self.front_stack);
+        self.deque.pop_back().map(|t| t.1)
     }
 }
