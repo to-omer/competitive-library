@@ -247,15 +247,33 @@
 <span id="231">231</span>
 <span id="232">232</span>
 <span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
 </pre><pre class="rust"><code><span class="kw">use </span><a href="../algebra/magma.rs.html#45"><span class="kw">super</span>::Monoid</a>;
-<span class="kw">use </span>std::fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>};
+<span class="kw">use </span>std::{
+    <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">collections::VecDeque</a>,
+    fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>},
+};
 
 <span class="kw">pub struct </span>QueueAggregation&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
 {
-    front_stack: Vec&lt;(M::T, M::T)&gt;,
-    back_stack: Vec&lt;(M::T, M::T)&gt;,
+    deque: VecDeque&lt;(M::T, M::T)&gt;,
+    mid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
 
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>QueueAggregation&lt;M&gt;
@@ -264,8 +282,8 @@
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            front_stack: <a class="self" href="#16">self</a>.front_stack.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
-            back_stack: <a class="self" href="#16">self</a>.back_stack.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            deque: <a class="self" href="#19">self</a>.deque.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            mid: <a class="self" href="#19">self</a>.mid,
         }
     }
 }
@@ -276,9 +294,9 @@
     M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#29">f</a>.debug_struct(<span class="string">&quot;QueueAggregation&quot;</span>)
-            .field(<span class="string">&quot;front_stack&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#29">self</a>.front_stack)
-            .field(<span class="string">&quot;back_stack&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#29">self</a>.back_stack)
+        <a href="#32">f</a>.debug_struct(<span class="string">&quot;QueueAggregation&quot;</span>)
+            .field(<span class="string">&quot;deque&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#32">self</a>.deque)
+            .field(<span class="string">&quot;mid&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#32">self</a>.mid)
             .finish()
     }
 }
@@ -289,8 +307,8 @@
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            front_stack: Vec::new(),
-            back_stack: Vec::new(),
+            deque: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
+            mid: <span class="number">0</span>,
         }
     }
 }
@@ -302,53 +320,65 @@
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::default()
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="#57">self</a>.front_stack.len() + <a class="self" href="#57">self</a>.back_stack.len()
+    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            deque: VecDeque::with_capacity(<a href="#59">capacity</a>),
+            mid: <span class="number">0</span>,
+        }
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#61">self</a>.front_stack.is_empty() &amp;&amp; <a class="self" href="#61">self</a>.back_stack.is_empty()
+    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a class="self" href="#65">self</a>.deque.len()
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
-        M::operate(
-            <a class="self" href="#65">self</a>.front_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#67">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-            <a class="self" href="#65">self</a>.back_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#68">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-        )
+    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a class="self" href="#68">self</a>.deque.is_empty()
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>last(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
-        <a class="self" href="#72">self</a>.back_stack
-            .last()
-            .or_else(|| <a class="self" href="#72">self</a>.front_stack.first())
-            .map(|t| <span class="kw-2">&amp;</span><a href="#76">t</a>.<span class="number">1</span>)
+    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
+        <span class="kw">match </span>(<a class="self" href="#71">self</a>.mid &gt; <span class="number">0</span>, <a class="self" href="#71">self</a>.mid &lt; <a class="self" href="#71">self</a>.<a href="#65">len</a>()) {
+            (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; M::operate(
+                <span class="kw-2">&amp;</span><a class="self" href="#71">self</a>.deque.front().unwrap().<span class="number">0</span>,
+                <span class="kw-2">&amp;</span><a class="self" href="#71">self</a>.deque.back().unwrap().<span class="number">0</span>,
+            ),
+            (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <a class="self" href="#71">self</a>.deque.front().unwrap().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            (<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; <a class="self" href="#71">self</a>.deque.back().unwrap().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            (<span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; M::unit(),
+        }
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
-        <span class="kw">let </span>x = M::operate(
-            <a class="self" href="#79">self</a>.back_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#81">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-            <span class="kw-2">&amp;</span><a href="#79">value</a>,
-        );
-        <a class="self" href="#79">self</a>.back_stack.push((<a href="#80">x</a>, <a href="#79">value</a>));
+    <span class="kw">pub fn </span>first(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
+        <a class="self" href="#82">self</a>.deque.front().map(|t| <span class="kw-2">&amp;</span><a href="#83">t</a>.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
-        <span class="kw">let </span>x = M::operate(
-            <span class="kw-2">&amp;</span><a href="#87">value</a>,
-            <a class="self" href="#87">self</a>.front_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#90">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-        );
-        <a class="self" href="#87">self</a>.front_stack.push((<a href="#88">x</a>, <a href="#87">value</a>));
+    <span class="kw">pub fn </span>last(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
+        <a class="self" href="#85">self</a>.deque.back().map(|t| <span class="kw-2">&amp;</span><a href="#86">t</a>.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
-        <span class="kw">if </span><span class="self">self</span>.front_stack.is_empty() {
-            <span class="kw">let </span><span class="kw-2">mut </span>back_stack = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#95">self</a>.back_stack);
-            <span class="kw">for </span>x <span class="kw">in </span>back_stack.drain(..).map(|t| t.<span class="number">1</span>).rev() {
-                <span class="self">self</span>.push_front(x);
+    <span class="kw">pub fn </span>push_first(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+        <span class="kw">let </span>x = <span class="kw">if </span><span class="self">self</span>.mid &gt; <span class="number">0 </span>{
+            M::operate(<span class="kw-2">&amp;</span><a href="#88">value</a>, <span class="kw-2">&amp;</span><a class="self" href="#88">self</a>.deque.front().unwrap().<span class="number">0</span>)
+        } <span class="kw">else </span>{
+            <a href="#88">value</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        };
+        <a class="self" href="#88">self</a>.mid += <span class="number">1</span>;
+        <a class="self" href="#88">self</a>.deque.push_front((<a href="#89">x</a>, <a href="#88">value</a>));
+    }
+    <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+        <span class="kw">let </span>x = <span class="kw">if </span><span class="self">self</span>.mid &lt; <span class="self">self</span>.len() {
+            M::operate(<span class="kw-2">&amp;</span><a class="self" href="#97">self</a>.deque.back().unwrap().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(), <span class="kw-2">&amp;</span><a href="#97">value</a>)
+        } <span class="kw">else </span>{
+            <a href="#97">value</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        };
+        <a class="self" href="#97">self</a>.deque.push_back((<a href="#98">x</a>, <a href="#97">value</a>));
+    }
+    <span class="kw">pub fn </span>pop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
+        <span class="kw">if </span><span class="self">self</span>.mid == <span class="number">0 </span>{
+            <a class="self" href="#105">self</a>.mid = <a class="self" href="#105">self</a>.<a href="#65">len</a>();
+            <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
+            <span class="kw">for </span>(x, y) <span class="kw">in </span><span class="self">self</span>.deque.range_mut(..).rev() {
+                acc = M::operate(y, <span class="kw-2">&amp;</span>acc);
+                <span class="kw-2">*</span>x = acc.clone();
             }
         }
-        <a class="self" href="#95">self</a>.front_stack.pop().map(|t| <a href="#102">t</a>.<span class="number">1</span>)
+        <span class="kw">if </span><span class="self">self</span>.mid &gt; <span class="number">0 </span>{
+            <a class="self" href="#105">self</a>.mid -= <span class="number">1</span>;
+        }
+        <a class="self" href="#105">self</a>.deque.pop_front().map(|t| <a href="#117">t</a>.<span class="number">1</span>)
     }
 }
 
@@ -356,8 +386,8 @@
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
 {
-    front_stack: Vec&lt;(M::T, M::T)&gt;,
-    back_stack: Vec&lt;(M::T, M::T)&gt;,
+    deque: VecDeque&lt;(M::T, M::T)&gt;,
+    mid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
 
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>DequeAggregation&lt;M&gt;
@@ -366,8 +396,8 @@
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            front_stack: <a class="self" href="#118">self</a>.front_stack.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
-            back_stack: <a class="self" href="#118">self</a>.back_stack.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            deque: <a class="self" href="#133">self</a>.deque.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            mid: <a class="self" href="#133">self</a>.mid,
         }
     }
 }
@@ -378,9 +408,9 @@
     M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#131">f</a>.debug_struct(<span class="string">&quot;DequeAggregation&quot;</span>)
-            .field(<span class="string">&quot;front_stack&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#131">self</a>.front_stack)
-            .field(<span class="string">&quot;back_stack&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#131">self</a>.back_stack)
+        <a href="#146">f</a>.debug_struct(<span class="string">&quot;DequeAggregation&quot;</span>)
+            .field(<span class="string">&quot;deque&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#146">self</a>.deque)
+            .field(<span class="string">&quot;mid&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#146">self</a>.mid)
             .finish()
     }
 }
@@ -391,8 +421,8 @@
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            front_stack: Vec::new(),
-            back_stack: Vec::new(),
+            deque: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
+            mid: <span class="number">0</span>,
         }
     }
 }
@@ -404,80 +434,80 @@
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::default()
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="#159">self</a>.front_stack.len() + <a class="self" href="#159">self</a>.back_stack.len()
+    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            deque: VecDeque::with_capacity(<a href="#173">capacity</a>),
+            mid: <span class="number">0</span>,
+        }
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#163">self</a>.front_stack.is_empty() &amp;&amp; <a class="self" href="#163">self</a>.back_stack.is_empty()
+    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a class="self" href="#179">self</a>.deque.len()
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
-        M::operate(
-            <a class="self" href="#167">self</a>.front_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#169">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-            <a class="self" href="#167">self</a>.back_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#170">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-        )
+    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a class="self" href="#182">self</a>.deque.is_empty()
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>front(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
-        <a class="self" href="#174">self</a>.front_stack
-            .last()
-            .or_else(|| <a class="self" href="#174">self</a>.back_stack.first())
-            .map(|t| <span class="kw-2">&amp;</span><a href="#178">t</a>.<span class="number">1</span>)
+    <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; M::T {
+        <span class="kw">match </span>(<a class="self" href="#185">self</a>.mid &gt; <span class="number">0</span>, <a class="self" href="#185">self</a>.mid &lt; <a class="self" href="#185">self</a>.<a href="#179">len</a>()) {
+            (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; M::operate(
+                <span class="kw-2">&amp;</span><a class="self" href="#185">self</a>.deque.front().unwrap().<span class="number">0</span>,
+                <span class="kw-2">&amp;</span><a class="self" href="#185">self</a>.deque.back().unwrap().<span class="number">0</span>,
+            ),
+            (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <a class="self" href="#185">self</a>.deque.front().unwrap().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            (<span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; <a class="self" href="#185">self</a>.deque.back().unwrap().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            (<span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; M::unit(),
+        }
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>back(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
-        <a class="self" href="#181">self</a>.back_stack
-            .last()
-            .or_else(|| <a class="self" href="#181">self</a>.front_stack.first())
-            .map(|t| <span class="kw-2">&amp;</span><a href="#185">t</a>.<span class="number">1</span>)
+    <span class="kw">pub fn </span>front(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
+        <a class="self" href="#196">self</a>.deque.front().map(|t| <span class="kw-2">&amp;</span><a href="#197">t</a>.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
-        <span class="kw">let </span>x = M::operate(
-            <span class="kw-2">&amp;</span><a href="#188">value</a>,
-            <a class="self" href="#188">self</a>.front_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#191">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-        );
-        <a class="self" href="#188">self</a>.front_stack.push((<a href="#189">x</a>, <a href="#188">value</a>));
+    <span class="kw">pub fn </span>back(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>M::T&gt; {
+        <a class="self" href="#199">self</a>.deque.back().map(|t| <span class="kw-2">&amp;</span><a href="#200">t</a>.<span class="number">1</span>)
     }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>push_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
-        <span class="kw">let </span>x = M::operate(
-            <a class="self" href="#196">self</a>.back_stack.last().map(|t| <span class="kw-2">&amp;</span><a href="#198">t</a>.<span class="number">0</span>).unwrap_or(<span class="kw-2">&amp;</span>M::unit()),
-            <span class="kw-2">&amp;</span><a href="#196">value</a>,
-        );
-        <a class="self" href="#196">self</a>.back_stack.push((<a href="#197">x</a>, <a href="#196">value</a>));
+    <span class="kw">pub fn </span>push_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+        <span class="kw">let </span>x = <span class="kw">if </span><span class="self">self</span>.mid &gt; <span class="number">0 </span>{
+            M::operate(<span class="kw-2">&amp;</span><a href="#202">value</a>, <span class="kw-2">&amp;</span><a class="self" href="#202">self</a>.deque.front().unwrap().<span class="number">0</span>)
+        } <span class="kw">else </span>{
+            <a href="#202">value</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        };
+        <a class="self" href="#202">self</a>.mid += <span class="number">1</span>;
+        <a class="self" href="#202">self</a>.deque.push_front((<a href="#203">x</a>, <a href="#202">value</a>));
+    }
+    <span class="kw">pub fn </span>push_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: M::T) {
+        <span class="kw">let </span>x = <span class="kw">if </span><span class="self">self</span>.mid &lt; <span class="self">self</span>.len() {
+            M::operate(<span class="kw-2">&amp;</span><a class="self" href="#211">self</a>.deque.back().unwrap().<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(), <span class="kw-2">&amp;</span><a href="#211">value</a>)
+        } <span class="kw">else </span>{
+            <a href="#211">value</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        };
+        <a class="self" href="#211">self</a>.deque.push_back((<a href="#212">x</a>, <a href="#211">value</a>));
+    }
+    <span class="kw">fn </span>rebuild(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
+        <span class="kw">for </span>(x, y) <span class="kw">in </span><span class="self">self</span>.deque.range_mut(<span class="self">self</span>.mid..) {
+            acc = M::operate(<span class="kw-2">&amp;</span>acc, y);
+            <span class="kw-2">*</span>x = acc.clone();
+        }
+        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
+        <span class="kw">for </span>(x, y) <span class="kw">in </span><span class="self">self</span>.deque.range_mut(..<span class="self">self</span>.mid).rev() {
+            acc = M::operate(y, <span class="kw-2">&amp;</span>acc);
+            <span class="kw-2">*</span>x = acc.clone();
+        }
     }
     <span class="kw">pub fn </span>pop_front(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
-        <span class="kw">if </span><span class="self">self</span>.front_stack.is_empty() {
-            <span class="kw">let </span>n = <a class="self" href="#203">self</a>.back_stack.len();
-            <span class="kw">let </span><span class="kw-2">mut </span>back_stack = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#203">self</a>.back_stack);
-            <span class="kw">for </span>x <span class="kw">in </span>back_stack.drain(..(n + <span class="number">1</span>) / <span class="number">2</span>).map(|t| t.<span class="number">1</span>).rev() {
-                <span class="self">self</span>.push_front(x);
-            }
-            <span class="kw">for </span>x <span class="kw">in </span>back_stack.drain(..).map(|t| t.<span class="number">1</span>) {
-                <span class="self">self</span>.push_back(x);
-            }
+        <span class="kw">if </span><span class="self">self</span>.mid == <span class="number">0 </span>{
+            <a class="self" href="#231">self</a>.mid = (<a class="self" href="#231">self</a>.<a href="#179">len</a>() + <span class="number">1</span>) / <span class="number">2</span>;
+            <a class="self" href="#231">self</a>.<a href="#219">rebuild</a>();
         }
-        <a class="self" href="#203">self</a>.front_stack.pop().map(|t| <a href="#214">t</a>.<span class="number">1</span>)
+        <span class="kw">if </span><span class="self">self</span>.mid &gt; <span class="number">0 </span>{
+            <a class="self" href="#231">self</a>.mid -= <span class="number">1</span>;
+        }
+        <a class="self" href="#231">self</a>.deque.pop_front().map(|t| <a href="#239">t</a>.<span class="number">1</span>)
     }
     <span class="kw">pub fn </span>pop_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;M::T&gt; {
-        <span class="kw">if </span><span class="self">self</span>.back_stack.is_empty() {
-            <span class="kw">let </span>n = <a class="self" href="#216">self</a>.front_stack.len();
-            <span class="kw">let </span><span class="kw-2">mut </span>front_stack = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#216">self</a>.front_stack);
-            <span class="kw">for </span>x <span class="kw">in </span>front_stack.drain(..(n + <span class="number">1</span>) / <span class="number">2</span>).map(|t| t.<span class="number">1</span>).rev() {
-                <span class="self">self</span>.push_back(x);
-            }
-            <span class="kw">for </span>x <span class="kw">in </span>front_stack.drain(..).map(|t| t.<span class="number">1</span>) {
-                <span class="self">self</span>.push_front(x);
-            }
+        <span class="kw">if </span><span class="self">self</span>.mid == <span class="self">self</span>.len() {
+            <a class="self" href="#241">self</a>.mid = <a class="self" href="#241">self</a>.<a href="#179">len</a>() / <span class="number">2</span>;
+            <a class="self" href="#241">self</a>.<a href="#219">rebuild</a>();
         }
-        <a class="self" href="#216">self</a>.back_stack.pop().map(|t| <a href="#227">t</a>.<span class="number">1</span>)
-    }
-    <span class="attribute">#[inline]
-    </span><span class="kw">pub fn </span>reverse(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">std::mem::swap</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#230">self</a>.back_stack, <span class="kw-2">&amp;mut </span><a class="self" href="#230">self</a>.front_stack);
+        <a class="self" href="#241">self</a>.deque.pop_back().map(|t| <a href="#246">t</a>.<span class="number">1</span>)
     }
 }
 </code></pre></div>
