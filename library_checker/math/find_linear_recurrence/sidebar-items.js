@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["find_linear_recurrence","✅  AC  144ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["find_linear_recurrence","✅  AC  109ms"]]};

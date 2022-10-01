@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["sharp_p_subset_sum","✅  AC  486ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["sharp_p_subset_sum","✅  AC  579ms"]]};

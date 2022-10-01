@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["range_kth_smallest","✅  AC  279ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["range_kth_smallest","✅  AC  298ms"]]};
