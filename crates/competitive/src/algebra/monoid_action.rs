@@ -63,6 +63,26 @@ pub mod monoid_action_impls {
         marker::PhantomData,
         ops::{Add, Mul, Sub},
     };
+    pub struct EmptyLazy<M> {
+        _marker: PhantomData<fn() -> M>,
+    }
+    impl<M: Monoid> MonoidAction for EmptyLazy<M> {
+        type Key = M::T;
+        type Agg = M::T;
+        type Act = ();
+        type AggMonoid = M;
+        type ActMonoid = ();
+        fn single_agg(key: &Self::Key) -> Self::Agg {
+            key.clone()
+        }
+        fn act_key(x: &Self::Key, _a: &Self::Act) -> Self::Key {
+            x.clone()
+        }
+        fn act_agg(x: &Self::Agg, _a: &Self::Act) -> Option<Self::Agg> {
+            Some(x.clone())
+        }
+    }
+
     pub struct RangeSumRangeAdd<T> {
         _marker: PhantomData<fn() -> T>,
     }

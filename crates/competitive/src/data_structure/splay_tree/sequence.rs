@@ -142,6 +142,92 @@ where
     }
 }
 
+struct SeekByAccCond<F, T>
+where
+    T: MonoidAction,
+{
+    acc: T::Agg,
+    f: F,
+    _marker: PhantomData<fn() -> T>,
+}
+impl<F, T> SeekByAccCond<F, T>
+where
+    T: MonoidAction,
+{
+    fn new(f: F) -> Self {
+        Self {
+            acc: T::agg_unit(),
+            f,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<F, T> SplaySeeker for SeekByAccCond<F, T>
+where
+    F: FnMut(&T::Agg) -> bool,
+    T: MonoidAction,
+{
+    type S = LazyAggSplay<T>;
+    fn splay_seek(&mut self, node: NodeRef<marker::Immut<'_>, Self::S>) -> Ordering {
+        if let Some(lagg) = node.left().map(|l| &l.data().agg) {
+            let nacc = T::agg_operate(&self.acc, lagg);
+            if (self.f)(&nacc) {
+                return Ordering::Less;
+            }
+            self.acc = nacc;
+        };
+        self.acc = T::agg_operate(&self.acc, &T::single_agg(&node.data().key));
+        if (self.f)(&self.acc) {
+            Ordering::Equal
+        } else {
+            Ordering::Greater
+        }
+    }
+}
+
+struct SeekByRaccCond<F, T>
+where
+    T: MonoidAction,
+{
+    acc: T::Agg,
+    f: F,
+    _marker: PhantomData<fn() -> T>,
+}
+impl<F, T> SeekByRaccCond<F, T>
+where
+    T: MonoidAction,
+{
+    fn new(f: F) -> Self {
+        Self {
+            acc: T::agg_unit(),
+            f,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<F, T> SplaySeeker for SeekByRaccCond<F, T>
+where
+    F: FnMut(&T::Agg) -> bool,
+    T: MonoidAction,
+{
+    type S = LazyAggSplay<T>;
+    fn splay_seek(&mut self, node: NodeRef<marker::Immut<'_>, Self::S>) -> Ordering {
+        if let Some(lagg) = node.right().map(|r| &r.data().agg) {
+            let nacc = T::agg_operate(lagg, &self.acc);
+            if (self.f)(&nacc) {
+                return Ordering::Greater;
+            }
+            self.acc = nacc;
+        };
+        self.acc = T::agg_operate(&T::single_agg(&node.data().key), &self.acc);
+        if (self.f)(&self.acc) {
+            Ordering::Equal
+        } else {
+            Ordering::Less
+        }
+    }
+}
+
 pub struct SplaySequence<T, A = MemoryPool<Node<LazyAggElement<T>>>>
 where
     T: MonoidAction,
@@ -211,6 +297,12 @@ where
             alloc: ManuallyDrop::new(MemoryPool::with_capacity(capacity)),
         }
     }
+    pub fn len(&self) -> usize {
+        self.length
+    }
+    pub fn is_empty(&self) -> bool {
+        self.length == 0
+    }
 }
 impl<T, A> SplaySequence<T, A>
 where
@@ -237,7 +329,7 @@ where
     where
         R: RangeBounds<usize>,
     {
-        if let Some(root) = self.range(range).root().root_data_mut() {
+        if let Some(root) = self.range(range).root_mut().root_data_mut() {
             LazyAggSplay::<T>::update_lazy(root, &x);
         }
     }
@@ -255,7 +347,7 @@ where
     where
         R: RangeBounds<usize>,
     {
-        if let Some(root) = self.range(range).root().root_data_mut() {
+        if let Some(root) = self.range(range).root_mut().root_data_mut() {
             LazyAggSplay::<T>::reverse(root);
         }
     }
@@ -303,5 +395,152 @@ where
         self.length -= 1;
         let node = self.root.take_root().unwrap().into_dying();
         unsafe { Some(node.into_data(self.alloc.deref_mut()).key) }
+    }
+    pub fn position_acc<R, F>(&mut self, range: R, f: F) -> Option<usize>
+    where
+        R: RangeBounds<usize>,
+        F: FnMut(&T::Agg) -> bool,
+    {
+        let mut range = self.range(range);
+        let ord = range.root_mut().splay_by(SeekByAccCond::new(f));
+        if !matches!(ord, Some(Ordering::Equal)) {
+            return None;
+        }
+        let front_size = range.front().size();
+        let left_size = range.root().left_size();
+        Some(front_size + left_size)
+    }
+    pub fn rposition_acc<R, F>(&mut self, range: R, f: F) -> Option<usize>
+    where
+        R: RangeBounds<usize>,
+        F: FnMut(&T::Agg) -> bool,
+    {
+        let mut range = self.range(range);
+        let ord = range.root_mut().splay_by(SeekByRaccCond::new(f));
+        if !matches!(ord, Some(Ordering::Equal)) {
+            return None;
+        }
+        let front_size = range.front().size();
+        let left_size = range.root().left_size();
+        Some(front_size + left_size)
+    }
+    pub fn rotate_left(&mut self, mid: usize) {
+        assert!(mid <= self.length);
+        if mid != 0 || mid != self.length {
+            self.range(mid..).drop_rotate_left()
+        }
+    }
+    pub fn rotate_right(&mut self, k: usize) {
+        assert!(k <= self.length);
+        self.rotate_left(self.length - k);
+    }
+}
+
+impl<T> Root<LazyAggSplay<T>>
+where
+    T: MonoidAction,
+{
+    fn size(&self) -> usize {
+        self.root().map(|root| root.data().size).unwrap_or_default()
+    }
+    fn left_size(&self) -> usize {
+        self.root()
+            .and_then(|root| root.left().map(|left| left.data().size))
+            .unwrap_or_default()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        algebra::RangeMaxRangeUpdate,
+        rand,
+        tools::{NotEmptySegment, Xorshift},
+    };
+
+    #[test]
+    fn test_splay_sequence() {
+        const N: usize = 1_000;
+        const Q: usize = 20_000;
+        const A: i64 = 1_000_000_000;
+
+        let mut rng = Xorshift::default();
+        rand!(rng, mut arr: [-A..A; N]);
+        let mut seq = SplaySequence::<RangeMaxRangeUpdate<_>>::new();
+        for (i, &a) in arr.iter().enumerate() {
+            seq.insert(i, a);
+        }
+        for _ in 0..Q {
+            assert_eq!(arr.len(), seq.len());
+            rand!(rng, ty: (0..6), (l, r): (NotEmptySegment(arr.len())));
+            match ty {
+                0 if arr.len() < N * 2 => {
+                    rand!(rng, i: (..=arr.len()), x: (-A..A));
+                    seq.insert(i, x);
+                    arr.insert(i, x);
+                }
+                1 if arr.len() > 1 => {
+                    rand!(rng, i: (..arr.len()));
+                    assert_eq!(arr.remove(i), seq.remove(i).unwrap());
+                }
+                2 => {
+                    let res = arr[l..r].iter().max().cloned().unwrap_or_default();
+                    assert_eq!(seq.fold(l..r), res);
+                }
+                3 => {
+                    rand!(rng, x: (-A..A));
+                    seq.update(l..r, Some(x));
+                    arr[l..r].iter_mut().for_each(|a| *a = x);
+                }
+                4 => {
+                    arr[l..r].reverse();
+                    seq.reverse(l..r);
+                }
+                5 => {
+                    rand!(rng, x: (-A..A));
+                    assert_eq!(
+                        seq.position_acc(l..r, |&d| d >= x),
+                        arr[l..r]
+                            .iter()
+                            .scan(std::i64::MIN, |acc, &a| {
+                                *acc = a.max(*acc);
+                                Some(*acc)
+                            })
+                            .position(|acc| acc >= x)
+                            .map(|i| i + l),
+                    );
+                }
+                6 => {
+                    rand!(rng, x: (-A..A));
+                    assert_eq!(
+                        seq.rposition_acc(l..r, |&d| d >= x),
+                        arr[l..r]
+                            .iter()
+                            .rev()
+                            .scan(std::i64::MIN, |acc, &a| {
+                                *acc = a.max(*acc);
+                                Some(*acc)
+                            })
+                            .position(|acc| acc >= x)
+                            .map(|i| r - i - 1),
+                    );
+                }
+                7 => {
+                    rand!(rng, i: (..=arr.len()));
+                    seq.rotate_left(i);
+                    arr.rotate_left(i);
+                }
+                8 => {
+                    rand!(rng, i: (..=arr.len()));
+                    seq.rotate_right(i);
+                    arr.rotate_right(i);
+                }
+                _ => {
+                    rand!(rng, i: (..arr.len()));
+                    assert_eq!(arr.get(i), seq.get(i));
+                }
+            }
+        }
     }
 }

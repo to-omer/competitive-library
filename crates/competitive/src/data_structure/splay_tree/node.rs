@@ -683,8 +683,18 @@ where
         self.back.insert_first(last);
         Some(noderef)
     }
-    pub fn root(&mut self) -> &mut Root<S> {
+    pub fn root(&self) -> &Root<S> {
         self.root
+    }
+    pub fn root_mut(&mut self) -> &mut Root<S> {
+        self.root
+    }
+    pub fn front(&self) -> &Root<S> {
+        &self.front
+    }
+    pub fn drop_rotate_left(mut self) {
+        self.root.append(&mut self.back);
+        self.root.append(&mut self.front);
     }
 }
 impl<'a, S> Drop for NodeRange<'a, S>
