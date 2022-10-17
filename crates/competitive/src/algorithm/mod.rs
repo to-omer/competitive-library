@@ -14,6 +14,8 @@ pub use self::chromatic_number::IndependentSubSet;
 pub use self::combinations::*;
 #[codesnip::entry("ConvexHullTrick")]
 pub use self::convex_hull_trick::ConvexHullTrick;
+#[codesnip::entry("ImpartialGame")]
+pub use self::impartial_game::{ImpartialGame, ImpartialGameAnalyzer, ImpartialGamer};
 pub use self::mo::MoSolver;
 pub use self::other::*;
 #[codesnip::entry("PartisanGame")]
@@ -29,6 +31,8 @@ pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
 pub use self::ternary_search::*;
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
+#[codesnip::entry("ZeroSumGame")]
+pub use self::zero_sum_game::{ZeroSumGame, ZeroSumGameAnalyzer, ZeroSumGamer};
 #[codesnip::entry("zeta_transform")]
 pub use self::zeta_transform::{
     DivisorTransform, MultipleTransform, SubsetTransform, SupersetTransform,
@@ -48,6 +52,8 @@ mod chromatic_number;
 mod combinations;
 #[cfg_attr(nightly, codesnip::entry("ConvexHullTrick"))]
 mod convex_hull_trick;
+#[cfg_attr(nightly, codesnip::entry("ImpartialGame"))]
+mod impartial_game;
 mod mo;
 mod other;
 #[cfg_attr(nightly, codesnip::entry("PartisanGame"))]
@@ -63,5 +69,7 @@ mod sqrt_decomposition;
 mod ternary_search;
 #[cfg_attr(nightly, codesnip::entry("XorBasis"))]
 mod xorbasis;
+#[cfg_attr(nightly, codesnip::entry("ZeroSumGame"))]
+mod zero_sum_game;
 #[cfg_attr(nightly, codesnip::entry("zeta_transform", include("algebra")))]
 mod zeta_transform;
