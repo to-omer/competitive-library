@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../../competitive/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
+</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../../competitive/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -273,6 +273,14 @@
 <span id="257">257</span>
 <span id="258">258</span>
 <span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
 </pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="../num/zero_one.rs.html#15">One</a>, <a href="../num/zero_one.rs.html#1">Zero</a>};
 <span class="kw">use </span>std::ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html">Div</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html">Index</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.IndexMut.html">IndexMut</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Mul</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">Sub</a>};
 
@@ -464,35 +472,43 @@
         <a href="#185">d</a>
     }
     <span class="kw">pub fn </span>solve_system_of_linear_equations(<span class="kw-2">&amp;</span><span class="self">self</span>, b: <span class="kw-2">&amp;</span>[T]) -&gt; <span class="prelude-ty">Option</span>&lt;Vec&lt;T&gt;&gt; {
-        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(<span class="self">self</span>.shape.<span class="number">0</span>, b.len());
-        <span class="kw">let </span>n = <a class="self" href="#191">self</a>.shape.<span class="number">0</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>c = Matrix::&lt;T&gt;::zeros((<a href="#194">n</a>, <a href="#194">n</a> + <span class="number">1</span>));
+        <span class="kw">let </span>(n, m) = <a class="self" href="#191">self</a>.shape;
+        <span class="kw">let </span><span class="kw-2">mut </span>c = Matrix::&lt;T&gt;::zeros((<a href="#193">n</a>, <a href="#193">m</a> + <span class="number">1</span>));
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
-            c[i][..n].clone_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>[i]);
-            c[i][n] = b[i];
+            c[i][..m].clone_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>[i]);
+            c[i][m] = b[i];
         }
-        <a href="#195">c</a>.<a href="#143">row_reduction</a>(<span class="bool-val">true</span>);
-        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| c[i][i].is_zero()) {
-            <span class="prelude-val">None
-        </span>} <span class="kw">else </span>{
-            <span class="prelude-val">Some</span>((<span class="number">0</span>..<a href="#194">n</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| <a href="#195">c</a>[<a href="#204">i</a>][<a href="#194">n</a>]).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;())
+        <a href="#194">c</a>.<a href="#143">row_reduction</a>(<span class="bool-val">true</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>x = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[T::zero(); m];
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
+            <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0usize</span>;
+            <span class="kw">while </span>j &lt;= m &amp;&amp; c[i][j].is_zero() {
+                j += <span class="number">1</span>;
+            }
+            <span class="kw">if </span>j == m {
+                <span class="kw">return </span><span class="prelude-val">None</span>;
+            }
+            <span class="kw">if </span>j &lt; m {
+                x[j] = c[i][m];
+            }
         }
+        <span class="prelude-val">Some</span>(<a href="#200">x</a>)
     }
     <span class="kw">pub fn </span>inverse(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Matrix&lt;T&gt;&gt; {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(<span class="self">self</span>.shape.<span class="number">0</span>, <span class="self">self</span>.shape.<span class="number">1</span>);
-        <span class="kw">let </span>n = <a class="self" href="#207">self</a>.shape.<span class="number">0</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>c = Matrix::&lt;T&gt;::zeros((<a href="#209">n</a>, <a href="#209">n</a> * <span class="number">2</span>));
+        <span class="kw">let </span>n = <a class="self" href="#215">self</a>.shape.<span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>c = Matrix::&lt;T&gt;::zeros((<a href="#217">n</a>, <a href="#217">n</a> * <span class="number">2</span>));
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n {
             c[i][..n].clone_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>[i]);
             c[i][n + i] = T::one();
         }
-        <a href="#210">c</a>.<a href="#143">row_reduction</a>(<span class="bool-val">true</span>);
+        <a href="#218">c</a>.<a href="#143">row_reduction</a>(<span class="bool-val">true</span>);
         <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| c[i][i].is_zero()) {
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{
             <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_vec(
-                <a href="#210">c</a>.data.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|r| <a href="#220">r</a>[<a href="#209">n</a>..].to_vec()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+                <a href="#218">c</a>.data.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|r| <a href="#228">r</a>[<a href="#217">n</a>..].to_vec()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
             ))
         }
     }
@@ -533,4 +549,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (a24a020e6 2022-10-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (5c8bff74b 2022-10-21)" ></div></body></html>

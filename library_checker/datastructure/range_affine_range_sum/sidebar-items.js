@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["range_affine_range_sum","✅  AC  775ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["range_affine_range_sum","✅  AC  725ms"]]};

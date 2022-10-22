@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../../competitive/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
+</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><a class="sidebar-logo" href="../../../competitive/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -406,7 +406,27 @@
 <span id="390">390</span>
 <span id="391">391</span>
 <span id="392">392</span>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="mod.rs.html#13">magma</a>::<span class="kw-2">*</span>, <a href="mod.rs.html#15">operations</a>::<span class="kw-2">*</span>};
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="mod.rs.html#14">magma</a>::<span class="kw-2">*</span>, <a href="mod.rs.html#16">operations</a>::<span class="kw-2">*</span>};
 <span class="kw">use </span><span class="kw">crate</span>::num::{<a href="../num/bounded.rs.html#2">Bounded</a>, <a href="../num/zero_one.rs.html#15">One</a>, <a href="../num/zero_one.rs.html#1">Zero</a>};
 
 <span class="attribute">#[codesnip::entry(<span class="string">&quot;MonoidAction&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>))]
@@ -471,6 +491,26 @@
         marker::PhantomData,
         ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Mul</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">Sub</a>},
     };
+    <span class="kw">pub struct </span>EmptyLazy&lt;M&gt; {
+        _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;,
+    }
+    <span class="kw">impl</span>&lt;M: <a href="magma.rs.html#45">Monoid</a>&gt; <a href="#5">MonoidAction</a> <span class="kw">for </span>EmptyLazy&lt;M&gt; {
+        <span class="kw">type </span>Key = M::T;
+        <span class="kw">type </span>Agg = M::T;
+        <span class="kw">type </span>Act = ();
+        <span class="kw">type </span>AggMonoid = M;
+        <span class="kw">type </span>ActMonoid = ();
+        <span class="kw">fn </span>single_agg(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
+            <a href="#75">key</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        }
+        <span class="kw">fn </span>act_key(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, _a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
+            <a href="#78">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        }
+        <span class="kw">fn </span>act_agg(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, _a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
+            <span class="prelude-val">Some</span>(<a href="#81">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>())
+        }
+    }
+
     <span class="kw">pub struct </span>RangeSumRangeAdd&lt;T&gt; {
         _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
     }
@@ -483,13 +523,13 @@
         <span class="kw">type </span>AggMonoid = (AdditiveOperation&lt;T&gt;, AdditiveOperation&lt;T&gt;);
         <span class="kw">type </span>ActMonoid = AdditiveOperation&lt;T&gt;;
         <span class="kw">fn </span>single_agg(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
-            (<span class="kw-2">*</span><a href="#77">key</a>, T::one())
+            (<span class="kw-2">*</span><a href="#97">key</a>, T::one())
         }
         <span class="kw">fn </span>act_key(<span class="kw-2">&amp;</span>x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, <span class="kw-2">&amp;</span>a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-            <a href="#80">x</a> + <a href="#80">a</a>
+            <a href="#100">x</a> + <a href="#100">a</a>
         }
         <span class="kw">fn </span>act_agg(<span class="kw-2">&amp;</span>(x, y): <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, <span class="kw-2">&amp;</span>a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
-            <span class="prelude-val">Some</span>((<a href="#83">x</a> + <a href="#83">a</a> * <a href="#83">y</a>, <a href="#83">y</a>))
+            <span class="prelude-val">Some</span>((<a href="#103">x</a> + <a href="#103">a</a> * <a href="#103">y</a>, <a href="#103">y</a>))
         }
     }
 
@@ -505,13 +545,13 @@
         <span class="kw">type </span>AggMonoid = (AdditiveOperation&lt;T&gt;, AdditiveOperation&lt;T&gt;);
         <span class="kw">type </span>ActMonoid = LinearOperation&lt;T&gt;;
         <span class="kw">fn </span>single_agg(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
-            (<span class="kw-2">*</span><a href="#99">key</a>, T::one())
+            (<span class="kw-2">*</span><a href="#119">key</a>, T::one())
         }
         <span class="kw">fn </span>act_key(<span class="kw-2">&amp;</span>x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, <span class="kw-2">&amp;</span>(a, b): <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-            <a href="#102">a</a> * <a href="#102">x</a> + <a href="#102">b</a>
+            <a href="#122">a</a> * <a href="#122">x</a> + <a href="#122">b</a>
         }
         <span class="kw">fn </span>act_agg(<span class="kw-2">&amp;</span>(x, y): <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, <span class="kw-2">&amp;</span>(a, b): <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
-            <span class="prelude-val">Some</span>((<a href="#105">a</a> * <a href="#105">x</a> + <a href="#105">b</a> * <a href="#105">y</a>, <a href="#105">y</a>))
+            <span class="prelude-val">Some</span>((<a href="#125">a</a> * <a href="#125">x</a> + <a href="#125">b</a> * <a href="#125">y</a>, <a href="#125">y</a>))
         }
     }
 
@@ -527,13 +567,13 @@
         <span class="kw">type </span>AggMonoid = (AdditiveOperation&lt;T&gt;, AdditiveOperation&lt;T&gt;);
         <span class="kw">type </span>ActMonoid = LastOperation&lt;T&gt;;
         <span class="kw">fn </span>single_agg(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
-            (<span class="kw-2">*</span><a href="#121">key</a>, T::one())
+            (<span class="kw-2">*</span><a href="#141">key</a>, T::one())
         }
         <span class="kw">fn </span>act_key(<span class="kw-2">&amp;</span>x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, <span class="kw-2">&amp;</span>a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-            <a href="#124">a</a>.unwrap_or(<a href="#124">x</a>)
+            <a href="#144">a</a>.unwrap_or(<a href="#144">x</a>)
         }
         <span class="kw">fn </span>act_agg(<span class="kw-2">&amp;</span>(x, y): <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
-            <span class="prelude-val">Some</span>((<a href="#127">a</a>.map(|a| <a href="#128">a</a> * <a href="#127">y</a>).unwrap_or(<a href="#127">x</a>), <a href="#127">y</a>))
+            <span class="prelude-val">Some</span>((<a href="#147">a</a>.map(|a| <a href="#148">a</a> * <a href="#147">y</a>).unwrap_or(<a href="#147">x</a>), <a href="#147">y</a>))
         }
     }
 
@@ -547,13 +587,13 @@
         <span class="kw">type </span>AggMonoid = MaxOperation&lt;T&gt;;
         <span class="kw">type </span>ActMonoid = LastOperation&lt;T&gt;;
         <span class="kw">fn </span>single_agg(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
-            <a href="#141">key</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+            <a href="#161">key</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
         }
         <span class="kw">fn </span>act_key(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-            <a href="#144">a</a>.as_ref().unwrap_or(<a href="#144">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+            <a href="#164">a</a>.as_ref().unwrap_or(<a href="#164">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
         }
         <span class="kw">fn </span>act_agg(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
-            <span class="prelude-val">Some</span>(<a href="#147">a</a>.as_ref().unwrap_or(<a href="#147">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>())
+            <span class="prelude-val">Some</span>(<a href="#167">a</a>.as_ref().unwrap_or(<a href="#167">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>())
         }
     }
 
@@ -567,13 +607,13 @@
         <span class="kw">type </span>AggMonoid = MinOperation&lt;T&gt;;
         <span class="kw">type </span>ActMonoid = LastOperation&lt;T&gt;;
         <span class="kw">fn </span>single_agg(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
-            <a href="#161">key</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+            <a href="#181">key</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
         }
         <span class="kw">fn </span>act_key(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-            <a href="#164">a</a>.as_ref().unwrap_or(<a href="#164">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+            <a href="#184">a</a>.as_ref().unwrap_or(<a href="#184">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
         }
         <span class="kw">fn </span>act_agg(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
-            <span class="prelude-val">Some</span>(<a href="#167">a</a>.as_ref().unwrap_or(<a href="#167">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>())
+            <span class="prelude-val">Some</span>(<a href="#187">a</a>.as_ref().unwrap_or(<a href="#187">x</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>())
         }
     }
 
@@ -587,13 +627,13 @@
         <span class="kw">type </span>AggMonoid = MinOperation&lt;T&gt;;
         <span class="kw">type </span>ActMonoid = AdditiveOperation&lt;T&gt;;
         <span class="kw">fn </span>single_agg(key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
-            <span class="kw-2">*</span><a href="#181">key</a>
+            <span class="kw-2">*</span><a href="#201">key</a>
         }
         <span class="kw">fn </span>act_key(<span class="kw-2">&amp;</span>x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, <span class="kw-2">&amp;</span>a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-            <a href="#184">x</a> + <a href="#184">a</a>
+            <a href="#204">x</a> + <a href="#204">a</a>
         }
         <span class="kw">fn </span>act_agg(<span class="kw-2">&amp;</span>x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, <span class="kw-2">&amp;</span>a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
-            <span class="prelude-val">Some</span>(<a href="#187">x</a> + <a href="#187">a</a>)
+            <span class="prelude-val">Some</span>(<a href="#207">x</a> + <a href="#207">a</a>)
         }
     }
 
@@ -610,13 +650,13 @@
         <span class="kw">pub fn </span>chmin(x: T) -&gt; <span class="self">Self </span>{
             <span class="self">Self </span>{
                 lb: T::minimum(),
-                ub: <a href="#202">x</a>,
+                ub: <a href="#222">x</a>,
                 bias: T::zero(),
             }
         }
         <span class="kw">pub fn </span>chmax(x: T) -&gt; <span class="self">Self </span>{
             <span class="self">Self </span>{
-                lb: <a href="#209">x</a>,
+                lb: <a href="#229">x</a>,
                 ub: T::maximum(),
                 bias: T::zero(),
             }
@@ -625,7 +665,7 @@
             <span class="self">Self </span>{
                 lb: T::minimum(),
                 ub: T::maximum(),
-                bias: <a href="#216">x</a>,
+                bias: <a href="#236">x</a>,
             }
         }
     }
@@ -636,9 +676,9 @@
         <span class="kw">type </span>T = <span class="self">Self</span>;
         <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
             <span class="self">Self </span>{
-                lb: (<a href="#229">x</a>.lb + <a href="#229">x</a>.bias).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#229">y</a>.ub).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#229">y</a>.lb) - <a href="#229">x</a>.bias,
-                ub: (<a href="#229">x</a>.ub + <a href="#229">x</a>.bias).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#229">y</a>.lb).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#229">y</a>.ub) - <a href="#229">x</a>.bias,
-                bias: <a href="#229">x</a>.bias + <a href="#229">y</a>.bias,
+                lb: (<a href="#249">x</a>.lb + <a href="#249">x</a>.bias).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#249">y</a>.ub).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#249">y</a>.lb) - <a href="#249">x</a>.bias,
+                ub: (<a href="#249">x</a>.ub + <a href="#249">x</a>.bias).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#249">y</a>.lb).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#249">y</a>.ub) - <a href="#249">x</a>.bias,
+                bias: <a href="#249">x</a>.bias + <a href="#249">y</a>.bias,
             }
         }
     }
@@ -677,14 +717,14 @@
     {
         <span class="kw">pub fn </span>single(key: T, size: T) -&gt; <span class="self">Self </span>{
             <span class="self">Self </span>{
-                min: <a href="#270">key</a>,
-                max: <a href="#270">key</a>,
+                min: <a href="#290">key</a>,
+                max: <a href="#290">key</a>,
                 min2: T::maximum(),
                 max2: T::minimum(),
-                sum: <a href="#270">key</a> * <a href="#270">size</a>,
-                <a href="#270">size</a>,
-                n_min: <a href="#270">size</a>,
-                n_max: <a href="#270">size</a>,
+                sum: <a href="#290">key</a> * <a href="#290">size</a>,
+                <a href="#290">size</a>,
+                n_min: <a href="#290">size</a>,
+                n_max: <a href="#290">size</a>,
             }
         }
     }
@@ -695,37 +735,37 @@
         <span class="kw">type </span>T = <span class="self">Self</span>;
         <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
             <span class="self">Self </span>{
-                min: <a href="#288">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#288">y</a>.min),
-                max: <a href="#288">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#288">y</a>.max),
+                min: <a href="#308">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#308">y</a>.min),
+                max: <a href="#308">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#308">y</a>.max),
                 min2: <span class="kw">if </span>x.min == y.min {
-                    <a href="#288">x</a>.min2.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#288">y</a>.min2)
+                    <a href="#308">x</a>.min2.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#308">y</a>.min2)
                 } <span class="kw">else if </span>x.min2 &lt;= y.min {
-                    <a href="#288">x</a>.min2
+                    <a href="#308">x</a>.min2
                 } <span class="kw">else if </span>y.min2 &lt;= x.min {
-                    <a href="#288">y</a>.min2
+                    <a href="#308">y</a>.min2
                 } <span class="kw">else </span>{
-                    <a href="#288">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#288">y</a>.min)
+                    <a href="#308">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#308">y</a>.min)
                 },
                 max2: <span class="kw">if </span>x.max == y.max {
-                    <a href="#288">x</a>.max2.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#288">y</a>.max2)
+                    <a href="#308">x</a>.max2.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#308">y</a>.max2)
                 } <span class="kw">else if </span>x.max2 &gt;= y.max {
-                    <a href="#288">x</a>.max2
+                    <a href="#308">x</a>.max2
                 } <span class="kw">else if </span>y.max2 &gt;= x.max {
-                    <a href="#288">y</a>.max2
+                    <a href="#308">y</a>.max2
                 } <span class="kw">else </span>{
-                    <a href="#288">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#288">y</a>.max)
+                    <a href="#308">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#308">y</a>.max)
                 },
-                sum: <a href="#288">x</a>.sum + <a href="#288">y</a>.sum,
-                size: <a href="#288">x</a>.size + <a href="#288">y</a>.size,
-                n_min: <span class="kw">match </span><a href="#288">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#288">y</a>.min) {
-                    Ordering::Less =&gt; <a href="#288">x</a>.n_min,
-                    Ordering::Equal =&gt; <a href="#288">x</a>.n_min + <a href="#288">y</a>.n_min,
-                    Ordering::Greater =&gt; <a href="#288">y</a>.n_min,
+                sum: <a href="#308">x</a>.sum + <a href="#308">y</a>.sum,
+                size: <a href="#308">x</a>.size + <a href="#308">y</a>.size,
+                n_min: <span class="kw">match </span><a href="#308">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#308">y</a>.min) {
+                    Ordering::Less =&gt; <a href="#308">x</a>.n_min,
+                    Ordering::Equal =&gt; <a href="#308">x</a>.n_min + <a href="#308">y</a>.n_min,
+                    Ordering::Greater =&gt; <a href="#308">y</a>.n_min,
                 },
-                n_max: <span class="kw">match </span><a href="#288">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#288">y</a>.max) {
-                    Ordering::Less =&gt; <a href="#288">y</a>.n_max,
-                    Ordering::Equal =&gt; <a href="#288">x</a>.n_max + <a href="#288">y</a>.n_max,
-                    Ordering::Greater =&gt; <a href="#288">x</a>.n_max,
+                n_max: <span class="kw">match </span><a href="#308">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#308">y</a>.max) {
+                    Ordering::Less =&gt; <a href="#308">y</a>.n_max,
+                    Ordering::Equal =&gt; <a href="#308">x</a>.n_max + <a href="#308">y</a>.n_max,
+                    Ordering::Greater =&gt; <a href="#308">x</a>.n_max,
                 },
             }
         }
@@ -762,36 +802,36 @@
         <span class="kw">type </span>AggMonoid = <span class="self">Self</span>;
         <span class="kw">type </span>ActMonoid = RangeChminChmaxAdd&lt;T&gt;;
         <span class="kw">fn </span>single_agg(<span class="kw-2">&amp;</span>key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Agg {
-            <span class="self">Self</span>::single(<a href="#356">key</a>, T::one())
+            <span class="self">Self</span>::single(<a href="#376">key</a>, T::one())
         }
         <span class="kw">fn </span>act_key(<span class="kw-2">&amp;</span>x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="self">Self</span>::Key {
-            <a href="#359">x</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#359">a</a>.lb).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#359">a</a>.ub) + <a href="#359">a</a>.bias
+            <a href="#379">x</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#379">a</a>.lb).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#379">a</a>.ub) + <a href="#379">a</a>.bias
         }
         <span class="kw">fn </span>act_agg(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::Agg, a: <span class="kw-2">&amp;</span><span class="self">Self</span>::Act) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Agg&gt; {
             <span class="prelude-val">Some</span>(<span class="kw">if </span>x.size.is_zero() {
                 <span class="self">Self</span>::unit()
             } <span class="kw">else if </span>x.min == x.max || a.lb == a.ub || a.lb &gt;= x.max || a.ub &lt;= x.min {
-                <span class="self">Self</span>::single(<a href="#362">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#362">a</a>.lb).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#362">a</a>.ub) + <a href="#362">a</a>.bias, <a href="#362">x</a>.size)
+                <span class="self">Self</span>::single(<a href="#382">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#382">a</a>.lb).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#382">a</a>.ub) + <a href="#382">a</a>.bias, <a href="#382">x</a>.size)
             } <span class="kw">else if </span>x.min2 == x.max {
-                <span class="kw">let </span><span class="kw-2">mut </span>x = <a href="#362">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
-                <span class="kw">let </span>min = <a href="#368">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#362">a</a>.lb) + <a href="#362">a</a>.bias;
-                <span class="kw">let </span>max = <a href="#368">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#362">a</a>.ub) + <a href="#362">a</a>.bias;
-                <a href="#368">x</a>.min = <a href="#369">min</a>;
-                <a href="#368">x</a>.max2 = <a href="#369">min</a>;
-                <a href="#368">x</a>.max = <a href="#370">max</a>;
-                <a href="#368">x</a>.min2 = <a href="#370">max</a>;
-                <a href="#368">x</a>.sum = <a href="#369">min</a> * <a href="#368">x</a>.n_min + <a href="#370">max</a> * <a href="#368">x</a>.n_max;
-                <a href="#368">x</a>
+                <span class="kw">let </span><span class="kw-2">mut </span>x = <a href="#382">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
+                <span class="kw">let </span>min = <a href="#388">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#382">a</a>.lb) + <a href="#382">a</a>.bias;
+                <span class="kw">let </span>max = <a href="#388">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#382">a</a>.ub) + <a href="#382">a</a>.bias;
+                <a href="#388">x</a>.min = <a href="#389">min</a>;
+                <a href="#388">x</a>.max2 = <a href="#389">min</a>;
+                <a href="#388">x</a>.max = <a href="#390">max</a>;
+                <a href="#388">x</a>.min2 = <a href="#390">max</a>;
+                <a href="#388">x</a>.sum = <a href="#389">min</a> * <a href="#388">x</a>.n_min + <a href="#390">max</a> * <a href="#388">x</a>.n_max;
+                <a href="#388">x</a>
             } <span class="kw">else if </span>a.lb &lt; x.min2 &amp;&amp; x.max2 &lt; a.ub {
-                <span class="kw">let </span><span class="kw-2">mut </span>x = <a href="#362">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
-                <span class="kw">let </span>min = <a href="#378">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#362">a</a>.lb);
-                <span class="kw">let </span>max = <a href="#378">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#362">a</a>.ub);
-                <a href="#378">x</a>.sum = <a href="#378">x</a>.sum + (<a href="#379">min</a> - <a href="#378">x</a>.min) * <a href="#378">x</a>.n_min + (<a href="#380">max</a> - <a href="#378">x</a>.max) * <a href="#378">x</a>.n_max + <a href="#362">a</a>.bias * <a href="#378">x</a>.size;
-                <a href="#378">x</a>.min = <a href="#379">min</a> + <a href="#362">a</a>.bias;
-                <a href="#378">x</a>.max = <a href="#380">max</a> + <a href="#362">a</a>.bias;
-                <a href="#378">x</a>.min2 = <a href="#378">x</a>.min2 + <a href="#362">a</a>.bias;
-                <a href="#378">x</a>.max2 = <a href="#378">x</a>.max2 + <a href="#362">a</a>.bias;
-                <a href="#378">x</a>
+                <span class="kw">let </span><span class="kw-2">mut </span>x = <a href="#382">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
+                <span class="kw">let </span>min = <a href="#398">x</a>.min.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#382">a</a>.lb);
+                <span class="kw">let </span>max = <a href="#398">x</a>.max.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#382">a</a>.ub);
+                <a href="#398">x</a>.sum = <a href="#398">x</a>.sum + (<a href="#399">min</a> - <a href="#398">x</a>.min) * <a href="#398">x</a>.n_min + (<a href="#400">max</a> - <a href="#398">x</a>.max) * <a href="#398">x</a>.n_max + <a href="#382">a</a>.bias * <a href="#398">x</a>.size;
+                <a href="#398">x</a>.min = <a href="#399">min</a> + <a href="#382">a</a>.bias;
+                <a href="#398">x</a>.max = <a href="#400">max</a> + <a href="#382">a</a>.bias;
+                <a href="#398">x</a>.min2 = <a href="#398">x</a>.min2 + <a href="#382">a</a>.bias;
+                <a href="#398">x</a>.max2 = <a href="#398">x</a>.max2 + <a href="#382">a</a>.bias;
+                <a href="#398">x</a>
             } <span class="kw">else </span>{
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             })
@@ -799,4 +839,4 @@
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (a24a020e6 2022-10-18)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0-nightly (5c8bff74b 2022-10-21)" ></div></body></html>
