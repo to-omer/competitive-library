@@ -8,6 +8,7 @@ pub use self::monoid_action::{monoid_action_impls::*, MonoidAction};
 pub use self::operations::*;
 #[codesnip::entry("ring")]
 pub use self::ring::*;
+pub use self::ring_operations::*;
 
 #[cfg_attr(nightly, codesnip::entry("algebra"))]
 mod magma;
@@ -21,3 +22,4 @@ mod operations;
     )
 )]
 mod ring;
+mod ring_operations;

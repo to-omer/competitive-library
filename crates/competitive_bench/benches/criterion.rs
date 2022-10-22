@@ -4,7 +4,7 @@ use std::time::Duration;
 mod barrett_reduction;
 mod gcd;
 mod mint;
-mod special_modulo;
+mod special_ring;
 
 criterion_group!(
     name = small_benches;
@@ -19,7 +19,7 @@ criterion_group!(
         gcd::bench_extgcd,
         gcd::bench_modinv,
         mint::bench_mod_mul,
-        special_modulo::bench_special_modulo,
+        special_ring::bench_special_ring,
 );
 
 criterion_main!(small_benches);

@@ -39,7 +39,6 @@ pub use self::prime_list::PrimeList;
 pub use self::prime_table::PrimeTable;
 #[codesnip::entry("primitive_root")]
 pub use self::primitive_root::{check_primitive_root, primitive_root};
-pub use self::special_modulo::*;
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
@@ -120,4 +119,3 @@ mod prime_list;
 mod prime_table;
 #[cfg_attr(nightly, codesnip::entry("primitive_root", include("prime_factors")))]
 mod primitive_root;
-mod special_modulo;

@@ -1,5 +1,6 @@
 //! string algorithems
 
+use crate::algebra::{Invertible, Ring, SemiRing};
 use crate::tools::Xorshift;
 
 #[codesnip::entry("KnuthMorrisPratt")]
@@ -13,7 +14,10 @@ pub use self::z_algorithm::Zarray;
 
 #[cfg_attr(nightly, codesnip::entry("KnuthMorrisPratt"))]
 mod knuth_morris_pratt;
-#[cfg_attr(nightly, codesnip::entry("RollingHash", include("Xorshift")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("RollingHash", include("Xorshift", "algebra", "ring"))
+)]
 mod rolling_hash;
 #[cfg_attr(nightly, codesnip::entry("SuffixArray"))]
 mod suffix_array;
