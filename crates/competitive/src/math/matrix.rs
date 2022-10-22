@@ -189,20 +189,28 @@ where
         d
     }
     pub fn solve_system_of_linear_equations(&self, b: &[T]) -> Option<Vec<T>> {
-        assert_eq!(self.shape.0, self.shape.1);
         assert_eq!(self.shape.0, b.len());
-        let n = self.shape.0;
-        let mut c = Matrix::<T>::zeros((n, n + 1));
+        let (n, m) = self.shape;
+        let mut c = Matrix::<T>::zeros((n, m + 1));
         for i in 0..n {
-            c[i][..n].clone_from_slice(&self[i]);
-            c[i][n] = b[i];
+            c[i][..m].clone_from_slice(&self[i]);
+            c[i][m] = b[i];
         }
         c.row_reduction(true);
-        if (0..n).any(|i| c[i][i].is_zero()) {
-            None
-        } else {
-            Some((0..n).map(|i| c[i][n]).collect::<Vec<_>>())
+        let mut x = vec![T::zero(); m];
+        for i in 0..n {
+            let mut j = 0usize;
+            while j <= m && c[i][j].is_zero() {
+                j += 1;
+            }
+            if j == m {
+                return None;
+            }
+            if j < m {
+                x[j] = c[i][m];
+            }
         }
+        Some(x)
     }
     pub fn inverse(&self) -> Option<Matrix<T>> {
         assert_eq!(self.shape.0, self.shape.1);
