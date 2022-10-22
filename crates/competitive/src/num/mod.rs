@@ -17,6 +17,8 @@ pub use self::integer::{BinaryRepr, ExtendedGcd, IntBase, Saturating, Signed, Un
 pub use self::mint::*;
 #[codesnip::entry("QuadDouble")]
 pub use self::quad_double::QuadDouble;
+#[codesnip::entry("Rational")]
+pub use self::rational::Rational;
 #[codesnip::entry("zero_one")]
 pub use self::zero_one::{One, Zero};
 
@@ -37,5 +39,7 @@ mod integer;
 mod mint;
 #[cfg_attr(nightly, codesnip::entry("QuadDouble"))]
 mod quad_double;
+#[cfg_attr(nightly, codesnip::entry("Rational", include("integer")))]
+mod rational;
 #[cfg_attr(nightly, codesnip::entry)]
 mod zero_one;
