@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["zalgorithm","✅  AC  27ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["zalgorithm","✅  AC  24ms"]]};
