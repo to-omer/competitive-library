@@ -186,6 +186,7 @@ pub trait ShortestPathExt<'g>: GraphBase<'g> {
             if self.vmap_get(&cost, u) != &d {
                 continue;
             }
+            let d = self.vmap_get(&cost, u).clone();
             for a in self.aviews(weight, u) {
                 let v = a.vindex();
                 let nd = S::mul(&d, &a.avalue());
