@@ -1,6 +1,7 @@
 //! algorithm
 
 use crate::algebra::{Group, Magma, Monoid, Unital};
+use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, Zero};
 
 #[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep"))]
@@ -14,6 +15,8 @@ pub use self::chromatic_number::IndependentSubSet;
 pub use self::combinations::*;
 #[codesnip::entry("ConvexHullTrick")]
 pub use self::convex_hull_trick::ConvexHullTrick;
+#[codesnip::entry("esper")]
+pub use self::esper::{EsperEstimator, EsperSolver};
 #[codesnip::entry("ImpartialGame")]
 pub use self::impartial_game::{ImpartialGame, ImpartialGameAnalyzer, ImpartialGamer};
 pub use self::mo::MoSolver;
@@ -52,6 +55,8 @@ mod chromatic_number;
 mod combinations;
 #[cfg_attr(nightly, codesnip::entry("ConvexHullTrick"))]
 mod convex_hull_trick;
+#[cfg_attr(nightly, codesnip::entry("esper", include("Matrix")))]
+mod esper;
 #[cfg_attr(nightly, codesnip::entry("ImpartialGame"))]
 mod impartial_game;
 mod mo;
