@@ -1,3 +1,5 @@
+use std::iter::once;
+
 #[derive(Clone, Debug)]
 pub struct PrimeTable {
     table: Vec<u32>,
@@ -24,6 +26,15 @@ impl PrimeTable {
     }
     pub fn is_prime(&self, n: u32) -> bool {
         n == 2 || n % 2 == 1 && self.table[n as usize >> 1] == 1
+    }
+    pub fn primes(&self) -> impl Iterator<Item = u32> + '_ {
+        once(2).chain(self.table.iter().enumerate().filter_map(|(i, b)| {
+            if *b == 1 {
+                Some(i as u32 * 2 + 1)
+            } else {
+                None
+            }
+        }))
     }
     pub fn trial_division<F>(&self, mut n: u32, mut f: F)
     where
