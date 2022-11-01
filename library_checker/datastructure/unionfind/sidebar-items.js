@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["unionfind","✅  AC  21ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["unionfind","✅  AC  20ms"]]};
