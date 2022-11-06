@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/bitset.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>bitset.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/bitset.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>bitset.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-49323347f582d396.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-9955804613a78ba1.css"><link rel="stylesheet" disabled href="../../../static.files/dark-3ab293e416bb6031.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-bba9ad31fb006b67.css"><script id="default-settings" ></script><script src="../../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../../static.files/source-script-74087aa2e88f4475.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0dede64717b247ca.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-201a7e04dc4c6fce.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
+</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
 <span id="2">2</span>
 <span id="3">3</span>
 <span id="4">4</span>
@@ -273,14 +273,14 @@
 <span id="257">257</span>
 <span id="258">258</span>
 <span id="259">259</span>
-</pre><pre class="rust"><code><span class="attribute">#![allow(clippy::suspicious_op_assign_impl)]
+</pre><pre class="rust"><code><span class="attr">#![allow(clippy::suspicious_op_assign_impl)]
 
 </span><span class="kw">use </span>std::ops::{
     <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitAnd.html">BitAnd</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitAndAssign.html">BitAndAssign</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitOr.html">BitOr</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitOrAssign.html">BitOrAssign</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitXor.html">BitXor</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.BitXorAssign.html">BitXorAssign</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.Not.html">Not</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.Shl.html">Shl</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.ShlAssign.html">ShlAssign</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.Shr.html">Shr</a>,
     <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.ShrAssign.html">ShrAssign</a>,
 };
 
-<span class="attribute">#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+<span class="attr">#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 </span><span class="kw">pub struct </span>BitSet {
     size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     bits: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
@@ -300,11 +300,11 @@
         <a href="#21">self_</a>.<a href="#49">trim</a>();
         <a href="#21">self_</a>
     }
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="self" href="#29">self</a>.bits[<a href="#29">i</a> &gt;&gt; <span class="number">6</span>] &amp; <span class="number">1 </span>&lt;&lt; (<a href="#29">i</a> &amp; <span class="number">63</span>) != <span class="number">0
     </span>}
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
         <span class="kw">if </span>b {
             <a class="self" href="#33">self</a>.bits[<a href="#33">i</a> &gt;&gt; <span class="number">6</span>] |= <span class="number">1 </span>&lt;&lt; (<a href="#33">i</a> &amp; <span class="number">63</span>);
@@ -312,15 +312,15 @@
             <a class="self" href="#33">self</a>.bits[<a href="#33">i</a> &gt;&gt; <span class="number">6</span>] &amp;= !(<span class="number">1 </span>&lt;&lt; (<a href="#33">i</a> &amp; <span class="number">63</span>));
         }
     }
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>count_ones(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
         <a class="self" href="#41">self</a>.bits.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|x| <a href="#42">x</a>.count_ones() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">sum</a>()
     }
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>count_zeros(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
         <a class="self" href="#45">self</a>.size <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> - <a class="self" href="#45">self</a>.<a href="#41">count_ones</a>()
     }
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>trim(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">if </span><span class="self">self</span>.size &amp; <span class="number">63 </span>!= <span class="number">0 </span>{
             <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = <a class="self" href="#49">self</a>.bits.last_mut() {
@@ -328,7 +328,7 @@
             }
         }
     }
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>shl_bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>n = <a class="self" href="#57">self</a>.bits.len();
         <span class="kw">let </span>k = <a href="#57">rhs</a> &gt;&gt; <span class="number">6</span>;
@@ -347,7 +347,7 @@
             <a class="self" href="#57">self</a>.<a href="#49">trim</a>();
         }
     }
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">pub fn </span>shr_bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>n = <a class="self" href="#76">self</a>.bits.len();
         <span class="kw">let </span>k = <a href="#76">rhs</a> &gt;&gt; <span class="number">6</span>;
@@ -367,7 +367,7 @@
     }
 }
 <span class="kw">impl </span>ShlAssign&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>shl_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>n = <a class="self" href="#96">self</a>.bits.len();
         <span class="kw">let </span>k = <a href="#96">rhs</a> &gt;&gt; <span class="number">6</span>;
@@ -396,14 +396,14 @@
 }
 <span class="kw">impl </span>Shl&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>shl(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::Output {
         <span class="self"><a href="#125">self</a> </span>&lt;&lt;= <a href="#125">rhs</a>;
         <span class="self"><a href="#125">self</a>
     </span>}
 }
 <span class="kw">impl </span>ShrAssign&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>shr_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>n = <a class="self" href="#132">self</a>.bits.len();
         <span class="kw">let </span>k = <a href="#132">rhs</a> &gt;&gt; <span class="number">6</span>;
@@ -431,14 +431,14 @@
 }
 <span class="kw">impl </span>Shr&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>shr(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::Output {
         <span class="self"><a href="#160">self</a> </span>&gt;&gt;= <a href="#160">rhs</a>;
         <span class="self"><a href="#160">self</a>
     </span>}
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitOrAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) {
         <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.bits.iter_mut().zip(rhs.bits.iter()) {
             <span class="kw-2">*</span>l |= <span class="kw-2">*</span>r;
@@ -448,7 +448,7 @@
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitOr&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitor(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self"><a href="#177">self</a> </span>|= <a href="#177">rhs</a>;
         <span class="self"><a href="#177">self</a>
@@ -456,7 +456,7 @@
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; BitOr&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <a href="#9">BitSet</a>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitor(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><a href="#9">BitSet</a>) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="self" href="#185">self</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
         <a href="#186">res</a> |= <a href="#185">rhs</a>;
@@ -464,7 +464,7 @@
     }
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitAndAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitand_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) {
         <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.bits.iter_mut().zip(rhs.bits.iter()) {
             <span class="kw-2">*</span>l &amp;= <span class="kw-2">*</span>r;
@@ -473,7 +473,7 @@
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitAnd&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitand(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self"><a href="#202">self</a> </span>&amp;= <a href="#202">rhs</a>;
         <span class="self"><a href="#202">self</a>
@@ -481,7 +481,7 @@
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; BitAnd&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <a href="#9">BitSet</a>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitand(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><a href="#9">BitSet</a>) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="self" href="#210">self</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
         <a href="#211">res</a> &amp;= <a href="#210">rhs</a>;
@@ -489,7 +489,7 @@
     }
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitXorAssign&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitxor_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) {
         <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.bits.iter_mut().zip(rhs.bits.iter()) {
             <span class="kw-2">*</span>l ^= <span class="kw-2">*</span>r;
@@ -499,7 +499,7 @@
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitXor&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitxor(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self"><a href="#228">self</a> </span>^= <a href="#228">rhs</a>;
         <span class="self"><a href="#228">self</a>
@@ -507,7 +507,7 @@
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt; BitXor&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><a href="#9">BitSet</a>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <a href="#9">BitSet</a>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>bitxor(<span class="self">self</span>, rhs: <span class="kw-2">&amp;</span><span class="lifetime">&#39;b </span><a href="#9">BitSet</a>) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="self" href="#236">self</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
         <a href="#237">res</a> ^= <a href="#236">rhs</a>;
@@ -516,7 +516,7 @@
 }
 <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.Not.html">Not</a> <span class="kw">for </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>not(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">for </span>x <span class="kw">in </span><span class="self">self</span>.bits.iter_mut() {
             <span class="kw-2">*</span>x = !<span class="kw-2">*</span>x;
@@ -527,10 +527,10 @@
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/bit/trait.Not.html">Not</a> <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="#9">BitSet</a> {
     <span class="kw">type </span>Output = <a href="#9">BitSet</a>;
-    <span class="attribute">#[inline]
+    <span class="attr">#[inline]
     </span><span class="kw">fn </span>not(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
         !<a class="self" href="#256">self</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
     }
 }
 </code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="competitive" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.67.0-nightly (95a3a7277 2022-10-31)" ></div></body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.0-nightly (1286ee23e 2022-11-05)" data-search-js="search-39ee4160c7dc16c9.js" data-settings-js="settings-3a0b9947ba1bd99a.js" data-settings-css="settings-a66f7524084a489a.css" ></div></body></html>
