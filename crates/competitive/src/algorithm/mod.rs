@@ -12,7 +12,8 @@ pub use self::binary_search::*;
 pub use self::bitdp::{BitDp, Combinations, Subsets};
 #[codesnip::entry("chromatic_number")]
 pub use self::chromatic_number::IndependentSubSet;
-pub use self::combinations::*;
+#[codesnip::entry("combinations")]
+pub use self::combinations::SliceCombinationsExt;
 #[codesnip::entry("ConvexHullTrick")]
 pub use self::convex_hull_trick::ConvexHullTrick;
 #[codesnip::entry("esper")]
@@ -52,6 +53,7 @@ mod bitdp;
     codesnip::entry("chromatic_number", include("MIntBase", "binary_search"))
 )]
 mod chromatic_number;
+#[cfg_attr(nightly, codesnip::entry("combinations"))]
 mod combinations;
 #[cfg_attr(nightly, codesnip::entry("ConvexHullTrick"))]
 mod convex_hull_trick;

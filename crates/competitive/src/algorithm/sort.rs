@@ -147,13 +147,13 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{algorithm::permutations, tools::Xorshift};
+    use crate::{algorithm::SliceCombinationsExt, tools::Xorshift};
 
     macro_rules! test_sort {
         (@small $sort_method:ident) => {
             for n in 0..=8 {
                 let a: Vec<_> = (0..n).collect();
-                permutations(&a, n, |a| {
+                a.for_each_permutations(n, |a| {
                     let mut x = a.to_vec();
                     let mut y = a.to_vec();
                     x.sort();
