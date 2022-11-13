@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["lca_euler_tour","✅  AC  613ms"],["lca_hld","✅  AC  509ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["lca_euler_tour","✅  AC  704ms"],["lca_hld","✅  AC  632ms"]]};
