@@ -1,3 +1,9 @@
+use std::{
+    cmp::Ordering,
+    hash::{Hash, Hasher},
+};
+
+#[derive(Debug, Clone, Copy, Default)]
 /// implement Ord by PartialOrd
 ///
 /// # Example
@@ -22,7 +28,7 @@ impl<T> PartialOrd for TotalOrd<T>
 where
     T: PartialOrd,
 {
-    fn partial_cmp(&self, other: &TotalOrd<T>) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &TotalOrd<T>) -> Option<Ordering> {
         self.0.partial_cmp(&other.0)
     }
 }
@@ -30,8 +36,19 @@ impl<T> Ord for TotalOrd<T>
 where
     T: PartialOrd,
 {
-    fn cmp(&self, other: &TotalOrd<T>) -> std::cmp::Ordering {
+    fn cmp(&self, other: &TotalOrd<T>) -> Ordering {
         self.partial_cmp(other).unwrap()
+    }
+}
+impl<T> Hash for TotalOrd<T>
+where
+    T: Hash,
+{
+    fn hash<H>(&self, state: &mut H)
+    where
+        H: Hasher,
+    {
+        self.0.hash(state);
     }
 }
 pub trait AsTotalOrd {
