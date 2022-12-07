@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["min_of_mod_of_linear","✅  AC  1260ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["min_of_mod_of_linear","✅  AC  2245ms"]]};

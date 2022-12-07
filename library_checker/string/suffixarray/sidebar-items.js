@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["suffixarray","✅  AC  508ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["suffixarray","✅  AC  512ms"]]};

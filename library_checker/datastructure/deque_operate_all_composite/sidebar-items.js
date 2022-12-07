@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["deque_operate_all_composite","✅  AC  70ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["deque_operate_all_composite","✅  AC  49ms"]]};
