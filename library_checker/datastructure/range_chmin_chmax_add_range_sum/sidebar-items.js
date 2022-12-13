@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["range_chmin_chmax_add_range_sum","✅  AC  1523ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["range_chmin_chmax_add_range_sum","✅  AC  1321ms"]]};
