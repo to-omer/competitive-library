@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["line_add_get_min","✅  AC  455ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["line_add_get_min","✅  AC  392ms"]]};

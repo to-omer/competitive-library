@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["number_of_substrings","✅  AC  690ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["number_of_substrings","✅  AC  884ms"]]};
