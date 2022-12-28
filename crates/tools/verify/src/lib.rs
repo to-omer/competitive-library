@@ -328,7 +328,7 @@ impl<'t> VerifyConfig<'t> {
                 buf
             })
             .unwrap_or_default();
-        let tz = FixedOffset::east(9 * 3600);
+        let tz = FixedOffset::east_opt(9 * 3600).unwrap();
         let end = Utc::now();
         let meta = format!(
             r#"
