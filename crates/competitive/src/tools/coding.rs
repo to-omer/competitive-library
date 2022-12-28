@@ -179,9 +179,9 @@ impl BitWriter {
         }
     }
     fn push_u8(&mut self, b: u8) {
-        self.bytes.push(self.last | (b >> (8 - self.w)) as u8);
+        self.bytes.push(self.last | (b >> (8 - self.w)));
         if self.w < 8 {
-            self.last = (b as u8) << self.w;
+            self.last = b << self.w;
         }
     }
     fn push_u64(&mut self, b: u64, mut c: u32) {

@@ -13,7 +13,7 @@ impl Xorshift {
             .duration_since(std::time::UNIX_EPOCH)
             .ok()
             .unwrap_or_default()
-            .as_secs() as u64;
+            .as_secs();
         Xorshift::new(seed)
     }
     #[inline]

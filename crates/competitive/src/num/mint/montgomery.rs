@@ -75,11 +75,11 @@ where
     }
     #[inline]
     fn into(x: Self::Inner) -> u32 {
-        Self::reduce(x as u64) as u32
+        Self::reduce(x as u64)
     }
     #[inline]
     fn mod_into() -> u32 {
-        <Self as MIntBase>::get_mod() as u32
+        <Self as MIntBase>::get_mod()
     }
 }
 impl<M> MIntConvert<u64> for M
@@ -128,7 +128,7 @@ where
         } else {
             x as u64
         };
-        Self::reduce(x as u64 * Self::n2() as u64)
+        Self::reduce(x * Self::n2() as u64)
     }
     #[inline]
     fn into(x: Self::Inner) -> i32 {
@@ -151,7 +151,7 @@ where
         } else {
             x as u64
         };
-        Self::reduce(x as u64 * Self::n2() as u64)
+        Self::reduce(x * Self::n2() as u64)
     }
     #[inline]
     fn into(x: Self::Inner) -> i64 {
@@ -174,7 +174,7 @@ where
         } else {
             x as u64
         };
-        Self::reduce(x as u64 * Self::n2() as u64)
+        Self::reduce(x * Self::n2() as u64)
     }
     #[inline]
     fn into(x: Self::Inner) -> isize {
@@ -398,10 +398,7 @@ mod tests {
                 M::from(x as u32).inner(),
                 MInt998244353::from(x as u32).inner()
             );
-            assert_eq!(
-                M::from(x as u64).inner(),
-                MInt998244353::from(x as u64).inner()
-            );
+            assert_eq!(M::from(x).inner(), MInt998244353::from(x).inner());
             assert_eq!(
                 M::from(x as usize).inner(),
                 MInt998244353::from(x as usize).inner()

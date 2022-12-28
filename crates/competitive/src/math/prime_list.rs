@@ -117,7 +117,7 @@ impl PrimeList {
             table.clear();
             table.resize(length as usize / 2, false);
             for &p in self.primes.iter().skip(1).take(plen) {
-                let y = p.max((start as u64 + p - 1) / (2 * p) * 2 + 1) * p / 2;
+                let y = p.max((start + p - 1) / (2 * p) * 2 + 1) * p / 2;
                 ((y - start / 2) as usize..length as usize / 2)
                     .step_by(p as usize)
                     .for_each(|i| table[i] = true);
@@ -125,7 +125,7 @@ impl PrimeList {
             self.primes
                 .extend(table.iter().cloned().enumerate().filter_map(|(i, b)| {
                     if !b {
-                        Some((i as u64 + start / 2) as u64 * 2 + 1)
+                        Some((i as u64 + start / 2) * 2 + 1)
                     } else {
                         None
                     }
@@ -269,7 +269,7 @@ mod tests {
 
         let pl = PrimeList::new(100_000);
         for n in (0..1000).chain(rng.gen_iter(0..=1_000_000_000).take(100)) {
-            assert_eq!(prime_factors(n), pl.prime_factors(n as u64));
+            assert_eq!(prime_factors(n), pl.prime_factors(n));
         }
     }
 

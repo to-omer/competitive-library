@@ -308,9 +308,9 @@ mod tests {
                     DynMIntU32::set_mod(p as u32);
                     for g in (3..).step_by(2) {
                         let g = DynMIntU32::new(g);
-                        if divisors(p as u64 - 1)
+                        if divisors(p - 1)
                             .into_iter()
-                            .filter(|&d| d != p as u64 - 1)
+                            .filter(|&d| d != p - 1)
                             .all(|d| g.pow(d as usize) != DynMIntU32::one())
                         {
                             println!("(p,a,b,g) = {:?}", (p, a, b, g));

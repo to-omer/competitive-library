@@ -107,7 +107,7 @@ fn test_prime_table() {
             primes
                 .prime_factors(i)
                 .into_iter()
-                .map(|(p, c)| p.pow(c as u32))
+                .map(|(p, c)| p.pow(c))
                 .product::<u32>()
         );
         assert_eq!(

@@ -37,13 +37,11 @@ impl<T: Ord> SuffixArray<T> {
     }
     pub fn longest_common_prefix_array(&self) -> Vec<usize> {
         let n = self.pat.len();
-        let mut h = 0;
+        let mut h = 0usize;
         let mut lcp = vec![0; n];
         for i in 0..n {
             let j = self[self.rank[i] - 2];
-            if h > 0 {
-                h -= 1;
-            }
+            h = h.saturating_sub(1);
             while j + h < n && i + h < n && self.pat[j + h] == self.pat[i + h] {
                 h += 1;
             }

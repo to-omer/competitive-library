@@ -124,7 +124,7 @@ mod tests {
         assert_eq!(binary_search(|&x| V[x] <= 3, 0, V.len()), 6);
 
         assert_eq!(
-            binary_search(&|&x: &i64| V[x as usize] as i64 <= -1, -1, V.len() as i64),
+            binary_search(&|&x: &i64| V[x as usize] <= -1, -1, V.len() as i64),
             -1
         );
 

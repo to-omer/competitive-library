@@ -93,7 +93,7 @@ mod tests {
         for p in -20..=20 {
             assert_eq!(
                 ternary_search(|&x| 10 * (x - p).pow(2) + 5, -10i64, 10),
-                p.min(10).max(-10)
+                p.clamp(-10, 10)
             );
         }
     }

@@ -1,3 +1,5 @@
+#![allow(clippy::manual_clamp)]
+
 use super::{magma::*, operations::*};
 use crate::num::{Bounded, One, Zero};
 
