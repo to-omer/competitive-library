@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["vertex_add_path_sum","✅  AC  336ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["vertex_add_path_sum","✅  AC  499ms"]]};
