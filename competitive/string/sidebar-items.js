@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["KnuthMorrisPratt",""],["MultipleRollingHash",""],["RollingHash",""],["SuffixArray",""],["Zarray",""]]};
+window.SIDEBAR_ITEMS = {"enum":[["Gf2_63x1",""],["Gf2_63x2",""],["Gf2_63x3",""],["Mersenne61x1",""],["Mersenne61x2",""],["Mersenne61x3",""]],"struct":[["KnuthMorrisPratt",""],["SuffixArray",""],["Zarray",""]],"trait":[["RollingHasher",""]]};
