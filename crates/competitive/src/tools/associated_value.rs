@@ -2,28 +2,32 @@
 pub trait AssociatedValue {
     /// Type of value.
     type T: 'static + Clone;
-    fn local_key() -> &'static std::thread::LocalKey<std::cell::UnsafeCell<Self::T>>;
+    unsafe fn __local_key() -> &'static std::thread::LocalKey<std::cell::Cell<Self::T>>;
     #[inline]
     fn get() -> Self::T {
         Self::with(Clone::clone)
     }
     #[inline]
     fn set(x: Self::T) {
-        Self::local_key().with(|cell| unsafe { *cell.get() = x })
+        unsafe { Self::__local_key().with(|cell| cell.set(x)) }
+    }
+    #[inline]
+    fn replace(x: Self::T) -> Self::T {
+        unsafe { Self::__local_key().with(|cell| cell.replace(x)) }
     }
     #[inline]
     fn with<F, R>(f: F) -> R
     where
         F: FnOnce(&Self::T) -> R,
     {
-        Self::local_key().with(|cell| unsafe { f(&*cell.get()) })
+        unsafe { Self::__local_key().with(|cell| f(&*cell.as_ptr())) }
     }
     #[inline]
     fn modify<F, R>(f: F) -> R
     where
         F: FnOnce(&mut Self::T) -> R,
     {
-        Self::local_key().with(|cell| unsafe { f(&mut *cell.get()) })
+        unsafe { Self::__local_key().with(|cell| f(&mut *cell.as_ptr())) }
     }
 }
 
@@ -59,8 +63,8 @@ macro_rules! impl_assoc_value {
         impl AssociatedValue for $name {
             type T = $t;
             #[inline]
-            fn local_key() -> &'static ::std::thread::LocalKey<::std::cell::UnsafeCell<Self::T>> {
-                ::std::thread_local!(static __LOCAL_KEY: ::std::cell::UnsafeCell<$t> = ::std::cell::UnsafeCell::new($e));
+            unsafe fn __local_key() -> &'static ::std::thread::LocalKey<::std::cell::Cell<Self::T>> {
+                ::std::thread_local!(static __LOCAL_KEY: ::std::cell::Cell<$t> = ::std::cell::Cell::new($e));
                 &__LOCAL_KEY
             }
         }

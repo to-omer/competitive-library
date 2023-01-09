@@ -1,5 +1,6 @@
 // #![warn(missing_docs)]
 #![allow(clippy::many_single_char_names)]
+#![allow(clippy::missing_safety_doc)]
 
 //! [github]
 //!
