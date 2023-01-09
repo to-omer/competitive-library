@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["main",""]],"macro":[["dg","[`iter_print!`] for buffered stderr. Do nothing in release mode."],["pp","[`iter_print!`] for buffered stdout."],["sc",""],["sv",""]],"mod":[["main_macros",""]]};

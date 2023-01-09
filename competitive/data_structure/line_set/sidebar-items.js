@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["f",""]],"struct":[["Line",""],["LineSet",""],["Query",""],["Slope",""]]};

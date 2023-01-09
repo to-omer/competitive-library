@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["LinearOperation","$(a, b) \\circ (c, d) = \\lambda x. c \\times (a \\times x + b) + d$"]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["EdgeListGraph","Graph represented by a list of edges."],["EdgeListGraphScanner",""]]};

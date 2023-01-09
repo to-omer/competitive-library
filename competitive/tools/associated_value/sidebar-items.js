@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":[["AssociatedValue","Trait for a modifiable value associated with a type."]]};

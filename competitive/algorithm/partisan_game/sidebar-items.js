@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["FIX",""]],"struct":[["PartisanGameAnalyzer",""],["PartisanGamer",""]],"trait":[["PartisanGame",""]],"type":[["Marker",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["BabyStepGiantStep","$\\min{1\\le i \\le n | x^i=a}$"]]};

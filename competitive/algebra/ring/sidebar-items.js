@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["AddMulOperation","$+,\\times$"]],"trait":[["Field",""],["Ring",""],["SemiRing",""]]};

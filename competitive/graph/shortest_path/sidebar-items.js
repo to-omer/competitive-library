@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["OptionSp",""],["PathFoldingSp",""],["StandardSp",""]],"trait":[["ShortestPathExt",""],["ShortestPathSemiRing",""]]};

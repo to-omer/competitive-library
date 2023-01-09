@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["XorBasis","Basis of xor operation."]]};

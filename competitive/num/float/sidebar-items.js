@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":[["ord_float_impls",""],["primitive_float_impls",""]],"struct":[["Float32",""],["Float64",""]],"trait":[["Float",""]]};

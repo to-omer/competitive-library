@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["bubble_sort",""],["get_and_increment",""],["merge",""],["merge_sort",""]],"struct":[["Run",""]],"trait":[["SliceSortExt",""]]};

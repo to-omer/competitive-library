@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":[["BISECT_SECTION_END_EPS",""]],"fn":[["binary_search","binary search for monotone segment"],["parallel_binary_search",""]],"macro":[["impl_bisect_float",""],["impl_bisect_signed",""],["impl_bisect_unsigned",""]],"trait":[["Bisect","binary search helper"],["SliceBisectExt","binary search for slice"]]};
