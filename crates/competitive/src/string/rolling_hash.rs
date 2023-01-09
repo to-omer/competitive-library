@@ -133,6 +133,18 @@ where
     _marker: PhantomData<fn() -> Hasher>,
 }
 
+impl<Hasher> std::hash::Hash for Hashed<Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: std::hash::Hash,
+{
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.len.hash(state);
+        self.hash.hash(state);
+        self._marker.hash(state);
+    }
+}
+
 impl<Hasher> Hashed<Hasher>
 where
     Hasher: RollingHasher + ?Sized,
@@ -235,6 +247,7 @@ macro_rules! impl_rolling_hasher {
         impl_rolling_hasher!(@inner $T, $R, [$($i)* $k] [$($s)* ()] [$($tt)*] [$($j)*]);
     };
     (@inner $T:ident, $R:ty, [$($i:tt)+] [$($s:tt)+] [] [$len:tt $($j:tt)*]) => {
+        #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
         pub enum $T {}
 
         impl $T {
