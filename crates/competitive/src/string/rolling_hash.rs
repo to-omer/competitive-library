@@ -1,7 +1,7 @@
 use super::{Gf2_63, Invertible, Mersenne61, Ring, SemiRing, Xorshift};
 use std::{
     marker::PhantomData,
-    ops::{Bound, RangeBounds},
+    ops::{Bound, RangeBounds, RangeInclusive},
 };
 
 pub trait RollingHasher {
@@ -16,8 +16,8 @@ pub trait RollingHasher {
     fn hash_sequence<I>(iter: I) -> HashedSequence<Self>
     where
         I: IntoIterator<Item = Self::T>;
-    fn hash_range(seq: &HashedSequence<Self>, l: usize, r: usize) -> HashedRange<Self>;
-    fn concat_hash(x: &HashedRange<Self>, y: &HashedRange<Self>) -> HashedRange<Self>;
+    fn hash_substr(hashed: &[Self::Hash]) -> Hashed<Self>;
+    fn concat_hash(x: &Hashed<Self>, y: &Hashed<Self>) -> Hashed<Self>;
 }
 
 #[derive(Debug)]
@@ -33,32 +33,98 @@ impl<Hasher> HashedSequence<Hasher>
 where
     Hasher: RollingHasher + ?Sized,
 {
-    pub fn new(hashed: Vec<Hasher::Hash>) -> Self {
+    fn new(hashed: Vec<Hasher::Hash>) -> Self {
         Self {
             hashed,
             _marker: PhantomData,
         }
     }
-    pub fn range<R>(&self, range: R) -> HashedRange<Hasher>
+    pub fn length(&self) -> usize {
+        self.hashed.len() - 1
+    }
+    pub fn range<R>(&self, range: R) -> HashedRange<'_, Hasher>
     where
         R: RangeBounds<usize>,
     {
-        let l = match range.start_bound() {
-            Bound::Included(l) => *l,
-            Bound::Excluded(l) => l + 1,
-            Bound::Unbounded => 0,
-        };
-        let r = match range.end_bound() {
-            Bound::Included(r) => r + 1,
-            Bound::Excluded(r) => *r,
-            Bound::Unbounded => self.hashed.len() - 1,
-        };
-        Hasher::hash_range(self, l, r)
+        HashedRange::new(&self.hashed[to_range(range, self.length())])
+    }
+    pub fn hash_range<R>(&self, range: R) -> Hashed<Hasher>
+    where
+        R: RangeBounds<usize>,
+    {
+        self.range(range).hash()
     }
 }
 
 #[derive(Debug)]
-pub struct HashedRange<Hasher>
+pub struct HashedRange<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    hashed: &'a [Hasher::Hash],
+    _marker: PhantomData<fn() -> Hasher>,
+}
+
+impl<'a, Hasher> HashedRange<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    fn new(hashed: &'a [Hasher::Hash]) -> Self {
+        Self {
+            hashed,
+            _marker: PhantomData,
+        }
+    }
+    pub fn length(&self) -> usize {
+        self.hashed.len() - 1
+    }
+    pub fn range<R>(&self, range: R) -> HashedRange<'_, Hasher>
+    where
+        R: RangeBounds<usize>,
+    {
+        HashedRange::new(&self.hashed[to_range(range, self.length())])
+    }
+    pub fn hash(&self) -> Hashed<Hasher> {
+        Hasher::hash_substr(self.hashed)
+    }
+    pub fn longest_common_prefix<R>(&self, other: &Self) -> usize
+    where
+        R: RangeBounds<usize>,
+    {
+        let n = self.length().min(other.length());
+        let mut ok = 0usize;
+        let mut err = n + 1;
+        while ok + 1 < err {
+            let mid = (ok + err) / 2;
+            if self.range(..mid).hash() == other.range(..mid).hash() {
+                ok = mid;
+            } else {
+                err = mid;
+            }
+        }
+        ok
+    }
+}
+
+fn to_range<R>(range: R, ub: usize) -> RangeInclusive<usize>
+where
+    R: RangeBounds<usize>,
+{
+    let l = match range.start_bound() {
+        Bound::Included(l) => *l,
+        Bound::Excluded(l) => l + 1,
+        Bound::Unbounded => 0,
+    };
+    let r = match range.end_bound() {
+        Bound::Included(r) => r + 1,
+        Bound::Excluded(r) => *r,
+        Bound::Unbounded => ub,
+    };
+    l..=r
+}
+
+#[derive(Debug)]
+pub struct Hashed<Hasher>
 where
     Hasher: RollingHasher + ?Sized,
 {
@@ -67,11 +133,11 @@ where
     _marker: PhantomData<fn() -> Hasher>,
 }
 
-impl<Hasher> HashedRange<Hasher>
+impl<Hasher> Hashed<Hasher>
 where
     Hasher: RollingHasher + ?Sized,
 {
-    pub fn new(len: usize, hash: Hasher::Hash) -> Self {
+    fn new(len: usize, hash: Hasher::Hash) -> Self {
         Self {
             len,
             hash,
@@ -83,7 +149,7 @@ where
     }
 }
 
-impl<Hasher> Clone for HashedRange<Hasher>
+impl<Hasher> Clone for Hashed<Hasher>
 where
     Hasher: RollingHasher + ?Sized,
 {
@@ -96,9 +162,9 @@ where
     }
 }
 
-impl<Hasher> Copy for HashedRange<Hasher> where Hasher: RollingHasher + ?Sized {}
+impl<Hasher> Copy for Hashed<Hasher> where Hasher: RollingHasher + ?Sized {}
 
-impl<Hasher> PartialEq for HashedRange<Hasher>
+impl<Hasher> PartialEq for Hashed<Hasher>
 where
     Hasher: RollingHasher + ?Sized,
 {
@@ -107,7 +173,7 @@ where
     }
 }
 
-impl<Hasher> Eq for HashedRange<Hasher> where Hasher: RollingHasher + ?Sized {}
+impl<Hasher> Eq for Hashed<Hasher> where Hasher: RollingHasher + ?Sized {}
 
 #[derive(Debug)]
 struct RollingHashPrecalc<R>
@@ -224,18 +290,18 @@ macro_rules! impl_rolling_hasher {
                 HashedSequence::new(hashed)
             }
 
-            fn hash_range(seq: &HashedSequence<Self>, l: usize, r: usize) -> HashedRange<Self> {
-                let len = r - l;
-                let hash = unsafe {
+            fn hash_substr(hashed: &[Self::Hash]) -> Hashed<Self> {
+                let len = hashed.len() - 1;
+                let h = unsafe {
                     Self::__rolling_hash_local_key().with(|cell| {
                         let arr = &mut *cell.as_ptr();
-                        [$(arr[$i].muln_sub(&seq.hashed[l][$i], &seq.hashed[r][$i], len),)+]
+                        [$(arr[$i].muln_sub(&hashed[0][$i], &hashed[len][$i], len),)+]
                     })
                 };
-                HashedRange::new(len, hash)
+                Hashed::new(len, h)
             }
 
-            fn concat_hash(x: &HashedRange<Self>, y: &HashedRange<Self>) -> HashedRange<Self> {
+            fn concat_hash(x: &Hashed<Self>, y: &Hashed<Self>) -> Hashed<Self> {
                 let len = y.len;
                 let hash = unsafe {
                     Self::__rolling_hash_local_key().with(|cell| {
@@ -243,7 +309,7 @@ macro_rules! impl_rolling_hasher {
                         [$(arr[$i].muln_add(&x.hash[$i], &y.hash[$i], len),)+]
                     })
                 };
-                HashedRange::new(x.len + y.len, hash)
+                Hashed::new(x.len + y.len, hash)
             }
         }
     };
