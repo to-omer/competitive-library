@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["many_aplusb","✅  AC  175ms"],["test_many_aplusb",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["many_aplusb","✅  AC  195ms"]]};

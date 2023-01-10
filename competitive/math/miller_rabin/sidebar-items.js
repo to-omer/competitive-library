@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["miller_rabin",""],["miller_rabin_with_br",""],["mr32",""],["mr64",""],["test_mr32",""],["test_mr64",""]],"macro":[["impl_mr","http://miller-rabin.appspot.com/"],["impl_test_mr",""]]};

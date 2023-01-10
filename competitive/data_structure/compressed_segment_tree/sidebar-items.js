@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":[["impl_compressed_segment_tree",""]],"struct":[["CompressedSegmentTree",""],["Tag",""]],"type":[["CompressedSegmentTree1d",""],["CompressedSegmentTree2d",""],["CompressedSegmentTree3d",""],["CompressedSegmentTree4d",""]]};

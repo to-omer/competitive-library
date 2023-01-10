@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["TotalOrd","implement Ord by PartialOrd"]],"trait":[["AsTotalOrd",""]]};

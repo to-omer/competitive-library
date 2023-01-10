@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["floor_kernel","$y = \\left\\lfloor\\frac{n}{x}\\right\\rfloor$"],["run_length_encoding","return: [(elem, length)]"]]};

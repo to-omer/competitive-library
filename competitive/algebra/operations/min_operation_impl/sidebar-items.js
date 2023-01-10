@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["MinOperation","binary operation to select smaller element"]]};

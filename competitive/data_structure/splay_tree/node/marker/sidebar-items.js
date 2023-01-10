@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":[["Dying",""],["Owned",""]],"struct":[["DataMut",""],["Immut",""],["Mut",""]]};

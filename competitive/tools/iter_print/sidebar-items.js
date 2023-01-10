@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":[["iter_print_tuple_impl",""]],"trait":[["IterPrint",""]]};

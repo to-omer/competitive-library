@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":[["Adj4",""],["Adj8",""],["GridDirection",""]],"struct":[["GridAdjacency",""],["GridDirectionIter",""],["GridGraph",""],["GridVertices",""]]};

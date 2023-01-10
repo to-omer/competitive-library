@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["from_prufer_sequence",""],["rand_inner",""]],"struct":[["MixedTree",""],["PathTree",""],["PruferSequence","Generate Tree with Prüfer sequence"],["StarTree",""]]};

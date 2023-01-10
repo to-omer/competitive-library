@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["closest_pair",""],["closest_pair_inner",""]]};

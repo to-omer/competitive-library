@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["ReRooting","dynamic programming on all-rooted trees"]]};

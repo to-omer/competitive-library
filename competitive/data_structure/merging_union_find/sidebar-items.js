@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":[["UfCell",""]],"struct":[["MergingUnionFind",""],["RootData",""]]};

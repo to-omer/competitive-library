@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["EPS_F32",""],["EPS_F64",""]],"macro":[["impl_approx_zero_for_int",""]],"struct":[["Approx",""]],"trait":[["ApproxOrd",""]]};

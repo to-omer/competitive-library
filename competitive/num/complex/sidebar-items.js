@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["pos",""]],"macro":[["impl_complex_fold",""],["impl_complex_op_assign",""],["impl_complex_ref_binop",""],["impl_complex_ref_unop",""]],"struct":[["Complex",""]]};

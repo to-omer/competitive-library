@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["directedmst","✅  AC  149ms"],["test_directedmst",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["directedmst","✅  AC  135ms"]]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["dynamic_sequence_range_affine_range_sum","✅  AC  3121ms"],["test_dynamic_sequence_range_affine_range_sum",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["dynamic_sequence_range_affine_range_sum","✅  AC  2700ms"]]};

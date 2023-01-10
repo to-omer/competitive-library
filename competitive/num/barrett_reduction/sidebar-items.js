@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["MASK64",""]],"macro":[["impl_barrett",""]],"struct":[["BarrettReduction",""]]};

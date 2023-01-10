@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["multipoint_evaluation","✅  AC  571ms"],["test_multipoint_evaluation",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["multipoint_evaluation","✅  AC  571ms"]]};

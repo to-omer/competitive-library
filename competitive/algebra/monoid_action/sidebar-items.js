@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":[["monoid_action_impls",""]],"trait":[["MonoidAction",""]]};

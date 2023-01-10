@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["DEPTH",""]],"fn":[["__getit",""],["__init",""]],"static":[["__KEY",""]]};

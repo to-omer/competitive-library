@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["RhoPath","$P_0 =$ `init`, $P_{i+1} = next(P_i)$"]]};

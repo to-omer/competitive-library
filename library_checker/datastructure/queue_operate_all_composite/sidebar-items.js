@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["queue_operate_all_composite","✅  AC  48ms"],["test_queue_operate_all_composite",""]]};
+window.SIDEBAR_ITEMS = {"fn":[["queue_operate_all_composite","✅  AC  47ms"]]};

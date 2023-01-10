@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["binary_exponentiation",""],["linear_congruence","return: (y,z)"]]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["choose2",""],["floor_sum","Sum of Floor of Linear mod 2^64"],["floor_sum_i64","Sum of Floor of Linear mod 2^64"],["floor_sum_range_freq",""]]};

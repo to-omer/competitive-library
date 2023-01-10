@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["LOWER_MASK",""],["UPPER_MASK",""]],"mod":[["random_generator",""]],"struct":[["Xorshift",""]]};

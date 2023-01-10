@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":[["polynomial_impls",""]],"struct":[["Polynomial",""]]};

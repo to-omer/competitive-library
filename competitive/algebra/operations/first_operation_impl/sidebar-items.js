@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["FirstOperation","retain the first element"]]};

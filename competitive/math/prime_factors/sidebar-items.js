@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":[["divisors",""],["find_factor",""],["prime_factors",""],["prime_factors_flatten",""]]};

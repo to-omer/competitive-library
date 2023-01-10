@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["FindMajorityOperation","Find majority(strict) of a sequence."]]};

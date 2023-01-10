@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":[["bounded_num_impls",""],["bounded_tuple_impls",""]],"trait":[["Bounded","Trait for max/min bounds"]]};

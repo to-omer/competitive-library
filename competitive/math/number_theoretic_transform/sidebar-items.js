@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":[["__LOCAL_KEY",""]],"fn":[["__getit",""],["__init",""]],"macro":[["impl_ntt_modulus",""]],"static":[["__KEY",""]],"struct":[["Convolve",""],["NttCache",""]],"trait":[["NttModulus",""]],"type":[["Convolve998244353",""],["MIntConvolve",""],["MVec",""]]};

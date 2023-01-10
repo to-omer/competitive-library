@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":[["ZeroSumGameAnalyzer",""],["ZeroSumGamer",""]],"trait":[["ZeroSumGame",""]],"type":[["Marker",""]]};
