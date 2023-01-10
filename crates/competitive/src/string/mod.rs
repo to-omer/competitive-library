@@ -23,7 +23,7 @@ mod knuth_morris_pratt;
         include("Xorshift", "algebra", "ring", "Gf2_63", "Mersenne61")
     )
 )]
-mod rolling_hash;
+pub mod rolling_hash;
 #[cfg_attr(nightly, codesnip::entry("SuffixArray"))]
 mod suffix_array;
 #[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]

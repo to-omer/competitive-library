@@ -1,5 +1,6 @@
 use super::{Gf2_63, Invertible, Mersenne61, Ring, SemiRing, Xorshift};
 use std::{
+    cmp::Ordering,
     marker::PhantomData,
     ops::{Bound, RangeBounds, RangeInclusive},
 };
@@ -65,6 +66,67 @@ where
     _marker: PhantomData<fn() -> Hasher>,
 }
 
+impl<Hasher> Clone for HashedRange<'_, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    fn clone(&self) -> Self {
+        Self {
+            hashed: self.hashed,
+            _marker: self._marker,
+        }
+    }
+}
+
+impl<Hasher> Copy for HashedRange<'_, Hasher> where Hasher: RollingHasher + ?Sized {}
+
+impl<Hasher> PartialEq for HashedRange<'_, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.hash() == other.hash()
+    }
+}
+
+impl<Hasher> Eq for HashedRange<'_, Hasher> where Hasher: RollingHasher + ?Sized {}
+
+impl<Hasher> PartialOrd for HashedRange<'_, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: PartialOrd,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        let n = self.longest_common_prefix(other);
+        match (self.length() > n, other.length() > n) {
+            (true, true) => {
+                let x = self.hash_range(n..=n);
+                let y = other.hash_range(n..=n);
+                x.hash.partial_cmp(&y.hash)
+            }
+            (x, y) => Some(x.cmp(&y)),
+        }
+    }
+}
+
+impl<Hasher> Ord for HashedRange<'_, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: Ord,
+{
+    fn cmp(&self, other: &Self) -> Ordering {
+        let n = self.longest_common_prefix(other);
+        match (self.length() > n, other.length() > n) {
+            (true, true) => {
+                let x = self.hash_range(n..=n);
+                let y = other.hash_range(n..=n);
+                x.hash.cmp(&y.hash)
+            }
+            (x, y) => x.cmp(&y),
+        }
+    }
+}
+
 impl<'a, Hasher> HashedRange<'a, Hasher>
 where
     Hasher: RollingHasher + ?Sized,
@@ -78,19 +140,22 @@ where
     pub fn length(&self) -> usize {
         self.hashed.len() - 1
     }
-    pub fn range<R>(&self, range: R) -> HashedRange<'_, Hasher>
+    pub fn range<R>(&self, range: R) -> HashedRange<'a, Hasher>
     where
         R: RangeBounds<usize>,
     {
         HashedRange::new(&self.hashed[to_range(range, self.length())])
     }
-    pub fn hash(&self) -> Hashed<Hasher> {
-        Hasher::hash_substr(self.hashed)
-    }
-    pub fn longest_common_prefix<R>(&self, other: &Self) -> usize
+    pub fn hash_range<R>(&self, range: R) -> Hashed<Hasher>
     where
         R: RangeBounds<usize>,
     {
+        self.range(range).hash()
+    }
+    pub fn hash(&self) -> Hashed<Hasher> {
+        Hasher::hash_substr(self.hashed)
+    }
+    pub fn longest_common_prefix(&self, other: &Self) -> usize {
         let n = self.length().min(other.length());
         let mut ok = 0usize;
         let mut err = n + 1;
