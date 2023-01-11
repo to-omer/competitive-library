@@ -20,6 +20,8 @@ pub use self::slice::GetDistinctMut;
 pub use self::totalord::{AsTotalOrd, TotalOrd};
 
 #[cfg_attr(nightly, codesnip::entry)]
+mod array;
+#[cfg_attr(nightly, codesnip::entry)]
 mod assign_ops;
 #[cfg_attr(nightly, codesnip::entry("AssociatedValue"))]
 mod associated_value;
@@ -48,7 +50,7 @@ mod ord_tools;
 #[cfg_attr(nightly, codesnip::entry("PartialIgnoredOrd"))]
 mod partial_ignored_ord;
 mod random;
-#[cfg_attr(nightly, codesnip::entry("scanner"))]
+#[cfg_attr(nightly, codesnip::entry("scanner", include("array")))]
 mod scanner;
 mod slice;
 #[cfg_attr(nightly, codesnip::entry("TotalOrd"))]

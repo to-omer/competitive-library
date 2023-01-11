@@ -140,26 +140,32 @@ where
 /// - `$ty`: IterScan
 /// - `@$expr`: MarkedIterScan
 /// - `[ELEMENT; $expr]`: vector
+/// - `[ELEMENT; const $expr]`: array
 /// - `[ELEMENT]`: iterator
 /// - `($(ELEMENT)*,)`: tuple
 #[macro_export]
 macro_rules! scan_value {
-    (@repeat $scanner:expr, [$($t:tt)*] $($len:expr)?)                              => { ::std::iter::repeat_with(|| $crate::scan_value!(@inner $scanner, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
-    (@tuple $scanner:expr, [$([$($args:tt)*])*])                                    => { ($($($args)*,)*) };
-    (@$tag:ident $scanner:expr, [[$($args:tt)*]])                                   => { $($args)* };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr)                            => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]]) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr, $($t:tt)*)                 => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@tuple $scanner, [] $($tuple)*)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [@$e:expr; $len:expr] $($t:tt)*)     => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [@$e] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [[$($tt:tt)*]; $len:expr] $($t:tt)*) => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [[$($tt)*]] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [($($tt:tt)*); $len:expr] $($t:tt)*) => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [($($tt)*)] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [$ty:ty; $len:expr] $($t:tt)*)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [$ty] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)              => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [$($tt)*])]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty)                              => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]]) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty, $($t:tt)*)                   => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                         => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*])                                     => { ::std::compile_error!(::std::stringify!($($args)*)) };
-    ($scanner:expr, $($t:tt)*)                                                      => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
+    (@repeat $scanner:expr, [$($t:tt)*] $($len:expr)?)                                    => { ::std::iter::repeat_with(|| $crate::scan_value!(@inner $scanner, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
+    (@array $scanner:expr, [$($t:tt)*] $len:expr)                                         => { $crate::array![|| $crate::scan_value!(@inner $scanner, [] $($t)*); $len] };
+    (@tuple $scanner:expr, [$([$($args:tt)*])*])                                          => { ($($($args)*,)*) };
+    (@$tag:ident $scanner:expr, [[$($args:tt)*]])                                         => { $($args)* };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr)                                  => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]]) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr, $($t:tt)*)                       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)                 => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@tuple $scanner, [] $($tuple)*)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [@$e:expr; const $len:expr] $($t:tt)*)     => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [@$e] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [@$e:expr; $len:expr] $($t:tt)*)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [@$e] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [[$($tt:tt)*]; const $len:expr] $($t:tt)*) => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [[$($tt)*]] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [[$($tt:tt)*]; $len:expr] $($t:tt)*)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [[$($tt)*]] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [($($tt:tt)*); const $len:expr] $($t:tt)*) => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [($($tt)*)] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [($($tt:tt)*); $len:expr] $($t:tt)*)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [($($tt)*)] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [$ty:ty; const $len:expr] $($t:tt)*)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [$ty] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [$ty:ty; $len:expr] $($t:tt)*)             => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [$ty] $len)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)                    => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [$($tt)*])]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty)                                    => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]]) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty, $($t:tt)*)                         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                               => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*])                                           => { ::std::compile_error!(::std::stringify!($($args)*)) };
+    ($scanner:expr, $($t:tt)*)                                                            => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
 }
 
 /// - `scan!(scanner, $($pat $(: ELEMENT)?),*)`
@@ -372,8 +378,8 @@ where
 #[test]
 fn test_scan() {
     use crate::scan;
-    let mut s = Scanner::new("1 2 3 a 1 2 1 1 1.1");
-    scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'));
+    let mut s = Scanner::new("1 2 3 a 1 2 1 1 1.1 2 3");
+    scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'), e: [usize; const 2]);
     assert_eq!(x, 1);
     assert_eq!(y, '2');
     assert_eq!(z, 2);
@@ -381,4 +387,5 @@ fn test_scan() {
     assert_eq!(b, vec![1, 2]);
     assert_eq!(c, (1, 1));
     assert_eq!(d, vec![1, 1]);
+    assert_eq!(e, [2, 3]);
 }
