@@ -1,27 +1,17 @@
+use std::cmp::Ordering;
+
 /// binary search helper
 pub trait Bisect: Clone {
-    /// return between two elements
-    fn halve(&self, other: &Self) -> Self;
-    /// the end condition of binary search
-    fn section_end(&self, other: &Self) -> bool;
+    /// Return between two elements if search is not end.
+    fn middle_point(&self, other: &Self) -> Option<Self>;
 }
 
 macro_rules! impl_bisect_unsigned {
     ($($t:ty)*) => {
         $(impl Bisect for $t {
-            fn halve(&self, other: &Self) -> Self {
-                if self > other {
-                    other + (self - other) / 2
-                } else {
-                    self + (other - self) / 2
-                }
-            }
-            fn section_end(&self, other: &Self) -> bool {
-                (if self > other {
-                    self - other
-                } else {
-                    other - self
-                }) <= 1
+            fn middle_point(&self, other: &Self) -> Option<Self> {
+                let (diff, small) = if self > other { (self - other, other) } else { (other - self, self) };
+                if diff > 1 { Some(small + diff / 2) } else { None }
             }
         })*
     };
@@ -29,31 +19,44 @@ macro_rules! impl_bisect_unsigned {
 macro_rules! impl_bisect_signed {
     ($($t:ty)*) => {
         $(impl Bisect for $t {
-            fn halve(&self, other: &Self) -> Self {
-                (self + other) / 2
-            }
-            fn section_end(&self, other: &Self) -> bool {
-                (self - other).abs() <= 1
+            fn middle_point(&self, other: &Self) -> Option<Self> {
+                if self.signum() != other.signum() {
+                    if match self.cmp(other) {
+                        Ordering::Less => self + 1 < *other,
+                        Ordering::Equal => false,
+                        Ordering::Greater => other + 1 < *self,
+                    } {
+                        Some((self + other) / 2)
+                    } else {
+                        None
+                    }
+                } else {
+                    let (diff, small) = if self > other { (self - other, other) } else { (other - self, self) };
+                    if diff > 1 { Some(small + diff / 2) } else { None }
+                }
             }
         })*
     };
 }
 macro_rules! impl_bisect_float {
-    ($($t:ty)*) => {
+    ($({$t:ident $u:ident $i:ident $e:expr})*) => {
         $(impl Bisect for $t {
-            fn halve(&self, other: &Self) -> Self {
-                (self + other) / 2.
-            }
-            fn section_end(&self, other: &Self) -> bool {
-                const BISECT_SECTION_END_EPS: $t = 1e-8;
-                (self - other).abs() <= BISECT_SECTION_END_EPS
+            fn middle_point(&self, other: &Self) -> Option<Self> {
+                fn to_float_ord(x: $t) -> $i {
+                    let a = x.to_bits() as $i;
+                    a ^ (((a >> $e) as $u) >> 1) as $i
+                }
+                fn from_float_ord(a: $i) -> $t {
+                    $t::from_bits((a ^ (((a >> $e) as $u) >> 1) as $i) as _)
+                }
+                <$i as Bisect>::middle_point(&to_float_ord(*self), &to_float_ord(*other)).map(from_float_ord)
             }
         })*
     };
 }
 impl_bisect_unsigned!(u8 u16 u32 u64 u128 usize);
 impl_bisect_signed!(i8 i16 i32 i64 i128 isize);
-impl_bisect_float!(f32 f64);
+impl_bisect_float!({f32 u32 i32 31} {f64 u64 i64 63});
 
 /// binary search for monotone segment
 ///
@@ -65,8 +68,7 @@ where
     T: Bisect,
     F: FnMut(&T) -> bool,
 {
-    while !ok.section_end(&err) {
-        let m = ok.halve(&err);
+    while let Some(m) = ok.middle_point(&err) {
         if f(&m) {
             ok = m;
         } else {
@@ -131,6 +133,12 @@ mod tests {
         let sq2 = binary_search(|&x| x * x <= 2., 1., 4.);
         let expect = 1.414_213_562_73;
         assert!(expect - 1e-8 <= sq2 && sq2 <= expect + 1e-8);
+
+        use std::i64::{MAX, MIN};
+        assert_eq!(binary_search(|&x| x < MAX, MIN, MAX), MAX - 1);
+        assert_eq!(binary_search(|&x| x == MIN, MIN, MAX), MIN);
+        assert_eq!(binary_search(|&x| x == MAX, MAX, MIN), MAX);
+        assert_eq!(binary_search(|&x| x > MIN, MAX, MIN), MIN + 1);
     }
 
     #[test]
@@ -181,19 +189,28 @@ mod tests {
 pub fn parallel_binary_search<T, F, G>(mut f: F, q: usize, ok: T, err: T) -> Vec<T>
 where
     T: Bisect,
-    F: FnMut(&[T]) -> G,
+    F: FnMut(&[Option<T>]) -> G,
     G: Fn(usize) -> bool,
 {
     let mut ok = vec![ok; q];
     let mut err = vec![err; q];
-    while !ok.iter().zip(&err).all(|(ok, err)| ok.section_end(err)) {
-        let m: Vec<_> = ok.iter().zip(&err).map(|(ok, err)| ok.halve(err)).collect();
+    loop {
+        let m: Vec<_> = ok
+            .iter()
+            .zip(&err)
+            .map(|(ok, err)| ok.middle_point(err))
+            .collect();
+        if m.iter().all(|m| m.is_none()) {
+            break;
+        }
         let g = f(&m);
         for (i, m) in m.into_iter().enumerate() {
-            if g(i) {
-                ok[i] = m;
-            } else {
-                err[i] = m;
+            if let Some(m) = m {
+                if g(i) {
+                    ok[i] = m;
+                } else {
+                    err[i] = m;
+                }
             }
         }
     }
