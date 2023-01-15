@@ -457,6 +457,23 @@ where
     pub fn new(root: Option<NodeRef<marker::Owned, S>>) -> Self {
         Self { root }
     }
+    pub unsafe fn from_single_nodes(nodes: Vec<NodeRef<marker::Owned, S>>) -> Self {
+        Self::from_single_nodes_inner(&nodes)
+    }
+    unsafe fn from_single_nodes_inner(nodes: &[NodeRef<marker::Owned, S>]) -> Self {
+        if nodes.is_empty() {
+            Self::new(None)
+        } else {
+            let m = nodes.len() / 2;
+            let left = Self::from_single_nodes_inner(&nodes[..m]);
+            let right = Self::from_single_nodes_inner(&nodes[m + 1..]);
+            let mut node = NodeRef::new(nodes[m].node);
+            node.borrow_mut().set_left(left.root);
+            node.borrow_mut().set_right(right.root);
+            S::bottom_up(node.borrow_datamut());
+            Self::new(Some(node))
+        }
+    }
     pub fn is_empty(&self) -> bool {
         self.root.is_none()
     }

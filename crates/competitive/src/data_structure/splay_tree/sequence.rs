@@ -436,6 +436,38 @@ where
     }
 }
 
+impl<T, A> Extend<T::Key> for SplaySequence<T, A>
+where
+    T: MonoidAction,
+    A: Allocator<Node<LazyAggElement<T>>>,
+{
+    fn extend<I>(&mut self, iter: I)
+    where
+        I: IntoIterator<Item = T::Key>,
+    {
+        let nodes: Vec<_> = unsafe {
+            iter.into_iter()
+                .map(|key| {
+                    let agg = T::single_agg(&key);
+                    NodeRef::from_data(
+                        LazyAggElement {
+                            key,
+                            agg,
+                            lazy: T::act_unit(),
+                            size: 1,
+                            rev: false,
+                        },
+                        self.alloc.deref_mut(),
+                    )
+                })
+                .collect()
+        };
+        self.length += nodes.len();
+        let mut root = unsafe { Root::from_single_nodes(nodes) };
+        self.root.append(&mut root);
+    }
+}
+
 impl<T> Root<LazyAggSplay<T>>
 where
     T: MonoidAction,
@@ -468,9 +500,7 @@ mod tests {
         let mut rng = Xorshift::default();
         rand!(rng, mut arr: [-A..A; N]);
         let mut seq = SplaySequence::<RangeMaxRangeUpdate<_>>::new();
-        for (i, &a) in arr.iter().enumerate() {
-            seq.insert(i, a);
-        }
+        seq.extend(arr.iter().cloned());
         for _ in 0..Q {
             assert_eq!(arr.len(), seq.len());
             rand!(rng, ty: (0..6), (l, r): (NotEmptySegment(arr.len())));

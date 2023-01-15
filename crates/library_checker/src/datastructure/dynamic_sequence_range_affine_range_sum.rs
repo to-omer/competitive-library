@@ -10,10 +10,8 @@ pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: im
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, q, a: [MInt998244353; n]);
 
-    let mut seq = SplaySequence::<RangeSumRangeLinear<MInt998244353>>::default();
-    for (i, &a) in a.iter().enumerate() {
-        seq.insert(i, a);
-    }
+    let mut seq = SplaySequence::<RangeSumRangeLinear<MInt998244353>>::with_capacity(n + q);
+    seq.extend(a);
     for _ in 0..q {
         match scanner.scan::<usize>() {
             0 => {
