@@ -1,3 +1,4 @@
+import os
 from argparse import ArgumentParser
 from pathlib import Path
 from shutil import move
@@ -7,6 +8,10 @@ verify_packages = ["aizu_online_judge", "library_checker"]
 
 
 def cargo_verify(package: str, name: str):
+    env = os.environ.copy()
+    env["RUST_MIN_STACK"] = "268435456"
+    env["RUST_LOG"] = "verify=info"
+    env["RUST_BACKTRACE"] = "1"
     run(
         [
             "cargo",
@@ -19,7 +24,8 @@ def cargo_verify(package: str, name: str):
             "--ignored",
             "--exact",
             "--nocapture",
-        ]
+        ],
+        env=env,
     )
 
 
