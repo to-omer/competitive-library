@@ -84,6 +84,23 @@ pub mod monoid_action_impls {
             Some(x.clone())
         }
     }
+    pub struct EmptyAction<T> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    impl<T: Clone> MonoidAction for EmptyAction<T> {
+        type Key = T;
+        type Agg = ();
+        type Act = ();
+        type AggMonoid = ();
+        type ActMonoid = ();
+        fn single_agg(_key: &Self::Key) -> Self::Agg {}
+        fn act_key(x: &Self::Key, _a: &Self::Act) -> Self::Key {
+            x.clone()
+        }
+        fn act_agg(_x: &Self::Agg, _a: &Self::Act) -> Option<Self::Agg> {
+            Some(())
+        }
+    }
 
     pub struct RangeSumRangeAdd<T> {
         _marker: PhantomData<fn() -> T>,
