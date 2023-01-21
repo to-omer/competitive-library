@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algorithm/binary_search.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>binary_search.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-52c5db6f6f352e54.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../../../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-d2686a620d99aad7.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algorithm/binary_search.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>binary_search.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-52c5db6f6f352e54.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../../../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-3367e395607fafc1.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -215,62 +215,82 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
-</pre><pre class="rust"><code><span class="doccomment">/// binary search helper
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+</pre><pre class="rust"><code><span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">std::cmp::Ordering</a>;
+
+<span class="doccomment">/// binary search helper
 </span><span class="kw">pub trait </span>Bisect: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> {
-    <span class="doccomment">/// return between two elements
-    </span><span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span>;
-    <span class="doccomment">/// the end condition of binary search
-    </span><span class="kw">fn </span>section_end(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
+    <span class="doccomment">/// Return between two elements if search is not end.
+    </span><span class="kw">fn </span>middle_point(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;;
 }
 
 <span class="macro">macro_rules! </span>impl_bisect_unsigned {
     ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl </span>Bisect <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
-            <span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
-                <span class="kw">if </span><span class="self">self </span>&gt; other {
-                    other + (<span class="self">self </span>- other) / <span class="number">2
-                </span>} <span class="kw">else </span>{
-                    <span class="self">self </span>+ (other - <span class="self">self</span>) / <span class="number">2
-                </span>}
+            <span class="kw">fn </span>middle_point(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                <span class="kw">let </span>(diff, small) = <span class="kw">if </span><span class="self">self </span>&gt; other { (<span class="self">self </span>- other, other) } <span class="kw">else </span>{ (other - <span class="self">self</span>, <span class="self">self</span>) };
+                <span class="kw">if </span>diff &gt; <span class="number">1 </span>{ <span class="prelude-val">Some</span>(small + diff / <span class="number">2</span>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>}
             }
-            <span class="kw">fn </span>section_end(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-                (<span class="kw">if </span><span class="self">self </span>&gt; other {
-                    <span class="self">self </span>- other
-                } <span class="kw">else </span>{
-                    other - <span class="self">self
-                </span>}) &lt;= <span class="number">1
-            </span>}
         })*
     };
 }
 <span class="macro">macro_rules! </span>impl_bisect_signed {
     ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
         $(<span class="kw">impl </span>Bisect <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
-            <span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
-                (<span class="self">self </span>+ other) / <span class="number">2
-            </span>}
-            <span class="kw">fn </span>section_end(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-                (<span class="self">self </span>- other).abs() &lt;= <span class="number">1
-            </span>}
-        })*
-    };
-}
-<span class="macro">macro_rules! </span>impl_bisect_float {
-    ($(<span class="macro-nonterminal">$t</span>:ty)<span class="kw-2">*</span>) =&gt; {
-        $(<span class="kw">impl </span>Bisect <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
-            <span class="kw">fn </span>halve(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
-                (<span class="self">self </span>+ other) / <span class="number">2.
-            </span>}
-            <span class="kw">fn </span>section_end(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-                <span class="kw">const </span>BISECT_SECTION_END_EPS: <span class="macro-nonterminal">$t </span>= <span class="number">1e-8</span>;
-                (<span class="self">self </span>- other).abs() &lt;= BISECT_SECTION_END_EPS
+            <span class="kw">fn </span>middle_point(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                <span class="kw">if </span><span class="self">self</span>.signum() != other.signum() {
+                    <span class="kw">if match </span><span class="self">self</span>.cmp(other) {
+                        Ordering::Less =&gt; <span class="self">self </span>+ <span class="number">1 </span>&lt; <span class="kw-2">*</span>other,
+                        Ordering::Equal =&gt; <span class="bool-val">false</span>,
+                        Ordering::Greater =&gt; other + <span class="number">1 </span>&lt; <span class="kw-2">*</span><span class="self">self</span>,
+                    } {
+                        <span class="prelude-val">Some</span>((<span class="self">self </span>+ other) / <span class="number">2</span>)
+                    } <span class="kw">else </span>{
+                        <span class="prelude-val">None
+                    </span>}
+                } <span class="kw">else </span>{
+                    <span class="kw">let </span>(diff, small) = <span class="kw">if </span><span class="self">self </span>&gt; other { (<span class="self">self </span>- other, other) } <span class="kw">else </span>{ (other - <span class="self">self</span>, <span class="self">self</span>) };
+                    <span class="kw">if </span>diff &gt; <span class="number">1 </span>{ <span class="prelude-val">Some</span>(small + diff / <span class="number">2</span>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>}
+                }
             }
         })*
     };
 }
-<a class="macro" href="#9-28">impl_bisect_unsigned!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
-<a class="macro" href="#29-40">impl_bisect_signed!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>);
-<a class="macro" href="#41-53">impl_bisect_float!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.f32.html">f32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>);
+<span class="macro">macro_rules! </span>impl_bisect_float {
+    ($({<span class="macro-nonterminal">$t</span>:ident <span class="macro-nonterminal">$u</span>:ident <span class="macro-nonterminal">$i</span>:ident <span class="macro-nonterminal">$e</span>:expr})<span class="kw-2">*</span>) =&gt; {
+        $(<span class="kw">impl </span>Bisect <span class="kw">for </span><span class="macro-nonterminal">$t </span>{
+            <span class="kw">fn </span>middle_point(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+                <span class="kw">fn </span>to_float_ord(x: <span class="macro-nonterminal">$t</span>) -&gt; <span class="macro-nonterminal">$i </span>{
+                    <span class="kw">let </span>a = x.to_bits() <span class="kw">as </span><span class="macro-nonterminal">$i</span>;
+                    a ^ (((a &gt;&gt; <span class="macro-nonterminal">$e</span>) <span class="kw">as </span><span class="macro-nonterminal">$u</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as </span><span class="macro-nonterminal">$i
+                </span>}
+                <span class="kw">fn </span>from_float_ord(a: <span class="macro-nonterminal">$i</span>) -&gt; <span class="macro-nonterminal">$t </span>{
+                    <span class="macro-nonterminal">$t::from_bits</span>((a ^ (((a &gt;&gt; <span class="macro-nonterminal">$e</span>) <span class="kw">as </span><span class="macro-nonterminal">$u</span>) &gt;&gt; <span class="number">1</span>) <span class="kw">as </span><span class="macro-nonterminal">$i</span>) <span class="kw">as _</span>)
+                }
+                &lt;<span class="macro-nonterminal">$i </span><span class="kw">as </span>Bisect&gt;::middle_point(<span class="kw-2">&amp;</span>to_float_ord(<span class="kw-2">*</span><span class="self">self</span>), <span class="kw-2">&amp;</span>to_float_ord(<span class="kw-2">*</span>other)).map(from_float_ord)
+            }
+        })*
+    };
+}
+<a class="macro" href="#9-18">impl_bisect_unsigned!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+<a class="macro" href="#19-40">impl_bisect_signed!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>);
+<a class="macro" href="#41-56">impl_bisect_float!</a>({f32 u32 i32 <span class="number">31</span>} {f64 u64 i64 <span class="number">63</span>});
 
 <span class="doccomment">/// binary search for monotone segment
 ///
@@ -279,18 +299,17 @@
 /// if `err &lt; ok` then search (err, ok] where `err`, f, f, f, ... f, t(`ret`), ... t, t, t(`ok`)
 </span><span class="kw">pub fn </span>binary_search&lt;T, F&gt;(<span class="kw-2">mut </span>f: F, <span class="kw-2">mut </span>ok: T, <span class="kw-2">mut </span>err: T) -&gt; T
 <span class="kw">where
-    </span>T: <a href="#2">Bisect</a>,
+    </span>T: <a href="#4">Bisect</a>,
     F: FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
-    <span class="kw">while </span>!ok.section_end(<span class="kw-2">&amp;</span>err) {
-        <span class="kw">let </span>m = ok.halve(<span class="kw-2">&amp;</span>err);
+    <span class="kw">while let </span><span class="prelude-val">Some</span>(m) = ok.middle_point(<span class="kw-2">&amp;</span>err) {
         <span class="kw">if </span>f(<span class="kw-2">&amp;</span>m) {
             ok = m;
         } <span class="kw">else </span>{
             err = m;
         }
     }
-    <a href="#63">ok</a>
+    <a href="#66">ok</a>
 }
 
 <span class="doccomment">/// binary search for slice
@@ -308,21 +327,21 @@
 }
 <span class="kw">impl</span>&lt;T&gt; SliceBisectExt&lt;T&gt; <span class="kw">for </span>[T] {
     <span class="kw">fn </span>find_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
-        <a class="self" href="#93">self</a>.get(<a class="self" href="#93">self</a>.<a href="#87">position_bisect</a>(<a href="#93">f</a>))
+        <a class="self" href="#95">self</a>.get(<a class="self" href="#95">self</a>.<a href="#89">position_bisect</a>(<a href="#95">f</a>))
     }
     <span class="kw">fn </span>rfind_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>T&gt; {
-        <span class="kw">let </span>pos = <a class="self" href="#96">self</a>.<a href="#90">rposition_bisect</a>(<a href="#96">f</a>);
+        <span class="kw">let </span>pos = <a class="self" href="#98">self</a>.<a href="#92">rposition_bisect</a>(<a href="#98">f</a>);
         <span class="kw">if </span>pos == <span class="number">0 </span>{
             <span class="prelude-val">None
         </span>} <span class="kw">else </span>{
-            <a class="self" href="#96">self</a>.get(<a href="#97">pos</a> - <span class="number">1</span>)
+            <a class="self" href="#98">self</a>.get(<a href="#99">pos</a> - <span class="number">1</span>)
         }
     }
     <span class="kw">fn </span>position_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a href="#63-66">binary_search</a>(|i| <a href="#104">f</a>(<span class="kw-2">&amp;</span><a class="self" href="#104">self</a>[<span class="kw-2">*</span><a href="#105">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]), <a class="self" href="#104">self</a>.len() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, -<span class="number">1</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
+        <a href="#66-69">binary_search</a>(|i| <a href="#106">f</a>(<span class="kw-2">&amp;</span><a class="self" href="#106">self</a>[<span class="kw-2">*</span><a href="#107">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]), <a class="self" href="#106">self</a>.len() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, -<span class="number">1</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="kw">fn </span>rposition_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a href="#63-66">binary_search</a>(|i| <a href="#107">f</a>(<span class="kw-2">&amp;</span><a class="self" href="#107">self</a>[<a href="#108">i</a> - <span class="number">1</span>]), <span class="number">0</span>, <a class="self" href="#107">self</a>.len() + <span class="number">1</span>)
+        <a href="#66-69">binary_search</a>(|i| <a href="#109">f</a>(<span class="kw-2">&amp;</span><a class="self" href="#109">self</a>[<a href="#110">i</a> - <span class="number">1</span>]), <span class="number">0</span>, <a class="self" href="#109">self</a>.len() + <span class="number">1</span>)
     }
 }
 
@@ -348,6 +367,12 @@
         <span class="kw">let </span>sq2 = binary_search(|<span class="kw-2">&amp;</span>x| x * x &lt;= <span class="number">2.</span>, <span class="number">1.</span>, <span class="number">4.</span>);
         <span class="kw">let </span>expect = <span class="number">1.414_213_562_73</span>;
         <span class="macro">assert!</span>(expect - <span class="number">1e-8 </span>&lt;= sq2 &amp;&amp; sq2 &lt;= expect + <span class="number">1e-8</span>);
+
+        <span class="kw">use </span>std::i64::{MAX, MIN};
+        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x &lt; MAX, MIN, MAX), MAX - <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x == MIN, MIN, MAX), MIN);
+        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x == MAX, MAX, MIN), MAX);
+        <span class="macro">assert_eq!</span>(binary_search(|<span class="kw-2">&amp;</span>x| x &gt; MIN, MAX, MIN), MIN + <span class="number">1</span>);
     }
 
     <span class="attr">#[test]
@@ -397,24 +422,33 @@
 
 <span class="kw">pub fn </span>parallel_binary_search&lt;T, F, G&gt;(<span class="kw-2">mut </span>f: F, q: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, ok: T, err: T) -&gt; Vec&lt;T&gt;
 <span class="kw">where
-    </span>T: <a href="#2">Bisect</a>,
-    F: FnMut(<span class="kw-2">&amp;</span>[T]) -&gt; G,
+    </span>T: <a href="#4">Bisect</a>,
+    F: FnMut(<span class="kw-2">&amp;</span>[<span class="prelude-ty">Option</span>&lt;T&gt;]) -&gt; G,
     G: Fn(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>ok = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[ok; q];
     <span class="kw">let </span><span class="kw-2">mut </span>err = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[err; q];
-    <span class="kw">while </span>!ok.iter().zip(<span class="kw-2">&amp;</span>err).all(|(ok, err)| ok.section_end(err)) {
-        <span class="kw">let </span>m: Vec&lt;<span class="kw">_</span>&gt; = ok.iter().zip(<span class="kw-2">&amp;</span>err).map(|(ok, err)| ok.halve(err)).collect();
-        <span class="kw">let </span>g = f(<span class="kw-2">&amp;</span>m);
+    <span class="kw">loop </span>{
+        <span class="kw">let </span>m: Vec&lt;<span class="kw">_</span>&gt; = <a href="#195">ok</a>
+            .iter()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">zip</a>(<span class="kw-2">&amp;</span><a href="#196">err</a>)
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|(ok, err)| <a href="#201">ok</a>.<a href="#6">middle_point</a>(<a href="#201">err</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <span class="kw">if </span>m.iter().all(|m| m.is_none()) {
+            <span class="kw">break</span>;
+        }
+        <span class="kw">let </span>g = <a href="#189">f</a>(<span class="kw-2">&amp;</span><a href="#198">m</a>);
         <span class="kw">for </span>(i, m) <span class="kw">in </span>m.into_iter().enumerate() {
-            <span class="kw">if </span>g(i) {
-                ok[i] = m;
-            } <span class="kw">else </span>{
-                err[i] = m;
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = m {
+                <span class="kw">if </span>g(i) {
+                    ok[i] = m;
+                } <span class="kw">else </span>{
+                    err[i] = m;
+                }
             }
         }
     }
-    <a href="#187">ok</a>
+    <a href="#195">ok</a>
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0-nightly (3984bc583 2023-01-17)" data-search-js="search-181581080540673f.js" data-settings-js="settings-a2afdefbb7c817f1.js" data-settings-css="settings-84508a86fe805444.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0-nightly (5ce39f42b 2023-01-20)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-ab1d4ae2ec52020e.css" ></div></body></html>

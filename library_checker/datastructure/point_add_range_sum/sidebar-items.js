@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["point_add_range_sum_binary_indexed_tree","✅  AC  77ms"],["point_add_range_sum_segment_tree","✅  AC  109ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["point_add_range_sum_binary_indexed_tree","✅  AC  83ms"],["point_add_range_sum_segment_tree","✅  AC  123ms"]]};
