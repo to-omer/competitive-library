@@ -68,7 +68,10 @@ pub mod monoid_action_impls {
     pub struct EmptyLazy<M> {
         _marker: PhantomData<fn() -> M>,
     }
-    impl<M: Monoid> MonoidAction for EmptyLazy<M> {
+    impl<M> MonoidAction for EmptyLazy<M>
+    where
+        M: Monoid,
+    {
         type Key = M::T;
         type Agg = M::T;
         type Act = ();
@@ -87,7 +90,10 @@ pub mod monoid_action_impls {
     pub struct EmptyAction<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone> MonoidAction for EmptyAction<T> {
+    impl<T> MonoidAction for EmptyAction<T>
+    where
+        T: Clone,
+    {
         type Key = T;
         type Agg = ();
         type Act = ();
@@ -105,8 +111,9 @@ pub mod monoid_action_impls {
     pub struct RangeSumRangeAdd<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> MonoidAction
-        for RangeSumRangeAdd<T>
+    impl<T> MonoidAction for RangeSumRangeAdd<T>
+    where
+        T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
     {
         type Key = T;
         type Agg = (T, T);
@@ -117,18 +124,27 @@ pub mod monoid_action_impls {
             (*key, T::one())
         }
         fn act_key(&x: &Self::Key, &a: &Self::Act) -> Self::Key {
-            x + a
+            if <Self::ActMonoid as Unital>::is_unit(&a) {
+                x
+            } else {
+                x + a
+            }
         }
         fn act_agg(&(x, y): &Self::Agg, &a: &Self::Act) -> Option<Self::Agg> {
-            Some((x + a * y, y))
+            Some(if <Self::ActMonoid as Unital>::is_unit(&a) {
+                (x, y)
+            } else {
+                (x + a * y, y)
+            })
         }
     }
 
     pub struct RangeSumRangeLinear<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>> MonoidAction
-        for RangeSumRangeLinear<T>
+    impl<T> MonoidAction for RangeSumRangeLinear<T>
+    where
+        T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
     {
         type Key = T;
         type Agg = (T, T);
@@ -139,18 +155,27 @@ pub mod monoid_action_impls {
             (*key, T::one())
         }
         fn act_key(&x: &Self::Key, &(a, b): &Self::Act) -> Self::Key {
-            a * x + b
+            if <Self::ActMonoid as Unital>::is_unit(&(a, b)) {
+                x
+            } else {
+                a * x + b
+            }
         }
         fn act_agg(&(x, y): &Self::Agg, &(a, b): &Self::Act) -> Option<Self::Agg> {
-            Some((a * x + b * y, y))
+            Some(if <Self::ActMonoid as Unital>::is_unit(&(a, b)) {
+                (x, y)
+            } else {
+                (a * x + b * y, y)
+            })
         }
     }
 
     pub struct RangeSumRangeUpdate<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq> MonoidAction
-        for RangeSumRangeUpdate<T>
+    impl<T> MonoidAction for RangeSumRangeUpdate<T>
+    where
+        T: Copy + Zero + One + Add<Output = T> + Mul<Output = T> + PartialEq,
     {
         type Key = T;
         type Agg = (T, T);
@@ -171,7 +196,10 @@ pub mod monoid_action_impls {
     pub struct RangeMaxRangeUpdate<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + PartialEq + Ord + Bounded> MonoidAction for RangeMaxRangeUpdate<T> {
+    impl<T> MonoidAction for RangeMaxRangeUpdate<T>
+    where
+        T: Clone + PartialEq + Ord + Bounded,
+    {
         type Key = T;
         type Agg = T;
         type Act = Option<T>;
@@ -191,7 +219,10 @@ pub mod monoid_action_impls {
     pub struct RangeMinRangeUpdate<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + PartialEq + Ord + Bounded> MonoidAction for RangeMinRangeUpdate<T> {
+    impl<T> MonoidAction for RangeMinRangeUpdate<T>
+    where
+        T: Clone + PartialEq + Ord + Bounded,
+    {
         type Key = T;
         type Agg = T;
         type Act = Option<T>;
@@ -211,7 +242,10 @@ pub mod monoid_action_impls {
     pub struct RangeMinRangeAdd<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Copy + Ord + Bounded + Zero + Add<Output = T>> MonoidAction for RangeMinRangeAdd<T> {
+    impl<T> MonoidAction for RangeMinRangeAdd<T>
+    where
+        T: Copy + Ord + Bounded + Zero + Add<Output = T>,
+    {
         type Key = T;
         type Agg = T;
         type Act = T;
@@ -221,14 +255,22 @@ pub mod monoid_action_impls {
             *key
         }
         fn act_key(&x: &Self::Key, &a: &Self::Act) -> Self::Key {
-            x + a
+            if <Self::ActMonoid as Unital>::is_unit(&a) {
+                x
+            } else {
+                x + a
+            }
         }
         fn act_agg(&x: &Self::Agg, &a: &Self::Act) -> Option<Self::Agg> {
-            Some(x + a)
+            Some(if <Self::ActMonoid as Unital>::is_unit(&a) {
+                x
+            } else {
+                x + a
+            })
         }
     }
 
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Clone, PartialEq, Eq)]
     pub struct RangeChminChmaxAdd<T> {
         lb: T,
         ub: T,
@@ -262,7 +304,15 @@ pub mod monoid_action_impls {
     }
     impl<T> Magma for RangeChminChmaxAdd<T>
     where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq,
     {
         type T = Self;
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -274,12 +324,28 @@ pub mod monoid_action_impls {
         }
     }
     impl<T> Associative for RangeChminChmaxAdd<T> where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq
     {
     }
     impl<T> Unital for RangeChminChmaxAdd<T>
     where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq,
     {
         fn unit() -> Self::T {
             Self {
@@ -290,7 +356,7 @@ pub mod monoid_action_impls {
         }
     }
 
-    #[derive(Debug, Clone)]
+    #[derive(Debug, Clone, PartialEq, Eq)]
     pub struct RangeSumRangeChminChmaxAdd<T> {
         min: T,
         max: T,
@@ -304,7 +370,15 @@ pub mod monoid_action_impls {
 
     impl<T> RangeSumRangeChminChmaxAdd<T>
     where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq,
     {
         pub fn single(key: T, size: T) -> Self {
             Self {
@@ -321,7 +395,15 @@ pub mod monoid_action_impls {
     }
     impl<T> Magma for RangeSumRangeChminChmaxAdd<T>
     where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq,
     {
         type T = Self;
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -362,12 +444,28 @@ pub mod monoid_action_impls {
         }
     }
     impl<T> Associative for RangeSumRangeChminChmaxAdd<T> where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq
     {
     }
     impl<T> Unital for RangeSumRangeChminChmaxAdd<T>
     where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq,
     {
         fn unit() -> Self::T {
             Self {
@@ -385,7 +483,15 @@ pub mod monoid_action_impls {
 
     impl<T> MonoidAction for RangeSumRangeChminChmaxAdd<T>
     where
-        T: Copy + Zero + One + Ord + Bounded + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Copy
+            + Zero
+            + One
+            + Ord
+            + Bounded
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Mul<Output = T>
+            + PartialEq,
     {
         type Key = T;
         type Agg = Self;
@@ -396,10 +502,16 @@ pub mod monoid_action_impls {
             Self::single(key, T::one())
         }
         fn act_key(&x: &Self::Key, a: &Self::Act) -> Self::Key {
-            x.max(a.lb).min(a.ub) + a.bias
+            if <Self::ActMonoid as Unital>::is_unit(&a) {
+                x
+            } else {
+                x.max(a.lb).min(a.ub) + a.bias
+            }
         }
         fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
-            Some(if x.size.is_zero() {
+            Some(if <Self::ActMonoid as Unital>::is_unit(&a) {
+                x.clone()
+            } else if x.size.is_zero() {
                 Self::unit()
             } else if x.min == x.max || a.lb == a.ub || a.lb >= x.max || a.ub <= x.min {
                 Self::single(x.min.max(a.lb).min(a.ub) + a.bias, x.size)
