@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/geometry/line.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>line.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-52c5db6f6f352e54.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../../../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-3367e395607fafc1.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/geometry/line.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>line.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-93196c7a1c3542a8.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-4743e13df3dfe8c4.css"><link rel="stylesheet" disabled href="../../../static.files/dark-0e1b889528bd466b.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-65289d5d067c7c66.css"><script id="default-settings" ></script><script src="../../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../../static.files/source-script-ea63cb6500f71309.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-3367e395607fafc1.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -117,108 +117,152 @@
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
-</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="approx.rs.html#57">Approx</a>, <a href="ccw.rs.html#8">Ccw</a>, <a href="mod.rs.html#21">Point</a>};
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+</pre><pre class="rust"><code><span class="kw">use super</span>::{<a href="approx.rs.html#57">Approx</a>, <a href="ccw.rs.html#22">Ccw</a>, <a href="ccw.rs.html#7-8">Ccwable</a>, <a href="../num/complex.rs.html#9">Complex</a>, <a href="../num/float.rs.html#11-26">Float</a>};
 
 <span class="attr">#[derive(Clone, Debug, PartialEq)]
-</span><span class="kw">pub struct </span>Line {
-    p1: <a href="mod.rs.html#21">Point</a>,
-    p2: <a href="mod.rs.html#21">Point</a>,
+</span><span class="kw">pub struct </span>Line&lt;T&gt; {
+    p1: Complex&lt;T&gt;,
+    p2: Complex&lt;T&gt;,
 }
-<span class="kw">impl </span><a href="#4">Line</a> {
-    <span class="kw">pub fn </span>new(p1: <a href="mod.rs.html#21">Point</a>, p2: <a href="mod.rs.html#21">Point</a>) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;T&gt; Line&lt;T&gt; {
+    <span class="kw">pub fn </span>new(p1: Complex&lt;T&gt;, p2: Complex&lt;T&gt;) -&gt; <span class="self">Self </span>{
         <a href="#4">Line</a> { <a href="#9">p1</a>, <a href="#9">p2</a> }
     }
-    <span class="kw">pub fn </span>dir(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="mod.rs.html#21">Point</a> {
-        <a class="self" href="#12">self</a>.p2 - <a class="self" href="#12">self</a>.p1
+}
+<span class="kw">impl</span>&lt;T&gt; Line&lt;T&gt;
+<span class="kw">where
+    </span>T: <a href="ccw.rs.html#7-8">Ccwable</a>,
+{
+    <span class="kw">pub fn </span>dir(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Complex&lt;T&gt; {
+        <a class="self" href="#17">self</a>.p2 - <a class="self" href="#17">self</a>.p1
     }
-    <span class="kw">pub fn </span>ccw(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="ccw.rs.html#8">Ccw</a> {
-        Ccw::ccw(<a class="self" href="#15">self</a>.p1, <a class="self" href="#15">self</a>.p2, <a href="#15">p</a>)
-    }
-    <span class="kw">pub fn </span>projection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="mod.rs.html#21">Point</a> {
-        <span class="kw">let </span>e = <a class="self" href="#18">self</a>.<a href="#12">dir</a>().<a href="../num/complex.rs.html#113">unit</a>();
-        <a class="self" href="#18">self</a>.p1 + <a href="#19">e</a> * (<a href="#18">p</a> - <a class="self" href="#18">self</a>.p1).<a href="../num/complex.rs.html#62">dot</a>(<a href="#19">e</a>)
-    }
-    <span class="kw">pub fn </span>reflection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="mod.rs.html#21">Point</a> {
-        <a href="#22">p</a> + (<a class="self" href="#22">self</a>.<a href="#18">projection</a>(<a href="#22">p</a>) - <a href="#22">p</a>) * <span class="number">2.0
-    </span>}
-    <span class="kw">pub fn </span>distance_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a> {
-        (<a href="#25">p</a> / <a class="self" href="#25">self</a>.<a href="#12">dir</a>().<a href="../num/complex.rs.html#113">unit</a>()).re
+    <span class="kw">pub fn </span>ccw(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; <a href="ccw.rs.html#22">Ccw</a> {
+        Ccw::ccw(<a class="self" href="#20">self</a>.p1, <a class="self" href="#20">self</a>.p2, <a href="#20">p</a>)
     }
     <span class="kw">pub fn </span>is_parallel(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#28">self</a>.<a href="#12">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a href="#28">other</a>.<a href="#12">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(<span class="number">0.</span>)
+        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#23">self</a>.<a href="#17">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a href="#23">other</a>.<a href="#17">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(T::zero())
     }
     <span class="kw">pub fn </span>is_orthogonal(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#31">self</a>.<a href="#12">dir</a>().<a href="../num/complex.rs.html#62">dot</a>(<a href="#31">other</a>.<a href="#12">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(<span class="number">0.</span>)
+        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#26">self</a>.<a href="#17">dir</a>().<a href="../num/complex.rs.html#62">dot</a>(<a href="#26">other</a>.<a href="#17">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(T::zero())
+    }
+}
+<span class="kw">impl</span>&lt;T&gt; Line&lt;T&gt;
+<span class="kw">where
+    </span>T: <a href="ccw.rs.html#7-8">Ccwable</a> + <a href="../num/float.rs.html#11-26">Float</a>,
+{
+    <span class="kw">pub fn </span>projection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; Complex&lt;T&gt; {
+        <span class="kw">let </span>e = <a class="self" href="#34">self</a>.<a href="#17">dir</a>().<a href="../num/complex.rs.html#116">unit</a>();
+        <a class="self" href="#34">self</a>.p1 + <a href="#35">e</a> * (<a href="#34">p</a> - <a class="self" href="#34">self</a>.p1).<a href="../num/complex.rs.html#62">dot</a>(<a href="#35">e</a>)
+    }
+    <span class="kw">pub fn </span>reflection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; Complex&lt;T&gt; {
+        <span class="kw">let </span>d = <a class="self" href="#38">self</a>.<a href="#34">projection</a>(<a href="#38">p</a>) - <a href="#38">p</a>;
+        <a href="#38">p</a> + <a href="#39">d</a> + <a href="#39">d</a>
+    }
+    <span class="kw">pub fn </span>distance_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; T {
+        (<a href="#42">p</a> / <a class="self" href="#42">self</a>.<a href="#17">dir</a>().<a href="../num/complex.rs.html#116">unit</a>()).re
     }
 }
 
 <span class="attr">#[derive(Clone, Debug, PartialEq)]
-</span><span class="kw">pub struct </span>LineSegment {
-    p1: <a href="mod.rs.html#21">Point</a>,
-    p2: <a href="mod.rs.html#21">Point</a>,
+</span><span class="kw">pub struct </span>LineSegment&lt;T&gt; {
+    p1: Complex&lt;T&gt;,
+    p2: Complex&lt;T&gt;,
 }
-<span class="kw">impl </span><a href="#37">LineSegment</a> {
-    <span class="kw">pub fn </span>new(p1: <a href="mod.rs.html#21">Point</a>, p2: <a href="mod.rs.html#21">Point</a>) -&gt; <span class="self">Self </span>{
-        <a href="#37">LineSegment</a> { <a href="#42">p1</a>, <a href="#42">p2</a> }
+<span class="kw">impl</span>&lt;T&gt; LineSegment&lt;T&gt; {
+    <span class="kw">pub fn </span>new(p1: Complex&lt;T&gt;, p2: Complex&lt;T&gt;) -&gt; <span class="self">Self </span>{
+        <a href="#48">LineSegment</a> { <a href="#53">p1</a>, <a href="#53">p2</a> }
     }
-    <span class="kw">pub fn </span>dir(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="mod.rs.html#21">Point</a> {
-        <a class="self" href="#45">self</a>.p2 - <a class="self" href="#45">self</a>.p1
+}
+<span class="kw">impl</span>&lt;T&gt; LineSegment&lt;T&gt;
+<span class="kw">where
+    </span>T: <a href="ccw.rs.html#7-8">Ccwable</a>,
+{
+    <span class="kw">pub fn </span>dir(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Complex&lt;T&gt; {
+        <a class="self" href="#61">self</a>.p2 - <a class="self" href="#61">self</a>.p1
     }
-    <span class="kw">pub fn </span>ccw(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="ccw.rs.html#8">Ccw</a> {
-        Ccw::ccw(<a class="self" href="#48">self</a>.p1, <a class="self" href="#48">self</a>.p2, <a href="#48">p</a>)
+    <span class="kw">pub fn </span>ccw(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; <a href="ccw.rs.html#22">Ccw</a> {
+        Ccw::ccw(<a class="self" href="#64">self</a>.p1, <a class="self" href="#64">self</a>.p2, <a href="#64">p</a>)
     }
-    <span class="kw">pub fn </span>projection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="mod.rs.html#21">Point</a> {
-        <span class="kw">let </span>e = <a class="self" href="#51">self</a>.<a href="#45">dir</a>().<a href="../num/complex.rs.html#113">unit</a>();
-        <a class="self" href="#51">self</a>.p1 + <a href="#52">e</a> * (<a href="#51">p</a> - <a class="self" href="#51">self</a>.p1).<a href="../num/complex.rs.html#62">dot</a>(<a href="#52">e</a>)
-    }
-    <span class="kw">pub fn </span>reflection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="mod.rs.html#21">Point</a> {
-        <a href="#55">p</a> + (<a class="self" href="#55">self</a>.<a href="#51">projection</a>(<a href="#55">p</a>) - <a href="#55">p</a>) * <span class="number">2.0
-    </span>}
     <span class="kw">pub fn </span>is_parallel(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#58">self</a>.<a href="#45">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a href="#58">other</a>.<a href="#45">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(<span class="number">0.</span>)
+        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#67">self</a>.<a href="#61">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a href="#67">other</a>.<a href="#61">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(T::zero())
     }
     <span class="kw">pub fn </span>is_orthogonal(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#61">self</a>.<a href="#45">dir</a>().<a href="../num/complex.rs.html#62">dot</a>(<a href="#61">other</a>.<a href="#45">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(<span class="number">0.</span>)
+        <a href="approx.rs.html#57">Approx</a>(<a class="self" href="#70">self</a>.<a href="#61">dir</a>().<a href="../num/complex.rs.html#62">dot</a>(<a href="#70">other</a>.<a href="#61">dir</a>())) == <a href="approx.rs.html#57">Approx</a>(T::zero())
     }
     <span class="kw">pub fn </span>intersect(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#64">self</a>.<a href="#48">ccw</a>(<a href="#64">other</a>.p1) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> * <a class="self" href="#64">self</a>.<a href="#48">ccw</a>(<a href="#64">other</a>.p2) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> &lt;= <span class="number">0
-            </span>&amp;&amp; <a href="#64">other</a>.<a href="#48">ccw</a>(<a class="self" href="#64">self</a>.p1) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> * <a href="#64">other</a>.<a href="#48">ccw</a>(<a class="self" href="#64">self</a>.p2) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> &lt;= <span class="number">0
+        <a class="self" href="#73">self</a>.<a href="#64">ccw</a>(<a href="#73">other</a>.p1) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> * <a class="self" href="#73">self</a>.<a href="#64">ccw</a>(<a href="#73">other</a>.p2) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> &lt;= <span class="number">0
+            </span>&amp;&amp; <a href="#73">other</a>.<a href="#64">ccw</a>(<a class="self" href="#73">self</a>.p1) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> * <a href="#73">other</a>.<a href="#64">ccw</a>(<a class="self" href="#73">self</a>.p2) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> &lt;= <span class="number">0
     </span>}
-    <span class="kw">pub fn </span>intersect_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#68">self</a>.<a href="#48">ccw</a>(<a href="#68">p</a>) == <a href="ccw.rs.html#14">Ccw::OnSegment</a>
+    <span class="kw">pub fn </span>intersect_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+        <a class="self" href="#77">self</a>.<a href="#64">ccw</a>(<a href="#77">p</a>) == <a href="ccw.rs.html#28">Ccw::OnSegment</a>
     }
-    <span class="kw">pub fn </span>cross_point(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="mod.rs.html#21">Point</a>&gt; {
+}
+<span class="kw">impl</span>&lt;T&gt; LineSegment&lt;T&gt;
+<span class="kw">where
+    </span>T: <a href="ccw.rs.html#7-8">Ccwable</a> + <a href="../num/float.rs.html#11-26">Float</a>,
+{
+    <span class="kw">pub fn </span>projection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; Complex&lt;T&gt; {
+        <span class="kw">let </span>e = <a class="self" href="#85">self</a>.<a href="#61">dir</a>().<a href="../num/complex.rs.html#116">unit</a>();
+        <a class="self" href="#85">self</a>.p1 + <a href="#86">e</a> * (<a href="#85">p</a> - <a class="self" href="#85">self</a>.p1).<a href="../num/complex.rs.html#62">dot</a>(<a href="#86">e</a>)
+    }
+    <span class="kw">pub fn </span>reflection(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; Complex&lt;T&gt; {
+        <span class="kw">let </span>d = <a class="self" href="#89">self</a>.<a href="#85">projection</a>(<a href="#89">p</a>) - <a href="#89">p</a>;
+        <a href="#89">p</a> + <a href="#90">d</a> + <a href="#90">d</a>
+    }
+    <span class="kw">pub fn </span>cross_point(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Complex&lt;T&gt;&gt; {
         <span class="kw">if </span><span class="self">self</span>.intersect(other) {
-            <span class="kw">let </span>a = <a class="self" href="#71">self</a>.<a href="#45">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a href="#71">other</a>.<a href="#45">dir</a>());
-            <span class="kw">let </span>b = <a class="self" href="#71">self</a>.<a href="#45">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a class="self" href="#71">self</a>.p2 - <a href="#71">other</a>.p1);
-            <span class="kw">if </span>Approx(a.abs()) == Approx(<span class="number">0.</span>) &amp;&amp; Approx(b.abs()) == Approx(<span class="number">0.</span>) {
-                <span class="prelude-val">Some</span>(<a href="#71">other</a>.p1)
+            <span class="kw">let </span>a = <a class="self" href="#93">self</a>.<a href="#61">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a href="#93">other</a>.<a href="#61">dir</a>());
+            <span class="kw">let </span>b = <a class="self" href="#93">self</a>.<a href="#61">dir</a>().<a href="../num/complex.rs.html#71">cross</a>(<a class="self" href="#93">self</a>.p2 - <a href="#93">other</a>.p1);
+            <span class="kw">if </span>Approx(a.abs()) == Approx(T::zero()) &amp;&amp; Approx(b.abs()) == Approx(T::zero()) {
+                <span class="prelude-val">Some</span>(<a href="#93">other</a>.p1)
             } <span class="kw">else </span>{
-                <span class="prelude-val">Some</span>(<a href="#71">other</a>.p1 + (<a href="#71">other</a>.<a href="#45">dir</a>() * <a href="#74">b</a> / <a href="#73">a</a>))
+                <span class="prelude-val">Some</span>(<a href="#93">other</a>.p1 + (<a href="#93">other</a>.<a href="#61">dir</a>() * <a href="#96">b</a> / <a href="#95">a</a>))
             }
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>}
     }
-    <span class="kw">pub fn </span>distance_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: <a href="mod.rs.html#21">Point</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a> {
-        <span class="kw">let </span>r = <a class="self" href="#84">self</a>.<a href="#51">projection</a>(<a href="#84">p</a>);
+    <span class="kw">pub fn </span>distance_point(<span class="kw-2">&amp;</span><span class="self">self</span>, p: Complex&lt;T&gt;) -&gt; T {
+        <span class="kw">let </span>r = <a class="self" href="#106">self</a>.<a href="#85">projection</a>(<a href="#106">p</a>);
         <span class="kw">if </span><span class="self">self</span>.intersect_point(r) {
-            (<a href="#85">r</a> - <a href="#84">p</a>).<a href="../num/complex.rs.html#110">abs</a>()
+            (<a href="#107">r</a> - <a href="#106">p</a>).<a href="../num/complex.rs.html#113">abs</a>()
         } <span class="kw">else </span>{
-            (<a class="self" href="#84">self</a>.p1 - <a href="#84">p</a>).<a href="../num/complex.rs.html#110">abs</a>().min((<a class="self" href="#84">self</a>.p2 - <a href="#84">p</a>).<a href="../num/complex.rs.html#110">abs</a>())
+            (<a class="self" href="#106">self</a>.p1 - <a href="#106">p</a>).<a href="../num/complex.rs.html#113">abs</a>().<a href="../num/float.rs.html#77">min</a>((<a class="self" href="#106">self</a>.p2 - <a href="#106">p</a>).<a href="../num/complex.rs.html#113">abs</a>())
         }
     }
-    <span class="kw">pub fn </span>distance(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a> {
+    <span class="kw">pub fn </span>distance(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; T {
         <span class="kw">if </span><span class="self">self</span>.intersect(other) {
-            <span class="number">0.
-        </span>} <span class="kw">else </span>{
-            <span class="kw">let </span>d1 = <a class="self" href="#92">self</a>.<a href="#84">distance_point</a>(<a href="#92">other</a>.p1);
-            <span class="kw">let </span>d2 = <a class="self" href="#92">self</a>.<a href="#84">distance_point</a>(<a href="#92">other</a>.p2);
-            <span class="kw">let </span>d3 = <a href="#92">other</a>.<a href="#84">distance_point</a>(<a class="self" href="#92">self</a>.p1);
-            <span class="kw">let </span>d4 = <a href="#92">other</a>.<a href="#84">distance_point</a>(<a class="self" href="#92">self</a>.p2);
-            <a href="#96">d1</a>.min(<a href="#97">d2</a>).min(<a href="#98">d3</a>).min(<a href="#99">d4</a>)
+            T::zero()
+        } <span class="kw">else </span>{
+            <span class="kw">let </span>d1 = <a class="self" href="#114">self</a>.<a href="#106">distance_point</a>(<a href="#114">other</a>.p1);
+            <span class="kw">let </span>d2 = <a class="self" href="#114">self</a>.<a href="#106">distance_point</a>(<a href="#114">other</a>.p2);
+            <span class="kw">let </span>d3 = <a href="#114">other</a>.<a href="#106">distance_point</a>(<a class="self" href="#114">self</a>.p1);
+            <span class="kw">let </span>d4 = <a href="#114">other</a>.<a href="#106">distance_point</a>(<a class="self" href="#114">self</a>.p2);
+            <a href="#118">d1</a>.<a href="../num/float.rs.html#77">min</a>(<a href="#119">d2</a>).<a href="../num/float.rs.html#77">min</a>(<a href="#120">d3</a>).<a href="../num/float.rs.html#77">min</a>(<a href="#121">d4</a>)
         }
     }
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0-nightly (5ce39f42b 2023-01-20)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-ab1d4ae2ec52020e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0-nightly (52372f9c7 2023-01-21)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
