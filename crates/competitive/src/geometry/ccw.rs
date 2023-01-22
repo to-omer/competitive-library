@@ -4,6 +4,20 @@ use std::{
     ops::{Add, Mul, Sub},
 };
 
+pub trait Ccwable:
+    ApproxOrd + Copy + Zero + Add<Output = Self> + Sub<Output = Self> + Mul<Output = Self>
+{
+}
+
+impl Ccwable for i8 {}
+impl Ccwable for i16 {}
+impl Ccwable for i32 {}
+impl Ccwable for i64 {}
+impl Ccwable for i128 {}
+impl Ccwable for isize {}
+impl Ccwable for f32 {}
+impl Ccwable for f64 {}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Ccw {
     /// a--b--c
@@ -20,7 +34,7 @@ pub enum Ccw {
 impl Ccw {
     pub fn ccw<T>(a: Complex<T>, b: Complex<T>, c: Complex<T>) -> Self
     where
-        T: ApproxOrd + Copy + Zero + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Ccwable,
     {
         let x = b - a;
         let y = c - a;
@@ -41,7 +55,7 @@ impl Ccw {
     }
     pub fn ccw_open<T>(a: Complex<T>, b: Complex<T>, c: Complex<T>) -> Self
     where
-        T: ApproxOrd + Copy + Zero + Add<Output = T> + Sub<Output = T> + Mul<Output = T>,
+        T: Ccwable,
     {
         let x = b - a;
         let y = c - a;

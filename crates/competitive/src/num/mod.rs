@@ -26,7 +26,10 @@ pub use self::zero_one::{One, Zero};
 mod barrett_reduction;
 #[cfg_attr(nightly, codesnip::entry)]
 mod bounded;
-#[cfg_attr(nightly, codesnip::entry("Complex", include("zero_one", "scanner")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Complex", include("zero_one", "scanner", "float"))
+)]
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(include("bounded")))]
 mod discrete_steps;

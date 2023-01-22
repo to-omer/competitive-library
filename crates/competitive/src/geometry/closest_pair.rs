@@ -1,11 +1,11 @@
-use super::{Point, TotalOrd};
+use super::{Complex, TotalOrd};
 
-pub fn closest_pair(a: Vec<Point>) -> f64 {
+pub fn closest_pair(a: Vec<Complex<f64>>) -> f64 {
     let mut a = a;
     a.sort_by_key(|&p| TotalOrd(p.re));
     closest_pair_inner(&mut a[..])
 }
-fn closest_pair_inner(a: &mut [Point]) -> f64 {
+fn closest_pair_inner(a: &mut [Complex<f64>]) -> f64 {
     use std::cmp::min;
     let n = a.len();
     if n <= 1 {
@@ -19,7 +19,7 @@ fn closest_pair_inner(a: &mut [Point]) -> f64 {
     )
     .0;
     a.sort_by_key(|&p| TotalOrd(p.im));
-    let mut b: Vec<Point> = vec![];
+    let mut b: Vec<Complex<f64>> = vec![];
     for a in a.iter() {
         if (a.re - x).abs() >= d {
             continue;

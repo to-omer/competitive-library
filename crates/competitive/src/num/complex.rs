@@ -1,4 +1,4 @@
-use super::{IterScan, One, Zero};
+use super::{Float, IterScan, One, Zero};
 use std::{
     cmp::Ordering,
     iter::{Product, Sum},
@@ -99,21 +99,24 @@ where
             .then_with(|| (self.re * other.im).cmp(&(self.im * other.re)).reverse())
     }
 }
-impl Complex<f64> {
-    pub fn polar(r: f64, theta: f64) -> Self {
+impl<T> Complex<T>
+where
+    T: Float,
+{
+    pub fn polar(r: T, theta: T) -> Self {
         Self::new(r * theta.cos(), r * theta.sin())
     }
-    pub fn primitive_nth_root_of_unity(n: f64) -> Self {
-        let theta = std::f64::consts::PI * 2. / n;
+    pub fn primitive_nth_root_of_unity(n: T) -> Self {
+        let theta = T::TAU / n;
         Self::new(theta.cos(), theta.sin())
     }
-    pub fn abs(self) -> f64 {
+    pub fn abs(self) -> T {
         self.re.hypot(self.im)
     }
     pub fn unit(self) -> Self {
         self / self.abs()
     }
-    pub fn angle(self) -> f64 {
+    pub fn angle(self) -> T {
         self.im.atan2(self.re)
     }
 }
