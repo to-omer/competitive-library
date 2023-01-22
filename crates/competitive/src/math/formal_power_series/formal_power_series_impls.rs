@@ -1,5 +1,7 @@
 use super::*;
 use std::{
+    cmp::Reverse,
+    collections::BinaryHeap,
     iter::repeat_with,
     iter::{once, FromIterator},
     marker::PhantomData,
@@ -420,19 +422,41 @@ where
     where
         I: IntoIterator<Item = Self>,
     {
-        let mut heap: std::collections::BinaryHeap<_> = iter
+        let mut heap: BinaryHeap<_> = iter
             .into_iter()
-            .map(|f| PartialIgnoredOrd(std::cmp::Reverse(f.length()), f))
+            .map(|f| PartialIgnoredOrd(Reverse(f.length()), f))
             .collect();
         while let Some(PartialIgnoredOrd(_, x)) = heap.pop() {
             if let Some(PartialIgnoredOrd(_, y)) = heap.pop() {
                 let z = (x * y).prefix(deg);
-                heap.push(PartialIgnoredOrd(std::cmp::Reverse(z.length()), z));
+                heap.push(PartialIgnoredOrd(Reverse(z.length()), z));
             } else {
                 return x;
             }
         }
         Self::one()
+    }
+    pub fn sum_all_rational<I>(iter: I, deg: usize) -> (Self, Self)
+    where
+        I: IntoIterator<Item = (Self, Self)>,
+    {
+        let mut heap: BinaryHeap<_> = iter
+            .into_iter()
+            .map(|(f, g)| PartialIgnoredOrd(Reverse(f.length().max(g.length())), (f, g)))
+            .collect();
+        while let Some(PartialIgnoredOrd(_, (xa, xb))) = heap.pop() {
+            if let Some(PartialIgnoredOrd(_, (ya, yb))) = heap.pop() {
+                let zb = (&xb * &yb).prefix(deg);
+                let za = (xa * yb + ya * xb).prefix(deg);
+                heap.push(PartialIgnoredOrd(
+                    Reverse(za.length().max(zb.length())),
+                    (za, zb),
+                ));
+            } else {
+                return (xa, xb);
+            }
+        }
+        (Self::zero(), Self::one())
     }
     pub fn kth_term_of_linearly_recurrence(self, a: Vec<T>, k: usize) -> T {
         if let Some(x) = a.get(k) {
@@ -446,6 +470,23 @@ where
             return x.clone();
         }
         Self::from_vec(berlekamp_massey(&a)).kth_term_of_linearly_recurrence(a, k)
+    }
+    /// sum_i a_i exp(b_i x)
+    pub fn linear_sum_of_exp<I, F>(iter: I, deg: usize, mut inv_fact: F) -> Self
+    where
+        I: IntoIterator<Item = (T, T)>,
+        F: FnMut(usize) -> T,
+    {
+        let (p, q) = Self::sum_all_rational(
+            iter.into_iter()
+                .map(|(a, b)| (Self::from_vec(vec![a]), Self::from_vec(vec![T::one(), -b]))),
+            deg,
+        );
+        let mut f = (p * q.inv(deg)).prefix(deg);
+        for i in 0..f.length() {
+            f[i] *= inv_fact(i);
+        }
+        f
     }
 }
 
