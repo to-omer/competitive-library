@@ -502,14 +502,14 @@ pub mod monoid_action_impls {
             Self::single(key, T::one())
         }
         fn act_key(&x: &Self::Key, a: &Self::Act) -> Self::Key {
-            if <Self::ActMonoid as Unital>::is_unit(&a) {
+            if <Self::ActMonoid as Unital>::is_unit(a) {
                 x
             } else {
                 x.max(a.lb).min(a.ub) + a.bias
             }
         }
         fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
-            Some(if <Self::ActMonoid as Unital>::is_unit(&a) {
+            Some(if <Self::ActMonoid as Unital>::is_unit(a) {
                 x.clone()
             } else if x.size.is_zero() {
                 Self::unit()
