@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["discrete_logarithm_mod","✅  AC  3ms"]]};
+window.SIDEBAR_ITEMS = {"fn":[["discrete_logarithm_mod","✅  AC  4ms"]]};
