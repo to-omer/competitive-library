@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["number_of_substrings",""],["suffixarray",""],["zalgorithm",""]]};
+window.SIDEBAR_ITEMS = {"mod":["number_of_substrings","suffixarray","zalgorithm"]};

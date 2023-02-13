@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["bipartitematching",""],["directedmst",""],["lca",""],["scc",""]]};
+window.SIDEBAR_ITEMS = {"mod":["bipartitematching","directedmst","lca","scc"]};

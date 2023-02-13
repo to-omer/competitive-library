@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":[["Bytes",""],["Chars",""],["Usize1",""]],"fn":[["read_all_unchecked",""]],"macro":[["iter_print","Print expressions with a separator."],["scan","`scan!(scanner, $($pat $(: ELEMENT)?),*)`"]],"struct":[["Scanner",""]],"trait":[["Read","The `Read` trait allows for reading bytes from a source."],["Write","A trait for objects which are byte-oriented sinks."]]};
+window.SIDEBAR_ITEMS = {"enum":["Bytes","Chars","Usize1"],"fn":["read_all_unchecked"],"macro":["iter_print","scan"],"struct":["Scanner"],"trait":["Read","Write"]};

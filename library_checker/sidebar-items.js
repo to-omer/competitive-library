@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["datastructure",""],["graph",""],["math",""],["sample",""],["string",""]]};
+window.SIDEBAR_ITEMS = {"mod":["datastructure","graph","math","sample","string"]};

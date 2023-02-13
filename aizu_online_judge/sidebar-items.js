@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["dpl","Discrete Optimization Problems"],["dsl","Data Sets and Queries"],["grl","Graph Algorithms"],["itp1","Introduction to Programming I"]]};
+window.SIDEBAR_ITEMS = {"mod":["dpl","dsl","grl","itp1"]};

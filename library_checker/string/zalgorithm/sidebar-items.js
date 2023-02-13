@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["zalgorithm","✅  AC  39ms"],["zalgorithm_rolling_hash","✅  AC  127ms"]]};
+window.SIDEBAR_ITEMS = {"fn":["zalgorithm","zalgorithm_rolling_hash"]};
