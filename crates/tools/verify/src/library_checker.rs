@@ -1,4 +1,4 @@
-use crate::{app_cache_directory, gen_case, BoxResult, ProblemNotFound, TestCase, VerifyStatus};
+use crate::{app_cache_directory, BoxResult, ProblemNotFound, TestCase, VerifyStatus};
 use serde::{Deserialize, Serialize};
 use std::{
     env::consts::OS,
@@ -8,12 +8,9 @@ use std::{
     path::{Path, PathBuf},
     process::Command,
 };
-use tokio::runtime;
 
 #[derive(Debug)]
 struct LibraryCheckerProblem {
-    category: String,
-    problemname: String,
     problemdir: PathBuf,
     info: LibraryCheckerProblemInfo,
 }
@@ -88,24 +85,16 @@ fn casename(name: &str, i: usize) -> Option<String> {
 fn find_problem(rootdir: &PathBuf, problem: &str) -> BoxResult<LibraryCheckerProblem> {
     for entry in read_dir(rootdir)?.flatten() {
         let mut path = entry.path();
-        if let Some(category) = path
-            .file_name()
-            .and_then(|s| s.to_str())
-            .map(|s| s.to_string())
-        {
-            path.push(problem);
-            path.push("info.toml");
-            if path.is_file() {
-                let data = read_to_string(&path)?;
-                let info: LibraryCheckerProblemInfo = toml::from_str(&data)?;
-                path.pop();
-                return Ok(LibraryCheckerProblem {
-                    category,
-                    problemname: problem.to_owned(),
-                    problemdir: path,
-                    info,
-                });
-            }
+        path.push(problem);
+        path.push("info.toml");
+        if path.is_file() {
+            let data = read_to_string(&path)?;
+            let info: LibraryCheckerProblemInfo = toml::from_str(&data)?;
+            path.pop();
+            return Ok(LibraryCheckerProblem {
+                problemdir: path,
+                info,
+            });
         }
     }
     Err(ProblemNotFound)?
@@ -147,47 +136,19 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         create_dir(&outdir)?;
     }
 
-    runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .unwrap()
-        .block_on(async {
-            let mut tasks = vec![];
-            for case in &problem.info.tests {
-                for i in 0..case.number {
-                    if let Some(name) = casename(&case.name, i) {
-                        let input = indir.join(&name).with_extension("in");
-                        let output = outdir.join(&name).with_extension("out");
-                        cases.push(TestCase {
-                            name: name.clone(),
-                            input: input.clone(),
-                            output: output.clone(),
-                        });
-                        if !is_testcases_already_generated {
-                            const BASE: &str =
-                                "https://hotman78.github.io/library-checker-testcases";
-                            let url = format!(
-                                "{}/{}/{}/in/{}.txt",
-                                BASE, problem.category, problem.problemname, name
-                            );
-                            tasks.push(tokio::spawn(async move {
-                                gen_case(url, input).await.ok();
-                            }));
-                            let url = format!(
-                                "{}/{}/{}/out/{}.txt",
-                                BASE, problem.category, problem.problemname, name
-                            );
-                            tasks.push(tokio::spawn(async move {
-                                gen_case(url, output).await.ok();
-                            }));
-                        }
-                    }
-                }
+    for case in &problem.info.tests {
+        for i in 0..case.number {
+            if let Some(name) = casename(&case.name, i) {
+                let input = indir.join(&name).with_extension("in");
+                let output = outdir.join(&name).with_extension("out");
+                cases.push(TestCase {
+                    name: name.clone(),
+                    input: input.clone(),
+                    output: output.clone(),
+                });
             }
-            for task in tasks {
-                task.await.ok();
-            }
-        });
+        }
+    }
 
     Command::new("python")
         .arg(rootdir.join("generate.py"))
