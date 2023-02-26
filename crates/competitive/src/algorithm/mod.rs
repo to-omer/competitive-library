@@ -20,7 +20,6 @@ pub use self::convex_hull_trick::ConvexHullTrick;
 pub use self::esper::{EsperEstimator, EsperSolver};
 #[codesnip::entry("ImpartialGame")]
 pub use self::impartial_game::{ImpartialGame, ImpartialGameAnalyzer, ImpartialGamer};
-pub use self::mo::MoSolver;
 pub use self::other::*;
 #[codesnip::entry("PartisanGame")]
 pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer};
@@ -61,7 +60,8 @@ mod convex_hull_trick;
 mod esper;
 #[cfg_attr(nightly, codesnip::entry("ImpartialGame"))]
 mod impartial_game;
-mod mo;
+#[cfg_attr(nightly, codesnip::entry)]
+mod mo_algorithm;
 mod other;
 #[cfg_attr(nightly, codesnip::entry("PartisanGame"))]
 mod partisan_game;
