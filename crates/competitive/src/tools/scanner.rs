@@ -134,6 +134,8 @@ where
     }
 }
 
+/// scan a value with Scanner
+///
 /// - `scan_value!(scanner, ELEMENT)`
 ///
 /// ELEMENT :=
@@ -168,6 +170,8 @@ macro_rules! scan_value {
     ($scanner:expr, $($t:tt)*)                                                            => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
 }
 
+/// scan and bind values with Scanner
+///
 /// - `scan!(scanner, $($pat $(: ELEMENT)?),*)`
 #[macro_export]
 macro_rules! scan {
@@ -236,6 +240,17 @@ impl MarkedIterScan for CharsWithBase {
                 .map(|c| (c as u8 - self.0 as u8) as usize)
                 .collect(),
         )
+    }
+}
+#[derive(Debug, Copy, Clone)]
+pub enum Byte1 {}
+impl IterScan for Byte1 {
+    type Output = u8;
+    #[inline]
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+        let bytes = iter.next()?.as_bytes();
+        assert_eq!(bytes.len(), 1);
+        Some(bytes[0])
     }
 }
 #[derive(Debug, Copy, Clone)]
