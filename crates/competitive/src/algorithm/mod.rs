@@ -73,6 +73,8 @@ mod sort;
 #[cfg_attr(nightly, codesnip::entry("SqrtDecomposition", include("algebra")))]
 mod sqrt_decomposition;
 #[cfg_attr(nightly, codesnip::entry)]
+mod syakutori;
+#[cfg_attr(nightly, codesnip::entry)]
 mod ternary_search;
 #[cfg_attr(nightly, codesnip::entry("XorBasis"))]
 mod xorbasis;
