@@ -7,7 +7,8 @@ use crate::tools::Xorshift;
 pub use self::knuth_morris_pratt::KnuthMorrisPratt;
 #[codesnip::entry("RollingHash")]
 pub use self::rolling_hash::{
-    Gf2_63x1, Gf2_63x2, Gf2_63x3, Mersenne61x1, Mersenne61x2, Mersenne61x3, RollingHasher,
+    Gf2_63x1, Gf2_63x2, Gf2_63x3, HashedRangeChained, Mersenne61x1, Mersenne61x2, Mersenne61x3,
+    RollingHasher,
 };
 #[codesnip::entry("SuffixArray")]
 pub use self::suffix_array::SuffixArray;

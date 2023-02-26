@@ -1,6 +1,7 @@
 use super::{Gf2_63, Invertible, Mersenne61, Ring, SemiRing, Xorshift};
 use std::{
     cmp::Ordering,
+    fmt::{self, Debug},
     marker::PhantomData,
     ops::{Bound, RangeBounds, RangeInclusive},
 };
@@ -40,14 +41,17 @@ where
             _marker: PhantomData,
         }
     }
-    pub fn length(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.hashed.len() - 1
+    }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
     }
     pub fn range<R>(&self, range: R) -> HashedRange<'_, Hasher>
     where
         R: RangeBounds<usize>,
     {
-        HashedRange::new(&self.hashed[to_range(range, self.length())])
+        HashedRange::new(&self.hashed[to_range(range, self.len())])
     }
     pub fn hash_range<R>(&self, range: R) -> Hashed<Hasher>
     where
@@ -98,7 +102,7 @@ where
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         let n = self.longest_common_prefix(other);
-        match (self.length() > n, other.length() > n) {
+        match (self.len() > n, other.len() > n) {
             (true, true) => {
                 let x = self.hash_range(n..=n);
                 let y = other.hash_range(n..=n);
@@ -116,7 +120,7 @@ where
 {
     fn cmp(&self, other: &Self) -> Ordering {
         let n = self.longest_common_prefix(other);
-        match (self.length() > n, other.length() > n) {
+        match (self.len() > n, other.len() > n) {
             (true, true) => {
                 let x = self.hash_range(n..=n);
                 let y = other.hash_range(n..=n);
@@ -137,14 +141,17 @@ where
             _marker: PhantomData,
         }
     }
-    pub fn length(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.hashed.len() - 1
+    }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
     }
     pub fn range<R>(&self, range: R) -> HashedRange<'a, Hasher>
     where
         R: RangeBounds<usize>,
     {
-        HashedRange::new(&self.hashed[to_range(range, self.length())])
+        HashedRange::new(&self.hashed[to_range(range, self.len())])
     }
     pub fn hash_range<R>(&self, range: R) -> Hashed<Hasher>
     where
@@ -156,7 +163,7 @@ where
         Hasher::hash_substr(self.hashed)
     }
     pub fn longest_common_prefix(&self, other: &Self) -> usize {
-        let n = self.length().min(other.length());
+        let n = self.len().min(other.len());
         let mut ok = 0usize;
         let mut err = n + 1;
         while ok + 1 < err {
@@ -168,6 +175,215 @@ where
             }
         }
         ok
+    }
+    pub fn chainable(self) -> HashedRangeChained<'a, Hasher> {
+        vec![self].into()
+    }
+}
+
+pub struct HashedRangeChained<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    chained: Vec<HashedRange<'a, Hasher>>,
+    _marker: PhantomData<fn() -> Hasher>,
+}
+
+impl<'a, Hasher: Debug> Debug for HashedRangeChained<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("HashedRangeChained")
+            .field("chained", &self.chained)
+            .finish()
+    }
+}
+
+impl<'a, Hasher: Default> Default for HashedRangeChained<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    fn default() -> Self {
+        Self {
+            chained: Default::default(),
+            _marker: Default::default(),
+        }
+    }
+}
+
+impl<'a, Hasher: Clone> Clone for HashedRangeChained<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    fn clone(&self) -> Self {
+        Self {
+            chained: self.chained.clone(),
+            _marker: self._marker,
+        }
+    }
+}
+
+impl<Hasher> PartialEq for HashedRangeChained<'_, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    fn eq(&self, other: &Self) -> bool {
+        let mut a = self.chained.iter().cloned();
+        let mut b = other.chained.iter().cloned();
+        macro_rules! next {
+            ($iter:expr) => {
+                loop {
+                    if let Some(x) = $iter.next() {
+                        if x.len() > 0 {
+                            break Some(x);
+                        }
+                    } else {
+                        break None;
+                    }
+                }
+            };
+        }
+        let mut x: Option<HashedRange<'_, Hasher>> = None;
+        let mut y: Option<HashedRange<'_, Hasher>> = None;
+        loop {
+            if x.map_or(true, |x| x.is_empty()) {
+                x = next!(a);
+            }
+            if y.map_or(true, |y| y.is_empty()) {
+                y = next!(b);
+            }
+            if let (Some(x), Some(y)) = (&mut x, &mut y) {
+                let k = x.len().min(y.len());
+                if x.range(..k) != y.range(..k) {
+                    return false;
+                }
+                *x = x.range(k..);
+                *y = y.range(k..);
+            } else {
+                break x.is_none() == y.is_none();
+            }
+        }
+    }
+}
+
+impl<Hasher> Eq for HashedRangeChained<'_, Hasher> where Hasher: RollingHasher + ?Sized {}
+
+impl<Hasher> PartialOrd for HashedRangeChained<'_, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: PartialOrd,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        let mut a = self.chained.iter().cloned();
+        let mut b = other.chained.iter().cloned();
+        macro_rules! next {
+            ($iter:expr) => {
+                loop {
+                    if let Some(x) = $iter.next() {
+                        if x.len() > 0 {
+                            break Some(x);
+                        }
+                    } else {
+                        break None;
+                    }
+                }
+            };
+        }
+        let mut x: Option<HashedRange<'_, Hasher>> = None;
+        let mut y: Option<HashedRange<'_, Hasher>> = None;
+        loop {
+            if x.map_or(true, |x| x.is_empty()) {
+                x = next!(a);
+            }
+            if y.map_or(true, |y| y.is_empty()) {
+                y = next!(b);
+            }
+            if let (Some(x), Some(y)) = (&mut x, &mut y) {
+                let k = x.longest_common_prefix(y);
+                if x.len() > k && y.len() > k {
+                    let x = x.hash_range(k..=k);
+                    let y = y.hash_range(k..=k);
+                    break x.hash.partial_cmp(&y.hash);
+                };
+                *x = x.range(k..);
+                *y = y.range(k..);
+            } else {
+                break x.is_some().partial_cmp(&y.is_some());
+            }
+        }
+    }
+}
+
+impl<Hasher> Ord for HashedRangeChained<'_, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: Ord,
+{
+    fn cmp(&self, other: &Self) -> Ordering {
+        let mut a = self.chained.iter().cloned();
+        let mut b = other.chained.iter().cloned();
+        macro_rules! next {
+            ($iter:expr) => {
+                loop {
+                    if let Some(x) = $iter.next() {
+                        if x.len() > 0 {
+                            break Some(x);
+                        }
+                    } else {
+                        break None;
+                    }
+                }
+            };
+        }
+        let mut x: Option<HashedRange<'_, Hasher>> = None;
+        let mut y: Option<HashedRange<'_, Hasher>> = None;
+        loop {
+            if x.map_or(true, |x| x.is_empty()) {
+                x = next!(a);
+            }
+            if y.map_or(true, |y| y.is_empty()) {
+                y = next!(b);
+            }
+            if let (Some(x), Some(y)) = (&mut x, &mut y) {
+                let k = x.longest_common_prefix(y);
+                if x.len() > k && y.len() > k {
+                    let x = x.hash_range(k..=k);
+                    let y = y.hash_range(k..=k);
+                    break x.hash.cmp(&y.hash);
+                };
+                *x = x.range(k..);
+                *y = y.range(k..);
+            } else {
+                break x.is_some().cmp(&y.is_some());
+            }
+        }
+    }
+}
+
+impl<'a, Hasher> From<Vec<HashedRange<'a, Hasher>>> for HashedRangeChained<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    fn from(hashed: Vec<HashedRange<'a, Hasher>>) -> Self {
+        Self {
+            chained: hashed,
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<'a, Hasher> HashedRangeChained<'a, Hasher>
+where
+    Hasher: RollingHasher + ?Sized,
+{
+    pub fn chain(mut self, x: HashedRange<'a, Hasher>) -> Self {
+        self.chained.push(x);
+        self
+    }
+    pub fn push(&mut self, x: HashedRange<'a, Hasher>) {
+        self.chained.push(x);
     }
 }
 
