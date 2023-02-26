@@ -1,6 +1,8 @@
 //! string algorithems
 
 use crate::algebra::{Gf2_63, Invertible, Mersenne61, Ring, SemiRing};
+use crate::math::{Convolve, ConvolveSteps};
+use crate::num::{montgomery, Zero};
 use crate::tools::Xorshift;
 
 #[codesnip::entry("KnuthMorrisPratt")]
@@ -12,6 +14,8 @@ pub use self::rolling_hash::{
 };
 #[codesnip::entry("SuffixArray")]
 pub use self::suffix_array::SuffixArray;
+#[codesnip::entry("wildcard_pattern_matching")]
+pub use self::wildcard_pattern_matching::wildcard_pattern_matching;
 #[codesnip::entry("ZAlgorithm")]
 pub use self::z_algorithm::Zarray;
 
@@ -27,5 +31,7 @@ mod knuth_morris_pratt;
 pub mod rolling_hash;
 #[cfg_attr(nightly, codesnip::entry("SuffixArray"))]
 mod suffix_array;
+#[cfg_attr(nightly, codesnip::entry(include("NumberTheoreticTransform")))]
+mod wildcard_pattern_matching;
 #[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]
 mod z_algorithm;
