@@ -91,45 +91,95 @@ where
         assert_eq!(self.cache.len(), n);
     }
 }
+macro_rules! impl_ntt {
+    (@ntt $self:ident $a:ident) => {
+        let n = $a.len();
+        $self.ensure(n / 2);
+        let mut v = n / 2;
+        while v > 0 {
+            for (a, wj) in $a.chunks_exact_mut(v << 1).zip(&$self.cache) {
+                let (l, r) = a.split_at_mut(v);
+                for (x, y) in l.iter_mut().zip(r) {
+                    let ajv = wj * *y;
+                    *y = *x - ajv;
+                    *x += ajv;
+                }
+            }
+            v >>= 1;
+        }
+    };
+    (@intt $self:ident $a:ident) => {
+        let n = $a.len();
+        $self.ensure(n / 2);
+        let mut v = 1;
+        while v < n {
+            for (a, wj) in $a.chunks_exact_mut(v << 1).zip(&$self.icache) {
+                let (l, r) = a.split_at_mut(v);
+                for (x, y) in l.iter_mut().zip(r) {
+                    let ajv = *x - *y;
+                    *x += *y;
+                    *y = wj * ajv;
+                }
+            }
+            v <<= 1;
+        }
+    };
+}
 impl<M> NttCache<M>
 where
     M: NttModulus,
 {
     fn ntt(a: &mut [MInt<M>]) {
-        M::modify(|cache| {
-            let n = a.len();
-            cache.ensure(n / 2);
-            let mut v = n / 2;
-            while v > 0 {
-                for (a, wj) in a.chunks_exact_mut(v << 1).zip(&cache.cache) {
-                    let (l, r) = a.split_at_mut(v);
-                    for (x, y) in l.iter_mut().zip(r) {
-                        let ajv = wj * *y;
-                        *y = *x - ajv;
-                        *x += ajv;
-                    }
-                }
-                v >>= 1;
-            }
-        });
+        // if is_x86_feature_detected!("avx512f")
+        //     && is_x86_feature_detected!("avx512dq")
+        //     && is_x86_feature_detected!("avx512cd")
+        //     && is_x86_feature_detected!("avx512bw")
+        //     && is_x86_feature_detected!("avx512vl")
+        // {
+        //     M::modify(|cache| unsafe { cache.ntt_inner_avx512(a) });
+        // } else
+        if is_x86_feature_detected!("avx2") {
+            M::modify(|cache| unsafe { cache.ntt_inner_avx2(a) });
+        } else {
+            M::modify(|cache| cache.ntt_inner(a));
+        }
+    }
+    // #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
+    // unsafe fn ntt_inner_avx512(&mut self, a: &mut [MInt<M>]) {
+    //     impl_ntt!(@ntt self a);
+    // }
+    #[target_feature(enable = "avx2")]
+    unsafe fn ntt_inner_avx2(&mut self, a: &mut [MInt<M>]) {
+        impl_ntt!(@ntt self a);
+    }
+    fn ntt_inner(&mut self, a: &mut [MInt<M>]) {
+        impl_ntt!(@ntt self a);
     }
     fn intt(a: &mut [MInt<M>]) {
-        M::modify(|cache| {
-            let n = a.len();
-            cache.ensure(n / 2);
-            let mut v = 1;
-            while v < n {
-                for (a, wj) in a.chunks_exact_mut(v << 1).zip(&cache.icache) {
-                    let (l, r) = a.split_at_mut(v);
-                    for (x, y) in l.iter_mut().zip(r) {
-                        let ajv = *x - *y;
-                        *x += *y;
-                        *y = wj * ajv;
-                    }
-                }
-                v <<= 1;
-            }
-        });
+        // if is_x86_feature_detected!("avx512f")
+        //     && is_x86_feature_detected!("avx512dq")
+        //     && is_x86_feature_detected!("avx512cd")
+        //     && is_x86_feature_detected!("avx512bw")
+        //     && is_x86_feature_detected!("avx512vl")
+        // {
+        //     M::modify(|cache| unsafe { cache.intt_inner_avx512(a) });
+        // } else
+        if is_x86_feature_detected!("avx2") {
+            M::modify(|cache| unsafe { cache.intt_inner_avx2(a) });
+        } else {
+            M::modify(|cache| cache.intt_inner(a));
+        }
+    }
+    // #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
+    // unsafe fn intt_inner_avx512(&mut self, a: &mut [MInt<M>]) {
+    //     impl_ntt!(@intt self a);
+    // }
+    #[target_feature(enable = "avx2")]
+    unsafe fn intt_inner_avx2(&mut self, a: &mut [MInt<M>]) {
+        impl_ntt!(@intt self a);
+    }
+    fn intt_inner(&mut self, a: &mut [MInt<M>]) {
+        impl_ntt!(@intt self a);
     }
 }
 impl<M> ConvolveSteps for Convolve<M>
