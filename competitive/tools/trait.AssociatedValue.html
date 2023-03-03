@@ -118,77 +118,87 @@
     });
 }</code></pre></div>
 </div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.modify" class="method"><a class="srclink rightside" href="../../src/competitive/tools/associated_value.rs.html#26-31">source</a><h4 class="code-header">fn <a href="#method.modify" class="fn">modify</a>&lt;F, R&gt;(f: F) -&gt; R<span class="where fmt-newline">where
-    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnOnce.html" title="trait core::ops::function::FnOnce">FnOnce</a>(&amp;mut Self::<a class="associatedtype" href="trait.AssociatedValue.html#associatedtype.T" title="type competitive::tools::AssociatedValue::T">T</a>) -&gt; R,</span></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example " data-locs="[[[1,16],&quot;../../src/competitive/math/number_theoretic_transform.rs.html#99-114&quot;,&quot;lines 99-114&quot;],[[19,34],&quot;../../src/competitive/math/number_theoretic_transform.rs.html#117-132&quot;,&quot;lines 117-132&quot;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../src/competitive/math/number_theoretic_transform.rs.html#99-114">lines 99-114</a>)</div><div class="code-wrapper"><button class="prev">&pr;</button> <button class="next">&sc;</button><div class="example-wrap"><pre class="src-line-numbers"><span>98</span>
-<span>99</span>
-<span>100</span>
-<span>101</span>
-<span>102</span>
-<span>103</span>
-<span>104</span>
-<span>105</span>
-<span>106</span>
-<span>107</span>
-<span>108</span>
-<span>109</span>
-<span>110</span>
-<span>111</span>
-<span>112</span>
-<span>113</span>
-<span>114</span>
-<span>115</span>
-<span>116</span>
-<span>117</span>
-<span>118</span>
-<span>119</span>
-<span>120</span>
-<span>121</span>
-<span>122</span>
-<span>123</span>
-<span>124</span>
-<span>125</span>
-<span>126</span>
-<span>127</span>
-<span>128</span>
-<span>129</span>
-<span>130</span>
-<span>131</span>
-<span>132</span>
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnOnce.html" title="trait core::ops::function::FnOnce">FnOnce</a>(&amp;mut Self::<a class="associatedtype" href="trait.AssociatedValue.html#associatedtype.T" title="type competitive::tools::AssociatedValue::T">T</a>) -&gt; R,</span></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example " data-locs="[[[10,10],&quot;../../src/competitive/math/number_theoretic_transform.rs.html#142&quot;,&quot;line 142&quot;],[[12,12],&quot;../../src/competitive/math/number_theoretic_transform.rs.html#144&quot;,&quot;line 144&quot;],[[36,36],&quot;../../src/competitive/math/number_theoretic_transform.rs.html#168&quot;,&quot;line 168&quot;],[[38,38],&quot;../../src/competitive/math/number_theoretic_transform.rs.html#170&quot;,&quot;line 170&quot;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../src/competitive/math/number_theoretic_transform.rs.html#142">line 142</a>)</div><div class="code-wrapper"><button class="prev">&pr;</button> <button class="next">&sc;</button><div class="example-wrap"><pre class="src-line-numbers"><span>132</span>
 <span>133</span>
+<span>134</span>
+<span>135</span>
+<span>136</span>
+<span>137</span>
+<span>138</span>
+<span>139</span>
+<span>140</span>
+<span>141</span>
+<span>142</span>
+<span>143</span>
+<span>144</span>
+<span>145</span>
+<span>146</span>
+<span>147</span>
+<span>148</span>
+<span>149</span>
+<span>150</span>
+<span>151</span>
+<span>152</span>
+<span>153</span>
+<span>154</span>
+<span>155</span>
+<span>156</span>
+<span>157</span>
+<span>158</span>
+<span>159</span>
+<span>160</span>
+<span>161</span>
+<span>162</span>
+<span>163</span>
+<span>164</span>
+<span>165</span>
+<span>166</span>
+<span>167</span>
+<span>168</span>
+<span>169</span>
+<span>170</span>
+<span>171</span>
+<span>172</span>
 </pre><pre class="rust"><code><button class="expand">&varr;</button>    <span class="kw">fn </span>ntt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <span class="highlight focus">M::modify</span>(|cache| {
-            <span class="kw">let </span>n = a.len();
-            cache.ensure(n / <span class="number">2</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>v = n / <span class="number">2</span>;
-            <span class="kw">while </span>v &gt; <span class="number">0 </span>{
-                <span class="kw">for </span>(a, wj) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span>cache.cache) {
-                    <span class="kw">let </span>(l, r) = a.split_at_mut(v);
-                    <span class="kw">for </span>(x, y) <span class="kw">in </span>l.iter_mut().zip(r) {
-                        <span class="kw">let </span>ajv = wj * <span class="kw-2">*</span>y;
-                        <span class="kw-2">*</span>y = <span class="kw-2">*</span>x - ajv;
-                        <span class="kw-2">*</span>x += ajv;
-                    }
-                }
-                v &gt;&gt;= <span class="number">1</span>;
-            }
-        });
+        <span class="comment">// if is_x86_feature_detected!(&quot;avx512f&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512dq&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512cd&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512bw&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512vl&quot;)
+        // {
+        //     M::modify(|cache| unsafe { cache.ntt_inner_avx512(a) });
+        // } else
+        </span><span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">&quot;avx2&quot;</span>) {
+            <span class="highlight focus">M::modify</span>(|cache| <span class="kw">unsafe </span>{ cache.ntt_inner_avx2(a) });
+        } <span class="kw">else </span>{
+            <span class="highlight">M::modify</span>(|cache| cache.ntt_inner(a));
+        }
+    }
+    <span class="comment">// #[target_feature(enable = &quot;avx512f,avx512dq,avx512cd,avx512bw,avx512vl&quot;)]
+    // unsafe fn ntt_inner_avx512(&amp;mut self, a: &amp;mut [MInt&lt;M&gt;]) {
+    //     impl_ntt!(@ntt self a);
+    // }
+    </span><span class="attr">#[target_feature(enable = <span class="string">&quot;avx2&quot;</span>)]
+    </span><span class="kw">unsafe fn </span>ntt_inner_avx2(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
+        <span class="macro">impl_ntt!</span>(@ntt <span class="self">self </span>a);
+    }
+    <span class="kw">fn </span>ntt_inner(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
+        <span class="macro">impl_ntt!</span>(@ntt <span class="self">self </span>a);
     }
     <span class="kw">fn </span>intt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <span class="highlight">M::modify</span>(|cache| {
-            <span class="kw">let </span>n = a.len();
-            cache.ensure(n / <span class="number">2</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
-            <span class="kw">while </span>v &lt; n {
-                <span class="kw">for </span>(a, wj) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span>cache.icache) {
-                    <span class="kw">let </span>(l, r) = a.split_at_mut(v);
-                    <span class="kw">for </span>(x, y) <span class="kw">in </span>l.iter_mut().zip(r) {
-                        <span class="kw">let </span>ajv = <span class="kw-2">*</span>x - <span class="kw-2">*</span>y;
-                        <span class="kw-2">*</span>x += <span class="kw-2">*</span>y;
-                        <span class="kw-2">*</span>y = wj * ajv;
-                    }
-                }
-                v &lt;&lt;= <span class="number">1</span>;
-            }
-        });
+        <span class="comment">// if is_x86_feature_detected!(&quot;avx512f&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512dq&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512cd&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512bw&quot;)
+        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512vl&quot;)
+        // {
+        //     M::modify(|cache| unsafe { cache.intt_inner_avx512(a) });
+        // } else
+        </span><span class="kw">if </span><span class="macro">is_x86_feature_detected!</span>(<span class="string">&quot;avx2&quot;</span>) {
+            <span class="highlight">M::modify</span>(|cache| <span class="kw">unsafe </span>{ cache.intt_inner_avx2(a) });
+        } <span class="kw">else </span>{
+            <span class="highlight">M::modify</span>(|cache| cache.intt_inner(a));
+        }
     }</code></pre></div>
 </div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example " data-locs="[[[2,25],&quot;../../src/competitive/math/fast_fourier_transform.rs.html#9-32&quot;,&quot;lines 9-32&quot;]]"><div class="scraped-example-title">crates/competitive/src/math/fast_fourier_transform.rs (<a href="../../src/competitive/math/fast_fourier_transform.rs.html#9-32">lines 9-32</a>)</div><div class="code-wrapper"><div class="example-wrap"><pre class="src-line-numbers"><span>7</span>
 <span>8</span>
@@ -244,4 +254,4 @@
             <span class="macro">assert_eq!</span>(cache.len(), n);
         });
     }</code></pre></div>
-</div></div></div></details></div></details></div><h2 id="implementors" class="small-section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo998244353" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo998244353" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo998244353.html" title="enum competitive::num::montgomery::Modulo998244353">Modulo998244353</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-1" class="associatedtype trait-impl"><a href="#associatedtype.T-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo998244353.html" title="enum competitive::num::montgomery::Modulo998244353">Modulo998244353</a>&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo1811939329" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo1811939329" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo1811939329.html" title="enum competitive::num::montgomery::Modulo1811939329">Modulo1811939329</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-2" class="associatedtype trait-impl"><a href="#associatedtype.T-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo1811939329.html" title="enum competitive::num::montgomery::Modulo1811939329">Modulo1811939329</a>&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo2013265921" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo2013265921" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo2013265921.html" title="enum competitive::num::montgomery::Modulo2013265921">Modulo2013265921</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-3" class="associatedtype trait-impl"><a href="#associatedtype.T-3" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo2013265921.html" title="enum competitive::num::montgomery::Modulo2013265921">Modulo2013265921</a>&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo2113929217" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo2113929217" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo2113929217.html" title="enum competitive::num::montgomery::Modulo2113929217">Modulo2113929217</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-4" class="associatedtype trait-impl"><a href="#associatedtype.T-4" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo2113929217.html" title="enum competitive::num::montgomery::Modulo2113929217">Modulo2113929217</a>&gt;</h4></section></div></details></div><script src="../../implementors/competitive/tools/associated_value/trait.AssociatedValue.js" async></script></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (7281249a1 2023-02-27)" data-search-js="search-d5a6cd8418084717.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</div></div></div></details></div></details></div><h2 id="implementors" class="small-section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo998244353" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo998244353" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo998244353.html" title="enum competitive::num::montgomery::Modulo998244353">Modulo998244353</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-1" class="associatedtype trait-impl"><a href="#associatedtype.T-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo998244353.html" title="enum competitive::num::montgomery::Modulo998244353">Modulo998244353</a>&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo1811939329" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo1811939329" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo1811939329.html" title="enum competitive::num::montgomery::Modulo1811939329">Modulo1811939329</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-2" class="associatedtype trait-impl"><a href="#associatedtype.T-2" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo1811939329.html" title="enum competitive::num::montgomery::Modulo1811939329">Modulo1811939329</a>&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo2013265921" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo2013265921" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo2013265921.html" title="enum competitive::num::montgomery::Modulo2013265921">Modulo2013265921</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-3" class="associatedtype trait-impl"><a href="#associatedtype.T-3" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo2013265921.html" title="enum competitive::num::montgomery::Modulo2013265921">Modulo2013265921</a>&gt;</h4></section></div></details><details class="toggle implementors-toggle"><summary><section id="impl-AssociatedValue-for-Modulo2113929217" class="impl"><a class="srclink rightside" href="../../src/competitive/math/number_theoretic_transform.rs.html#28-33">source</a><a href="#impl-AssociatedValue-for-Modulo2113929217" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.AssociatedValue.html" title="trait competitive::tools::AssociatedValue">AssociatedValue</a> for <a class="enum" href="../num/montgomery/enum.Modulo2113929217.html" title="enum competitive::num::montgomery::Modulo2113929217">Modulo2113929217</a></h3></section></summary><div class="impl-items"><section id="associatedtype.T-4" class="associatedtype trait-impl"><a href="#associatedtype.T-4" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.T" class="associatedtype">T</a> = NttCache&lt;<a class="enum" href="../num/montgomery/enum.Modulo2113929217.html" title="enum competitive::num::montgomery::Modulo2113929217">Modulo2113929217</a>&gt;</h4></section></div></details></div><script src="../../implementors/competitive/tools/associated_value/trait.AssociatedValue.js" async></script></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0-nightly (13471d3b2 2023-03-02)" data-search-js="search-2cde8914278f97ed.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
