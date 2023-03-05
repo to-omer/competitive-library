@@ -92,7 +92,7 @@ where
     }
 }
 macro_rules! impl_ntt {
-    (@ntt $self:ident $a:ident) => {
+    (@ntt2 $self:ident $a:ident) => {
         let n = $a.len();
         $self.ensure(n / 2);
         let mut v = n / 2;
@@ -108,7 +108,52 @@ macro_rules! impl_ntt {
             v >>= 1;
         }
     };
-    (@intt $self:ident $a:ident) => {
+    // (@ntt4 $self:ident $a:ident) => {
+    //     let n = $a.len();
+    //     $self.ensure(2.max(n / 2));
+    //     let imag = $self.cache[1];
+    //     let mut v = n / 2;
+    //     while v > 1 {
+    //         for ((a, &w2), &w1) in $a
+    //             .chunks_exact_mut(v << 1)
+    //             .zip(&$self.cache)
+    //             .zip($self.cache.iter().step_by(2))
+    //         {
+    //             let (l, r) = a.split_at_mut(v);
+    //             let (ll, lr) = l.split_at_mut(v >> 1);
+    //             let (rl, rr) = r.split_at_mut(v >> 1);
+    //             let w3 = w1 * w2;
+    //             for (((x0, x1), x2), x3) in ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+    //                 let a0 = *x0;
+    //                 let a1 = *x1 * w1;
+    //                 let a2 = *x2 * w2;
+    //                 let a3 = *x3 * w3;
+    //                 let a0pa2 = a0 + a2;
+    //                 let a0na2 = a0 - a2;
+    //                 let a1pa3 = a1 + a3;
+    //                 let a1na3imag = (a1 - a3) * imag;
+    //                 *x0 = a0pa2 + a1pa3;
+    //                 *x1 = a0pa2 - a1pa3;
+    //                 *x2 = a0na2 + a1na3imag;
+    //                 *x3 = a0na2 - a1na3imag;
+    //             }
+    //         }
+    //         v >>= 2;
+    //     }
+    //     if v == 1 {
+    //         for (a, wj) in $a.chunks_exact_mut(2).zip(&$self.cache) {
+    //             unsafe {
+    //                 let (l, r) = a.split_at_mut(v);
+    //                 let x = l.get_unchecked_mut(0);
+    //                 let y = r.get_unchecked_mut(0);
+    //                 let ajv = wj * *y;
+    //                 *y = *x - ajv;
+    //                 *x += ajv;
+    //             }
+    //         }
+    //     }
+    // };
+    (@intt2 $self:ident $a:ident) => {
         let n = $a.len();
         $self.ensure(n / 2);
         let mut v = 1;
@@ -124,6 +169,52 @@ macro_rules! impl_ntt {
             v <<= 1;
         }
     };
+    //
+    // (@intt4 $self:ident $a:ident) => {
+    //     let n = $a.len();
+    //     $self.ensure(n / 2);
+    //     let iimag = $self.icache[1];
+    //     let mut v = 1;
+    //     if n.trailing_zeros() & 1 == 1 {
+    //         for (a, wj) in $a.chunks_exact_mut(2).zip(&$self.icache) {
+    //             let (l, r) = a.split_at_mut(1);
+    //             let x = l.get_unchecked_mut(0);
+    //             let y = r.get_unchecked_mut(0);
+    //             let ajv = *x - *y;
+    //             *x += *y;
+    //             *y = wj * ajv;
+    //         }
+    //         v <<= 1;
+    //     }
+    //     while v < n {
+    //         for ((a, &w2), &w1) in $a
+    //             .chunks_exact_mut(v << 2)
+    //             .zip(&$self.icache)
+    //             .zip($self.icache.iter().step_by(2))
+    //         {
+    //             let (l, r) = a.split_at_mut(v << 1);
+    //             let (ll, lr) = l.split_at_mut(v);
+    //             let (rl, rr) = r.split_at_mut(v);
+    //             let w3 = w1 * w2;
+    //             for (((x0, x1), x2), x3) in ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+    //                 let a0 = *x0;
+    //                 let a1 = *x1;
+    //                 let a2 = *x2;
+    //                 let a3 = *x3;
+    //                 let a0pa1 = a0 + a1;
+    //                 let a0na1 = a0 - a1;
+    //                 let a2pa3 = a2 + a3;
+    //                 let a2na3iimag = (a2 - a3) * iimag;
+    //                 *x0 = a0pa1 + a2pa3;
+    //                 *x1 = (a0na1 + a2na3iimag) * w1;
+    //                 *x2 = (a0pa1 - a2pa3) * w2;
+    //                 *x3 = (a0na1 - a2na3iimag) * w3;
+    //             }
+    //         }
+    //         v <<= 2;
+    //     }
+    // };
+    () => {};
 }
 impl<M> NttCache<M>
 where
@@ -146,14 +237,14 @@ where
     }
     // #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     // unsafe fn ntt_inner_avx512(&mut self, a: &mut [MInt<M>]) {
-    //     impl_ntt!(@ntt self a);
+    //     impl_ntt!(@ntt2 self a);
     // }
     #[target_feature(enable = "avx2")]
     unsafe fn ntt_inner_avx2(&mut self, a: &mut [MInt<M>]) {
-        impl_ntt!(@ntt self a);
+        impl_ntt!(@ntt2 self a);
     }
     fn ntt_inner(&mut self, a: &mut [MInt<M>]) {
-        impl_ntt!(@ntt self a);
+        impl_ntt!(@ntt2 self a);
     }
     fn intt(a: &mut [MInt<M>]) {
         // if is_x86_feature_detected!("avx512f")
@@ -172,14 +263,14 @@ where
     }
     // #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
     // unsafe fn intt_inner_avx512(&mut self, a: &mut [MInt<M>]) {
-    //     impl_ntt!(@intt self a);
+    //     impl_ntt!(@intt2 self a);
     // }
     #[target_feature(enable = "avx2")]
     unsafe fn intt_inner_avx2(&mut self, a: &mut [MInt<M>]) {
-        impl_ntt!(@intt self a);
+        impl_ntt!(@intt2 self a);
     }
     fn intt_inner(&mut self, a: &mut [MInt<M>]) {
-        impl_ntt!(@intt self a);
+        impl_ntt!(@intt2 self a);
     }
 }
 impl<M> ConvolveSteps for Convolve<M>
