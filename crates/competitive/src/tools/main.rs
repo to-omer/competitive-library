@@ -5,10 +5,12 @@
 use crate::tools::{read_stdin_all_unchecked, Scanner};
 
 #[cfg_attr(any(), rust_minify::skip)]
-pub fn main() {
+pub fn solve() {
     crate::prepare!();
     sc!(_n);
 }
+
+crate::main!();
 
 #[allow(unused_imports)]
 use std::{
@@ -73,5 +75,33 @@ mod main_macros {
         };
         () => { $crate::prepare!(@output ($)); $crate::prepare!(@normal ($)) };
         (?) => { $crate::prepare!(@output ($)); $crate::prepare!(@interactive ($)) };
+    }
+    #[macro_export]
+    macro_rules! main {
+        () => {
+            fn main() {
+                solve();
+            }
+        };
+        (avx2) => {
+            fn main() {
+                #[target_feature(enable = "avx2")]
+                unsafe fn solve_avx2() {
+                    solve();
+                }
+                unsafe { solve_avx2() }
+            }
+        };
+        (large_stack) => {
+            fn main() {
+                const STACK_SIZE: usize = 512 * 1024 * 1024;
+                ::std::thread::Builder::new()
+                    .stack_size(STACK_SIZE)
+                    .spawn(solve)
+                    .unwrap()
+                    .join()
+                    .unwrap();
+            }
+        };
     }
 }

@@ -273,6 +273,30 @@ where
         impl_ntt!(@intt2 self a);
     }
 }
+fn convolve_naive<M>(a: &[MInt<M>], b: &[MInt<M>]) -> Vec<MInt<M>>
+where
+    M: MIntBase,
+{
+    if a.is_empty() && b.is_empty() {
+        return Vec::new();
+    }
+    let len = a.len() + b.len() - 1;
+    let mut c = vec![MInt::<M>::zero(); len];
+    if a.len() < b.len() {
+        for (i, &b) in b.iter().enumerate() {
+            for (a, c) in a.iter().zip(&mut c[i..]) {
+                *c += *a * b;
+            }
+        }
+    } else {
+        for (i, &a) in a.iter().enumerate() {
+            for (b, c) in b.iter().zip(&mut c[i..]) {
+                *c += *b * a;
+            }
+        }
+    }
+    c
+}
 impl<M> ConvolveSteps for Convolve<M>
 where
     M: NttModulus,
@@ -301,6 +325,41 @@ where
         for (f, g) in f.iter_mut().zip(g.iter()) {
             *f *= *g;
         }
+    }
+    fn convolve(mut a: Self::T, mut b: Self::T) -> Self::T {
+        if Self::length(&a).min(Self::length(&b)) <= 60 {
+            return convolve_naive(&a, &b);
+        }
+        let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
+        let size = len.max(2).next_power_of_two();
+        if len <= size / 2 + 2 {
+            let xa = a.pop().unwrap();
+            let xb = b.pop().unwrap();
+            let mut c = vec![MInt::<M>::zero(); len];
+            *c.last_mut().unwrap() = xa * xb;
+            for (a, c) in a.iter().zip(&mut c[b.len()..]) {
+                *c += *a * xb;
+            }
+            for (b, c) in b.iter().zip(&mut c[a.len()..]) {
+                *c += *b * xa;
+            }
+            let d = Self::convolve(a, b);
+            for (d, c) in d.into_iter().zip(&mut c) {
+                *c += d;
+            }
+            return c;
+        }
+        let same = a == b;
+        let mut a = Self::transform(a, len);
+        if same {
+            for a in a.iter_mut() {
+                *a *= *a;
+            }
+        } else {
+            let b = Self::transform(b, len);
+            Self::multiply(&mut a, &b);
+        }
+        Self::inverse_transform(a, len)
     }
 }
 type MVec<M> = Vec<MInt<M>>;
@@ -368,6 +427,16 @@ where
         for (f, g) in f.2.iter_mut().zip(g.2.iter()) {
             *f *= *g;
         }
+    }
+    fn convolve(a: Self::T, b: Self::T) -> Self::T {
+        if Self::length(&a).min(Self::length(&b)) <= 60 {
+            return convolve_naive(&a, &b);
+        }
+        let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
+        let mut a = Self::transform(a, len);
+        let b = Self::transform(b, len);
+        Self::multiply(&mut a, &b);
+        Self::inverse_transform(a, len)
     }
 }
 
