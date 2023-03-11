@@ -3,8 +3,8 @@
 /// arg:
 /// - lr: slice of pair of usize
 /// - (l, r): ident of current pair
-/// - incl: |i| expr: add i, l+=1 (post)
-/// - decl: |i| expr: del i, l-=1 (pre)
+/// - incl: |i| expr: del i, l+=1 (post)
+/// - decl: |i| expr: add i, l-=1 (pre)
 /// - incr: |i| expr: add i, r+=1 (post)
 /// - decr: |i| expr: del i, r-=1 (pre)
 /// - answer: |i| expr: answer i-th pair of lr
@@ -24,8 +24,8 @@ macro_rules! mo_algorithm {
             ($l, $r),
             |$i| $inc,
             |$d| $dec,
-            |$i| $inc,
             |$d| $dec,
+            |$i| $inc,
             |$a| $answer
         );
     }};
