@@ -33,6 +33,8 @@ mod char_tools;
 mod coding;
 #[cfg_attr(nightly, codesnip::entry("SimuratedAnnealing", include("Xorshift")))]
 mod heuristics;
+#[cfg_attr(nightly, codesnip::entry)]
+mod invariant;
 #[cfg_attr(nightly, codesnip::entry("_iter_print"))]
 mod iter_print;
 #[cfg_attr(nightly, codesnip::entry("comprehension"))]
