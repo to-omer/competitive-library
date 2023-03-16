@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tools/iter_print.rs`."><title>iter_print.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (8a73f50d8 2023-03-11)" data-search-js="search-ab3e9174d42dd6c2.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-9184409068f70b79.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f5a2577c5297a973.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tools/iter_print.rs`."><title>iter_print.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (ab654863c 2023-03-15)" data-search-js="search-d1bc581867fd0849.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-9184409068f70b79.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f5a2577c5297a973.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -233,6 +233,52 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Display.html">fmt::Display</a>,
     io::{<a href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html">Error</a>, <a href="../../../competitive/prelude/trait.Write.html">Write</a>},
@@ -292,9 +338,12 @@
 /// - `@ns`: alias for `@sep &quot;&quot;`
 /// - `@lf`: alias for `@sep &#39;\n&#39;`
 /// - `@sp`: alias for `@sep &#39; &#39;`
-/// - `@fmt $lit =&gt; {$($expr),*}`: print `format!($lit, $($expr),*)`
+/// - `@fmt ($lit, $($expr),*)`: print `format!($lit, $($expr),*)`
 /// - `@flush`: flush writer (auto insert `!`)
 /// - `@it $expr`: print iterator
+/// - `@it1 $expr`: print iterator as 1-indexed
+/// - `@cw ($char $expr)`: print iterator as `(elem as u8 + $char as u8) as char`
+/// - `@bw ($byte $expr)`: print iterator as `(elem as u8 + $byte) as char`
 /// - `@it2d $expr`: print 2d-iterator
 /// - `@tup $expr`: print tuple (need to import [`IterPrint`])
 /// - `@ittup $expr`: print iterative tuple (need to import [`IterPrint`])
@@ -304,14 +353,14 @@
 /// - `!`: not print `&#39;\n&#39;` at the end
 </span><span class="attr">#[macro_export]
 </span><span class="macro">macro_rules! </span>iter_print {
-    (@@fmt <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, <span class="macro-nonterminal">$lit</span>:literal, $(<span class="macro-nonterminal">$e</span>:expr),<span class="kw-2">*</span>) =&gt; {
+    (@@fmt <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, (<span class="macro-nonterminal">$lit</span>:literal $(, <span class="macro-nonterminal">$e</span>:expr)* $(,)<span class="question-mark">?</span>)) =&gt; {
         <span class="kw">if </span>!<span class="macro-nonterminal">$is_head </span>{
             <span class="macro">::std::write!</span>(<span class="macro-nonterminal">$writer</span>, <span class="string">&quot;{}&quot;</span>, <span class="macro-nonterminal">$sep</span>).expect(<span class="string">&quot;io error&quot;</span>);
         }
         <span class="macro">::std::write!</span>(<span class="macro-nonterminal">$writer</span>, <span class="macro-nonterminal">$lit</span>, $(<span class="macro-nonterminal">$e</span>),<span class="kw-2">*</span>).expect(<span class="string">&quot;io error&quot;</span>);
     };
     (@@item <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, <span class="macro-nonterminal">$e</span>:expr) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">fmt $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, <span class="string">&quot;{}&quot;</span>, <span class="macro-nonterminal">$e</span>);
+        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">fmt $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, (<span class="string">&quot;{}&quot;</span>, <span class="macro-nonterminal">$e</span>));
     };
     (@@line_feed <span class="macro-nonterminal">$writer</span>:expr $(,)<span class="question-mark">?</span>) =&gt; {
         <span class="macro">::std::writeln!</span>(<span class="macro-nonterminal">$writer</span>).expect(<span class="string">&quot;io error&quot;</span>);
@@ -323,6 +372,35 @@
         }
         <span class="kw">for </span>item <span class="kw">in </span>iter {
             <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">item $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="bool-val">false</span>, item);
+        }
+    }};
+    (@@it1 <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, <span class="macro-nonterminal">$iter</span>:expr) =&gt; {{
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = <span class="macro-nonterminal">$iter</span>.into_iter();
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(item) = iter.next() {
+            <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">item $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, item + <span class="number">1</span>);
+        }
+        <span class="kw">for </span>item <span class="kw">in </span>iter {
+            <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">item $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="bool-val">false</span>, item + <span class="number">1</span>);
+        }
+    }};
+    (@@cw <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, (<span class="macro-nonterminal">$ch</span>:literal <span class="macro-nonterminal">$iter</span>:expr)) =&gt; {{
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = <span class="macro-nonterminal">$iter</span>.into_iter();
+        <span class="kw">let </span>b = <span class="macro-nonterminal">$ch </span><span class="kw">as </span>u8;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(item) = iter.next() {
+            <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">item $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, (item <span class="kw">as </span>u8 + b) <span class="kw">as </span>char);
+        }
+        <span class="kw">for </span>item <span class="kw">in </span>iter {
+            <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">item $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="bool-val">false</span>, (item <span class="kw">as </span>u8 + b) <span class="kw">as </span>char);
+        }
+    }};
+    (@@bw <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, (<span class="macro-nonterminal">$b</span>:literal <span class="macro-nonterminal">$iter</span>:expr)) =&gt; {{
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = <span class="macro-nonterminal">$iter</span>.into_iter();
+        <span class="kw">let </span>b: u8 = <span class="macro-nonterminal">$b</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(item) = iter.next() {
+            <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">item $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, (item <span class="kw">as </span>u8 + b) <span class="kw">as </span>char);
+        }
+        <span class="kw">for </span>item <span class="kw">in </span>iter {
+            <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">item $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="bool-val">false</span>, (item <span class="kw">as </span>u8 + b) <span class="kw">as </span>char);
         }
     }};
     (@@it2d <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, <span class="macro-nonterminal">$iter</span>:expr) =&gt; {
@@ -350,6 +428,7 @@
     };
     (@@assert_tag item) =&gt; {};
     (@@assert_tag it) =&gt; {};
+    (@@assert_tag it1) =&gt; {};
     (@@assert_tag it2d) =&gt; {};
     (@@assert_tag tup) =&gt; {};
     (@@assert_tag ittup) =&gt; {};
@@ -372,8 +451,16 @@
         <span class="macro-nonterminal">$writer</span>.flush().expect(<span class="string">&quot;io error&quot;</span>);
         <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">inner $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, ! $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>);
     };
-    (@@inner <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, @fmt <span class="macro-nonterminal">$lit</span>:literal =&gt; {$(<span class="macro-nonterminal">$e</span>:expr),* $(,)<span class="question-mark">?</span>} $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
-        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">fmt $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, <span class="macro-nonterminal">$lit</span>, $(<span class="macro-nonterminal">$e</span>),<span class="kw-2">*</span>);
+    (@@inner <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, @fmt <span class="macro-nonterminal">$arg</span>:tt $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">fmt $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, <span class="macro-nonterminal">$arg</span>);
+        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">inner $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>);
+    };
+    (@@inner <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, @cw <span class="macro-nonterminal">$arg</span>:tt $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">cw $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, <span class="macro-nonterminal">$arg</span>);
+        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">inner $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>);
+    };
+    (@@inner <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, @bw <span class="macro-nonterminal">$arg</span>:tt $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">bw $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, <span class="macro-nonterminal">$arg</span>);
         <span class="macro-nonterminal">$</span><span class="macro">crate::iter_print!</span>(@@<span class="macro-nonterminal">inner $writer</span>, <span class="macro-nonterminal">$sep</span>, <span class="macro-nonterminal">$is_head</span>, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>);
     };
     (@@inner <span class="macro-nonterminal">$writer</span>:expr, <span class="macro-nonterminal">$sep</span>:expr, <span class="macro-nonterminal">$is_head</span>:expr, @<span class="macro-nonterminal">$tag</span>:ident <span class="macro-nonterminal">$e</span>:expr, $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) =&gt; {
@@ -431,11 +518,13 @@
         <span class="kw">let </span><span class="kw-2">mut </span>buf = Vec::new();
         <span class="macro">iter_print!</span>(
             buf, <span class="number">1</span>, <span class="number">2</span>, @sep <span class="string">&#39;.&#39;</span>, <span class="number">3</span>, <span class="number">4</span>; <span class="number">5</span>, <span class="number">6</span>, @sp @it <span class="number">7</span>..=<span class="number">10</span>;
-            @tup (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); @flush <span class="number">4</span>, @fmt <span class="string">&quot;{}?{}&quot; </span>=&gt; {<span class="number">5</span>, <span class="number">6.7</span>};
+            @tup (<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); @flush <span class="number">4</span>, @fmt (<span class="string">&quot;{}?{}&quot;</span>, <span class="number">5</span>, <span class="number">6.7</span>);
             { @ns @it <span class="number">8</span>..=<span class="number">10</span>; @lf @it <span class="number">11</span>..=<span class="number">13 </span>},
             @it2d (<span class="number">0</span>..<span class="number">3</span>).map(|i| (<span class="number">14</span>..=<span class="number">15</span>).map(<span class="kw">move </span>|j| i * <span class="number">2 </span>+ j));
-            @ns @ittup (<span class="number">0</span>..<span class="number">2</span>).map(|i| (i * <span class="number">2 </span>+ <span class="number">20</span>, i * <span class="number">2 </span>+ <span class="number">21</span>)),
+            @ns @ittup (<span class="number">0</span>..<span class="number">2</span>).map(|i| (i * <span class="number">2 </span>+ <span class="number">20</span>, i * <span class="number">2 </span>+ <span class="number">21</span>));
             @flush,
+            @cw (<span class="string">&#39;a&#39; </span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>].iter().cloned());
+            @sp @it1 (<span class="number">0</span>..<span class="number">2</span>)
         );
         <span class="kw">let </span>expected = <span class="string">r#&quot;1 2.3.4
 5.6 7 8 9 10
@@ -448,7 +537,10 @@
 16 17
 18 19
 2021
-2223&quot;#</span>;
+2223
+abc
+1 2
+&quot;#</span>;
         <span class="macro">assert_eq!</span>(expected, String::from_utf8_lossy(<span class="kw-2">&amp;</span>buf));
     }
 }
