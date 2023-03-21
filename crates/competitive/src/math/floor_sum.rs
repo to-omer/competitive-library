@@ -84,7 +84,7 @@ fn test_floor_sum() {
     const A: u64 = 1_000;
     const B: i64 = 1_000;
     const Q: usize = 1_000;
-    let mut rng = Xorshift::time();
+    let mut rng = Xorshift::new();
     for _ in 0..Q {
         let (n, a, b, m) = rng.gen((..A, ..A, ..A, 1..A));
         let expected: u64 = (0..n).map(|i| (a * i + b) / m).sum();

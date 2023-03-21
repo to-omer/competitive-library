@@ -346,7 +346,7 @@ mod tests {
 
     #[test]
     fn test_mint998244353() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         const Q: usize = 1000;
         assert_eq!(0, MInt998244353::zero().inner());
         assert_eq!(1, MInt998244353::one().inner());

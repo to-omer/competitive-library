@@ -27,7 +27,7 @@ impl Default for SimuratedAnnealing {
             time: 0.,
             temperture: 3e3,
             log_table,
-            rand: Xorshift::new(Self::SEED),
+            rand: Xorshift::new_with_seed(Self::SEED),
             is_maximize: true,
             start_temp: 3e3,
             end_temp: 1e-8,

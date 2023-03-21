@@ -16,7 +16,7 @@ pub fn zalgorithm_rolling_hash(reader: impl Read, mut writer: impl Write) {
     let s = read_all_unchecked(reader);
     let mut scanner = Scanner::new(&s);
     scan!(scanner, s: Bytes);
-    Mersenne61x1::init_with_time(s.len());
+    Mersenne61x1::init(s.len());
     let h = Mersenne61x1::hash_sequence(s.iter().map(|&c| c as _));
     let ans = (0..s.len()).map(|i| h.range(..).longest_common_prefix(&h.range(i..)));
     iter_print!(writer, @it ans);

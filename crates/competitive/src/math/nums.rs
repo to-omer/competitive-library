@@ -49,7 +49,7 @@ fn test_linear_congruence() {
     use crate::tools::Xorshift;
     const N: usize = 5;
     const Q: usize = 1_000;
-    let mut rng = Xorshift::time();
+    let mut rng = Xorshift::new();
     for _ in 0..Q {
         let abm: Vec<_> = (0..N)
             .map(|_| {

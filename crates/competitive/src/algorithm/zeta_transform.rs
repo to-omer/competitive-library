@@ -260,7 +260,7 @@ mod tests {
 
     #[test]
     fn test_subset_transform() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         type Subset = SubsetTransform<AdditiveOperation<i64>>;
 
         rand!(rng, mut f: [-A..A; N]);
@@ -291,7 +291,7 @@ mod tests {
 
     #[test]
     fn test_superset_transform() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         type Superset = SupersetTransform<AdditiveOperation<i64>>;
 
         rand!(rng, mut f: [-A..A; N]);
@@ -322,7 +322,7 @@ mod tests {
 
     #[test]
     fn test_divisor_transform() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         let primes = PrimeList::new(M as u64);
         let divisor = DivisorTransform::<AdditiveOperation<i64>>::new_with_primes(primes.primes());
 
@@ -360,7 +360,7 @@ mod tests {
 
     #[test]
     fn test_multiple_transform() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         let primes = PrimeList::new(M as u64);
         let multiple = MultipleTransform::<AdditiveOperation<_>>::new_with_primes(primes.primes());
 

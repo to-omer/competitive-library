@@ -241,7 +241,7 @@ mod tests {
 
     #[test]
     fn test_segment_tree() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         let mut arr = vec![0; N + 1];
         let mut seg = SegmentTree::<AdditiveOperation<_>>::new(N);
         for (k, v) in rng.gen_iter((..N, 1..=A)).take(Q) {

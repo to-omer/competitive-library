@@ -5,16 +5,15 @@ pub struct Xorshift {
 }
 #[codesnip::entry("Xorshift")]
 impl Xorshift {
-    pub fn new(seed: u64) -> Self {
+    pub fn new_with_seed(seed: u64) -> Self {
         Xorshift { y: seed }
     }
-    pub fn time() -> Self {
-        let seed = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .ok()
-            .unwrap_or_default()
-            .as_secs();
-        Xorshift::new(seed)
+    pub fn new() -> Self {
+        use std::{
+            collections::hash_map::RandomState,
+            hash::{BuildHasher, Hasher},
+        };
+        Xorshift::new_with_seed(RandomState::new().build_hasher().finish())
     }
     #[inline]
     pub fn rand64(&mut self) -> u64 {
@@ -55,7 +54,7 @@ impl Xorshift {
 #[codesnip::entry("Xorshift")]
 impl Default for Xorshift {
     fn default() -> Self {
-        Xorshift::new(0x2b99_2ddf_a232_49d6)
+        Xorshift::new_with_seed(0x2b99_2ddf_a232_49d6)
     }
 }
 

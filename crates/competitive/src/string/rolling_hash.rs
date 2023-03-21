@@ -9,10 +9,10 @@ use std::{
 pub trait RollingHasher {
     type T;
     type Hash: Copy + Eq;
-    fn init(len: usize, rng: &mut Xorshift);
-    fn init_with_time(len: usize) {
-        let mut rng = Xorshift::time();
-        Self::init(len, &mut rng);
+    fn init_with_rng(len: usize, rng: &mut Xorshift);
+    fn init(len: usize) {
+        let mut rng = Xorshift::new();
+        Self::init_with_rng(len, &mut rng);
     }
     fn ensure(len: usize);
     fn hash_sequence<I>(iter: I) -> HashedSequence<Self>
@@ -545,7 +545,7 @@ macro_rules! impl_rolling_hasher {
 
             type Hash = [<$R as SemiRing>::T; $len];
 
-            fn init(len: usize, rng: &mut Xorshift) {
+            fn init_with_rng(len: usize, rng: &mut Xorshift) {
                 Self::__rolling_hash_local_key().with(|cell| {
                     if unsafe{ (&*cell.as_ptr()).iter().all(|p| p.base == 0) } {
                         cell.set([$({ $s; RollingHashPrecalc::new(rng.rand(<$R>::MOD)) },)+]);

@@ -47,7 +47,7 @@ fn test_range_ap_add() {
     const N: usize = 1000;
     const Q: usize = 10000;
     const A: i64 = 1_000_000_000;
-    let mut rng = Xorshift::time();
+    let mut rng = Xorshift::new();
     let mut v = vec![0i64; N];
     let mut ap = RangeArithmeticProgressionAdd::new(N);
     for ((l, r), a, d) in rng.gen_iter((Nes(N), -A..=A, -A..=A)).take(Q) {

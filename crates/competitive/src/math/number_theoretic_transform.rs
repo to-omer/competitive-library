@@ -453,7 +453,7 @@ mod tests {
 
     #[test]
     fn test_ntt998244353() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         let a: Vec<_> = rng
             .gen_iter(..MInt998244353::get_mod())
             .map(MInt998244353::new_unchecked)
@@ -477,7 +477,7 @@ mod tests {
     #[test]
     fn test_convolve3() {
         type M = MInt<Modulo1000000009>;
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         let a: Vec<_> = rng
             .gen_iter(..M::get_mod())
             .map(M::new_unchecked)

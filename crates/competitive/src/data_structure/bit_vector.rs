@@ -169,7 +169,7 @@ mod tests {
     #[test]
     fn test_rank_select_usize() {
         const WORD_SIZE: usize = 0usize.count_zeros() as usize;
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         for x in rng.gen_iter(0u64..).take(Q) {
             for k in 0..=WORD_SIZE {
                 assert_eq!(x.rank1(k), (0..k).filter(|&i| x.access(i)).count());
@@ -193,7 +193,7 @@ mod tests {
     #[test]
     fn test_rank_select_bit_vector() {
         const N: usize = 1_000;
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         let x: BitVector = (0..N).map(|_| rng.rand(2) != 0).collect();
         for k in rng.gen_iter(..=N).take(Q) {
             assert_eq!(x.rank1(k), (0..k).filter(|&i| x.access(i)).count());

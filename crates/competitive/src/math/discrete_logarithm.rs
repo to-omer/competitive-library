@@ -280,7 +280,7 @@ impl IndexCalculusWithPrimitiveRoot {
             return None;
         }
 
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         let mut row = vec![0u64; br_primes.len()];
         let mut kk = rng.rand(ord - 1) + 1;
         let mut gkk = self.prec.pow(kk, &br);

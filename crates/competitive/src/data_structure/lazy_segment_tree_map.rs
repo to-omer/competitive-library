@@ -315,7 +315,7 @@ mod tests {
 
     #[test]
     fn test_lazy_segment_tree_map() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         // Range Sum Query & Range Add Query
         let mut arr = vec![0i64; N];
         let mut seg = LazySegmentTreeMap::<RangeSumRangeAdd<_>>::new(N);

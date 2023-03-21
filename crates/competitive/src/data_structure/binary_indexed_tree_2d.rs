@@ -120,7 +120,7 @@ mod tests {
 
     #[test]
     fn test_binary_indexed_tree_2d() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         const H: usize = 150;
         const W: usize = 250;
         let mut bit = BinaryIndexedTree2D::<AdditiveOperation<_>>::new(H, W);
@@ -170,7 +170,7 @@ mod tests {
 
     #[test]
     fn test_group_binary_indexed_tree2d() {
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         const H: usize = 15;
         const W: usize = 25;
         let mut bit = BinaryIndexedTree2D::<AdditiveOperation<_>>::new(H, W);

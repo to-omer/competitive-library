@@ -36,18 +36,15 @@ impl TreeHasher {
         Self::mersenne_mod(Self::mersenne_mul(a, b))
     }
     pub fn new() -> Self {
-        Self::default()
+        Self {
+            rv: Vec::new(),
+            rng: Xorshift::new(),
+        }
     }
     pub fn with_seed(seed: u64) -> Self {
         Self {
             rv: Vec::new(),
-            rng: Xorshift::new(seed),
-        }
-    }
-    pub fn time_seeded() -> Self {
-        Self {
-            rv: Vec::new(),
-            rng: Xorshift::time(),
+            rng: Xorshift::new_with_seed(seed),
         }
     }
     pub fn hash(&mut self, g: &UndirectedSparseGraph) -> u64 {

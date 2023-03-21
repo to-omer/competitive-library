@@ -259,7 +259,7 @@ mod tests {
     fn test_small_factorials() {
         use crate::num::mint_basic::DynModuloU32;
         use crate::tools::Xorshift;
-        let mut rng = Xorshift::time();
+        let mut rng = Xorshift::new();
         const Q: usize = 100_000;
         DynModuloU32::set_mod(2);
         let fact = SmallModMemorizedFactorial::<DynModuloU32>::new();
