@@ -197,7 +197,7 @@ impl From<f64> for DoubleDouble {
 }
 
 impl Display for DoubleDouble {
-    fn fmt<'a>(&self, f: &mut fmt::Formatter<'a>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.1 + self.0)
     }
 }

@@ -268,7 +268,7 @@ where
     M: MIntConvert,
     M::Inner: Display,
 {
-    fn fmt<'a>(&self, f: &mut fmt::Formatter<'a>) -> Result<(), fmt::Error> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "{}", self.inner())
     }
 }

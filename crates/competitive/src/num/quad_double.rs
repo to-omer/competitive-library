@@ -285,7 +285,7 @@ impl From<f64> for QuadDouble {
 }
 
 impl Display for QuadDouble {
-    fn fmt<'a>(&self, f: &mut fmt::Formatter<'a>) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.3 + self.2 + self.1 + self.0)
     }
 }

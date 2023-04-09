@@ -386,7 +386,7 @@ mod tests {
         let mut h = vec![0i64; M];
         for i in 1..M {
             for j in 1..M {
-                h[(gcd(i as _, j as _) as usize)] += f[i] * g[j];
+                h[gcd(i as _, j as _) as usize] += f[i] * g[j];
             }
         }
         let i = multiple.convolve::<MultiplicativeOperation<_>>(f, g);
