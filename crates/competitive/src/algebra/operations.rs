@@ -656,78 +656,162 @@ mod reverse_operation_impl {
     impl<M> Idempotent for ReverseOperation<M> where M: Idempotent {}
 }
 
-#[codesnip::entry("Top2Operation")]
-pub use self::top2_operation_impl::Top2Operation;
-#[codesnip::entry("Top2Operation", include("algebra", "bounded"))]
-mod top2_operation_impl {
+#[codesnip::entry("TopkOperation")]
+pub use self::topk_operation_impl::TopkOperation;
+#[codesnip::entry("TopkOperation", include("algebra", "bounded", "array"))]
+mod topk_operation_impl {
     use super::*;
     use std::marker::PhantomData;
-    pub struct Top2Operation<T>
+    pub struct TopkOperation<const K: usize, T>
     where
         T: Clone + Ord + Bounded,
     {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T> Magma for Top2Operation<T>
+    impl<const K: usize, T> Magma for TopkOperation<K, T>
     where
         T: Clone + Ord + Bounded,
     {
-        type T = (T, T);
+        type T = [T; K];
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            if x.0 < y.0 {
-                (y.0.clone(), if x.0 < y.1 { &y.1 } else { &x.0 }.clone())
-            } else {
-                (x.0.clone(), if x.1 < y.0 { &y.0 } else { &x.1 }.clone())
-            }
+            let mut i = 0;
+            let mut j = 0;
+            crate::array![|| {
+                if i == K || j != K && x[i] < y[j] {
+                    let t = &y[j];
+                    j += 1;
+                    t.clone()
+                } else {
+                    let t = &x[i];
+                    i += 1;
+                    t.clone()
+                }
+            }; K]
         }
     }
-    impl<T> Unital for Top2Operation<T>
+    impl<const K: usize, T> Unital for TopkOperation<K, T>
     where
         T: Clone + Ord + Bounded,
     {
         fn unit() -> Self::T {
-            (<T as Bounded>::minimum(), <T as Bounded>::minimum())
+            crate::array![|| <T as Bounded>::minimum(); K]
         }
     }
-    impl<T> Associative for Top2Operation<T> where T: Clone + Ord + Bounded {}
-    impl<T> Commutative for Top2Operation<T> where T: Clone + Ord + Bounded {}
+    impl<const K: usize, T> Associative for TopkOperation<K, T> where T: Clone + Ord + Bounded {}
+    impl<const K: usize, T> Commutative for TopkOperation<K, T> where T: Clone + Ord + Bounded {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::tools::Xorshift;
+
+        #[test]
+        fn test_topk() {
+            let mut rng = Xorshift::new();
+            for _ in 0..100 {
+                let mut x = [i64::MIN; 4];
+                for _ in 0..100 {
+                    let mut y = [i64::MIN; 4];
+                    for y in &mut y {
+                        *y = rng.gen(0..1000);
+                    }
+                    y.sort_unstable();
+                    y.reverse();
+                    let z = {
+                        let mut x = x.to_vec();
+                        x.extend(&y);
+                        x.sort_unstable();
+                        x.reverse();
+                        x.truncate(4);
+                        x
+                    };
+                    let zz = TopkOperation::<4, i64>::operate(&x, &y);
+                    for (z, zz) in z.iter().zip(&zz) {
+                        assert_eq!(z, zz);
+                    }
+                    x = zz;
+                }
+            }
+        }
+    }
 }
 
-#[codesnip::entry("Bottom2Operation")]
-pub use self::bottom2_operation_impl::Bottom2Operation;
-#[codesnip::entry("Bottom2Operation", include("algebra", "bounded"))]
-mod bottom2_operation_impl {
+#[codesnip::entry("BottomkOperation")]
+pub use self::bottomk_operation_impl::BottomkOperation;
+#[codesnip::entry("BottomkOperation", include("algebra", "bounded", "array"))]
+mod bottomk_operation_impl {
     use super::*;
     use std::marker::PhantomData;
-    pub struct Bottom2Operation<T>
+    pub struct BottomkOperation<const K: usize, T>
     where
         T: Clone + Ord + Bounded,
     {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T> Magma for Bottom2Operation<T>
+    impl<const K: usize, T> Magma for BottomkOperation<K, T>
     where
         T: Clone + Ord + Bounded,
     {
-        type T = (T, T);
+        type T = [T; K];
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            if x.0 > y.0 {
-                (y.0.clone(), if x.0 > y.1 { &y.1 } else { &x.0 }.clone())
-            } else {
-                (x.0.clone(), if x.1 > y.0 { &y.0 } else { &x.1 }.clone())
-            }
+            let mut i = 0;
+            let mut j = 0;
+            crate::array![|| {
+                if i == K || j != K && x[i] > y[j] {
+                    let t = &y[j];
+                    j += 1;
+                    t.clone()
+                } else {
+                    let t = &x[i];
+                    i += 1;
+                    t.clone()
+                }
+            }; K]
         }
     }
-    impl<T> Unital for Bottom2Operation<T>
+    impl<const K: usize, T> Unital for BottomkOperation<K, T>
     where
         T: Clone + Ord + Bounded,
     {
         fn unit() -> Self::T {
-            (<T as Bounded>::maximum(), <T as Bounded>::maximum())
+            crate::array![|| <T as Bounded>::maximum(); K]
         }
     }
-    impl<T> Associative for Bottom2Operation<T> where T: Clone + Ord + Bounded {}
-    impl<T> Commutative for Bottom2Operation<T> where T: Clone + Ord + Bounded {}
+    impl<const K: usize, T> Associative for BottomkOperation<K, T> where T: Clone + Ord + Bounded {}
+    impl<const K: usize, T> Commutative for BottomkOperation<K, T> where T: Clone + Ord + Bounded {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::tools::Xorshift;
+
+        #[test]
+        fn test_bottomk() {
+            let mut rng = Xorshift::new();
+            for _ in 0..100 {
+                let mut x = [i64::MAX; 4];
+                for _ in 0..100 {
+                    let mut y = [i64::MAX; 4];
+                    for y in &mut y {
+                        *y = rng.gen(0..1000);
+                    }
+                    y.sort_unstable();
+                    let z = {
+                        let mut x = x.to_vec();
+                        x.extend(&y);
+                        x.sort_unstable();
+                        x.truncate(4);
+                        x
+                    };
+                    let zz = BottomkOperation::<4, i64>::operate(&x, &y);
+                    for (z, zz) in z.iter().zip(&zz) {
+                        assert_eq!(z, zz);
+                    }
+                    x = zz;
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("PermutationOperation")]

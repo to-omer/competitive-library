@@ -2,13 +2,12 @@
 macro_rules! array {
     [@inner $data:ident = [$init:expr; $len:expr]] => {{
         use ::std::mem::{ManuallyDrop, MaybeUninit};
-        const LEN: usize = $len;
-        let mut $data: [MaybeUninit<_>; LEN] = unsafe { MaybeUninit::uninit().assume_init() };
+        let mut $data: [MaybeUninit<_>; $len] = unsafe { MaybeUninit::uninit().assume_init() };
         $init;
         #[repr(C)]
-        union __Transmuter<T: Copy> {
-            src: ManuallyDrop<[MaybeUninit<T>; LEN]>,
-            dst: ManuallyDrop<[T; LEN]>,
+        union __Transmuter<const N: usize, T: Clone> {
+            src: ManuallyDrop<[MaybeUninit<T>; N]>,
+            dst: ManuallyDrop<[T; N]>,
         }
         ManuallyDrop::into_inner(unsafe { __Transmuter { src: ManuallyDrop::new($data) }.dst })
     }};
