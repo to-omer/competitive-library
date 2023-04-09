@@ -92,6 +92,6 @@ where
         for a in self.graph.adjacencies(0) {
             self.dfs(a, 0);
         }
-        self.efs(0, std::usize::MAX);
+        self.efs(0, usize::MAX);
     }
 }

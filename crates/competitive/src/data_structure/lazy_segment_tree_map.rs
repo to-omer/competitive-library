@@ -339,7 +339,7 @@ mod tests {
         }
 
         // Range Max Query & Range Update Query & Binary Search Query
-        let mut arr = vec![std::i64::MIN; N];
+        let mut arr = vec![i64::MIN; N];
         let mut seg = LazySegmentTreeMap::<RangeMaxRangeUpdate<_>>::new(N);
         for _ in 0..Q {
             rand!(rng, ty: (0..4), (l, r): (NotEmptySegment(N)));
@@ -362,7 +362,7 @@ mod tests {
                         seg.position_acc(l, r, |&d| d >= x),
                         arr[l..r]
                             .iter()
-                            .scan(std::i64::MIN, |acc, &a| {
+                            .scan(i64::MIN, |acc, &a| {
                                 *acc = a.max(*acc);
                                 Some(*acc)
                             })
@@ -378,7 +378,7 @@ mod tests {
                         arr[l..r]
                             .iter()
                             .rev()
-                            .scan(std::i64::MIN, |acc, &a| {
+                            .scan(i64::MIN, |acc, &a| {
                                 *acc = a.max(*acc);
                                 Some(*acc)
                             })

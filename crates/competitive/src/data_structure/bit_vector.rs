@@ -95,7 +95,7 @@ impl RankSelectDictionaries for BitVector {
     }
     fn rank1(&self, k: usize) -> usize {
         let (bit, sum) = self.data[k / Self::WORD_SIZE];
-        sum + (bit & !(std::usize::MAX << (k % Self::WORD_SIZE))).count_ones() as usize
+        sum + (bit & !(usize::MAX << (k % Self::WORD_SIZE))).count_ones() as usize
     }
     fn select1(&self, mut k: usize) -> Option<usize> {
         let (mut l, mut r) = (0, self.data.len());

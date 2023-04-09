@@ -63,7 +63,7 @@ where
     }
     #[inline]
     fn most_significant_bit_place(x: usize) -> Option<usize> {
-        const C: u32 = std::usize::MAX.count_ones();
+        const C: u32 = usize::MAX.count_ones();
         ((C - x.leading_zeros()) as usize).checked_sub(1)
     }
     #[inline]

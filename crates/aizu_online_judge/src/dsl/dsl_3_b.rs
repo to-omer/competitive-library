@@ -7,7 +7,7 @@ pub fn dsl_3_b(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, n, k, a: [Usize1; n]);
     let mut counter = vec![0; 100_001];
     let mut j = 0;
-    let mut ans = std::usize::MAX;
+    let mut ans = usize::MAX;
     let mut cnt = 0;
     for i in 0..n {
         while j < n && cnt < k {
@@ -21,5 +21,5 @@ pub fn dsl_3_b(reader: impl Read, mut writer: impl Write) {
         counter[a[i]] -= 1;
         cnt -= (a[i] < k && counter[a[i]] == 0) as usize;
     }
-    writeln!(writer, "{}", if ans == std::usize::MAX { 0 } else { ans }).ok();
+    writeln!(writer, "{}", if ans == usize::MAX { 0 } else { ans }).ok();
 }

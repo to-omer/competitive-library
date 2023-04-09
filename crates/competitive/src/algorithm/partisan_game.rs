@@ -85,12 +85,12 @@ where
                 .game
                 .next_left(s)
                 .map(|ns| self.eval(&ns))
-                .fold(std::i64::MIN, Ord::max);
+                .fold(i64::MIN, Ord::max);
             let rmin = self
                 .game
                 .next_right(s)
                 .map(|ns| self.eval(&ns))
-                .fold(std::i64::MAX, Ord::min);
+                .fold(i64::MAX, Ord::min);
             let res = Self::simple_number(lmax, rmin);
             self.number.insert(s.clone(), res);
             res
