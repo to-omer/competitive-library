@@ -4,10 +4,10 @@ use crate::algebra::{Group, Magma, Monoid, Unital};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
-pub use self::baby_step_giant_step::baby_step_giant_step;
+#[cfg_attr(nightly, codesnip::entry("discrete_logarithm_bsgs"))]
+pub use self::baby_step_giant_step::discrete_logarithm_bsgs;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
-pub use self::binary_search::*;
+pub use self::binary_search::{binary_search, parallel_binary_search, Bisect, SliceBisectExt};
 #[codesnip::entry("BitDp")]
 pub use self::bitdp::{BitDp, Combinations, Subsets};
 #[codesnip::entry("chromatic_number")]

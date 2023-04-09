@@ -485,7 +485,7 @@ pub fn discrete_logarithm(a: u64, b: u64, n: u64) -> Option<u64> {
 mod tests {
     use super::*;
     use crate::{
-        algebra::MultiplicativeOperation, algorithm::baby_step_giant_step,
+        algebra::MultiplicativeOperation, algorithm::discrete_logarithm_bsgs,
         num::mint_basic::DynMIntU64,
     };
 
@@ -502,7 +502,7 @@ mod tests {
             return;
         }
         DynMIntU64::set_mod(n);
-        let res = baby_step_giant_step::<MultiplicativeOperation<_>>(
+        let res = discrete_logarithm_bsgs::<MultiplicativeOperation<_>>(
             DynMIntU64::new(a),
             DynMIntU64::new(b),
             n as _,
