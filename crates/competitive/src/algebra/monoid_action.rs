@@ -107,6 +107,28 @@ pub mod monoid_action_impls {
             Some(())
         }
     }
+    pub struct FlattenAction<M> {
+        _marker: PhantomData<fn() -> M>,
+    }
+    impl<M> MonoidAction for FlattenAction<M>
+    where
+        M: Monoid,
+    {
+        type Key = M::T;
+        type Agg = M::T;
+        type Act = M::T;
+        type AggMonoid = M;
+        type ActMonoid = M;
+        fn single_agg(key: &Self::Key) -> Self::Agg {
+            key.clone()
+        }
+        fn act_key(x: &Self::Key, a: &Self::Act) -> Self::Key {
+            M::operate(x, a)
+        }
+        fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+            Some(M::operate(x, a))
+        }
+    }
 
     pub struct RangeSumRangeAdd<T> {
         _marker: PhantomData<fn() -> T>,

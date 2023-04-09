@@ -4,8 +4,8 @@ use crate::algebra::{Group, Magma, Monoid, Unital};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep"))]
-pub use self::baby_step_giant_step::BabyStepGiantStep;
+#[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
+pub use self::baby_step_giant_step::baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
 pub use self::binary_search::*;
 #[codesnip::entry("BitDp")]
