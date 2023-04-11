@@ -485,7 +485,7 @@ pub fn discrete_logarithm(a: u64, b: u64, n: u64) -> Option<u64> {
 mod tests {
     use super::*;
     use crate::{
-        algebra::MultiplicativeOperation, algorithm::discrete_logarithm_bsgs,
+        algebra::MultiplicativeOperation, algorithm::baby_step_giant_step,
         num::mint_basic::DynMIntU64,
     };
 
@@ -502,41 +502,12 @@ mod tests {
             return;
         }
         DynMIntU64::set_mod(n);
-        let res = discrete_logarithm_bsgs::<MultiplicativeOperation<_>>(
+        let res = baby_step_giant_step::<MultiplicativeOperation<_>>(
             DynMIntU64::new(a),
             DynMIntU64::new(b),
             n as _,
         )
         .map(|x| x as _);
-        // let res = if b == 1 {
-        //     Some(0)
-        // } else {
-        //     (|| {
-        //         let d = 2.max(64 - n.leading_zeros() as u64);
-        //         let mut pw = 1 % n;
-        //         for i in 0..d {
-        //             if pw == b {
-        //                 return Some(i);
-        //             }
-        //             pw = (pw as u128 * a as u128 % n as u128) as u64;
-        //         }
-        //         if pw == b {
-        //             return Some(d);
-        //         }
-        //         let g = gcd(pw, n);
-        //         if b % g != 0 {
-        //             return None;
-        //         }
-        //         let n = n / g;
-        //         let b = (b as u128 * modinv(pw, n) as u128 % n as u128) as u64;
-        //         BabyStepGiantStep::<MultiplicativeOperation<_>>::new(
-        //             n as usize + 1,
-        //             DynMIntU64::new(a),
-        //         )
-        //         .solve(DynMIntU64::new(b))
-        //         .map(|x| x as u64 + d)
-        //     })()
-        // };
         assert_eq!(res, l);
     }
 

@@ -2,7 +2,7 @@ use super::Monoid;
 use std::{collections::HashSet, hash::Hash};
 
 /// $\min\{0\le i < n | x^i=y\}$
-pub fn discrete_logarithm_bsgs<M>(x: M::T, y: M::T, n: usize) -> Option<usize>
+pub fn baby_step_giant_step<M>(x: M::T, y: M::T, n: usize) -> Option<usize>
 where
     M: Monoid,
     M::T: Eq + Hash,
@@ -54,7 +54,7 @@ mod tests {
                 for y in 0..n {
                     let (x, y) = (DynMIntU32::new(x), DynMIntU32::new(y));
                     let exp = (0..n).position(|i| x.pow(i as _) == y);
-                    let ans = discrete_logarithm_bsgs::<MulOp<DynMIntU32>>(x, y, n as _);
+                    let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(x, y, n as _);
                     assert_eq!(exp, ans);
                 }
             }
@@ -70,7 +70,7 @@ mod tests {
             let x = DynMIntU32::new(rng.gen(..n));
             let y = DynMIntU32::new(rng.gen(..n));
             let exp = (0..n).position(|i| x.pow(i as _) == y);
-            let ans = discrete_logarithm_bsgs::<MulOp<DynMIntU32>>(x, y, n as _);
+            let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(x, y, n as _);
             assert_eq!(exp, ans);
         }
     }
@@ -83,7 +83,7 @@ mod tests {
             DynMIntU32::set_mod(n);
             let x = DynMIntU32::new(rng.gen(..n));
             let y = DynMIntU32::new(rng.gen(..n));
-            let ans = discrete_logarithm_bsgs::<MulOp<DynMIntU32>>(x, y, n as _);
+            let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(x, y, n as _);
             if let Some(i) = ans {
                 assert_eq!(x.pow(i), y);
                 assert!(i < n as usize);
