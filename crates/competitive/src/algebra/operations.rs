@@ -676,16 +676,14 @@ mod topk_operation_impl {
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             let mut i = 0;
             let mut j = 0;
-            crate::array![|| {
-                if i == K || j != K && x[i] < y[j] {
-                    let t = &y[j];
-                    j += 1;
-                    t.clone()
-                } else {
-                    let t = &x[i];
-                    i += 1;
-                    t.clone()
-                }
+            crate::array![|| if i == K || j != K && x[i] < y[j] {
+                let t = &y[j];
+                j += 1;
+                t.clone()
+            } else {
+                let t = &x[i];
+                i += 1;
+                t.clone()
             }; K]
         }
     }
@@ -756,16 +754,14 @@ mod bottomk_operation_impl {
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             let mut i = 0;
             let mut j = 0;
-            crate::array![|| {
-                if i == K || j != K && x[i] > y[j] {
-                    let t = &y[j];
-                    j += 1;
-                    t.clone()
-                } else {
-                    let t = &x[i];
-                    i += 1;
-                    t.clone()
-                }
+            crate::array![|| if i == K || j != K && x[i] > y[j] {
+                let t = &y[j];
+                j += 1;
+                t.clone()
+            } else {
+                let t = &x[i];
+                i += 1;
+                t.clone()
             }; K]
         }
     }
