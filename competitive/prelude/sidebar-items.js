@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Bytes","Chars","Usize1"],"fn":["read_all_unchecked"],"macro":["iter_print","scan"],"struct":["Scanner"],"trait":["Read","Write"]};
+window.SIDEBAR_ITEMS = {"macro":["iter_print","scan"],"trait":["Read","Write"]};
