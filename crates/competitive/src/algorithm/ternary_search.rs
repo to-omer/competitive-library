@@ -16,52 +16,24 @@ macro_rules! impl_fibonacci_search_unsigned {
                 let l = self;
                 let r = other;
                 assert!(l <= r);
-                if l == r {
-                    return (l, f(l));
-                }
-                if l + 1 == r {
-                    let vl = f(l);
-                    let vr = f(r);
-                    return if vl > vr { (r, vr) } else { (l, vl) };
-                }
-                if l + 2 == r {
-                    let vl = f(l);
-                    let vm = f(l + 1);
-                    let vr = f(r);
-                    return if vl > vm {
-                        if vm > vr {
-                            (r, vr)
-                        } else {
-                            (l + 1, vm)
-                        }
-                    } else {
-                        if vl > vr {
-                            (r, vr)
-                        } else {
-                            (l, vl)
-                        }
-                    };
-                }
-                let mut fib = vec![1, 2];
-                {
-                    let mut a = 1;
-                    let mut b = 2;
-                    loop {
-                        if a >= r - l - b {
-                            break;
-                        }
-                        let c = a + b;
-                        fib.push(c);
-                        a = b;
-                        b = c;
+                const W: usize = [12, 23, 46, 92, 185][<$t>::BITS.ilog2() as usize - 3];
+                const FIB: [$t; W] = {
+                    let mut fib = [0; W];
+                    fib[0] = 1;
+                    fib[1] = 2;
+                    let mut i = 2;
+                    while i < W {
+                        fib[i] = fib[i - 1] + fib[i - 2];
+                        i += 1;
                     }
-                }
+                    fib
+                };
                 let mut s = l;
                 let mut v0 = None;
                 let mut v1 = None;
                 let mut v2 = None;
                 let mut v3 = None;
-                for w in fib.windows(2).rev() {
+                for w in FIB[..FIB.partition_point(|&f| f < r - l)].windows(2).rev() {
                     let (w0, w1) = (w[0], w[1]);
                     if w1 > r - s || v1.get_or_insert_with(|| f(s + w0)) <= v2.get_or_insert_with(|| f(s + w1)) {
                         v3 = v2;
@@ -176,13 +148,7 @@ mod tests {
         for p in 0u8..=u8::MAX {
             for l in 0u8..=u8::MAX {
                 for r in l..=u8::MAX {
-                    let f = |x| {
-                        if x > p {
-                            x - p
-                        } else {
-                            p - x
-                        }
-                    };
+                    let f = |x| p.abs_diff(x);
                     assert_eq!(
                         f(l).min(f(r)).min(f(p.clamp(l, r))),
                         f(ternary_search(l, r, f)),
