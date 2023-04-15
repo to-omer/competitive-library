@@ -14,7 +14,7 @@ macro_rules! array {
     [|| $e:expr; $len:expr] => {
         $crate::array![@inner data = [data.iter_mut().for_each(|item| *item = MaybeUninit::new($e)); $len]]
     };
-    [|$i:pat| $e:expr; $len:expr] => {
+    [|$i:pat_param| $e:expr; $len:expr] => {
         $crate::array![@inner data = [data.iter_mut().enumerate().for_each(|($i, item)| *item = MaybeUninit::new($e)); $len]]
     };
     [$e:expr; $len:expr] => {{
