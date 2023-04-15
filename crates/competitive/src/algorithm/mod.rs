@@ -31,7 +31,7 @@ pub use self::sort::SliceSortExt;
 #[codesnip::entry("SqrtDecomposition")]
 pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
 #[codesnip::entry("ternary_search")]
-pub use self::ternary_search::*;
+pub use self::ternary_search::ternary_search;
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
 #[codesnip::entry("ZeroSumGame")]

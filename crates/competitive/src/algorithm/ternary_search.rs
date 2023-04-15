@@ -1,3 +1,5 @@
+use std::ops::RangeInclusive;
+
 /// fibonacci search helper
 pub trait FibonacciSearch: Sized {
     fn fibonacci_search<T, F>(self, other: Self, f: F) -> (Self, T)
@@ -119,23 +121,19 @@ impl_trisect_unsigned!(u8 u16 u32 u64 u128 usize);
 impl_trisect_signed!({i8 u8} {i16 u16} {i32 u32} {i64 u64} {i128 u128} {isize usize});
 impl_trisect_float!({f32 u32 i32} {f64 u64 i64});
 
-/// like `(left..=right).min_by_key(f)`
-///
-/// `f` should be strictly concave up
-pub fn ternary_search<T, U, F>(left: T, right: T, mut f: F) -> T
+/// Returns the element that gives the minimum value from the strictly concave up function and the minimum value.
+pub fn ternary_search<K, V, F>(range: RangeInclusive<K>, mut f: F) -> (K, V)
 where
-    T: Trisect,
-    U: PartialOrd,
-    F: FnMut(T) -> U,
+    K: Trisect,
+    V: PartialOrd,
+    F: FnMut(K) -> V,
 {
-    T::trisect_unkey(
-        <T::Key as FibonacciSearch>::fibonacci_search(
-            left.trisect_key(),
-            right.trisect_key(),
-            |x| f(Trisect::trisect_unkey(x)),
-        )
-        .0,
-    )
+    let (l, r) = range.into_inner();
+    let (k, v) =
+        <K::Key as FibonacciSearch>::fibonacci_search(l.trisect_key(), r.trisect_key(), |x| {
+            f(Trisect::trisect_unkey(x))
+        });
+    (K::trisect_unkey(k), v)
 }
 
 #[cfg(test)]
@@ -151,7 +149,7 @@ mod tests {
                     let f = |x| p.abs_diff(x);
                     assert_eq!(
                         f(l).min(f(r)).min(f(p.clamp(l, r))),
-                        f(ternary_search(l, r, f)),
+                        ternary_search(l..=r, f).1,
                     );
                 }
             }
@@ -163,7 +161,7 @@ mod tests {
         for p in -20..=20 {
             assert_eq!(
                 p.clamp(-10, 10),
-                ternary_search(-10i64, 10, |x| 10 * (x - p).pow(2) + 5),
+                ternary_search(-10i64..=10, |x| 10 * (x - p).pow(2) + 5).0,
             );
         }
     }
@@ -172,9 +170,10 @@ mod tests {
     fn test_ternary_search_float() {
         assert_eq!(
             std::f64::consts::PI,
-            ternary_search(f64::MIN, f64::MAX, |x| (DoubleDouble::from(x)
+            ternary_search(f64::MIN..=f64::MAX, |x| (DoubleDouble::from(x)
                 - DoubleDouble::from(std::f64::consts::PI))
-            .abs()),
+            .abs())
+            .0,
         );
     }
 }
