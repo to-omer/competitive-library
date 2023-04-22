@@ -6,7 +6,7 @@ use crate::num::{Bounded, RangeBoundsExt};
 use crate::tools::GetDistinctMut;
 
 #[codesnip::entry("Accumulate")]
-pub use self::accumulate::Accumulate;
+pub use self::accumulate::{Accumulate, Accumulate2d};
 #[codesnip::entry("Allocator")]
 pub use self::allocator::{Allocator, MemoryPool};
 #[codesnip::entry("automaton")]
