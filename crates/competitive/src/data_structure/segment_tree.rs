@@ -57,7 +57,7 @@ where
         Self { n, seg }
     }
     pub fn set(&mut self, k: usize, x: M::T) {
-        debug_assert!(k < self.n);
+        assert!(k < self.n);
         let mut k = k + self.n;
         self.seg[k] = x;
         k /= 2;
@@ -67,7 +67,7 @@ where
         }
     }
     pub fn update(&mut self, k: usize, x: M::T) {
-        debug_assert!(k < self.n);
+        assert!(k < self.n);
         let mut k = k + self.n;
         self.seg[k] = M::operate(&self.seg[k], &x);
         k /= 2;
@@ -77,15 +77,14 @@ where
         }
     }
     pub fn get(&self, k: usize) -> M::T {
-        debug_assert!(k < self.n);
+        assert!(k < self.n);
         self.seg[k + self.n].clone()
     }
     pub fn fold<R>(&self, range: R) -> M::T
     where
         R: RangeBounds<usize>,
     {
-        let range = range.to_range();
-        debug_assert!(range.end <= self.n);
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
         let mut l = range.start + self.n;
         let mut r = range.end + self.n;
         let mut vl = M::unit();
@@ -138,8 +137,7 @@ where
         R: RangeBounds<usize>,
         F: Fn(&M::T) -> bool,
     {
-        let range = range.to_range();
-        debug_assert!(range.end <= self.n);
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
         let mut l = range.start + self.n;
         let r = range.end + self.n;
         let mut k = 0usize;
@@ -174,8 +172,7 @@ where
         R: RangeBounds<usize>,
         F: Fn(&M::T) -> bool,
     {
-        let range = range.to_range();
-        debug_assert!(range.end <= self.n);
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
         let mut l = range.start + self.n;
         let mut r = range.end + self.n;
         let mut c = 0usize;
