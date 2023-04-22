@@ -140,6 +140,18 @@ pub trait RangeBoundsExt<T> {
     fn start_bound_excluded(&self) -> T;
     fn end_bound_included(&self) -> T;
     fn end_bound_excluded(&self) -> T;
+    fn start_bound_included_bounded(&self, lb: T) -> Option<T>
+    where
+        T: Ord;
+    fn start_bound_excluded_bounded(&self, lb: T) -> Option<T>
+    where
+        T: Ord;
+    fn end_bound_included_bounded(&self, ub: T) -> Option<T>
+    where
+        T: Ord;
+    fn end_bound_excluded_bounded(&self, ub: T) -> Option<T>
+    where
+        T: Ord;
 
     fn to_range_checked(&self) -> Option<Range<T>> {
         match (
@@ -153,6 +165,12 @@ pub trait RangeBoundsExt<T> {
     fn to_range(&self) -> Range<T> {
         self.start_bound_included()..self.end_bound_excluded()
     }
+    fn to_range_bounded(&self, min: T, max: T) -> Option<Range<T>>
+    where
+        T: Ord,
+    {
+        Some(self.start_bound_included_bounded(min)?..self.end_bound_excluded_bounded(max)?)
+    }
     fn to_range_inclusive_checked(&self) -> Option<RangeInclusive<T>> {
         match (
             self.start_bound_included_checked(),
@@ -164,6 +182,12 @@ pub trait RangeBoundsExt<T> {
     }
     fn to_range_inclusive(&self) -> RangeInclusive<T> {
         self.start_bound_included()..=self.end_bound_included()
+    }
+    fn to_range_inclusive_bounded(&self, min: T, max: T) -> Option<RangeInclusive<T>>
+    where
+        T: Ord,
+    {
+        Some(self.start_bound_included_bounded(min)?..=self.end_bound_included_bounded(max)?)
     }
 }
 
@@ -230,6 +254,46 @@ macro_rules! impl_range_bounds_ext {
                         Bound::Unbounded => DiscreteSteps::<$source>::forward_delta(Bounded::maximum()),
                     }
                 }
+                fn start_bound_included_bounded(&self, lb: $target) -> Option<$target>
+                where
+                    $target: Ord
+                {
+                    match self.start_bound() {
+                        Bound::Included(x) => Some(*x).filter(|&x| lb <= x),
+                        Bound::Excluded(x) => DiscreteSteps::<$source>::forward_delta_checked(*x).filter(|&x| lb <= x),
+                        Bound::Unbounded => Some(lb),
+                    }
+                }
+                fn start_bound_excluded_bounded(&self, lb: $target) -> Option<$target>
+                where
+                    $target: Ord
+                {
+                    match self.start_bound() {
+                        Bound::Included(x) => DiscreteSteps::<$source>::backward_delta_checked(*x).filter(|&x| lb <= x),
+                        Bound::Excluded(x) => Some(*x).filter(|&x| lb <= x),
+                        Bound::Unbounded => Some(lb),
+                    }
+                }
+                fn end_bound_included_bounded(&self, ub: $target) -> Option<$target>
+                where
+                    $target: Ord
+                {
+                    match self.end_bound() {
+                        Bound::Included(x) => Some(*x).filter(|&x| x <= ub),
+                        Bound::Excluded(x) => DiscreteSteps::<$source>::backward_delta_checked(*x).filter(|&x| x <= ub),
+                        Bound::Unbounded => Some(ub),
+                    }
+                }
+                fn end_bound_excluded_bounded(&self, ub: $target) -> Option<$target>
+                where
+                    $target: Ord
+                {
+                    match self.end_bound() {
+                        Bound::Included(x) => DiscreteSteps::<$source>::forward_delta_checked(*x).filter(|&x| x <= ub),
+                        Bound::Excluded(x) => Some(*x).filter(|&x| x <= ub),
+                        Bound::Unbounded => Some(ub),
+                    }
+                }
             }
         )+)*
     };
@@ -248,39 +312,61 @@ mod tests {
 
     #[test]
     fn test_start_bound_included() {
-        assert_eq!((2..3).start_bound_included(), 2);
-        assert_eq!((..3usize).start_bound_included(), 0);
+        assert_eq!((2..5).start_bound_included(), 2);
+        assert_eq!((..5usize).start_bound_included(), 0);
     }
 
     #[test]
     fn test_start_bound_excluded() {
-        assert_eq!((2..3).start_bound_excluded(), 1);
-        assert_eq!((..3usize).start_bound_excluded_checked(), None);
+        assert_eq!((2..5).start_bound_excluded(), 1);
+        assert_eq!((..5usize).start_bound_excluded_checked(), None);
     }
 
     #[test]
     fn test_end_bound_included() {
-        assert_eq!((2..3).end_bound_included(), 2);
+        assert_eq!((2..5).end_bound_included(), 4);
         assert_eq!((2usize..).end_bound_included(), !0usize);
     }
 
     #[test]
     fn test_end_bound_excluded() {
-        assert_eq!((2..3).end_bound_excluded(), 3);
+        assert_eq!((2..5).end_bound_excluded(), 5);
         assert_eq!((2usize..).end_bound_excluded_checked(), None);
     }
 
     #[test]
     fn test_to_range() {
-        assert_eq!((2..3).to_range(), 2..3);
-        assert_eq!((2..=3).to_range(), 2..4);
-        assert_eq!((..3usize).to_range(), 0..3);
+        assert_eq!((2..5).to_range(), 2..5);
+        assert_eq!((2..=5).to_range(), 2..6);
+        assert_eq!((..5usize).to_range(), 0..5);
+    }
+
+    #[test]
+    fn test_to_range_bounded() {
+        assert_eq!((3..6).to_range_bounded(2, 7), Some(3..6));
+        assert_eq!((2..7).to_range_bounded(2, 7), Some(2..7));
+        assert_eq!((2..8).to_range_bounded(2, 7), None);
+        assert_eq!((1..7).to_range_bounded(2, 7), None);
+        assert_eq!((..).to_range_bounded(2, 7), Some(2..7));
+        assert_eq!((2..=6).to_range_bounded(2, 7), Some(2..7));
+        assert_eq!((2..=7).to_range_bounded(2, 7), None);
     }
 
     #[test]
     fn test_to_range_inclusive() {
-        assert_eq!((2..3).to_range_inclusive(), 2..=2);
-        assert_eq!((2..=3).to_range_inclusive(), 2..=3);
-        assert_eq!((..3usize).to_range_inclusive(), 0..=2);
+        assert_eq!((2..5).to_range_inclusive(), 2..=4);
+        assert_eq!((2..=5).to_range_inclusive(), 2..=5);
+        assert_eq!((..5usize).to_range_inclusive(), 0..=4);
+    }
+
+    #[test]
+    fn test_to_range_inclusive_bounded() {
+        assert_eq!((3..6).to_range_inclusive_bounded(2, 6), Some(3..=5));
+        assert_eq!((2..7).to_range_inclusive_bounded(2, 6), Some(2..=6));
+        assert_eq!((2..8).to_range_inclusive_bounded(2, 6), None);
+        assert_eq!((1..7).to_range_inclusive_bounded(2, 6), None);
+        assert_eq!((..).to_range_inclusive_bounded(2, 6), Some(2..=6));
+        assert_eq!((2..=6).to_range_inclusive_bounded(2, 6), Some(2..=6));
+        assert_eq!((2..=7).to_range_inclusive_bounded(2, 6), None);
     }
 }
