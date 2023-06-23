@@ -1,6 +1,4 @@
-use crate::algebra::AbelianGroup;
-
-use super::{AbelianMonoid, Group, Monoid, RangeBoundsExt};
+use super::{AbelianGroup, AbelianMonoid, Group, Monoid, RangeBoundsExt};
 use std::{
     fmt::{self, Debug, Formatter},
     iter::FromIterator,

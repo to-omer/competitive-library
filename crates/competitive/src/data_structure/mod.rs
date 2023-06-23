@@ -1,6 +1,6 @@
 //! data structures
 
-use crate::algebra::{AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup};
+use crate::algebra::{AbelianGroup, AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup};
 use crate::algorithm::SliceBisectExt;
 use crate::num::{Bounded, RangeBoundsExt};
 use crate::tools::GetDistinctMut;
@@ -70,7 +70,10 @@ pub use self::wavelet_matrix::WaveletMatrix;
 #[codesnip::entry("WeightedUnionFind")]
 pub use self::weighted_union_find::WeightedUnionFind;
 
-#[cfg_attr(nightly, codesnip::entry("Accumulate", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Accumulate", include("algebra", "discrete_steps"))
+)]
 mod accumulate;
 #[cfg_attr(nightly, codesnip::entry("Allocator"))]
 mod allocator;
