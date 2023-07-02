@@ -38,7 +38,7 @@ mod discrete_steps;
     codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner"))
 )]
 mod double_double;
-#[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded")))]
+#[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod float;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod integer;
