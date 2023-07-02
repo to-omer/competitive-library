@@ -40,6 +40,9 @@ pub trait IntBase:
     fn rem_euclid(self, rhs: Self) -> Self;
     fn pow(self, exp: u32) -> Self;
     fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::Error>;
+    fn ilog(self, base: Self) -> u32;
+    fn ilog2(self) -> u32;
+    fn ilog10(self) -> u32;
 }
 macro_rules! impl_int_base {
     ($($t:ty)*) => {
@@ -50,6 +53,9 @@ macro_rules! impl_int_base {
                 fn rem_euclid(self, rhs: Self) -> Self { self.rem_euclid(rhs) }
                 fn pow(self, exp: u32) -> Self { self.pow(exp) }
                 fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::Error> { Self::from_str_radix(src, radix) }
+                fn ilog(self, base: Self) -> u32 { self.ilog(base) }
+                fn ilog2(self) -> u32 { self.ilog2() }
+                fn ilog10(self) -> u32 { self.ilog10() }
             }
         )*
     };
@@ -68,13 +74,8 @@ pub struct ExtendedGcd<T: Unsigned> {
 pub trait Unsigned: IntBase {
     type Signed: Signed<Unsigned = Self>;
     fn signed(self) -> Self::Signed;
-    fn abs_sub(self, other: Self) -> Self {
-        if self > other {
-            self - other
-        } else {
-            other - self
-        }
-    }
+    fn abs_diff(self, other: Self) -> Self;
+    fn next_power_of_two(self) -> Self;
     fn gcd(self, other: Self) -> Self;
     fn lcm(self, other: Self) -> Self {
         if self.is_zero() && other.is_zero() {
@@ -127,6 +128,7 @@ pub trait Signed: IntBase + Neg<Output = Self> {
     type Unsigned: Unsigned<Signed = Self>;
     fn unsigned(self) -> Self::Unsigned;
     fn abs(self) -> Self;
+    fn abs_diff(self, other: Self) -> Self::Unsigned;
     fn is_negative(self) -> bool;
     fn is_positive(self) -> bool;
     fn signum(self) -> Self;
@@ -138,6 +140,8 @@ macro_rules! impl_unsigned_signed {
             impl Unsigned for $unsigned {
                 type Signed = $signed;
                 fn signed(self) -> Self::Signed { self as Self::Signed }
+                fn abs_diff(self, other: Self) -> Self { self.abs_diff(other) }
+                fn next_power_of_two(self) -> Self { self.next_power_of_two() }
                 fn gcd(self, other: Self) -> Self {
                     let (mut a, mut b) = (self, other);
                     if a.is_zero() || b.is_zero() {
@@ -161,6 +165,7 @@ macro_rules! impl_unsigned_signed {
             impl Signed for $signed {
                 type Unsigned = $unsigned;
                 fn unsigned(self) -> Self::Unsigned { self as Self::Unsigned }
+                fn abs_diff(self, other: Self) -> Self::Unsigned { self.abs_diff(other) }
                 fn abs(self) -> Self { self.abs() }
                 fn is_negative(self) -> bool { self.is_negative() }
                 fn is_positive(self) -> bool { self.is_positive() }
@@ -188,12 +193,13 @@ pub trait BinaryRepr<Size = u32>:
 {
     fn count_ones(self) -> Size;
     fn count_zeros(self) -> Size;
-    // fn leading_ones(self) -> Size;
+    fn leading_ones(self) -> Size;
     fn leading_zeros(self) -> Size;
     fn reverse_bits(self) -> Self;
     fn rotate_left(self, n: Size) -> Self;
     fn rotate_right(self, n: Size) -> Self;
-    // fn trailing_ones(self) -> Size;
+    fn swap_bytes(self) -> Self;
+    fn trailing_ones(self) -> Size;
     fn trailing_zeros(self) -> Size;
 }
 
@@ -203,12 +209,13 @@ macro_rules! impl_binary_repr {
             impl BinaryRepr for $t {
                 fn count_ones(self) -> u32 { self.count_ones() }
                 fn count_zeros(self) -> u32 { self.count_zeros() }
-                // // fn leading_ones(self) -> u32 { self.leading_ones() }
+                fn leading_ones(self) -> u32 { self.leading_ones() }
                 fn leading_zeros(self) -> u32 { self.leading_zeros() }
                 fn reverse_bits(self) -> Self { self.reverse_bits() }
                 fn rotate_left(self, n: u32) -> Self { self.rotate_left(n) }
                 fn rotate_right(self, n: u32) -> Self { self.rotate_right(n) }
-                // // fn trailing_ones(self) -> u32 { self.trailing_ones() }
+                fn swap_bytes(self) -> Self { self.swap_bytes() }
+                fn trailing_ones(self) -> u32 { self.trailing_ones() }
                 fn trailing_zeros(self) -> u32 { self.trailing_zeros() }
             }
         )*
@@ -366,18 +373,13 @@ macro_rules! impl_int_base_for_saturating {
             }
             impl IntBase for Saturating<$t> {
                 type Error = <$t as IntBase>::Error;
-                fn div_euclid(self, rhs: Self) -> Self {
-                    Self(self.0.div_euclid(rhs.0))
-                }
-                fn rem_euclid(self, rhs: Self) -> Self {
-                    Self(self.0.rem_euclid(rhs.0))
-                }
-                fn pow(self, exp: u32) -> Self {
-                    Self(self.0.saturating_pow(exp))
-                }
-                fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::Error> {
-                    <$t as IntBase>::from_str_radix(src, radix).map(Self)
-                }
+                fn div_euclid(self, rhs: Self) -> Self { Self(self.0.div_euclid(rhs.0)) }
+                fn rem_euclid(self, rhs: Self) -> Self { Self(self.0.rem_euclid(rhs.0)) }
+                fn pow(self, exp: u32) -> Self { Self(self.0.saturating_pow(exp)) }
+                fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::Error> { <$t as IntBase>::from_str_radix(src, radix).map(Self) }
+                fn ilog(self, base: Self) -> u32 { self.0.ilog(base.0) }
+                fn ilog2(self) -> u32 { self.0.ilog2() }
+                fn ilog10(self) -> u32 { self.0.ilog10() }
             }
             impl From<$t> for Saturating<$t> {
                 fn from(t: $t) -> Self {
@@ -395,13 +397,15 @@ macro_rules! impl_unsigned_signed_for_saturating {
             impl Unsigned for Saturating<$unsigned> {
                 type Signed = Saturating<$signed>;
                 fn signed(self) -> Self::Signed { Saturating(TryFrom::try_from(self.0).ok().unwrap_or_else($signed::maximum)) }
+                fn abs_diff(self, other: Self) -> Self { Self(self.0.abs_diff(other.0)) }
+                fn next_power_of_two(self) -> Self { Self(self.0.next_power_of_two()) }
                 fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
             }
             impl Signed for Saturating<$signed> {
                 type Unsigned = Saturating<$unsigned>;
                 fn unsigned(self) -> Self::Unsigned { Saturating(TryFrom::try_from(self.0).ok().unwrap_or_else($unsigned::minimum)) }
-                // fn abs(self) -> Self { Self(self.0.saturating_abs()) }
-                fn abs(self) -> Self { Self(self.0.abs()) }
+                fn abs(self) -> Self { Self(self.0.saturating_abs()) }
+                fn abs_diff(self, other: Self) -> Self::Unsigned { Saturating(self.0.abs_diff(other.0)) }
                 fn is_negative(self) -> bool { self.0.is_negative() }
                 fn is_positive(self) -> bool { self.0.is_positive() }
                 fn signum(self) -> Self { Self(self.0.signum()) }
@@ -409,8 +413,7 @@ macro_rules! impl_unsigned_signed_for_saturating {
             impl Neg for Saturating<$signed> {
                 type Output = Self;
                 fn neg(self) -> Self::Output {
-                    // Self(self.0.saturating_neg())
-                    Self(self.0.neg())
+                    Self(self.0.saturating_neg())
                 }
             }
         )*
@@ -446,12 +449,13 @@ macro_rules! impl_binary_repr_for_saturating {
             impl BinaryRepr for Saturating<$t> {
                 fn count_ones(self) -> u32 { self.0.count_ones() }
                 fn count_zeros(self) -> u32 { self.0.count_zeros() }
-                // // fn leading_ones(self) -> u32 { self.0.leading_ones() }
+                fn leading_ones(self) -> u32 { self.0.leading_ones() }
                 fn leading_zeros(self) -> u32 { self.0.leading_zeros() }
                 fn reverse_bits(self) -> Self { Self(self.0.reverse_bits()) }
                 fn rotate_left(self, n: u32) -> Self { Self(self.0.rotate_left(n)) }
                 fn rotate_right(self, n: u32) -> Self { Self(self.0.rotate_right(n)) }
-                // // fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
+                fn swap_bytes(self) -> Self { Self(self.0.swap_bytes()) }
+                fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
                 fn trailing_zeros(self) -> u32 { self.0.trailing_zeros() }
             }
         )*
@@ -601,18 +605,13 @@ macro_rules! impl_int_base_for_wrapping {
             }
             impl IntBase for Wrapping<$t> {
                 type Error = <$t as IntBase>::Error;
-                fn div_euclid(self, rhs: Self) -> Self {
-                    Self(self.0.wrapping_div_euclid(rhs.0))
-                }
-                fn rem_euclid(self, rhs: Self) -> Self {
-                    Self(self.0.wrapping_rem_euclid(rhs.0))
-                }
-                fn pow(self, exp: u32) -> Self {
-                    Self(self.0.wrapping_pow(exp))
-                }
-                fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::Error> {
-                    <$t as IntBase>::from_str_radix(src, radix).map(Self)
-                }
+                fn div_euclid(self, rhs: Self) -> Self { Self(self.0.wrapping_div_euclid(rhs.0)) }
+                fn rem_euclid(self, rhs: Self) -> Self { Self(self.0.wrapping_rem_euclid(rhs.0)) }
+                fn pow(self, exp: u32) -> Self { Self(self.0.wrapping_pow(exp)) }
+                fn from_str_radix(src: &str, radix: u32) -> Result<Self, Self::Error> { <$t as IntBase>::from_str_radix(src, radix).map(Self) }
+                fn ilog(self, base: Self) -> u32 { self.0.ilog(base.0) }
+                fn ilog2(self) -> u32 { self.0.ilog2() }
+                fn ilog10(self) -> u32 { self.0.ilog10() }
             }
             impl From<$t> for Wrapping<$t> {
                 fn from(t: $t) -> Self {
@@ -630,12 +629,15 @@ macro_rules! impl_unsigned_signed_for_wrapping {
             impl Unsigned for Wrapping<$unsigned> {
                 type Signed = Wrapping<$signed>;
                 fn signed(self) -> Self::Signed { Wrapping(self.0.signed()) }
+                fn abs_diff(self, other: Self) -> Self { Self(self.0.abs_diff(other.0)) }
+                fn next_power_of_two(self) -> Self { Self(self.0.next_power_of_two()) }
                 fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
             }
             impl Signed for Wrapping<$signed> {
                 type Unsigned = Wrapping<$unsigned>;
                 fn unsigned(self) -> Self::Unsigned { Wrapping(self.0.unsigned()) }
                 fn abs(self) -> Self { Self(self.0.wrapping_abs()) }
+                fn abs_diff(self, other: Self) -> Self::Unsigned { Wrapping(self.0.abs_diff(other.0)) }
                 fn is_negative(self) -> bool { self.0.is_negative() }
                 fn is_positive(self) -> bool { self.0.is_positive() }
                 fn signum(self) -> Self { Self(self.0.signum()) }
@@ -679,12 +681,13 @@ macro_rules! impl_binary_repr_for_wrapping {
             impl BinaryRepr for Wrapping<$t> {
                 fn count_ones(self) -> u32 { self.0.count_ones() }
                 fn count_zeros(self) -> u32 { self.0.count_zeros() }
-                // // fn leading_ones(self) -> u32 { self.0.leading_ones() }
+                fn leading_ones(self) -> u32 { self.0.leading_ones() }
                 fn leading_zeros(self) -> u32 { self.0.leading_zeros() }
                 fn reverse_bits(self) -> Self { Self(self.0.reverse_bits()) }
                 fn rotate_left(self, n: u32) -> Self { Self(self.0.rotate_left(n)) }
                 fn rotate_right(self, n: u32) -> Self { Self(self.0.rotate_right(n)) }
-                // // fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
+                fn swap_bytes(self) -> Self { Self(self.0.swap_bytes()) }
+                fn trailing_ones(self) -> u32 { self.0.trailing_ones() }
                 fn trailing_zeros(self) -> u32 { self.0.trailing_zeros() }
             }
         )*
