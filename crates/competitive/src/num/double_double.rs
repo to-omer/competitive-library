@@ -1,6 +1,6 @@
 #![allow(clippy::suspicious_arithmetic_impl)]
 
-use super::Bounded;
+use super::{Bounded, IterScan, One, Zero};
 use std::{
     cmp::Ordering,
     fmt::{self, Display},
@@ -11,33 +11,6 @@ use std::{
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct DoubleDouble(f64, f64);
-
-impl Eq for DoubleDouble {}
-impl PartialOrd for DoubleDouble {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        fn total_cmp(x: f64, y: f64) -> Ordering {
-            let mut left = x.to_bits() as i64;
-            let mut right = y.to_bits() as i64;
-            left ^= (((left >> 63) as u64) >> 1) as i64;
-            right ^= (((right >> 63) as u64) >> 1) as i64;
-            left.cmp(&right)
-        }
-        Some(total_cmp(self.0, other.0).then_with(|| total_cmp(self.1, other.1)))
-    }
-}
-impl Ord for DoubleDouble {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
-    }
-}
-impl Bounded for DoubleDouble {
-    fn maximum() -> Self {
-        DoubleDouble::from(<f64 as Bounded>::maximum())
-    }
-    fn minimum() -> Self {
-        DoubleDouble::from(<f64 as Bounded>::minimum())
-    }
-}
 
 impl DoubleDouble {
     fn renormalize(a0: f64, a1: f64, a2: f64) -> Self {
@@ -209,10 +182,65 @@ impl FromStr for DoubleDouble {
     }
 }
 
-impl DoubleDouble {
-    pub fn is_zero(&self) -> bool {
+impl Eq for DoubleDouble {}
+impl PartialOrd for DoubleDouble {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        fn total_cmp(x: f64, y: f64) -> Ordering {
+            let mut left = x.to_bits() as i64;
+            let mut right = y.to_bits() as i64;
+            left ^= (((left >> 63) as u64) >> 1) as i64;
+            right ^= (((right >> 63) as u64) >> 1) as i64;
+            left.cmp(&right)
+        }
+        Some(total_cmp(self.0, other.0).then_with(|| total_cmp(self.1, other.1)))
+    }
+}
+impl Ord for DoubleDouble {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+impl Bounded for DoubleDouble {
+    fn maximum() -> Self {
+        DoubleDouble::from(<f64 as Bounded>::maximum())
+    }
+    fn minimum() -> Self {
+        DoubleDouble::from(<f64 as Bounded>::minimum())
+    }
+}
+
+impl Zero for DoubleDouble {
+    fn zero() -> Self {
+        Self::from(0.)
+    }
+    fn is_zero(&self) -> bool
+    where
+        Self: PartialEq,
+    {
         self.0 == 0.
     }
+}
+
+impl One for DoubleDouble {
+    fn one() -> Self {
+        Self::from(1.)
+    }
+    fn is_one(&self) -> bool
+    where
+        Self: PartialEq,
+    {
+        self.0 == 1.
+    }
+}
+
+impl IterScan for DoubleDouble {
+    type Output = Self;
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+        iter.next().and_then(|s| s.parse().ok())
+    }
+}
+
+impl DoubleDouble {
     pub fn sqrt(self) -> Self {
         if self.is_zero() {
             return Self::from(0.);

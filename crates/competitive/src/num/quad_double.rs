@@ -1,6 +1,8 @@
 #![allow(clippy::suspicious_arithmetic_impl)]
 
+use super::{Bounded, IterScan, One, Zero};
 use std::{
+    cmp::Ordering,
     fmt::{self, Display},
     num::ParseFloatError,
     ops::{Add, Div, Index, Mul, Neg, Sub},
@@ -8,7 +10,7 @@ use std::{
 };
 
 /// ref: <https://na-inet.jp/na/qd_ja.pdf>
-#[derive(Clone, Copy, Debug, Default, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct QuadDouble(f64, f64, f64, f64);
 
 impl QuadDouble {
@@ -294,6 +296,64 @@ impl FromStr for QuadDouble {
     type Err = ParseFloatError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.parse::<f64>().map(Self::from)
+    }
+}
+
+impl Eq for QuadDouble {}
+impl PartialOrd for QuadDouble {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        fn total_cmp(x: f64, y: f64) -> Ordering {
+            let mut left = x.to_bits() as i64;
+            let mut right = y.to_bits() as i64;
+            left ^= (((left >> 63) as u64) >> 1) as i64;
+            right ^= (((right >> 63) as u64) >> 1) as i64;
+            left.cmp(&right)
+        }
+        Some(total_cmp(self.0, other.0).then_with(|| total_cmp(self.1, other.1)))
+    }
+}
+impl Ord for QuadDouble {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+impl Bounded for QuadDouble {
+    fn maximum() -> Self {
+        Self::from(<f64 as Bounded>::maximum())
+    }
+    fn minimum() -> Self {
+        Self::from(<f64 as Bounded>::minimum())
+    }
+}
+
+impl Zero for QuadDouble {
+    fn zero() -> Self {
+        Self::from(0.)
+    }
+    fn is_zero(&self) -> bool
+    where
+        Self: PartialEq,
+    {
+        self.0 == 0.
+    }
+}
+
+impl One for QuadDouble {
+    fn one() -> Self {
+        Self::from(1.)
+    }
+    fn is_one(&self) -> bool
+    where
+        Self: PartialEq,
+    {
+        self.0 == 1.
+    }
+}
+
+impl IterScan for QuadDouble {
+    type Output = Self;
+    fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+        iter.next().and_then(|s| s.parse().ok())
     }
 }
 

@@ -33,14 +33,20 @@ mod bounded;
 mod complex;
 #[cfg_attr(nightly, codesnip::entry(include("bounded")))]
 mod discrete_steps;
-#[cfg_attr(nightly, codesnip::entry("DoubleDouble", include("bounded")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner"))
+)]
 mod double_double;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded")))]
 mod float;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod integer;
 mod mint;
-#[cfg_attr(nightly, codesnip::entry("QuadDouble"))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("QuadDouble", include("zero_one", "bounded", "scanner"))
+)]
 mod quad_double;
 #[cfg_attr(nightly, codesnip::entry("Rational", include("integer")))]
 mod rational;
