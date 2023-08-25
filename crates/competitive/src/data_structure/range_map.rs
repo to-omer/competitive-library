@@ -486,7 +486,7 @@ mod tests {
         const N: usize = 200;
         const Q: usize = 5000;
         let mut set: RangeSet<usize> = Default::default();
-        let mut arr = vec![false; N];
+        let mut arr = [false; N];
         for _ in 0..Q {
             match rng.gen(0..5) {
                 0 => {

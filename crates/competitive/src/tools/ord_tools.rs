@@ -101,7 +101,7 @@ mod tests {
         chmin!(x, 61, 42, 51);
         assert_eq!(x, 42);
 
-        let mut v = vec![31, 12];
+        let mut v = [31, 12];
         chmin!(v[0], v[1], 14);
         assert_eq!(v[0], v[1]);
     }
@@ -124,7 +124,7 @@ mod tests {
         chmax!(x, 261, 242, 251);
         assert_eq!(x, 261);
 
-        let mut v = vec![31, 42];
+        let mut v = [31, 42];
         chmax!(v[0], v[1], 14);
         assert_eq!(v[0], v[1]);
     }

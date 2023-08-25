@@ -250,7 +250,7 @@ mod tests {
     fn test_row_reduction() {
         const Q: usize = 1000;
         let mut rng = Xorshift::new();
-        let ps = vec![2, 3, 1_000_000_007];
+        let ps = [2, 3, 1_000_000_007];
         for _ in 0..Q {
             let m = ps[rng.gen(..ps.len())];
             DynMIntU32::set_mod(m);

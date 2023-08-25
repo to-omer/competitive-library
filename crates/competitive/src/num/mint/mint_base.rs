@@ -92,10 +92,7 @@ where
 {
     #[inline]
     fn clone(&self) -> Self {
-        Self {
-            x: Clone::clone(&self.x),
-            _marker: PhantomData,
-        }
+        *self
     }
 }
 impl<M> Copy for MInt<M> where M: MIntBase {}
