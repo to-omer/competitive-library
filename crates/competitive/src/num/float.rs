@@ -283,12 +283,12 @@ macro_rules! ord_float_impls {
         impl Eq for $n {}
         impl PartialOrd for $n {
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-                Some(self.total_cmp(other))
+                Some(self.cmp(other))
             }
         }
         impl Ord for $n {
             fn cmp(&self, other: &Self) -> Ordering {
-                self.partial_cmp(other).unwrap()
+                self.total_cmp(other)
             }
         }
         impl IterScan for $n {

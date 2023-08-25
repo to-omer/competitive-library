@@ -160,7 +160,7 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         .join("checker")
         .with_extension(if OS != "windows" { "" } else { "exe" });
     if !checker.is_file() {
-        return Err(CheckerBinaryNotFound)?;
+        Err(CheckerBinaryNotFound)?;
     }
 
     Ok((cases, CheckerBinary { checker }))

@@ -48,7 +48,7 @@ impl BipartiteMatching {
         }
     }
     pub fn hopcroft_karp(&mut self) {
-        fn bfs(bm: &mut BipartiteMatching, deq: &mut VecDeque<usize>, level: &mut [usize]) {
+        fn bfs(bm: &BipartiteMatching, deq: &mut VecDeque<usize>, level: &mut [usize]) {
             deq.clear();
             for (i, r) in bm.left_match.iter().enumerate() {
                 if r.is_none() {

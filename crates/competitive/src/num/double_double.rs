@@ -185,6 +185,11 @@ impl FromStr for DoubleDouble {
 impl Eq for DoubleDouble {}
 impl PartialOrd for DoubleDouble {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl Ord for DoubleDouble {
+    fn cmp(&self, other: &Self) -> Ordering {
         fn total_cmp(x: f64, y: f64) -> Ordering {
             let mut left = x.to_bits() as i64;
             let mut right = y.to_bits() as i64;
@@ -192,12 +197,7 @@ impl PartialOrd for DoubleDouble {
             right ^= (((right >> 63) as u64) >> 1) as i64;
             left.cmp(&right)
         }
-        Some(total_cmp(self.0, other.0).then_with(|| total_cmp(self.1, other.1)))
-    }
-}
-impl Ord for DoubleDouble {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
+        total_cmp(self.0, other.0).then_with(|| total_cmp(self.1, other.1))
     }
 }
 impl Bounded for DoubleDouble {
