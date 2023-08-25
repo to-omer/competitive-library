@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/num/mint/montgomery.rs`."><title>montgomery.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (e6d4725c7 2023-06-05)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-48600a9606eff342.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/num/mint/montgomery.rs`."><title>montgomery.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../competitive/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../competitive/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -436,9 +436,9 @@
 <a href="#420" id="420">420</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-<span class="kw">impl</span>&lt;M&gt; <a href="mint_base.rs.html#27">MIntBase</a> <span class="kw">for </span>M
+<span class="kw">impl</span>&lt;M&gt; <a href="mint_base.rs.html#27-49">MIntBase</a> <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: <a href="#189">MontgomeryReduction32</a>,
+    </span>M: <a href="#189-222">MontgomeryReduction32</a>,
 {
     <span class="kw">type </span>Inner = <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="attr">#[inline]
@@ -503,7 +503,7 @@
 }
 <span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: <a href="#189">MontgomeryReduction32</a>,
+    </span>M: <a href="#189-222">MontgomeryReduction32</a>,
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="self">Self</span>::Inner {
@@ -520,7 +520,7 @@
 }
 <span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: <a href="#189">MontgomeryReduction32</a>,
+    </span>M: <a href="#189-222">MontgomeryReduction32</a>,
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="self">Self</span>::Inner {
@@ -537,7 +537,7 @@
 }
 <span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: <a href="#189">MontgomeryReduction32</a>,
+    </span>M: <a href="#189-222">MontgomeryReduction32</a>,
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::Inner {
@@ -554,7 +554,7 @@
 }
 <span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: <a href="#189">MontgomeryReduction32</a>,
+    </span>M: <a href="#189-222">MontgomeryReduction32</a>,
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>) -&gt; <span class="self">Self</span>::Inner {
@@ -577,7 +577,7 @@
 }
 <span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: <a href="#189">MontgomeryReduction32</a>,
+    </span>M: <a href="#189-222">MontgomeryReduction32</a>,
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <span class="self">Self</span>::Inner {
@@ -600,7 +600,7 @@
 }
 <span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>&gt; <span class="kw">for </span>M
 <span class="kw">where
-    </span>M: <a href="#189">MontgomeryReduction32</a>,
+    </span>M: <a href="#189-222">MontgomeryReduction32</a>,
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>) -&gt; <span class="self">Self</span>::Inner {
@@ -622,7 +622,7 @@
     }
 }
 <span class="doccomment">/// m is prime, n = 2^32
-</span><span class="kw">pub trait </span>MontgomeryReduction32 {
+</span><span class="kw">pub trait </span><a href="../../../../competitive/num/montgomery/trait.MontgomeryReduction32.html">MontgomeryReduction32</a> {
     <span class="doccomment">/// m
     </span><span class="kw">fn </span>get_mod() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
     <span class="doccomment">/// (-m)^{-1} mod n
@@ -688,40 +688,40 @@
 }
 <a class="macro" href="#223-252">define_montgomery_reduction_32!</a>(
     [
-        Modulo998244353,
+        <a href="../../../../competitive/num/montgomery/enum.Modulo998244353.html">Modulo998244353</a>,
         <span class="number">998_244_353</span>,
         <span class="number">998_244_351</span>,
         <span class="number">301_989_884</span>,
         <span class="number">932_051_910</span>,
         <span class="number">679_058_953</span>,
-        MInt998244353,
+        <a href="../../../../competitive/num/montgomery/type.MInt998244353.html">MInt998244353</a>,
     ],
     [
-        Modulo2113929217,
+        <a href="../../../../competitive/num/montgomery/enum.Modulo2113929217.html">Modulo2113929217</a>,
         <span class="number">2_113_929_217</span>,
         <span class="number">2_113_929_215</span>,
         <span class="number">67_108_862</span>,
         <span class="number">2_111_798_781</span>,
         <span class="number">239_209_529</span>,
-        MInt2113929217,
+        <a href="../../../../competitive/num/montgomery/type.MInt2113929217.html">MInt2113929217</a>,
     ],
     [
-        Modulo1811939329,
+        <a href="../../../../competitive/num/montgomery/enum.Modulo1811939329.html">Modulo1811939329</a>,
         <span class="number">1_811_939_329</span>,
         <span class="number">1_811_939_327</span>,
         <span class="number">671_088_638</span>,
         <span class="number">959_408_210</span>,
         <span class="number">1_483_943_592</span>,
-        MInt1811939329,
+        <a href="../../../../competitive/num/montgomery/type.MInt1811939329.html">MInt1811939329</a>,
     ],
     [
-        Modulo2013265921,
+        <a href="../../../../competitive/num/montgomery/enum.Modulo2013265921.html">Modulo2013265921</a>,
         <span class="number">2_013_265_921</span>,
         <span class="number">2_013_265_919</span>,
         <span class="number">268_435_454</span>,
         <span class="number">1_172_168_163</span>,
         <span class="number">317_946_875</span>,
-        MInt2013265921,
+        <a href="../../../../competitive/num/montgomery/type.MInt2013265921.html">MInt2013265921</a>,
     ],
 );
 
@@ -729,16 +729,16 @@
 </span><span class="attr">#[allow(dead_code)]
 #[codesnip::skip]
 </span><span class="kw">fn </span>culculate_montgomery() {
-    <span class="kw">use </span><a href="../../math/gcd.rs.html#111"><span class="kw">crate</span>::math::modinv</a>;
+    <span class="kw">use </span><a href="../../math/gcd.rs.html#111-122"><span class="kw">crate</span>::math::modinv</a>;
     <span class="kw">let </span>m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = <span class="number">998_244_353</span>;
     <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;m = {}&quot;</span>, m);
     <span class="kw">let </span>n = <span class="number">1u64 </span>&lt;&lt; <span class="number">32</span>;
     <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;n = {}&quot;</span>, n);
     <span class="comment">// n^{-1} mod m
-    </span><span class="kw">let </span>ninv = <a href="../../math/gcd.rs.html#111">modinv</a>(<a href="#299">n</a>, <a href="#297">m</a>);
+    </span><span class="kw">let </span>ninv = <a href="../../math/gcd.rs.html#111-122">modinv</a>(<a href="#299">n</a>, <a href="#297">m</a>);
     <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;n^{{-1}} = {}&quot;</span>, ninv);
     <span class="comment">// r = (-m)^{-1} mod n
-    </span><span class="kw">let </span>r = <a href="../../math/gcd.rs.html#111">modinv</a>(<a href="#299">n</a> - <a href="#297">m</a>, <a href="#299">n</a>);
+    </span><span class="kw">let </span>r = <a href="../../math/gcd.rs.html#111-122">modinv</a>(<a href="#299">n</a> - <a href="#297">m</a>, <a href="#299">n</a>);
     <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.println.html">println!</a>(<span class="string">&quot;r = {}&quot;</span>, r);
     <span class="kw">let </span>get_r = || {
         <span class="kw">let </span><span class="kw-2">mut </span>r = <span class="number">0</span>;

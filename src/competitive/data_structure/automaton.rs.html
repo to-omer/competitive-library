@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (e6d4725c7 2023-06-05)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-48600a9606eff342.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -757,7 +757,7 @@
 <a href="#741" id="741">741</a>
 <a href="#742" id="742">742</a>
 <a href="#743" id="743">743</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><a href="../algebra/magma.rs.html#45"><span class="kw">super</span>::Monoid</a>;
+</pre></div><pre class="rust"><code><span class="kw">use </span><a href="../algebra/magma.rs.html#45-58"><span class="kw">super</span>::Monoid</a>;
 <span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">borrow::Borrow</a>,
     <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>,
@@ -768,7 +768,7 @@
     <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>,
 };
 
-<span class="kw">pub trait </span>Automaton {
+<span class="kw">pub trait </span><a href="../../../competitive/data_structure/trait.Automaton.html">Automaton</a> {
     <span class="kw">type </span>Alphabet;
     <span class="kw">type </span>State;
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State;
@@ -778,15 +778,15 @@
     <span class="kw">where
         </span><span class="self">Self</span>: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
         <span class="self">Self</span>::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
-        M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+        M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
     {
         Automatondp::new(<a class="self" href="#18">self</a>, <a href="#18">init</a>)
     }
 }
 
-<span class="kw">impl</span>&lt;A&gt; <a href="#12">Automaton</a> <span class="kw">for </span><span class="kw-2">&amp;</span>A
+<span class="kw">impl</span>&lt;A&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span><span class="kw-2">&amp;</span>A
 <span class="kw">where
-    </span>A: <a href="#12">Automaton</a>,
+    </span>A: <a href="#12-26">Automaton</a>,
 {
     <span class="kw">type </span>Alphabet = A::Alphabet;
     <span class="kw">type </span>State = A::State;
@@ -802,10 +802,10 @@
 }
 
 <span class="attr">#[derive(Clone)]
-</span><span class="kw">pub struct </span>Automatondp&lt;M, A&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.Automatondp.html">Automatondp</a>&lt;M, A&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
-    A: <a href="#12">Automaton</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
+    A: <a href="#12-26">Automaton</a>,
     A::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
 {
     dfa: A,
@@ -815,8 +815,8 @@
 
 <span class="kw">impl</span>&lt;M, A&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>Automatondp&lt;M, A&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
-    A: <a href="#12">Automaton</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
+    A: <a href="#12-26">Automaton</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     A::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
@@ -831,8 +831,8 @@
 
 <span class="kw">impl</span>&lt;M, A&gt; Automatondp&lt;M, A&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
-    A: <a href="#12">Automaton</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
+    A: <a href="#12-26">Automaton</a>,
     A::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
 {
     <span class="kw">pub fn </span>new(dfa: A, init: M::T) -&gt; <span class="self">Self </span>{
@@ -912,7 +912,7 @@
         <span class="kw">for _ in </span><span class="number">0</span>..len {
             <span class="self">self</span>.step(<span class="kw-2">&amp;mut </span>sigma);
         }
-        <a class="self" href="#147">self</a>.<a href="#123">fold_accept</a>()
+        <a class="self" href="#147">self</a>.<a href="#123-131">fold_accept</a>()
     }
     <span class="kw">pub fn </span>run_effect&lt;S, I, B, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>effect: F) -&gt; M::T
     <span class="kw">where
@@ -924,13 +924,13 @@
         <span class="kw">for _ in </span><span class="number">0</span>..len {
             <span class="self">self</span>.step_effect(<span class="kw-2">&amp;mut </span>sigma, <span class="kw-2">&amp;mut </span>effect);
         }
-        <a class="self" href="#158">self</a>.<a href="#123">fold_accept</a>()
+        <a class="self" href="#158">self</a>.<a href="#123-131">fold_accept</a>()
     }
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>IntersectionAutomaton&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
-<span class="kw">impl</span>&lt;A, X, Y&gt; <a href="#12">Automaton</a> <span class="kw">for </span>IntersectionAutomaton&lt;X, Y&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.IntersectionAutomaton.html">IntersectionAutomaton</a>&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
+<span class="kw">impl</span>&lt;A, X, Y&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>IntersectionAutomaton&lt;X, Y&gt;
 <span class="kw">where
     </span>X: Automaton&lt;Alphabet = A&gt;,
     Y: Automaton&lt;Alphabet = A&gt;,
@@ -952,8 +952,8 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>UnionAutomaton&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
-<span class="kw">impl</span>&lt;A, X, Y&gt; <a href="#12">Automaton</a> <span class="kw">for </span>UnionAutomaton&lt;X, Y&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.UnionAutomaton.html">UnionAutomaton</a>&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
+<span class="kw">impl</span>&lt;A, X, Y&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>UnionAutomaton&lt;X, Y&gt;
 <span class="kw">where
     </span>X: Automaton&lt;Alphabet = A&gt;,
     Y: Automaton&lt;Alphabet = A&gt;,
@@ -975,11 +975,11 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>ProductAutomaton&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
-<span class="kw">impl</span>&lt;X, Y&gt; <a href="#12">Automaton</a> <span class="kw">for </span>ProductAutomaton&lt;X, Y&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.ProductAutomaton.html">ProductAutomaton</a>&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
+<span class="kw">impl</span>&lt;X, Y&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>ProductAutomaton&lt;X, Y&gt;
 <span class="kw">where
-    </span>X: <a href="#12">Automaton</a>,
-    Y: <a href="#12">Automaton</a>,
+    </span>X: <a href="#12-26">Automaton</a>,
+    Y: <a href="#12-26">Automaton</a>,
 {
     <span class="kw">type </span>Alphabet = (X::Alphabet, Y::Alphabet);
     <span class="kw">type </span>State = (X::State, Y::State);
@@ -1001,7 +1001,7 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>FunctionalAutomaton&lt;A, S, F, G, H&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.FunctionalAutomaton.html">FunctionalAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
     </span>F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
@@ -1027,7 +1027,7 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#12">Automaton</a> <span class="kw">for </span>FunctionalAutomaton&lt;A, S, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>FunctionalAutomaton&lt;A, S, F, G, H&gt;
 <span class="kw">where
     </span>F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
@@ -1047,9 +1047,9 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>MappingAutomaton&lt;A, S, F, G, H&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.MappingAutomaton.html">MappingAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
-    </span>A: <a href="#12">Automaton</a>,
+    </span>A: <a href="#12-26">Automaton</a>,
     F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
     H: Fn(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1062,7 +1062,7 @@
 }
 <span class="kw">impl</span>&lt;A, S, F, G, H&gt; MappingAutomaton&lt;A, S, F, G, H&gt;
 <span class="kw">where
-    </span>A: <a href="#12">Automaton</a>,
+    </span>A: <a href="#12-26">Automaton</a>,
     F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
     H: Fn(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1077,9 +1077,9 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#12">Automaton</a> <span class="kw">for </span>MappingAutomaton&lt;A, S, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>MappingAutomaton&lt;A, S, F, G, H&gt;
 <span class="kw">where
-    </span>A: <a href="#12">Automaton</a>,
+    </span>A: <a href="#12-26">Automaton</a>,
     F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
     H: Fn(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1100,9 +1100,9 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>AlphabetMappingAutomaton&lt;A, S, B, F, G, H&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.AlphabetMappingAutomaton.html">AlphabetMappingAutomaton</a>&lt;A, S, B, F, G, H&gt;
 <span class="kw">where
-    </span>A: <a href="#12">Automaton</a>,
+    </span>A: <a href="#12-26">Automaton</a>,
     F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
     H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1115,7 +1115,7 @@
 }
 <span class="kw">impl</span>&lt;A, S, B, F, G, H&gt; AlphabetMappingAutomaton&lt;A, S, B, F, G, H&gt;
 <span class="kw">where
-    </span>A: <a href="#12">Automaton</a>,
+    </span>A: <a href="#12-26">Automaton</a>,
     F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
     H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1130,9 +1130,9 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;A, S, B, F, G, H&gt; <a href="#12">Automaton</a> <span class="kw">for </span>AlphabetMappingAutomaton&lt;A, S, B, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, B, F, G, H&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>AlphabetMappingAutomaton&lt;A, S, B, F, G, H&gt;
 <span class="kw">where
-    </span>A: <a href="#12">Automaton</a>,
+    </span>A: <a href="#12-26">Automaton</a>,
     F: Fn() -&gt; S,
     G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
     H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1153,7 +1153,7 @@
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="doccomment">/// DFA to accept Less/Greater than (or equal to) the sequence
-</span><span class="kw">pub struct </span>LexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.LexicographicalAutomaton.html">LexicographicalAutomaton</a>&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T],
     ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>,
     equal: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1188,7 +1188,7 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; <a href="#12">Automaton</a> <span class="kw">for </span>LexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>LexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
@@ -1214,7 +1214,7 @@
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="doccomment">/// DFA to accept Less/Greater than (or equal to) the reversed sequence
-</span><span class="kw">pub struct </span>RevLexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt; {
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.RevLexicographicalAutomaton.html">RevLexicographicalAutomaton</a>&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T],
     ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>,
     equal: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
@@ -1249,7 +1249,7 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; <a href="#12">Automaton</a> <span class="kw">for </span>RevLexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>RevLexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
@@ -1271,12 +1271,12 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>MonoidalAutomaton&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;)
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.MonoidalAutomaton.html">MonoidalAutomaton</a>&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;)
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>;
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>;
 <span class="kw">impl</span>&lt;M&gt; MonoidalAutomaton&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
@@ -1284,15 +1284,15 @@
 }
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>MonoidalAutomaton&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(PhantomData)
     }
 }
-<span class="kw">impl</span>&lt;M&gt; <a href="#12">Automaton</a> <span class="kw">for </span>MonoidalAutomaton&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>MonoidalAutomaton&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
     <span class="kw">type </span>Alphabet = M::T;
     <span class="kw">type </span>State = M::T;
@@ -1308,7 +1308,7 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>AlwaysAcceptingAutomaton&lt;A&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; A&gt;);
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.AlwaysAcceptingAutomaton.html">AlwaysAcceptingAutomaton</a>&lt;A&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; A&gt;);
 <span class="kw">impl</span>&lt;A&gt; AlwaysAcceptingAutomaton&lt;A&gt; {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
@@ -1319,7 +1319,7 @@
         <span class="self">Self</span>(PhantomData)
     }
 }
-<span class="kw">impl</span>&lt;A&gt; <a href="#12">Automaton</a> <span class="kw">for </span>AlwaysAcceptingAutomaton&lt;A&gt; {
+<span class="kw">impl</span>&lt;A&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>AlwaysAcceptingAutomaton&lt;A&gt; {
     <span class="kw">type </span>Alphabet = A;
     <span class="kw">type </span>State = ();
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {}
@@ -1331,7 +1331,7 @@
     </span>}
 }
 
-<span class="kw">pub trait </span>ToDigitSequence: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a> {
+<span class="kw">pub trait </span><a href="../../../competitive/data_structure/trait.ToDigitSequence.html">ToDigitSequence</a>: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a> {
     <span class="kw">fn </span>to_digit_sequence(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="self">Self</span>&gt;;
     <span class="kw">fn </span>to_digit_sequence_radix(<span class="kw-2">&amp;</span><span class="self">self</span>, radix: <span class="self">Self</span>) -&gt; Vec&lt;<span class="self">Self</span>&gt;;
     <span class="kw">fn </span>to_digit_sequence_len(<span class="kw-2">&amp;</span><span class="self">self</span>, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<span class="self">Self</span>&gt;;
@@ -1393,7 +1393,7 @@
 /// - `(A) &amp; (B)`: `IntersectionAutomaton(A, B)`
 /// - `(A) | (B)`: `UnionAutomaton(A, B)`
 </span><span class="attr">#[macro_export]
-</span><span class="macro">macro_rules! </span>automaton {
+</span><span class="macro">macro_rules! </span><a href="../../../competitive/data_structure/macro.automaton.html">automaton</a> {
     (@inner ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>))                                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
     (@inner &lt;= <span class="macro-nonterminal">$e</span>:expr)                                      =&gt; { LexicographicalAutomaton::less_than_or_equal(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
     (@inner &gt;= <span class="macro-nonterminal">$e</span>:expr)                                      =&gt; { LexicographicalAutomaton::greater_than_or_equal(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };

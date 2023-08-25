@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/lazy_segment_tree_map.rs`."><title>lazy_segment_tree_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (e6d4725c7 2023-06-05)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-48600a9606eff342.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/lazy_segment_tree_map.rs`."><title>lazy_segment_tree_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -406,16 +406,16 @@
 <a href="#390" id="390">390</a>
 <a href="#391" id="391">391</a>
 <a href="#392" id="392">392</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span><a href="../algebra/monoid_action.rs.html#7"><span class="kw">super</span>::MonoidAction</a>;
+</pre></div><pre class="rust"><code><span class="kw">use </span><a href="../algebra/monoid_action.rs.html#7-42"><span class="kw">super</span>::MonoidAction</a>;
 <span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">collections::HashMap</a>,
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>},
     <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">mem::replace</a>,
 };
 
-<span class="kw">pub struct </span>LazySegmentTreeMap&lt;M&gt;
+<span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.LazySegmentTreeMap.html">LazySegmentTreeMap</a>&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/monoid_action.rs.html#7">MonoidAction</a>,
+    </span>M: <a href="../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
     M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>,
 {
     n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
@@ -424,7 +424,7 @@
 
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>LazySegmentTreeMap&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/monoid_action.rs.html#7">MonoidAction</a>,
+    </span>M: <a href="../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
     M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>,
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
@@ -437,7 +437,7 @@
 
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>LazySegmentTreeMap&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/monoid_action.rs.html#7">MonoidAction</a>,
+    </span>M: <a href="../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
     M::Agg: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
@@ -451,7 +451,7 @@
 
 <span class="kw">impl</span>&lt;M&gt; LazySegmentTreeMap&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/monoid_action.rs.html#7">MonoidAction</a>,
+    </span>M: <a href="../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
     M::Act: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html">PartialEq</a>,
 {
     <span class="kw">pub fn </span>new(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
@@ -467,7 +467,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: <span class="kw-2">&amp;</span>M::Act) {
         <span class="kw">let </span>n = <a class="self" href="#60">self</a>.n;
-        <span class="kw">let </span>a = <a class="self" href="#60">self</a>.<a href="#56">get_mut</a>(<a href="#60">k</a>);
+        <span class="kw">let </span>a = <a class="self" href="#60">self</a>.<a href="#56-58">get_mut</a>(<a href="#60">k</a>);
         <span class="kw">let </span>nx = M::act_agg(<span class="kw-2">&amp;</span><a href="#62">a</a>.<span class="number">0</span>, <a href="#60">x</a>);
         <span class="kw">if </span>k &lt; n {
             <a href="#62">a</a>.<span class="number">1 </span>= M::act_operate(<span class="kw-2">&amp;</span><a href="#62">a</a>.<span class="number">1</span>, <a href="#60">x</a>);
@@ -475,8 +475,8 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(nx) = <a href="#63">nx</a> {
             <a href="#62">a</a>.<span class="number">0 </span>= <a href="#67">nx</a>;
         } <span class="kw">else if </span>k &lt; n {
-            <a class="self" href="#60">self</a>.<a href="#87">propagate_at</a>(<a href="#60">k</a>);
-            <a class="self" href="#60">self</a>.<a href="#77">recalc_at</a>(<a href="#60">k</a>);
+            <a class="self" href="#60">self</a>.<a href="#87-95">propagate_at</a>(<a href="#60">k</a>);
+            <a class="self" href="#60">self</a>.<a href="#77-85">recalc_at</a>(<a href="#60">k</a>);
         } <span class="kw">else </span>{
             <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.panic.html">panic!</a>(<span class="string">&quot;act failed on leaf&quot;</span>);
         }
@@ -489,7 +489,7 @@
             (<span class="prelude-val">Some</span>((x, <span class="kw">_</span>)), <span class="prelude-val">None</span>) =&gt; <a href="#81">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
             (<span class="prelude-val">Some</span>((x, <span class="kw">_</span>)), <span class="prelude-val">Some</span>((y, <span class="kw">_</span>))) =&gt; M::agg_operate(<a href="#82">x</a>, <a href="#82">y</a>),
         };
-        <a class="self" href="#77">self</a>.<a href="#56">get_mut</a>(<a href="#77">k</a>).<span class="number">0 </span>= <a href="#78">x</a>;
+        <a class="self" href="#77">self</a>.<a href="#56-58">get_mut</a>(<a href="#77">k</a>).<span class="number">0 </span>= <a href="#78">x</a>;
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
@@ -498,8 +498,8 @@
             <span class="prelude-val">Some</span>((<span class="kw">_</span>, x)) =&gt; <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<a href="#90">x</a>, M::act_unit()),
             <span class="prelude-val">None </span>=&gt; M::act_unit(),
         };
-        <a class="self" href="#87">self</a>.<a href="#60">update_at</a>(<span class="number">2 </span>* <a href="#87">k</a>, <span class="kw-2">&amp;</span><a href="#89">x</a>);
-        <a class="self" href="#87">self</a>.<a href="#60">update_at</a>(<span class="number">2 </span>* <a href="#87">k</a> + <span class="number">1</span>, <span class="kw-2">&amp;</span><a href="#89">x</a>);
+        <a class="self" href="#87">self</a>.<a href="#60-75">update_at</a>(<span class="number">2 </span>* <a href="#87">k</a>, <span class="kw-2">&amp;</span><a href="#89">x</a>);
+        <a class="self" href="#87">self</a>.<a href="#60-75">update_at</a>(<span class="number">2 </span>* <a href="#87">k</a> + <span class="number">1</span>, <span class="kw-2">&amp;</span><a href="#89">x</a>);
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>propagate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>, nofilt: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
@@ -524,8 +524,8 @@
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(r &lt;= <span class="self">self</span>.n);
         <span class="kw">let </span><span class="kw-2">mut </span>a = <a href="#114">l</a> + <a class="self" href="#114">self</a>.n;
         <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="#114">r</a> + <a class="self" href="#114">self</a>.n;
-        <a class="self" href="#114">self</a>.<a href="#97">propagate</a>(<a href="#117">a</a>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-        <a class="self" href="#114">self</a>.<a href="#97">propagate</a>(<a href="#118">b</a>, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
+        <a class="self" href="#114">self</a>.<a href="#97-104">propagate</a>(<a href="#117">a</a>, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
+        <a class="self" href="#114">self</a>.<a href="#97-104">propagate</a>(<a href="#118">b</a>, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
         <span class="kw">while </span>a &lt; b {
             <span class="kw">if </span>a &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
                 <span class="self">self</span>.update_at(a, <span class="kw-2">&amp;</span>x);
@@ -538,16 +538,16 @@
             a /= <span class="number">2</span>;
             b /= <span class="number">2</span>;
         }
-        <a class="self" href="#114">self</a>.<a href="#106">recalc</a>(<a href="#114">l</a> + <a class="self" href="#114">self</a>.n, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
-        <a class="self" href="#114">self</a>.<a href="#106">recalc</a>(<a href="#114">r</a> + <a class="self" href="#114">self</a>.n, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
+        <a class="self" href="#114">self</a>.<a href="#106-113">recalc</a>(<a href="#114">l</a> + <a class="self" href="#114">self</a>.n, <span class="bool-val">false</span>, <span class="bool-val">false</span>);
+        <a class="self" href="#114">self</a>.<a href="#106-113">recalc</a>(<a href="#114">r</a> + <a class="self" href="#114">self</a>.n, <span class="bool-val">true</span>, <span class="bool-val">false</span>);
     }
     <span class="kw">pub fn </span>fold(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::Agg {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(l &lt;= r);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(r &lt;= <span class="self">self</span>.n);
         <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="#136">l</a> + <a class="self" href="#136">self</a>.n;
         <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="#136">r</a> + <a class="self" href="#136">self</a>.n;
-        <a class="self" href="#136">self</a>.<a href="#97">propagate</a>(<a href="#139">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <a class="self" href="#136">self</a>.<a href="#97">propagate</a>(<a href="#140">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <a class="self" href="#136">self</a>.<a href="#97-104">propagate</a>(<a href="#139">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="#136">self</a>.<a href="#97-104">propagate</a>(<a href="#140">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>vl = M::agg_unit();
         <span class="kw">let </span><span class="kw-2">mut </span>vr = M::agg_unit();
         <span class="kw">while </span>l &lt; r {
@@ -570,15 +570,15 @@
     }
     <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::Agg) {
         <span class="kw">let </span>k = <a href="#163">k</a> + <a class="self" href="#163">self</a>.n;
-        <a class="self" href="#163">self</a>.<a href="#97">propagate</a>(<a href="#164">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <span class="kw-2">*</span><a class="self" href="#163">self</a>.<a href="#56">get_mut</a>(<a href="#164">k</a>) = (<a href="#163">x</a>, M::act_unit());
-        <a class="self" href="#163">self</a>.<a href="#106">recalc</a>(<a href="#164">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="#163">self</a>.<a href="#97-104">propagate</a>(<a href="#164">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <span class="kw-2">*</span><a class="self" href="#163">self</a>.<a href="#56-58">get_mut</a>(<a href="#164">k</a>) = (<a href="#163">x</a>, M::act_unit());
+        <a class="self" href="#163">self</a>.<a href="#106-113">recalc</a>(<a href="#164">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
     }
     <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::Agg {
-        <a class="self" href="#169">self</a>.<a href="#136">fold</a>(<a href="#169">k</a>, <a href="#169">k</a> + <span class="number">1</span>)
+        <a class="self" href="#169">self</a>.<a href="#136-162">fold</a>(<a href="#169">k</a>, <a href="#169">k</a> + <span class="number">1</span>)
     }
     <span class="kw">pub fn </span>fold_all(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; M::Agg {
-        <a class="self" href="#172">self</a>.<a href="#136">fold</a>(<span class="number">0</span>, <a class="self" href="#172">self</a>.n)
+        <a class="self" href="#172">self</a>.<a href="#136-162">fold</a>(<span class="number">0</span>, <a class="self" href="#172">self</a>.n)
     }
     <span class="kw">fn </span>bisect_perfect&lt;P&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>pos: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>acc: M::Agg, p: P) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, M::Agg)
     <span class="kw">where
@@ -623,8 +623,8 @@
     {
         <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="#212">l</a> + <a class="self" href="#212">self</a>.n;
         <span class="kw">let </span>r = <a href="#212">r</a> + <a class="self" href="#212">self</a>.n;
-        <a class="self" href="#212">self</a>.<a href="#97">propagate</a>(<a href="#216">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <a class="self" href="#212">self</a>.<a href="#97">propagate</a>(<a href="#217">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <a class="self" href="#212">self</a>.<a href="#97-104">propagate</a>(<a href="#216">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="#212">self</a>.<a href="#97-104">propagate</a>(<a href="#217">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
         <span class="kw">while </span>l &lt; r &gt;&gt; k {
@@ -664,8 +664,8 @@
     {
         <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="#253">l</a> + <a class="self" href="#253">self</a>.n;
         <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="#253">r</a> + <a class="self" href="#253">self</a>.n;
-        <a class="self" href="#253">self</a>.<a href="#97">propagate</a>(<a href="#257">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <a class="self" href="#253">self</a>.<a href="#97">propagate</a>(<a href="#258">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
+        <a class="self" href="#253">self</a>.<a href="#97-104">propagate</a>(<a href="#257">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
+        <a class="self" href="#253">self</a>.<a href="#97-104">propagate</a>(<a href="#258">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
@@ -747,7 +747,7 @@
         }
 
         <span class="comment">// Range Max Query &amp; Range Update Query &amp; Binary Search Query
-        </span><span class="kw">let </span><span class="kw-2">mut </span>arr = <span class="macro">vec!</span>[std::i64::MIN; N];
+        </span><span class="kw">let </span><span class="kw-2">mut </span>arr = <span class="macro">vec!</span>[i64::MIN; N];
         <span class="kw">let </span><span class="kw-2">mut </span>seg = LazySegmentTreeMap::&lt;RangeMaxRangeUpdate&lt;<span class="kw">_</span>&gt;&gt;::new(N);
         <span class="kw">for _ in </span><span class="number">0</span>..Q {
             <span class="macro">rand!</span>(rng, ty: (<span class="number">0</span>..<span class="number">4</span>), (l, r): (NotEmptySegment(N)));
@@ -770,7 +770,7 @@
                         seg.position_acc(l, r, |<span class="kw-2">&amp;</span>d| d &gt;= x),
                         arr[l..r]
                             .iter()
-                            .scan(std::i64::MIN, |acc, <span class="kw-2">&amp;</span>a| {
+                            .scan(i64::MIN, |acc, <span class="kw-2">&amp;</span>a| {
                                 <span class="kw-2">*</span>acc = a.max(<span class="kw-2">*</span>acc);
                                 <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
                             })
@@ -786,7 +786,7 @@
                         arr[l..r]
                             .iter()
                             .rev()
-                            .scan(std::i64::MIN, |acc, <span class="kw-2">&amp;</span>a| {
+                            .scan(i64::MIN, |acc, <span class="kw-2">&amp;</span>a| {
                                 <span class="kw-2">*</span>acc = a.max(<span class="kw-2">*</span>acc);
                                 <span class="prelude-val">Some</span>(<span class="kw-2">*</span>acc)
                             })

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/combinatorial_optimization/knapsack_problem.rs`."><title>knapsack_problem.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (e6d4725c7 2023-06-05)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-48600a9606eff342.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/combinatorial_optimization/knapsack_problem.rs`."><title>knapsack_problem.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -388,10 +388,6 @@
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
-<a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
-<a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>,
     <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">collections::VecDeque</a>,
@@ -400,13 +396,13 @@
 };
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>KnapsackPloblemSmallWeight {
+</span><span class="kw">pub struct </span><a href="../../../competitive/combinatorial_optimization/struct.KnapsackPloblemSmallWeight.html">KnapsackPloblemSmallWeight</a> {
     <span class="kw">pub </span>dp: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
 }
 
-<span class="kw">impl </span><a href="#9">KnapsackPloblemSmallWeight</a> {
+<span class="kw">impl </span><a href="#9-11">KnapsackPloblemSmallWeight</a> {
     <span class="kw">pub fn </span>new(max_weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>dp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[std::i64::MIN; max_weight + <span class="number">1</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>dp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[i64::MIN; max_weight + <span class="number">1</span>];
         <a href="#15">dp</a>[<span class="number">0</span>] = <span class="number">0</span>;
         <span class="self">Self </span>{ <a href="#15">dp</a> }
     }
@@ -415,7 +411,7 @@
     </span>}
     <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">for </span>i <span class="kw">in </span>weight..<span class="self">self</span>.dp.len() {
-            <span class="kw">if </span><span class="self">self</span>.dp[i - weight] != std::i64::MIN {
+            <span class="kw">if </span><span class="self">self</span>.dp[i - weight] != i64::MIN {
                 <span class="self">self</span>.dp[i] = <span class="self">self</span>.dp[i].max(<span class="self">self</span>.dp[i - weight] + value);
             }
         }
@@ -430,7 +426,7 @@
     }
     <span class="kw">pub fn </span>insert01(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">for </span>i <span class="kw">in </span>(weight..<span class="self">self</span>.dp.len()).rev() {
-            <span class="kw">if </span><span class="self">self</span>.dp[i - weight] != std::i64::MIN {
+            <span class="kw">if </span><span class="self">self</span>.dp[i - weight] != i64::MIN {
                 <span class="self">self</span>.dp[i] = <span class="self">self</span>.dp[i].max(<span class="self">self</span>.dp[i - weight] + value);
             }
         }
@@ -448,7 +444,7 @@
             <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::new();
             <span class="kw">let </span><span class="kw-2">mut </span>j = <span class="number">0</span>;
             <span class="kw">while </span>j * weight + i &lt; <span class="self">self</span>.dp.len() {
-                <span class="kw">if </span><span class="self">self</span>.dp[j * weight + i] != std::i64::MIN {
+                <span class="kw">if </span><span class="self">self</span>.dp[j * weight + i] != i64::MIN {
                     <span class="kw">let </span>v = <span class="self">self</span>.dp[j * weight + i] - j <span class="kw">as </span>i64 * value;
                     <span class="kw">while </span>deq.back().map(|<span class="kw-2">&amp;</span>(<span class="kw">_</span>, x)| x &lt;= v).unwrap_or_default() {
                         deq.pop_back();
@@ -479,7 +475,7 @@
             <span class="kw">let </span>k = b.min(count);
             count -= k;
             <span class="kw">for </span>i <span class="kw">in </span>(weight * k..<span class="self">self</span>.dp.len()).rev() {
-                <span class="kw">if </span><span class="self">self</span>.dp[i - weight * k] != std::i64::MIN {
+                <span class="kw">if </span><span class="self">self</span>.dp[i - weight * k] != i64::MIN {
                     <span class="self">self</span>.dp[i] = <span class="self">self</span>.dp[i].max(<span class="self">self</span>.dp[i - weight * k] + value * k <span class="kw">as </span>i64);
                 }
             }
@@ -495,15 +491,11 @@
         }
     }
     <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; {
-        <a class="self" href="#103">self</a>.dp
-            .iter()
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|&amp;&amp;dp| <a href="#106">dp</a> != std::i64::MIN)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">max</a>()
-            .cloned()
+        <a class="self" href="#103">self</a>.dp.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|&amp;&amp;dp| <a href="#104">dp</a> != i64::MIN).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">max</a>().cloned()
     }
     <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; {
-        <span class="kw">if </span><span class="self">self</span>.dp[weight] != std::i64::MIN {
-            <span class="prelude-val">Some</span>(<a class="self" href="#110">self</a>.dp[<a href="#110">weight</a>])
+        <span class="kw">if </span><span class="self">self</span>.dp[weight] != i64::MIN {
+            <span class="prelude-val">Some</span>(<a class="self" href="#106">self</a>.dp[<a href="#106">weight</a>])
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>}
@@ -511,19 +503,19 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>KnapsackPloblemSmallValue {
+</span><span class="kw">pub struct </span><a href="../../../competitive/combinatorial_optimization/struct.KnapsackPloblemSmallValue.html">KnapsackPloblemSmallValue</a> {
     <span class="kw">pub </span>dp: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
 }
 
-<span class="kw">impl </span><a href="#120">KnapsackPloblemSmallValue</a> {
+<span class="kw">impl </span><a href="#116-118">KnapsackPloblemSmallValue</a> {
     <span class="kw">pub fn </span>new(max_value: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>dp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[std::i64::MAX; max_value + <span class="number">1</span>];
-        <a href="#126">dp</a>[<span class="number">0</span>] = <span class="number">0</span>;
-        <span class="self">Self </span>{ <a href="#126">dp</a> }
+        <span class="kw">let </span><span class="kw-2">mut </span>dp = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[i64::MAX; max_value + <span class="number">1</span>];
+        <a href="#122">dp</a>[<span class="number">0</span>] = <span class="number">0</span>;
+        <span class="self">Self </span>{ <a href="#122">dp</a> }
     }
     <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
         <span class="kw">for </span>i <span class="kw">in </span>value..<span class="self">self</span>.dp.len() {
-            <span class="kw">if </span><span class="self">self</span>.dp[i - value] != std::i64::MAX {
+            <span class="kw">if </span><span class="self">self</span>.dp[i - value] != i64::MAX {
                 <span class="self">self</span>.dp[i] = <span class="self">self</span>.dp[i].min(<span class="self">self</span>.dp[i - value] + weight);
             }
         }
@@ -538,7 +530,7 @@
     }
     <span class="kw">pub fn </span>insert01(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
         <span class="kw">for </span>i <span class="kw">in </span>(value..<span class="self">self</span>.dp.len()).rev() {
-            <span class="kw">if </span><span class="self">self</span>.dp[i - value] != std::i64::MAX {
+            <span class="kw">if </span><span class="self">self</span>.dp[i - value] != i64::MAX {
                 <span class="self">self</span>.dp[i] = <span class="self">self</span>.dp[i].min(<span class="self">self</span>.dp[i - value] + weight);
             }
         }
@@ -557,7 +549,7 @@
             <span class="kw">let </span>k = b.min(count);
             count -= k;
             <span class="kw">for </span>i <span class="kw">in </span>(value * k..<span class="self">self</span>.dp.len()).rev() {
-                <span class="kw">if </span><span class="self">self</span>.dp[i - value * k] != std::i64::MAX {
+                <span class="kw">if </span><span class="self">self</span>.dp[i - value * k] != i64::MAX {
                     <span class="self">self</span>.dp[i] = <span class="self">self</span>.dp[i].min(<span class="self">self</span>.dp[i - value * k] + weight * k <span class="kw">as </span>i64);
                 }
             }
@@ -573,13 +565,13 @@
         }
     }
     <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>, max_weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
-        (<span class="number">0</span>..<a class="self" href="#181">self</a>.dp.len())
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|<span class="kw-2">&amp;</span>i| <a class="self" href="#181">self</a>.dp[<a href="#183">i</a>] &lt;= <a href="#181">max_weight</a>)
+        (<span class="number">0</span>..<a class="self" href="#177">self</a>.dp.len())
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|<span class="kw-2">&amp;</span>i| <a class="self" href="#177">self</a>.dp[<a href="#179">i</a>] &lt;= <a href="#177">max_weight</a>)
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">max</a>()
     }
     <span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, value: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt; {
-        <span class="kw">if </span><span class="self">self</span>.dp[value] != std::i64::MAX {
-            <span class="prelude-val">Some</span>(<a class="self" href="#186">self</a>.dp[<a href="#186">value</a>])
+        <span class="kw">if </span><span class="self">self</span>.dp[value] != i64::MAX {
+            <span class="prelude-val">Some</span>(<a class="self" href="#182">self</a>.dp[<a href="#182">value</a>])
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>}
@@ -587,12 +579,12 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>ZeroOneKnapsackProblemSmallItems {
+</span><span class="kw">pub struct </span><a href="../../../competitive/combinatorial_optimization/struct.ZeroOneKnapsackProblemSmallItems.html">ZeroOneKnapsackProblemSmallItems</a> {
     a: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt;,
     b: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt;,
 }
 
-<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="#196">ZeroOneKnapsackProblemSmallItems</a> {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="#192-195">ZeroOneKnapsackProblemSmallItems</a> {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             a: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(<span class="number">0</span>, <span class="number">0</span>)],
@@ -601,36 +593,36 @@
     }
 }
 
-<span class="kw">impl </span><a href="#196">ZeroOneKnapsackProblemSmallItems</a> {
+<span class="kw">impl </span><a href="#192-195">ZeroOneKnapsackProblemSmallItems</a> {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
     }
     <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>a_iter = <a class="self" href="#214">self</a>.a.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>b_iter = <a class="self" href="#214">self</a>.a.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw-2">&amp;</span>(v, w)| (<a href="#216">v</a> + <a href="#214">value</a>, <a href="#216">w</a> + <a href="#214">weight</a>));
-        <span class="kw">let </span><span class="kw-2">mut </span>c = Vec::with_capacity(<a class="self" href="#214">self</a>.a.len() * <span class="number">2</span>);
-        <span class="kw">let </span>(<span class="kw-2">mut </span>a_next, <span class="kw-2">mut </span>b_next) = (<a href="#215">a_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>(), <a href="#216">b_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>());
+        <span class="kw">let </span><span class="kw-2">mut </span>a_iter = <a class="self" href="#210">self</a>.a.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>b_iter = <a class="self" href="#210">self</a>.a.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw-2">&amp;</span>(v, w)| (<a href="#212">v</a> + <a href="#210">value</a>, <a href="#212">w</a> + <a href="#210">weight</a>));
+        <span class="kw">let </span><span class="kw-2">mut </span>c = Vec::with_capacity(<a class="self" href="#210">self</a>.a.len() * <span class="number">2</span>);
+        <span class="kw">let </span>(<span class="kw-2">mut </span>a_next, <span class="kw-2">mut </span>b_next) = (<a href="#211">a_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>(), <a href="#212">b_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>());
         <span class="kw">loop </span>{
-            <span class="kw">match </span>(<a href="#218">a_next</a>, <a href="#218">b_next</a>) {
-                (<span class="prelude-val">Some</span>(a), <span class="prelude-val">Some</span>(b)) =&gt; <span class="kw">match </span><a href="#221">a</a>.<span class="number">1</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#221">b</a>.<span class="number">1</span>) {
+            <span class="kw">match </span>(<a href="#214">a_next</a>, <a href="#214">b_next</a>) {
+                (<span class="prelude-val">Some</span>(a), <span class="prelude-val">Some</span>(b)) =&gt; <span class="kw">match </span><a href="#217">a</a>.<span class="number">1</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#217">b</a>.<span class="number">1</span>) {
                     Ordering::Less =&gt; {
-                        <a href="#217">c</a>.push(<a href="#221">a</a>);
-                        <a href="#218">a_next</a> = <a href="#215">a_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
+                        <a href="#213">c</a>.push(<a href="#217">a</a>);
+                        <a href="#214">a_next</a> = <a href="#211">a_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
                     }
                     Ordering::Equal =&gt; {
-                        <a href="#217">c</a>.push((<a href="#221">a</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#221">b</a>.<span class="number">0</span>), <a href="#221">a</a>.<span class="number">1</span>));
-                        <a href="#218">a_next</a> = <a href="#215">a_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
-                        <a href="#218">b_next</a> = <a href="#216">b_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
+                        <a href="#213">c</a>.push((<a href="#217">a</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a href="#217">b</a>.<span class="number">0</span>), <a href="#217">a</a>.<span class="number">1</span>));
+                        <a href="#214">a_next</a> = <a href="#211">a_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
+                        <a href="#214">b_next</a> = <a href="#212">b_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
                     }
                     Ordering::Greater =&gt; {
-                        <a href="#217">c</a>.push(<a href="#221">b</a>);
-                        <a href="#218">b_next</a> = <a href="#216">b_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
+                        <a href="#213">c</a>.push(<a href="#217">b</a>);
+                        <a href="#214">b_next</a> = <a href="#212">b_iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>();
                     }
                 },
                 (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(x)) | (<span class="prelude-val">Some</span>(x), <span class="prelude-val">None</span>) =&gt; {
-                    <a href="#217">c</a>.push(<a href="#236">x</a>);
-                    <a href="#217">c</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">extend</a>(<a href="#215">a_iter</a>);
-                    <a href="#217">c</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">extend</a>(<a href="#216">b_iter</a>);
+                    <a href="#213">c</a>.push(<a href="#232">x</a>);
+                    <a href="#213">c</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">extend</a>(<a href="#211">a_iter</a>);
+                    <a href="#213">c</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">extend</a>(<a href="#212">b_iter</a>);
                     <span class="kw">break</span>;
                 }
                 (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; {
@@ -638,9 +630,9 @@
                 }
             }
         }
-        <a class="self" href="#214">self</a>.a = <a href="#217">c</a>;
+        <a class="self" href="#210">self</a>.a = <a href="#213">c</a>;
         <span class="kw">if </span><span class="self">self</span>.a.len() &gt; <span class="self">self</span>.b.len() {
-            <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#214">self</a>.a, <span class="kw-2">&amp;mut </span><a class="self" href="#214">self</a>.b);
+            <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#210">self</a>.a, <span class="kw-2">&amp;mut </span><a class="self" href="#210">self</a>.b);
         }
     }
     <span class="kw">pub fn </span>extend&lt;I&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I)
@@ -664,14 +656,14 @@
                 ans = ans.max(a.<span class="number">0 </span>+ max);
             }
         }
-        <a href="#261">ans</a>
+        <a href="#257">ans</a>
     }
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>ZeroOneKnapsackPloblemBranchAndBound {
-    items: Vec&lt;<a href="#284">Item</a>&gt;,
-    gap: <a href="#284">Item</a>,
+</span><span class="kw">pub struct </span><a href="../../../competitive/combinatorial_optimization/struct.ZeroOneKnapsackPloblemBranchAndBound.html">ZeroOneKnapsackPloblemBranchAndBound</a> {
+    items: Vec&lt;<a href="#280-283">Item</a>&gt;,
+    gap: <a href="#280-283">Item</a>,
 }
 
 <span class="attr">#[derive(Copy, Clone, Default, Debug)]
@@ -679,38 +671,38 @@
     value: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>,
     weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>,
 }
-<span class="kw">impl </span>From&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt; <span class="kw">for </span><a href="#284">Item</a> {
+<span class="kw">impl </span>From&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt; <span class="kw">for </span><a href="#280-283">Item</a> {
     <span class="kw">fn </span>from(vw: (<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            value: <a href="#289">vw</a>.<span class="number">0</span>,
-            weight: <a href="#289">vw</a>.<span class="number">1</span>,
+            value: <a href="#285">vw</a>.<span class="number">0</span>,
+            weight: <a href="#285">vw</a>.<span class="number">1</span>,
         }
     }
 }
-<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a> <span class="kw">for </span><a href="#284">Item</a> {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a> <span class="kw">for </span><a href="#280-283">Item</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self </span>{
-            value: <a class="self" href="#298">self</a>.value + <a href="#298">rhs</a>.value,
-            weight: <a class="self" href="#298">self</a>.weight + <a href="#298">rhs</a>.weight,
+            value: <a class="self" href="#294">self</a>.value + <a href="#294">rhs</a>.value,
+            weight: <a class="self" href="#294">self</a>.weight + <a href="#294">rhs</a>.weight,
         }
     }
 }
-<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html">Neg</a> <span class="kw">for </span><a href="#284">Item</a> {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html">Neg</a> <span class="kw">for </span><a href="#280-283">Item</a> {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="self">Self </span>{
-            value: -<a class="self" href="#307">self</a>.value,
-            weight: -<a class="self" href="#307">self</a>.weight,
+            value: -<a class="self" href="#303">self</a>.value,
+            weight: -<a class="self" href="#303">self</a>.weight,
         }
     }
 }
-<span class="kw">impl </span><a href="#278">ZeroOneKnapsackPloblemBranchAndBound</a> {
+<span class="kw">impl </span><a href="#274-277">ZeroOneKnapsackPloblemBranchAndBound</a> {
     <span class="kw">pub fn </span>new&lt;I&gt;(iter: I) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>I: IntoIterator&lt;Item = (<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt;,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>items: Vec&lt;<a href="#284">Item</a>&gt; = <a href="#315">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html">From::from</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>items: Vec&lt;<a href="#280-283">Item</a>&gt; = <a href="#311">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html">From::from</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="kw">let </span><span class="kw-2">mut </span>gap = Item::default();
         <span class="kw">for </span>item <span class="kw">in </span><span class="kw-2">&amp;mut </span>items {
             <span class="kw">if </span>item.weight &lt; <span class="number">0 </span>{
@@ -718,11 +710,11 @@
                 <span class="kw-2">*</span>item = -<span class="kw-2">*</span>item;
             }
         }
-        <a href="#319">items</a>.sort_by(|i1, i2| {
-            (<a href="#327">i2</a>.value <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> * <a href="#327">i1</a>.weight <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a href="#327">i2</a>.value)
-                .<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span>(<a href="#327">i1</a>.value <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> * <a href="#327">i2</a>.weight <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a href="#327">i1</a>.value))
+        <a href="#315">items</a>.sort_by(|i1, i2| {
+            (<a href="#323">i2</a>.value <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> * <a href="#323">i1</a>.weight <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a href="#323">i2</a>.value)
+                .<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span>(<a href="#323">i1</a>.value <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> * <a href="#323">i2</a>.weight <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>, <a href="#323">i1</a>.value))
         });
-        <span class="self">Self </span>{ <a href="#319">items</a>, <a href="#320">gap</a> }
+        <span class="self">Self </span>{ <a href="#315">items</a>, <a href="#316">gap</a> }
     }
     <span class="kw">fn </span>solve_relax(<span class="kw-2">&amp;</span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>max_weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <span class="prelude-ty">Result</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>ans = <span class="number">0i64</span>;
@@ -737,17 +729,17 @@
                 <span class="kw">return </span><span class="prelude-val">Err</span>(ans <span class="kw">as </span>f64 + max_weight <span class="kw">as </span>f64 / weight <span class="kw">as </span>f64 * value <span class="kw">as </span>f64);
             }
         }
-        <span class="prelude-val">Ok</span>(<a href="#334">ans</a>)
+        <span class="prelude-val">Ok</span>(<a href="#330">ans</a>)
     }
-    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;</span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cur: <a href="#284">Item</a>, max_weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, max_value: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
+    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;</span><span class="self">self</span>, i: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cur: <a href="#280-283">Item</a>, max_weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>, max_value: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
         <span class="kw">if </span>i == <span class="self">self</span>.items.len() {
-            <span class="kw-2">*</span><a href="#348">max_value</a> = <a href="#348">cur</a>.value.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="kw-2">*</span><a href="#348">max_value</a>);
-            <span class="kw">return </span><a href="#348">cur</a>.value;
+            <span class="kw-2">*</span><a href="#344">max_value</a> = <a href="#344">cur</a>.value.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="kw-2">*</span><a href="#344">max_value</a>);
+            <span class="kw">return </span><a href="#344">cur</a>.value;
         }
-        <span class="kw">match </span><a class="self" href="#348">self</a>.<a href="#333">solve_relax</a>(<a href="#348">i</a>, <a href="#348">max_weight</a> - <a href="#348">cur</a>.weight) {
+        <span class="kw">match </span><a class="self" href="#344">self</a>.<a href="#329-343">solve_relax</a>(<a href="#344">i</a>, <a href="#344">max_weight</a> - <a href="#344">cur</a>.weight) {
             <span class="prelude-val">Ok</span>(relax) =&gt; {
-                <span class="kw-2">*</span><a href="#348">max_value</a> = (<a href="#354">relax</a> + <a href="#348">cur</a>.value).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="kw-2">*</span><a href="#348">max_value</a>);
-                <span class="kw">return </span><a href="#354">relax</a> + <a href="#348">cur</a>.value;
+                <span class="kw-2">*</span><a href="#344">max_value</a> = (<a href="#350">relax</a> + <a href="#344">cur</a>.value).<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="kw-2">*</span><a href="#344">max_value</a>);
+                <span class="kw">return </span><a href="#350">relax</a> + <a href="#344">cur</a>.value;
             }
             <span class="prelude-val">Err</span>(relax) =&gt; {
                 <span class="kw">if </span><span class="kw-2">*</span>max_value <span class="kw">as </span>f64 &gt; (relax + cur.value <span class="kw">as </span>f64) {
@@ -757,17 +749,17 @@
         }
         <span class="kw">let </span><span class="kw-2">mut </span>ans = <span class="number">0i64</span>;
         <span class="kw">if </span>cur.weight + <span class="self">self</span>.items[i].weight &lt;= max_weight {
-            <a href="#364">ans</a> = <a href="#364">ans</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a class="self" href="#348">self</a>.<a href="#348">dfs</a>(<a href="#348">i</a> + <span class="number">1</span>, <a href="#348">cur</a> + <a class="self" href="#348">self</a>.items[<a href="#348">i</a>], <a href="#348">max_weight</a>, <a href="#348">max_value</a>));
+            <a href="#360">ans</a> = <a href="#360">ans</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a class="self" href="#344">self</a>.<a href="#344-365">dfs</a>(<a href="#344">i</a> + <span class="number">1</span>, <a href="#344">cur</a> + <a class="self" href="#344">self</a>.items[<a href="#344">i</a>], <a href="#344">max_weight</a>, <a href="#344">max_value</a>));
         }
-        <a href="#364">ans</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a class="self" href="#348">self</a>.<a href="#348">dfs</a>(<a href="#348">i</a> + <span class="number">1</span>, <a href="#348">cur</a>, <a href="#348">max_weight</a>, <a href="#348">max_value</a>))
+        <a href="#360">ans</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<a class="self" href="#344">self</a>.<a href="#344-365">dfs</a>(<a href="#344">i</a> + <span class="number">1</span>, <a href="#344">cur</a>, <a href="#344">max_weight</a>, <a href="#344">max_value</a>))
     }
     <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>, max_weight: <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
-        <a class="self" href="#370">self</a>.<a href="#348">dfs</a>(
+        <a class="self" href="#366">self</a>.<a href="#344-365">dfs</a>(
             <span class="number">0</span>,
             <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
-            <a href="#370">max_weight</a> - <a class="self" href="#370">self</a>.gap.weight,
+            <a href="#366">max_weight</a> - <a class="self" href="#366">self</a>.gap.weight,
             <span class="kw-2">&amp;mut </span><span class="number">0i64</span>,
-        ) + <a class="self" href="#370">self</a>.gap.value
+        ) + <a class="self" href="#366">self</a>.gap.value
     }
 }
 </code></pre></div></section></main></body></html>

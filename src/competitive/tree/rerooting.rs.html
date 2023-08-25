@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/rerooting.rs`."><title>rerooting.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (e6d4725c7 2023-06-05)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-48600a9606eff342.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/rerooting.rs`."><title>rerooting.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -113,8 +113,8 @@
 <a href="#97" id="97">97</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! dynamic programming on all-rooted trees
 
-</span><span class="kw">use </span><a href="../algebra/magma.rs.html#45"><span class="kw">crate</span>::algebra::Monoid</a>;
-<span class="kw">use </span><span class="kw">crate</span>::graph::{<a href="../graph/sparse_graph.rs.html#17">Adjacency</a>, <a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>};
+</span><span class="kw">use </span><a href="../algebra/magma.rs.html#45-58"><span class="kw">crate</span>::algebra::Monoid</a>;
+<span class="kw">use </span><span class="kw">crate</span>::graph::{<a href="../graph/sparse_graph.rs.html#17-20">Adjacency</a>, <a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>};
 
 <span class="attr">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>, include(<span class="string">&quot;algebra&quot;</span>, <span class="string">&quot;SparseGraph&quot;</span>))]
 </span><span class="doccomment">/// dynamic programming on all-rooted trees
@@ -122,7 +122,7 @@
 /// caluculate all subtrees (hanging on the edge) in specific ordering,
 /// each subtree calculated in the order of merge and rooting
 </span><span class="attr">#[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span>ReRooting&lt;<span class="lifetime">&#39;a</span>, M: <a href="../algebra/magma.rs.html#45">Monoid</a>, F: Fn(<span class="kw-2">&amp;</span>M::T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; M::T&gt; {
+</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.ReRooting.html">ReRooting</a>&lt;<span class="lifetime">&#39;a</span>, M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>, F: Fn(<span class="kw-2">&amp;</span>M::T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; M::T&gt; {
     graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
     <span class="doccomment">/// dp\[v\]: result of v-rooted tree
     </span><span class="kw">pub </span>dp: Vec&lt;M::T&gt;,
@@ -134,7 +134,7 @@
 <span class="attr">#[codesnip::entry(<span class="string">&quot;ReRooting&quot;</span>)]
 </span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, M, F&gt; ReRooting&lt;<span class="lifetime">&#39;a</span>, M, F&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
     F: Fn(<span class="kw-2">&amp;</span>M::T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) -&gt; M::T,
 {
     <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>, rooting: F) -&gt; <span class="self">Self </span>{
@@ -146,16 +146,16 @@
             <a href="#29">ep</a>,
             <a href="#27">rooting</a>,
         };
-        <a href="#30">self_</a>.<a href="#91">rerooting</a>();
+        <a href="#30">self_</a>.<a href="#91-96">rerooting</a>();
         <a href="#30">self_</a>
     }
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>eidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, a: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#17">Adjacency</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a href="#40">a</a>.id + <a class="self" href="#40">self</a>.graph.<a href="../graph/sparse_graph.rs.html#43">edges_size</a>() * (<a href="#40">u</a> &gt; <a href="#40">a</a>.to) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
+    </span><span class="kw">fn </span>eidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, a: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#17-20">Adjacency</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="#40">a</a>.id + <a class="self" href="#40">self</a>.graph.<a href="../graph/sparse_graph.rs.html#43-45">edges_size</a>() * (<a href="#40">u</a> &gt; <a href="#40">a</a>.to) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>reidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, a: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#17">Adjacency</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a href="#44">a</a>.id + <a class="self" href="#44">self</a>.graph.<a href="../graph/sparse_graph.rs.html#43">edges_size</a>() * (<a href="#44">u</a> &lt; <a href="#44">a</a>.to) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
+    </span><span class="kw">fn </span>reidx(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, a: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#17-20">Adjacency</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
+        <a href="#44">a</a>.id + <a class="self" href="#44">self</a>.graph.<a href="../graph/sparse_graph.rs.html#43-45">edges_size</a>() * (<a href="#44">u</a> &lt; <a href="#44">a</a>.to) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>merge(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, y: <span class="kw-2">&amp;</span>M::T) -&gt; M::T {
@@ -169,18 +169,18 @@
     </span><span class="kw">fn </span>add_root(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>M::T, vid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
         (<a class="self" href="#56">self</a>.rooting)(<a href="#56">x</a>, <a href="#56">vid</a>, <span class="prelude-val">None</span>)
     }
-    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pa: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#17">Adjacency</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
+    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pa: <span class="kw-2">&amp;</span><a href="../graph/sparse_graph.rs.html#17-20">Adjacency</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>u = <a href="#59">pa</a>.to;
-        <span class="kw">let </span>pi = <a class="self" href="#59">self</a>.<a href="#40">eidx</a>(<a href="#59">p</a>, <a href="#59">pa</a>);
+        <span class="kw">let </span>pi = <a class="self" href="#59">self</a>.<a href="#40-42">eidx</a>(<a href="#59">p</a>, <a href="#59">pa</a>);
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).filter(|a| a.to != p) {
             <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
             <span class="self">self</span>.dfs(a, u);
             <span class="self">self</span>.ep[pi] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span><span class="self">self</span>.ep[pi], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
         }
-        <a class="self" href="#59">self</a>.ep[<a href="#61">pi</a>] = <a class="self" href="#59">self</a>.<a href="#52">add_subroot</a>(<span class="kw-2">&amp;</span><a class="self" href="#59">self</a>.ep[<a href="#61">pi</a>], <a href="#60">u</a>, <a href="#59">pa</a>.id);
+        <a class="self" href="#59">self</a>.ep[<a href="#61">pi</a>] = <a class="self" href="#59">self</a>.<a href="#52-54">add_subroot</a>(<span class="kw-2">&amp;</span><a class="self" href="#59">self</a>.ep[<a href="#61">pi</a>], <a href="#60">u</a>, <a href="#59">pa</a>.id);
     }
     <span class="kw">fn </span>efs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-        <span class="kw">let </span>m = <a class="self" href="#69">self</a>.graph.<a href="../graph/sparse_graph.rs.html#51">adjacencies</a>(<a href="#69">u</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html">len</a>();
+        <span class="kw">let </span>m = <a class="self" href="#69">self</a>.graph.<a href="../graph/sparse_graph.rs.html#51-53">adjacencies</a>(<a href="#69">u</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html">len</a>();
         <span class="kw">let </span><span class="kw-2">mut </span>left = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); m + <span class="number">1</span>];
         <span class="kw">let </span><span class="kw-2">mut </span>right = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[M::unit(); m + <span class="number">1</span>];
         <span class="kw">for </span>(k, a) <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).enumerate() {
@@ -191,7 +191,7 @@
             <span class="kw">let </span>i = <span class="self">self</span>.eidx(u, a);
             right[k] = <span class="self">self</span>.merge(<span class="kw-2">&amp;</span>right[k + <span class="number">1</span>], <span class="kw-2">&amp;</span><span class="self">self</span>.ep[i]);
         }
-        <a class="self" href="#69">self</a>.dp[<a href="#69">u</a>] = <a class="self" href="#69">self</a>.<a href="#56">add_root</a>(<span class="kw-2">&amp;</span><a href="#71">left</a>[<a href="#70">m</a>], <a href="#69">u</a>);
+        <a class="self" href="#69">self</a>.dp[<a href="#69">u</a>] = <a class="self" href="#69">self</a>.<a href="#56-58">add_root</a>(<span class="kw-2">&amp;</span><a href="#71">left</a>[<a href="#70">m</a>], <a href="#69">u</a>);
         <span class="kw">for </span>(k, a) <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).enumerate() {
             <span class="kw">if </span>a.to != p {
                 <span class="kw">let </span>i = <span class="self">self</span>.reidx(u, a);
@@ -205,7 +205,7 @@
         <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(<span class="number">0</span>) {
             <span class="self">self</span>.dfs(a, <span class="number">0</span>);
         }
-        <a class="self" href="#91">self</a>.<a href="#69">efs</a>(<span class="number">0</span>, std::usize::MAX);
+        <a class="self" href="#91">self</a>.<a href="#69-90">efs</a>(<span class="number">0</span>, usize::MAX);
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algebra/ring_operations.rs`."><title>ring_operations.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (e6d4725c7 2023-06-05)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-48600a9606eff342.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algebra/ring_operations.rs`."><title>ring_operations.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -126,18 +126,18 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="mod.rs.html#14">magma</a>::<span class="kw-2">*</span>, <a href="operations.rs.html#374">operations::BitXorOperation</a>, <a href="mod.rs.html#24">ring</a>::<span class="kw-2">*</span>};
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="mod.rs.html#14">magma</a>::<span class="kw-2">*</span>, <a href="operations.rs.html#462-467">operations::BitXorOperation</a>, <a href="mod.rs.html#24">ring</a>::<span class="kw-2">*</span>};
 
 <span class="attr">#[codesnip::entry(<span class="string">&quot;Gf2_63&quot;</span>)]
 </span><span class="kw">pub use </span><a href="#8"><span class="self">self</span>::gf2_63::Gf2_63</a>;
 <span class="attr">#[codesnip::entry(<span class="string">&quot;Gf2_63&quot;</span>, include(<span class="string">&quot;BitXorOperation&quot;</span>, <span class="string">&quot;ring&quot;</span>))]
 </span><span class="kw">mod </span>gf2_63 {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">pub enum </span>Gf2_63 {}
+    <span class="kw">pub enum </span><a href="../../../competitive/algebra/enum.Gf2_63.html">Gf2_63</a> {}
     <span class="kw">impl </span><a href="#8">Gf2_63</a> {
         <span class="kw">pub const </span>MOD: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = <span class="number">1 </span>&lt;&lt; <span class="number">63</span>;
     }
-    <span class="kw">impl </span><a href="magma.rs.html#4">Magma</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {
+    <span class="kw">impl </span><a href="magma.rs.html#4-17">Magma</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {
         <span class="kw">type </span>T = <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
             <span class="kw">use </span>core::arch::x86_64::{_mm_clmulepi64_si128, _mm_extract_epi64, _mm_set_epi64x};
@@ -167,14 +167,14 @@
             // }
         </span>}
     }
-    <span class="kw">impl </span><a href="magma.rs.html#28">Unital</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {
+    <span class="kw">impl </span><a href="magma.rs.html#28-42">Unital</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {
         <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
             <span class="number">1
         </span>}
     }
     <span class="kw">impl </span><a href="magma.rs.html#20">Associative</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {}
     <span class="kw">impl </span><a href="magma.rs.html#78">Commutative</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {}
-    <span class="kw">impl </span><a href="ring.rs.html#7">SemiRing</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {
+    <span class="kw">impl </span><a href="ring.rs.html#7-27">SemiRing</a> <span class="kw">for </span><a href="#8">Gf2_63</a> {
         <span class="kw">type </span>T = <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">type </span>Additive = BitXorOperation&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;;
         <span class="kw">type </span>Multiplicative = <span class="self">Self</span>;
@@ -187,7 +187,7 @@
 </span><span class="kw">mod </span>mersenne61 {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">pub enum </span>Mersenne61Add {}
-    <span class="kw">impl </span><a href="magma.rs.html#4">Magma</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {
+    <span class="kw">impl </span><a href="magma.rs.html#4-17">Magma</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {
         <span class="kw">type </span>T = <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
             <span class="kw">let </span><span class="kw-2">mut </span>z = <a href="#64">x</a> + <a href="#64">y</a>;
@@ -197,14 +197,14 @@
             <a href="#65">z</a>
         }
     }
-    <span class="kw">impl </span><a href="magma.rs.html#28">Unital</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {
+    <span class="kw">impl </span><a href="magma.rs.html#28-42">Unital</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {
         <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
             <span class="number">0
         </span>}
     }
     <span class="kw">impl </span><a href="magma.rs.html#20">Associative</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {}
     <span class="kw">impl </span><a href="magma.rs.html#78">Commutative</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {}
-    <span class="kw">impl </span><a href="magma.rs.html#63">Invertible</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {
+    <span class="kw">impl </span><a href="magma.rs.html#63-70">Invertible</a> <span class="kw">for </span><a href="#61">Mersenne61Add</a> {
         <span class="kw">fn </span>inverse(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
             <span class="kw">if </span><span class="kw-2">*</span>x == <span class="number">0 </span>{
                 <span class="number">0
@@ -214,25 +214,25 @@
         }
     }
 
-    <span class="kw">pub enum </span>Mersenne61 {}
+    <span class="kw">pub enum </span><a href="../../../competitive/algebra/enum.Mersenne61.html">Mersenne61</a> {}
     <span class="kw">impl </span><a href="#89">Mersenne61</a> {
         <span class="kw">pub const </span>MOD: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> = (<span class="number">1 </span>&lt;&lt; <span class="number">61</span>) - <span class="number">1</span>;
     }
-    <span class="kw">impl </span><a href="magma.rs.html#4">Magma</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {
+    <span class="kw">impl </span><a href="magma.rs.html#4-17">Magma</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {
         <span class="kw">type </span>T = <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">fn </span>operate(x: <span class="kw-2">&amp;</span><span class="self">Self</span>::T, y: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
             <span class="kw">let </span>z = <span class="kw-2">*</span><a href="#95">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <span class="kw-2">*</span><a href="#95">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>;
             Mersenne61Add::operate(<span class="kw-2">&amp;</span>((<a href="#96">z</a> &gt;&gt; <span class="number">61</span>) <span class="kw">as _</span>), <span class="kw-2">&amp;</span>(<a href="#96">z</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> &amp; <span class="self">Self</span>::MOD))
         }
     }
-    <span class="kw">impl </span><a href="magma.rs.html#28">Unital</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {
+    <span class="kw">impl </span><a href="magma.rs.html#28-42">Unital</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {
         <span class="kw">fn </span>unit() -&gt; <span class="self">Self</span>::T {
             <span class="number">1
         </span>}
     }
     <span class="kw">impl </span><a href="magma.rs.html#20">Associative</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {}
     <span class="kw">impl </span><a href="magma.rs.html#78">Commutative</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {}
-    <span class="kw">impl </span><a href="ring.rs.html#7">SemiRing</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {
+    <span class="kw">impl </span><a href="ring.rs.html#7-27">SemiRing</a> <span class="kw">for </span><a href="#89">Mersenne61</a> {
         <span class="kw">type </span>T = <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">type </span>Additive = <a href="#61">Mersenne61Add</a>;
         <span class="kw">type </span>Multiplicative = <span class="self">Self</span>;

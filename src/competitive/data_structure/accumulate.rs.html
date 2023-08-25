@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/accumulate.rs`."><title>accumulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-2fcac8296ac587d8.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (e6d4725c7 2023-06-05)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-48600a9606eff342.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/accumulate.rs`."><title>accumulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (58eefc33a 2023-08-24)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-b2d31d2efc7e9b67.css" data-theme-dark-css="dark-3388a2fb2ef8066b.css" data-theme-ayu-css="ayu-8c3c66a6cf12cb2f.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-b2d31d2efc7e9b67.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-3388a2fb2ef8066b.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,7 +14,7 @@
     });
   });
 </script>
-</head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../competitive/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -145,59 +145,235 @@
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="../algebra/magma.rs.html#73">Group</a>, <a href="../algebra/magma.rs.html#45">Monoid</a>};
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="../algebra/magma.rs.html#86">AbelianGroup</a>, <a href="../algebra/magma.rs.html#81">AbelianMonoid</a>, <a href="../algebra/magma.rs.html#73">Group</a>, <a href="../algebra/magma.rs.html#45-58">Monoid</a>, <a href="../num/discrete_steps.rs.html#134-192">RangeBoundsExt</a>};
 <span class="kw">use </span>std::{
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>},
     <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html">iter::FromIterator</a>,
+    <a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">ops::RangeBounds</a>,
 };
 
 <span class="doccomment">/// Accumlated data
-</span><span class="kw">pub struct </span>Accumulate&lt;M&gt;
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.Accumulate.html">Accumulate</a>&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
     data: Vec&lt;M::T&gt;,
 }
 
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
     M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#20">f</a>.debug_struct(<span class="string">&quot;Accumulate&quot;</span>)
-            .field(<span class="string">&quot;data&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#20">self</a>.data)
+        <a href="#21">f</a>.debug_struct(<span class="string">&quot;Accumulate&quot;</span>)
+            .field(<span class="string">&quot;data&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#21">self</a>.data)
             .finish()
     }
 }
 
 <span class="kw">impl</span>&lt;M&gt; FromIterator&lt;M::T&gt; <span class="kw">for </span>Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
     <span class="kw">fn </span>from_iter&lt;T&gt;(iter: T) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>T: IntoIterator&lt;Item = M::T&gt;,
     {
-        <span class="kw">let </span>iter = <a href="#31">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>();
-        <span class="kw">let </span>(lower, <span class="kw">_</span>) = <a href="#35">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">size_hint</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity(<a href="#36">lower</a>.saturating_add(<span class="number">1</span>));
+        <span class="kw">let </span>iter = <a href="#32">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>();
+        <span class="kw">let </span>(lower, <span class="kw">_</span>) = <a href="#36">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">size_hint</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity(<a href="#37">lower</a>.saturating_add(<span class="number">1</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
         <span class="kw">for </span>x <span class="kw">in </span>iter {
             <span class="kw">let </span>y = M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span>x);
             data.push(acc);
             acc = y;
         }
-        <a href="#37">data</a>.push(<a href="#38">acc</a>);
-        <span class="self">Self </span>{ <a href="#37">data</a> }
+        <a href="#38">data</a>.push(<a href="#39">acc</a>);
+        <span class="self">Self </span>{ <a href="#38">data</a> }
     }
 }
 
 <span class="kw">impl</span>&lt;M&gt; Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="../algebra/magma.rs.html#45">Monoid</a>,
+    </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
-    <span class="doccomment">/// Return accumlate of \[0, k\)
+    <span class="doccomment">/// Return fold of \[0, k\)
     </span><span class="kw">pub fn </span>accumulate(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
             k &lt; <span class="self">self</span>.data.len(),
@@ -205,26 +381,136 @@
             <span class="self">self</span>.data.len(),
             k
         );
-        <span class="kw">unsafe </span>{ <a class="self" href="#54">self</a>.data.get_unchecked(<a href="#54">k</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        <span class="kw">unsafe </span>{ <a class="self" href="#55">self</a>.data.get_unchecked(<a href="#55">k</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
     }
 }
 
-<span class="kw">impl</span>&lt;G&gt; Accumulate&lt;G&gt;
+<span class="kw">impl</span>&lt;M&gt; Accumulate&lt;M&gt;
 <span class="kw">where
-    </span>G: <a href="../algebra/magma.rs.html#73">Group</a>,
+    </span>M: <a href="../algebra/magma.rs.html#73">Group</a>,
 {
-    <span class="doccomment">/// Return fold of \[l, r\)
-    </span><span class="kw">pub fn </span>fold(<span class="kw-2">&amp;</span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; G::T {
+    <span class="doccomment">/// Return fold of range
+    </span><span class="kw">pub fn </span>fold&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range: R) -&gt; M::T
+    <span class="kw">where
+        </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    {
+        <span class="kw">let </span>n = <a class="self" href="#71">self</a>.data.len() - <span class="number">1</span>;
+        <span class="kw">let </span>range = <a href="#71">range</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a href="#75">n</a>).expect(<span class="string">&quot;invalid range&quot;</span>);
+        <span class="kw">let </span>(l, r) = (<a href="#76">range</a>.start, <a href="#76">range</a>.end);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(l &lt;= r, <span class="string">&quot;bad range [{}, {})&quot;</span>, l, r);
-        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
-            r &lt; <span class="self">self</span>.data.len(),
-            <span class="string">&quot;index out of range: the len is {} but the index is {}&quot;</span>,
-            <span class="self">self</span>.data.len(),
-            r
-        );
-        G::operate(<span class="kw-2">&amp;</span>G::inverse(<span class="kw">unsafe </span>{ <a class="self" href="#70">self</a>.data.get_unchecked(<a href="#70">l</a>) }), <span class="kw">unsafe </span>{
-            <a class="self" href="#70">self</a>.data.get_unchecked(<a href="#70">r</a>)
+        M::operate(<span class="kw-2">&amp;</span>M::inverse(<span class="kw">unsafe </span>{ <a class="self" href="#71">self</a>.data.get_unchecked(<a href="#77">l</a>) }), <span class="kw">unsafe </span>{
+            <a class="self" href="#71">self</a>.data.get_unchecked(<a href="#77">r</a>)
         })
+    }
+}
+
+<span class="doccomment">/// 2-dimensional accumlated data
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.Accumulate2d.html">Accumulate2d</a>&lt;M&gt;
+<span class="kw">where
+    </span>M: <a href="../algebra/magma.rs.html#81">AbelianMonoid</a>,
+{
+    h: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    w: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    data: Vec&lt;M::T&gt;,
+}
+
+<span class="kw">impl</span>&lt;M&gt; Accumulate2d&lt;M&gt;
+<span class="kw">where
+    </span>M: <a href="../algebra/magma.rs.html#81">AbelianMonoid</a>,
+{
+    <span class="kw">pub fn </span>new(arr2d: <span class="kw-2">&amp;</span>[Vec&lt;M::T&gt;]) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>h = <a href="#99">arr2d</a>.len();
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(h &gt; <span class="number">0</span>);
+        <span class="kw">let </span>w = <a href="#99">arr2d</a>[<span class="number">0</span>].len();
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(w &gt; <span class="number">0</span>);
+        <span class="kw">let </span>w1 = <a href="#102">w</a> + <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity((<a href="#100">h</a> + <span class="number">1</span>) * <a href="#104">w1</a>);
+        <a href="#105">data</a>.resize_with(<a href="#104">w1</a>, M::unit);
+        <span class="kw">for </span>(i, arr) <span class="kw">in </span>arr2d.iter().enumerate() {
+            <span class="macro">assert_eq!</span>(w, arr.len(), <span class="string">&quot;expected 2d array&quot;</span>);
+            <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
+            <span class="kw">for </span>(j, x) <span class="kw">in </span>arr.iter().enumerate() {
+                <span class="kw">let </span>y = M::operate(<span class="kw-2">&amp;</span>acc, x);
+                data.push(M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ data.get_unchecked(w1 * i + j) }));
+                acc = y;
+            }
+            data.push(M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ data.get_unchecked(w1 * i + w) }));
+        }
+        <span class="self">Self </span>{ <a href="#100">h</a>, <a href="#102">w</a>, <a href="#105">data</a> }
+    }
+    <span class="kw">pub fn </span>from_fn&lt;F&gt;(h: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, w: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>f: F) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>F: FnMut(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T,
+    {
+        <span class="kw">let </span>w1 = <a href="#119">w</a> + <span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity((<a href="#119">h</a> + <span class="number">1</span>) * <a href="#123">w1</a>);
+        <a href="#124">data</a>.resize_with(<a href="#123">w1</a>, M::unit);
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..h {
+            <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
+            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..w {
+                <span class="kw">let </span>y = M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span>f(i, j));
+                data.push(M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ data.get_unchecked(w1 * i + j) }));
+                acc = y;
+            }
+            data.push(M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw">unsafe </span>{ data.get_unchecked(w1 * i + w) }));
+        }
+        <span class="self">Self </span>{ <a href="#119">h</a>, <a href="#119">w</a>, <a href="#124">data</a> }
+    }
+}
+
+<span class="kw">impl</span>&lt;M&gt; Accumulate2d&lt;M&gt;
+<span class="kw">where
+    </span>M: <a href="../algebra/magma.rs.html#81">AbelianMonoid</a>,
+{
+    <span class="doccomment">/// Return fold of \[0, x\) × \[0, y\)
+    </span><span class="kw">pub fn </span>accumulate(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T {
+        <span class="kw">let </span>h1 = <a class="self" href="#144">self</a>.h + <span class="number">1</span>;
+        <span class="kw">let </span>w1 = <a class="self" href="#144">self</a>.w + <span class="number">1</span>;
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
+            x &lt; h1,
+            <span class="string">&quot;index out of range: the first len is {} but the index is {}&quot;</span>,
+            h1,
+            x
+        );
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
+            y &lt; w1,
+            <span class="string">&quot;index out of range: the second len is {} but the index is {}&quot;</span>,
+            w1,
+            y
+        );
+        <span class="kw">unsafe </span>{ <a class="self" href="#144">self</a>.data.get_unchecked(<a href="#146">w1</a> * <a href="#144">x</a> + <a href="#144">y</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+    }
+}
+
+<span class="kw">impl</span>&lt;M&gt; Accumulate2d&lt;M&gt;
+<span class="kw">where
+    </span>M: <a href="../algebra/magma.rs.html#86">AbelianGroup</a>,
+{
+    <span class="doccomment">/// Return fold of range
+    </span><span class="kw">pub fn </span>fold&lt;R0, R1&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, range0: R0, range1: R1) -&gt; M::T
+    <span class="kw">where
+        </span>R0: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+        R1: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    {
+        <span class="kw">let </span>range0 = <a href="#168">range0</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a class="self" href="#168">self</a>.h).expect(<span class="string">&quot;invalid range&quot;</span>);
+        <span class="kw">let </span>range1 = <a href="#168">range1</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a class="self" href="#168">self</a>.w).expect(<span class="string">&quot;invalid range&quot;</span>);
+        <span class="kw">let </span>(xl, xr) = (<a href="#173">range0</a>.start, <a href="#173">range0</a>.end);
+        <span class="kw">let </span>(yl, yr) = (<a href="#174">range1</a>.start, <a href="#174">range1</a>.end);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(xl &lt;= xr, <span class="string">&quot;bad range [{}, {})&quot;</span>, xl, xr);
+        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(yl &lt;= yr, <span class="string">&quot;bad range [{}, {})&quot;</span>, yl, yr);
+        <span class="kw">let </span>w1 = <a class="self" href="#168">self</a>.w + <span class="number">1</span>;
+        <span class="kw">unsafe </span>{
+            M::rinv_operate(
+                <span class="kw-2">&amp;</span>M::operate(
+                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xl</a> + <a href="#176">yl</a>),
+                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xr</a> + <a href="#176">yr</a>),
+                ),
+                <span class="kw-2">&amp;</span>M::operate(
+                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xl</a> + <a href="#176">yr</a>),
+                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xr</a> + <a href="#176">yl</a>),
+                ),
+            )
+        }
     }
 }
 
@@ -232,12 +518,13 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
-        algebra::{LinearOperation, Magma, Unital},
+        algebra::{AdditiveOperation, LinearOperation, Magma, Unital},
         num::mint_basic::MInt1000000007,
         rand,
         tools::{RandomSpec, Xorshift},
     };
     <span class="kw">type </span>M = LinearOperation&lt;MInt1000000007&gt;;
+    <span class="kw">type </span>A = AdditiveOperation&lt;MInt1000000007&gt;;
     <span class="kw">struct </span>D;
     <span class="kw">impl </span>RandomSpec&lt;MInt1000000007&gt; <span class="kw">for </span>D {
         <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>Xorshift) -&gt; MInt1000000007 {
@@ -248,31 +535,94 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_accumlate() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-        <span class="kw">const </span>N: usize = <span class="number">1_000_000</span>;
-        <span class="macro">rand!</span>(rng, v: [(D, D); N]);
-        <span class="kw">let </span>acc: Accumulate&lt;M&gt; = v.iter().cloned().collect();
-        <span class="kw">let </span><span class="kw-2">mut </span>d = <span class="macro">vec!</span>[M::unit(); N + <span class="number">1</span>];
-        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N {
-            d[i + <span class="number">1</span>] = M::operate(<span class="kw-2">&amp;</span>d[i], <span class="kw-2">&amp;</span>v[i]);
-        }
-        <span class="kw">for </span>(k, d) <span class="kw">in </span>d.iter().enumerate() {
-            <span class="macro">assert_eq!</span>(acc.accumulate(k), <span class="kw-2">*</span>d);
+        <span class="kw">const </span>Q: usize = <span class="number">1_000</span>;
+        <span class="kw">const </span>N: usize = <span class="number">50</span>;
+        <span class="kw">for </span>n <span class="kw">in </span><span class="number">0</span>..Q {
+            <span class="kw">let </span>n = n % N;
+            <span class="macro">rand!</span>(rng, v: [(D, D); n]);
+            <span class="kw">let </span>acc: Accumulate&lt;M&gt; = v.iter().cloned().collect();
+            <span class="kw">for </span>r <span class="kw">in </span><span class="number">0</span>..=n {
+                <span class="macro">assert_eq!</span>(
+                    v[..r].iter().fold(M::unit(), |x, y| M::operate(<span class="kw-2">&amp;</span>x, y)),
+                    acc.accumulate(r)
+                );
+                <span class="kw">for </span>l <span class="kw">in </span><span class="number">0</span>..=r {
+                    <span class="macro">assert_eq!</span>(
+                        v[l..r].iter().fold(M::unit(), |x, y| M::operate(<span class="kw-2">&amp;</span>x, y)),
+                        acc.fold(l..r)
+                    );
+                }
+            }
         }
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_fold() {
+    </span><span class="kw">fn </span>test_accumlate2d() {
         <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-        <span class="kw">const </span>N: usize = <span class="number">1_000</span>;
-        <span class="macro">rand!</span>(rng, v: [(D, D); N]);
-        <span class="kw">let </span>acc: Accumulate&lt;M&gt; = v.iter().cloned().collect();
-        <span class="kw">for </span>l <span class="kw">in </span><span class="number">0</span>..=N {
-            <span class="kw">let </span><span class="kw-2">mut </span>d = M::unit();
-            <span class="kw">for </span>(r, v) <span class="kw">in </span>v.iter().enumerate().skip(l) {
-                <span class="macro">assert_eq!</span>(acc.fold(l, r), d);
-                M::operate_assign(<span class="kw-2">&amp;mut </span>d, v);
+        <span class="kw">const </span>Q: usize = <span class="number">1_000</span>;
+        <span class="kw">const </span>N: usize = <span class="number">10</span>;
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..Q {
+            <span class="kw">let </span>h = i % N + <span class="number">1</span>;
+            <span class="kw">let </span>w = i / N % N + <span class="number">1</span>;
+            <span class="macro">rand!</span>(rng, v: [[D; w]; h]);
+            <span class="kw">let </span>acc2d = Accumulate2d::&lt;A&gt;::new(<span class="kw-2">&amp;</span>v);
+            <span class="kw">for </span>xr <span class="kw">in </span><span class="number">0</span>..=h {
+                <span class="kw">for </span>yr <span class="kw">in </span><span class="number">0</span>..=w {
+                    <span class="macro">assert_eq!</span>(
+                        v[..xr]
+                            .iter()
+                            .flat_map(|v| v[..yr].iter())
+                            .fold(A::unit(), |x, y| A::operate(<span class="kw-2">&amp;</span>x, y)),
+                        acc2d.accumulate(xr, yr)
+                    );
+                    <span class="kw">for </span>xl <span class="kw">in </span><span class="number">0</span>..=xr {
+                        <span class="kw">for </span>yl <span class="kw">in </span><span class="number">0</span>..=yr {
+                            <span class="macro">assert_eq!</span>(
+                                v[xl..xr]
+                                    .iter()
+                                    .flat_map(|v| v[yl..yr].iter())
+                                    .fold(A::unit(), |x, y| A::operate(<span class="kw-2">&amp;</span>x, y)),
+                                acc2d.fold(xl..xr, yl..yr)
+                            );
+                        }
+                    }
+                }
             }
-            <span class="macro">assert_eq!</span>(acc.fold(l, N), d);
+        }
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_accumlate2d_from_fn() {
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+        <span class="kw">const </span>Q: usize = <span class="number">1_000</span>;
+        <span class="kw">const </span>N: usize = <span class="number">10</span>;
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..Q {
+            <span class="kw">let </span>h = i % N;
+            <span class="kw">let </span>w = i / N % N;
+            <span class="macro">rand!</span>(rng, v: [[D; w]; h]);
+            <span class="kw">let </span>acc2d = Accumulate2d::&lt;A&gt;::from_fn(h, w, |i, j| v[i][j]);
+            <span class="kw">for </span>xr <span class="kw">in </span><span class="number">0</span>..=h {
+                <span class="kw">for </span>yr <span class="kw">in </span><span class="number">0</span>..=w {
+                    <span class="macro">assert_eq!</span>(
+                        v[..xr]
+                            .iter()
+                            .flat_map(|v| v[..yr].iter())
+                            .fold(A::unit(), |x, y| A::operate(<span class="kw-2">&amp;</span>x, y)),
+                        acc2d.accumulate(xr, yr)
+                    );
+                    <span class="kw">for </span>xl <span class="kw">in </span><span class="number">0</span>..=xr {
+                        <span class="kw">for </span>yl <span class="kw">in </span><span class="number">0</span>..=yr {
+                            <span class="macro">assert_eq!</span>(
+                                v[xl..xr]
+                                    .iter()
+                                    .flat_map(|v| v[yl..yr].iter())
+                                    .fold(A::unit(), |x, y| A::operate(<span class="kw-2">&amp;</span>x, y)),
+                                acc2d.fold(xl..xr, yl..yr)
+                            );
+                        }
+                    }
+                }
+            }
         }
     }
 }
