@@ -41,7 +41,7 @@ impl UndirectedSparseGraph {
         weight: F,
     ) -> Vec<M::T> {
         let mut depth = vec![M::unit(); self.vertices_size()];
-        self.weighted_depth_dfs::<M, _>(root, std::usize::MAX, M::unit(), &mut depth, &weight);
+        self.weighted_depth_dfs::<M, _>(root, usize::MAX, M::unit(), &mut depth, &weight);
         depth
     }
 }
@@ -57,7 +57,7 @@ impl UndirectedSparseGraph {
     }
     pub fn tree_size(&self, root: usize) -> Vec<u64> {
         let mut size = vec![0; self.vertices_size()];
-        self.size_dfs(root, std::usize::MAX, &mut size);
+        self.size_dfs(root, usize::MAX, &mut size);
         size
     }
 }

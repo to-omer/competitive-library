@@ -1,4 +1,4 @@
-use super::{Bounded, One, Zero};
+use super::{Bounded, IterScan, One, Zero};
 use std::{
     cmp::Ordering,
     convert::TryInto,
@@ -78,6 +78,7 @@ pub trait Float:
     fn to_bits(self) -> u64;
     fn from_bits(v: u64) -> Self;
     fn total_cmp(&self, other: &Self) -> Ordering;
+    fn clamp(self, min: Self, max: Self) -> Self;
     const RADIX: u32;
     const MANTISSA_DIGITS: u32;
     const DIGITS: u32;
@@ -166,13 +167,8 @@ macro_rules! primitive_float_impls {
             fn min(self, other: Self) -> Self { $t::min(self, other) }
             fn to_bits(self) -> u64 { $t::to_bits(self).into() }
             fn from_bits(v: u64) -> Self { $t::from_bits(v.try_into().unwrap()) }
-            fn total_cmp(&self, other: &Self) -> Ordering {
-                let mut left = self.to_bits() as $i;
-                let mut right = other.to_bits() as $i;
-                left ^= (((left >> $e) as $u) >> 1) as $i;
-                right ^= (((right >> $e) as $u) >> 1) as $i;
-                left.cmp(&right)
-            }
+            fn total_cmp(&self, other: &Self) -> Ordering { $t::total_cmp(self, other) }
+            fn clamp(self, min: Self, max: Self) -> Self { $t::clamp(self, min, max) }
             const RADIX: u32 = std::$t::RADIX;
             const MANTISSA_DIGITS: u32 = std::$t::MANTISSA_DIGITS;
             const DIGITS: u32 = std::$t::DIGITS;
@@ -287,12 +283,18 @@ macro_rules! ord_float_impls {
         impl Eq for $n {}
         impl PartialOrd for $n {
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-                Some(self.total_cmp(other))
+                Some(self.cmp(other))
             }
         }
         impl Ord for $n {
             fn cmp(&self, other: &Self) -> Ordering {
-                self.partial_cmp(other).unwrap()
+                self.total_cmp(other)
+            }
+        }
+        impl IterScan for $n {
+            type Output = Self;
+            fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
+                <$t as IterScan>::scan(iter).map(Self)
             }
         }
         impl Float for $n {
@@ -349,6 +351,7 @@ macro_rules! ord_float_impls {
             fn to_bits(self) -> u64 { <$t as Float>::to_bits(self.0) }
             fn from_bits(v: u64) -> Self { Self(<$t as Float>::from_bits(v)) }
             fn total_cmp(&self, other: &Self) -> Ordering { <$t as Float>::total_cmp(&self.0, &other.0) }
+            fn clamp(self, min: Self, max: Self) -> Self { Self(<$t as Float>::clamp(self.0, min.0, max.0)) }
             const RADIX: u32 = <$t as Float>::RADIX;
             const MANTISSA_DIGITS: u32 = <$t as Float>::MANTISSA_DIGITS;
             const DIGITS: u32 = <$t as Float>::DIGITS;

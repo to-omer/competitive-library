@@ -23,11 +23,11 @@ impl<'a> StronglyConnectedComponent<'a> {
             csize: 0,
             visited: Vec::with_capacity(graph.vertices_size()),
             low: vec![0; graph.vertices_size()],
-            ord: vec![std::usize::MAX; graph.vertices_size()],
+            ord: vec![usize::MAX; graph.vertices_size()],
             comp: vec![0; graph.vertices_size()],
         };
         for u in graph.vertices() {
-            if self_.ord[u] == std::usize::MAX {
+            if self_.ord[u] == usize::MAX {
                 self_.dfs(u, &mut now_ord);
             }
         }
@@ -44,7 +44,7 @@ impl StronglyConnectedComponent<'_> {
         *now_ord += 1;
         self.visited.push(u);
         for a in self.graph.adjacencies(u) {
-            if self.ord[a.to] == std::usize::MAX {
+            if self.ord[a.to] == usize::MAX {
                 self.dfs(a.to, now_ord);
                 self.low[u] = self.low[u].min(self.low[a.to]);
             } else {

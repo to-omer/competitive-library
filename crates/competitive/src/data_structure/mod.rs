@@ -1,12 +1,12 @@
 //! data structures
 
-use crate::algebra::{AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup};
+use crate::algebra::{AbelianGroup, AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup};
 use crate::algorithm::SliceBisectExt;
 use crate::num::{Bounded, RangeBoundsExt};
 use crate::tools::GetDistinctMut;
 
 #[codesnip::entry("Accumulate")]
-pub use self::accumulate::Accumulate;
+pub use self::accumulate::{Accumulate, Accumulate2d};
 #[codesnip::entry("Allocator")]
 pub use self::allocator::{Allocator, MemoryPool};
 #[codesnip::entry("automaton")]
@@ -19,6 +19,8 @@ pub use self::binary_indexed_tree_2d::BinaryIndexedTree2D;
 pub use self::bit_vector::{BitVector, RankSelectDictionaries};
 #[codesnip::entry("BitSet")]
 pub use self::bitset::BitSet;
+#[codesnip::entry("BTreeMapExt")]
+pub use self::btreemap_ext::{BTreeMapExt, BTreeSetExt};
 #[codesnip::entry("compress")]
 pub use self::compress::{Compressor, HashCompress, VecCompress};
 #[codesnip::entry("CompressedBinaryIndexedTree")]
@@ -70,7 +72,10 @@ pub use self::wavelet_matrix::WaveletMatrix;
 #[codesnip::entry("WeightedUnionFind")]
 pub use self::weighted_union_find::WeightedUnionFind;
 
-#[cfg_attr(nightly, codesnip::entry("Accumulate", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Accumulate", include("algebra", "discrete_steps"))
+)]
 mod accumulate;
 #[cfg_attr(nightly, codesnip::entry("Allocator"))]
 mod allocator;
@@ -84,6 +89,8 @@ mod binary_indexed_tree_2d;
 mod bit_vector;
 #[cfg_attr(nightly, codesnip::entry("BitSet"))]
 mod bitset;
+#[cfg_attr(nightly, codesnip::entry("BTreeMapExt"))]
+mod btreemap_ext;
 #[cfg_attr(nightly, codesnip::entry("compress", include("binary_search")))]
 mod compress;
 #[cfg_attr(

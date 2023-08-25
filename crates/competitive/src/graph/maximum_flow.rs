@@ -58,15 +58,14 @@ impl<'a> Dinic<'a> {
         DinicBuilder::new(vsize, esize_expect)
     }
     fn bfs(&mut self, s: usize, t: usize) -> bool {
-        use std::usize::MAX;
         self.level.clear();
-        self.level.resize(self.graph.vertices_size(), MAX);
+        self.level.resize(self.graph.vertices_size(), usize::MAX);
         self.level[s] = 0;
         self.deq.clear();
         self.deq.push_back(s);
         while let Some(u) = self.deq.pop_front() {
             for a in self.graph.adjacencies(u) {
-                if self.capacities[a.id] > 0 && self.level[a.to] == MAX {
+                if self.capacities[a.id] > 0 && self.level[a.to] == usize::MAX {
                     self.level[a.to] = self.level[u] + 1;
                     if a.to == t {
                         return false;
@@ -75,7 +74,7 @@ impl<'a> Dinic<'a> {
                 }
             }
         }
-        self.level[t] == MAX
+        self.level[t] == usize::MAX
     }
     fn dfs(&mut self, s: usize, u: usize, upper: u64) -> u64 {
         if u == s {
@@ -117,7 +116,7 @@ impl<'a> Dinic<'a> {
         flow
     }
     pub fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
-        self.maximum_flow_limited(s, t, std::u64::MAX)
+        self.maximum_flow_limited(s, t, u64::MAX)
     }
     pub fn minimum_cut(&mut self, s: usize) -> Vec<bool> {
         let mut visited = vec![false; self.graph.vertices_size()];

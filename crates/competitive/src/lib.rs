@@ -18,6 +18,7 @@ pub mod combinatorial_optimization;
 pub mod data_structure;
 pub mod geometry;
 pub mod graph;
+pub mod heuristic;
 pub mod math;
 pub mod num;
 pub mod prelude;

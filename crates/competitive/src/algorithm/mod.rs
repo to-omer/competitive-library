@@ -4,10 +4,10 @@ use crate::algebra::{Group, Magma, Monoid, Unital};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep"))]
-pub use self::baby_step_giant_step::BabyStepGiantStep;
+#[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
+pub use self::baby_step_giant_step::baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
-pub use self::binary_search::*;
+pub use self::binary_search::{binary_search, parallel_binary_search, Bisect, SliceBisectExt};
 #[codesnip::entry("BitDp")]
 pub use self::bitdp::{BitDp, Combinations, Subsets};
 #[codesnip::entry("chromatic_number")]
@@ -31,7 +31,7 @@ pub use self::sort::SliceSortExt;
 #[codesnip::entry("SqrtDecomposition")]
 pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
 #[codesnip::entry("ternary_search")]
-pub use self::ternary_search::*;
+pub use self::ternary_search::ternary_search;
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
 #[codesnip::entry("ZeroSumGame")]
@@ -41,7 +41,7 @@ pub use self::zeta_transform::{
     DivisorTransform, MultipleTransform, SubsetTransform, SupersetTransform,
 };
 
-#[cfg_attr(nightly, codesnip::entry("BabyStepGiantStep", include("algebra")))]
+#[cfg_attr(nightly, codesnip::entry("baby_step_giant_step", include("algebra")))]
 mod baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry)]
 mod binary_search;

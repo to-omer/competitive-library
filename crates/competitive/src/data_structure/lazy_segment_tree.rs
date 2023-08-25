@@ -328,7 +328,7 @@ mod tests {
                         seg.position_acc(l, r, |&d| d >= x),
                         arr[l..r]
                             .iter()
-                            .scan(std::i64::MIN, |acc, &a| {
+                            .scan(i64::MIN, |acc, &a| {
                                 *acc = a.max(*acc);
                                 Some(*acc)
                             })
@@ -344,7 +344,7 @@ mod tests {
                         arr[l..r]
                             .iter()
                             .rev()
-                            .scan(std::i64::MIN, |acc, &a| {
+                            .scan(i64::MIN, |acc, &a| {
                                 *acc = a.max(*acc);
                                 Some(*acc)
                             })

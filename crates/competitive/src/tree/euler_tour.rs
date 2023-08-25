@@ -16,10 +16,10 @@ impl<'a> EulerTourForEdge<'a> {
         let mut self_ = Self {
             graph,
             eidx: vec![(0, 0); graph.vertices_size() - 1],
-            par: vec![std::usize::MAX; graph.vertices_size()],
+            par: vec![usize::MAX; graph.vertices_size()],
             epos: 0,
         };
-        self_.edge_tour(root, std::usize::MAX);
+        self_.edge_tour(root, usize::MAX);
         self_
     }
     pub fn length(&self) -> usize {
@@ -112,7 +112,7 @@ impl<'a> EulerTourForRichVertex<'a> {
             vidx: vec![(0, 0); graph.vertices_size()],
             vtrace: vec![],
         };
-        self_.vertex_tour(root, std::usize::MAX);
+        self_.vertex_tour(root, usize::MAX);
         self_
     }
     pub fn length(&self) -> usize {

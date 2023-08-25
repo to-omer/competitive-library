@@ -92,10 +92,7 @@ where
 {
     #[inline]
     fn clone(&self) -> Self {
-        Self {
-            x: Clone::clone(&self.x),
-            _marker: PhantomData,
-        }
+        *self
     }
 }
 impl<M> Copy for MInt<M> where M: MIntBase {}
@@ -268,7 +265,7 @@ where
     M: MIntConvert,
     M::Inner: Display,
 {
-    fn fmt<'a>(&self, f: &mut fmt::Formatter<'a>) -> Result<(), fmt::Error> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "{}", self.inner())
     }
 }

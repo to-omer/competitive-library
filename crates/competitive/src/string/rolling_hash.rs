@@ -75,10 +75,7 @@ where
     Hasher: RollingHasher + ?Sized,
 {
     fn clone(&self) -> Self {
-        Self {
-            hashed: self.hashed,
-            _marker: self._marker,
-        }
+        *self
     }
 }
 
@@ -447,11 +444,7 @@ where
     Hasher: RollingHasher + ?Sized,
 {
     fn clone(&self) -> Self {
-        Self {
-            len: self.len,
-            hash: self.hash,
-            _marker: self._marker,
-        }
+        *self
     }
 }
 

@@ -108,7 +108,7 @@ impl ProjectSelectionProblem {
                     Ordering::Equal => {}
                 }
                 if v >= 2 {
-                    builder.add_edge(u, u - 1, std::u64::MAX);
+                    builder.add_edge(u, u - 1, u64::MAX);
                 }
             }
         }

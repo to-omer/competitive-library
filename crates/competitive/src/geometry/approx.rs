@@ -71,7 +71,7 @@ where
     T: ApproxOrd,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.0.approx_cmp(&other.0))
+        Some(self.cmp(other))
     }
 }
 impl<T> Ord for Approx<T>

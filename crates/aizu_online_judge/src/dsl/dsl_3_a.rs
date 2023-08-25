@@ -8,7 +8,7 @@ pub fn dsl_3_a(reader: impl Read, mut writer: impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, n, s: u64, a: [u64]);
     let mut que = QueueAggregation::<AdditiveOperation<_>>::new();
-    let mut ans = std::usize::MAX;
+    let mut ans = usize::MAX;
     for a in a.take(n) {
         que.push(a);
         while que.fold_all() >= s {
@@ -16,5 +16,5 @@ pub fn dsl_3_a(reader: impl Read, mut writer: impl Write) {
             que.pop();
         }
     }
-    writeln!(writer, "{}", if ans == std::usize::MAX { 0 } else { ans }).ok();
+    writeln!(writer, "{}", if ans == usize::MAX { 0 } else { ans }).ok();
 }

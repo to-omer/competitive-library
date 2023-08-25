@@ -6,13 +6,13 @@ pub struct BarrettReduction<T> {
 macro_rules! impl_barrett {
     ($basety:ty, |$a:ident, $im:ident| $quotient:expr) => {
         impl BarrettReduction<$basety> {
-            pub fn new(m: $basety) -> Self {
+            pub const fn new(m: $basety) -> Self {
                 Self { m, im: !0 / m }
             }
-            pub fn get_mod(&self) -> $basety {
+            pub const fn get_mod(&self) -> $basety {
                 self.m
             }
-            pub fn div_rem(&self, $a: $basety) -> ($basety, $basety) {
+            pub const fn div_rem(&self, $a: $basety) -> ($basety, $basety) {
                 if self.m == 1 {
                     return ($a, 0);
                 }
@@ -25,10 +25,10 @@ macro_rules! impl_barrett {
                 }
                 (q, r)
             }
-            pub fn div(&self, a: $basety) -> $basety {
+            pub const fn div(&self, a: $basety) -> $basety {
                 self.div_rem(a).0
             }
-            pub fn rem(&self, a: $basety) -> $basety {
+            pub const fn rem(&self, a: $basety) -> $basety {
                 self.div_rem(a).1
             }
         }

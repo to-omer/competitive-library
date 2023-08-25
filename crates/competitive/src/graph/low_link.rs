@@ -12,12 +12,12 @@ impl<'a> LowLink<'a> {
         let mut self_ = Self {
             graph,
             low: vec![0; graph.vertices_size()],
-            ord: vec![std::usize::MAX; graph.vertices_size()],
+            ord: vec![usize::MAX; graph.vertices_size()],
             articulation: vec![],
             bridge: vec![],
         };
         for u in graph.vertices() {
-            if self_.ord[u] == std::usize::MAX {
+            if self_.ord[u] == usize::MAX {
                 self_.dfs(u, graph.vertices_size(), &mut 0);
             }
         }
@@ -30,7 +30,7 @@ impl<'a> LowLink<'a> {
         let mut is_articulation = false;
         let mut cnt = 0;
         for a in self.graph.adjacencies(u) {
-            if self.ord[a.to] == std::usize::MAX {
+            if self.ord[a.to] == usize::MAX {
                 cnt += 1;
                 self.dfs(a.to, u, now_ord);
                 self.low[u] = self.low[u].min(self.low[a.to]);

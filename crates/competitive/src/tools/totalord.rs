@@ -29,7 +29,7 @@ where
     T: PartialOrd,
 {
     fn partial_cmp(&self, other: &TotalOrd<T>) -> Option<Ordering> {
-        self.0.partial_cmp(&other.0)
+        Some(self.cmp(other))
     }
 }
 impl<T> Ord for TotalOrd<T>
@@ -37,7 +37,7 @@ where
     T: PartialOrd,
 {
     fn cmp(&self, other: &TotalOrd<T>) -> Ordering {
-        self.partial_cmp(other).unwrap()
+        self.0.partial_cmp(&other.0).unwrap()
     }
 }
 impl<T> Hash for TotalOrd<T>

@@ -75,8 +75,7 @@ impl<'a> PrimalDual<'a> {
     }
     fn bellman_ford(&mut self, s: usize) {
         self.potential.clear();
-        self.potential
-            .resize(self.graph.vertices_size(), std::i64::MAX);
+        self.potential.resize(self.graph.vertices_size(), i64::MAX);
         self.potential[s] = 0;
         for _ in 1..self.graph.vertices_size() {
             let mut end = true;
@@ -97,7 +96,7 @@ impl<'a> PrimalDual<'a> {
     fn dijkstra(&mut self, s: usize, t: usize) -> bool {
         use std::{cmp::Reverse, collections::BinaryHeap};
         self.dist.clear();
-        self.dist.resize(self.graph.vertices_size(), std::i64::MAX);
+        self.dist.resize(self.graph.vertices_size(), i64::MAX);
         self.dist[s] = 0;
         let mut heap = BinaryHeap::new();
         heap.push((Reverse(0), s));
@@ -119,7 +118,7 @@ impl<'a> PrimalDual<'a> {
                 }
             }
         }
-        self.dist[t] != std::i64::MAX
+        self.dist[t] != i64::MAX
     }
     /// Return (flow, cost).
     pub fn minimum_cost_flow_limited(&mut self, s: usize, t: usize, limit: u64) -> (u64, i64) {
@@ -151,7 +150,7 @@ impl<'a> PrimalDual<'a> {
     }
     /// Return (flow, cost).
     pub fn minimum_cost_flow(&mut self, s: usize, t: usize) -> (u64, i64) {
-        self.minimum_cost_flow_limited(s, t, std::u64::MAX)
+        self.minimum_cost_flow_limited(s, t, u64::MAX)
     }
     pub fn get_flow(&self, eid: usize) -> u64 {
         self.capacities[eid * 2 + 1]

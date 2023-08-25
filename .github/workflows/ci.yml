@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: '0 0 */6 * *'
   push:
-    branches:
-      - master
   pull_request:
 
 
@@ -69,8 +67,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Setup `1.42.0`
-      uses: dtolnay/rust-toolchain@1.42.0
+    - name: Setup `1.70.0`
+      uses: dtolnay/rust-toolchain@1.70.0
 
     - name: Setup `stable`
       uses: dtolnay/rust-toolchain@stable
@@ -84,7 +82,7 @@ jobs:
       run: cargo install codesnip
 
     - name: Snippet Verification
-      run: cargo codesnip --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly verify --verbose --toolchain=1.42.0
+      run: cargo codesnip --target=crates/competitive/src/lib.rs --filter-item=test --cfg=nightly verify --verbose --toolchain=1.70.0
 
 
   verify:
@@ -178,7 +176,7 @@ jobs:
 
   generate-doc:
     needs: [verify, benchmark]
-    if: github.ref == 'refs/heads/master'
+    if: github.ref_name == 'master'
 
     name: Generate Doc
     runs-on: ubuntu-latest
@@ -220,5 +218,5 @@ jobs:
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
-        personal_token: ${{ secrets.GH_PAT }}
+        personal_token: ${{ secrets.GITHUB_TOKEN  }}
         publish_dir: ./target/doc

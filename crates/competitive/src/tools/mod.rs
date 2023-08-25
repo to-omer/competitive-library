@@ -1,11 +1,9 @@
 #[codesnip::entry("AssociatedValue")]
 pub use self::associated_value::AssociatedValue;
-#[codesnip::entry("char_tools")]
-pub use self::char_tools::CharTools;
+#[codesnip::entry("char_convert")]
+pub use self::char_convert::{CharConvertTryFrom, CharConvertTryInto};
 #[codesnip::entry("coding")]
 pub use self::coding::{unescape, SerdeByteStr};
-#[codesnip::entry("SimuratedAnnealing")]
-pub use self::heuristics::SimuratedAnnealing;
 #[codesnip::entry("_iter_print")]
 pub use self::iter_print::IterPrint;
 #[codesnip::entry("ord_tools")]
@@ -27,12 +25,10 @@ mod assign_ops;
 mod associated_value;
 #[cfg_attr(nightly, codesnip::entry)]
 mod capture;
-#[cfg_attr(nightly, codesnip::entry("char_tools"))]
-mod char_tools;
+#[cfg_attr(nightly, codesnip::entry("char_convert"))]
+mod char_convert;
 #[cfg_attr(nightly, codesnip::entry("coding"))]
 mod coding;
-#[cfg_attr(nightly, codesnip::entry("SimuratedAnnealing", include("Xorshift")))]
-mod heuristics;
 #[cfg_attr(nightly, codesnip::entry)]
 mod invariant;
 #[cfg_attr(nightly, codesnip::entry("_iter_print"))]
@@ -44,7 +40,6 @@ mod iterable;
     codesnip::entry("main", inline, include("scanner", "_iter_print"))
 )]
 mod main;
-mod map;
 #[cfg_attr(nightly, codesnip::entry)]
 mod mlambda;
 #[cfg_attr(nightly, codesnip::entry("ord_tools"))]

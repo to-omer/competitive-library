@@ -9,25 +9,34 @@ mod max_operation_impl {
     use super::*;
     use std::marker::PhantomData;
     /// binary operation to select larger element
-    pub struct MaxOperation<T: Clone + Ord + Bounded> {
+    pub struct MaxOperation<T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + Ord + Bounded> Magma for MaxOperation<T> {
+    impl<T> Magma for MaxOperation<T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.max(y).clone()
         }
     }
-    impl<T: Clone + Ord + Bounded> Unital for MaxOperation<T> {
+    impl<T> Unital for MaxOperation<T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         #[inline]
         fn unit() -> Self::T {
             <T as Bounded>::minimum()
         }
     }
-    impl<T: Clone + Ord + Bounded> Associative for MaxOperation<T> {}
-    impl<T: Clone + Ord + Bounded> Commutative for MaxOperation<T> {}
-    impl<T: Clone + Ord + Bounded> Idempotent for MaxOperation<T> {}
+    impl<T> Associative for MaxOperation<T> where T: Clone + Ord + Bounded {}
+    impl<T> Commutative for MaxOperation<T> where T: Clone + Ord + Bounded {}
+    impl<T> Idempotent for MaxOperation<T> where T: Clone + Ord + Bounded {}
 }
 
 #[codesnip::entry("MinOperation")]
@@ -37,25 +46,34 @@ mod min_operation_impl {
     use super::*;
     use std::marker::PhantomData;
     /// binary operation to select smaller element
-    pub struct MinOperation<T: Clone + Ord + Bounded> {
+    pub struct MinOperation<T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + Ord + Bounded> Magma for MinOperation<T> {
+    impl<T> Magma for MinOperation<T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.min(y).clone()
         }
     }
-    impl<T: Clone + Ord + Bounded> Unital for MinOperation<T> {
+    impl<T> Unital for MinOperation<T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         #[inline]
         fn unit() -> Self::T {
             <T as Bounded>::maximum()
         }
     }
-    impl<T: Clone + Ord + Bounded> Associative for MinOperation<T> {}
-    impl<T: Clone + Ord + Bounded> Commutative for MinOperation<T> {}
-    impl<T: Clone + Ord + Bounded> Idempotent for MinOperation<T> {}
+    impl<T> Associative for MinOperation<T> where T: Clone + Ord + Bounded {}
+    impl<T> Commutative for MinOperation<T> where T: Clone + Ord + Bounded {}
+    impl<T> Idempotent for MinOperation<T> where T: Clone + Ord + Bounded {}
 }
 
 #[codesnip::entry("FirstOperation")]
@@ -65,24 +83,33 @@ mod first_operation_impl {
     use super::*;
     use std::marker::PhantomData;
     /// retain the first element
-    pub struct FirstOperation<T: Clone> {
+    pub struct FirstOperation<T>
+    where
+        T: Clone,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone> Magma for FirstOperation<T> {
+    impl<T> Magma for FirstOperation<T>
+    where
+        T: Clone,
+    {
         type T = Option<T>;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.as_ref().or(y.as_ref()).cloned()
         }
     }
-    impl<T: Clone> Unital for FirstOperation<T> {
+    impl<T> Unital for FirstOperation<T>
+    where
+        T: Clone,
+    {
         #[inline]
         fn unit() -> Self::T {
             None
         }
     }
-    impl<T: Clone> Associative for FirstOperation<T> {}
-    impl<T: Clone> Idempotent for FirstOperation<T> {}
+    impl<T> Associative for FirstOperation<T> where T: Clone {}
+    impl<T> Idempotent for FirstOperation<T> where T: Clone {}
 }
 
 #[codesnip::entry("LastOperation")]
@@ -92,24 +119,33 @@ mod last_operation_impl {
     use super::*;
     use std::marker::PhantomData;
     /// retain the last element
-    pub struct LastOperation<T: Clone> {
+    pub struct LastOperation<T>
+    where
+        T: Clone,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone> Magma for LastOperation<T> {
+    impl<T> Magma for LastOperation<T>
+    where
+        T: Clone,
+    {
         type T = Option<T>;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             y.as_ref().or(x.as_ref()).cloned()
         }
     }
-    impl<T: Clone> Unital for LastOperation<T> {
+    impl<T> Unital for LastOperation<T>
+    where
+        T: Clone,
+    {
         #[inline]
         fn unit() -> Self::T {
             None
         }
     }
-    impl<T: Clone> Associative for LastOperation<T> {}
-    impl<T: Clone> Idempotent for LastOperation<T> {}
+    impl<T> Associative for LastOperation<T> where T: Clone {}
+    impl<T> Idempotent for LastOperation<T> where T: Clone {}
 }
 
 #[codesnip::entry("AdditiveOperation")]
@@ -122,26 +158,36 @@ mod additive_operation_impl {
         ops::{Add, Neg, Sub},
     };
     /// $+$
-    pub struct AdditiveOperation<T: Clone + Zero + Add<Output = T>> {
+    pub struct AdditiveOperation<T>
+    where
+        T: Clone + Zero + Add<Output = T>,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + Zero + Add<Output = T>> Magma for AdditiveOperation<T> {
+    impl<T> Magma for AdditiveOperation<T>
+    where
+        T: Clone + Zero + Add<Output = T>,
+    {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.clone() + y.clone()
         }
     }
-    impl<T: Clone + Zero + Add<Output = T>> Unital for AdditiveOperation<T> {
+    impl<T> Unital for AdditiveOperation<T>
+    where
+        T: Clone + Zero + Add<Output = T>,
+    {
         #[inline]
         fn unit() -> Self::T {
             Zero::zero()
         }
     }
-    impl<T: Clone + Zero + Add<Output = T>> Associative for AdditiveOperation<T> {}
-    impl<T: Clone + Zero + Add<Output = T>> Commutative for AdditiveOperation<T> {}
-    impl<T: Clone + Zero + Add<Output = T> + Sub<Output = T> + Neg<Output = T>> Invertible
-        for AdditiveOperation<T>
+    impl<T> Associative for AdditiveOperation<T> where T: Clone + Zero + Add<Output = T> {}
+    impl<T> Commutative for AdditiveOperation<T> where T: Clone + Zero + Add<Output = T> {}
+    impl<T> Invertible for AdditiveOperation<T>
+    where
+        T: Clone + Zero + Add<Output = T> + Sub<Output = T> + Neg<Output = T>,
     {
         #[inline]
         fn inverse(x: &Self::T) -> Self::T {
@@ -164,25 +210,37 @@ mod multiplicative_operation_impl {
         ops::{Div, Mul},
     };
     /// $\times$
-    pub struct MultiplicativeOperation<T: Clone + One + Mul<Output = T>> {
+    pub struct MultiplicativeOperation<T>
+    where
+        T: Clone + One + Mul<Output = T>,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + One + Mul<Output = T>> Magma for MultiplicativeOperation<T> {
+    impl<T> Magma for MultiplicativeOperation<T>
+    where
+        T: Clone + One + Mul<Output = T>,
+    {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.clone() * y.clone()
         }
     }
-    impl<T: Clone + One + Mul<Output = T>> Unital for MultiplicativeOperation<T> {
+    impl<T> Unital for MultiplicativeOperation<T>
+    where
+        T: Clone + One + Mul<Output = T>,
+    {
         #[inline]
         fn unit() -> Self::T {
             One::one()
         }
     }
-    impl<T: Clone + One + Mul<Output = T>> Associative for MultiplicativeOperation<T> {}
-    impl<T: Clone + One + Mul<Output = T>> Commutative for MultiplicativeOperation<T> {}
-    impl<T: Clone + One + Mul<Output = T> + Div<Output = T>> Invertible for MultiplicativeOperation<T> {
+    impl<T> Associative for MultiplicativeOperation<T> where T: Clone + One + Mul<Output = T> {}
+    impl<T> Commutative for MultiplicativeOperation<T> where T: Clone + One + Mul<Output = T> {}
+    impl<T> Invertible for MultiplicativeOperation<T>
+    where
+        T: Clone + One + Mul<Output = T> + Div<Output = T>,
+    {
         #[inline]
         fn inverse(x: &Self::T) -> Self::T {
             Self::unit().div(x.clone())
@@ -204,10 +262,16 @@ mod linear_operation_impl {
         ops::{Add, Div, Mul, Neg, Sub},
     };
     /// $(a, b) \circ (c, d) = \lambda x. c \times (a \times x + b) + d$
-    pub struct LinearOperation<T: Clone + Zero + Add<Output = T> + One + Mul<Output = T>> {
+    pub struct LinearOperation<T>
+    where
+        T: Clone + Zero + Add<Output = T> + One + Mul<Output = T>,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>> Magma for LinearOperation<T> {
+    impl<T> Magma for LinearOperation<T>
+    where
+        T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
+    {
         type T = (T, T);
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
@@ -217,23 +281,29 @@ mod linear_operation_impl {
             )
         }
     }
-    impl<T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>> Unital for LinearOperation<T> {
+    impl<T> Unital for LinearOperation<T>
+    where
+        T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
+    {
         #[inline]
         fn unit() -> Self::T {
             (One::one(), Zero::zero())
         }
     }
-    impl<T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>> Associative for LinearOperation<T> {}
-    impl<
-            T: Clone
-                + Zero
-                + One
-                + Add<Output = T>
-                + Sub<Output = T>
-                + Neg<Output = T>
-                + Mul<Output = T>
-                + Div<Output = T>,
-        > Invertible for LinearOperation<T>
+    impl<T> Associative for LinearOperation<T> where
+        T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>
+    {
+    }
+    impl<T> Invertible for LinearOperation<T>
+    where
+        T: Clone
+            + Zero
+            + One
+            + Add<Output = T>
+            + Sub<Output = T>
+            + Neg<Output = T>
+            + Mul<Output = T>
+            + Div<Output = T>,
     {
         fn inverse(x: &Self::T) -> Self::T {
             let y = <T as One>::one().div(x.0.clone());
@@ -249,7 +319,10 @@ mod bitand_operation_impl {
     use super::*;
     use std::{marker::PhantomData, ops::BitAnd};
     /// &
-    pub struct BitAndOperation<T: Clone + BitAndIdentity> {
+    pub struct BitAndOperation<T>
+    where
+        T: Clone + BitAndIdentity,
+    {
         _marker: PhantomData<fn() -> T>,
     }
     pub trait BitAndIdentity: Sized + BitAnd<Output = Self> {
@@ -275,32 +348,38 @@ mod bitand_operation_impl {
         };
     }
     impl_bitand_identity!(bool, true);
-    impl_bitand_identity!(usize, std::usize::MAX);
-    impl_bitand_identity!(u8, std::u8::MAX);
-    impl_bitand_identity!(u16, std::u16::MAX);
-    impl_bitand_identity!(u32, std::u32::MAX);
-    impl_bitand_identity!(u64, std::u64::MAX);
-    impl_bitand_identity!(isize, std::isize::MIN);
-    impl_bitand_identity!(i8, std::i8::MIN);
-    impl_bitand_identity!(i16, std::i16::MIN);
-    impl_bitand_identity!(i32, std::i32::MIN);
-    impl_bitand_identity!(i64, std::i64::MIN);
-    impl<T: Clone + BitAndIdentity> Magma for BitAndOperation<T> {
+    impl_bitand_identity!(usize, usize::MAX);
+    impl_bitand_identity!(u8, u8::MAX);
+    impl_bitand_identity!(u16, u16::MAX);
+    impl_bitand_identity!(u32, u32::MAX);
+    impl_bitand_identity!(u64, u64::MAX);
+    impl_bitand_identity!(isize, isize::MIN);
+    impl_bitand_identity!(i8, i8::MIN);
+    impl_bitand_identity!(i16, i16::MIN);
+    impl_bitand_identity!(i32, i32::MIN);
+    impl_bitand_identity!(i64, i64::MIN);
+    impl<T> Magma for BitAndOperation<T>
+    where
+        T: Clone + BitAndIdentity,
+    {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.clone() & y.clone()
         }
     }
-    impl<T: Clone + BitAndIdentity> Unital for BitAndOperation<T> {
+    impl<T> Unital for BitAndOperation<T>
+    where
+        T: Clone + BitAndIdentity,
+    {
         #[inline]
         fn unit() -> Self::T {
             BitAndIdentity::all_one()
         }
     }
-    impl<T: Clone + BitAndIdentity> Associative for BitAndOperation<T> {}
-    impl<T: Clone + BitAndIdentity> Commutative for BitAndOperation<T> {}
-    impl<T: Clone + BitAndIdentity> Idempotent for BitAndOperation<T> {}
+    impl<T> Associative for BitAndOperation<T> where T: Clone + BitAndIdentity {}
+    impl<T> Commutative for BitAndOperation<T> where T: Clone + BitAndIdentity {}
+    impl<T> Idempotent for BitAndOperation<T> where T: Clone + BitAndIdentity {}
 }
 
 #[codesnip::entry("BitOrOperation")]
@@ -310,7 +389,10 @@ mod bitor_operation_impl {
     use super::*;
     use std::{marker::PhantomData, ops::BitOr};
     /// |
-    pub struct BitOrOperation<T: Clone + BitOrIdentity> {
+    pub struct BitOrOperation<T>
+    where
+        T: Clone + BitOrIdentity,
+    {
         _marker: PhantomData<fn() -> T>,
     }
     pub trait BitOrIdentity: Sized + BitOr<Output = Self> {
@@ -336,32 +418,38 @@ mod bitor_operation_impl {
         };
     }
     impl_bitor_identity!(bool, false);
-    impl_bitor_identity!(usize, 0usize);
-    impl_bitor_identity!(u8, 0u8);
-    impl_bitor_identity!(u16, 0u16);
-    impl_bitor_identity!(u32, 0u32);
-    impl_bitor_identity!(u64, 0u64);
-    impl_bitor_identity!(isize, 0isize);
-    impl_bitor_identity!(i8, 0i8);
-    impl_bitor_identity!(i16, 0i16);
-    impl_bitor_identity!(i32, 0i32);
-    impl_bitor_identity!(i64, 0i64);
-    impl<T: Clone + BitOrIdentity> Magma for BitOrOperation<T> {
+    impl_bitor_identity!(usize, 0);
+    impl_bitor_identity!(u8, 0);
+    impl_bitor_identity!(u16, 0);
+    impl_bitor_identity!(u32, 0);
+    impl_bitor_identity!(u64, 0);
+    impl_bitor_identity!(isize, 0);
+    impl_bitor_identity!(i8, 0);
+    impl_bitor_identity!(i16, 0);
+    impl_bitor_identity!(i32, 0);
+    impl_bitor_identity!(i64, 0);
+    impl<T> Magma for BitOrOperation<T>
+    where
+        T: Clone + BitOrIdentity,
+    {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.clone() | y.clone()
         }
     }
-    impl<T: Clone + BitOrIdentity> Unital for BitOrOperation<T> {
+    impl<T> Unital for BitOrOperation<T>
+    where
+        T: Clone + BitOrIdentity,
+    {
         #[inline]
         fn unit() -> Self::T {
             BitOrIdentity::all_zero()
         }
     }
-    impl<T: Clone + BitOrIdentity> Associative for BitOrOperation<T> {}
-    impl<T: Clone + BitOrIdentity> Commutative for BitOrOperation<T> {}
-    impl<T: Clone + BitOrIdentity> Idempotent for BitOrOperation<T> {}
+    impl<T> Associative for BitOrOperation<T> where T: Clone + BitOrIdentity {}
+    impl<T> Commutative for BitOrOperation<T> where T: Clone + BitOrIdentity {}
+    impl<T> Idempotent for BitOrOperation<T> where T: Clone + BitOrIdentity {}
 }
 
 #[codesnip::entry("BitXorOperation")]
@@ -371,7 +459,10 @@ mod bitxor_operation_impl {
     use super::*;
     use std::{marker::PhantomData, ops::BitXor};
     /// ^
-    pub struct BitXorOperation<T: Clone + BitXorIdentity> {
+    pub struct BitXorOperation<T>
+    where
+        T: Clone + BitXorIdentity,
+    {
         _marker: PhantomData<fn() -> T>,
     }
     pub trait BitXorIdentity: Sized + BitXor<Output = Self> {
@@ -393,32 +484,41 @@ mod bitxor_operation_impl {
         };
     }
     impl_bitxor_identity!(bool, false);
-    impl_bitxor_identity!(usize, 0usize);
-    impl_bitxor_identity!(u8, 0u8);
-    impl_bitxor_identity!(u16, 0u16);
-    impl_bitxor_identity!(u32, 0u32);
-    impl_bitxor_identity!(u64, 0u64);
-    impl_bitxor_identity!(isize, 0isize);
-    impl_bitxor_identity!(i8, 0i8);
-    impl_bitxor_identity!(i16, 0i16);
-    impl_bitxor_identity!(i32, 0i32);
-    impl_bitxor_identity!(i64, 0i64);
-    impl<T: Clone + BitXorIdentity> Magma for BitXorOperation<T> {
+    impl_bitxor_identity!(usize, 0);
+    impl_bitxor_identity!(u8, 0);
+    impl_bitxor_identity!(u16, 0);
+    impl_bitxor_identity!(u32, 0);
+    impl_bitxor_identity!(u64, 0);
+    impl_bitxor_identity!(isize, 0);
+    impl_bitxor_identity!(i8, 0);
+    impl_bitxor_identity!(i16, 0);
+    impl_bitxor_identity!(i32, 0);
+    impl_bitxor_identity!(i64, 0);
+    impl<T> Magma for BitXorOperation<T>
+    where
+        T: Clone + BitXorIdentity,
+    {
         type T = T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.clone() ^ y.clone()
         }
     }
-    impl<T: Clone + BitXorIdentity> Unital for BitXorOperation<T> {
+    impl<T> Unital for BitXorOperation<T>
+    where
+        T: Clone + BitXorIdentity,
+    {
         #[inline]
         fn unit() -> Self::T {
             BitXorIdentity::xor_zero()
         }
     }
-    impl<T: Clone + BitXorIdentity> Associative for BitXorOperation<T> {}
-    impl<T: Clone + BitXorIdentity> Commutative for BitXorOperation<T> {}
-    impl<T: Clone + BitXorIdentity> Invertible for BitXorOperation<T> {
+    impl<T> Associative for BitXorOperation<T> where T: Clone + BitXorIdentity {}
+    impl<T> Commutative for BitXorOperation<T> where T: Clone + BitXorIdentity {}
+    impl<T> Invertible for BitXorOperation<T>
+    where
+        T: Clone + BitXorIdentity,
+    {
         fn inverse(x: &Self::T) -> Self::T {
             x.clone()
         }
@@ -477,8 +577,9 @@ mod counting_operation_impl {
     pub struct CountingOperation<M> {
         _marker: PhantomData<fn() -> M>,
     }
-    impl<M: Magma> Magma for CountingOperation<M>
+    impl<M> Magma for CountingOperation<M>
     where
+        M: Magma,
         M::T: PartialEq,
     {
         type T = (M::T, usize);
@@ -498,8 +599,9 @@ mod counting_operation_impl {
             }
         }
     }
-    impl<M: Unital> Unital for CountingOperation<M>
+    impl<M> Unital for CountingOperation<M>
     where
+        M: Unital,
         M::T: PartialEq,
     {
         #[inline]
@@ -507,9 +609,9 @@ mod counting_operation_impl {
             (M::unit(), 0)
         }
     }
-    impl<M: Associative> Associative for CountingOperation<M> {}
-    impl<M: Commutative> Commutative for CountingOperation<M> {}
-    impl<M: Idempotent> Idempotent for CountingOperation<M> {}
+    impl<M> Associative for CountingOperation<M> where M: Associative {}
+    impl<M> Commutative for CountingOperation<M> where M: Commutative {}
+    impl<M> Idempotent for CountingOperation<M> where M: Idempotent {}
 }
 
 #[codesnip::entry("ReverseOperation")]
@@ -521,84 +623,191 @@ mod reverse_operation_impl {
     pub struct ReverseOperation<M> {
         _marker: PhantomData<fn() -> M>,
     }
-    impl<M: Magma> Magma for ReverseOperation<M> {
+    impl<M> Magma for ReverseOperation<M>
+    where
+        M: Magma,
+    {
         type T = M::T;
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             M::operate(y, x)
         }
     }
-    impl<M: Unital> Unital for ReverseOperation<M> {
+    impl<M> Unital for ReverseOperation<M>
+    where
+        M: Unital,
+    {
         #[inline]
         fn unit() -> Self::T {
             M::unit()
         }
     }
-    impl<M: Associative> Associative for ReverseOperation<M> {}
-    impl<M: Commutative> Commutative for ReverseOperation<M> {}
-    impl<M: Invertible> Invertible for ReverseOperation<M> {
+    impl<M> Associative for ReverseOperation<M> where M: Associative {}
+    impl<M> Commutative for ReverseOperation<M> where M: Commutative {}
+    impl<M> Invertible for ReverseOperation<M>
+    where
+        M: Invertible,
+    {
         #[inline]
         fn inverse(x: &Self::T) -> Self::T {
             M::inverse(x)
         }
     }
-    impl<M: Idempotent> Idempotent for ReverseOperation<M> {}
+    impl<M> Idempotent for ReverseOperation<M> where M: Idempotent {}
 }
 
-#[codesnip::entry("Top2Operation")]
-pub use self::top2_operation_impl::Top2Operation;
-#[codesnip::entry("Top2Operation", include("algebra", "bounded"))]
-mod top2_operation_impl {
+#[codesnip::entry("TopkOperation")]
+pub use self::topk_operation_impl::TopkOperation;
+#[codesnip::entry("TopkOperation", include("algebra", "bounded", "array"))]
+mod topk_operation_impl {
     use super::*;
     use std::marker::PhantomData;
-    pub struct Top2Operation<T: Clone + Ord + Bounded> {
+    pub struct TopkOperation<const K: usize, T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + Ord + Bounded> Magma for Top2Operation<T> {
-        type T = (T, T);
+    impl<const K: usize, T> Magma for TopkOperation<K, T>
+    where
+        T: Clone + Ord + Bounded,
+    {
+        type T = [T; K];
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            if x.0 < y.0 {
-                (y.0.clone(), if x.0 < y.1 { &y.1 } else { &x.0 }.clone())
+            let mut i = 0;
+            let mut j = 0;
+            crate::array![|| if i == K || j != K && x[i] < y[j] {
+                let t = &y[j];
+                j += 1;
+                t.clone()
             } else {
-                (x.0.clone(), if x.1 < y.0 { &y.0 } else { &x.1 }.clone())
+                let t = &x[i];
+                i += 1;
+                t.clone()
+            }; K]
+        }
+    }
+    impl<const K: usize, T> Unital for TopkOperation<K, T>
+    where
+        T: Clone + Ord + Bounded,
+    {
+        fn unit() -> Self::T {
+            crate::array![|| <T as Bounded>::minimum(); K]
+        }
+    }
+    impl<const K: usize, T> Associative for TopkOperation<K, T> where T: Clone + Ord + Bounded {}
+    impl<const K: usize, T> Commutative for TopkOperation<K, T> where T: Clone + Ord + Bounded {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::tools::Xorshift;
+
+        #[test]
+        fn test_topk() {
+            let mut rng = Xorshift::new();
+            for _ in 0..100 {
+                let mut x = [i64::MIN; 4];
+                for _ in 0..100 {
+                    let mut y = [i64::MIN; 4];
+                    for y in &mut y {
+                        *y = rng.gen(0..1000);
+                    }
+                    y.sort_unstable();
+                    y.reverse();
+                    let z = {
+                        let mut x = x.to_vec();
+                        x.extend(&y);
+                        x.sort_unstable();
+                        x.reverse();
+                        x.truncate(4);
+                        x
+                    };
+                    let zz = TopkOperation::<4, i64>::operate(&x, &y);
+                    for (z, zz) in z.iter().zip(&zz) {
+                        assert_eq!(z, zz);
+                    }
+                    x = zz;
+                }
             }
         }
     }
-    impl<T: Clone + Ord + Bounded> Unital for Top2Operation<T> {
-        fn unit() -> Self::T {
-            (<T as Bounded>::minimum(), <T as Bounded>::minimum())
-        }
-    }
-    impl<T: Clone + Ord + Bounded> Associative for Top2Operation<T> {}
-    impl<T: Clone + Ord + Bounded> Commutative for Top2Operation<T> {}
 }
 
-#[codesnip::entry("Bottom2Operation")]
-pub use self::bottom2_operation_impl::Bottom2Operation;
-#[codesnip::entry("Bottom2Operation", include("algebra", "bounded"))]
-mod bottom2_operation_impl {
+#[codesnip::entry("BottomkOperation")]
+pub use self::bottomk_operation_impl::BottomkOperation;
+#[codesnip::entry("BottomkOperation", include("algebra", "bounded", "array"))]
+mod bottomk_operation_impl {
     use super::*;
     use std::marker::PhantomData;
-    pub struct Bottom2Operation<T: Clone + Ord + Bounded> {
+    pub struct BottomkOperation<const K: usize, T>
+    where
+        T: Clone + Ord + Bounded,
+    {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + Ord + Bounded> Magma for Bottom2Operation<T> {
-        type T = (T, T);
+    impl<const K: usize, T> Magma for BottomkOperation<K, T>
+    where
+        T: Clone + Ord + Bounded,
+    {
+        type T = [T; K];
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            if x.0 > y.0 {
-                (y.0.clone(), if x.0 > y.1 { &y.1 } else { &x.0 }.clone())
+            let mut i = 0;
+            let mut j = 0;
+            crate::array![|| if i == K || j != K && x[i] > y[j] {
+                let t = &y[j];
+                j += 1;
+                t.clone()
             } else {
-                (x.0.clone(), if x.1 > y.0 { &y.0 } else { &x.1 }.clone())
+                let t = &x[i];
+                i += 1;
+                t.clone()
+            }; K]
+        }
+    }
+    impl<const K: usize, T> Unital for BottomkOperation<K, T>
+    where
+        T: Clone + Ord + Bounded,
+    {
+        fn unit() -> Self::T {
+            crate::array![|| <T as Bounded>::maximum(); K]
+        }
+    }
+    impl<const K: usize, T> Associative for BottomkOperation<K, T> where T: Clone + Ord + Bounded {}
+    impl<const K: usize, T> Commutative for BottomkOperation<K, T> where T: Clone + Ord + Bounded {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::tools::Xorshift;
+
+        #[test]
+        fn test_bottomk() {
+            let mut rng = Xorshift::new();
+            for _ in 0..100 {
+                let mut x = [i64::MAX; 4];
+                for _ in 0..100 {
+                    let mut y = [i64::MAX; 4];
+                    for y in &mut y {
+                        *y = rng.gen(0..1000);
+                    }
+                    y.sort_unstable();
+                    let z = {
+                        let mut x = x.to_vec();
+                        x.extend(&y);
+                        x.sort_unstable();
+                        x.truncate(4);
+                        x
+                    };
+                    let zz = BottomkOperation::<4, i64>::operate(&x, &y);
+                    for (z, zz) in z.iter().zip(&zz) {
+                        assert_eq!(z, zz);
+                    }
+                    x = zz;
+                }
             }
         }
     }
-    impl<T: Clone + Ord + Bounded> Unital for Bottom2Operation<T> {
-        fn unit() -> Self::T {
-            (<T as Bounded>::maximum(), <T as Bounded>::maximum())
-        }
-    }
-    impl<T: Clone + Ord + Bounded> Associative for Bottom2Operation<T> {}
-    impl<T: Clone + Ord + Bounded> Commutative for Bottom2Operation<T> {}
 }
 
 #[codesnip::entry("PermutationOperation")]
@@ -648,7 +857,10 @@ mod find_majority_operation_impl {
     pub struct FindMajorityOperation<T> {
         _marker: PhantomData<fn() -> T>,
     }
-    impl<T: Clone + Eq> Magma for FindMajorityOperation<T> {
+    impl<T> Magma for FindMajorityOperation<T>
+    where
+        T: Clone + Eq,
+    {
         type T = (Option<T>, usize);
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
             if y.0.is_none() {
@@ -665,7 +877,10 @@ mod find_majority_operation_impl {
             }
         }
     }
-    impl<T: Clone + Eq> Unital for FindMajorityOperation<T> {
+    impl<T> Unital for FindMajorityOperation<T>
+    where
+        T: Clone + Eq,
+    {
         fn unit() -> Self::T {
             (None, 0)
         }

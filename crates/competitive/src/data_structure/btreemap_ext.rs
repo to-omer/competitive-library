@@ -1,4 +1,3 @@
-#[codesnip::entry("BTreeMapExt")]
 pub trait BTreeMapExt<K, V>
 where
     K: Ord,
@@ -61,7 +60,6 @@ where
         K: Clone,
         P: FnMut(&K, &V) -> bool;
 }
-#[codesnip::entry("BTreeMapExt")]
 impl<K, V> BTreeMapExt<K, V> for std::collections::BTreeMap<K, V>
 where
     K: Ord,
@@ -229,7 +227,6 @@ where
     }
 }
 
-#[codesnip::entry("BTreeSetExt")]
 pub trait BTreeSetExt<T>
 where
     T: Ord,
@@ -285,7 +282,6 @@ where
         T: Clone,
         P: FnMut(&T) -> bool;
 }
-#[codesnip::entry("BTreeSetExt")]
 impl<T> BTreeSetExt<T> for std::collections::BTreeSet<T>
 where
     T: Ord,

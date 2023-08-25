@@ -12,7 +12,7 @@ pub struct KnapsackPloblemSmallWeight {
 
 impl KnapsackPloblemSmallWeight {
     pub fn new(max_weight: usize) -> Self {
-        let mut dp = vec![std::i64::MIN; max_weight + 1];
+        let mut dp = vec![i64::MIN; max_weight + 1];
         dp[0] = 0;
         Self { dp }
     }
@@ -21,7 +21,7 @@ impl KnapsackPloblemSmallWeight {
     }
     pub fn insert(&mut self, value: i64, weight: usize) {
         for i in weight..self.dp.len() {
-            if self.dp[i - weight] != std::i64::MIN {
+            if self.dp[i - weight] != i64::MIN {
                 self.dp[i] = self.dp[i].max(self.dp[i - weight] + value);
             }
         }
@@ -36,7 +36,7 @@ impl KnapsackPloblemSmallWeight {
     }
     pub fn insert01(&mut self, value: i64, weight: usize) {
         for i in (weight..self.dp.len()).rev() {
-            if self.dp[i - weight] != std::i64::MIN {
+            if self.dp[i - weight] != i64::MIN {
                 self.dp[i] = self.dp[i].max(self.dp[i - weight] + value);
             }
         }
@@ -54,7 +54,7 @@ impl KnapsackPloblemSmallWeight {
             let mut deq = VecDeque::new();
             let mut j = 0;
             while j * weight + i < self.dp.len() {
-                if self.dp[j * weight + i] != std::i64::MIN {
+                if self.dp[j * weight + i] != i64::MIN {
                     let v = self.dp[j * weight + i] - j as i64 * value;
                     while deq.back().map(|&(_, x)| x <= v).unwrap_or_default() {
                         deq.pop_back();
@@ -85,7 +85,7 @@ impl KnapsackPloblemSmallWeight {
             let k = b.min(count);
             count -= k;
             for i in (weight * k..self.dp.len()).rev() {
-                if self.dp[i - weight * k] != std::i64::MIN {
+                if self.dp[i - weight * k] != i64::MIN {
                     self.dp[i] = self.dp[i].max(self.dp[i - weight * k] + value * k as i64);
                 }
             }
@@ -101,14 +101,10 @@ impl KnapsackPloblemSmallWeight {
         }
     }
     pub fn solve(&self) -> Option<i64> {
-        self.dp
-            .iter()
-            .filter(|&&dp| dp != std::i64::MIN)
-            .max()
-            .cloned()
+        self.dp.iter().filter(|&&dp| dp != i64::MIN).max().cloned()
     }
     pub fn get(&self, weight: usize) -> Option<i64> {
-        if self.dp[weight] != std::i64::MIN {
+        if self.dp[weight] != i64::MIN {
             Some(self.dp[weight])
         } else {
             None
@@ -123,13 +119,13 @@ pub struct KnapsackPloblemSmallValue {
 
 impl KnapsackPloblemSmallValue {
     pub fn new(max_value: usize) -> Self {
-        let mut dp = vec![std::i64::MAX; max_value + 1];
+        let mut dp = vec![i64::MAX; max_value + 1];
         dp[0] = 0;
         Self { dp }
     }
     pub fn insert(&mut self, value: usize, weight: i64) {
         for i in value..self.dp.len() {
-            if self.dp[i - value] != std::i64::MAX {
+            if self.dp[i - value] != i64::MAX {
                 self.dp[i] = self.dp[i].min(self.dp[i - value] + weight);
             }
         }
@@ -144,7 +140,7 @@ impl KnapsackPloblemSmallValue {
     }
     pub fn insert01(&mut self, value: usize, weight: i64) {
         for i in (value..self.dp.len()).rev() {
-            if self.dp[i - value] != std::i64::MAX {
+            if self.dp[i - value] != i64::MAX {
                 self.dp[i] = self.dp[i].min(self.dp[i - value] + weight);
             }
         }
@@ -163,7 +159,7 @@ impl KnapsackPloblemSmallValue {
             let k = b.min(count);
             count -= k;
             for i in (value * k..self.dp.len()).rev() {
-                if self.dp[i - value * k] != std::i64::MAX {
+                if self.dp[i - value * k] != i64::MAX {
                     self.dp[i] = self.dp[i].min(self.dp[i - value * k] + weight * k as i64);
                 }
             }
@@ -184,7 +180,7 @@ impl KnapsackPloblemSmallValue {
             .max()
     }
     pub fn get(&self, value: usize) -> Option<i64> {
-        if self.dp[value] != std::i64::MAX {
+        if self.dp[value] != i64::MAX {
             Some(self.dp[value])
         } else {
             None

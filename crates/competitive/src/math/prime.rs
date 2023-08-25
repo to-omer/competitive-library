@@ -74,7 +74,7 @@ pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
 pub fn highly_composite_number(n: u128) -> Vec<(u128, u128)> {
     let mut dp = vec![(1u128, 1u128)];
     let mut acc = 1u128;
-    let mut table = vec![false; 110];
+    let mut table = [false; 110];
     for p in 2u128.. {
         if !table[p as usize] {
             for i in (p..110).step_by(p as _) {
