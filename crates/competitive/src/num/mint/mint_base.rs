@@ -46,6 +46,9 @@ pub trait MIntBase {
         }
         z
     }
+    fn mod_inner(x: Self::Inner) -> Self::Inner {
+        x
+    }
 }
 
 impl<M> MInt<M>
@@ -55,10 +58,6 @@ where
     #[inline]
     pub fn new(x: M::Inner) -> Self {
         Self::new_unchecked(<M as MIntConvert<M::Inner>>::from(x))
-    }
-    #[inline]
-    pub fn inner(self) -> M::Inner {
-        <M as MIntConvert<M::Inner>>::into(self.x)
     }
 }
 impl<M> MInt<M>
@@ -84,6 +83,10 @@ where
     pub fn inv(self) -> Self {
         Self::new_unchecked(M::mod_inv(self.x))
     }
+    #[inline]
+    pub fn inner(self) -> M::Inner {
+        M::mod_inner(self.x)
+    }
 }
 
 impl<M> Clone for MInt<M>
@@ -101,7 +104,7 @@ where
     M: MIntBase,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        Debug::fmt(&self.x, f)
+        Debug::fmt(&self.inner(), f)
     }
 }
 impl<M> Default for MInt<M>
@@ -262,7 +265,7 @@ where
 }
 impl<M> Display for MInt<M>
 where
-    M: MIntConvert,
+    M: MIntBase,
     M::Inner: Display,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {

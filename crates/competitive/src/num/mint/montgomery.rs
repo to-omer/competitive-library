@@ -64,6 +64,9 @@ where
         }
         Self::reduce((if x < 0 { x + p } else { x }) as u64 * Self::N3 as u64)
     }
+    fn mod_inner(x: Self::Inner) -> Self::Inner {
+        Self::reduce(x as u64)
+    }
 }
 impl<M> MIntConvert<u32> for M
 where
