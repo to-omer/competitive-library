@@ -3,14 +3,24 @@ use super::{
     MIntConvert, MIntConvolve, MemorizedFactorial, One, PartialIgnoredOrd, Zero,
 };
 use std::{
+    fmt::{self, Debug},
     marker::PhantomData,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct FormalPowerSeries<T, C> {
     pub data: Vec<T>,
     _marker: PhantomData<C>,
+}
+
+impl<T, C> Debug for FormalPowerSeries<T, C>
+where
+    T: Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        Debug::fmt(&self.data, f)
+    }
 }
 
 pub type Fps998244353 = FormalPowerSeries<MInt998244353, Convolve998244353>;
