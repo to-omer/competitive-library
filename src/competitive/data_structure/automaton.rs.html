@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (8550f15e1 2023-08-27)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (84a9f4c6e 2023-08-29)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -757,6 +757,68 @@
 <a href="#741" id="741">741</a>
 <a href="#742" id="742">742</a>
 <a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><a href="../algebra/magma.rs.html#45-58"><span class="kw">super</span>::Monoid</a>;
 <span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">borrow::Borrow</a>,
@@ -929,76 +991,127 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.IntersectionAutomaton.html">IntersectionAutomaton</a>&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
-<span class="kw">impl</span>&lt;A, X, Y&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>IntersectionAutomaton&lt;X, Y&gt;
-<span class="kw">where
-    </span>X: Automaton&lt;Alphabet = A&gt;,
-    Y: Automaton&lt;Alphabet = A&gt;,
-{
-    <span class="kw">type </span>Alphabet = A;
-    <span class="kw">type </span>State = (X::State, Y::State);
-    <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#181">self</a>.<span class="number">0</span>.<a href="#15">initial</a>(), <a class="self" href="#181">self</a>.<span class="number">1</span>.<a href="#15">initial</a>())
-    }
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <span class="kw">match </span>(<a class="self" href="#184">self</a>.<span class="number">0</span>.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#184">state</a>.<span class="number">0</span>, <a href="#184">alph</a>), <a class="self" href="#184">self</a>.<span class="number">1</span>.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#184">state</a>.<span class="number">1</span>, <a href="#184">alph</a>)) {
-            (<span class="prelude-val">Some</span>(s0), <span class="prelude-val">Some</span>(s1)) =&gt; <span class="prelude-val">Some</span>((<a href="#186">s0</a>, <a href="#186">s1</a>)),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.IntersectionAutomaton.html">IntersectionAutomaton</a>&lt;Tuple&gt;(<span class="kw">pub </span>Tuple);
+
+<span class="macro">macro_rules! </span>impl_intersection_automaton {
+    (@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;A, $(<span class="macro-nonterminal">$T</span>),<span class="kw-2">*</span>&gt; Automaton <span class="kw">for </span>IntersectionAutomaton&lt;($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>)&gt;
+        <span class="kw">where
+            </span>$(<span class="macro-nonterminal">$T</span>: Automaton&lt;Alphabet = A&gt;,)*
+        {
+            <span class="kw">type </span>Alphabet = A;
+            <span class="kw">type </span>State = ($(<span class="macro-nonterminal">$T::State</span>,)<span class="kw-2">*</span>);
+            <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                ($(<span class="macro-nonterminal">$a</span>.initial(),)<span class="kw-2">*</span>)
+            }
+            <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, ($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>): <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                <span class="kw">match </span>($(<span class="macro-nonterminal">$a</span>.next(<span class="macro-nonterminal">$s</span>, alph),)<span class="kw-2">*</span>) {
+                    ($(<span class="prelude-val">Some</span>(<span class="macro-nonterminal">$s</span>),)<span class="kw-2">*</span>) =&gt; <span class="prelude-val">Some</span>(($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>)),
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+                }
+            }
+            <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, ($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>): <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; bool {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                $(<span class="macro-nonterminal">$a</span>.accept(<span class="macro-nonterminal">$s</span>))&amp;&amp;*
+            }
         }
-    }
-    <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#190">self</a>.<span class="number">0</span>.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#190">state</a>.<span class="number">0</span>) &amp;&amp; <a class="self" href="#190">self</a>.<span class="number">1</span>.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#190">state</a>.<span class="number">1</span>)
-    }
+    };
+    (@inc $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>, <span class="macro-nonterminal">$U</span>:ident <span class="macro-nonterminal">$b</span>:ident <span class="macro-nonterminal">$t</span>:ident) =&gt; {
+        <span class="macro">impl_intersection_automaton!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>);
+    };
+    (@inc $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>, <span class="macro-nonterminal">$U</span>:ident <span class="macro-nonterminal">$b</span>:ident <span class="macro-nonterminal">$t</span>:ident $(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">impl_intersection_automaton!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>);
+        <span class="macro">impl_intersection_automaton!</span>(@inc $(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>, $(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>);
+    };
+    ($(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">impl_intersection_automaton!</span>(@inc , , , $(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>);
+    };
 }
+<a class="macro" href="#175-210">impl_intersection_automaton!</a>(T0 t0 s0 T1 t1 s1 T2 t2 s2 T3 t3 s3 T4 t4 s4 T5 t5 s5);
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.UnionAutomaton.html">UnionAutomaton</a>&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
-<span class="kw">impl</span>&lt;A, X, Y&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>UnionAutomaton&lt;X, Y&gt;
-<span class="kw">where
-    </span>X: Automaton&lt;Alphabet = A&gt;,
-    Y: Automaton&lt;Alphabet = A&gt;,
-{
-    <span class="kw">type </span>Alphabet = A;
-    <span class="kw">type </span>State = (X::State, Y::State);
-    <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#204">self</a>.<span class="number">0</span>.<a href="#15">initial</a>(), <a class="self" href="#204">self</a>.<span class="number">1</span>.<a href="#15">initial</a>())
-    }
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <span class="kw">match </span>(<a class="self" href="#207">self</a>.<span class="number">0</span>.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#207">state</a>.<span class="number">0</span>, <a href="#207">alph</a>), <a class="self" href="#207">self</a>.<span class="number">1</span>.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#207">state</a>.<span class="number">1</span>, <a href="#207">alph</a>)) {
-            (<span class="prelude-val">Some</span>(s0), <span class="prelude-val">Some</span>(s1)) =&gt; <span class="prelude-val">Some</span>((<a href="#209">s0</a>, <a href="#209">s1</a>)),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.UnionAutomaton.html">UnionAutomaton</a>&lt;Tuple&gt;(<span class="kw">pub </span>Tuple);
+
+<span class="macro">macro_rules! </span>impl_union_automaton {
+    (@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;A, $(<span class="macro-nonterminal">$T</span>),<span class="kw-2">*</span>&gt; Automaton <span class="kw">for </span>UnionAutomaton&lt;($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>)&gt;
+        <span class="kw">where
+            </span>$(<span class="macro-nonterminal">$T</span>: Automaton&lt;Alphabet = A&gt;,)*
+        {
+            <span class="kw">type </span>Alphabet = A;
+            <span class="kw">type </span>State = ($(<span class="macro-nonterminal">$T::State</span>,)<span class="kw-2">*</span>);
+            <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                ($(<span class="macro-nonterminal">$a</span>.initial(),)<span class="kw-2">*</span>)
+            }
+            <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, ($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>): <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                <span class="kw">match </span>($(<span class="macro-nonterminal">$a</span>.next(<span class="macro-nonterminal">$s</span>, alph),)<span class="kw-2">*</span>) {
+                    ($(<span class="prelude-val">Some</span>(<span class="macro-nonterminal">$s</span>),)<span class="kw-2">*</span>) =&gt; <span class="prelude-val">Some</span>(($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>)),
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+                }
+            }
+            <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, ($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>): <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; bool {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                $(<span class="macro-nonterminal">$a</span>.accept(<span class="macro-nonterminal">$s</span>))||*
+            }
         }
-    }
-    <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#213">self</a>.<span class="number">0</span>.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#213">state</a>.<span class="number">0</span>) || <a class="self" href="#213">self</a>.<span class="number">1</span>.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#213">state</a>.<span class="number">1</span>)
-    }
+    };
+    (@inc $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>, <span class="macro-nonterminal">$U</span>:ident <span class="macro-nonterminal">$b</span>:ident <span class="macro-nonterminal">$t</span>:ident) =&gt; {
+        <span class="macro">impl_union_automaton!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>);
+    };
+    (@inc $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>, <span class="macro-nonterminal">$U</span>:ident <span class="macro-nonterminal">$b</span>:ident <span class="macro-nonterminal">$t</span>:ident $(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">impl_union_automaton!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>);
+        <span class="macro">impl_union_automaton!</span>(@inc $(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>, $(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>);
+    };
+    ($(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">impl_union_automaton!</span>(@inc , , , $(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>);
+    };
 }
+<a class="macro" href="#216-251">impl_union_automaton!</a>(T0 t0 s0 T1 t1 s1 T2 t2 s2 T3 t3 s3 T4 t4 s4 T5 t5 s5);
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.ProductAutomaton.html">ProductAutomaton</a>&lt;X, Y&gt;(<span class="kw">pub </span>X, <span class="kw">pub </span>Y);
-<span class="kw">impl</span>&lt;X, Y&gt; <a href="#12-26">Automaton</a> <span class="kw">for </span>ProductAutomaton&lt;X, Y&gt;
-<span class="kw">where
-    </span>X: <a href="#12-26">Automaton</a>,
-    Y: <a href="#12-26">Automaton</a>,
-{
-    <span class="kw">type </span>Alphabet = (X::Alphabet, Y::Alphabet);
-    <span class="kw">type </span>State = (X::State, Y::State);
-    <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#227">self</a>.<span class="number">0</span>.<a href="#15">initial</a>(), <a class="self" href="#227">self</a>.<span class="number">1</span>.<a href="#15">initial</a>())
-    }
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <span class="kw">match </span>(
-            <a class="self" href="#230">self</a>.<span class="number">0</span>.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#230">state</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span><a href="#230">alph</a>.<span class="number">0</span>),
-            <a class="self" href="#230">self</a>.<span class="number">1</span>.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#230">state</a>.<span class="number">1</span>, <span class="kw-2">&amp;</span><a href="#230">alph</a>.<span class="number">1</span>),
-        ) {
-            (<span class="prelude-val">Some</span>(s0), <span class="prelude-val">Some</span>(s1)) =&gt; <span class="prelude-val">Some</span>((<a href="#235">s0</a>, <a href="#235">s1</a>)),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.ProductAutomaton.html">ProductAutomaton</a>&lt;Tuple&gt;(<span class="kw">pub </span>Tuple);
+
+<span class="macro">macro_rules! </span>impl_product_automaton {
+    (@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$c</span>:ident)<span class="kw-2">*</span>) =&gt; {
+        <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$T</span>),<span class="kw-2">*</span>&gt; Automaton <span class="kw">for </span>ProductAutomaton&lt;($(<span class="macro-nonterminal">$T</span>,)<span class="kw-2">*</span>)&gt;
+        <span class="kw">where
+            </span>$(<span class="macro-nonterminal">$T</span>: Automaton,)*
+        {
+            <span class="kw">type </span>Alphabet = ($(<span class="macro-nonterminal">$T::Alphabet</span>,)<span class="kw-2">*</span>);
+            <span class="kw">type </span>State = ($(<span class="macro-nonterminal">$T::State</span>,)<span class="kw-2">*</span>);
+            <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                ($(<span class="macro-nonterminal">$a</span>.initial(),)<span class="kw-2">*</span>)
+            }
+            <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, ($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>): <span class="kw-2">&amp;</span><span class="self">Self</span>::State, ($(<span class="macro-nonterminal">$c</span>,)<span class="kw-2">*</span>): <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                <span class="kw">match </span>($(<span class="macro-nonterminal">$a</span>.next(<span class="macro-nonterminal">$s</span>, <span class="macro-nonterminal">$c</span>),)<span class="kw-2">*</span>) {
+                    ($(<span class="prelude-val">Some</span>(<span class="macro-nonterminal">$s</span>),)<span class="kw-2">*</span>) =&gt; <span class="prelude-val">Some</span>(($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>)),
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+                }
+            }
+            <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, ($(<span class="macro-nonterminal">$s</span>,)<span class="kw-2">*</span>): <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; bool {
+                <span class="kw">let </span><span class="self">Self</span>(($(<span class="macro-nonterminal">$a</span>,)<span class="kw-2">*</span>)) = <span class="self">self</span>;
+                $(<span class="macro-nonterminal">$a</span>.accept(<span class="macro-nonterminal">$s</span>))&amp;&amp;*
+            }
         }
-    }
-    <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#239">self</a>.<span class="number">0</span>.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#239">state</a>.<span class="number">0</span>) &amp;&amp; <a class="self" href="#239">self</a>.<span class="number">1</span>.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#239">state</a>.<span class="number">1</span>)
-    }
+    };
+    (@inc $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$c</span>:ident)<span class="kw-2">*</span>, <span class="macro-nonterminal">$U</span>:ident <span class="macro-nonterminal">$b</span>:ident <span class="macro-nonterminal">$t</span>:ident <span class="macro-nonterminal">$d</span>:ident) =&gt; {
+        <span class="macro">impl_product_automaton!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>, $(<span class="macro-nonterminal">$c</span>)* <span class="macro-nonterminal">$d</span>);
+    };
+    (@inc $(<span class="macro-nonterminal">$T</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$a</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$s</span>:ident)<span class="kw-2">*</span>, $(<span class="macro-nonterminal">$c</span>:ident)<span class="kw-2">*</span>, <span class="macro-nonterminal">$U</span>:ident <span class="macro-nonterminal">$b</span>:ident <span class="macro-nonterminal">$t</span>:ident <span class="macro-nonterminal">$d</span>:ident $(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">impl_product_automaton!</span>(@<span class="kw">impl </span>$(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>, $(<span class="macro-nonterminal">$c</span>)* <span class="macro-nonterminal">$d</span>);
+        <span class="macro">impl_product_automaton!</span>(@inc $(<span class="macro-nonterminal">$T</span>)* <span class="macro-nonterminal">$U</span>, $(<span class="macro-nonterminal">$a</span>)* <span class="macro-nonterminal">$b</span>, $(<span class="macro-nonterminal">$s</span>)* <span class="macro-nonterminal">$t</span>, $(<span class="macro-nonterminal">$c</span>)* <span class="macro-nonterminal">$d</span>, $(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>);
+    };
+    ($(<span class="macro-nonterminal">$tt</span>:tt)<span class="kw-2">*</span>) =&gt; {
+        <span class="macro">impl_product_automaton!</span>(@inc , , , , $(<span class="macro-nonterminal">$tt</span>)<span class="kw-2">*</span>);
+    };
 }
+<a class="macro" href="#257-292">impl_product_automaton!</a>(T0 t0 s0 c0 T1 t1 s1 c1 T2 t2 s2 c2 T3 t3 s3 c3 T4 t4 s4 c4 T5 t5 s5 c5);
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.FunctionalAutomaton.html">FunctionalAutomaton</a>&lt;A, S, F, G, H&gt;
@@ -1020,9 +1133,9 @@
 {
     <span class="kw">pub fn </span>new(fn_initial: F, fn_next: G, fn_accept: H) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#262">fn_initial</a>,
-            <a href="#262">fn_next</a>,
-            <a href="#262">fn_accept</a>,
+            <a href="#313">fn_initial</a>,
+            <a href="#313">fn_next</a>,
+            <a href="#313">fn_accept</a>,
             _marker: PhantomData,
         }
     }
@@ -1036,13 +1149,13 @@
     <span class="kw">type </span>Alphabet = A;
     <span class="kw">type </span>State = S;
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#279">self</a>.fn_initial)()
+        (<a class="self" href="#330">self</a>.fn_initial)()
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        (<a class="self" href="#282">self</a>.fn_next)(<a href="#282">state</a>, <a href="#282">alph</a>)
+        (<a class="self" href="#333">self</a>.fn_next)(<a href="#333">state</a>, <a href="#333">alph</a>)
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        (<a class="self" href="#285">self</a>.fn_accept)(<a href="#285">state</a>)
+        (<a class="self" href="#336">self</a>.fn_accept)(<a href="#336">state</a>)
     }
 }
 
@@ -1069,10 +1182,10 @@
 {
     <span class="kw">pub fn </span>new(dfa: A, fn_initial: F, fn_next: G, fn_accept: H) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#311">dfa</a>,
-            <a href="#311">fn_initial</a>,
-            <a href="#311">fn_next</a>,
-            <a href="#311">fn_accept</a>,
+            <a href="#362">dfa</a>,
+            <a href="#362">fn_initial</a>,
+            <a href="#362">fn_next</a>,
+            <a href="#362">fn_accept</a>,
             _marker: PhantomData,
         }
     }
@@ -1087,15 +1200,15 @@
     <span class="kw">type </span>Alphabet = A::Alphabet;
     <span class="kw">type </span>State = (A::State, S);
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#330">self</a>.dfa.<a href="#15">initial</a>(), (<a class="self" href="#330">self</a>.fn_initial)())
+        (<a class="self" href="#381">self</a>.dfa.<a href="#15">initial</a>(), (<a class="self" href="#381">self</a>.fn_initial)())
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <a class="self" href="#333">self</a>.dfa
-            .<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#333">state</a>.<span class="number">0</span>, <a href="#333">alph</a>)
-            .and_then(|s| (<a class="self" href="#333">self</a>.fn_next)(<a href="#333">state</a>, <a href="#333">alph</a>).map(|ss| (<a href="#336">s</a>, <a href="#336">ss</a>)))
+        <a class="self" href="#384">self</a>.dfa
+            .<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#384">state</a>.<span class="number">0</span>, <a href="#384">alph</a>)
+            .and_then(|s| (<a class="self" href="#384">self</a>.fn_next)(<a href="#384">state</a>, <a href="#384">alph</a>).map(|ss| (<a href="#387">s</a>, <a href="#387">ss</a>)))
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#338">self</a>.dfa.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#338">state</a>.<span class="number">0</span>) &amp;&amp; (<a class="self" href="#338">self</a>.fn_accept)(<a href="#338">state</a>)
+        <a class="self" href="#389">self</a>.dfa.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#389">state</a>.<span class="number">0</span>) &amp;&amp; (<a class="self" href="#389">self</a>.fn_accept)(<a href="#389">state</a>)
     }
 }
 
@@ -1122,10 +1235,10 @@
 {
     <span class="kw">pub fn </span>new(dfa: A, fn_initial: F, fn_next: G, fn_accept: H) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#364">dfa</a>,
-            <a href="#364">fn_initial</a>,
-            <a href="#364">fn_next</a>,
-            <a href="#364">fn_accept</a>,
+            <a href="#415">dfa</a>,
+            <a href="#415">fn_initial</a>,
+            <a href="#415">fn_next</a>,
+            <a href="#415">fn_accept</a>,
             _marker: PhantomData,
         }
     }
@@ -1140,14 +1253,14 @@
     <span class="kw">type </span>Alphabet = B;
     <span class="kw">type </span>State = (A::State, S);
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#383">self</a>.dfa.<a href="#15">initial</a>(), (<a class="self" href="#383">self</a>.fn_initial)())
+        (<a class="self" href="#434">self</a>.dfa.<a href="#15">initial</a>(), (<a class="self" href="#434">self</a>.fn_initial)())
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        (<a class="self" href="#386">self</a>.fn_next)(<span class="kw-2">&amp;</span><a href="#386">state</a>.<span class="number">1</span>, <a href="#386">alph</a>)
-            .and_then(|(s1, a)| <a class="self" href="#386">self</a>.dfa.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#386">state</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span><a href="#388">a</a>).map(|s0| (<a href="#388">s0</a>, <a href="#388">s1</a>)))
+        (<a class="self" href="#437">self</a>.fn_next)(<span class="kw-2">&amp;</span><a href="#437">state</a>.<span class="number">1</span>, <a href="#437">alph</a>)
+            .and_then(|(s1, a)| <a class="self" href="#437">self</a>.dfa.<a href="#16">next</a>(<span class="kw-2">&amp;</span><a href="#437">state</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span><a href="#439">a</a>).map(|s0| (<a href="#439">s0</a>, <a href="#439">s1</a>)))
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#390">self</a>.dfa.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#390">state</a>.<span class="number">0</span>) &amp;&amp; (<a class="self" href="#390">self</a>.fn_accept)(<span class="kw-2">&amp;</span><a href="#390">state</a>.<span class="number">1</span>)
+        <a class="self" href="#441">self</a>.dfa.<a href="#17">accept</a>(<span class="kw-2">&amp;</span><a href="#441">state</a>.<span class="number">0</span>) &amp;&amp; (<a class="self" href="#441">self</a>.fn_accept)(<span class="kw-2">&amp;</span><a href="#441">state</a>.<span class="number">1</span>)
     }
 }
 
@@ -1161,28 +1274,28 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; LexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     <span class="kw">pub fn </span>less_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#403">sequence</a>,
+            <a href="#454">sequence</a>,
             ordering: Ordering::Less,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>less_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#410">sequence</a>,
+            <a href="#461">sequence</a>,
             ordering: Ordering::Less,
             equal: <span class="bool-val">true</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#417">sequence</a>,
+            <a href="#468">sequence</a>,
             ordering: Ordering::Greater,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#424">sequence</a>,
+            <a href="#475">sequence</a>,
             ordering: Ordering::Greater,
             equal: <span class="bool-val">true</span>,
         }
@@ -1199,16 +1312,16 @@
         (<span class="number">0</span>, <span class="bool-val">true</span>)
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <a class="self" href="#442">self</a>.sequence
-            .get(<a href="#442">state</a>.<span class="number">0</span>)
-            .and_then(|c| <span class="kw">match </span>(<a href="#442">state</a>.<span class="number">1</span>, <a href="#445">c</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<a href="#442">alph</a>)) {
-                (<span class="bool-val">true</span>, Ordering::Equal) =&gt; <span class="prelude-val">Some</span>((<a href="#442">state</a>.<span class="number">0 </span>+ <span class="number">1</span>, <span class="bool-val">true</span>)),
-                (<span class="bool-val">true</span>, ord) <span class="kw">if </span><a href="#447">ord</a> == <a class="self" href="#442">self</a>.ordering =&gt; <span class="prelude-val">None</span>,
-                <span class="kw">_ </span>=&gt; <span class="prelude-val">Some</span>((<a href="#442">state</a>.<span class="number">0 </span>+ <span class="number">1</span>, <span class="bool-val">false</span>)),
+        <a class="self" href="#493">self</a>.sequence
+            .get(<a href="#493">state</a>.<span class="number">0</span>)
+            .and_then(|c| <span class="kw">match </span>(<a href="#493">state</a>.<span class="number">1</span>, <a href="#496">c</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<a href="#493">alph</a>)) {
+                (<span class="bool-val">true</span>, Ordering::Equal) =&gt; <span class="prelude-val">Some</span>((<a href="#493">state</a>.<span class="number">0 </span>+ <span class="number">1</span>, <span class="bool-val">true</span>)),
+                (<span class="bool-val">true</span>, ord) <span class="kw">if </span><a href="#498">ord</a> == <a class="self" href="#493">self</a>.ordering =&gt; <span class="prelude-val">None</span>,
+                <span class="kw">_ </span>=&gt; <span class="prelude-val">Some</span>((<a href="#493">state</a>.<span class="number">0 </span>+ <span class="number">1</span>, <span class="bool-val">false</span>)),
             })
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#451">self</a>.equal || !<a href="#451">state</a>.<span class="number">1
+        <a class="self" href="#502">self</a>.equal || !<a href="#502">state</a>.<span class="number">1
     </span>}
 }
 
@@ -1222,28 +1335,28 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; RevLexicographicalAutomaton&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     <span class="kw">pub fn </span>less_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#464">sequence</a>,
+            <a href="#515">sequence</a>,
             ordering: Ordering::Less,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>less_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#471">sequence</a>,
+            <a href="#522">sequence</a>,
             ordering: Ordering::Less,
             equal: <span class="bool-val">true</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#478">sequence</a>,
+            <a href="#529">sequence</a>,
             ordering: Ordering::Greater,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            <a href="#485">sequence</a>,
+            <a href="#536">sequence</a>,
             ordering: Ordering::Greater,
             equal: <span class="bool-val">true</span>,
         }
@@ -1257,16 +1370,16 @@
     <span class="doccomment">/// (next position of sequence, is equal)
     </span><span class="kw">type </span>State = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>);
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#500">self</a>.sequence.len(), Ordering::Equal)
+        (<a class="self" href="#551">self</a>.sequence.len(), Ordering::Equal)
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <span class="kw">let </span>index = <a href="#503">state</a>.<span class="number">0</span>.wrapping_add(!<span class="number">0</span>);
-        <a class="self" href="#503">self</a>.sequence
-            .get(<a href="#504">index</a>)
-            .map(|c| (<a href="#504">index</a>, <a href="#503">alph</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<a href="#507">c</a>).then(<a href="#503">state</a>.<span class="number">1</span>)))
+        <span class="kw">let </span>index = <a href="#554">state</a>.<span class="number">0</span>.wrapping_add(!<span class="number">0</span>);
+        <a class="self" href="#554">self</a>.sequence
+            .get(<a href="#555">index</a>)
+            .map(|c| (<a href="#555">index</a>, <a href="#554">alph</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<a href="#558">c</a>).then(<a href="#554">state</a>.<span class="number">1</span>)))
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a href="#509">state</a>.<span class="number">1 </span>== <a class="self" href="#509">self</a>.ordering || <a class="self" href="#509">self</a>.equal &amp;&amp; <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(state.<span class="number">1</span>, Ordering::Equal)
+        <a href="#560">state</a>.<span class="number">1 </span>== <a class="self" href="#560">self</a>.ordering || <a class="self" href="#560">self</a>.equal &amp;&amp; <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(state.<span class="number">1</span>, Ordering::Equal)
     }
 }
 
@@ -1300,7 +1413,7 @@
         M::unit()
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <span class="prelude-val">Some</span>(M::operate(<a href="#543">state</a>, <a href="#543">alph</a>))
+        <span class="prelude-val">Some</span>(M::operate(<a href="#594">state</a>, <a href="#594">alph</a>))
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, _state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <span class="bool-val">true
@@ -1372,26 +1485,26 @@
         })*
     };
 }
-<a class="macro" href="#582-615">impl_to_digit_sequence!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+<a class="macro" href="#633-666">impl_to_digit_sequence!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
 
 <span class="doccomment">/// build automaton
 ///
 /// - `automaton!(A)`
-/// - `&lt;= seq`: `LexicographicalAutomaton::less_than_or_equal(seq)`
-/// - `&gt;= seq`: `LexicographicalAutomaton::greater_than_or_equal(seq)`
-/// - `&lt; seq`: `LexicographicalAutomaton::greater_than(seq)`
-/// - `&gt; seq`: `LexicographicalAutomaton::greater_than(seq)`
-/// - `!&lt;= seq`: `RevLexicographicalAutomaton::less_than_or_equal(seq)`
-/// - `!&gt;= seq`: `RevLexicographicalAutomaton::greater_than_or_equal(seq)`
-/// - `!&lt; seq`: `RevLexicographicalAutomaton::greater_than(seq)`
-/// - `!&gt; seq`: `RevLexicographicalAutomaton::greater_than(seq)`
-/// - `=&gt; f g h`: `FunctionalAutomaton::new(f, g, h)`
-/// - `=&gt; (A) f g h`: `MappingAutomaton::new(A, f, g, h)`
-/// - `=&gt; f g h (A)`: `AlphabetMappingAutomaton::new(A, f, g, h)`
-/// - `@`: `AlwaysAcceptingAutomaton::new()`
-/// - `(A) * (B)`: `ProductAutomaton(A, B)`
-/// - `(A) &amp; (B)`: `IntersectionAutomaton(A, B)`
-/// - `(A) | (B)`: `UnionAutomaton(A, B)`
+/// - `&lt;= seq`, `seq &gt;=`: [`LexicographicalAutomaton::less_than_or_equal(&amp;seq)`](`LexicographicalAutomaton::less_than_or_equal`)
+/// - `&gt;= seq`, `seq &lt;=`: [`LexicographicalAutomaton::greater_than_or_equal(&amp;seq)`](`LexicographicalAutomaton::greater_than_or_equal`)
+/// - `&lt; seq`, `seq &gt;`: [`LexicographicalAutomaton::greater_than(&amp;seq)`](`LexicographicalAutomaton::greater_than`)
+/// - `&gt; seq`, `seq &lt;`: [`LexicographicalAutomaton::greater_than(&amp;seq)`](`LexicographicalAutomaton::greater_than`)
+/// - `!&lt;= seq`, `seq !&gt;=`: [`RevLexicographicalAutomaton::less_than_or_equal(&amp;seq)`](`RevLexicographicalAutomaton::less_than_or_equal`)
+/// - `!&gt;= seq`, `seq !&lt;=`: [`RevLexicographicalAutomaton::greater_than_or_equal(&amp;seq)`](`RevLexicographicalAutomaton::greater_than_or_equal`)
+/// - `!&lt; seq`, `seq !&gt;`: [`RevLexicographicalAutomaton::greater_than(&amp;seq)`](`RevLexicographicalAutomaton::greater_than`)
+/// - `!&gt; seq`, `seq !&lt;`: [`RevLexicographicalAutomaton::greater_than(&amp;seq)`](`RevLexicographicalAutomaton::greater_than`)
+/// - `=&gt; f g h`: [`FunctionalAutomaton::new(f, g, h)`](`FunctionalAutomaton`)
+/// - `=&gt; (A) f g h`: [`MappingAutomaton::new(A, f, g, h)`](`MappingAutomaton`)
+/// - `=&gt; f g h (A)`: [`AlphabetMappingAutomaton::new(A, f, g, h)`](`AlphabetMappingAutomaton`)
+/// - `@`: [`AlwaysAcceptingAutomaton::new()`](`AlwaysAcceptingAutomaton`)
+/// - `A * B`: [`ProductAutomaton((A, B))`](`ProductAutomaton`)
+/// - `A &amp; B`: [`IntersectionAutomaton((A, B))`](`IntersectionAutomaton`)
+/// - `A | B`: [`UnionAutomaton((A, B))`](`UnionAutomaton`)
 </span><span class="attr">#[macro_export]
 </span><span class="macro">macro_rules! </span><a href="../../../competitive/data_structure/macro.automaton.html">automaton</a> {
     (@inner ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>))                                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
@@ -1403,24 +1516,35 @@
     (@inner !&gt;= <span class="macro-nonterminal">$e</span>:expr)                                     =&gt; { RevLexicographicalAutomaton::greater_than_or_equal(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
     (@inner !&lt; <span class="macro-nonterminal">$e</span>:expr)                                      =&gt; { RevLexicographicalAutomaton::less_than(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
     (@inner !&gt; <span class="macro-nonterminal">$e</span>:expr)                                      =&gt; { RevLexicographicalAutomaton::greater_than(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident &gt;=)                                     =&gt; { LexicographicalAutomaton::less_than_or_equal(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident &lt;=)                                     =&gt; { LexicographicalAutomaton::greater_than_or_equal(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident &gt;)                                      =&gt; { LexicographicalAutomaton::less_than(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident &lt;)                                      =&gt; { LexicographicalAutomaton::greater_than(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident !&gt;=)                                    =&gt; { RevLexicographicalAutomaton::less_than_or_equal(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident !&lt;=)                                    =&gt; { RevLexicographicalAutomaton::greater_than_or_equal(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident !&gt;)                                     =&gt; { RevLexicographicalAutomaton::less_than(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
+    (@inner <span class="macro-nonterminal">$e</span>:ident !&lt;)                                     =&gt; { RevLexicographicalAutomaton::greater_than(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$e</span>) };
     (@inner =&gt; <span class="macro-nonterminal">$f</span>:expr, <span class="macro-nonterminal">$g</span>:expr, <span class="macro-nonterminal">$h</span>:expr, ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) $(,)<span class="question-mark">?</span>) =&gt; { AlphabetMappingAutomaton::new(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>), <span class="macro-nonterminal">$f</span>, <span class="macro-nonterminal">$g</span>, <span class="macro-nonterminal">$h</span>) };
     (@inner =&gt; ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>) <span class="macro-nonterminal">$f</span>:expr, <span class="macro-nonterminal">$g</span>:expr, <span class="macro-nonterminal">$h</span>:expr $(,)<span class="question-mark">?</span>)  =&gt; { MappingAutomaton::new(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>), <span class="macro-nonterminal">$f</span>, <span class="macro-nonterminal">$g</span>, <span class="macro-nonterminal">$h</span>) };
     (@inner =&gt; <span class="macro-nonterminal">$f</span>:expr, <span class="macro-nonterminal">$g</span>:expr, <span class="macro-nonterminal">$h</span>:expr $(,)<span class="question-mark">?</span>)              =&gt; { FunctionalAutomaton::new(<span class="macro-nonterminal">$f</span>, <span class="macro-nonterminal">$g</span>, <span class="macro-nonterminal">$h</span>) };
-    (@inner ($(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$op</span>:tt ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>))<span class="kw-2">*</span>)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">union </span>[] ($(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$op </span>($(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>))<span class="kw-2">*</span>) };
     (@inner @)                                               =&gt; { AlwaysAcceptingAutomaton::new() };
-    (@inner $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                                       =&gt; { $(<span class="macro-nonterminal">$t</span>)* };
-    (@union [] ($(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                        =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">union </span>[($(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
-    (@union [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>] | ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)             =&gt; { UnionAutomaton(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>), <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)) };
-    (@union [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$op</span>:tt ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)        =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">union </span>[$(<span class="macro-nonterminal">$h</span>)* <span class="macro-nonterminal">$op </span>($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
-    (@union [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>])                                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inter </span>[] $(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>) };
-    (@inter [] ($(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                        =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inter </span>[($(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
-    (@inter [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>] &amp; ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)             =&gt; { IntersectionAutomaton(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>), <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)) };
-    (@inter [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$op</span>:tt ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)        =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inter </span>[$(<span class="macro-nonterminal">$h</span>)* <span class="macro-nonterminal">$op </span>($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
-    (@inter [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>])                                     =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">prod </span>[] $(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>) };
-    (@prod [] ($(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                         =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">prod </span>[($(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
-    (@prod [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>] * ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)              =&gt; { ProductAutomaton(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>), <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)) };
-    (@prod [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$op</span>:tt ($(<span class="macro-nonterminal">$x</span>:tt)<span class="kw-2">*</span>) $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)         =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">prod </span>[$(<span class="macro-nonterminal">$h</span>)* <span class="macro-nonterminal">$op </span>($(<span class="macro-nonterminal">$x</span>)<span class="kw-2">*</span>)] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
-    (@prod [$(<span class="macro-nonterminal">$h</span>:tt)<span class="kw-2">*</span>])                                      =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$h</span>)<span class="kw-2">*</span>) };
+    (@inner $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                                       =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">union </span>[] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@union [$([$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>])<span class="kw-2">*</span>])                               =&gt; { UnionAutomaton(($(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$a</span>)<span class="kw-2">*</span>),)<span class="kw-2">*</span>)) };
+    (@union [] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>])                                  =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inter </span>[] [] $(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>) };
+    (@union [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>])                         =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">union </span>[$(<span class="macro-nonterminal">$a</span>)* [$(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>]]) };
+    (@union [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>] | $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)             =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">union </span>[$(<span class="macro-nonterminal">$a</span>)* [$(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>]] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@union [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$op</span>:tt $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)        =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">union </span>[$(<span class="macro-nonterminal">$a</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>)* <span class="macro-nonterminal">$op</span>] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@inter [$([$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>])<span class="kw-2">*</span>])                               =&gt; { IntersectionAutomaton(($(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$a</span>)<span class="kw-2">*</span>),)<span class="kw-2">*</span>)) };
+    (@inter [] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>])                                  =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">prod </span>[] [] $(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>) };
+    (@inter [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>])                         =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inter </span>[$(<span class="macro-nonterminal">$a</span>)* [$(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>]]) };
+    (@inter [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>] &amp; $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)             =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inter </span>[$(<span class="macro-nonterminal">$a</span>)* [$(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>]] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@inter [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$op</span>:tt $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)        =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inter </span>[$(<span class="macro-nonterminal">$a</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>)* <span class="macro-nonterminal">$op</span>] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@prod [$([$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>])<span class="kw-2">*</span>])                                =&gt; { ProductAutomaton(($(<span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$a</span>)<span class="kw-2">*</span>),)<span class="kw-2">*</span>)) };
+    (@prod [] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>])                                   =&gt; { $(<span class="macro-nonterminal">$b</span>)* };
+    (@prod [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>])                          =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">prod </span>[$(<span class="macro-nonterminal">$a</span>)* [$(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>]]) };
+    (@prod [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>] * $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">prod </span>[$(<span class="macro-nonterminal">$a</span>)* [$(<span class="macro-nonterminal">$b</span>)<span class="kw-2">*</span>]] [] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@prod [$(<span class="macro-nonterminal">$a</span>:tt)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>:tt)<span class="kw-2">*</span>] <span class="macro-nonterminal">$op</span>:tt $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)         =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">prod </span>[$(<span class="macro-nonterminal">$a</span>)<span class="kw-2">*</span>] [$(<span class="macro-nonterminal">$b</span>)* <span class="macro-nonterminal">$op</span>] $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
+    (@<span class="macro-nonterminal">$tag</span>:ident $(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                                  =&gt; { <span class="macro">compile_error!</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$tag</span>, $(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>)) };
     ($(<span class="macro-nonterminal">$t</span>:tt)<span class="kw-2">*</span>)                                              =&gt; { <span class="macro-nonterminal">$</span><span class="macro">crate::automaton!</span>(@<span class="macro-nonterminal">inner </span>$(<span class="macro-nonterminal">$t</span>)<span class="kw-2">*</span>) };
 }
 
