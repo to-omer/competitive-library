@@ -10,6 +10,8 @@ pub use self::complex::Complex;
 pub use self::discrete_steps::{DiscreteSteps, RangeBoundsExt};
 #[codesnip::entry("DoubleDouble")]
 pub use self::double_double::DoubleDouble;
+#[codesnip::entry("DualNumber")]
+pub use self::dual_number::DualNumber;
 #[codesnip::entry("float")]
 pub use self::float::{Float, Float32, Float64};
 #[codesnip::entry("integer")]
@@ -38,6 +40,8 @@ mod discrete_steps;
     codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner"))
 )]
 mod double_double;
+#[cfg_attr(nightly, codesnip::entry("DualNumber", include("zero_one")))]
+mod dual_number;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
 mod float;
 #[cfg_attr(nightly, codesnip::entry(include("zero_one", "bounded", "scanner")))]
