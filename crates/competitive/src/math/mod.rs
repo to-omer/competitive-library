@@ -99,10 +99,7 @@ mod miller_rabin;
 mod mod_sqrt;
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "NumberTheoreticTransform",
-        include("montgomery", "AssociatedValue", "ConvolveSteps")
-    )
+    codesnip::entry("NumberTheoreticTransform", include("montgomery", "ConvolveSteps"))
 )]
 mod number_theoretic_transform;
 mod nums;

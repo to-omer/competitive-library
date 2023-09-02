@@ -65,7 +65,7 @@ where
     M: MIntBase,
 {
     #[inline]
-    pub fn new_unchecked(x: M::Inner) -> Self {
+    pub const fn new_unchecked(x: M::Inner) -> Self {
         Self {
             x,
             _marker: PhantomData,
@@ -86,6 +86,10 @@ where
     #[inline]
     pub fn inner(self) -> M::Inner {
         M::mod_inner(self.x)
+    }
+    #[inline]
+    pub const fn inner_unchecked(self) -> M::Inner {
+        self.x
     }
 }
 
