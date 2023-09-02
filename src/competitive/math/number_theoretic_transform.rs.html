@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/number_theoretic_transform.rs`."><title>number_theoretic_transform.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (59a829484 2023-08-30)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/number_theoretic_transform.rs`."><title>number_theoretic_transform.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (35e416303 2023-09-01)" data-channel="nightly" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -578,16 +578,46 @@
 <a href="#562" id="562">562</a>
 <a href="#563" id="563">563</a>
 <a href="#564" id="564">564</a>
-</pre></div><pre class="rust"><code><span class="kw">use super</span>::{
-    <a href="../num/mint/mod.rs.html#21">montgomery</a>::<span class="kw-2">*</span>, <a href="../tools/associated_value.rs.html#2-32">AssociatedValue</a>, <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a>, <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>, <a href="../num/mint/mint_base.rs.html#27-52">MIntBase</a>, <a href="../num/mint/mint_base.rs.html#21-25">MIntConvert</a>, <a href="../num/zero_one.rs.html#15-28">One</a>, <a href="../num/zero_one.rs.html#1-14">Zero</a>,
-};
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+</pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="../num/mint/mod.rs.html#21">montgomery</a>::<span class="kw-2">*</span>, <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a>, <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>, <a href="../num/mint/mint_base.rs.html#27-52">MIntBase</a>, <a href="../num/mint/mint_base.rs.html#21-25">MIntConvert</a>, <a href="../num/zero_one.rs.html#15-28">One</a>, <a href="../num/zero_one.rs.html#1-14">Zero</a>};
 <span class="kw">use </span>std::marker::PhantomData;
-
-<span class="kw">pub trait </span>NttModulus:
-    <span class="lifetime">&#39;static </span>+ <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a> + MIntBase&lt;Inner = <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; + MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; + AssociatedValue&lt;T = NttCache&lt;<span class="self">Self</span>&gt;&gt;
-{
-    <span class="kw">fn </span>primitive_root() -&gt; MInt&lt;<span class="self">Self</span>&gt;;
-}
 
 <span class="kw">pub struct </span><a href="../../../competitive/math/struct.Convolve.html">Convolve</a>&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
 <span class="kw">pub type </span><a href="../../../competitive/math/type.Convolve998244353.html">Convolve998244353</a> = Convolve&lt;<a href="../num/mint/montgomery.rs.html#239-244">Modulo998244353</a>&gt;;
@@ -596,263 +626,309 @@
 <span class="macro">macro_rules! </span>impl_ntt_modulus {
     ($([<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$g</span>:expr]),<span class="kw-2">*</span>) =&gt; {
         $(
-            <span class="kw">impl </span>NttModulus <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
-                <span class="kw">fn </span>primitive_root() -&gt; MInt&lt;<span class="self">Self</span>&gt; {
-                    MInt::new_unchecked(<span class="macro-nonterminal">$g</span>)
-                }
-            }
-            <span class="macro">crate::impl_assoc_value!</span>(<span class="macro-nonterminal">$name</span>, NttCache&lt;<span class="macro-nonterminal">$name</span>&gt;, NttCache::new());
+            <span class="kw">impl </span>Montgomery32NttModulus <span class="kw">for </span><span class="macro-nonterminal">$name </span>{}
         )*
     };
 }
-<a class="macro" href="#16-27">impl_ntt_modulus!</a>(
+<a class="macro" href="#8-14">impl_ntt_modulus!</a>(
     [Modulo998244353, <span class="number">3</span>],
     [Modulo2113929217, <span class="number">5</span>],
     [Modulo1811939329, <span class="number">13</span>],
     [Modulo2013265921, <span class="number">31</span>]
 );
-<span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>NttCache&lt;M&gt;
-<span class="kw">where
-    </span>M: <a href="#6-10">NttModulus</a>,
-{
-    cache: Vec&lt;MInt&lt;M&gt;&gt;,
-    icache: Vec&lt;MInt&lt;M&gt;&gt;,
-}
-<span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>NttCache&lt;M&gt;
-<span class="kw">where
-    </span>M: <a href="#6-10">NttModulus</a>,
-{
-    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            cache: <a class="self" href="#46">self</a>.cache.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
-            icache: <a class="self" href="#46">self</a>.icache.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
-        }
+
+<span class="kw">const fn </span>reduce(z: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
+    <span class="kw">let </span><span class="kw-2">mut </span>z = ((<a href="#22">z</a> + <a href="#22">r</a>.wrapping_mul(<a href="#22">z</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <a href="#22">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) &gt;&gt; <span class="number">32</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>;
+    <span class="kw">if </span>z &gt;= p {
+        <a href="#23">z</a> -= <a href="#22">p</a>;
     }
+    <a href="#23">z</a>
 }
-<span class="kw">impl</span>&lt;M&gt; NttCache&lt;M&gt;
-<span class="kw">where
-    </span>M: <a href="#6-10">NttModulus</a>,
-{
-    <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            cache: Vec::new(),
-            icache: Vec::new(),
-        }
-    }
-    <span class="kw">fn </span>ensure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
-        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(n.count_ones(), <span class="number">1</span>, <span class="string">&quot;call with power of two but {}&quot;</span>, n);
-        <span class="kw">let </span><span class="kw-2">mut </span>m = <a class="self" href="#63">self</a>.cache.len();
-        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(
-            m.count_ones() &lt;= <span class="number">1</span>,
-            <span class="string">&quot;length might be power of two but {}&quot;</span>,
-            m
-        );
-        <span class="kw">if </span>m &gt;= n {
-            <span class="kw">return</span>;
-        }
-        <span class="kw">let </span>q: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = M::mod_into() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> - <span class="number">1</span>;
-        <a class="self" href="#63">self</a>.cache.reserve_exact(<a href="#63">n</a> - <a href="#65">m</a>);
-        <a class="self" href="#63">self</a>.icache.reserve_exact(<a href="#63">n</a> - <a href="#65">m</a>);
-        <span class="kw">if </span><span class="self">self</span>.cache.is_empty() {
-            <a class="self" href="#63">self</a>.cache.push(MInt::one());
-            <a class="self" href="#63">self</a>.icache.push(MInt::one());
-            <a href="#65">m</a> += <span class="number">1</span>;
-        }
-        <span class="kw">while </span>m &lt; n {
-            <span class="kw">let </span>p = M::primitive_root().pow(q / (m * <span class="number">4</span>));
-            <span class="kw">let </span>pinv = p.inv();
-            <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..m {
-                <span class="self">self</span>.cache.push(<span class="self">self</span>.cache[i] * p);
-                <span class="self">self</span>.icache.push(<span class="self">self</span>.icache[i] * pinv);
-            }
-            m &lt;&lt;= <span class="number">1</span>;
-        }
-        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(<span class="self">self</span>.cache.len(), n);
-    }
+<span class="kw">const fn </span>mod_mul(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
+    <a href="#22-28">reduce</a>(<a href="#29">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <a href="#29">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="#29">p</a>, <a href="#29">r</a>)
 }
-<span class="macro">macro_rules! </span>impl_ntt {
-    (@ntt2 <span class="macro-nonterminal">$self</span>:ident <span class="macro-nonterminal">$a</span>:ident) =&gt; {
-        <span class="kw">let </span>n = <span class="macro-nonterminal">$a</span>.len();
-        <span class="macro-nonterminal">$self</span>.ensure(n / <span class="number">2</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>v = n / <span class="number">2</span>;
-        <span class="kw">while </span>v &gt; <span class="number">0 </span>{
-            <span class="kw">for </span>(a, wj) <span class="kw">in </span><span class="macro-nonterminal">$a</span>.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$self</span>.cache) {
-                <span class="kw">let </span>(l, r) = a.split_at_mut(v);
-                <span class="kw">for </span>(x, y) <span class="kw">in </span>l.iter_mut().zip(r) {
-                    <span class="kw">let </span>ajv = wj * <span class="kw-2">*</span>y;
-                    <span class="kw-2">*</span>y = <span class="kw-2">*</span>x - ajv;
-                    <span class="kw-2">*</span>x += ajv;
+<span class="kw">const fn </span>mod_pow(<span class="kw-2">mut </span>x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <span class="kw-2">mut </span>y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <span class="kw-2">mut </span>z: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
+    <span class="kw">while </span>y &gt; <span class="number">0 </span>{
+        <span class="kw">if </span>y &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+            z = mod_mul(z, x, p, r);
+        }
+        x = mod_mul(x, x, p, r);
+        y &gt;&gt;= <span class="number">1</span>;
+    }
+    <a href="#32">z</a>
+}
+
+<span class="kw">pub trait </span>Montgomery32NttModulus: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a> + <a href="../num/mint/montgomery.rs.html#192-227">MontgomeryReduction32</a> {
+    <span class="kw">const </span>PRIMITIVE_ROOT: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> = {
+        <span class="kw">let </span><span class="kw-2">mut </span>g = <span class="number">3u32</span>;
+        <span class="kw">loop </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="bool-val">true</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>d = <span class="number">1u32</span>;
+            <span class="kw">while </span>d * d &lt; <span class="self">Self</span>::MOD {
+                <span class="kw">if </span>(<span class="self">Self</span>::MOD - <span class="number">1</span>) % d == <span class="number">0 </span>{
+                    <span class="kw">let </span>ds = [d, (<span class="self">Self</span>::MOD - <span class="number">1</span>) / d];
+                    <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+                    <span class="kw">while </span>i &lt; <span class="number">2 </span>{
+                        ok &amp;= ds[i] == <span class="self">Self</span>::MOD - <span class="number">1
+                            </span>|| mod_pow(
+                                reduce(g <span class="kw">as </span>u64 * <span class="self">Self</span>::N2 <span class="kw">as </span>u64, <span class="self">Self</span>::MOD, <span class="self">Self</span>::R),
+                                ds[i],
+                                <span class="self">Self</span>::MOD,
+                                <span class="self">Self</span>::R,
+                                <span class="self">Self</span>::N1,
+                            ) != <span class="self">Self</span>::N1;
+                        i += <span class="number">1</span>;
+                    }
                 }
+                d += <span class="number">1</span>;
             }
-            v &gt;&gt;= <span class="number">1</span>;
+            <span class="kw">if </span>ok {
+                <span class="kw">break</span>;
+            }
+            <a href="#45">g</a> += <span class="number">2</span>;
+        }
+        <a href="#45">g</a>
+    };
+    <span class="kw">const </span>RANK: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> = (<span class="self">Self</span>::MOD - <span class="number">1</span>).trailing_zeros();
+    <span class="kw">const </span>INFO: <a href="#78-85">NttInfo</a> = NttInfo::new::&lt;<span class="self">Self</span>&gt;();
+}
+
+<span class="kw">pub struct </span>NttInfo {
+    root: [<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>; <span class="number">32</span>],
+    inv_root: [<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>; <span class="number">32</span>],
+    rate2: [<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>; <span class="number">32</span>],
+    inv_rate2: [<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>; <span class="number">32</span>],
+    rate3: [<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>; <span class="number">32</span>],
+    inv_rate3: [<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>; <span class="number">32</span>],
+}
+<span class="kw">impl </span><a href="#78-85">NttInfo</a> {
+    <span class="kw">const fn </span>new&lt;M&gt;() -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>root = [<span class="number">0</span>; <span class="number">32</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>inv_root = [<span class="number">0</span>; <span class="number">32</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>rate2 = [<span class="number">0</span>; <span class="number">32</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>inv_rate2 = [<span class="number">0</span>; <span class="number">32</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>rate3 = [<span class="number">0</span>; <span class="number">32</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>inv_rate3 = [<span class="number">0</span>; <span class="number">32</span>];
+        <span class="kw">let </span>rank = M::RANK <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+
+        <span class="kw">let </span>g = <a href="#22-28">reduce</a>(M::PRIMITIVE_ROOT <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * M::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, M::MOD, M::R);
+        <a href="#91">root</a>[<a href="#97">rank</a>] = <a href="#32-41">mod_pow</a>(<a href="#99">g</a>, (M::MOD - <span class="number">1</span>) &gt;&gt; <a href="#97">rank</a>, M::MOD, M::R, M::N1);
+        <a href="#92">inv_root</a>[<a href="#97">rank</a>] = <a href="#32-41">mod_pow</a>(<a href="#91">root</a>[<a href="#97">rank</a>], M::MOD - <span class="number">2</span>, M::MOD, M::R, M::N1);
+        <span class="kw">let </span><span class="kw-2">mut </span>i = <a href="#97">rank</a> - <span class="number">1</span>;
+        <span class="kw">loop </span>{
+            <a href="#91">root</a>[<a href="#102">i</a>] = <a href="#29-31">mod_mul</a>(<a href="#91">root</a>[<a href="#102">i</a> + <span class="number">1</span>], <a href="#91">root</a>[<a href="#102">i</a> + <span class="number">1</span>], M::MOD, M::R);
+            <a href="#92">inv_root</a>[<a href="#102">i</a>] = <a href="#29-31">mod_mul</a>(<a href="#92">inv_root</a>[<a href="#102">i</a> + <span class="number">1</span>], <a href="#92">inv_root</a>[<a href="#102">i</a> + <span class="number">1</span>], M::MOD, M::R);
+            <span class="kw">if </span>i == <span class="number">0 </span>{
+                <span class="kw">break</span>;
+            }
+            <a href="#102">i</a> -= <span class="number">1</span>;
+        }
+
+        <span class="kw">let </span>(<span class="kw-2">mut </span>i, <span class="kw-2">mut </span>prod, <span class="kw-2">mut </span>inv_prod) = (<span class="number">0</span>, M::N1, M::N1);
+        <span class="kw">while </span>i &lt; rank - <span class="number">1 </span>{
+            rate2[i] = mod_mul(root[i + <span class="number">2</span>], prod, M::MOD, M::R);
+            inv_rate2[i] = mod_mul(inv_root[i + <span class="number">2</span>], inv_prod, M::MOD, M::R);
+            prod = mod_mul(prod, inv_root[i + <span class="number">2</span>], M::MOD, M::R);
+            inv_prod = mod_mul(inv_prod, root[i + <span class="number">2</span>], M::MOD, M::R);
+            i += <span class="number">1</span>;
+        }
+
+        <span class="kw">let </span>(<span class="kw-2">mut </span>i, <span class="kw-2">mut </span>prod, <span class="kw-2">mut </span>inv_prod) = (<span class="number">0</span>, M::N1, M::N1);
+        <span class="kw">while </span>i &lt; rank - <span class="number">2 </span>{
+            rate3[i] = mod_mul(root[i + <span class="number">3</span>], prod, M::MOD, M::R);
+            inv_rate3[i] = mod_mul(inv_root[i + <span class="number">3</span>], inv_prod, M::MOD, M::R);
+            prod = mod_mul(prod, inv_root[i + <span class="number">3</span>], M::MOD, M::R);
+            inv_prod = mod_mul(inv_prod, root[i + <span class="number">3</span>], M::MOD, M::R);
+            i += <span class="number">1</span>;
+        }
+
+        <a href="#78-85">NttInfo</a> {
+            <a href="#91">root</a>,
+            <a href="#92">inv_root</a>,
+            <a href="#93">rate2</a>,
+            <a href="#94">inv_rate2</a>,
+            <a href="#95">rate3</a>,
+            <a href="#96">inv_rate3</a>,
+        }
+    }
+}
+
+<span class="macro">macro_rules! </span>impl_ntt {
+    (@ntt <span class="macro-nonterminal">$a</span>:ident) =&gt; {
+        <span class="kw">let </span>n = <span class="macro-nonterminal">$a</span>.len();
+        <span class="kw">let </span><span class="kw-2">mut </span>v = n / <span class="number">2</span>;
+        <span class="kw">let </span>imag = MInt::&lt;M&gt;::new_unchecked(M::INFO.root[<span class="number">2</span>]);
+        <span class="kw">while </span>v &gt; <span class="number">1 </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>w1 = MInt::&lt;M&gt;::one();
+            <span class="kw">for </span>(s, a) <span class="kw">in </span><span class="macro-nonterminal">$a</span>.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).enumerate() {
+                <span class="kw">let </span>(l, r) = a.split_at_mut(v);
+                <span class="kw">let </span>(ll, lr) = l.split_at_mut(v &gt;&gt; <span class="number">1</span>);
+                <span class="kw">let </span>(rl, rr) = r.split_at_mut(v &gt;&gt; <span class="number">1</span>);
+                <span class="kw">let </span>w2 = w1 * w1;
+                <span class="kw">let </span>w3 = w1 * w2;
+                <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+                    <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+                    <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1 * w1;
+                    <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2 * w2;
+                    <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3 * w3;
+                    <span class="kw">let </span>a0pa2 = a0 + a2;
+                    <span class="kw">let </span>a0na2 = a0 - a2;
+                    <span class="kw">let </span>a1pa3 = a1 + a3;
+                    <span class="kw">let </span>a1na3imag = (a1 - a3) * imag;
+                    <span class="kw-2">*</span>x0 = a0pa2 + a1pa3;
+                    <span class="kw-2">*</span>x1 = a0pa2 - a1pa3;
+                    <span class="kw-2">*</span>x2 = a0na2 + a1na3imag;
+                    <span class="kw-2">*</span>x3 = a0na2 - a1na3imag;
+                }
+                w1 <span class="kw-2">*</span>= MInt::&lt;M&gt;::new_unchecked(M::INFO.rate3[s.trailing_ones() <span class="kw">as </span>usize]);
+            }
+            v &gt;&gt;= <span class="number">2</span>;
+        }
+        <span class="kw">if </span>v == <span class="number">1 </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>w1 = MInt::&lt;M&gt;::one();
+            <span class="kw">for </span>(s, a) <span class="kw">in </span><span class="macro-nonterminal">$a</span>.chunks_exact_mut(<span class="number">2</span>).enumerate() {
+                <span class="kw">unsafe </span>{
+                    <span class="kw">let </span>(l, r) = a.split_at_mut(<span class="number">1</span>);
+                    <span class="kw">let </span>x0 = l.get_unchecked_mut(<span class="number">0</span>);
+                    <span class="kw">let </span>x1 = r.get_unchecked_mut(<span class="number">0</span>);
+                    <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+                    <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1 * w1;
+                    <span class="kw-2">*</span>x0 = a0 + a1;
+                    <span class="kw-2">*</span>x1 = a0 - a1;
+                }
+                w1 <span class="kw-2">*</span>= MInt::&lt;M&gt;::new_unchecked(M::INFO.rate2[s.trailing_ones() <span class="kw">as </span>usize]);
+            }
         }
     };
-    <span class="comment">// (@ntt4 $self:ident $a:ident) =&gt; {
-    //     let n = $a.len();
-    //     $self.ensure(2.max(n / 2));
-    //     let imag = $self.cache[1];
-    //     let mut v = n / 2;
-    //     while v &gt; 1 {
-    //         for ((a, &amp;w2), &amp;w1) in $a
-    //             .chunks_exact_mut(v &lt;&lt; 1)
-    //             .zip(&amp;$self.cache)
-    //             .zip($self.cache.iter().step_by(2))
-    //         {
-    //             let (l, r) = a.split_at_mut(v);
-    //             let (ll, lr) = l.split_at_mut(v &gt;&gt; 1);
-    //             let (rl, rr) = r.split_at_mut(v &gt;&gt; 1);
-    //             let w3 = w1 * w2;
-    //             for (((x0, x1), x2), x3) in ll.iter_mut().zip(lr).zip(rl).zip(rr) {
-    //                 let a0 = *x0;
-    //                 let a1 = *x1 * w1;
-    //                 let a2 = *x2 * w2;
-    //                 let a3 = *x3 * w3;
-    //                 let a0pa2 = a0 + a2;
-    //                 let a0na2 = a0 - a2;
-    //                 let a1pa3 = a1 + a3;
-    //                 let a1na3imag = (a1 - a3) * imag;
-    //                 *x0 = a0pa2 + a1pa3;
-    //                 *x1 = a0pa2 - a1pa3;
-    //                 *x2 = a0na2 + a1na3imag;
-    //                 *x3 = a0na2 - a1na3imag;
-    //             }
-    //         }
-    //         v &gt;&gt;= 2;
-    //     }
-    //     if v == 1 {
-    //         for (a, wj) in $a.chunks_exact_mut(2).zip(&amp;$self.cache) {
-    //             unsafe {
-    //                 let (l, r) = a.split_at_mut(v);
-    //                 let x = l.get_unchecked_mut(0);
-    //                 let y = r.get_unchecked_mut(0);
-    //                 let ajv = wj * *y;
-    //                 *y = *x - ajv;
-    //                 *x += ajv;
-    //             }
-    //         }
-    //     }
-    // };
-    </span>(@intt2 <span class="macro-nonterminal">$self</span>:ident <span class="macro-nonterminal">$a</span>:ident) =&gt; {
+    (@intt <span class="macro-nonterminal">$a</span>:ident) =&gt; {
         <span class="kw">let </span>n = <span class="macro-nonterminal">$a</span>.len();
-        <span class="macro-nonterminal">$self</span>.ensure(n / <span class="number">2</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
-        <span class="kw">while </span>v &lt; n {
-            <span class="kw">for </span>(a, wj) <span class="kw">in </span><span class="macro-nonterminal">$a</span>.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).zip(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$self</span>.icache) {
-                <span class="kw">let </span>(l, r) = a.split_at_mut(v);
-                <span class="kw">for </span>(x, y) <span class="kw">in </span>l.iter_mut().zip(r) {
-                    <span class="kw">let </span>ajv = <span class="kw-2">*</span>x - <span class="kw-2">*</span>y;
-                    <span class="kw-2">*</span>x += <span class="kw-2">*</span>y;
-                    <span class="kw-2">*</span>y = wj * ajv;
+        <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>w1 = MInt::&lt;M&gt;::one();
+            <span class="kw">for </span>(s, a) <span class="kw">in </span><span class="macro-nonterminal">$a</span>.chunks_exact_mut(<span class="number">2</span>).enumerate() {
+                <span class="kw">unsafe </span>{
+                    <span class="kw">let </span>(l, r) = a.split_at_mut(<span class="number">1</span>);
+                    <span class="kw">let </span>x0 = l.get_unchecked_mut(<span class="number">0</span>);
+                    <span class="kw">let </span>x1 = r.get_unchecked_mut(<span class="number">0</span>);
+                    <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+                    <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+                    <span class="kw-2">*</span>x0 = a0 + a1;
+                    <span class="kw-2">*</span>x1 = (a0 - a1) * w1;
                 }
+                w1 <span class="kw-2">*</span>= MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_rate2[s.trailing_ones() <span class="kw">as </span>usize]);
             }
             v &lt;&lt;= <span class="number">1</span>;
         }
+        <span class="kw">let </span>iimag = MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_root[<span class="number">2</span>]);
+        <span class="kw">while </span>v &lt; n {
+            <span class="kw">let </span><span class="kw-2">mut </span>w1 = MInt::&lt;M&gt;::one();
+            <span class="kw">for </span>(s, a) <span class="kw">in </span><span class="macro-nonterminal">$a</span>.chunks_exact_mut(v &lt;&lt; <span class="number">2</span>).enumerate() {
+                <span class="kw">let </span>(l, r) = a.split_at_mut(v &lt;&lt; <span class="number">1</span>);
+                <span class="kw">let </span>(ll, lr) = l.split_at_mut(v);
+                <span class="kw">let </span>(rl, rr) = r.split_at_mut(v);
+                <span class="kw">let </span>w2 = w1 * w1;
+                <span class="kw">let </span>w3 = w1 * w2;
+                <span class="kw">for </span>(((x0, x1), x2), x3) <span class="kw">in </span>ll.iter_mut().zip(lr).zip(rl).zip(rr) {
+                    <span class="kw">let </span>a0 = <span class="kw-2">*</span>x0;
+                    <span class="kw">let </span>a1 = <span class="kw-2">*</span>x1;
+                    <span class="kw">let </span>a2 = <span class="kw-2">*</span>x2;
+                    <span class="kw">let </span>a3 = <span class="kw-2">*</span>x3;
+                    <span class="kw">let </span>a0pa1 = a0 + a1;
+                    <span class="kw">let </span>a0na1 = a0 - a1;
+                    <span class="kw">let </span>a2pa3 = a2 + a3;
+                    <span class="kw">let </span>a2na3iimag = (a2 - a3) * iimag;
+                    <span class="kw-2">*</span>x0 = a0pa1 + a2pa3;
+                    <span class="kw-2">*</span>x1 = (a0na1 + a2na3iimag) * w1;
+                    <span class="kw-2">*</span>x2 = (a0pa1 - a2pa3) * w2;
+                    <span class="kw-2">*</span>x3 = (a0na1 - a2na3iimag) * w3;
+                }
+                w1 <span class="kw-2">*</span>= MInt::&lt;M&gt;::new_unchecked(M::INFO.inv_rate3[s.trailing_ones() <span class="kw">as </span>usize]);
+            }
+            v &lt;&lt;= <span class="number">2</span>;
+        }
     };
-    <span class="comment">//
-    // (@intt4 $self:ident $a:ident) =&gt; {
-    //     let n = $a.len();
-    //     $self.ensure(n / 2);
-    //     let iimag = $self.icache[1];
-    //     let mut v = 1;
-    //     if n.trailing_zeros() &amp; 1 == 1 {
-    //         for (a, wj) in $a.chunks_exact_mut(2).zip(&amp;$self.icache) {
-    //             let (l, r) = a.split_at_mut(1);
-    //             let x = l.get_unchecked_mut(0);
-    //             let y = r.get_unchecked_mut(0);
-    //             let ajv = *x - *y;
-    //             *x += *y;
-    //             *y = wj * ajv;
-    //         }
-    //         v &lt;&lt;= 1;
-    //     }
-    //     while v &lt; n {
-    //         for ((a, &amp;w2), &amp;w1) in $a
-    //             .chunks_exact_mut(v &lt;&lt; 2)
-    //             .zip(&amp;$self.icache)
-    //             .zip($self.icache.iter().step_by(2))
-    //         {
-    //             let (l, r) = a.split_at_mut(v &lt;&lt; 1);
-    //             let (ll, lr) = l.split_at_mut(v);
-    //             let (rl, rr) = r.split_at_mut(v);
-    //             let w3 = w1 * w2;
-    //             for (((x0, x1), x2), x3) in ll.iter_mut().zip(lr).zip(rl).zip(rr) {
-    //                 let a0 = *x0;
-    //                 let a1 = *x1;
-    //                 let a2 = *x2;
-    //                 let a3 = *x3;
-    //                 let a0pa1 = a0 + a1;
-    //                 let a0na1 = a0 - a1;
-    //                 let a2pa3 = a2 + a3;
-    //                 let a2na3iimag = (a2 - a3) * iimag;
-    //                 *x0 = a0pa1 + a2pa3;
-    //                 *x1 = (a0na1 + a2na3iimag) * w1;
-    //                 *x2 = (a0pa1 - a2pa3) * w2;
-    //                 *x3 = (a0na1 - a2na3iimag) * w3;
-    //             }
-    //         }
-    //         v &lt;&lt;= 2;
-    //     }
-    // };
-    </span>() =&gt; {};
 }
-<span class="kw">impl</span>&lt;M&gt; NttCache&lt;M&gt;
+
+<span class="kw">fn </span>ntt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
 <span class="kw">where
-    </span>M: <a href="#6-10">NttModulus</a>,
+    </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
 {
-    <span class="kw">fn </span>ntt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <span class="comment">// if is_x86_feature_detected!(&quot;avx512f&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512dq&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512cd&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512bw&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512vl&quot;)
-        // {
-        //     M::modify(|cache| unsafe { cache.ntt_inner_avx512(a) });
-        // } else
-        </span><span class="kw">if </span><a class="macro" href="https://doc.rust-lang.org/nightly/std_detect/macro.is_x86_feature_detected.html">is_x86_feature_detected!</a>(<span class="string">&quot;avx2&quot;</span>) {
-            M::modify(|cache| <span class="kw">unsafe </span>{ <a href="#233">cache</a>.<a href="#243-245">ntt_inner_avx2</a>(<a href="#223">a</a>) });
-        } <span class="kw">else </span>{
-            M::modify(|cache| <a href="#235">cache</a>.<a href="#246-248">ntt_inner</a>(<a href="#223">a</a>));
-        }
-    }
-    <span class="comment">// #[target_feature(enable = &quot;avx512f,avx512dq,avx512cd,avx512bw,avx512vl&quot;)]
-    // unsafe fn ntt_inner_avx512(&amp;mut self, a: &amp;mut [MInt&lt;M&gt;]) {
-    //     impl_ntt!(@ntt2 self a);
-    // }
-    </span><span class="attr">#[target_feature(enable = <span class="string">&quot;avx2&quot;</span>)]
-    </span><span class="kw">unsafe fn </span>ntt_inner_avx2(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <a class="macro" href="#94-218">impl_ntt!</a>(@ntt2 <span class="self">self </span>a);
-    }
-    <span class="kw">fn </span>ntt_inner(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <a class="macro" href="#94-218">impl_ntt!</a>(@ntt2 <span class="self">self </span>a);
-    }
-    <span class="kw">fn </span>intt(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <span class="comment">// if is_x86_feature_detected!(&quot;avx512f&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512dq&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512cd&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512bw&quot;)
-        //     &amp;&amp; is_x86_feature_detected!(&quot;avx512vl&quot;)
-        // {
-        //     M::modify(|cache| unsafe { cache.intt_inner_avx512(a) });
-        // } else
-        </span><span class="kw">if </span><a class="macro" href="https://doc.rust-lang.org/nightly/std_detect/macro.is_x86_feature_detected.html">is_x86_feature_detected!</a>(<span class="string">&quot;avx2&quot;</span>) {
-            M::modify(|cache| <span class="kw">unsafe </span>{ <a href="#259">cache</a>.<a href="#269-271">intt_inner_avx2</a>(<a href="#249">a</a>) });
-        } <span class="kw">else </span>{
-            M::modify(|cache| <a href="#261">cache</a>.<a href="#272-274">intt_inner</a>(<a href="#249">a</a>));
-        }
-    }
-    <span class="comment">// #[target_feature(enable = &quot;avx512f,avx512dq,avx512cd,avx512bw,avx512vl&quot;)]
-    // unsafe fn intt_inner_avx512(&amp;mut self, a: &amp;mut [MInt&lt;M&gt;]) {
-    //     impl_ntt!(@intt2 self a);
-    // }
-    </span><span class="attr">#[target_feature(enable = <span class="string">&quot;avx2&quot;</span>)]
-    </span><span class="kw">unsafe fn </span>intt_inner_avx2(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <a class="macro" href="#94-218">impl_ntt!</a>(@intt2 <span class="self">self </span>a);
-    }
-    <span class="kw">fn </span>intt_inner(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;]) {
-        <a class="macro" href="#94-218">impl_ntt!</a>(@intt2 <span class="self">self </span>a);
+    <span class="comment">// if is_x86_feature_detected!(&quot;avx512f&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512dq&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512cd&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512bw&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512vl&quot;)
+    // {
+    //     unsafe { ntt_inner_avx512(a) };
+    // } else
+    </span><span class="kw">if </span><a class="macro" href="https://doc.rust-lang.org/nightly/std_detect/macro.is_x86_feature_detected.html">is_x86_feature_detected!</a>(<span class="string">&quot;avx2&quot;</span>) {
+        <span class="kw">unsafe </span>{ <a href="#263-268">ntt_inner_avx2</a>(<a href="#237">a</a>) };
+    } <span class="kw">else </span>{
+        <a href="#269-274">ntt_inner</a>(<a href="#237">a</a>);
     }
 }
+<span class="comment">// #[target_feature(enable = &quot;avx512f,avx512dq,avx512cd,avx512bw,avx512vl&quot;)]
+// unsafe fn ntt_inner_avx512&lt;M&gt;(a: &amp;mut [MInt&lt;M&gt;])
+// where
+//     M: Montgomery32NttModulus,
+// {
+//     impl_ntt!(@ntt a);
+// }
+</span><span class="attr">#[target_feature(enable = <span class="string">&quot;avx2&quot;</span>)]
+</span><span class="kw">unsafe fn </span>ntt_inner_avx2&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span class="kw">where
+    </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
+{
+    <a class="macro" href="#141-235">impl_ntt!</a>(@ntt a);
+}
+<span class="kw">fn </span>ntt_inner&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span class="kw">where
+    </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
+{
+    <a class="macro" href="#141-235">impl_ntt!</a>(@ntt a);
+}
+<span class="kw">fn </span>intt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span class="kw">where
+    </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
+{
+    <span class="comment">// if is_x86_feature_detected!(&quot;avx512f&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512dq&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512cd&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512bw&quot;)
+    //     &amp;&amp; is_x86_feature_detected!(&quot;avx512vl&quot;)
+    // {
+    //     unsafe { intt_inner_avx512(a) };
+    // } else
+    </span><span class="kw">if </span><a class="macro" href="https://doc.rust-lang.org/nightly/std_detect/macro.is_x86_feature_detected.html">is_x86_feature_detected!</a>(<span class="string">&quot;avx2&quot;</span>) {
+        <span class="kw">unsafe </span>{ <a href="#301-306">intt_inner_avx2</a>(<a href="#275">a</a>) };
+    } <span class="kw">else </span>{
+        <a href="#307-312">intt_inner</a>(<a href="#275">a</a>);
+    }
+}
+<span class="comment">// #[target_feature(enable = &quot;avx512f,avx512dq,avx512cd,avx512bw,avx512vl&quot;)]
+// unsafe fn intt_inner_avx512&lt;M&gt;(a: &amp;mut [MInt&lt;M&gt;])
+// where
+//     M: Montgomery32NttModulus,
+// {
+//     impl_ntt!(@intt a);
+// }
+</span><span class="attr">#[target_feature(enable = <span class="string">&quot;avx2&quot;</span>)]
+</span><span class="kw">unsafe fn </span>intt_inner_avx2&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span class="kw">where
+    </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
+{
+    <a class="macro" href="#141-235">impl_ntt!</a>(@intt a);
+}
+<span class="kw">fn </span>intt_inner&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span class="kw">where
+    </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
+{
+    <a class="macro" href="#141-235">impl_ntt!</a>(@intt a);
+}
+
 <span class="kw">fn </span>convolve_naive&lt;M&gt;(a: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], b: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
 <span class="kw">where
     </span>M: <a href="../num/mint/mint_base.rs.html#27-52">MIntBase</a>,
@@ -860,7 +936,7 @@
     <span class="kw">if </span>a.is_empty() &amp;&amp; b.is_empty() {
         <span class="kw">return </span>Vec::new();
     }
-    <span class="kw">let </span>len = <a href="#276">a</a>.len() + <a href="#276">b</a>.len() - <span class="number">1</span>;
+    <span class="kw">let </span>len = <a href="#314">a</a>.len() + <a href="#314">b</a>.len() - <span class="number">1</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>c = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::zero(); len];
     <span class="kw">if </span>a.len() &lt; b.len() {
         <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
@@ -875,30 +951,30 @@
             }
         }
     }
-    <a href="#284">c</a>
+    <a href="#322">c</a>
 }
 <span class="kw">impl</span>&lt;M&gt; <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a> <span class="kw">for </span>Convolve&lt;M&gt;
 <span class="kw">where
-    </span>M: <a href="#6-10">NttModulus</a>,
+    </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
 {
     <span class="kw">type </span>T = Vec&lt;MInt&lt;M&gt;&gt;;
     <span class="kw">type </span>F = Vec&lt;MInt&lt;M&gt;&gt;;
     <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a href="#306">t</a>.len()
+        <a href="#344">t</a>.len()
     }
     <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::F {
-        <a href="#309">t</a>.resize_with(<a href="#309">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two(), <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
-        NttCache::&lt;M&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="#309">t</a>);
-        <a href="#309">t</a>
+        <a href="#347">t</a>.resize_with(<a href="#347">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two(), <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
+        <a href="#237-254">ntt</a>(<span class="kw-2">&amp;mut </span><a href="#347">t</a>);
+        <a href="#347">t</a>
     }
     <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::T {
-        NttCache::&lt;M&gt;::intt(<span class="kw-2">&amp;mut </span><a href="#314">f</a>);
-        <a href="#314">f</a>.truncate(<a href="#314">len</a>);
-        <span class="kw">let </span>inv = MInt::from(<a href="#314">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
+        <a href="#275-292">intt</a>(<span class="kw-2">&amp;mut </span><a href="#352">f</a>);
+        <a href="#352">f</a>.truncate(<a href="#352">len</a>);
+        <span class="kw">let </span>inv = MInt::from(<a href="#352">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
         <span class="kw">for </span>f <span class="kw">in </span>f.iter_mut() {
             <span class="kw-2">*</span>f <span class="kw-2">*</span>= inv;
         }
-        <a href="#314">f</a>
+        <a href="#352">f</a>
     }
     <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(f.len(), g.len());
@@ -908,89 +984,89 @@
     }
     <span class="kw">fn </span>convolve(<span class="kw-2">mut </span>a: <span class="self">Self</span>::T, <span class="kw-2">mut </span>b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
         <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
-            <span class="kw">return </span><a href="#276-299">convolve_naive</a>(<span class="kw-2">&amp;</span><a href="#329">a</a>, <span class="kw-2">&amp;</span><a href="#329">b</a>);
+            <span class="kw">return </span><a href="#314-337">convolve_naive</a>(<span class="kw-2">&amp;</span><a href="#367">a</a>, <span class="kw-2">&amp;</span><a href="#367">b</a>);
         }
-        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#329">a</a>) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#329">b</a>)).saturating_sub(<span class="number">1</span>);
-        <span class="kw">let </span>size = <a href="#333">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two();
+        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#367">a</a>) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#367">b</a>)).saturating_sub(<span class="number">1</span>);
+        <span class="kw">let </span>size = <a href="#371">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two();
         <span class="kw">if </span>len &lt;= size / <span class="number">2 </span>+ <span class="number">2 </span>{
-            <span class="kw">let </span>xa = <a href="#329">a</a>.pop().unwrap();
-            <span class="kw">let </span>xb = <a href="#329">b</a>.pop().unwrap();
+            <span class="kw">let </span>xa = <a href="#367">a</a>.pop().unwrap();
+            <span class="kw">let </span>xb = <a href="#367">b</a>.pop().unwrap();
             <span class="kw">let </span><span class="kw-2">mut </span>c = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::zero(); len];
-            <span class="kw-2">*</span><a href="#338">c</a>.last_mut().unwrap() = <a href="#336">xa</a> * <a href="#337">xb</a>;
+            <span class="kw-2">*</span><a href="#376">c</a>.last_mut().unwrap() = <a href="#374">xa</a> * <a href="#375">xb</a>;
             <span class="kw">for </span>(a, c) <span class="kw">in </span>a.iter().zip(<span class="kw-2">&amp;mut </span>c[b.len()..]) {
                 <span class="kw-2">*</span>c += <span class="kw-2">*</span>a * xb;
             }
             <span class="kw">for </span>(b, c) <span class="kw">in </span>b.iter().zip(<span class="kw-2">&amp;mut </span>c[a.len()..]) {
                 <span class="kw-2">*</span>c += <span class="kw-2">*</span>b * xa;
             }
-            <span class="kw">let </span>d = <span class="self">Self</span>::convolve(<a href="#329">a</a>, <a href="#329">b</a>);
+            <span class="kw">let </span>d = <span class="self">Self</span>::convolve(<a href="#367">a</a>, <a href="#367">b</a>);
             <span class="kw">for </span>(d, c) <span class="kw">in </span>d.into_iter().zip(<span class="kw-2">&amp;mut </span>c) {
                 <span class="kw-2">*</span>c += d;
             }
-            <span class="kw">return </span><a href="#338">c</a>;
+            <span class="kw">return </span><a href="#376">c</a>;
         }
-        <span class="kw">let </span>same = <a href="#329">a</a> == <a href="#329">b</a>;
-        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(<a href="#329">a</a>, <a href="#333">len</a>);
+        <span class="kw">let </span>same = <a href="#367">a</a> == <a href="#367">b</a>;
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(<a href="#367">a</a>, <a href="#371">len</a>);
         <span class="kw">if </span>same {
             <span class="kw">for </span>a <span class="kw">in </span>a.iter_mut() {
                 <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>a;
             }
         } <span class="kw">else </span>{
-            <span class="kw">let </span>b = <span class="self">Self</span>::transform(<a href="#329">b</a>, <a href="#333">len</a>);
-            <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span><a href="#353">a</a>, <span class="kw-2">&amp;</span><a href="#359">b</a>);
+            <span class="kw">let </span>b = <span class="self">Self</span>::transform(<a href="#367">b</a>, <a href="#371">len</a>);
+            <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span><a href="#391">a</a>, <span class="kw-2">&amp;</span><a href="#397">b</a>);
         }
-        <span class="self">Self</span>::inverse_transform(<a href="#353">a</a>, <a href="#333">len</a>)
+        <span class="self">Self</span>::inverse_transform(<a href="#391">a</a>, <a href="#371">len</a>)
     }
 }
 <span class="kw">type </span>MVec&lt;M&gt; = Vec&lt;MInt&lt;M&gt;&gt;;
 <span class="kw">impl</span>&lt;M, N1, N2, N3&gt; <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a> <span class="kw">for </span>Convolve&lt;(M, (N1, N2, N3))&gt;
 <span class="kw">where
     </span>M: <a href="../num/mint/mint_base.rs.html#21-25">MIntConvert</a> + MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,
-    N1: <a href="#6-10">NttModulus</a>,
-    N2: <a href="#6-10">NttModulus</a>,
-    N3: <a href="#6-10">NttModulus</a>,
+    N1: <a href="#43-76">Montgomery32NttModulus</a>,
+    N2: <a href="#43-76">Montgomery32NttModulus</a>,
+    N3: <a href="#43-76">Montgomery32NttModulus</a>,
 {
     <span class="kw">type </span>T = MVec&lt;M&gt;;
     <span class="kw">type </span>F = (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;);
     <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a href="#375">t</a>.len()
+        <a href="#413">t</a>.len()
     }
     <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::F {
-        <span class="kw">let </span>npot = <a href="#378">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two();
+        <span class="kw">let </span>npot = <a href="#416">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">2</span>).next_power_of_two();
         <span class="kw">let </span><span class="kw-2">mut </span>f = (
-            MVec::&lt;N1&gt;::with_capacity(<a href="#379">npot</a>),
-            MVec::&lt;N2&gt;::with_capacity(<a href="#379">npot</a>),
-            MVec::&lt;N3&gt;::with_capacity(<a href="#379">npot</a>),
+            MVec::&lt;N1&gt;::with_capacity(<a href="#417">npot</a>),
+            MVec::&lt;N2&gt;::with_capacity(<a href="#417">npot</a>),
+            MVec::&lt;N3&gt;::with_capacity(<a href="#417">npot</a>),
         );
         <span class="kw">for </span>t <span class="kw">in </span>t {
             f.<span class="number">0</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
             f.<span class="number">1</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
             f.<span class="number">2</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
         }
-        <a href="#380">f</a>.<span class="number">0</span>.resize_with(<a href="#379">npot</a>, <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
-        <a href="#380">f</a>.<span class="number">1</span>.resize_with(<a href="#379">npot</a>, <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
-        <a href="#380">f</a>.<span class="number">2</span>.resize_with(<a href="#379">npot</a>, <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
-        NttCache::&lt;N1&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="#380">f</a>.<span class="number">0</span>);
-        NttCache::&lt;N2&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="#380">f</a>.<span class="number">1</span>);
-        NttCache::&lt;N3&gt;::ntt(<span class="kw-2">&amp;mut </span><a href="#380">f</a>.<span class="number">2</span>);
-        <a href="#380">f</a>
+        <a href="#418">f</a>.<span class="number">0</span>.resize_with(<a href="#417">npot</a>, <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
+        <a href="#418">f</a>.<span class="number">1</span>.resize_with(<a href="#417">npot</a>, <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
+        <a href="#418">f</a>.<span class="number">2</span>.resize_with(<a href="#417">npot</a>, <a href="../num/zero_one.rs.html#2">Zero::zero</a>);
+        <a href="#237-254">ntt</a>(<span class="kw-2">&amp;mut </span><a href="#418">f</a>.<span class="number">0</span>);
+        <a href="#237-254">ntt</a>(<span class="kw-2">&amp;mut </span><a href="#418">f</a>.<span class="number">1</span>);
+        <a href="#237-254">ntt</a>(<span class="kw-2">&amp;mut </span><a href="#418">f</a>.<span class="number">2</span>);
+        <a href="#418">f</a>
     }
     <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::T {
         <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
         <span class="kw">let </span>m1 = MInt::&lt;M&gt;::from(N1::get_mod());
         <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
-        <span class="kw">let </span>t2 = (<a href="#401">m1_3</a> * MInt::&lt;N3&gt;::new(N2::get_mod())).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
-        <span class="kw">let </span>m2 = <a href="#400">m1</a> * MInt::&lt;M&gt;::from(N2::get_mod());
-        Convolve::&lt;N1&gt;::inverse_transform(<a href="#398">f</a>.<span class="number">0</span>, <a href="#398">len</a>)
+        <span class="kw">let </span>t2 = (<a href="#439">m1_3</a> * MInt::&lt;N3&gt;::new(N2::get_mod())).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
+        <span class="kw">let </span>m2 = <a href="#438">m1</a> * MInt::&lt;M&gt;::from(N2::get_mod());
+        Convolve::&lt;N1&gt;::inverse_transform(<a href="#436">f</a>.<span class="number">0</span>, <a href="#436">len</a>)
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">zip</a>(Convolve::&lt;N2&gt;::inverse_transform(<a href="#398">f</a>.<span class="number">1</span>, <a href="#398">len</a>))
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">zip</a>(Convolve::&lt;N3&gt;::inverse_transform(<a href="#398">f</a>.<span class="number">2</span>, <a href="#398">len</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">zip</a>(Convolve::&lt;N2&gt;::inverse_transform(<a href="#436">f</a>.<span class="number">1</span>, <a href="#436">len</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">zip</a>(Convolve::&lt;N3&gt;::inverse_transform(<a href="#436">f</a>.<span class="number">2</span>, <a href="#436">len</a>))
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|((c1, c2), c3)| {
-                <span class="kw">let </span>d1 = <a href="#408">c1</a>.<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
-                <span class="kw">let </span>d2 = ((<a href="#408">c2</a> - MInt::&lt;N2&gt;::from(<a href="#409">d1</a>)) * <a href="#399">t1</a>).<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
-                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(<a href="#409">d1</a>) + MInt::&lt;N3&gt;::new(<a href="#410">d2</a>) * <a href="#401">m1_3</a>;
-                <span class="kw">let </span>d3 = ((<a href="#408">c3</a> - <a href="#411">x</a>) * <a href="#402">t2</a>).<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
-                MInt::&lt;M&gt;::from(<a href="#409">d1</a>) + MInt::&lt;M&gt;::from(<a href="#410">d2</a>) * <a href="#400">m1</a> + MInt::&lt;M&gt;::from(<a href="#412">d3</a>) * <a href="#403">m2</a>
+                <span class="kw">let </span>d1 = <a href="#446">c1</a>.<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
+                <span class="kw">let </span>d2 = ((<a href="#446">c2</a> - MInt::&lt;N2&gt;::from(<a href="#447">d1</a>)) * <a href="#437">t1</a>).<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
+                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(<a href="#447">d1</a>) + MInt::&lt;N3&gt;::new(<a href="#448">d2</a>) * <a href="#439">m1_3</a>;
+                <span class="kw">let </span>d3 = ((<a href="#446">c3</a> - <a href="#449">x</a>) * <a href="#440">t2</a>).<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
+                MInt::&lt;M&gt;::from(<a href="#447">d1</a>) + MInt::&lt;M&gt;::from(<a href="#448">d2</a>) * <a href="#438">m1</a> + MInt::&lt;M&gt;::from(<a href="#450">d3</a>) * <a href="#441">m2</a>
             })
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
     }
@@ -1010,13 +1086,13 @@
     }
     <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
         <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
-            <span class="kw">return </span><a href="#276-299">convolve_naive</a>(<span class="kw-2">&amp;</span><a href="#431">a</a>, <span class="kw-2">&amp;</span><a href="#431">b</a>);
+            <span class="kw">return </span><a href="#314-337">convolve_naive</a>(<span class="kw-2">&amp;</span><a href="#469">a</a>, <span class="kw-2">&amp;</span><a href="#469">b</a>);
         }
-        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#431">a</a>) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#431">b</a>)).saturating_sub(<span class="number">1</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(<a href="#431">a</a>, <a href="#435">len</a>);
-        <span class="kw">let </span>b = <span class="self">Self</span>::transform(<a href="#431">b</a>, <a href="#435">len</a>);
-        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span><a href="#436">a</a>, <span class="kw-2">&amp;</span><a href="#437">b</a>);
-        <span class="self">Self</span>::inverse_transform(<a href="#436">a</a>, <a href="#435">len</a>)
+        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#469">a</a>) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span><a href="#469">b</a>)).saturating_sub(<span class="number">1</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(<a href="#469">a</a>, <a href="#473">len</a>);
+        <span class="kw">let </span>b = <span class="self">Self</span>::transform(<a href="#469">b</a>, <a href="#473">len</a>);
+        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span><a href="#474">a</a>, <span class="kw-2">&amp;</span><a href="#475">b</a>);
+        <span class="self">Self</span>::inverse_transform(<a href="#474">a</a>, <a href="#473">len</a>)
     }
 }
 
@@ -1029,7 +1105,7 @@
     };
     <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
 
-    <span class="kw">const </span>N: usize = <span class="number">3_000</span>;
+    <span class="kw">const </span>N: usize = <span class="number">8</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ntt998244353() {
