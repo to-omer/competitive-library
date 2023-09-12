@@ -1,6 +1,3 @@
-#[codesnip::skip]
-use crate::num::Bounded;
-
 use super::*;
 use std::{
     marker::PhantomData,

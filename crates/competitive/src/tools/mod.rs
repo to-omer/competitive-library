@@ -1,3 +1,5 @@
+use crate::num::Bounded;
+
 #[codesnip::entry("AssociatedValue")]
 pub use self::associated_value::AssociatedValue;
 #[codesnip::entry("char_convert")]
@@ -10,12 +12,15 @@ pub use self::iter_print::IterPrint;
 pub use self::ord_tools::PartialOrdExt;
 #[codesnip::entry("PartialIgnoredOrd")]
 pub use self::partial_ignored_ord::PartialIgnoredOrd;
-pub use self::random::*;
+#[codesnip::entry("random_generator")]
+pub use self::random_generator::*;
 #[codesnip::entry("scanner")]
 pub use self::scanner::*;
 pub use self::slice::GetDistinctMut;
 #[codesnip::entry("TotalOrd")]
 pub use self::totalord::{AsTotalOrd, TotalOrd};
+#[codesnip::entry("Xorshift")]
+pub use self::xorshift::Xorshift;
 
 #[cfg_attr(nightly, codesnip::entry)]
 mod array;
@@ -46,9 +51,15 @@ mod mlambda;
 mod ord_tools;
 #[cfg_attr(nightly, codesnip::entry("PartialIgnoredOrd"))]
 mod partial_ignored_ord;
-mod random;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("random_generator", include("Xorshift", "bounded"))
+)]
+mod random_generator;
 #[cfg_attr(nightly, codesnip::entry("scanner", include("array")))]
 mod scanner;
 mod slice;
 #[cfg_attr(nightly, codesnip::entry("TotalOrd"))]
 mod totalord;
+#[cfg_attr(nightly, codesnip::entry("Xorshift"))]
+mod xorshift;
