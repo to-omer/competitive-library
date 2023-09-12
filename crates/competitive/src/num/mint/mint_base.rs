@@ -87,10 +87,6 @@ where
     pub fn inner(self) -> M::Inner {
         M::mod_inner(self.x)
     }
-    #[inline]
-    pub const fn inner_unchecked(self) -> M::Inner {
-        self.x
-    }
 }
 
 impl<M> Clone for MInt<M>
