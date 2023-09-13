@@ -9,7 +9,7 @@ pub trait IterPrint {
         W: Write,
         S: Display;
 }
-macro_rules! iter_print_tuple_impl {
+macro_rules! impl_iter_print_tuple {
     (@impl $($A:ident $a:ident)?, $($B:ident $b:ident)*) => {
         impl<$($A,)? $($B),*> IterPrint for ($($A,)? $($B),*)
         where
@@ -35,21 +35,21 @@ macro_rules! iter_print_tuple_impl {
         }
     };
     (@inc , , $C:ident $c:ident $($D:ident $d:ident)*) => {
-        iter_print_tuple_impl!(@impl ,);
-        iter_print_tuple_impl!(@inc $C $c, , $($D $d)*);
+        impl_iter_print_tuple!(@impl ,);
+        impl_iter_print_tuple!(@inc $C $c, , $($D $d)*);
     };
     (@inc $A:ident $a:ident, $($B:ident $b:ident)*, $C:ident $c:ident $($D:ident $d:ident)*) => {
-        iter_print_tuple_impl!(@impl $A $a, $($B $b)*);
-        iter_print_tuple_impl!(@inc $A $a, $($B $b)* $C $c, $($D $d)*);
+        impl_iter_print_tuple!(@impl $A $a, $($B $b)*);
+        impl_iter_print_tuple!(@inc $A $a, $($B $b)* $C $c, $($D $d)*);
     };
     (@inc $A:ident $a:ident, $($B:ident $b:ident)*,) => {
-        iter_print_tuple_impl!(@impl $A $a, $($B $b)*);
+        impl_iter_print_tuple!(@impl $A $a, $($B $b)*);
     };
     ($($t:tt)*) => {
-        iter_print_tuple_impl!(@inc , , $($t)*);
+        impl_iter_print_tuple!(@inc , , $($t)*);
     };
 }
-iter_print_tuple_impl!(A a B b C c D d E e F f G g H h I i J j K k);
+impl_iter_print_tuple!(A a B b C c D d E e F f G g H h I i J j K k);
 
 /// Print expressions with a separator.
 /// - `iter_print!(writer, args...)`

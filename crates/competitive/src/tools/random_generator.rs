@@ -154,7 +154,7 @@ macro_rules! impl_random_spec_ranges {
 }
 impl_random_spec_ranges!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
 
-macro_rules! random_spec_tuple_impls {
+macro_rules! impl_random_spec_tuple {
     ($($T:ident)*, $($R:ident)*, $($v:ident)*) => {
         impl<$($T),*, $($R),*> RandomSpec<($($T,)*)> for ($($R,)*)
         where
@@ -167,18 +167,18 @@ macro_rules! random_spec_tuple_impls {
         }
     };
 }
-random_spec_tuple_impls!(A, RA, a);
-random_spec_tuple_impls!(A B, RA RB, a b);
-random_spec_tuple_impls!(A B C, RA RB RC, a b c);
-random_spec_tuple_impls!(A B C D, RA RB RC RD, a b c d);
-random_spec_tuple_impls!(A B C D E, RA RB RC RD RE, a b c d e);
-random_spec_tuple_impls!(A B C D E F, RA RB RC RD RE RF, a b c d e f);
-random_spec_tuple_impls!(A B C D E F G, RA RB RC RD RE RF RG, a b c d e f g);
-random_spec_tuple_impls!(A B C D E F G H, RA RB RC RD RE RF RG RH, a b c d e f g h);
-random_spec_tuple_impls!(A B C D E F G H I, RA RB RC RD RE RF RG RH RI, a b c d e f g h i);
-random_spec_tuple_impls!(A B C D E F G H I J, RA RB RC RD RE RF RG RH RI RJ, a b c d e f g h i j);
+impl_random_spec_tuple!(A, RA, a);
+impl_random_spec_tuple!(A B, RA RB, a b);
+impl_random_spec_tuple!(A B C, RA RB RC, a b c);
+impl_random_spec_tuple!(A B C D, RA RB RC RD, a b c d);
+impl_random_spec_tuple!(A B C D E, RA RB RC RD RE, a b c d e);
+impl_random_spec_tuple!(A B C D E F, RA RB RC RD RE RF, a b c d e f);
+impl_random_spec_tuple!(A B C D E F G, RA RB RC RD RE RF RG, a b c d e f g);
+impl_random_spec_tuple!(A B C D E F G H, RA RB RC RD RE RF RG RH, a b c d e f g h);
+impl_random_spec_tuple!(A B C D E F G H I, RA RB RC RD RE RF RG RH RI, a b c d e f g h i);
+impl_random_spec_tuple!(A B C D E F G H I J, RA RB RC RD RE RF RG RH RI RJ, a b c d e f g h i j);
 
-macro_rules! random_spec_primitive_impls {
+macro_rules! impl_random_spec_primitive {
     ($($t:ty)*) => {
         $(impl RandomSpec<$t> for $t {
             fn rand(&self, _rng: &mut Xorshift) -> $t {
@@ -187,7 +187,7 @@ macro_rules! random_spec_primitive_impls {
         })*
     };
 }
-random_spec_primitive_impls!(() u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize bool char);
+impl_random_spec_primitive!(() u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize bool char);
 
 impl<T, R> RandomSpec<T> for &R
 where

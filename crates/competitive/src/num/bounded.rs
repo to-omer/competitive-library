@@ -16,7 +16,7 @@ pub trait Bounded: Sized + PartialOrd {
     }
 }
 
-macro_rules! bounded_num_impls {
+macro_rules! impl_bounded_num {
     ($($t:ident)*) => {
         $(impl Bounded for $t {
             fn maximum() -> Self { std::$t::MAX }
@@ -24,9 +24,9 @@ macro_rules! bounded_num_impls {
         })*
     };
 }
-bounded_num_impls!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize f32 f64);
+impl_bounded_num!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize f32 f64);
 
-macro_rules! bounded_tuple_impls {
+macro_rules! impl_bounded_tuple {
     (@impl $($T:ident)*) => {
         impl<$($T: Bounded),*> Bounded for ($($T,)*) {
             fn maximum() -> Self { ($(<$T as Bounded>::maximum(),)*) }
@@ -34,17 +34,17 @@ macro_rules! bounded_tuple_impls {
         }
     };
     (@inner $($T:ident)*,) => {
-        bounded_tuple_impls!(@impl $($T)*);
+        impl_bounded_tuple!(@impl $($T)*);
     };
     (@inner $($T:ident)*, $U:ident $($Rest:ident)*) => {
-        bounded_tuple_impls!(@impl $($T)*);
-        bounded_tuple_impls!(@inner $($T)* $U, $($Rest)*);
+        impl_bounded_tuple!(@impl $($T)*);
+        impl_bounded_tuple!(@inner $($T)* $U, $($Rest)*);
     };
     ($T:ident $($Rest:ident)*) => {
-        bounded_tuple_impls!(@inner $T, $($Rest)*);
+        impl_bounded_tuple!(@inner $T, $($Rest)*);
     };
 }
-bounded_tuple_impls!(A B C D E F G H I J);
+impl_bounded_tuple!(A B C D E F G H I J);
 
 impl Bounded for () {
     fn maximum() -> Self {}

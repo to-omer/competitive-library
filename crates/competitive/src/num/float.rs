@@ -112,7 +112,7 @@ pub trait Float:
     const LN_10: Self;
 }
 
-macro_rules! primitive_float_impls {
+macro_rules! impl_primitive_float {
     ($({$t:ident $i:ident $u:ident $e:expr})*) => {$(
         impl Float for $t {
             fn floor(self) -> Self { $t::floor(self) }
@@ -203,9 +203,9 @@ macro_rules! primitive_float_impls {
         })*
     };
 }
-primitive_float_impls!({f32 i32 u32 31} {f64 i64 u64 63});
+impl_primitive_float!({f32 i32 u32 31} {f64 i64 u64 63});
 
-macro_rules! ord_float_impls {
+macro_rules! impl_ord_float {
     ($({$t:ident $n:ident})*) => {$(
         #[derive(Debug, Copy, Clone, PartialEq, Default)]
         #[repr(transparent)]
@@ -386,4 +386,4 @@ macro_rules! ord_float_impls {
         })*
     };
 }
-ord_float_impls!({f32 Float32} {f64 Float64});
+impl_ord_float!({f32 Float32} {f64 Float64});

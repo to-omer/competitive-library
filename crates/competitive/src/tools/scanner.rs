@@ -83,7 +83,7 @@ impl<'a> Scanner<'a> {
     }
 }
 
-macro_rules! iter_scan_impls {
+macro_rules! impl_iter_scan {
     ($($t:ty)*) => {$(
         impl IterScan for $t {
             type Output = Self;
@@ -94,9 +94,9 @@ macro_rules! iter_scan_impls {
         })*
     };
 }
-iter_scan_impls!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
+impl_iter_scan!(char u8 u16 u32 u64 usize i8 i16 i32 i64 isize f32 f64 u128 i128 String);
 
-macro_rules! iter_scan_tuple_impl {
+macro_rules! impl_iter_scan_tuple {
     (@impl $($T:ident)*) => {
         impl<$($T: IterScan),*> IterScan for ($($T,)*) {
             type Output = ($(<$T as IterScan>::Output,)*);
@@ -107,17 +107,17 @@ macro_rules! iter_scan_tuple_impl {
         }
     };
     (@inner $($T:ident)*,) => {
-        iter_scan_tuple_impl!(@impl $($T)*);
+        impl_iter_scan_tuple!(@impl $($T)*);
     };
     (@inner $($T:ident)*, $U:ident $($Rest:ident)*) => {
-        iter_scan_tuple_impl!(@impl $($T)*);
-        iter_scan_tuple_impl!(@inner $($T)* $U, $($Rest)*);
+        impl_iter_scan_tuple!(@impl $($T)*);
+        impl_iter_scan_tuple!(@inner $($T)* $U, $($Rest)*);
     };
     ($($T:ident)*) => {
-        iter_scan_tuple_impl!(@inner , $($T)*);
+        impl_iter_scan_tuple!(@inner , $($T)*);
     };
 }
-iter_scan_tuple_impl!(A B C D E F G H I J K);
+impl_iter_scan_tuple!(A B C D E F G H I J K);
 
 pub struct ScannerIter<'a, 'b, T> {
     inner: &'b mut Scanner<'a>,
