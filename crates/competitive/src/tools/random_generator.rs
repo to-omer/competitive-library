@@ -1,8 +1,8 @@
-use super::*;
+use super::Xorshift;
 use std::{
     marker::PhantomData,
     mem::swap,
-    ops::{Bound, Range, RangeFrom, RangeInclusive, RangeTo, RangeToInclusive},
+    ops::{Bound, Range, RangeFrom, RangeFull, RangeInclusive, RangeTo, RangeToInclusive},
 };
 
 /// Trait for spec of generating random value.
@@ -20,66 +20,140 @@ pub trait RandomSpec<T>: Sized {
 }
 
 impl Xorshift {
-    pub fn gen<T, R: RandomSpec<T>>(&mut self, spec: R) -> T {
+    pub fn gen<T, R>(&mut self, spec: R) -> T
+    where
+        R: RandomSpec<T>,
+    {
         spec.rand(self)
     }
-    pub fn gen_iter<T, R: RandomSpec<T>>(&mut self, spec: R) -> RandIter<'_, T, R> {
+    pub fn gen_iter<T, R>(&mut self, spec: R) -> RandIter<'_, T, R>
+    where
+        R: RandomSpec<T>,
+    {
         spec.rand_iter(self)
     }
 }
 
 #[derive(Debug)]
-pub struct RandIter<'r, T, R: RandomSpec<T>> {
+pub struct RandIter<'r, T, R>
+where
+    R: RandomSpec<T>,
+{
     spec: R,
     rng: &'r mut Xorshift,
     _marker: PhantomData<fn() -> T>,
 }
-impl<T, R: RandomSpec<T>> Iterator for RandIter<'_, T, R> {
+
+impl<T, R> Iterator for RandIter<'_, T, R>
+where
+    R: RandomSpec<T>,
+{
     type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
         Some(self.spec.rand(self.rng))
     }
 }
 
-impl<T: NotEmptyStep64> RandomSpec<T> for Range<T> {
-    fn rand(&self, rng: &mut Xorshift) -> T {
-        let count = <T as NotEmptyStep64>::steps_between(&self.start, &self.end);
-        assert_ne!(count, 0, "empty range in `RandomSpec<T> for Range<T>`");
-        let count = randint_uniform(rng, count);
-        <T as NotEmptyStep64>::forward_unchecked(&self.start, count)
+macro_rules! impl_random_spec_range_full {
+    ($($t:ty)*) => {
+        $(impl RandomSpec<$t> for RangeFull {
+            fn rand(&self, rng: &mut Xorshift) -> $t {
+                rng.rand64() as _
+            }
+        })*
+    };
+}
+impl_random_spec_range_full!(u8 u16 u32 u64 usize i8 i16 i32 i64 isize);
+
+impl RandomSpec<u128> for RangeFull {
+    fn rand(&self, rng: &mut Xorshift) -> u128 {
+        (rng.rand64() as u128) << 64 | rng.rand64() as u128
     }
 }
-impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeFrom<T> {
-    fn rand(&self, rng: &mut Xorshift) -> T {
-        let count = <T as NotEmptyStep64>::steps_between(&self.start, &<T as Bounded>::maximum())
-            .wrapping_add(1);
-        let count = randint_uniform(rng, count);
-        <T as NotEmptyStep64>::forward_unchecked(&self.start, count)
+impl RandomSpec<i128> for RangeFull {
+    fn rand(&self, rng: &mut Xorshift) -> i128 {
+        rng.gen::<u128, _>(..) as i128
     }
 }
-impl<T: NotEmptyStep64> RandomSpec<T> for RangeInclusive<T> {
-    fn rand(&self, rng: &mut Xorshift) -> T {
-        let count = <T as NotEmptyStep64>::steps_between(self.start(), self.end()).wrapping_add(1);
-        let count = randint_uniform(rng, count);
-        <T as NotEmptyStep64>::forward_unchecked(self.start(), count)
-    }
+
+macro_rules! impl_random_spec_ranges {
+    ($($u:ident $i:ident)*) => {
+        $(
+            impl RandomSpec<$u> for Range<$u> {
+                fn rand(&self, rng: &mut Xorshift) -> $u {
+                    assert!(self.start < self.end);
+                    let len = self.end - self.start;
+                    (self.start + rng.gen::<$u, _>(..) % len)
+                }
+            }
+            impl RandomSpec<$i> for Range<$i> {
+                fn rand(&self, rng: &mut Xorshift) -> $i {
+                    assert!(self.start < self.end);
+                    let len = self.end.abs_diff(self.start);
+                    self.start.wrapping_add_unsigned(rng.gen::<$u, _>(..) % len)
+                }
+            }
+            impl RandomSpec<$u> for RangeFrom<$u> {
+                fn rand(&self, rng: &mut Xorshift) -> $u {
+                    let len = ($u::MAX - self.start).wrapping_add(1);
+                    let x = rng.gen::<$u, _>(..);
+                    self.start + if len != 0 { x % len } else { x }
+                }
+            }
+            impl RandomSpec<$i> for RangeFrom<$i> {
+                fn rand(&self, rng: &mut Xorshift) -> $i {
+                    let len = ($i::MAX.abs_diff(self.start)).wrapping_add(1);
+                    let x = rng.gen::<$u, _>(..);
+                    self.start.wrapping_add_unsigned(if len != 0 { x % len } else { x })
+                }
+            }
+            impl RandomSpec<$u> for RangeInclusive<$u> {
+                fn rand(&self, rng: &mut Xorshift) -> $u {
+                    assert!(self.start() <= self.end());
+                    let len = (self.end() - self.start()).wrapping_add(1);
+                    let x = rng.gen::<$u, _>(..);
+                    self.start() + if len != 0 { x % len } else { x }
+                }
+            }
+            impl RandomSpec<$i> for RangeInclusive<$i> {
+                fn rand(&self, rng: &mut Xorshift) -> $i {
+                    assert!(self.start() <= self.end());
+                    let len = (self.end().abs_diff(*self.start())).wrapping_add(1);
+                    let x = rng.gen::<$u, _>(..);
+                    self.start().wrapping_add_unsigned(if len != 0 { x % len } else { x })
+                }
+            }
+            impl RandomSpec<$u> for RangeTo<$u> {
+                fn rand(&self, rng: &mut Xorshift) -> $u {
+                    let len = self.end;
+                    rng.gen::<$u, _>(..) % len
+                }
+            }
+            impl RandomSpec<$i> for RangeTo<$i> {
+                fn rand(&self, rng: &mut Xorshift) -> $i {
+                    let len = self.end.abs_diff($i::MIN);
+                    $i::MIN.wrapping_add_unsigned(rng.gen::<$u, _>(..) % len)
+                }
+            }
+            impl RandomSpec<$u> for RangeToInclusive<$u> {
+                fn rand(&self, rng: &mut Xorshift) -> $u {
+                    let len = (self.end).wrapping_add(1);
+                    let x = rng.gen::<$u, _>(..);
+                    if len != 0 { x % len } else { x }
+                }
+            }
+            impl RandomSpec<$i> for RangeToInclusive<$i> {
+                fn rand(&self, rng: &mut Xorshift) -> $i {
+                    let len = (self.end.abs_diff($i::MIN)).wrapping_add(1);
+                    let x = rng.gen::<$u, _>(..);
+                    $i::MIN.wrapping_add_unsigned(if len != 0 { x % len } else { x })
+                }
+            }
+        )*
+    };
 }
-impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeTo<T> {
-    fn rand(&self, rng: &mut Xorshift) -> T {
-        let count = <T as NotEmptyStep64>::steps_between(&<T as Bounded>::minimum(), &self.end);
-        assert_ne!(count, 0, "empty range in `RandomSpec<T> for RangeTo<T>`");
-        let count = randint_uniform(rng, count);
-        <T as NotEmptyStep64>::forward_unchecked(&<T as Bounded>::minimum(), count)
-    }
-}
-impl<T: NotEmptyStep64 + Bounded> RandomSpec<T> for RangeToInclusive<T> {
-    fn rand(&self, rng: &mut Xorshift) -> T {
-        let count = <T as NotEmptyStep64>::steps_between(&<T as Bounded>::minimum(), &self.end)
-            .wrapping_add(1);
-        let count = randint_uniform(rng, count);
-        <T as NotEmptyStep64>::forward_unchecked(&<T as Bounded>::minimum(), count)
-    }
-}
+impl_random_spec_ranges!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
+
 macro_rules! random_spec_tuple_impls {
     ($($T:ident)*, $($R:ident)*, $($v:ident)*) => {
         impl<$($T),*, $($R),*> RandomSpec<($($T,)*)> for ($($R,)*)
@@ -115,63 +189,20 @@ macro_rules! random_spec_primitive_impls {
 }
 random_spec_primitive_impls!(() u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize bool char);
 
-impl<T, R: RandomSpec<T>> RandomSpec<T> for &R {
+impl<T, R> RandomSpec<T> for &R
+where
+    R: RandomSpec<T>,
+{
     fn rand(&self, rng: &mut Xorshift) -> T {
         <R as RandomSpec<T>>::rand(self, rng)
     }
 }
-impl<T, R: RandomSpec<T>> RandomSpec<T> for &mut R {
+impl<T, R> RandomSpec<T> for &mut R
+where
+    R: RandomSpec<T>,
+{
     fn rand(&self, rng: &mut Xorshift) -> T {
         <R as RandomSpec<T>>::rand(self, rng)
-    }
-}
-
-pub trait NotEmptyStep64: Clone + PartialOrd {
-    fn steps_between(start: &Self, end: &Self) -> u64;
-    fn forward_unchecked(start: &Self, count: u64) -> Self;
-}
-
-macro_rules! step64_impls {
-    ([$($u:ty),*],[$($i:ty),*]) => {
-        $(impl NotEmptyStep64 for $u {
-            fn steps_between(start: &Self, end: &Self) -> u64 {
-                if *start <= *end {
-                    (*end - *start) as u64
-                } else {
-                    panic!("empty range in `NotEmptyStep64`");
-                }
-            }
-            fn forward_unchecked(start: &Self, count: u64) -> Self {
-                start + count as Self
-            }
-        })*
-        $(impl NotEmptyStep64 for $i {
-            fn steps_between(start: &Self, end: &Self) -> u64 {
-                if *start <= *end {
-                    ((*end as i64).wrapping_sub(*start as i64)) as u64
-                } else {
-                    panic!("empty range in `NotEmptyStep64`");
-                }
-            }
-            fn forward_unchecked(start: &Self, count: u64) -> Self {
-                start + count as Self
-            }
-        })*
-    };
-}
-step64_impls!([u8, u16, u32, u64, usize], [i8, i16, i32, i64, isize]);
-impl NotEmptyStep64 for char {
-    fn steps_between(start: &Self, end: &Self) -> u64 {
-        let start = *start as u8;
-        let end = *end as u8;
-        if start <= end {
-            (end - start) as u64
-        } else {
-            panic!("empty range in `NotEmptyStep64`");
-        }
-    }
-    fn forward_unchecked(start: &Self, count: u64) -> Self {
-        NotEmptyStep64::forward_unchecked(&(*start as u8), count) as char
     }
 }
 
@@ -287,11 +318,25 @@ macro_rules! rand {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_random_range() {
+        let mut rng = Xorshift::default();
+        assert_eq!(rng.gen(1i32..2), 1);
+        assert_eq!(rng.gen(1u32..2), 1);
+        assert_eq!(rng.gen(1i32..=1), 1);
+        assert_eq!(rng.gen(1u32..=1), 1);
+        assert_eq!(rng.gen(i32::MAX..), i32::MAX);
+        assert_eq!(rng.gen(u32::MAX..), u32::MAX);
+        assert_eq!(rng.gen(..=i32::MIN), i32::MIN);
+        assert_eq!(rng.gen(..=u32::MIN), u32::MIN);
+    }
+
     #[test]
     fn test_random_segment() {
         let mut rng = Xorshift::default();
         for _ in 0..100_000 {
-            let n = (0..1_000_000).rand(&mut rng) + 1;
+            let n = (1..=1_000_000).rand(&mut rng);
             let (l, r) = NotEmptySegment(n).rand(&mut rng);
             assert!(l < r);
             assert!(r <= n);

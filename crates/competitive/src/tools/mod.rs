@@ -1,5 +1,3 @@
-use crate::num::Bounded;
-
 #[codesnip::entry("AssociatedValue")]
 pub use self::associated_value::AssociatedValue;
 #[codesnip::entry("char_convert")]
@@ -13,7 +11,7 @@ pub use self::ord_tools::PartialOrdExt;
 #[codesnip::entry("PartialIgnoredOrd")]
 pub use self::partial_ignored_ord::PartialIgnoredOrd;
 #[codesnip::entry("random_generator")]
-pub use self::random_generator::*;
+pub use self::random_generator::{NotEmptySegment, RandIter, RandRange, RandomSpec};
 #[codesnip::entry("scanner")]
 pub use self::scanner::*;
 pub use self::slice::GetDistinctMut;
@@ -51,10 +49,7 @@ mod mlambda;
 mod ord_tools;
 #[cfg_attr(nightly, codesnip::entry("PartialIgnoredOrd"))]
 mod partial_ignored_ord;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("random_generator", include("Xorshift", "bounded"))
-)]
+#[cfg_attr(nightly, codesnip::entry("random_generator", include("Xorshift")))]
 mod random_generator;
 #[cfg_attr(nightly, codesnip::entry("scanner", include("array")))]
 mod scanner;
