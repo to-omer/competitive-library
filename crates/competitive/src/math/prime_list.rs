@@ -1,4 +1,4 @@
-use std::{mem::replace, slice::Iter};
+use std::{cell::UnsafeCell, mem::replace, slice::Iter};
 
 #[derive(Debug, Clone, Default)]
 pub struct PrimeList {
@@ -167,6 +167,20 @@ impl Iterator for PrimeListTrialDivision<'_> {
         }
         None
     }
+}
+
+pub fn with_prime_list<F>(max_n: u64, f: F)
+where
+    F: FnOnce(&PrimeList),
+{
+    thread_local!(static PRIME_LIST: UnsafeCell<PrimeList> = Default::default());
+    PRIME_LIST.with(|cell| {
+        unsafe {
+            let pl = &mut *cell.get();
+            pl.reserve(max_n);
+            f(pl);
+        };
+    });
 }
 
 #[cfg(test)]
