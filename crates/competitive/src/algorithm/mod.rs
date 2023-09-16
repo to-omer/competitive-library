@@ -53,12 +53,12 @@ mod binary_search;
 mod bitdp;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BitwiseandConvolve", include("algebra", "ring", "ConvolveSteps"))
+    codesnip::entry("BitwiseandConvolve", include("_zeta_transform"))
 )]
 mod bitwiseand_convolve;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BitwiseorConvolve", include("algebra", "ring", "ConvolveSteps"))
+    codesnip::entry("BitwiseorConvolve", include("_zeta_transform"))
 )]
 mod bitwiseor_convolve;
 #[cfg_attr(
@@ -74,20 +74,14 @@ mod convex_hull_trick;
 mod esper;
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "GcdConvolve",
-        include("algebra", "ring", "ConvolveSteps", "PrimeList")
-    )
+    codesnip::entry("GcdConvolve", include("_zeta_transform", "PrimeList"))
 )]
 mod gcd_convolve;
 #[cfg_attr(nightly, codesnip::entry("ImpartialGame"))]
 mod impartial_game;
 #[cfg_attr(
     nightly,
-    codesnip::entry(
-        "LcmConvolve",
-        include("algebra", "ring", "ConvolveSteps", "PrimeList")
-    )
+    codesnip::entry("LcmConvolve", include("_zeta_transform", "PrimeList"))
 )]
 mod lcm_convolve;
 #[cfg_attr(nightly, codesnip::entry)]
@@ -110,3 +104,9 @@ mod ternary_search;
 mod xorbasis;
 #[cfg_attr(nightly, codesnip::entry("ZeroSumGame"))]
 mod zero_sum_game;
+
+#[codesnip::entry("_zeta_transform", include("algebra", "ring", "ConvolveSteps"))]
+#[codesnip::skip]
+#[allow(dead_code)]
+#[doc(hidden)]
+enum ZetaTransformSnippets {}
