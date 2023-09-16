@@ -16,7 +16,7 @@ impl PrimeList {
     }
     pub fn primes_lte(&self, n: u64) -> &[u64] {
         assert!(n <= self.max_n, "expected `n={} <= {}`", n, self.max_n);
-        let i = self.primes.binary_search(&n).unwrap_or_else(|i| i);
+        let i = self.primes.partition_point(|&p| p <= n);
         &self.primes[..i]
     }
     pub fn is_prime(&self, n: u64) -> bool {
@@ -186,7 +186,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::math::{prime_factors, PrimeTable};
+    use crate::math::prime_factors;
     use crate::tools::Xorshift;
 
     fn primes(n: usize) -> Vec<usize> {
@@ -289,13 +289,15 @@ mod tests {
 
     #[test]
     fn test_primes() {
-        let t = PrimeTable::new(2000);
-        for i in 0..2000 {
+        let pl = PrimeList::new(2000);
+        for i in 0..=2000 {
             assert_eq!(
                 primes(i),
-                (2..=i)
-                    .filter(|&i| t.is_prime(i as u32))
-                    .collect::<Vec<_>>(),
+                (2..=i).filter(|&i| pl.is_prime(i as _)).collect::<Vec<_>>(),
+            );
+            assert_eq!(
+                primes(i).iter().map(|&p| p as _).collect::<Vec<u64>>(),
+                pl.primes_lte(i as _)
             );
         }
     }
