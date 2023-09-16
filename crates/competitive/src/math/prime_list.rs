@@ -1,10 +1,20 @@
 use std::{cell::UnsafeCell, mem::replace, slice::Iter};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct PrimeList {
     primes: Vec<u64>,
     max_n: u64,
 }
+
+impl Default for PrimeList {
+    fn default() -> Self {
+        Self {
+            primes: Default::default(),
+            max_n: 1,
+        }
+    }
+}
+
 impl PrimeList {
     pub fn new(max_n: u64) -> Self {
         let mut self_: Self = Default::default();
