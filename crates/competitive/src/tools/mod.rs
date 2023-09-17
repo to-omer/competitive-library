@@ -26,6 +26,8 @@ mod array;
 mod assign_ops;
 #[cfg_attr(nightly, codesnip::entry("AssociatedValue"))]
 mod associated_value;
+#[cfg_attr(nightly, codesnip::entry("avx_helper"))]
+mod avx_helper;
 #[cfg_attr(nightly, codesnip::entry)]
 mod capture;
 #[cfg_attr(nightly, codesnip::entry("char_convert"))]
