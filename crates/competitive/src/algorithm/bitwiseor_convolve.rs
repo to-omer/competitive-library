@@ -18,8 +18,6 @@ where
             {
                 let k = f.len().trailing_zeros() as usize;
                 assert_eq!(f.len(), 1 << k);
-                let n = f.len();
-                assert_eq!(n.count_ones(), 1);
                 for i in 0..k {
                     if i == 0 {
                         for c in f.chunks_exact_mut(2) {
@@ -71,8 +69,6 @@ where
             {
                 let k = f.len().trailing_zeros() as usize;
                 assert_eq!(f.len(), 1 << k);
-                let n = f.len();
-                assert_eq!(n.count_ones(), 1);
                 for i in 0..k {
                     if i == 0 {
                         for c in f.chunks_exact_mut(2) {
