@@ -1,10 +1,15 @@
 //! mathematical datas
 
+use crate::algebra::{Group, Invertible, Monoid, Ring};
 use crate::num::{montgomery, BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Zero};
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
+#[codesnip::entry("BitwiseandConvolve")]
+pub use self::bitwiseand_convolve::BitwiseandConvolve;
+#[codesnip::entry("BitwiseorConvolve")]
+pub use self::bitwiseor_convolve::BitwiseorConvolve;
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
 #[codesnip::entry("discrete_logarithm")]
@@ -20,8 +25,12 @@ pub use self::formal_power_series::{
     Fps998244353,
 };
 pub use self::gcd::*;
+#[codesnip::entry("GcdConvolve")]
+pub use self::gcd_convolve::GcdConvolve;
 #[codesnip::entry("lagrange_interpolation")]
 pub use self::lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
+#[codesnip::entry("LcmConvolve")]
+pub use self::lcm_convolve::LcmConvolve;
 #[codesnip::entry("Matrix")]
 pub use self::matrix::Matrix;
 #[codesnip::entry("miller_rabin")]
@@ -42,6 +51,16 @@ pub use self::primitive_root::{check_primitive_root, primitive_root};
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("BitwiseandConvolve", include("_zeta_transform", "avx_helper"))
+)]
+mod bitwiseand_convolve;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("BitwiseorConvolve", include("_zeta_transform", "avx_helper"))
+)]
+mod bitwiseor_convolve;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
 mod convolve_steps;
 #[cfg_attr(
@@ -88,9 +107,19 @@ mod formal_power_series;
 mod gcd;
 #[cfg_attr(
     nightly,
+    codesnip::entry("GcdConvolve", include("_zeta_transform", "PrimeList"))
+)]
+mod gcd_convolve;
+#[cfg_attr(
+    nightly,
     codesnip::entry("lagrange_interpolation", include("factorial", "MIntBase"))
 )]
 mod lagrange_interpolation;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("LcmConvolve", include("_zeta_transform", "PrimeList"))
+)]
+mod lcm_convolve;
 #[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one")))]
 mod matrix;
 #[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
@@ -116,3 +145,9 @@ mod prime_list;
 mod prime_table;
 #[cfg_attr(nightly, codesnip::entry("primitive_root", include("prime_factors")))]
 mod primitive_root;
+
+#[codesnip::entry("_zeta_transform", include("algebra", "ring", "ConvolveSteps"))]
+#[codesnip::skip]
+#[allow(dead_code)]
+#[doc(hidden)]
+enum ZetaTransformSnippets {}

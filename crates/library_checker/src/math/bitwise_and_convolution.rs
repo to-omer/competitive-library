@@ -2,8 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     algebra::AddMulOperation,
-    algorithm::{BitwiseandConvolve, BitwiseorConvolve},
-    math::ConvolveSteps,
+    math::{BitwiseandConvolve, BitwiseorConvolve, ConvolveSteps},
     num::montgomery::MInt998244353,
 };
 

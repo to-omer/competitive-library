@@ -1,7 +1,8 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
-    algebra::AddMulOperation, algorithm::GcdConvolve, math::ConvolveSteps,
+    algebra::AddMulOperation,
+    math::{ConvolveSteps, GcdConvolve},
     num::montgomery::MInt998244353,
 };
 
