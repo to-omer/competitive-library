@@ -53,12 +53,12 @@ mod binary_search;
 mod bitdp;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BitwiseandConvolve", include("_zeta_transform"))
+    codesnip::entry("BitwiseandConvolve", include("_zeta_transform", "avx_helper"))
 )]
 mod bitwiseand_convolve;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BitwiseorConvolve", include("_zeta_transform"))
+    codesnip::entry("BitwiseorConvolve", include("_zeta_transform", "avx_helper"))
 )]
 mod bitwiseor_convolve;
 #[cfg_attr(

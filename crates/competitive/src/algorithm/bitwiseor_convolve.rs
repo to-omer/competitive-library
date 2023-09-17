@@ -11,16 +11,50 @@ where
 {
     /// $$g(m) = \sum_{n \mid m}f(n)$$
     pub fn zeta_transform(f: &mut [M::T]) {
-        let n = f.len();
-        let mut i = 1;
-        while i < n {
-            for j in 0..n {
-                if j & i != 0 {
-                    f[j] = M::operate(&f[j], &f[j ^ i]);
+        crate::avx_helper!(
+            @avx2 fn zeta_transform<M>(f: &mut [M::T])
+            where
+                [M: Monoid]
+            {
+                let k = f.len().trailing_zeros() as usize;
+                assert_eq!(f.len(), 1 << k);
+                let n = f.len();
+                assert_eq!(n.count_ones(), 1);
+                for i in 0..k {
+                    if i == 0 {
+                        for c in f.chunks_exact_mut(2) {
+                            let (y, x) = c.split_at_mut(1);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = M::operate(x, y);
+                            }
+                        }
+                    } else if i == 1 {
+                        for c in f.chunks_exact_mut(4) {
+                            let (y, x) = c.split_at_mut(2);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = M::operate(x, y);
+                            }
+                        }
+                    } else if i == 2 {
+                        for c in f.chunks_exact_mut(8) {
+                            let (y, x) = c.split_at_mut(4);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = M::operate(x, y);
+                            }
+                        }
+                    } else {
+                        assert!(i >= 3);
+                        for c in f.chunks_exact_mut(2 << i) {
+                            let (y, x) = c.split_at_mut(1 << i);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = M::operate(x, y);
+                            }
+                        }
+                    }
                 }
             }
-            i <<= 1;
-        }
+        );
+        zeta_transform::<M>(f);
     }
 }
 
@@ -30,16 +64,50 @@ where
 {
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(f: &mut [G::T]) {
-        let n = f.len();
-        let mut i = 1;
-        while i < n {
-            for j in 0..n {
-                if j & i != 0 {
-                    f[j] = G::rinv_operate(&f[j], &f[j ^ i]);
+        crate::avx_helper!(
+            @avx2 fn mobius_transform<G>(f: &mut [G::T])
+            where
+                [G: Group]
+            {
+                let k = f.len().trailing_zeros() as usize;
+                assert_eq!(f.len(), 1 << k);
+                let n = f.len();
+                assert_eq!(n.count_ones(), 1);
+                for i in 0..k {
+                    if i == 0 {
+                        for c in f.chunks_exact_mut(2) {
+                            let (y, x) = c.split_at_mut(1);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = G::rinv_operate(x, y);
+                            }
+                        }
+                    } else if i == 1 {
+                        for c in f.chunks_exact_mut(4) {
+                            let (y, x) = c.split_at_mut(2);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = G::rinv_operate(x, y);
+                            }
+                        }
+                    } else if i == 2 {
+                        for c in f.chunks_exact_mut(8) {
+                            let (y, x) = c.split_at_mut(4);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = G::rinv_operate(x, y);
+                            }
+                        }
+                    } else {
+                        assert!(i >= 3);
+                        for c in f.chunks_exact_mut(2 << i) {
+                            let (y, x) = c.split_at_mut(1 << i);
+                            for (x, y) in x.iter_mut().zip(y) {
+                                *x = G::rinv_operate(x, y);
+                            }
+                        }
+                    }
                 }
             }
-            i <<= 1;
-        }
+        );
+        mobius_transform::<G>(f);
     }
 }
 
