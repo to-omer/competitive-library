@@ -138,14 +138,17 @@ impl NttInfo {
     }
 }
 
-macro_rules! impl_ntt {
-    (@ntt $a:ident) => {
-        let n = $a.len();
+crate::avx_helper!(
+    @avx2 fn ntt<M>(a: &mut [MInt<M>])
+    where
+        [M: Montgomery32NttModulus]
+    {
+        let n = a.len();
         let mut v = n / 2;
         let imag = MInt::<M>::new_unchecked(M::INFO.root[2]);
         while v > 1 {
             let mut w1 = MInt::<M>::one();
-            for (s, a) in $a.chunks_exact_mut(v << 1).enumerate() {
+            for (s, a) in a.chunks_exact_mut(v << 1).enumerate() {
                 let (l, r) = a.split_at_mut(v);
                 let (ll, lr) = l.split_at_mut(v >> 1);
                 let (rl, rr) = r.split_at_mut(v >> 1);
@@ -171,7 +174,7 @@ macro_rules! impl_ntt {
         }
         if v == 1 {
             let mut w1 = MInt::<M>::one();
-            for (s, a) in $a.chunks_exact_mut(2).enumerate() {
+            for (s, a) in a.chunks_exact_mut(2).enumerate() {
                 unsafe {
                     let (l, r) = a.split_at_mut(1);
                     let x0 = l.get_unchecked_mut(0);
@@ -184,13 +187,18 @@ macro_rules! impl_ntt {
                 w1 *= MInt::<M>::new_unchecked(M::INFO.rate2[s.trailing_ones() as usize]);
             }
         }
-    };
-    (@intt $a:ident) => {
-        let n = $a.len();
+    }
+);
+crate::avx_helper!(
+    @avx2 fn intt<M>(a: &mut [MInt<M>])
+    where
+        [M: Montgomery32NttModulus]
+    {
+        let n = a.len();
         let mut v = 1;
         if n.trailing_zeros() & 1 == 1 {
             let mut w1 = MInt::<M>::one();
-            for (s, a) in $a.chunks_exact_mut(2).enumerate() {
+            for (s, a) in a.chunks_exact_mut(2).enumerate() {
                 unsafe {
                     let (l, r) = a.split_at_mut(1);
                     let x0 = l.get_unchecked_mut(0);
@@ -207,7 +215,7 @@ macro_rules! impl_ntt {
         let iimag = MInt::<M>::new_unchecked(M::INFO.inv_root[2]);
         while v < n {
             let mut w1 = MInt::<M>::one();
-            for (s, a) in $a.chunks_exact_mut(v << 2).enumerate() {
+            for (s, a) in a.chunks_exact_mut(v << 2).enumerate() {
                 let (l, r) = a.split_at_mut(v << 1);
                 let (ll, lr) = l.split_at_mut(v);
                 let (rl, rr) = r.split_at_mut(v);
@@ -231,85 +239,8 @@ macro_rules! impl_ntt {
             }
             v <<= 2;
         }
-    };
-}
-
-fn ntt<M>(a: &mut [MInt<M>])
-where
-    M: Montgomery32NttModulus,
-{
-    // if is_x86_feature_detected!("avx512f")
-    //     && is_x86_feature_detected!("avx512dq")
-    //     && is_x86_feature_detected!("avx512cd")
-    //     && is_x86_feature_detected!("avx512bw")
-    //     && is_x86_feature_detected!("avx512vl")
-    // {
-    //     unsafe { ntt_inner_avx512(a) };
-    // } else
-    if is_x86_feature_detected!("avx2") {
-        unsafe { ntt_inner_avx2(a) };
-    } else {
-        ntt_inner(a);
     }
-}
-// #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-// unsafe fn ntt_inner_avx512<M>(a: &mut [MInt<M>])
-// where
-//     M: Montgomery32NttModulus,
-// {
-//     impl_ntt!(@ntt a);
-// }
-#[target_feature(enable = "avx2")]
-unsafe fn ntt_inner_avx2<M>(a: &mut [MInt<M>])
-where
-    M: Montgomery32NttModulus,
-{
-    impl_ntt!(@ntt a);
-}
-fn ntt_inner<M>(a: &mut [MInt<M>])
-where
-    M: Montgomery32NttModulus,
-{
-    impl_ntt!(@ntt a);
-}
-fn intt<M>(a: &mut [MInt<M>])
-where
-    M: Montgomery32NttModulus,
-{
-    // if is_x86_feature_detected!("avx512f")
-    //     && is_x86_feature_detected!("avx512dq")
-    //     && is_x86_feature_detected!("avx512cd")
-    //     && is_x86_feature_detected!("avx512bw")
-    //     && is_x86_feature_detected!("avx512vl")
-    // {
-    //     unsafe { intt_inner_avx512(a) };
-    // } else
-    if is_x86_feature_detected!("avx2") {
-        unsafe { intt_inner_avx2(a) };
-    } else {
-        intt_inner(a);
-    }
-}
-// #[target_feature(enable = "avx512f,avx512dq,avx512cd,avx512bw,avx512vl")]
-// unsafe fn intt_inner_avx512<M>(a: &mut [MInt<M>])
-// where
-//     M: Montgomery32NttModulus,
-// {
-//     impl_ntt!(@intt a);
-// }
-#[target_feature(enable = "avx2")]
-unsafe fn intt_inner_avx2<M>(a: &mut [MInt<M>])
-where
-    M: Montgomery32NttModulus,
-{
-    impl_ntt!(@intt a);
-}
-fn intt_inner<M>(a: &mut [MInt<M>])
-where
-    M: Montgomery32NttModulus,
-{
-    impl_ntt!(@intt a);
-}
+);
 
 fn convolve_naive<M>(a: &[MInt<M>], b: &[MInt<M>]) -> Vec<MInt<M>>
 where

@@ -99,7 +99,8 @@ mod floor_sum;
             "mod_sqrt",
             "factorial",
             "PartialIgnoredOrd",
-            "berlekamp_massey"
+            "berlekamp_massey",
+            "avx_helper"
         )
     )
 )]
