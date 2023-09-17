@@ -110,6 +110,7 @@ where
 impl<R> ConvolveSteps for BitwiseorConvolve<R>
 where
     R: Ring,
+    R::T: PartialEq,
     R::Additive: Invertible,
 {
     type T = Vec<R::T>;
@@ -133,6 +134,22 @@ where
         for (f, g) in f.iter_mut().zip(g) {
             *f = R::mul(f, g);
         }
+    }
+
+    fn convolve(a: Self::T, b: Self::T) -> Self::T {
+        assert_eq!(a.len(), b.len());
+        let len = a.len();
+        let same = a == b;
+        let mut a = Self::transform(a, len);
+        if same {
+            for a in a.iter_mut() {
+                *a = R::mul(a, a);
+            }
+        } else {
+            let b = Self::transform(b, len);
+            Self::multiply(&mut a, &b);
+        }
+        Self::inverse_transform(a, len)
     }
 }
 
