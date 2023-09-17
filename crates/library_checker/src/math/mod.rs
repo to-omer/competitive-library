@@ -18,5 +18,6 @@ pub mod pow_of_formal_power_series;
 pub mod sharp_p_subset_sum;
 pub mod sqrt_mod;
 pub mod sqrt_of_formal_power_series;
+pub mod subset_convolution;
 pub mod sum_of_floor_of_linear;
 pub mod two_sat;

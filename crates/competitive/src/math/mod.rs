@@ -48,6 +48,8 @@ pub use self::prime_list::{with_prime_list, PrimeList};
 pub use self::prime_table::PrimeTable;
 #[codesnip::entry("primitive_root")]
 pub use self::primitive_root::{check_primitive_root, primitive_root};
+#[codesnip::entry("SubsetConvolve")]
+pub use self::subset_convolve::SubsetConvolve;
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
@@ -146,6 +148,11 @@ mod prime_list;
 mod prime_table;
 #[cfg_attr(nightly, codesnip::entry("primitive_root", include("prime_factors")))]
 mod primitive_root;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SubsetConvolve", include("BitwiseorConvolve"))
+)]
+mod subset_convolve;
 
 #[codesnip::entry("_zeta_transform", include("algebra", "ring", "ConvolveSteps"))]
 #[codesnip::skip]
