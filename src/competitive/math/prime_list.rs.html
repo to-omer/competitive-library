@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/prime_list.rs`."><title>prime_list.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (d9c8274fb 2023-09-12)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-74424d7eec62a23e.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-8d035c8cea6edbc4.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/prime_list.rs`."><title>prime_list.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-085727c29c2fa99e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (7d9bce327 2023-09-16)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f6ec288034ea164c.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -319,48 +319,84 @@
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
 <a href="#305" id="305">305</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">mem::replace</a>, <a href="https://doc.rust-lang.org/nightly/core/slice/iter/struct.Iter.html">slice::Iter</a>};
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/cell/struct.UnsafeCell.html">cell::UnsafeCell</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">mem::replace</a>, <a href="https://doc.rust-lang.org/nightly/core/slice/iter/struct.Iter.html">slice::Iter</a>};
 
-<span class="attr">#[derive(Debug, Clone, Default)]
+<span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/math/struct.PrimeList.html">PrimeList</a> {
     primes: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
     max_n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>,
 }
+
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="#4-7">PrimeList</a> {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            primes: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
+            max_n: <span class="number">1</span>,
+        }
+    }
+}
+
 <span class="kw">impl </span><a href="#4-7">PrimeList</a> {
     <span class="kw">pub fn </span>new(max_n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>self_: <span class="self">Self </span>= <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>();
-        <a href="#10">self_</a>.<a href="#60-135">reserve</a>(<a href="#9">max_n</a>);
-        <a href="#10">self_</a>
+        <a href="#20">self_</a>.<a href="#70-145">reserve</a>(<a href="#19">max_n</a>);
+        <a href="#20">self_</a>
     }
     <span class="kw">pub fn </span>primes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>] {
-        <a class="self" href="#14">self</a>.primes.as_slice()
+        <a class="self" href="#24">self</a>.primes.as_slice()
     }
     <span class="kw">pub fn </span>primes_lte(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="kw-2">&amp;</span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>] {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(n &lt;= <span class="self">self</span>.max_n, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, n, <span class="self">self</span>.max_n);
-        <span class="kw">let </span>i = <a class="self" href="#17">self</a>.primes.binary_search(<span class="kw-2">&amp;</span><a href="#17">n</a>).unwrap_or_else(|i| <a href="#19">i</a>);
-        <span class="kw-2">&amp;</span><a class="self" href="#17">self</a>.primes[..<a href="#19">i</a>]
+        <span class="kw">let </span>i = <a class="self" href="#27">self</a>.primes.partition_point(|<span class="kw-2">&amp;</span>p| <a href="#29">p</a> &lt;= <a href="#27">n</a>);
+        <span class="kw-2">&amp;</span><a class="self" href="#27">self</a>.primes[..<a href="#29">i</a>]
     }
     <span class="kw">pub fn </span>is_prime(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(n &lt;= <span class="self">self</span>.max_n, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, n, <span class="self">self</span>.max_n);
-        <a class="self" href="#22">self</a>.primes.binary_search(<span class="kw-2">&amp;</span><a href="#22">n</a>).is_ok()
+        <a class="self" href="#32">self</a>.primes.binary_search(<span class="kw-2">&amp;</span><a href="#32">n</a>).is_ok()
     }
     <span class="kw">pub fn </span>trial_division(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; PrimeListTrialDivision&lt;<span class="lifetime">&#39;_</span>&gt; {
-        <span class="kw">let </span>bound = <a class="self" href="#26">self</a>.max_n.saturating_mul(<a class="self" href="#26">self</a>.max_n);
+        <span class="kw">let </span>bound = <a class="self" href="#36">self</a>.max_n.saturating_mul(<a class="self" href="#36">self</a>.max_n);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(n &lt;= bound, <span class="string">&quot;expected `n={} &lt;= {}`&quot;</span>, n, bound);
-        <a href="#139-142">PrimeListTrialDivision</a> {
-            primes: <a class="self" href="#26">self</a>.primes.iter(),
-            <a href="#26">n</a>,
+        <a href="#149-152">PrimeListTrialDivision</a> {
+            primes: <a class="self" href="#36">self</a>.primes.iter(),
+            <a href="#36">n</a>,
         }
     }
     <span class="kw">pub fn </span>prime_factors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)&gt; {
-        <a class="self" href="#34">self</a>.<a href="#26-33">trial_division</a>(<a href="#34">n</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
+        <a class="self" href="#44">self</a>.<a href="#36-43">trial_division</a>(<a href="#44">n</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
     }
     <span class="kw">pub fn </span>count_divisors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
         <span class="kw">let </span><span class="kw-2">mut </span>divisor_cnt = <span class="number">1u64</span>;
         <span class="kw">for </span>(<span class="kw">_</span>, cnt) <span class="kw">in </span><span class="self">self</span>.trial_division(n) {
             divisor_cnt <span class="kw-2">*</span>= cnt <span class="kw">as </span>u64 + <span class="number">1</span>;
         }
-        <a href="#38">divisor_cnt</a>
+        <a href="#48">divisor_cnt</a>
     }
     <span class="kw">pub fn </span>divisors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>d = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">1u64</span>];
@@ -374,8 +410,8 @@
                 acc <span class="kw-2">*</span>= p;
             }
         }
-        <a href="#45">d</a>.sort_unstable();
-        <a href="#45">d</a>
+        <a href="#55">d</a>.sort_unstable();
+        <a href="#55">d</a>
     }
     <span class="doccomment">/// list primes less than or equal to `max_n` by segmented sieve
     </span><span class="kw">pub fn </span>reserve(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
@@ -384,24 +420,24 @@
         }
 
         <span class="kw">if </span><span class="self">self</span>.primes.is_empty() {
-            <a class="self" href="#60">self</a>.primes.push(<span class="number">2</span>);
-            <a class="self" href="#60">self</a>.max_n = <span class="number">2</span>;
+            <a class="self" href="#70">self</a>.primes.push(<span class="number">2</span>);
+            <a class="self" href="#70">self</a>.max_n = <span class="number">2</span>;
         }
         <span class="kw">if </span>max_n == <span class="number">2 </span>{
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let </span>max_n = (<a href="#60">max_n</a> + <span class="number">1</span>) / <span class="number">2 </span>* <span class="number">2</span>; <span class="comment">// odd
-        </span><span class="kw">let </span>sqrt_n = ((<a href="#73">max_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>) / <span class="number">2 </span>* <span class="number">2</span>; <span class="comment">// even
-        </span><span class="kw">let </span><span class="kw-2">mut </span>table = Vec::with_capacity(<a href="#74">sqrt_n</a> &gt;&gt; <span class="number">1</span>);
+        <span class="kw">let </span>max_n = (<a href="#70">max_n</a> + <span class="number">1</span>) / <span class="number">2 </span>* <span class="number">2</span>; <span class="comment">// odd
+        </span><span class="kw">let </span>sqrt_n = ((<a href="#83">max_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>) / <span class="number">2 </span>* <span class="number">2</span>; <span class="comment">// even
+        </span><span class="kw">let </span><span class="kw-2">mut </span>table = Vec::with_capacity(<a href="#84">sqrt_n</a> &gt;&gt; <span class="number">1</span>);
         <span class="kw">if </span><span class="self">self</span>.max_n &lt; sqrt_n <span class="kw">as </span>u64 {
-            <span class="kw">let </span>start = (<a class="self" href="#60">self</a>.max_n <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>) | <span class="number">1</span>; <span class="comment">// odd
-            </span><span class="kw">let </span>end = <a href="#74">sqrt_n</a> + <span class="number">1</span>;
-            <span class="kw">let </span>sqrt_end = (<a href="#74">sqrt_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
-            <span class="kw">let </span>plen = <a class="self" href="#60">self</a>.primes[<span class="number">1</span>..]
-                .binary_search(<span class="kw-2">&amp;</span>(<a href="#79">sqrt_end</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> + <span class="number">1</span>))
-                .unwrap_or_else(|x| <a href="#82">x</a>);
-            <a href="#75">table</a>.resize(<a href="#78">end</a> / <span class="number">2 </span>- <a href="#77">start</a> / <span class="number">2</span>, <span class="bool-val">false</span>);
+            <span class="kw">let </span>start = (<a class="self" href="#70">self</a>.max_n <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>) | <span class="number">1</span>; <span class="comment">// odd
+            </span><span class="kw">let </span>end = <a href="#84">sqrt_n</a> + <span class="number">1</span>;
+            <span class="kw">let </span>sqrt_end = (<a href="#84">sqrt_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+            <span class="kw">let </span>plen = <a class="self" href="#70">self</a>.primes[<span class="number">1</span>..]
+                .binary_search(<span class="kw-2">&amp;</span>(<a href="#89">sqrt_end</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> + <span class="number">1</span>))
+                .unwrap_or_else(|x| <a href="#92">x</a>);
+            <a href="#85">table</a>.resize(<a href="#88">end</a> / <span class="number">2 </span>- <a href="#87">start</a> / <span class="number">2</span>, <span class="bool-val">false</span>);
             <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span><span class="self">self</span>.primes.iter().skip(<span class="number">1</span>).take(plen) {
                 <span class="kw">let </span>y = p.max((start <span class="kw">as </span>u64 + p - <span class="number">1</span>) / (<span class="number">2 </span>* p) * <span class="number">2 </span>+ <span class="number">1</span>) * p / <span class="number">2</span>;
                 (y <span class="kw">as </span>usize - start / <span class="number">2</span>..end / <span class="number">2 </span>- start / <span class="number">2</span>)
@@ -416,18 +452,18 @@
                     }
                 }
             }
-            <a class="self" href="#60">self</a>.primes
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">extend</a>(<a href="#75">table</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(i, b)| {
+            <a class="self" href="#70">self</a>.primes
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">extend</a>(<a href="#85">table</a>.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(i, b)| {
                     <span class="kw">if </span>!b {
-                        <span class="prelude-val">Some</span>((<a href="#99">i</a> + <a href="#77">start</a> / <span class="number">2</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="number">2 </span>+ <span class="number">1</span>)
+                        <span class="prelude-val">Some</span>((<a href="#109">i</a> + <a href="#87">start</a> / <span class="number">2</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="number">2 </span>+ <span class="number">1</span>)
                     } <span class="kw">else </span>{
                         <span class="prelude-val">None
                     </span>}
                 }));
-            <a class="self" href="#60">self</a>.max_n = <a href="#74">sqrt_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+            <a class="self" href="#70">self</a>.max_n = <a href="#84">sqrt_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         }
 
-        <span class="kw">let </span>sqrt_n = <a href="#74">sqrt_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span>sqrt_n = <a href="#84">sqrt_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">for </span>start <span class="kw">in </span>(<span class="self">self</span>.max_n + <span class="number">1</span>..=max_n).step_by(sqrt_n <span class="kw">as </span>usize) {
             <span class="kw">let </span>end = (start + sqrt_n).min(max_n + <span class="number">1</span>);
             <span class="kw">let </span>sqrt_end = (end <span class="kw">as </span>f64).sqrt() <span class="kw">as </span>u64;
@@ -452,7 +488,7 @@
                     </span>}
                 }));
         }
-        <a class="self" href="#60">self</a>.max_n = <a href="#73">max_n</a>;
+        <a class="self" href="#70">self</a>.max_n = <a href="#83">max_n</a>;
     }
 }
 
@@ -468,32 +504,46 @@
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
         <span class="kw">loop </span>{
-            <span class="kw">match </span><a class="self" href="#145">self</a>.primes.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>() {
-                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>p) <span class="kw">if </span><a href="#151">p</a> * <a href="#151">p</a> &lt;= <a class="self" href="#145">self</a>.n =&gt; {
+            <span class="kw">match </span><a class="self" href="#155">self</a>.primes.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>() {
+                <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>p) <span class="kw">if </span><a href="#161">p</a> * <a href="#161">p</a> &lt;= <a class="self" href="#155">self</a>.n =&gt; {
                     <span class="kw">if </span><span class="self">self</span>.n % p == <span class="number">0 </span>{
                         <span class="kw">let </span><span class="kw-2">mut </span>cnt = <span class="number">1u32</span>;
-                        <a class="self" href="#145">self</a>.n /= <a href="#151">p</a>;
+                        <a class="self" href="#155">self</a>.n /= <a href="#161">p</a>;
                         <span class="kw">while </span><span class="self">self</span>.n % p == <span class="number">0 </span>{
                             cnt += <span class="number">1</span>;
                             <span class="self">self</span>.n /= p;
                         }
-                        <span class="kw">return </span><span class="prelude-val">Some</span>((<a href="#151">p</a>, <a href="#153">cnt</a>));
+                        <span class="kw">return </span><span class="prelude-val">Some</span>((<a href="#161">p</a>, <a href="#163">cnt</a>));
                     }
                 }
                 <span class="kw">_ </span>=&gt; <span class="kw">break</span>,
             }
         }
         <span class="kw">if </span><span class="self">self</span>.n &gt; <span class="number">1 </span>{
-            <span class="kw">return </span><span class="prelude-val">Some</span>((<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#145">self</a>.n, <span class="number">1</span>), <span class="number">1</span>));
+            <span class="kw">return </span><span class="prelude-val">Some</span>((<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#155">self</a>.n, <span class="number">1</span>), <span class="number">1</span>));
         }
         <span class="prelude-val">None
     </span>}
 }
 
+<span class="kw">pub fn </span><a href="../../../competitive/math/fn.with_prime_list.html">with_prime_list</a>&lt;F&gt;(max_n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, f: F)
+<span class="kw">where
+    </span>F: FnOnce(<span class="kw-2">&amp;</span><a href="#4-7">PrimeList</a>),
+{
+    <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.thread_local.html">thread_local!</a>(<span class="kw">static </span>PRIME_LIST: UnsafeCell&lt;PrimeList&gt; = Default::default());
+    <a href="#186">PRIME_LIST</a>.with(|cell| {
+        <span class="kw">unsafe </span>{
+            <span class="kw">let </span>pl = <span class="kw-2">&amp;mut *</span><a href="#187">cell</a>.get();
+            <a href="#189">pl</a>.<a href="#70-145">reserve</a>(<a href="#182">max_n</a>);
+            <a href="#182">f</a>(<a href="#189">pl</a>);
+        };
+    });
+}
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::math::{prime_factors, PrimeTable};
+    <span class="kw">use </span><span class="kw">crate</span>::math::prime_factors;
     <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
 
     <span class="kw">fn </span>primes(n: usize) -&gt; Vec&lt;usize&gt; {
@@ -596,13 +646,15 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_primes() {
-        <span class="kw">let </span>t = PrimeTable::new(<span class="number">2000</span>);
-        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">2000 </span>{
+        <span class="kw">let </span>pl = PrimeList::new(<span class="number">2000</span>);
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..=<span class="number">2000 </span>{
             <span class="macro">assert_eq!</span>(
                 primes(i),
-                (<span class="number">2</span>..=i)
-                    .filter(|<span class="kw-2">&amp;</span>i| t.is_prime(i <span class="kw">as </span>u32))
-                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+                (<span class="number">2</span>..=i).filter(|<span class="kw-2">&amp;</span>i| pl.is_prime(i <span class="kw">as _</span>)).collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+            );
+            <span class="macro">assert_eq!</span>(
+                primes(i).iter().map(|<span class="kw-2">&amp;</span>p| p <span class="kw">as _</span>).collect::&lt;Vec&lt;u64&gt;&gt;(),
+                pl.primes_lte(i <span class="kw">as _</span>)
             );
         }
     }
