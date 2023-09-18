@@ -109,6 +109,20 @@ impl<T, C> IntoIterator for FormalPowerSeries<T, C> {
         self.data.into_iter()
     }
 }
+impl<'a, T, C> IntoIterator for &'a FormalPowerSeries<T, C> {
+    type Item = &'a T;
+    type IntoIter = Iter<'a, T>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.iter()
+    }
+}
+impl<'a, T, C> IntoIterator for &'a mut FormalPowerSeries<T, C> {
+    type Item = &'a mut T;
+    type IntoIter = IterMut<'a, T>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.iter_mut()
+    }
+}
 
 impl<T, C> FromIterator<T> for FormalPowerSeries<T, C> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
