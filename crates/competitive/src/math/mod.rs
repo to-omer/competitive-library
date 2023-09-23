@@ -101,8 +101,7 @@ mod floor_sum;
             "mod_sqrt",
             "factorial",
             "PartialIgnoredOrd",
-            "berlekamp_massey",
-            "avx_helper"
+            "berlekamp_massey"
         )
     )
 )]
@@ -131,7 +130,10 @@ mod miller_rabin;
 mod mod_sqrt;
 #[cfg_attr(
     nightly,
-    codesnip::entry("NumberTheoreticTransform", include("montgomery", "ConvolveSteps"))
+    codesnip::entry(
+        "NumberTheoreticTransform",
+        include("montgomery", "ConvolveSteps", "avx_helper")
+    )
 )]
 mod number_theoretic_transform;
 mod nums;

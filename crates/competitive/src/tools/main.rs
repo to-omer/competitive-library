@@ -23,6 +23,7 @@ mod main_macros {
     /// - `prepare!();`: default (all input scanner (`sc!`, `sv!`) + buf print (`pp!`, `dg!`))
     /// - `prepare!(?);`: interactive (line scanner (`scln!`) + buf print (`pp!`, `dg!`))
     #[macro_export]
+    #[allow(clippy::crate_in_macro_def)]
     macro_rules! prepare {
         (@output ($dol:tt)) => {
             #[allow(unused_imports)]
