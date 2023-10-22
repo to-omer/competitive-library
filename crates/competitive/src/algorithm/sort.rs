@@ -13,6 +13,12 @@ pub trait SliceSortExt<T> {
     fn merge_sort_by<F>(&mut self, compare: F)
     where
         F: FnMut(&T, &T) -> Ordering;
+    fn insertion_sort(&mut self)
+    where
+        T: Ord;
+    fn insertion_sort_by<F>(&mut self, compare: F)
+    where
+        F: FnMut(&T, &T) -> Ordering;
 }
 impl<T> SliceSortExt<T> for [T] {
     fn bubble_sort(&mut self)
@@ -38,6 +44,18 @@ impl<T> SliceSortExt<T> for [T] {
         F: FnMut(&T, &T) -> Ordering,
     {
         merge_sort(self, |a, b| compare(a, b) == Ordering::Less);
+    }
+    fn insertion_sort(&mut self)
+    where
+        T: Ord,
+    {
+        insertion_sort(self, |a, b| a.lt(b));
+    }
+    fn insertion_sort_by<F>(&mut self, mut compare: F)
+    where
+        F: FnMut(&T, &T) -> Ordering,
+    {
+        insertion_sort(self, |a, b| compare(a, b) == Ordering::Less);
     }
 }
 
@@ -144,6 +162,17 @@ where
     }
 }
 
+fn insertion_sort<T, F>(v: &mut [T], mut is_less: F)
+where
+    F: FnMut(&T, &T) -> bool,
+{
+    for i in 1..v.len() {
+        let x = &v[i];
+        let p = v[..i].partition_point(|y| is_less(y, x));
+        v[p..=i].rotate_right(1);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -195,5 +224,15 @@ mod tests {
     #[test]
     fn test_merge_sort_large() {
         test_sort!(@large merge_sort, 100_000);
+    }
+
+    #[test]
+    fn test_insertion_sort_small() {
+        test_sort!(@small insertion_sort);
+    }
+
+    #[test]
+    fn test_insertion_sort_large() {
+        test_sort!(@large insertion_sort, 100_000);
     }
 }
