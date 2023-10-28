@@ -11,7 +11,7 @@ pub fn bench_mod_mul(c: &mut Criterion) {
         b.iter_batched(
             || {
                 let (a, b) = rng.gen(spec);
-                (M::new(a), M::new(b))
+                (M::new_unchecked(a), M::new_unchecked(b))
             },
             |(a, b)| a * b,
             BatchSize::SmallInput,
@@ -23,7 +23,20 @@ pub fn bench_mod_mul(c: &mut Criterion) {
         b.iter_batched(
             || {
                 let (a, b) = rng.gen(spec);
-                (M::new(a), M::new(b))
+                (M::new_unchecked(a), M::new_unchecked(b))
+            },
+            |(a, b)| a * b,
+            BatchSize::SmallInput,
+        )
+    });
+    group.bench_function("dynmint_mul", |b| {
+        type M = mint_basic::DynMIntU32;
+        M::set_mod(A);
+        let mut rng = Xorshift::default();
+        b.iter_batched(
+            || {
+                let (a, b) = rng.gen(spec);
+                (M::new_unchecked(a), M::new_unchecked(b))
             },
             |(a, b)| a * b,
             BatchSize::SmallInput,
