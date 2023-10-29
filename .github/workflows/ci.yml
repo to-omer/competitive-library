@@ -116,6 +116,9 @@ jobs:
     - name: Cache
       uses: Swatinem/rust-cache@v2
 
+    - name: cargo-build
+      run: cargo build --release --workspace --lib --tests
+
     - id: testcases-hash
       run: python ./.github/workflows/matrix.py ${{ matrix.job-id }} --hash >> $GITHUB_OUTPUT
 
@@ -123,10 +126,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache
-        key: testcases-${{ steps.testcases-hash.outputs }}
-
-    - name: cargo-build
-      run: cargo build --release --workspace --lib --tests
+        key: testcases-${{ steps.testcases-hash.outputs.hash }}
 
     - name: Verify
       env:
