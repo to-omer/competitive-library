@@ -1,21 +1,24 @@
 use self::library_checker::CheckerBinary;
 use chrono::{DateTime, FixedOffset, SecondsFormat, Utc};
 use dirs::cache_dir;
+use rand::prelude::*;
 use reqwest::{blocking, Client};
 use serde::Deserialize;
 use std::{
     borrow::Borrow,
+    collections::hash_map::RandomState,
     env::{current_dir, temp_dir},
     error::Error,
     fmt::{self, Display, Formatter},
     fs::File,
+    hash::BuildHasher,
     io::{self, Read, Write},
     path::{Path, PathBuf},
     process::Command,
     time::{Duration, Instant},
 };
 use tempfile::NamedTempFile;
-use tokio::io::AsyncWriteExt;
+use tokio::{io::AsyncWriteExt, time::sleep};
 pub use verify_attr::{aizu_online_judge, library_checker};
 
 mod aizu_online_judge;
@@ -78,10 +81,13 @@ async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
         File::create(file).await?.write_all(bytes.borrow()).await?;
         Ok(())
     }
+    let seed = RandomState::new().hash_one(&url);
+    let mut rng = StdRng::seed_from_u64(seed);
     for _ in 0..2 {
         if let Ok(()) = gen_case_inner(&url, &file).await {
             return Ok(());
         };
+        sleep(Duration::from_secs_f64(rng.gen_range(1f64..5f64))).await;
     }
     gen_case_inner(&url, &file).await
 }
