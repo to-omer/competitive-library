@@ -64,17 +64,26 @@ fn build_async_client() -> reqwest::Result<Client> {
 }
 
 async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
-    use tokio::fs::File;
-    let client = build_async_client()?;
-    let bytes = client
-        .get(&url)
-        .send()
-        .await?
-        .error_for_status()?
-        .bytes()
-        .await?;
-    File::create(&file).await?.write_all(bytes.borrow()).await?;
-    Ok(())
+    async fn gen_case_inner(url: &str, file: &PathBuf) -> BoxResult<()> {
+        use tokio::fs::File;
+        let client = build_async_client()?;
+        let bytes = client
+            .get(url)
+            .timeout(Duration::from_secs(5))
+            .send()
+            .await?
+            .error_for_status()?
+            .bytes()
+            .await?;
+        File::create(file).await?.write_all(bytes.borrow()).await?;
+        Ok(())
+    }
+    for _ in 0..2 {
+        if let Ok(()) = gen_case_inner(&url, &file).await {
+            return Ok(());
+        };
+    }
+    gen_case_inner(&url, &file).await
 }
 
 #[derive(Debug, Clone)]

@@ -1,6 +1,9 @@
 use crate::{app_cache_directory, build_client, gen_case, TestCase};
 use serde::Deserialize;
-use std::fs::{create_dir, create_dir_all, remove_dir_all};
+use std::{
+    fs::{create_dir, create_dir_all, remove_dir_all},
+    time::Duration,
+};
 use tokio::runtime;
 
 #[derive(Deserialize, Debug)]
@@ -42,7 +45,11 @@ pub fn get_testcases(
         "https://judgedat.u-aizu.ac.jp/testcases/{}/header",
         problem_id,
     );
-    let headers: AOJTestCaseHeaders = build_client()?.get(url).send()?.json()?;
+    let headers: AOJTestCaseHeaders = build_client()?
+        .get(url)
+        .timeout(Duration::from_secs(5))
+        .send()?
+        .json()?;
 
     let mut cases = Vec::with_capacity(headers.headers.len());
     runtime::Builder::new_current_thread()
