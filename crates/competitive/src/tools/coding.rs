@@ -610,6 +610,7 @@ mod tests {
     fn test_serde() {
         let a = (
             (0..=255).collect::<Vec<u8>>(),
+            String::from_utf8((0..128).collect::<Vec<u8>>()).unwrap(),
             (0..=255).collect::<VecDeque<u64>>(),
             (0..=255).collect::<BTreeSet<usize>>(),
             (-255..=255).collect::<HashSet<i128>>(),
