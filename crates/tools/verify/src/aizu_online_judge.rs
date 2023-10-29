@@ -39,7 +39,6 @@ pub fn get_testcases(
         create_dir(&indir)?;
         create_dir(&outdir)?;
     }
-    log::info!("download testcases at {}", problemdir.display());
 
     let url = format!(
         "https://judgedat.u-aizu.ac.jp/testcases/{}/header",

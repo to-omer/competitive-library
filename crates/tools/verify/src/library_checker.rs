@@ -135,7 +135,6 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         create_dir(&indir)?;
         create_dir(&outdir)?;
     }
-    log::info!("download testcases at {}", problem.problemdir.display());
 
     for case in &problem.info.tests {
         for i in 0..case.number {
