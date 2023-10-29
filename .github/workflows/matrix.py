@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from hashlib import sha256
 from itertools import islice
 from pathlib import Path
 from shutil import move
@@ -59,11 +60,23 @@ def arrange_artifacts():
 def main():
     parser = ArgumentParser()
     parser.add_argument("nth", type=int, nargs="?")
+    parser.add_argument("--hash", action="store_true")
     args = parser.parse_args()
-    for package, name in islice(verify_list(), args.nth, None, SIZE):
-        cargo_verify(package, name)
 
-    arrange_artifacts()
+    if args.hash:
+        print(
+            sha256(
+                " ".join(
+                    f"{package}::{name}"
+                    for package, name in islice(verify_list(), args.nth, None, SIZE)
+                ).encode()
+            ).hexdigest()
+        )
+    else:
+        for package, name in islice(verify_list(), args.nth, None, SIZE):
+            cargo_verify(package, name)
+
+        arrange_artifacts()
 
 
 if __name__ == "__main__":
