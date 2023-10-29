@@ -64,13 +64,13 @@ def main():
     args = parser.parse_args()
 
     if args.hash:
-        hash = sha256(
+        h = sha256(
             " ".join(
                 f"{package}::{name}"
                 for package, name in islice(verify_list(), args.nth, None, SIZE)
             ).encode()
         ).hexdigest()
-        print(f"{hash=}")
+        print(f"hash={h}")
     else:
         for package, name in islice(verify_list(), args.nth, None, SIZE):
             cargo_verify(package, name)
