@@ -301,17 +301,17 @@ where
                 if S::has_bottom_up() {
                     stack.push($ptr.node);
                 }
-                $entry = unsafe{ &mut (*$entry.as_mut().unwrap().as_ptr()).$dir };
+                $entry = unsafe { &mut (*$entry.as_mut().unwrap().as_ptr()).$dir };
             };
         }
 
         let root_ord = loop {
             S::top_down(x.borrow_datamut());
-            match seeker.splay_seek(unsafe { NodeRef::new_unchecked(x.node) }) {
+            match seeker.splay_seek(x.reborrow()) {
                 Ordering::Less => {
                     if let Some(mut y) = x.borrow_mut().take_left() {
                         S::top_down(y.borrow_datamut());
-                        match seeker.splay_seek(unsafe { NodeRef::new_unchecked(y.node) }) {
+                        match seeker.splay_seek(y.reborrow()) {
                             Ordering::Less => {
                                 if let Some(mut z) = y.borrow_mut().take_left() {
                                     S::top_down(z.borrow_datamut());
@@ -352,7 +352,7 @@ where
                 Ordering::Greater => {
                     if let Some(mut y) = x.borrow_mut().take_right() {
                         S::top_down(y.borrow_datamut());
-                        match seeker.splay_seek(unsafe { NodeRef::new_unchecked(y.node) }) {
+                        match seeker.splay_seek(y.reborrow()) {
                             Ordering::Less => {
                                 if let Some(mut z) = y.borrow_mut().take_left() {
                                     S::top_down(z.borrow_datamut());
