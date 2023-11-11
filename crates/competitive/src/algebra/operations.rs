@@ -525,6 +525,61 @@ mod bitxor_operation_impl {
     }
 }
 
+#[codesnip::entry("LogicalLinearOperation")]
+pub use self::logical_linear_operation_impl::LogicalLinearOperation;
+#[codesnip::entry(
+    "LogicalLinearOperation",
+    include("algebra", "BitXorOperation", "BitAndOperation")
+)]
+mod logical_linear_operation_impl {
+    use super::*;
+    use std::{
+        marker::PhantomData,
+        ops::{BitAnd, BitXor},
+    };
+    /// $(a, b) \circ (c, d) = \lambda x. c \wedge (a \wedge x \oplus b) \oplus d$
+    pub struct LogicalLinearOperation<T>
+    where
+        T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>,
+    {
+        _marker: PhantomData<fn() -> T>,
+    }
+    impl<T> LogicalLinearOperation<T>
+    where
+        T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>,
+    {
+        pub fn eval((a, b): &<Self as Magma>::T, x: &T) -> T {
+            a.clone() & x.clone() ^ b.clone()
+        }
+    }
+    impl<T> Magma for LogicalLinearOperation<T>
+    where
+        T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>,
+    {
+        type T = (T, T);
+        #[inline]
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            (
+                y.0.clone() & x.0.clone(),
+                y.0.clone() & x.1.clone() ^ y.1.clone(),
+            )
+        }
+    }
+    impl<T> Unital for LogicalLinearOperation<T>
+    where
+        T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>,
+    {
+        #[inline]
+        fn unit() -> Self::T {
+            (BitAndIdentity::all_one(), BitXorIdentity::xor_zero())
+        }
+    }
+    impl<T> Associative for LogicalLinearOperation<T> where
+        T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>
+    {
+    }
+}
+
 #[codesnip::entry("TupleOperation", include("algebra"))]
 mod tuple_operation_impl {
     #![allow(unused_variables, clippy::unused_unit)]
