@@ -150,7 +150,10 @@ mod slope_trick;
 mod splay_tree;
 #[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
 mod trie;
-#[cfg_attr(nightly, codesnip::entry("UnionFind", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("UnionFind", include("algebra", "TupleOperation"))
+)]
 pub mod union_find;
 #[cfg_attr(nightly, codesnip::entry("WaveletMatrix", include("BitVector")))]
 mod wavelet_matrix;
