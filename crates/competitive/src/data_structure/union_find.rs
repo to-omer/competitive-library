@@ -6,49 +6,57 @@ use std::{
     mem::swap,
 };
 
-pub struct UnionFindBase<U, F, M, P>
+pub struct UnionFindBase<U, F, M, P, H>
 where
     U: UnionStrategy,
     F: FindStrategy,
     M: UfMergeSpec,
     P: Monoid,
+    H: UndoStrategy<UfCell<U, M, P>>,
 {
     cells: Vec<UfCell<U, M, P>>,
     merger: M,
+    history: H::History,
     _marker: PhantomData<fn() -> F>,
 }
 
-impl<U, F, M, P> Clone for UnionFindBase<U, F, M, P>
+impl<U, F, M, P, H> Clone for UnionFindBase<U, F, M, P, H>
 where
     U: UnionStrategy,
     F: FindStrategy,
     M: UfMergeSpec + Clone,
     P: Monoid,
+    H: UndoStrategy<UfCell<U, M, P>>,
     U::Info: Clone,
     M::Data: Clone,
+    H::History: Clone,
 {
     fn clone(&self) -> Self {
         Self {
             cells: self.cells.clone(),
             merger: self.merger.clone(),
+            history: self.history.clone(),
             _marker: self._marker,
         }
     }
 }
 
-impl<U, F, M, P> Debug for UnionFindBase<U, F, M, P>
+impl<U, F, M, P, H> Debug for UnionFindBase<U, F, M, P, H>
 where
     U: UnionStrategy,
     F: FindStrategy,
     M: UfMergeSpec,
     P: Monoid,
+    H: UndoStrategy<UfCell<U, M, P>>,
     U::Info: Debug,
     M::Data: Debug,
     P::T: Debug,
+    H::History: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("UnionFindBase")
             .field("cells", &self.cells)
+            .field("history", &self.history)
             .finish()
     }
 }
@@ -213,11 +221,56 @@ impl UfMergeSpec for () {
     fn merge(&mut self, _to: &mut Self::Data, _from: &mut Self::Data) {}
 }
 
-impl<U, F, P> UnionFindBase<U, F, (), P>
+pub trait UndoStrategy<T> {
+    const UNDOABLE: bool;
+
+    type History: Default;
+
+    fn unite(history: &mut Self::History, x: usize, y: usize, cells: &[T]);
+
+    fn undo_unite(history: &mut Self::History, cells: &mut [T]);
+}
+
+pub enum Undoable {}
+
+impl<T> UndoStrategy<T> for Undoable
+where
+    T: Clone,
+{
+    const UNDOABLE: bool = true;
+
+    type History = Vec<[(usize, T); 2]>;
+
+    fn unite(history: &mut Self::History, x: usize, y: usize, cells: &[T]) {
+        let cx = cells[x].clone();
+        let cy = cells[y].clone();
+        history.push([(x, cx), (y, cy)]);
+    }
+
+    fn undo_unite(history: &mut Self::History, cells: &mut [T]) {
+        if let Some([(x, cx), (y, cy)]) = history.pop() {
+            cells[x] = cx;
+            cells[y] = cy;
+        }
+    }
+}
+
+impl<T> UndoStrategy<T> for () {
+    const UNDOABLE: bool = false;
+
+    type History = ();
+
+    fn unite(_history: &mut Self::History, _x: usize, _y: usize, _cells: &[T]) {}
+
+    fn undo_unite(_history: &mut Self::History, _cells: &mut [T]) {}
+}
+
+impl<U, F, P, H> UnionFindBase<U, F, (), P, H>
 where
     U: UnionStrategy,
     F: FindStrategy,
     P: Monoid,
+    H: UndoStrategy<UfCell<U, (), P>>,
 {
     pub fn new(n: usize) -> Self {
         let cells: Vec<_> = (0..n)
@@ -226,6 +279,7 @@ where
         Self {
             cells,
             merger: (),
+            history: Default::default(),
             _marker: PhantomData,
         }
     }
@@ -234,12 +288,13 @@ where
     }
 }
 
-impl<U, F, T, Merge, P> UnionFindBase<U, F, FnMerger<T, Merge>, P>
+impl<U, F, T, Merge, P, H> UnionFindBase<U, F, FnMerger<T, Merge>, P, H>
 where
     U: UnionStrategy,
     F: FindStrategy,
     Merge: FnMut(&mut T, &mut T),
     P: Monoid,
+    H: UndoStrategy<UfCell<U, FnMerger<T, Merge>, P>>,
 {
     pub fn new_with_merger(n: usize, mut init: impl FnMut(usize) -> T, merge: Merge) -> Self {
         let cells: Vec<_> = (0..n)
@@ -251,16 +306,18 @@ where
                 f: merge,
                 _marker: PhantomData,
             },
+            history: Default::default(),
             _marker: PhantomData,
         }
     }
 }
 
-impl<F, M, P> UnionFindBase<UnionBySize, F, M, P>
+impl<F, M, P, H> UnionFindBase<UnionBySize, F, M, P, H>
 where
     F: FindStrategy,
     M: UfMergeSpec,
     P: Monoid,
+    H: UndoStrategy<UfCell<UnionBySize, M, P>>,
 {
     pub fn size(&mut self, x: usize) -> <UnionBySize as UnionStrategy>::Info {
         let root = self.find_root(x);
@@ -268,12 +325,13 @@ where
     }
 }
 
-impl<U, F, M, P> UnionFindBase<U, F, M, P>
+impl<U, F, M, P, H> UnionFindBase<U, F, M, P, H>
 where
     U: UnionStrategy,
     F: FindStrategy,
     M: UfMergeSpec,
     P: Monoid,
+    H: UndoStrategy<UfCell<U, M, P>>,
 {
     fn root_info(&mut self, x: usize) -> Option<U::Info> {
         match &self.cells[x] {
@@ -363,6 +421,7 @@ where
         if rx == ry || y != ry {
             return false;
         }
+        H::unite(&mut self.history, rx, ry, &self.cells);
         {
             let ptr = self.cells.as_mut_ptr();
             let (cx, cy) = unsafe { (&mut *ptr.add(rx), &mut *ptr.add(ry)) };
@@ -376,12 +435,13 @@ where
     }
 }
 
-impl<U, F, M, P> UnionFindBase<U, F, M, P>
+impl<U, F, M, P, H> UnionFindBase<U, F, M, P, H>
 where
     U: UnionStrategy,
     F: FindStrategy,
     M: UfMergeSpec,
     P: Group,
+    H: UndoStrategy<UfCell<U, M, P>>,
 {
     pub fn difference(&mut self, x: usize, y: usize) -> Option<P::T> {
         let (rx, potx) = self.find(x);
@@ -411,6 +471,7 @@ where
             swap(&mut rx, &mut ry);
             swap(&mut xinfo, &mut yinfo);
         }
+        H::unite(&mut self.history, rx, ry, &self.cells);
         {
             let ptr = self.cells.as_mut_ptr();
             let (cx, cy) = unsafe { (&mut *ptr.add(rx), &mut *ptr.add(ry)) };
@@ -427,9 +488,23 @@ where
     }
 }
 
-pub type UnionFind = UnionFindBase<UnionBySize, PathCompression, (), ()>;
-pub type MergingUnionFind<T, M> = UnionFindBase<UnionBySize, PathCompression, FnMerger<T, M>, ()>;
-pub type PotentializedUnionFind<P> = UnionFindBase<UnionBySize, PathCompression, (), P>;
+impl<U, M, P, H> UnionFindBase<U, (), M, P, H>
+where
+    U: UnionStrategy,
+    M: UfMergeSpec,
+    P: Monoid,
+    H: UndoStrategy<UfCell<U, M, P>>,
+{
+    pub fn undo(&mut self) {
+        H::undo_unite(&mut self.history, &mut self.cells);
+    }
+}
+
+pub type UnionFind = UnionFindBase<UnionBySize, PathCompression, (), (), ()>;
+pub type MergingUnionFind<T, M> =
+    UnionFindBase<UnionBySize, PathCompression, FnMerger<T, M>, (), ()>;
+pub type PotentializedUnionFind<P> = UnionFindBase<UnionBySize, PathCompression, (), P, ()>;
+pub type UndoableUnionFind = UnionFindBase<UnionBySize, PathCompression, (), (), Undoable>;
 
 #[cfg(test)]
 mod tests {
@@ -490,7 +565,7 @@ mod tests {
 
             macro_rules! test_uf {
                 ($union:ty, $find:ty) => {{
-                    let mut uf = UnionFindBase::<$union, $find, FnMerger<Vec<usize>, _>, ()>::new_with_merger(n, |i| vec![i], |x, y| x.append(y));
+                    let mut uf = UnionFindBase::<$union, $find, FnMerger<Vec<usize>, _>, (), ()>::new_with_merger(n, |i| vec![i], |x, y| x.append(y));
                     for &(x, y) in &edges {
                         uf.unite(x, y);
                     }
@@ -547,7 +622,7 @@ mod tests {
 
             macro_rules! test_uf {
                 ($union:ty, $find:ty) => {{
-                    let mut uf = UnionFindBase::<$union, $find, (), G>::new(n);
+                    let mut uf = UnionFindBase::<$union, $find, (), G, ()>::new(n);
                     for (i, &(u, v)) in g.edges.iter().enumerate().take(k) {
                         uf.unite_with(u, v, p[i]);
                     }
@@ -576,6 +651,57 @@ mod tests {
             test_uf!(UnionBySize, PathCompression);
             test_uf!(UnionByRank, PathCompression);
             test_uf!((), PathCompression);
+            test_uf!(UnionBySize, ());
+            test_uf!(UnionByRank, ());
+            test_uf!((), ());
+        }
+    }
+
+    #[test]
+    fn test_undoable_union_find() {
+        const N: usize = 10;
+        const M: usize = 200;
+        let mut rng = Xorshift::default();
+        for _ in 0..10 {
+            rand!(rng, n: (1..=N), m: (1..=M), g: (MixedTree(m)), p: [(0..n, 0..n); m]);
+
+            macro_rules! test_uf {
+                ($union:ty, $find:ty) => {{
+                    let uf = UnionFind::new(n);
+                    let mut uf2 = UnionFindBase::<$union, $find, (), (), Undoable>::new(n);
+                    fn dfs(
+                        n: usize,
+                        g: &UndirectedSparseGraph,
+                        u: usize,
+                        vis: &mut [bool],
+                        mut uf: UnionFindBase<UnionBySize, PathCompression, (), (), ()>,
+                        uf2: &mut UnionFindBase<$union, $find, (), (), Undoable>,
+                        p: &[(usize, usize)],
+                    ) {
+                        vis[u] = true;
+                        for x in 0..n {
+                            for y in 0..n {
+                                assert_eq!(uf.same(x, y), uf2.same(x, y));
+                            }
+                        }
+                        for a in g.adjacencies(u) {
+                            if !vis[a.to] {
+                                let (x, y) = p[a.id];
+                                let mut uf = uf.clone();
+                                uf.unite(x, y);
+                                let merged = uf2.unite(x, y);
+                                dfs(n, g, a.to, vis, uf, uf2, p);
+                                if merged {
+                                    uf2.undo();
+                                }
+                            }
+                        }
+                    }
+                    for u in 0..m {
+                        dfs(n, &g, u, &mut vec![false; m], uf.clone(), &mut uf2, &p);
+                    }
+                }};
+            }
             test_uf!(UnionBySize, ());
             test_uf!(UnionByRank, ());
             test_uf!((), ());

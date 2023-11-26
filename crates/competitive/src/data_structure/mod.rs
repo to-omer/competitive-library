@@ -64,7 +64,9 @@ pub use self::splay_tree::{SplayMap, SplaySequence};
 #[codesnip::entry("Trie")]
 pub use self::trie::Trie;
 #[codesnip::entry("UnionFind")]
-pub use self::union_find::{MergingUnionFind, PotentializedUnionFind, UnionFind, UnionFindBase};
+pub use self::union_find::{
+    MergingUnionFind, PotentializedUnionFind, UndoableUnionFind, UnionFind, UnionFindBase,
+};
 #[codesnip::entry("WaveletMatrix")]
 pub use self::wavelet_matrix::WaveletMatrix;
 
