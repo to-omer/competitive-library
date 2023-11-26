@@ -47,8 +47,6 @@ pub use self::lazy_segment_tree::LazySegmentTree;
 pub use self::lazy_segment_tree_map::LazySegmentTreeMap;
 #[codesnip::entry("LineSet")]
 pub use self::line_set::LineSet;
-#[codesnip::entry("MergingUnionFind")]
-pub use self::merging_union_find::MergingUnionFind;
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 #[codesnip::entry("RangeMap")]
@@ -66,11 +64,9 @@ pub use self::splay_tree::{SplayMap, SplaySequence};
 #[codesnip::entry("Trie")]
 pub use self::trie::Trie;
 #[codesnip::entry("UnionFind")]
-pub use self::union_find::UnionFind;
+pub use self::union_find::{MergingUnionFind, PotentializedUnionFind, UnionFind, UnionFindBase};
 #[codesnip::entry("WaveletMatrix")]
 pub use self::wavelet_matrix::WaveletMatrix;
-#[codesnip::entry("WeightedUnionFind")]
-pub use self::weighted_union_find::WeightedUnionFind;
 
 #[cfg_attr(
     nightly,
@@ -126,8 +122,6 @@ mod lazy_segment_tree;
 mod lazy_segment_tree_map;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
 mod line_set;
-#[cfg_attr(nightly, codesnip::entry("MergingUnionFind"))]
-mod merging_union_find;
 #[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]
 mod range_ap_add;
 #[cfg_attr(nightly, codesnip::entry("RangeMap"))]
@@ -156,9 +150,7 @@ mod slope_trick;
 mod splay_tree;
 #[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
 mod trie;
-#[cfg_attr(nightly, codesnip::entry("UnionFind"))]
-mod union_find;
+#[cfg_attr(nightly, codesnip::entry("UnionFind", include("algebra")))]
+pub mod union_find;
 #[cfg_attr(nightly, codesnip::entry("WaveletMatrix", include("BitVector")))]
 mod wavelet_matrix;
-#[cfg_attr(nightly, codesnip::entry("WeightedUnionFind", include("algebra")))]
-mod weighted_union_find;

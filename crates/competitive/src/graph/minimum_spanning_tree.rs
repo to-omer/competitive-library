@@ -22,7 +22,7 @@ impl EdgeListGraph {
 
 #[codesnip::entry(
     "minimum_spanning_arborescence",
-    include("algebra", "EdgeListGraph", "MergingUnionFind")
+    include("algebra", "EdgeListGraph", "UnionFind")
 )]
 impl EdgeListGraph {
     /// tarjan
@@ -37,7 +37,7 @@ impl EdgeListGraph {
         F: Fn(usize) -> G::T,
     {
         use std::{cmp::Reverse, collections::BinaryHeap};
-        let mut uf = MergingUnionFind::new(
+        let mut uf = MergingUnionFind::new_with_merger(
             self.vertices_size(),
             |_| (BinaryHeap::new(), G::unit()),
             |x, y| {
@@ -52,7 +52,7 @@ impl EdgeListGraph {
         let mut state = vec![0; self.vertices_size()]; // 0: unprocessed, 1: in process, 2: completed
         state[root] = 2;
         for (id, &(_, to)) in self.edges().enumerate() {
-            uf.find_root_mut(to).data.0.push((Reverse(weight(id)), id));
+            uf.merge_data_mut(to).0.push((Reverse(weight(id)), id));
         }
         let mut paredge = vec![0; self.edges_size()];
         let mut ord = vec![];
@@ -69,14 +69,14 @@ impl EdgeListGraph {
                 path.push(cur);
                 state[cur] = 1;
                 let (w, eid) = {
-                    let (heap, lazy) = &mut uf.find_root_mut(cur).data;
+                    let (heap, lazy) = &mut uf.merge_data_mut(cur);
                     match heap.pop() {
                         Some((Reverse(w), eid)) => (G::operate(&w, lazy), eid),
                         None => return None,
                     }
                 };
                 {
-                    let curw = &mut uf.find_root_mut(cur).data.1;
+                    let curw = &mut uf.merge_data_mut(cur).1;
                     *curw = G::rinv_operate(curw, &w);
                 }
                 acc = G::operate(&acc, &w);
@@ -90,7 +90,7 @@ impl EdgeListGraph {
                     cycle -= 1;
                 }
                 ch.push(eid);
-                if state[uf.find(u)] == 1 {
+                if state[uf.find_root(u)] == 1 {
                     while let Some(t) = path.pop() {
                         state[t] = 2;
                         cycle += 1;
@@ -98,9 +98,9 @@ impl EdgeListGraph {
                             break;
                         }
                     }
-                    state[uf.find(u)] = 1;
+                    state[uf.find_root(u)] = 1;
                 }
-                cur = uf.find(u);
+                cur = uf.find_root(u);
             }
             for u in path.into_iter() {
                 state[u] = 2;
