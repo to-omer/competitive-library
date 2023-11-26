@@ -504,7 +504,7 @@ pub type UnionFind = UnionFindBase<UnionBySize, PathCompression, (), (), ()>;
 pub type MergingUnionFind<T, M> =
     UnionFindBase<UnionBySize, PathCompression, FnMerger<T, M>, (), ()>;
 pub type PotentializedUnionFind<P> = UnionFindBase<UnionBySize, PathCompression, (), P, ()>;
-pub type UndoableUnionFind = UnionFindBase<UnionBySize, PathCompression, (), (), Undoable>;
+pub type UndoableUnionFind = UnionFindBase<UnionBySize, (), (), (), Undoable>;
 
 #[cfg(test)]
 mod tests {
