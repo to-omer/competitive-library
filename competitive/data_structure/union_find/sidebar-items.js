@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["PathCompression","UfCell","UnionByRank","UnionBySize"],"struct":["FnMerger","UnionFindBase"],"trait":["FindStrategy","UfMergeSpec","UnionStrategy"],"type":["MergingUnionFind","PotentializedUnionFind","UnionFind"]};
+window.SIDEBAR_ITEMS = {"enum":["PathCompression","UfCell","Undoable","UnionByRank","UnionBySize"],"struct":["FnMerger","UnionFindBase"],"trait":["FindStrategy","UfMergeSpec","UndoStrategy","UnionStrategy"],"type":["MergingUnionFind","PotentializedUnionFind","UndoableUnionFind","UnionFind"]};
