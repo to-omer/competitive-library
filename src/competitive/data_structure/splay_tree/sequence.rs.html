@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/splay_tree/sequence.rs`."><title>sequence.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (b10cfcd65 2023-11-29)" data-channel="nightly" data-search-js="search-56a624991a76cfad.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/splay_tree/sequence.rs`."><title>sequence.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-c67e44d78ab2db17.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (e9013ac0e 2023-12-05)" data-channel="nightly" data-search-js="search-5a66c239c06b3a66.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -620,12 +620,12 @@
     T::Agg: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     T::Act: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#31">f</a>.debug_struct(<span class="string">&quot;LazyAggElement&quot;</span>)
-            .field(<span class="string">&quot;key&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.key)
-            .field(<span class="string">&quot;agg&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.agg)
-            .field(<span class="string">&quot;lazy&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.lazy)
-            .field(<span class="string">&quot;size&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.size)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+        <a href="#31">f</a>.debug_struct(<span class="string">"LazyAggElement"</span>)
+            .field(<span class="string">"key"</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.key)
+            .field(<span class="string">"agg"</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.agg)
+            .field(<span class="string">"lazy"</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.lazy)
+            .field(<span class="string">"size"</span>, <span class="kw-2">&amp;</span><a class="self" href="#31">self</a>.size)
             .finish()
     }
 }
@@ -638,7 +638,7 @@
 <span class="kw">where
     </span>T: <a href="../../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
 {
-    <span class="kw">pub fn </span>update_lazy(<span class="kw-2">mut </span>node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;, lazy: <span class="kw-2">&amp;</span>T::Act) {
+    <span class="kw">pub fn </span>update_lazy(<span class="kw-2">mut </span>node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt;, lazy: <span class="kw-2">&amp;</span>T::Act) {
         T::act_operate_assign(<span class="kw-2">&amp;mut </span><a href="#49">node</a>.<a href="node.rs.html#208-210">data_mut</a>().lazy, <a href="#49">lazy</a>);
         <a href="#49">node</a>.<a href="node.rs.html#208-210">data_mut</a>().key = T::act_key(<span class="kw-2">&amp;</span><a href="#49">node</a>.<a href="node.rs.html#205-207">data</a>().key, <a href="#49">lazy</a>);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(nxlazy) = T::act_agg(<span class="kw-2">&amp;</span><a href="#49">node</a>.<a href="node.rs.html#205-207">data</a>().agg, <a href="#49">lazy</a>) {
@@ -648,12 +648,12 @@
             <span class="self">Self</span>::recalc(<a href="#49">node</a>);
         }
     }
-    <span class="kw">pub fn </span>reverse(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) {
+    <span class="kw">pub fn </span>reverse(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt;) {
         <a href="#59">node</a>.<a href="node.rs.html#225-230">reverse</a>();
         T::toggle(<span class="kw-2">&amp;mut </span><a href="#59">node</a>.<a href="node.rs.html#208-210">data_mut</a>().agg);
         <a href="#59">node</a>.<a href="node.rs.html#208-210">data_mut</a>().rev ^= <span class="bool-val">true</span>;
     }
-    <span class="kw">fn </span>propagate(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) -&gt; NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt; {
+    <span class="kw">fn </span>propagate(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt;) -&gt; NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt; {
         <span class="kw">let </span>lazy = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a href="#64">node</a>.<a href="node.rs.html#208-210">data_mut</a>().lazy, T::act_unit());
         <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="#64">node</a>.<a href="node.rs.html#211-217">left</a>() {
             <span class="self">Self</span>::update_lazy(<a href="#66">left</a>, <span class="kw-2">&amp;</span><a href="#65">lazy</a>);
@@ -671,7 +671,7 @@
         }
         <a href="#64">node</a>
     }
-    <span class="kw">fn </span>recalc(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) -&gt; NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt; {
+    <span class="kw">fn </span>recalc(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt;) -&gt; NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>agg = T::single_agg(<span class="kw-2">&amp;</span><a href="#82">node</a>.<a href="node.rs.html#205-207">data</a>().key);
         <span class="kw">let </span><span class="kw-2">mut </span>size = <span class="number">1</span>;
         <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="#82">node</a>.<a href="node.rs.html#211-217">left</a>() {
@@ -699,10 +699,10 @@
     <span class="kw">fn </span>has_bottom_up() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <span class="bool-val">true
     </span>}
-    <span class="kw">fn </span>top_down(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) {
+    <span class="kw">fn </span>top_down(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt;) {
         <span class="self">Self</span>::propagate(<a href="#110">node</a>);
     }
-    <span class="kw">fn </span>bottom_up(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>&gt;) {
+    <span class="kw">fn </span>bottom_up(node: NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>&gt;) {
         <span class="self">Self</span>::recalc(<a href="#113">node</a>);
     }
 }
@@ -724,7 +724,7 @@
     </span>T: <a href="../../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
 {
     <span class="kw">type </span>S = LazyAggSplay&lt;T&gt;;
-    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
+    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
         <span class="kw">let </span>lsize = <a href="#135">node</a>.<a href="node.rs.html#171-177">left</a>().map(|l| <a href="#136">l</a>.<a href="node.rs.html#168-170">data</a>().size).unwrap_or_default();
         <span class="kw">let </span>ord = <a class="self" href="#135">self</a>.index.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#136">lsize</a>);
         <span class="kw">if </span><a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(ord, Ordering::Greater) {
@@ -760,7 +760,7 @@
     T: <a href="../../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
 {
     <span class="kw">type </span>S = LazyAggSplay&lt;T&gt;;
-    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
+    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(lagg) = <a href="#171">node</a>.<a href="node.rs.html#171-177">left</a>().map(|l| <span class="kw-2">&amp;</span><a href="#172">l</a>.<a href="node.rs.html#168-170">data</a>().agg) {
             <span class="kw">let </span>nacc = T::agg_operate(<span class="kw-2">&amp;</span><a class="self" href="#171">self</a>.acc, <a href="#172">lagg</a>);
             <span class="kw">if </span>(<span class="self">self</span>.f)(<span class="kw-2">&amp;</span>nacc) {
@@ -803,7 +803,7 @@
     T: <a href="../../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
 {
     <span class="kw">type </span>S = LazyAggSplay&lt;T&gt;;
-    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
+    <span class="kw">fn </span>splay_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: NodeRef&lt;marker::Immut&lt;<span class="lifetime">'_</span>&gt;, <span class="self">Self</span>::S&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(lagg) = <a href="#214">node</a>.<a href="node.rs.html#178-184">right</a>().map(|r| <span class="kw-2">&amp;</span><a href="#215">r</a>.<a href="node.rs.html#168-170">data</a>().agg) {
             <span class="kw">let </span>nacc = T::agg_operate(<a href="#215">lagg</a>, <span class="kw-2">&amp;</span><a class="self" href="#214">self</a>.acc);
             <span class="kw">if </span>(<span class="self">self</span>.f)(<span class="kw-2">&amp;</span>nacc) {
@@ -838,10 +838,10 @@
     T::Act: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     A: Allocator&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt;,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#249">f</a>.debug_struct(<span class="string">&quot;SplayMap&quot;</span>)
-            .field(<span class="string">&quot;root&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#249">self</a>.root)
-            .field(<span class="string">&quot;length&quot;</span>, <span class="kw-2">&amp;</span><a class="self" href="#249">self</a>.length)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+        <a href="#249">f</a>.debug_struct(<span class="string">"SplayMap"</span>)
+            .field(<span class="string">"root"</span>, <span class="kw-2">&amp;</span><a class="self" href="#249">self</a>.root)
+            .field(<span class="string">"length"</span>, <span class="kw-2">&amp;</span><a class="self" href="#249">self</a>.length)
             .finish()
     }
 }
@@ -901,7 +901,7 @@
     </span>T: <a href="../../algebra/monoid_action.rs.html#7-42">MonoidAction</a>,
     A: Allocator&lt;Node&lt;LazyAggElement&lt;T&gt;&gt;&gt;,
 {
-    <span class="kw">fn </span>range&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; NodeRange&lt;<span class="lifetime">&#39;_</span>, LazyAggSplay&lt;T&gt;&gt;
+    <span class="kw">fn </span>range&lt;R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: R) -&gt; NodeRange&lt;<span class="lifetime">'_</span>, LazyAggSplay&lt;T&gt;&gt;
     <span class="kw">where
         </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {

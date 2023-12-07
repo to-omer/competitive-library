@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/euler_tour.rs`."><title>euler_tour.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (b10cfcd65 2023-11-29)" data-channel="nightly" data-search-js="search-56a624991a76cfad.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/euler_tour.rs`."><title>euler_tour.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c67e44d78ab2db17.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (e9013ac0e 2023-12-05)" data-channel="nightly" data-search-js="search-5a66c239c06b3a66.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -229,17 +229,17 @@
 <span class="kw">use </span><a href="../data_structure/disjoint_sparse_table.rs.html#7-12"><span class="kw">crate</span>::data_structure::DisjointSparseTable</a>;
 <span class="kw">use </span><a href="../graph/sparse_graph.rs.html#161"><span class="kw">crate</span>::graph::UndirectedSparseGraph</a>;
 
-<span class="attr">#[codesnip::entry(<span class="string">&quot;EulerTourForEdge&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]
+<span class="attr">#[codesnip::entry(<span class="string">"EulerTourForEdge"</span>, include(<span class="string">"SparseGraph"</span>))]
 #[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.EulerTourForEdge.html">EulerTourForEdge</a>&lt;<span class="lifetime">&#39;a</span>&gt; {
-    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
+</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.EulerTourForEdge.html">EulerTourForEdge</a>&lt;<span class="lifetime">'a</span>&gt; {
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
     <span class="kw">pub </span>eidx: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
     <span class="kw">pub </span>par: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     epos: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;EulerTourForEdge&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; EulerTourForEdge&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>new(root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
+<span class="attr">#[codesnip::entry(<span class="string">"EulerTourForEdge"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; EulerTourForEdge&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">pub fn </span>new(root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
             <a href="#15">graph</a>,
             eidx: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(<span class="number">0</span>, <span class="number">0</span>); graph.vertices_size() - <span class="number">1</span>],
@@ -264,16 +264,16 @@
     }
 }
 
-<span class="attr">#[codesnip::entry(<span class="string">&quot;EulerTourForVertex&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]
+<span class="attr">#[codesnip::entry(<span class="string">"EulerTourForVertex"</span>, include(<span class="string">"SparseGraph"</span>))]
 #[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.EulerTourForVertex.html">EulerTourForVertex</a>&lt;<span class="lifetime">&#39;a</span>&gt; {
-    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
+</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.EulerTourForVertex.html">EulerTourForVertex</a>&lt;<span class="lifetime">'a</span>&gt; {
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
     <span class="kw">pub </span>vidx: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
     vpos: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;EulerTourForVertex&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; EulerTourForVertex&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
+<span class="attr">#[codesnip::entry(<span class="string">"EulerTourForVertex"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; EulerTourForVertex&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">pub fn </span>new(graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#49">graph</a>,
             vidx: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[(<span class="number">0</span>, <span class="number">0</span>); graph.vertices_size()],
@@ -322,17 +322,17 @@
     }
 }
 
-<span class="attr">#[codesnip::entry(<span class="string">&quot;EulerTourForRichVertex&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]
+<span class="attr">#[codesnip::entry(<span class="string">"EulerTourForRichVertex"</span>, include(<span class="string">"SparseGraph"</span>))]
 #[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.EulerTourForRichVertex.html">EulerTourForRichVertex</a>&lt;<span class="lifetime">&#39;a</span>&gt; {
-    graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
+</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.EulerTourForRichVertex.html">EulerTourForRichVertex</a>&lt;<span class="lifetime">'a</span>&gt; {
+    graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>,
     <span class="kw">pub </span>root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     <span class="kw">pub </span>vidx: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
     vtrace: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;EulerTourForRichVertex&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; EulerTourForRichVertex&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>new(root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, graph: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
+<span class="attr">#[codesnip::entry(<span class="string">"EulerTourForRichVertex"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; EulerTourForRichVertex&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">pub fn </span>new(root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
             <a href="#108">graph</a>,
             <a href="#108">root</a>,
@@ -363,49 +363,49 @@
     }
 }
 
-<span class="attr">#[codesnip::entry(<span class="string">&quot;LowestCommonAncestor&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; EulerTourForRichVertex&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">pub fn </span>gen_lca&lt;D: <a href="#169-173">LcaMonoidDispatch</a>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; LowestCommonAncestor&lt;<span class="lifetime">&#39;a</span>, D&gt; {
+<span class="attr">#[codesnip::entry(<span class="string">"LowestCommonAncestor"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; EulerTourForRichVertex&lt;<span class="lifetime">'a</span>&gt; {
+    <span class="kw">pub fn </span>gen_lca&lt;D: <a href="#169-173">LcaMonoidDispatch</a>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>) -&gt; LowestCommonAncestor&lt;<span class="lifetime">'a</span>, D&gt; {
         D::set_depth(<a class="self" href="#141">self</a>.graph.<a href="depth.rs.html#12-16">tree_depth</a>(<a class="self" href="#141">self</a>.root));
         <span class="kw">let </span>dst = DisjointSparseTable::&lt;LcaMonoid&lt;D&gt;&gt;::new(<a class="self" href="#141">self</a>.vtrace.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>());
         <a href="#158-161">LowestCommonAncestor</a> { euler: <a class="self" href="#141">self</a>, <a href="#143">dst</a> }
     }
 }
 <span class="attr">#[codesnip::entry(
-    <span class="string">&quot;LowestCommonAncestor&quot;</span>,
+    <span class="string">"LowestCommonAncestor"</span>,
     include(
-        <span class="string">&quot;algebra&quot;</span>,
-        <span class="string">&quot;DisjointSparseTable&quot;</span>,
-        <span class="string">&quot;EulerTourForRichVertex&quot;</span>,
-        <span class="string">&quot;SparseGraph&quot;</span>,
-        <span class="string">&quot;tree_depth&quot;
+        <span class="string">"algebra"</span>,
+        <span class="string">"DisjointSparseTable"</span>,
+        <span class="string">"EulerTourForRichVertex"</span>,
+        <span class="string">"SparseGraph"</span>,
+        <span class="string">"tree_depth"
     </span>)
 )]
 #[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.LowestCommonAncestor.html">LowestCommonAncestor</a>&lt;<span class="lifetime">&#39;a</span>, D: <a href="#169-173">LcaMonoidDispatch</a>&gt; {
-    euler: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>EulerTourForRichVertex&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.LowestCommonAncestor.html">LowestCommonAncestor</a>&lt;<span class="lifetime">'a</span>, D: <a href="#169-173">LcaMonoidDispatch</a>&gt; {
+    euler: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>EulerTourForRichVertex&lt;<span class="lifetime">'a</span>&gt;,
     dst: DisjointSparseTable&lt;LcaMonoid&lt;D&gt;&gt;,
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;LowestCommonAncestor&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, D: <a href="#169-173">LcaMonoidDispatch</a>&gt; LowestCommonAncestor&lt;<span class="lifetime">&#39;a</span>, D&gt; {
+<span class="attr">#[codesnip::entry(<span class="string">"LowestCommonAncestor"</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, D: <a href="#169-173">LcaMonoidDispatch</a>&gt; LowestCommonAncestor&lt;<span class="lifetime">'a</span>, D&gt; {
     <span class="kw">pub fn </span>lca(<span class="kw-2">&amp;</span><span class="self">self</span>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, v: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <a class="self" href="#164">self</a>.euler.<a href="#130-136">query</a>(<a href="#164">u</a>, <a href="#164">v</a>, |l, r| <a class="self" href="#164">self</a>.dst.<a href="../data_structure/disjoint_sparse_table.rs.html#81-84">fold</a>(<a href="#165">l</a>, <a href="#165">r</a>))
     }
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;LowestCommonAncestor&quot;</span>)]
+<span class="attr">#[codesnip::entry(<span class="string">"LowestCommonAncestor"</span>)]
 </span><span class="kw">pub trait </span><a href="../../../competitive/tree/trait.LcaMonoidDispatch.html">LcaMonoidDispatch</a> {
     <span class="kw">fn </span>vsize() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
     <span class="kw">fn </span>depth(u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
     <span class="kw">fn </span>set_depth(depth: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;);
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;LowestCommonAncestor&quot;</span>)]
+<span class="attr">#[codesnip::entry(<span class="string">"LowestCommonAncestor"</span>)]
 </span><span class="kw">pub enum </span><a href="../../../competitive/tree/enum.LcaMonoidDefaultId.html">LcaMonoidDefaultId</a> {}
-<span class="attr">#[codesnip::entry(<span class="string">&quot;LowestCommonAncestor&quot;</span>)]
+<span class="attr">#[codesnip::entry(<span class="string">"LowestCommonAncestor"</span>)]
 #[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/tree/struct.LcaMonoid.html">LcaMonoid</a>&lt;D: <a href="#169-173">LcaMonoidDispatch</a> = <a href="#175">LcaMonoidDefaultId</a>&gt; {
     _marker: std::marker::PhantomData&lt;<span class="kw">fn</span>() -&gt; D&gt;,
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;LowestCommonAncestor&quot;</span>)]
+<span class="attr">#[codesnip::entry(<span class="string">"LowestCommonAncestor"</span>)]
 </span><span class="kw">pub mod </span><a href="../../../competitive/tree/impl_lcam/index.html">impl_lcam</a> {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <a class="macro" href="https://doc.rust-lang.org/nightly/std/macro.thread_local.html">thread_local! </a>{

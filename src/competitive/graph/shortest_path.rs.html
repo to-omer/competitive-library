@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/shortest_path.rs`."><title>shortest_path.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (b10cfcd65 2023-11-29)" data-channel="nightly" data-search-js="search-56a624991a76cfad.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/shortest_path.rs`."><title>shortest_path.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c67e44d78ab2db17.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (e9013ac0e 2023-12-05)" data-channel="nightly" data-search-js="search-5a66c239c06b3a66.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -414,25 +414,25 @@
     }
 }
 
-<span class="kw">pub trait </span><a href="../../../competitive/graph/trait.ShortestPathExt.html">ShortestPathExt</a>&lt;<span class="lifetime">&#39;g</span>&gt;: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {
-    <span class="kw">fn </span>bfs_distance_ss&lt;<span class="lifetime">&#39;a</span>, S, M&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
+<span class="kw">pub trait </span><a href="../../../competitive/graph/trait.ShortestPathExt.html">ShortestPathExt</a>&lt;<span class="lifetime">'g</span>&gt;: GraphBase&lt;<span class="lifetime">'g</span>&gt; {
+    <span class="kw">fn </span>bfs_distance_ss&lt;<span class="lifetime">'a</span>, S, M&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
         source: <span class="self">Self</span>::VIndex,
-        weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
-    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
+        weight: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>M,
+    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
-        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
+        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">'g</span>, <span class="lifetime">'a</span>, M, S::T&gt;,
         S: <a href="#9-15">ShortestPathSemiRing</a>,
     {
         <a class="self" href="#115">self</a>.<a href="#125-157">bfs_distance_ms</a>::&lt;S, M, <span class="kw">_</span>&gt;(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(<a href="#116">source</a>), <a href="#117">weight</a>)
     }
-    <span class="kw">fn </span>bfs_distance_ms&lt;<span class="lifetime">&#39;a</span>, S, M, I&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
+    <span class="kw">fn </span>bfs_distance_ms&lt;<span class="lifetime">'a</span>, S, M, I&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
         sources: I,
-        weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
-    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
+        weight: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>M,
+    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
-        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
+        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">'g</span>, <span class="lifetime">'a</span>, M, S::T&gt;,
         S: <a href="#9-15">ShortestPathSemiRing</a>,
         I: IntoIterator&lt;Item = <span class="self">Self</span>::VIndex&gt;,
     {
@@ -459,24 +459,24 @@
         }
         <a href="#135">cost</a>
     }
-    <span class="kw">fn </span>dijkstra_ss&lt;<span class="lifetime">&#39;a</span>, S, M&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
+    <span class="kw">fn </span>dijkstra_ss&lt;<span class="lifetime">'a</span>, S, M&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
         source: <span class="self">Self</span>::VIndex,
-        weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
-    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
+        weight: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>M,
+    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
-        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
+        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">'g</span>, <span class="lifetime">'a</span>, M, S::T&gt;,
         S: <a href="#9-15">ShortestPathSemiRing</a>,
     {
         <a class="self" href="#159">self</a>.<a href="#169-199">dijkstra_ms</a>::&lt;S, M, <span class="kw">_</span>&gt;(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(<a href="#160">source</a>), <a href="#161">weight</a>)
     }
-    <span class="kw">fn </span>dijkstra_ms&lt;<span class="lifetime">&#39;a</span>, S, M, I&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
+    <span class="kw">fn </span>dijkstra_ms&lt;<span class="lifetime">'a</span>, S, M, I&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
         sources: I,
-        weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
-    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap
+        weight: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>M,
+    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap
     <span class="kw">where
-        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
+        </span><span class="self">Self</span>: VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">'g</span>, <span class="lifetime">'a</span>, M, S::T&gt;,
         S: <a href="#9-15">ShortestPathSemiRing</a>,
         I: IntoIterator&lt;Item = <span class="self">Self</span>::VIndex&gt;,
     {
@@ -501,26 +501,26 @@
         }
         <a href="#179">cost</a>
     }
-    <span class="kw">fn </span>bellman_ford_ss&lt;<span class="lifetime">&#39;a</span>, S, M&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
+    <span class="kw">fn </span>bellman_ford_ss&lt;<span class="lifetime">'a</span>, S, M&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
         source: <span class="self">Self</span>::VIndex,
-        weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
+        weight: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>M,
         check: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap&gt;
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap&gt;
     <span class="kw">where
-        </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">&#39;g</span>&gt; + VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt; + VertexSize&lt;<span class="lifetime">&#39;g</span>&gt;,
+        </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">'g</span>&gt; + VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">'g</span>, <span class="lifetime">'a</span>, M, S::T&gt; + VertexSize&lt;<span class="lifetime">'g</span>&gt;,
         S: <a href="#9-15">ShortestPathSemiRing</a>,
     {
         <a class="self" href="#201">self</a>.<a href="#212-253">bellman_ford_ms</a>::&lt;S, M, <span class="kw">_</span>&gt;(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(<a href="#202">source</a>), <a href="#203">weight</a>, <a href="#204">check</a>)
     }
-    <span class="kw">fn </span>bellman_ford_ms&lt;<span class="lifetime">&#39;a</span>, S, M, I&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
+    <span class="kw">fn </span>bellman_ford_ms&lt;<span class="lifetime">'a</span>, S, M, I&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
         sources: I,
-        weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
+        weight: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>M,
         check: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap&gt;
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap&gt;
     <span class="kw">where
-        </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">&#39;g</span>&gt; + VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt; + VertexSize&lt;<span class="lifetime">&#39;g</span>&gt;,
+        </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">'g</span>&gt; + VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt; + AdjacencyView&lt;<span class="lifetime">'g</span>, <span class="lifetime">'a</span>, M, S::T&gt; + VertexSize&lt;<span class="lifetime">'g</span>&gt;,
         S: <a href="#9-15">ShortestPathSemiRing</a>,
         I: IntoIterator&lt;Item = <span class="self">Self</span>::VIndex&gt;,
     {
@@ -555,16 +555,16 @@
         }
         <span class="prelude-val">Some</span>(<a href="#223">cost</a>)
     }
-    <span class="kw">fn </span>warshall_floyd_ap&lt;<span class="lifetime">&#39;a</span>, S, M&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;g </span><span class="self">self</span>,
-        weight: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M,
-    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap&gt;&gt;::Vmap
+    <span class="kw">fn </span>warshall_floyd_ap&lt;<span class="lifetime">'a</span>, S, M&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
+        weight: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>M,
+    ) -&gt; &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap&gt;&gt;::Vmap
     <span class="kw">where
-        </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">&#39;g</span>&gt;
-            + VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;
-            + VertexMap&lt;<span class="lifetime">&#39;g</span>, &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap&gt;
-            + AdjacencyView&lt;<span class="lifetime">&#39;g</span>, <span class="lifetime">&#39;a</span>, M, S::T&gt;,
-        &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">&#39;g</span>, S::T&gt;&gt;::Vmap: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+        </span><span class="self">Self</span>: Vertices&lt;<span class="lifetime">'g</span>&gt;
+            + VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;
+            + VertexMap&lt;<span class="lifetime">'g</span>, &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap&gt;
+            + AdjacencyView&lt;<span class="lifetime">'g</span>, <span class="lifetime">'a</span>, M, S::T&gt;,
+        &lt;<span class="self">Self </span><span class="kw">as </span>VertexMap&lt;<span class="lifetime">'g</span>, S::T&gt;&gt;::Vmap: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
         S: <a href="#9-15">ShortestPathSemiRing</a>,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>cost = <a class="self" href="#255">self</a>.<a href="graph_base.rs.html#210-212">construct_vmap</a>(|| <a class="self" href="#255">self</a>.<a href="graph_base.rs.html#210-212">construct_vmap</a>(S::inf));
@@ -589,5 +589,5 @@
         <a href="#266">cost</a>
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;g</span>, G&gt; ShortestPathExt&lt;<span class="lifetime">&#39;g</span>&gt; <span class="kw">for </span>G <span class="kw">where </span>G: GraphBase&lt;<span class="lifetime">&#39;g</span>&gt; {}
+<span class="kw">impl</span>&lt;<span class="lifetime">'g</span>, G&gt; ShortestPathExt&lt;<span class="lifetime">'g</span>&gt; <span class="kw">for </span>G <span class="kw">where </span>G: GraphBase&lt;<span class="lifetime">'g</span>&gt; {}
 </code></pre></div></section></main></body></html>

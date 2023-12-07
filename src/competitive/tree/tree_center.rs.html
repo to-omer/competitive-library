@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/tree_center.rs`."><title>tree_center.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-9ee3a5e31a2afa3e.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (b10cfcd65 2023-11-29)" data-channel="nightly" data-search-js="search-56a624991a76cfad.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/tree_center.rs`."><title>tree_center.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c67e44d78ab2db17.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.76.0-nightly (e9013ac0e 2023-12-05)" data-channel="nightly" data-search-js="search-5a66c239c06b3a66.js" data-settings-js="settings-fe03fdc259827cd2.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-77dede896d6ac08e.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -143,13 +143,13 @@
 <a href="#127" id="127">127</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><a href="../graph/sparse_graph.rs.html#161"><span class="kw">crate</span>::graph::UndirectedSparseGraph</a>;
 
-<span class="attr">#[codesnip::entry(<span class="string">&quot;tree_center&quot;</span>)]
+<span class="attr">#[codesnip::entry(<span class="string">"tree_center"</span>)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 </span><span class="kw">pub enum </span><a href="../../../competitive/tree/enum.TreeCenter.html">TreeCenter</a> {
     One(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),
     Two(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>),
 }
-<span class="attr">#[codesnip::entry(<span class="string">&quot;tree_center&quot;</span>, include(<span class="string">&quot;SparseGraph&quot;</span>))]
+<span class="attr">#[codesnip::entry(<span class="string">"tree_center"</span>, include(<span class="string">"SparseGraph"</span>))]
 </span><span class="kw">impl </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a> {
     <span class="doccomment">/// tree center
     </span><span class="kw">pub fn </span>tree_center(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="#5-8">TreeCenter</a> {
@@ -166,7 +166,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>cnt = <a href="#15">deq</a>.len();
         <span class="kw">if </span>cnt &lt; n {
             <a href="#22">k</a> = <a href="#15">deq</a>.len();
-            <span class="lifetime">&#39;outer</span>: <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = deq.pop_front() {
+            <span class="lifetime">'outer</span>: <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = deq.pop_front() {
                 k -= <span class="number">1</span>;
                 <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.adjacencies(u) {
                     deg[a.to] -= <span class="number">1</span>;
@@ -174,7 +174,7 @@
                         deq.push_back(a.to);
                         cnt += <span class="number">1</span>;
                         <span class="kw">if </span>cnt == n {
-                            <span class="kw">break </span><span class="lifetime">&#39;outer</span>;
+                            <span class="kw">break </span><span class="lifetime">'outer</span>;
                         }
                     }
                 }
@@ -218,7 +218,7 @@
                     TreeCenter::One(md[<span class="number">0</span>].<span class="number">1</span>)
                 }
             } <span class="kw">else </span>{
-                <span class="macro">panic!</span>(<span class="string">&quot;vertex size should be larger than one.&quot;</span>);
+                <span class="macro">panic!</span>(<span class="string">"vertex size should be larger than one."</span>);
             }
         }
     }
