@@ -73,6 +73,7 @@ mod main_macros {
                     $dol crate::scan!(__scanner, $dol($dol t)*)
                 }
             }
+            #[allow(unused_macros)]
             /// Scan a line, and previous line will be truncated in the next call.
             macro_rules! svln {
                 ($dol($dol t:tt)*) => {{
