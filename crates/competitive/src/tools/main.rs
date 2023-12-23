@@ -73,6 +73,15 @@ mod main_macros {
                     $dol crate::scan!(__scanner, $dol($dol t)*)
                 }
             }
+            /// Scan a line, and previous line will be truncated in the next call.
+            macro_rules! svln {
+                ($dol($dol t:tt)*) => {{
+                    let __in_buf = read_stdin_line();
+                    #[allow(unused_mut,unused_variables)]
+                    let mut __scanner = Scanner::new(&__in_buf);
+                    $dol crate::scan_value!(__scanner, $dol($dol t)*)
+                }}
+            }
         };
         () => { $crate::prepare!(@output ($)); $crate::prepare!(@normal ($)) };
         (?) => { $crate::prepare!(@output ($)); $crate::prepare!(@interactive ($)) };
