@@ -429,7 +429,7 @@ where
         }
         uptree_t[n..]
             .iter()
-            .map(|u| u.data.get(0).cloned().unwrap_or_else(Zero::zero))
+            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
             .collect()
     }
     pub fn product_all<I>(iter: I, deg: usize) -> Self

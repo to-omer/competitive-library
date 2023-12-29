@@ -25,11 +25,16 @@ pub trait SplaySeeker {
 pub struct SeekLeft<S> {
     _marker: PhantomData<fn() -> S>,
 }
-impl<S> SeekLeft<S> {
-    pub fn new() -> Self {
+impl<S> Default for SeekLeft<S> {
+    fn default() -> Self {
         Self {
             _marker: PhantomData,
         }
+    }
+}
+impl<S> SeekLeft<S> {
+    pub fn new() -> Self {
+        Self::default()
     }
 }
 impl<S> SplaySeeker for SeekLeft<S>
@@ -45,11 +50,16 @@ where
 pub struct SeekRight<S> {
     _marker: PhantomData<fn() -> S>,
 }
-impl<S> SeekRight<S> {
-    pub fn new() -> Self {
+impl<S> Default for SeekRight<S> {
+    fn default() -> Self {
         Self {
             _marker: PhantomData,
         }
+    }
+}
+impl<S> SeekRight<S> {
+    pub fn new() -> Self {
+        Self::default()
     }
 }
 impl<S> SplaySeeker for SeekRight<S>

@@ -58,7 +58,7 @@ pub use self::monoid_action_impls::*;
         "zero_one"
     )
 )]
-pub mod monoid_action_impls {
+mod monoid_action_impls {
     use super::*;
     use std::{
         cmp::Ordering,

@@ -149,7 +149,7 @@ mod slope_trick;
     nightly,
     codesnip::entry("SplayTree", include("Allocator", "MonoidAction"))
 )]
-mod splay_tree;
+pub mod splay_tree;
 #[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
 mod trie;
 #[cfg_attr(

@@ -4,7 +4,7 @@ use crate::num::{Bounded, One, Zero};
 
 #[codesnip::entry("algebra")]
 pub use self::magma::*;
-pub use self::monoid_action::{monoid_action_impls::*, MonoidAction};
+pub use self::monoid_action::*;
 pub use self::operations::*;
 #[codesnip::entry("ring")]
 pub use self::ring::*;

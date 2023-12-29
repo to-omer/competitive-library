@@ -111,6 +111,37 @@ impl<T> SliceBisectExt<T> for [T] {
     }
 }
 
+pub fn parallel_binary_search<T, F, G>(mut f: F, q: usize, ok: T, err: T) -> Vec<T>
+where
+    T: Bisect,
+    F: FnMut(&[Option<T>]) -> G,
+    G: Fn(usize) -> bool,
+{
+    let mut ok = vec![ok; q];
+    let mut err = vec![err; q];
+    loop {
+        let m: Vec<_> = ok
+            .iter()
+            .zip(&err)
+            .map(|(ok, err)| ok.middle_point(err))
+            .collect();
+        if m.iter().all(|m| m.is_none()) {
+            break;
+        }
+        let g = f(&m);
+        for (i, m) in m.into_iter().enumerate() {
+            if let Some(m) = m {
+                if g(i) {
+                    ok[i] = m;
+                } else {
+                    err[i] = m;
+                }
+            }
+        }
+    }
+    ok
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -184,35 +215,4 @@ mod tests {
         assert_eq!(V.rfind_bisect(|&x| x <= 5), Some(&4));
         assert_eq!(V.rfind_bisect(|&x| x <= 10), Some(&8));
     }
-}
-
-pub fn parallel_binary_search<T, F, G>(mut f: F, q: usize, ok: T, err: T) -> Vec<T>
-where
-    T: Bisect,
-    F: FnMut(&[Option<T>]) -> G,
-    G: Fn(usize) -> bool,
-{
-    let mut ok = vec![ok; q];
-    let mut err = vec![err; q];
-    loop {
-        let m: Vec<_> = ok
-            .iter()
-            .zip(&err)
-            .map(|(ok, err)| ok.middle_point(err))
-            .collect();
-        if m.iter().all(|m| m.is_none()) {
-            break;
-        }
-        let g = f(&m);
-        for (i, m) in m.into_iter().enumerate() {
-            if let Some(m) = m {
-                if g(i) {
-                    ok[i] = m;
-                } else {
-                    err[i] = m;
-                }
-            }
-        }
-    }
-    ok
 }
