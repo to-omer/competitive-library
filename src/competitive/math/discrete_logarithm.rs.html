@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/discrete_logarithm.rs`."><title>discrete_logarithm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-452d19225583af2a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (3cdd004e5 2023-12-29)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6902632119e002ca.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/discrete_logarithm.rs`."><title>discrete_logarithm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0b2e2def73e61cbe.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,8 +14,9 @@
     });
   });
 </script>
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../competitive/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -699,7 +700,7 @@
 <span class="kw">impl </span><a href="#53-57">IndexCalculus</a> {
     <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            primes: PrimeList::new(<span class="number">2</span>),
+            primes: <a href="prime_list.rs.html#19-23">PrimeList::new</a>(<span class="number">2</span>),
             br_primes: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
             ic: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
         }
@@ -716,7 +717,7 @@
         <span class="kw">let </span>br_primes = <span class="kw-2">&amp;</span><a class="self" href="#67">self</a>.br_primes[..<a href="#71">primes</a>.len()];
         <a class="self" href="#67">self</a>.ic
             .entry(<a href="#67">p</a>)
-            .or_insert_with(|| IndexCalculusWithPrimitiveRoot::new(<a href="#67">p</a>, <a href="#76">br_primes</a>))
+            .or_insert_with(|| <a href="#258-270">IndexCalculusWithPrimitiveRoot::new</a>(<a href="#67">p</a>, <a href="#76">br_primes</a>))
             .<a href="#313-334">discrete_logarithm</a>(<a href="#67">a</a>, <a href="#67">b</a>, <a href="#76">br_primes</a>)
     }
 }
@@ -833,7 +834,7 @@
     <span class="kw">let </span><span class="kw-2">mut </span>mat: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;&gt; = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
     <span class="kw">let </span><span class="kw-2">mut </span>rows: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;&gt; = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
 
-    <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+    <span class="kw">let </span><span class="kw-2">mut </span>rng = <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Xorshift::default</a>();
     <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#183">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
 
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..pc {
@@ -899,7 +900,7 @@
         <span class="kw">let </span>ord = <a href="#258">p</a> - <span class="number">1</span>;
         <span class="kw">let </span>g = <a href="primitive_root.rs.html#3-13">primitive_root</a>(<a href="#258">p</a>);
         <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#258">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
-        <span class="kw">let </span>prec = QdrtPowPrec::new(<a href="#260">g</a>, <a href="#259">ord</a>, <span class="kw-2">&amp;</span><a href="#261">br</a>);
+        <span class="kw">let </span>prec = <a href="#122-159">QdrtPowPrec::new</a>(<a href="#260">g</a>, <a href="#259">ord</a>, <span class="kw-2">&amp;</span><a href="#261">br</a>);
         <span class="kw">let </span>coeff = <a href="#182-247">index_calculus_for_primitive_root</a>(<a href="#258">p</a>, <a href="#259">ord</a>, <a href="#258">br_primes</a>, <span class="kw-2">&amp;</span><a href="#262">prec</a>);
         <span class="self">Self </span>{
             <a href="#258">p</a>,
@@ -920,8 +921,8 @@
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::new();
-        <span class="kw">let </span><span class="kw-2">mut </span>row = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0u64</span>; br_primes.len()];
+        <span class="kw">let </span><span class="kw-2">mut </span>rng = <a href="../tools/xorshift.rs.html#17-19">Xorshift::new</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>row = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0u64</span>; <a href="#271">br_primes</a>.len()];
         <span class="kw">let </span><span class="kw-2">mut </span>kk = <a href="#283">rng</a>.<a href="../tools/xorshift.rs.html#28-30">rand</a>(<a href="#273">ord</a> - <span class="number">1</span>) + <span class="number">1</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>gkk = <a class="self" href="#271">self</a>.prec.<a href="#160-179">pow</a>(<a href="#285">kk</a>, <span class="kw-2">&amp;</span><a href="#274">br</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="#285">kk</a>;
@@ -968,8 +969,8 @@
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
 
-        <span class="kw">let </span>x = <span class="self">self</span>.index_calculus(a, br_primes)<span class="question-mark">?</span>;
-        <span class="kw">let </span>y = <span class="self">self</span>.index_calculus(b, br_primes)<span class="question-mark">?</span>;
+        <span class="kw">let </span>x = <a class="self" href="#314">self</a>.<a href="#271-312">index_calculus</a>(<a href="#322">a</a>, <a href="#317">br_primes</a>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>y = <a class="self" href="#314">self</a>.<a href="#271-312">index_calculus</a>(<a href="#323">b</a>, <a href="#317">br_primes</a>)<span class="question-mark">?</span>;
         <a href="#20-27">solve_linear_congruence</a>(<a href="#331">x</a>, <a href="#332">y</a>, <a href="#320">ord</a>)
     }
 }
@@ -1045,9 +1046,9 @@
             <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="#379">b</a> } <span class="kw">else </span>{ <a href="#382">n</a> - <a href="#379">b</a> };
             <span class="kw">let </span>g = <span class="number">5</span>;
             <span class="kw">let </span>ord = <a href="#382">n</a> / <span class="number">4</span>;
-            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(g, aa, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
-            <span class="kw">let </span>y = pohlig_hellman_prime_power_order(g, bb, n, p, e - <span class="number">2</span>)<span class="question-mark">?</span>;
-            <span class="kw">let </span>t = solve_linear_congruence(x, y, ord)<span class="question-mark">?</span>;
+            <span class="kw">let </span>x = <a href="#347-376">pohlig_hellman_prime_power_order</a>(<a href="#406">g</a>, <a href="#404">aa</a>, <a href="#382">n</a>, <a href="#379">p</a>, <a href="#379">e</a> - <span class="number">2</span>)<span class="question-mark">?</span>;
+            <span class="kw">let </span>y = <a href="#347-376">pohlig_hellman_prime_power_order</a>(<a href="#406">g</a>, <a href="#405">bb</a>, <a href="#382">n</a>, <a href="#379">p</a>, <a href="#379">e</a> - <span class="number">2</span>)<span class="question-mark">?</span>;
+            <span class="kw">let </span>t = <a href="#20-27">solve_linear_congruence</a>(<a href="#408">x</a>, <a href="#409">y</a>, <a href="#407">ord</a>)<span class="question-mark">?</span>;
             <span class="kw">match </span>(<a href="#379">a</a> % <span class="number">4 </span>== <span class="number">1</span>, <a href="#379">b</a> % <span class="number">4 </span>== <span class="number">1</span>) {
                 (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>(<a href="#410">t</a>),
                 (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="kw">if </span><a href="#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>=&gt; <span class="prelude-val">Some</span>((<a href="#410">t</a>.<span class="number">0</span>, <a href="gcd.rs.html#34-36">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),

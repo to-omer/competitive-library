@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/splay_tree/node.rs`."><title>node.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-452d19225583af2a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (3cdd004e5 2023-12-29)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-6902632119e002ca.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/splay_tree/node.rs`."><title>node.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0b2e2def73e61cbe.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,8 +14,9 @@
     });
   });
 </script>
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../../competitive/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -798,7 +799,7 @@
 }
 <span class="kw">impl</span>&lt;S&gt; SeekLeft&lt;S&gt; {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::default()
+        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html"><span class="self">Self</span>::default</a>()
     }
 }
 <span class="kw">impl</span>&lt;S&gt; <a href="#20-23">SplaySeeker</a> <span class="kw">for </span>SeekLeft&lt;S&gt;
@@ -823,7 +824,7 @@
 }
 <span class="kw">impl</span>&lt;S&gt; SeekRight&lt;S&gt; {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::default()
+        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html"><span class="self">Self</span>::default</a>()
     }
 }
 <span class="kw">impl</span>&lt;S&gt; <a href="#20-23">SplaySeeker</a> <span class="kw">for </span>SeekRight&lt;S&gt;
@@ -903,7 +904,7 @@
         }
     }
     <span class="kw">fn </span>reborrow(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; NodeRef&lt;marker::Immut&lt;<span class="lifetime">'_</span>&gt;, S&gt; {
-        <span class="kw">unsafe </span>{ NodeRef::new_unchecked(<a class="self" href="#141">self</a>.node) }
+        <span class="kw">unsafe </span>{ <a href="#135-140">NodeRef::new_unchecked</a>(<a class="self" href="#141">self</a>.node) }
     }
     <span class="kw">fn </span>as_ptr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">*mut </span>Node&lt;S::T&gt; {
         <a class="self" href="#144">self</a>.node.as_ptr()
@@ -915,22 +916,22 @@
     </span>S: <a href="#11-18">SplaySpec</a>,
 {
     <span class="kw">pub fn </span>new(node: NonNull&lt;Node&lt;S::T&gt;&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">unsafe </span>{ NodeRef::new_unchecked(<a href="#153">node</a>) }
+        <span class="kw">unsafe </span>{ <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#153">node</a>) }
     }
     <span class="kw">pub unsafe fn </span>from_data&lt;A&gt;(data: S::T, allocator: <span class="kw-2">&amp;mut </span>A) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>A: Allocator&lt;Node&lt;S::T&gt;&gt;,
     {
-        <span class="self">Self</span>::new(<a href="#156">allocator</a>.<a href="../allocator.rs.html#8">allocate</a>(Node::new(<a href="#156">data</a>)))
+        <a href="#153-155"><span class="self">Self</span>::new</a>(<a href="#156">allocator</a>.<a href="../allocator.rs.html#8">allocate</a>(<a href="#82-88">Node::new</a>(<a href="#156">data</a>)))
     }
     <span class="kw">pub fn </span>borrow_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; NodeRef&lt;marker::Mut&lt;<span class="lifetime">'_</span>&gt;, S&gt; {
-        <span class="kw">unsafe </span>{ NodeRef::new_unchecked(<a class="self" href="#162">self</a>.node) }
+        <span class="kw">unsafe </span>{ <a href="#135-140">NodeRef::new_unchecked</a>(<a class="self" href="#162">self</a>.node) }
     }
     <span class="kw">pub fn </span>borrow_datamut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, S&gt; {
-        <span class="kw">unsafe </span>{ NodeRef::new_unchecked(<a class="self" href="#165">self</a>.node) }
+        <span class="kw">unsafe </span>{ <a href="#135-140">NodeRef::new_unchecked</a>(<a class="self" href="#165">self</a>.node) }
     }
     <span class="kw">pub fn </span>into_dying(<span class="self">self</span>) -&gt; NodeRef&lt;<a href="#743">marker::Dying</a>, S&gt; {
-        <span class="kw">unsafe </span>{ NodeRef::new_unchecked(<a class="self" href="#168">self</a>.node) }
+        <span class="kw">unsafe </span>{ <a href="#135-140">NodeRef::new_unchecked</a>(<a class="self" href="#168">self</a>.node) }
     }
 }
 
@@ -946,14 +947,14 @@
         <span class="kw">unsafe </span>{
             (<span class="kw-2">*</span><a class="self" href="#181">self</a>.<a href="#144-146">as_ptr</a>())
                 .left
-                .map(|node| NodeRef::new_unchecked(<a href="#185">node</a>))
+                .map(|node| <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#185">node</a>))
         }
     }
     <span class="kw">pub fn </span>right(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">unsafe </span>{
             (<span class="kw-2">*</span><a class="self" href="#188">self</a>.<a href="#144-146">as_ptr</a>())
                 .right
-                .map(|node| NodeRef::new_unchecked(<a href="#192">node</a>))
+                .map(|node| <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#192">node</a>))
         }
     }
     <span class="kw">pub fn </span>traverse&lt;F&gt;(<span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>F)
@@ -986,14 +987,14 @@
         <span class="kw">unsafe </span>{
             (<span class="kw-2">*</span><a class="self" href="#221">self</a>.<a href="#144-146">as_ptr</a>())
                 .left
-                .map(|node| NodeRef::new_unchecked(<a href="#225">node</a>))
+                .map(|node| <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#225">node</a>))
         }
     }
     <span class="kw">pub fn </span>right(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">unsafe </span>{
             (<span class="kw-2">*</span><a class="self" href="#228">self</a>.<a href="#144-146">as_ptr</a>())
                 .right
-                .map(|node| NodeRef::new_unchecked(<a href="#232">node</a>))
+                .map(|node| <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#232">node</a>))
         }
     }
     <span class="kw">pub fn </span>reverse(<span class="kw-2">&amp;</span><span class="self">self</span>) {
@@ -1016,10 +1017,10 @@
         <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span>(<span class="kw-2">*</span><a class="self" href="#251">self</a>.<a href="#144-146">as_ptr</a>()).data }
     }
     <span class="kw">pub fn </span>take_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
-        <span class="prelude-val">Some</span>(NodeRef::new(<span class="kw">unsafe </span>{ (<span class="kw-2">*</span><span class="self">self</span>.as_ptr()).left.take()<span class="question-mark">? </span>}))
+        <span class="prelude-val">Some</span>(<a href="#153-155">NodeRef::new</a>(<span class="kw">unsafe </span>{ (<span class="kw-2">*</span><a class="self" href="#254">self</a>.<a href="#144-146">as_ptr</a>()).left.take()<span class="question-mark">? </span>}))
     }
     <span class="kw">pub fn </span>take_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
-        <span class="prelude-val">Some</span>(NodeRef::new(<span class="kw">unsafe </span>{ (<span class="kw-2">*</span><span class="self">self</span>.as_ptr()).right.take()<span class="question-mark">? </span>}))
+        <span class="prelude-val">Some</span>(<a href="#153-155">NodeRef::new</a>(<span class="kw">unsafe </span>{ (<span class="kw-2">*</span><a class="self" href="#257">self</a>.<a href="#144-146">as_ptr</a>()).right.take()<span class="question-mark">? </span>}))
     }
     <span class="kw">pub fn </span>set_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt;) {
         <span class="kw">unsafe </span>{ (<span class="kw-2">*</span><a class="self" href="#260">self</a>.<a href="#144-146">as_ptr</a>()).left = <a href="#260">node</a>.map(|node| <a href="#261">node</a>.node) }
@@ -1080,17 +1081,17 @@
         }
 
         <span class="kw">let </span>root_ord = <span class="kw">loop </span>{
-            S::top_down(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
+            <a href="#16">S::top_down</a>(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
             <span class="kw">match </span><a href="#294">seeker</a>.<a href="#22">splay_seek</a>(<a href="#298">x</a>.<a href="#141-143">reborrow</a>()) {
                 Ordering::Less =&gt; {
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>y) = <a href="#298">x</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>() {
-                        S::top_down(<a href="#322">y</a>.<a href="#165-167">borrow_datamut</a>());
+                        <a href="#16">S::top_down</a>(<a href="#322">y</a>.<a href="#165-167">borrow_datamut</a>());
                         <span class="kw">match </span><a href="#294">seeker</a>.<a href="#22">splay_seek</a>(<a href="#322">y</a>.<a href="#141-143">reborrow</a>()) {
                             Ordering::Less =&gt; {
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>z) = <a href="#322">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>() {
-                                    S::top_down(<a href="#326">z</a>.<a href="#165-167">borrow_datamut</a>());
+                                    <a href="#16">S::top_down</a>(<a href="#326">z</a>.<a href="#165-167">borrow_datamut</a>());
                                     <a href="#298">x</a>.<a href="#162-164">borrow_mut</a>().<a href="#260-262">set_left</a>(<a href="#322">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>());
-                                    S::bottom_up(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
+                                    <a href="#17">S::bottom_up</a>(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
                                     <a href="#322">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#263-265">set_right</a>(<span class="prelude-val">Some</span>(<a href="#298">x</a>));
                                     <a class="macro" href="#306-316">add!</a>(@right <span class="prelude-val">Some</span>(y));
                                     <a href="#298">x</a> = <a href="#326">z</a>;
@@ -1107,7 +1108,7 @@
                             }
                             Ordering::Greater =&gt; {
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>z) = <a href="#322">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>() {
-                                    S::top_down(<a href="#345">z</a>.<a href="#165-167">borrow_datamut</a>());
+                                    <a href="#16">S::top_down</a>(<a href="#345">z</a>.<a href="#165-167">borrow_datamut</a>());
                                     <a class="macro" href="#306-316">add!</a>(@right <span class="prelude-val">Some</span>(x));
                                     <a class="macro" href="#306-316">add!</a>(@left <span class="prelude-val">Some</span>(y));
                                     <a href="#298">x</a> = <a href="#345">z</a>;
@@ -1125,11 +1126,11 @@
                 Ordering::Equal =&gt; <span class="kw">break </span>Ordering::Equal,
                 Ordering::Greater =&gt; {
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>y) = <a href="#298">x</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>() {
-                        S::top_down(<a href="#363">y</a>.<a href="#165-167">borrow_datamut</a>());
+                        <a href="#16">S::top_down</a>(<a href="#363">y</a>.<a href="#165-167">borrow_datamut</a>());
                         <span class="kw">match </span><a href="#294">seeker</a>.<a href="#22">splay_seek</a>(<a href="#363">y</a>.<a href="#141-143">reborrow</a>()) {
                             Ordering::Less =&gt; {
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>z) = <a href="#363">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>() {
-                                    S::top_down(<a href="#367">z</a>.<a href="#165-167">borrow_datamut</a>());
+                                    <a href="#16">S::top_down</a>(<a href="#367">z</a>.<a href="#165-167">borrow_datamut</a>());
                                     <a class="macro" href="#306-316">add!</a>(@left <span class="prelude-val">Some</span>(x));
                                     <a class="macro" href="#306-316">add!</a>(@right <span class="prelude-val">Some</span>(y));
                                     <a href="#298">x</a> = <a href="#367">z</a>;
@@ -1146,9 +1147,9 @@
                             }
                             Ordering::Greater =&gt; {
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>z) = <a href="#363">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>() {
-                                    S::top_down(<a href="#384">z</a>.<a href="#165-167">borrow_datamut</a>());
+                                    <a href="#16">S::top_down</a>(<a href="#384">z</a>.<a href="#165-167">borrow_datamut</a>());
                                     <a href="#298">x</a>.<a href="#162-164">borrow_mut</a>().<a href="#263-265">set_right</a>(<a href="#363">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>());
-                                    S::bottom_up(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
+                                    <a href="#17">S::bottom_up</a>(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
                                     <a href="#363">y</a>.<a href="#162-164">borrow_mut</a>().<a href="#260-262">set_left</a>(<span class="prelude-val">Some</span>(<a href="#298">x</a>));
                                     <a class="macro" href="#306-316">add!</a>(@left <span class="prelude-val">Some</span>(y));
                                     <a href="#298">x</a> = <a href="#384">z</a>;
@@ -1169,56 +1170,56 @@
         <span class="kw-2">*</span><a href="#303">right_entry</a> = <a href="#298">x</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>().map(|node| <a href="#405">node</a>.node);
         <span class="kw">unsafe </span>{
             <a href="#298">x</a>.<a href="#162-164">borrow_mut</a>()
-                .<a href="#260-262">set_left</a>(<a href="#300">left_subtree</a>.map(|node| NodeRef::new_unchecked(<a href="#408">node</a>)));
+                .<a href="#260-262">set_left</a>(<a href="#300">left_subtree</a>.map(|node| <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#408">node</a>)));
             <a href="#298">x</a>.<a href="#162-164">borrow_mut</a>()
-                .<a href="#263-265">set_right</a>(<a href="#301">right_subtree</a>.map(|node| NodeRef::new_unchecked(<a href="#410">node</a>)));
+                .<a href="#263-265">set_right</a>(<a href="#301">right_subtree</a>.map(|node| <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#410">node</a>)));
             <span class="kw">if </span>S::has_bottom_up() {
                 <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
                     S::bottom_up(NodeRef::new_unchecked(node));
                 }
             }
         }
-        S::bottom_up(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
+        <a href="#17">S::bottom_up</a>(<a href="#298">x</a>.<a href="#165-167">borrow_datamut</a>());
         (<a href="#318">root_ord</a>, <a href="#298">x</a>)
     }
     <span class="kw">pub fn </span>insert_left(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>node: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a class="self" href="#420">self</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>() {
             <a href="#420">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#260-262">set_left</a>(<span class="prelude-val">Some</span>(<a href="#421">left</a>));
-            S::bottom_up(<a class="self" href="#420">self</a>.<a href="#165-167">borrow_datamut</a>());
+            <a href="#17">S::bottom_up</a>(<a class="self" href="#420">self</a>.<a href="#165-167">borrow_datamut</a>());
         };
         <a href="#420">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#263-265">set_right</a>(<span class="prelude-val">Some</span>(<a class="self" href="#420">self</a>));
-        S::bottom_up(<a href="#420">node</a>.<a href="#165-167">borrow_datamut</a>());
+        <a href="#17">S::bottom_up</a>(<a href="#420">node</a>.<a href="#165-167">borrow_datamut</a>());
         <a href="#420">node</a>
     }
     <span class="kw">pub fn </span>insert_right(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>node: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a class="self" href="#429">self</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>() {
             <a href="#429">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#263-265">set_right</a>(<span class="prelude-val">Some</span>(<a href="#430">right</a>));
-            S::bottom_up(<a class="self" href="#429">self</a>.<a href="#165-167">borrow_datamut</a>());
+            <a href="#17">S::bottom_up</a>(<a class="self" href="#429">self</a>.<a href="#165-167">borrow_datamut</a>());
         }
         <a href="#429">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#260-262">set_left</a>(<span class="prelude-val">Some</span>(<a class="self" href="#429">self</a>));
-        S::bottom_up(<a href="#429">node</a>.<a href="#165-167">borrow_datamut</a>());
+        <a href="#17">S::bottom_up</a>(<a href="#429">node</a>.<a href="#165-167">borrow_datamut</a>());
         <a href="#429">node</a>
     }
     <span class="kw">pub fn </span>insert_first(<span class="self">self</span>, <span class="kw-2">mut </span>node: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <a href="#438">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#263-265">set_right</a>(<span class="prelude-val">Some</span>(<a class="self" href="#438">self</a>));
-        S::bottom_up(<a href="#438">node</a>.<a href="#165-167">borrow_datamut</a>());
+        <a href="#17">S::bottom_up</a>(<a href="#438">node</a>.<a href="#165-167">borrow_datamut</a>());
         <a href="#438">node</a>
     }
     <span class="kw">pub fn </span>insert_last(<span class="self">self</span>, <span class="kw-2">mut </span>node: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <a href="#443">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#260-262">set_left</a>(<span class="prelude-val">Some</span>(<a class="self" href="#443">self</a>));
-        S::bottom_up(<a href="#443">node</a>.<a href="#165-167">borrow_datamut</a>());
+        <a href="#17">S::bottom_up</a>(<a href="#443">node</a>.<a href="#165-167">borrow_datamut</a>());
         <a href="#443">node</a>
     }
     <span class="kw">pub fn </span>merge(<span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span>other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">if </span>other.reborrow().left().is_none() {
-            S::top_down(<a href="#448">other</a>.<a href="#165-167">borrow_datamut</a>());
+            <a href="#16">S::top_down</a>(<a href="#448">other</a>.<a href="#165-167">borrow_datamut</a>());
             <a href="#448">other</a>.<a href="#162-164">borrow_mut</a>().<a href="#260-262">set_left</a>(<span class="prelude-val">Some</span>(<a class="self" href="#448">self</a>));
-            S::bottom_up(<a href="#448">other</a>.<a href="#165-167">borrow_datamut</a>());
+            <a href="#17">S::bottom_up</a>(<a href="#448">other</a>.<a href="#165-167">borrow_datamut</a>());
             <a href="#448">other</a>
         } <span class="kw">else </span>{
-            <span class="self"><a href="#448">self</a> </span>= <a class="self" href="#448">self</a>.<a href="#294-419">splay_by</a>(SeekRight::new()).<span class="number">1</span>;
+            <span class="self"><a href="#448">self</a> </span>= <a class="self" href="#448">self</a>.<a href="#294-419">splay_by</a>(<a href="#61-63">SeekRight::new</a>()).<span class="number">1</span>;
             <a class="self" href="#448">self</a>.<a href="#162-164">borrow_mut</a>().<a href="#263-265">set_right</a>(<span class="prelude-val">Some</span>(<a href="#448">other</a>));
-            S::bottom_up(<a class="self" href="#448">self</a>.<a href="#165-167">borrow_datamut</a>());
+            <a href="#17">S::bottom_up</a>(<a class="self" href="#448">self</a>.<a href="#165-167">borrow_datamut</a>());
             <span class="self"><a href="#448">self</a>
         </span>}
     }
@@ -1232,36 +1233,36 @@
         <span class="self">Self </span>{ <a href="#467">root</a> }
     }
     <span class="kw">pub unsafe fn </span>from_single_nodes(nodes: Vec&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::from_single_nodes_inner(<span class="kw-2">&amp;</span><a href="#470">nodes</a>)
+        <a href="#473-486"><span class="self">Self</span>::from_single_nodes_inner</a>(<span class="kw-2">&amp;</span><a href="#470">nodes</a>)
     }
     <span class="kw">unsafe fn </span>from_single_nodes_inner(nodes: <span class="kw-2">&amp;</span>[NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;]) -&gt; <span class="self">Self </span>{
         <span class="kw">if </span>nodes.is_empty() {
-            <span class="self">Self</span>::new(<span class="prelude-val">None</span>)
+            <a href="#467-469"><span class="self">Self</span>::new</a>(<span class="prelude-val">None</span>)
         } <span class="kw">else </span>{
             <span class="kw">let </span>m = <a href="#473">nodes</a>.len() / <span class="number">2</span>;
-            <span class="kw">let </span>left = <span class="self">Self</span>::from_single_nodes_inner(<span class="kw-2">&amp;</span><a href="#473">nodes</a>[..<a href="#477">m</a>]);
-            <span class="kw">let </span>right = <span class="self">Self</span>::from_single_nodes_inner(<span class="kw-2">&amp;</span><a href="#473">nodes</a>[<a href="#477">m</a> + <span class="number">1</span>..]);
-            <span class="kw">let </span><span class="kw-2">mut </span>node = NodeRef::new(<a href="#473">nodes</a>[<a href="#477">m</a>].node);
+            <span class="kw">let </span>left = <a href="#473-486"><span class="self">Self</span>::from_single_nodes_inner</a>(<span class="kw-2">&amp;</span><a href="#473">nodes</a>[..<a href="#477">m</a>]);
+            <span class="kw">let </span>right = <a href="#473-486"><span class="self">Self</span>::from_single_nodes_inner</a>(<span class="kw-2">&amp;</span><a href="#473">nodes</a>[<a href="#477">m</a> + <span class="number">1</span>..]);
+            <span class="kw">let </span><span class="kw-2">mut </span>node = <a href="#153-155">NodeRef::new</a>(<a href="#473">nodes</a>[<a href="#477">m</a>].node);
             <a href="#480">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#260-262">set_left</a>(<a href="#478">left</a>.root);
             <a href="#480">node</a>.<a href="#162-164">borrow_mut</a>().<a href="#263-265">set_right</a>(<a href="#479">right</a>.root);
-            S::bottom_up(<a href="#480">node</a>.<a href="#165-167">borrow_datamut</a>());
-            <span class="self">Self</span>::new(<span class="prelude-val">Some</span>(<a href="#480">node</a>))
+            <a href="#17">S::bottom_up</a>(<a href="#480">node</a>.<a href="#165-167">borrow_datamut</a>());
+            <a href="#467-469"><span class="self">Self</span>::new</a>(<span class="prelude-val">Some</span>(<a href="#480">node</a>))
         }
     }
     <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="self" href="#487">self</a>.root.is_none()
     }
     <span class="kw">pub fn </span>root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;marker::Immut&lt;<span class="lifetime">'_</span>&gt;, S&gt;&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.root.as_ref()<span class="question-mark">?</span>.<a href="#141-143">reborrow</a>())
+        <span class="prelude-val">Some</span>(<a class="self" href="#490">self</a>.root.as_ref()<span class="question-mark">?</span>.<a href="#141-143">reborrow</a>())
     }
     <span class="kw">pub fn </span>root_data_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'_</span>&gt;, S&gt;&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.root.as_mut()<span class="question-mark">?</span>.<a href="#165-167">borrow_datamut</a>())
+        <span class="prelude-val">Some</span>(<a class="self" href="#493">self</a>.root.as_mut()<span class="question-mark">?</span>.<a href="#165-167">borrow_datamut</a>())
     }
     <span class="kw">pub fn </span>splay_by&lt;Seeker&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, seeker: Seeker) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>&gt;
     <span class="kw">where
         </span>Seeker: SplaySeeker&lt;S = S&gt;,
     {
-        <span class="kw">let </span>(ord, root) = <span class="self">self</span>.root.take()<span class="question-mark">?</span>.<a href="#294-419">splay_by</a>(<a href="#496">seeker</a>);
+        <span class="kw">let </span>(ord, root) = <a class="self" href="#496">self</a>.root.take()<span class="question-mark">?</span>.<a href="#294-419">splay_by</a>(<a href="#496">seeker</a>);
         <a class="self" href="#496">self</a>.root = <span class="prelude-val">Some</span>(<a href="#500">root</a>);
         <span class="prelude-val">Some</span>(<a href="#500">ord</a>)
     }
@@ -1269,7 +1270,7 @@
         <a class="self" href="#504">self</a>.root = <span class="prelude-val">Some</span>(<span class="kw">match </span><a class="self" href="#504">self</a>.root.take() {
             <span class="prelude-val">Some</span>(root) =&gt; <a href="#506">root</a>.<a href="#420-428">insert_left</a>(<a href="#504">node</a>),
             <span class="prelude-val">None </span>=&gt; {
-                S::bottom_up(<a href="#504">node</a>.<a href="#165-167">borrow_datamut</a>());
+                <a href="#17">S::bottom_up</a>(<a href="#504">node</a>.<a href="#165-167">borrow_datamut</a>());
                 <a href="#504">node</a>
             }
         });
@@ -1278,7 +1279,7 @@
         <a class="self" href="#513">self</a>.root = <span class="prelude-val">Some</span>(<span class="kw">match </span><a class="self" href="#513">self</a>.root.take() {
             <span class="prelude-val">Some</span>(root) =&gt; <a href="#515">root</a>.<a href="#429-437">insert_right</a>(<a href="#513">node</a>),
             <span class="prelude-val">None </span>=&gt; {
-                S::bottom_up(<a href="#513">node</a>.<a href="#165-167">borrow_datamut</a>());
+                <a href="#17">S::bottom_up</a>(<a href="#513">node</a>.<a href="#165-167">borrow_datamut</a>());
                 <a href="#513">node</a>
             }
         });
@@ -1287,7 +1288,7 @@
         <a class="self" href="#522">self</a>.root = <span class="prelude-val">Some</span>(<span class="kw">match </span><a class="self" href="#522">self</a>.root.take() {
             <span class="prelude-val">Some</span>(root) =&gt; <a href="#524">root</a>.<a href="#438-442">insert_first</a>(<a href="#522">node</a>),
             <span class="prelude-val">None </span>=&gt; {
-                S::bottom_up(<a href="#522">node</a>.<a href="#165-167">borrow_datamut</a>());
+                <a href="#17">S::bottom_up</a>(<a href="#522">node</a>.<a href="#165-167">borrow_datamut</a>());
                 <a href="#522">node</a>
             }
         });
@@ -1296,40 +1297,40 @@
         <a class="self" href="#531">self</a>.root = <span class="prelude-val">Some</span>(<span class="kw">match </span><a class="self" href="#531">self</a>.root.take() {
             <span class="prelude-val">Some</span>(root) =&gt; <a href="#533">root</a>.<a href="#443-447">insert_last</a>(<a href="#531">node</a>),
             <span class="prelude-val">None </span>=&gt; {
-                S::bottom_up(<a href="#531">node</a>.<a href="#165-167">borrow_datamut</a>());
+                <a href="#17">S::bottom_up</a>(<a href="#531">node</a>.<a href="#165-167">borrow_datamut</a>());
                 <a href="#531">node</a>
             }
         });
     }
     <span class="kw">pub fn </span>take_root(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="self">self</span>.root.take()<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>root = <a class="self" href="#540">self</a>.root.take()<span class="question-mark">?</span>;
         <span class="kw">let </span>right = <a href="#541">root</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>();
         <a class="self" href="#540">self</a>.root = <a href="#541">root</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>();
-        <a class="self" href="#540">self</a>.<a href="#579-585">append</a>(<span class="kw-2">&amp;mut </span><span class="self">Self</span>::new(<a href="#542">right</a>));
+        <a class="self" href="#540">self</a>.<a href="#579-585">append</a>(<span class="kw-2">&amp;mut </span><a href="#467-469"><span class="self">Self</span>::new</a>(<a href="#542">right</a>));
         <span class="prelude-val">Some</span>(<a href="#541">root</a>)
     }
     <span class="kw">pub fn </span>take_first(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="self">self</span>.root.take()<span class="question-mark">?</span>.<a href="#294-419">splay_by</a>(SeekLeft::new()).<span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>root = <a class="self" href="#547">self</a>.root.take()<span class="question-mark">?</span>.<a href="#294-419">splay_by</a>(<a href="#36-38">SeekLeft::new</a>()).<span class="number">1</span>;
         <span class="kw">let </span>right = <a href="#548">root</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>();
         <a class="self" href="#547">self</a>.root = <a href="#549">right</a>;
         <span class="prelude-val">Some</span>(<a href="#548">root</a>)
     }
     <span class="kw">pub fn </span>take_last(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>root = <span class="self">self</span>.root.take()<span class="question-mark">?</span>.<a href="#294-419">splay_by</a>(SeekRight::new()).<span class="number">1</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>root = <a class="self" href="#553">self</a>.root.take()<span class="question-mark">?</span>.<a href="#294-419">splay_by</a>(<a href="#61-63">SeekRight::new</a>()).<span class="number">1</span>;
         <span class="kw">let </span>left = <a href="#554">root</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>();
         <a class="self" href="#553">self</a>.root = <a href="#555">left</a>;
         <span class="prelude-val">Some</span>(<a href="#554">root</a>)
     }
     <span class="kw">pub fn </span>split_left(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
-        <span class="kw">let </span>root = <span class="self">self</span>.root.as_mut()<span class="question-mark">?</span>;
+        <span class="kw">let </span>root = <a class="self" href="#559">self</a>.root.as_mut()<span class="question-mark">?</span>;
         <span class="kw">let </span>left = <a href="#560">root</a>.<a href="#162-164">borrow_mut</a>().<a href="#254-256">take_left</a>();
-        S::bottom_up(<a href="#560">root</a>.<a href="#165-167">borrow_datamut</a>());
+        <a href="#17">S::bottom_up</a>(<a href="#560">root</a>.<a href="#165-167">borrow_datamut</a>());
         <a href="#561">left</a>
     }
     <span class="kw">pub fn </span>split_right(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
-        <span class="kw">let </span>root = <span class="self">self</span>.root.as_mut()<span class="question-mark">?</span>;
+        <span class="kw">let </span>root = <a class="self" href="#565">self</a>.root.as_mut()<span class="question-mark">?</span>;
         <span class="kw">let </span>right = <a href="#566">root</a>.<a href="#162-164">borrow_mut</a>().<a href="#257-259">take_right</a>();
-        S::bottom_up(<a href="#566">root</a>.<a href="#165-167">borrow_datamut</a>());
+        <a href="#17">S::bottom_up</a>(<a href="#566">root</a>.<a href="#165-167">borrow_datamut</a>());
         <a href="#567">right</a>
     }
     <span class="kw">pub fn </span>split_left_eq(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt; {
@@ -1352,7 +1353,7 @@
         </span>Seeker: SplaySeeker&lt;S = S&gt;,
     {
         <span class="kw">if </span><span class="self">self</span>.is_empty() {
-            <span class="kw">return </span>NodeRange::new(<a class="self" href="#586">self</a>);
+            <span class="kw">return </span><a href="#683-689">NodeRange::new</a>(<a class="self" href="#586">self</a>);
         }
         <span class="kw">let </span>right = <span class="kw">match </span><a href="#586">end</a> {
             Bound::Included(seeker) =&gt; <span class="kw">match </span><a class="self" href="#586">self</a>.<a href="#496-503">splay_by</a>(<a href="#594">seeker</a>).unwrap() {
@@ -1366,7 +1367,7 @@
             Bound::Unbounded =&gt; <span class="prelude-val">None</span>,
         };
         <span class="kw">if </span><span class="self">self</span>.is_empty() {
-            <span class="kw">return </span>NodeRange::three_way(<span class="prelude-val">None</span>, <a class="self" href="#586">self</a>, <a href="#593">right</a>);
+            <span class="kw">return </span><a href="#690-700">NodeRange::three_way</a>(<span class="prelude-val">None</span>, <a class="self" href="#586">self</a>, <a href="#593">right</a>);
         }
         <span class="kw">let </span>left = <span class="kw">match </span><a href="#586">start</a> {
             Bound::Included(seeker) =&gt; <span class="kw">match </span><a class="self" href="#586">self</a>.<a href="#496-503">splay_by</a>(<a href="#608">seeker</a>).unwrap() {
@@ -1379,7 +1380,7 @@
             },
             Bound::Unbounded =&gt; <span class="prelude-val">None</span>,
         };
-        NodeRange::three_way(<a href="#607">left</a>, <a class="self" href="#586">self</a>, <a href="#593">right</a>)
+        <a href="#690-700">NodeRange::three_way</a>(<a href="#607">left</a>, <a class="self" href="#586">self</a>, <a href="#593">right</a>)
     }
 }
 
@@ -1397,20 +1398,20 @@
             </span>S: <a href="#11-18">SplaySpec</a>,
             S::T: <span class="lifetime">'a </span>+ <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
         {
-            <span class="macro">write!</span>(f, <span class="string">"["</span>)<span class="question-mark">?</span>;
+            <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.write.html">write!</a>(<a href="#630">f</a>, <span class="string">"["</span>)<span class="question-mark">?</span>;
             <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <a href="#629">node</a>.<a href="#181-187">left</a>() {
-                fmt_recurse(left, f)<span class="question-mark">?</span>;
+                <a href="#628-646">fmt_recurse</a>(<a href="#637">left</a>, <a href="#630">f</a>)<span class="question-mark">?</span>;
             }
-            node.data().fmt(f)<span class="question-mark">?</span>;
+            <a href="#629">node</a>.<a href="#178-180">data</a>().<a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">fmt</a>(<a href="#630">f</a>)<span class="question-mark">?</span>;
             <span class="kw">if let </span><span class="prelude-val">Some</span>(right) = <a href="#629">node</a>.<a href="#188-194">right</a>() {
-                fmt_recurse(right, f)<span class="question-mark">?</span>;
+                <a href="#628-646">fmt_recurse</a>(<a href="#641">right</a>, <a href="#630">f</a>)<span class="question-mark">?</span>;
             }
-            <span class="macro">write!</span>(f, <span class="string">"]"</span>)<span class="question-mark">?</span>;
+            <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.write.html">write!</a>(<a href="#630">f</a>, <span class="string">"]"</span>)<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(())
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = <a class="self" href="#627">self</a>.root.as_ref() {
             <span class="kw">let </span>root = <a href="#647">root</a>.<a href="#141-143">reborrow</a>();
-            fmt_recurse(root, f)<span class="question-mark">?</span>;
+            <a href="#628-646">fmt_recurse</a>(<a href="#648">root</a>, <a href="#627">f</a>)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -1457,20 +1458,20 @@
         back: <span class="prelude-ty">Option</span>&lt;NodeRef&lt;<a href="#742">marker::Owned</a>, S&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            front: Root::new(<a href="#691">front</a>),
-            back: Root::new(<a href="#693">back</a>),
+            front: <a href="#467-469">Root::new</a>(<a href="#691">front</a>),
+            back: <a href="#467-469">Root::new</a>(<a href="#693">back</a>),
             <a href="#692">root</a>,
         }
     }
     <span class="kw">pub fn </span>next_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'a</span>&gt;, S&gt;&gt; {
-        <span class="kw">let </span>first = <span class="self">self</span>.root.take_first()<span class="question-mark">?</span>;
-        <span class="kw">let </span>noderef = <span class="kw">unsafe </span>{ NodeRef::new_unchecked(<a href="#702">first</a>.node) };
+        <span class="kw">let </span>first = <a class="self" href="#701">self</a>.root.<a href="#547-552">take_first</a>()<span class="question-mark">?</span>;
+        <span class="kw">let </span>noderef = <span class="kw">unsafe </span>{ <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#702">first</a>.node) };
         <a class="self" href="#701">self</a>.front.<a href="#531-539">insert_last</a>(<a href="#702">first</a>);
         <span class="prelude-val">Some</span>(<a href="#703">noderef</a>)
     }
     <span class="kw">pub fn </span>next_back_checked(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeRef&lt;marker::DataMut&lt;<span class="lifetime">'a</span>&gt;, S&gt;&gt; {
-        <span class="kw">let </span>last = <span class="self">self</span>.root.take_last()<span class="question-mark">?</span>;
-        <span class="kw">let </span>noderef = <span class="kw">unsafe </span>{ NodeRef::new_unchecked(<a href="#708">last</a>.node) };
+        <span class="kw">let </span>last = <a class="self" href="#707">self</a>.root.<a href="#553-558">take_last</a>()<span class="question-mark">?</span>;
+        <span class="kw">let </span>noderef = <span class="kw">unsafe </span>{ <a href="#135-140">NodeRef::new_unchecked</a>(<a href="#708">last</a>.node) };
         <a class="self" href="#707">self</a>.back.<a href="#522-530">insert_first</a>(<a href="#708">last</a>);
         <span class="prelude-val">Some</span>(<a href="#709">noderef</a>)
     }

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tools/scanner.rs`."><title>scanner.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-452d19225583af2a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (3cdd004e5 2023-12-29)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6902632119e002ca.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tools/scanner.rs`."><title>scanner.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0b2e2def73e61cbe.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,8 +14,9 @@
     });
   });
 </script>
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../competitive/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -630,7 +631,7 @@
     <span class="kw">type </span>Output = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>scan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        &lt;usize <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">?</span>.checked_sub(<span class="number">1</span>)
+        &lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> <span class="kw">as </span>IterScan&gt;::scan(<a href="#209">iter</a>)<span class="question-mark">?</span>.checked_sub(<span class="number">1</span>)
     }
 }
 <span class="attr">#[derive(Debug, Copy, Clone)]
@@ -639,7 +640,7 @@
     <span class="kw">type </span>Output = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="prelude-val">Some</span>((&lt;char <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">? </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> - <a class="self" href="#218">self</a>.<span class="number">0 </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
+        <span class="prelude-val">Some</span>((&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a> <span class="kw">as </span>IterScan&gt;::scan(<a href="#218">iter</a>)<span class="question-mark">? </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> - <a class="self" href="#218">self</a>.<span class="number">0 </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
     }
 }
 <span class="attr">#[derive(Debug, Copy, Clone)]
@@ -648,7 +649,7 @@
     <span class="kw">type </span>Output = Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a>&gt;;
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>scan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="prelude-val">Some</span>(iter.next()<span class="question-mark">?</span>.chars().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>())
+        <span class="prelude-val">Some</span>(<a href="#227">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?</span>.chars().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>())
     }
 }
 <span class="attr">#[derive(Debug, Copy, Clone)]
@@ -658,7 +659,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(
-            iter.next()<span class="question-mark">?
+            <a href="#236">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?
                 </span>.chars()
                 .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|c| (<a href="#240">c</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> - <a class="self" href="#236">self</a>.<span class="number">0 </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
                 .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
@@ -671,7 +672,7 @@
     <span class="kw">type </span>Output = <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>;
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>scan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="kw">let </span>bytes = iter.next()<span class="question-mark">?</span>.as_bytes();
+        <span class="kw">let </span>bytes = <a href="#250">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?</span>.as_bytes();
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(bytes.len(), <span class="number">1</span>);
         <span class="prelude-val">Some</span>(<a href="#251">bytes</a>[<span class="number">0</span>])
     }
@@ -682,7 +683,7 @@
     <span class="kw">type </span>Output = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="prelude-val">Some</span>((&lt;char <span class="kw">as </span>IterScan&gt;::scan(iter)<span class="question-mark">? </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> - <a class="self" href="#261">self</a>.<span class="number">0</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
+        <span class="prelude-val">Some</span>((&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a> <span class="kw">as </span>IterScan&gt;::scan(<a href="#261">iter</a>)<span class="question-mark">? </span><span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> - <a class="self" href="#261">self</a>.<span class="number">0</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
     }
 }
 <span class="attr">#[derive(Debug, Copy, Clone)]
@@ -691,7 +692,7 @@
     <span class="kw">type </span>Output = Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;;
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>scan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="prelude-val">Some</span>(iter.next()<span class="question-mark">?</span>.bytes().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>())
+        <span class="prelude-val">Some</span>(<a href="#270">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?</span>.bytes().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>())
     }
 }
 <span class="attr">#[derive(Debug, Copy, Clone)]
@@ -701,7 +702,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
         <span class="prelude-val">Some</span>(
-            iter.next()<span class="question-mark">?
+            <a href="#279">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?
                 </span>.bytes()
                 .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|c| (<a href="#283">c</a> - <a class="self" href="#279">self</a>.<span class="number">0</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)
                 .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
@@ -758,7 +759,7 @@
     <span class="kw">type </span>Output = B;
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>scan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="kw">let </span>size = usize::scan(iter)<span class="question-mark">?</span>;
+        <span class="kw">let </span>size = <a href="#35">usize::scan</a>(<a href="#337">iter</a>)<span class="question-mark">?</span>;
         <a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">repeat_with</a>(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(<a href="#337">iter</a>))
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">take</a>(<a href="#338">size</a>)
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
@@ -789,7 +790,7 @@
 {
     <span class="kw">type </span>Output = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;;
     <span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>iter = iter.next()<span class="question-mark">?</span>.split(<a class="self" href="#368">self</a>.pat);
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = <a href="#368">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?</span>.split(<a class="self" href="#368">self</a>.pat);
         <span class="prelude-val">Some</span>(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/from_fn/fn.from_fn.html">from_fn</a>(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><a href="#369">iter</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>())
     }
 }
@@ -799,7 +800,7 @@
 {
     <span class="kw">type </span>Output = Vec&lt;&lt;T <span class="kw">as </span>IterScan&gt;::Output&gt;;
     <span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>iter = iter.next()<span class="question-mark">?</span>.split(<a class="self" href="#378">self</a>.pat);
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = <a href="#378">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?</span>.split(<a class="self" href="#378">self</a>.pat);
         <span class="prelude-val">Some</span>(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/from_fn/fn.from_fn.html">from_fn</a>(|| &lt;T <span class="kw">as </span>IterScan&gt;::scan(<span class="kw-2">&amp;mut </span><a href="#379">iter</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>())
     }
 }
@@ -809,7 +810,7 @@
 {
     <span class="kw">type </span>Output = T;
     <span class="kw">fn </span>mscan&lt;<span class="lifetime">'a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;&gt;(<span class="self">self</span>, iter: <span class="kw-2">&amp;mut </span>I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Output&gt; {
-        <a class="self" href="#388">self</a>(iter.next()<span class="question-mark">?</span>)
+        <a class="self" href="#388">self</a>(<a href="#388">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">next</a>()<span class="question-mark">?</span>)
     }
 }
 

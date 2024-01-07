@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/union_find.rs`."><title>union_find.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-452d19225583af2a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (3cdd004e5 2023-12-29)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6902632119e002ca.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/union_find.rs`."><title>union_find.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0b2e2def73e61cbe.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,8 +14,9 @@
     });
   });
 </script>
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../competitive/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -808,8 +809,8 @@
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span><span class="self"><a href="#82">self</a> </span>{
-            <span class="self">Self</span>::Root(data) =&gt; <span class="self">Self</span>::Root(<a href="#84">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()),
-            <span class="self">Self</span>::Child(data) =&gt; <span class="self">Self</span>::Child(<a href="#85">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()),
+            <span class="self">Self</span>::Root(data) =&gt; <a href="#70"><span class="self">Self</span>::Root</a>(<a href="#84">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()),
+            <span class="self">Self</span>::Child(data) =&gt; <a href="#71"><span class="self">Self</span>::Child</a>(<a href="#85">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()),
         }
     }
 }
@@ -1001,7 +1002,7 @@
 {
     <span class="kw">pub fn </span>new(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<a href="#275">n</a>)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw">_</span>| <a href="#70">UfCell::Root</a>((U::single_info(), ())))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw">_</span>| <a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), ())))
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="self">Self </span>{
             <a href="#276">cells</a>,
@@ -1011,7 +1012,7 @@
         }
     }
     <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <a class="self" href="#286">self</a>.cells.push(<a href="#70">UfCell::Root</a>((U::single_info(), ())));
+        <a class="self" href="#286">self</a>.cells.push(<a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), ())));
     }
 }
 
@@ -1025,7 +1026,7 @@
 {
     <span class="kw">pub fn </span>new_with_merger(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>init: <span class="kw">impl </span>FnMut(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T, merge: Merge) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<a href="#299">n</a>)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| <a href="#70">UfCell::Root</a>((U::single_info(), <a href="#299">init</a>(<a href="#301">i</a>))))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| <a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), <a href="#299">init</a>(<a href="#301">i</a>))))
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
         <span class="self">Self </span>{
             <a href="#300">cells</a>,
@@ -1110,15 +1111,15 @@
     <span class="kw">pub fn </span>find(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, P::T) {
         <span class="kw">let </span>(parent_parent, parent_potential) = <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="#383">self</a>.cells[<a href="#383">x</a>] {
             <a href="#71">UfCell::Child</a>((parent, <span class="kw">_</span>)) =&gt; <a class="self" href="#383">self</a>.<a href="#383-397">find</a>(<span class="kw-2">*</span><a href="#385">parent</a>),
-            <a href="#70">UfCell::Root</a>(<span class="kw">_</span>) =&gt; <span class="kw">return </span>(<a href="#383">x</a>, P::unit()),
+            <a href="#70">UfCell::Root</a>(<span class="kw">_</span>) =&gt; <span class="kw">return </span>(<a href="#383">x</a>, <a href="../algebra/magma.rs.html#30">P::unit</a>()),
         };
         <span class="kw">let </span>(parent, potential) = <a class="self" href="#383">self</a>.cells[<a href="#383">x</a>].<a href="#119-124">child_mut</a>().unwrap();
         <span class="kw">let </span>potential = <span class="kw">if </span>F::CHENGE_ROOT {
             <span class="kw-2">*</span><a href="#388">parent</a> = <a href="#384">parent_parent</a>;
-            <span class="kw-2">*</span><a href="#388">potential</a> = P::operate(<span class="kw-2">&amp;</span><a href="#384">parent_potential</a>, <a href="#388">potential</a>);
+            <span class="kw-2">*</span><a href="#388">potential</a> = <a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#384">parent_potential</a>, <a href="#388">potential</a>);
             <a href="#388">potential</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
         } <span class="kw">else </span>{
-            P::operate(<span class="kw-2">&amp;</span><a href="#384">parent_potential</a>, <a href="#388">potential</a>)
+            <a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#384">parent_potential</a>, <a href="#388">potential</a>)
         };
         (<a href="#384">parent_parent</a>, <a href="#389">potential</a>)
     }
@@ -1136,7 +1137,7 @@
             <span class="kw">let </span>(parent, potential) = <a href="#405">cx</a>.<a href="#119-124">child_mut</a>().unwrap();
             <span class="kw-2">*</span><a href="#409">parent</a> = <a href="#400">parent_parent</a>;
             <span class="kw">if let </span><a href="#71">UfCell::Child</a>((<span class="kw">_</span>, ppot)) = <span class="kw-2">&amp;</span><a href="#405">cp</a> {
-                <span class="kw-2">*</span><a href="#409">potential</a> = P::operate(<a href="#411">ppot</a>, <a href="#409">potential</a>);
+                <span class="kw-2">*</span><a href="#409">potential</a> = <a href="../algebra/magma.rs.html#8">P::operate</a>(<a href="#411">ppot</a>, <a href="#409">potential</a>);
             }
         }
         <a href="#400">parent_parent</a>
@@ -1148,7 +1149,7 @@
         <span class="kw">if </span>rx == ry || y != ry {
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
-        H::unite(<span class="kw-2">&amp;mut </span><a class="self" href="#418">self</a>.history, <a href="#419">rx</a>, <a href="#420">ry</a>, <span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.cells);
+        <a href="#229">H::unite</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#418">self</a>.history, <a href="#419">rx</a>, <a href="#420">ry</a>, <span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.cells);
         {
             <span class="kw">let </span>ptr = <a class="self" href="#418">self</a>.cells.as_mut_ptr();
             <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#426">ptr</a>.add(<a href="#419">rx</a>), <span class="kw-2">&amp;mut *</span><a href="#426">ptr</a>.add(<a href="#420">ry</a>)) };
@@ -1156,8 +1157,8 @@
                 .<a href="#198">merge</a>(<span class="kw-2">&amp;mut </span><a href="#427">cx</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>, <span class="kw-2">&amp;mut </span><a href="#427">cy</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>);
         }
         <span class="kw-2">*</span><a class="self" href="#418">self</a>.<a href="#343-348">root_info_mut</a>(<a href="#419">rx</a>).unwrap() =
-            U::unite(<span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#419">rx</a>).unwrap(), <span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#420">ry</a>).unwrap());
-        <a class="self" href="#418">self</a>.cells[<a href="#420">ry</a>] = <a href="#71">UfCell::Child</a>((<a href="#419">rx</a>, P::operate(<span class="kw-2">&amp;</span><a href="#419">potx</a>, <span class="kw-2">&amp;</span><a href="#418">potential</a>)));
+            <a href="#145">U::unite</a>(<span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#419">rx</a>).unwrap(), <span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#420">ry</a>).unwrap());
+        <a class="self" href="#418">self</a>.cells[<a href="#420">ry</a>] = <a href="#71">UfCell::Child</a>((<a href="#419">rx</a>, <a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#419">potx</a>, <span class="kw-2">&amp;</span><a href="#418">potential</a>)));
         <span class="bool-val">true
     </span>}
 }
@@ -1174,7 +1175,7 @@
         <span class="kw">let </span>(rx, potx) = <a class="self" href="#446">self</a>.<a href="#383-397">find</a>(<a href="#446">x</a>);
         <span class="kw">let </span>(ry, poty) = <a class="self" href="#446">self</a>.<a href="#383-397">find</a>(<a href="#446">y</a>);
         <span class="kw">if </span>rx == ry {
-            <span class="prelude-val">Some</span>(P::operate(<span class="kw-2">&amp;</span>P::inverse(<span class="kw-2">&amp;</span><a href="#447">potx</a>), <span class="kw-2">&amp;</span><a href="#448">poty</a>))
+            <span class="prelude-val">Some</span>(<a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#65">P::inverse</a>(<span class="kw-2">&amp;</span><a href="#447">potx</a>), <span class="kw-2">&amp;</span><a href="#448">poty</a>))
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>}
@@ -1188,30 +1189,30 @@
         }
         <span class="kw">let </span><span class="kw-2">mut </span>xinfo = <a class="self" href="#456">self</a>.<a href="#336-341">root_info</a>(<a href="#457">rx</a>).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>yinfo = <a class="self" href="#456">self</a>.<a href="#336-341">root_info</a>(<a href="#458">ry</a>).unwrap();
-        <span class="kw">let </span>inverse = !U::check_directoin(<span class="kw-2">&amp;</span><a href="#462">xinfo</a>, <span class="kw-2">&amp;</span><a href="#463">yinfo</a>);
+        <span class="kw">let </span>inverse = !<a href="#144">U::check_directoin</a>(<span class="kw-2">&amp;</span><a href="#462">xinfo</a>, <span class="kw-2">&amp;</span><a href="#463">yinfo</a>);
         <span class="kw">let </span>potential = <span class="kw">if </span>inverse {
-            P::rinv_operate(<span class="kw-2">&amp;</span><a href="#458">poty</a>, <span class="kw-2">&amp;</span>P::operate(<span class="kw-2">&amp;</span><a href="#457">potx</a>, <span class="kw-2">&amp;</span><a href="#456">potential</a>))
+            <a href="../algebra/magma.rs.html#67-69">P::rinv_operate</a>(<span class="kw-2">&amp;</span><a href="#458">poty</a>, <span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#457">potx</a>, <span class="kw-2">&amp;</span><a href="#456">potential</a>))
         } <span class="kw">else </span>{
-            P::operate(<span class="kw-2">&amp;</span><a href="#457">potx</a>, <span class="kw-2">&amp;</span>P::rinv_operate(<span class="kw-2">&amp;</span><a href="#456">potential</a>, <span class="kw-2">&amp;</span><a href="#458">poty</a>))
+            <a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#457">potx</a>, <span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#67-69">P::rinv_operate</a>(<span class="kw-2">&amp;</span><a href="#456">potential</a>, <span class="kw-2">&amp;</span><a href="#458">poty</a>))
         };
         <span class="kw">if </span>inverse {
             <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a href="#457">rx</a>, <span class="kw-2">&amp;mut </span><a href="#458">ry</a>);
             <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">swap</a>(<span class="kw-2">&amp;mut </span><a href="#462">xinfo</a>, <span class="kw-2">&amp;mut </span><a href="#463">yinfo</a>);
         }
-        H::unite(<span class="kw-2">&amp;mut </span><a class="self" href="#456">self</a>.history, <a href="#457">rx</a>, <a href="#458">ry</a>, <span class="kw-2">&amp;</span><a class="self" href="#456">self</a>.cells);
+        <a href="#229">H::unite</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#456">self</a>.history, <a href="#457">rx</a>, <a href="#458">ry</a>, <span class="kw-2">&amp;</span><a class="self" href="#456">self</a>.cells);
         {
             <span class="kw">let </span>ptr = <a class="self" href="#456">self</a>.cells.as_mut_ptr();
             <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#476">ptr</a>.add(<a href="#457">rx</a>), <span class="kw-2">&amp;mut *</span><a href="#476">ptr</a>.add(<a href="#458">ry</a>)) };
             <a class="self" href="#456">self</a>.merger
                 .<a href="#198">merge</a>(<span class="kw-2">&amp;mut </span><a href="#477">cx</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>, <span class="kw-2">&amp;mut </span><a href="#477">cy</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>);
         }
-        <span class="kw-2">*</span><a class="self" href="#456">self</a>.<a href="#343-348">root_info_mut</a>(<a href="#457">rx</a>).unwrap() = U::unite(<span class="kw-2">&amp;</span><a href="#462">xinfo</a>, <span class="kw-2">&amp;</span><a href="#463">yinfo</a>);
+        <span class="kw-2">*</span><a class="self" href="#456">self</a>.<a href="#343-348">root_info_mut</a>(<a href="#457">rx</a>).unwrap() = <a href="#145">U::unite</a>(<span class="kw-2">&amp;</span><a href="#462">xinfo</a>, <span class="kw-2">&amp;</span><a href="#463">yinfo</a>);
         <a class="self" href="#456">self</a>.cells[<a href="#458">ry</a>] = <a href="#71">UfCell::Child</a>((<a href="#457">rx</a>, <a href="#465">potential</a>));
         <span class="bool-val">true
     </span>}
 
     <span class="kw">pub fn </span>unite(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#486">self</a>.<a href="#456-484">unite_with</a>(<a href="#486">x</a>, <a href="#486">y</a>, P::unit())
+        <a class="self" href="#486">self</a>.<a href="#456-484">unite_with</a>(<a href="#486">x</a>, <a href="#486">y</a>, <a href="../algebra/magma.rs.html#30">P::unit</a>())
     }
 }
 
@@ -1223,7 +1224,7 @@
     H: UndoStrategy&lt;UfCell&lt;U, M, P&gt;&gt;,
 {
     <span class="kw">pub fn </span>undo(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        H::undo_unite(<span class="kw-2">&amp;mut </span><a class="self" href="#498">self</a>.history, <span class="kw-2">&amp;mut </span><a class="self" href="#498">self</a>.cells);
+        <a href="#231">H::undo_unite</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#498">self</a>.history, <span class="kw-2">&amp;mut </span><a class="self" href="#498">self</a>.cells);
     }
 }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/num/mint/montgomery.rs`."><title>montgomery.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-452d19225583af2a.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (3cdd004e5 2023-12-29)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-6902632119e002ca.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/num/mint/montgomery.rs`."><title>montgomery.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0b2e2def73e61cbe.js"></script><script defer src="../../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,8 +14,9 @@
     });
   });
 </script>
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../../competitive/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -362,7 +363,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_add(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
         <span class="kw">let </span>z = <a href="#21">x</a> + <a href="#21">y</a>;
-        <span class="kw">let </span>m = <span class="self">Self</span>::get_mod();
+        <span class="kw">let </span>m = <a href="mint_base.rs.html#29"><span class="self">Self</span>::get_mod</a>();
         <span class="kw">if </span>z &gt;= m {
             <a href="#22">z</a> - <a href="#23">m</a>
         } <span class="kw">else </span>{
@@ -372,29 +373,29 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_sub(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
         <span class="kw">if </span>x &lt; y {
-            <a href="#31">x</a> + <span class="self">Self</span>::get_mod() - <a href="#31">y</a>
+            <a href="#31">x</a> + <a href="mint_base.rs.html#29"><span class="self">Self</span>::get_mod</a>() - <a href="#31">y</a>
         } <span class="kw">else </span>{
             <a href="#31">x</a> - <a href="#31">y</a>
         }
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_mul(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(<a href="#39">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <a href="#39">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#39">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <a href="#39">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_div(x: <span class="self">Self</span>::Inner, y: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::mod_mul(<a href="#43">x</a>, <span class="self">Self</span>::mod_inv(<a href="#43">y</a>))
+        <a href="mint_base.rs.html#34"><span class="self">Self</span>::mod_mul</a>(<a href="#43">x</a>, <a href="mint_base.rs.html#37"><span class="self">Self</span>::mod_inv</a>(<a href="#43">y</a>))
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_neg(x: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
         <span class="kw">if </span>x == <span class="number">0 </span>{
             <span class="number">0
         </span>} <span class="kw">else </span>{
-            <span class="self">Self</span>::get_mod() - <a href="#47">x</a>
+            <a href="mint_base.rs.html#29"><span class="self">Self</span>::get_mod</a>() - <a href="#47">x</a>
         }
     }
     <span class="kw">fn </span>mod_inv(x: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="kw">let </span>p = <span class="self">Self</span>::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>;
+        <span class="kw">let </span>p = <a href="mint_base.rs.html#29"><span class="self">Self</span>::get_mod</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>;
         <span class="kw">let </span>(<span class="kw-2">mut </span>a, <span class="kw-2">mut </span>b) = (<a href="#54">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>, <a href="#55">p</a>);
         <span class="kw">let </span>(<span class="kw-2">mut </span>u, <span class="kw-2">mut </span>x) = (<span class="number">1</span>, <span class="number">0</span>);
         <span class="kw">while </span>a != <span class="number">0 </span>{
@@ -404,10 +405,10 @@
             std::mem::swap(<span class="kw-2">&amp;mut </span>x, <span class="kw-2">&amp;mut </span>u);
             std::mem::swap(<span class="kw-2">&amp;mut </span>b, <span class="kw-2">&amp;mut </span>a);
         }
-        <span class="self">Self</span>::reduce((<span class="kw">if </span>x &lt; <span class="number">0 </span>{ <a href="#57">x</a> + <a href="#55">p</a> } <span class="kw">else </span>{ <a href="#57">x</a> }) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N3 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>((<span class="kw">if </span>x &lt; <span class="number">0 </span>{ <a href="#57">x</a> + <a href="#55">p</a> } <span class="kw">else </span>{ <a href="#57">x</a> }) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N3 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="kw">fn </span>mod_inner(x: <span class="self">Self</span>::Inner) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(<a href="#67">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#67">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
 }
 <span class="kw">impl</span>&lt;M&gt; MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; <span class="kw">for </span>M
@@ -416,11 +417,11 @@
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(<a href="#76">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#76">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
-        <span class="self">Self</span>::reduce(<a href="#80">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#80">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
@@ -433,11 +434,11 @@
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(<a href="#93">x</a> % <span class="self">Self</span>::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#93">x</a> % <a href="mint_base.rs.html#29"><span class="self">Self</span>::get_mod</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-        <span class="self">Self</span>::reduce(<a href="#97">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#97">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
@@ -450,11 +451,11 @@
 {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>from(x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::Inner {
-        <span class="self">Self</span>::reduce(<a href="#110">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> % <span class="self">Self</span>::get_mod() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#110">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> % <a href="mint_base.rs.html#29"><span class="self">Self</span>::get_mod</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <span class="self">Self</span>::reduce(<a href="#114">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#114">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
@@ -473,11 +474,11 @@
         } <span class="kw">else </span>{
             <a href="#128">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         };
-        <span class="self">Self</span>::reduce(<a href="#129">x</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#129">x</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> {
-        <span class="self">Self</span>::reduce(<a href="#137">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#137">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a>
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> {
@@ -496,11 +497,11 @@
         } <span class="kw">else </span>{
             <a href="#151">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         };
-        <span class="self">Self</span>::reduce(<a href="#152">x</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#152">x</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
-        <span class="self">Self</span>::reduce(<a href="#160">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#160">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> {
@@ -519,11 +520,11 @@
         } <span class="kw">else </span>{
             <a href="#174">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>
         };
-        <span class="self">Self</span>::reduce(<a href="#175">x</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#175">x</a> * <span class="self">Self</span>::N2 <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>into(x: <span class="self">Self</span>::Inner) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> {
-        <span class="self">Self</span>::reduce(<a href="#183">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>
+        <a href="#218-226"><span class="self">Self</span>::reduce</a>(<a href="#183">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>mod_into() -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> {

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/heavy_light_decomposition.rs`."><title>heavy_light_decomposition.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-452d19225583af2a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (3cdd004e5 2023-12-29)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6902632119e002ca.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tree/heavy_light_decomposition.rs`."><title>heavy_light_decomposition.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0b2e2def73e61cbe.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,8 +14,9 @@
     });
   });
 </script>
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../competitive/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -177,10 +178,10 @@
 </span><span class="kw">impl </span><a href="#5-10">HeavyLightDecomposition</a> {
     <span class="kw">pub fn </span>new(root: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, graph: <span class="kw-2">&amp;mut </span><a href="../graph/sparse_graph.rs.html#161">UndirectedSparseGraph</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>self_ = <span class="self">Self </span>{
-            par: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; graph.vertices_size()],
-            size: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; graph.vertices_size()],
-            head: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; graph.vertices_size()],
-            vidx: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; graph.vertices_size()],
+            par: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <a href="#13">graph</a>.<a href="../graph/sparse_graph.rs.html#39-41">vertices_size</a>()],
+            size: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <a href="#13">graph</a>.<a href="../graph/sparse_graph.rs.html#39-41">vertices_size</a>()],
+            head: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <a href="#13">graph</a>.<a href="../graph/sparse_graph.rs.html#39-41">vertices_size</a>()],
+            vidx: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0</span>; <a href="#13">graph</a>.<a href="../graph/sparse_graph.rs.html#39-41">vertices_size</a>()],
         };
         <a href="#14">self_</a>.<a href="#54-59">build</a>(<a href="#13">root</a>, <a href="#13">graph</a>);
         <a href="#14">self_</a>
@@ -259,7 +260,7 @@
         is_edge: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
         <span class="kw-2">mut </span>f: F,
     ) -&gt; M::T {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (M::unit(), M::unit());
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<a href="../algebra/magma.rs.html#30">M::unit</a>(), <a href="../algebra/magma.rs.html#30">M::unit</a>());
         <span class="kw">loop </span>{
             <span class="kw">if </span><span class="self">self</span>.vidx[u] &gt; <span class="self">self</span>.vidx[v] {
                 <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">std::mem::swap</a>(<span class="kw-2">&amp;mut </span><a href="#92">u</a>, <span class="kw-2">&amp;mut </span><a href="#93">v</a>);
@@ -268,11 +269,11 @@
             <span class="kw">if </span><span class="self">self</span>.head[u] == <span class="self">self</span>.head[v] {
                 <span class="kw">break</span>;
             }
-            <a href="#97">l</a> = M::operate(<span class="kw-2">&amp;</span><a href="#95">f</a>(<a class="self" href="#91">self</a>.vidx[<a class="self" href="#91">self</a>.head[<a href="#93">v</a>]], <a class="self" href="#91">self</a>.vidx[<a href="#93">v</a>] + <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="#97">l</a>);
+            <a href="#97">l</a> = <a href="../algebra/magma.rs.html#8">M::operate</a>(<span class="kw-2">&amp;</span><a href="#95">f</a>(<a class="self" href="#91">self</a>.vidx[<a class="self" href="#91">self</a>.head[<a href="#93">v</a>]], <a class="self" href="#91">self</a>.vidx[<a href="#93">v</a>] + <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="#97">l</a>);
             <a href="#93">v</a> = <a class="self" href="#91">self</a>.par[<a class="self" href="#91">self</a>.head[<a href="#93">v</a>]];
         }
-        M::operate(
-            <span class="kw-2">&amp;</span>M::operate(<span class="kw-2">&amp;</span><a href="#95">f</a>(<a class="self" href="#91">self</a>.vidx[<a href="#92">u</a>] + <a href="#94">is_edge</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="self" href="#91">self</a>.vidx[<a href="#93">v</a>] + <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="#97">l</a>),
+        <a href="../algebra/magma.rs.html#8">M::operate</a>(
+            <span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#8">M::operate</a>(<span class="kw-2">&amp;</span><a href="#95">f</a>(<a class="self" href="#91">self</a>.vidx[<a href="#92">u</a>] + <a href="#94">is_edge</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="self" href="#91">self</a>.vidx[<a href="#93">v</a>] + <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="#97">l</a>),
             <span class="kw-2">&amp;</span><a href="#97">r</a>,
         )
     }
@@ -288,7 +289,7 @@
         <span class="kw-2">mut </span>f1: F1,
         <span class="kw-2">mut </span>f2: F2,
     ) -&gt; M::T {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (M::unit(), M::unit());
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<a href="../algebra/magma.rs.html#30">M::unit</a>(), <a href="../algebra/magma.rs.html#30">M::unit</a>());
         <span class="kw">while </span><span class="self">self</span>.head[u] != <span class="self">self</span>.head[v] {
             <span class="kw">if </span><span class="self">self</span>.vidx[u] &gt; <span class="self">self</span>.vidx[v] {
                 l = M::operate(<span class="kw-2">&amp;</span>l, <span class="kw-2">&amp;</span>f2(<span class="self">self</span>.vidx[<span class="self">self</span>.head[u]], <span class="self">self</span>.vidx[u] + <span class="number">1</span>));
@@ -298,8 +299,8 @@
                 v = <span class="self">self</span>.par[<span class="self">self</span>.head[v]];
             }
         }
-        M::operate(
-            <span class="kw-2">&amp;</span>M::operate(
+        <a href="../algebra/magma.rs.html#8">M::operate</a>(
+            <span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#8">M::operate</a>(
                 <span class="kw-2">&amp;</span><a href="#126">l</a>,
                 <span class="kw-2">&amp;</span><span class="kw">if </span><span class="self">self</span>.vidx[u] &gt; <span class="self">self</span>.vidx[v] {
                     <a href="#124">f2</a>(<a class="self" href="#119">self</a>.vidx[<a href="#121">v</a>] + <a href="#122">is_edge</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a class="self" href="#119">self</a>.vidx[<a href="#120">u</a>] + <span class="number">1</span>)

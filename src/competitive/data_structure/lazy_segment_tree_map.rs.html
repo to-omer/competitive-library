@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/lazy_segment_tree_map.rs`."><title>lazy_segment_tree_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-452d19225583af2a.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (3cdd004e5 2023-12-29)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-39ed315d46fb705f.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6902632119e002ca.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-feafe1bb7466e4bd.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/lazy_segment_tree_map.rs`."><title>lazy_segment_tree_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-4e54bb2b497cc83f.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (595bc6f00 2024-01-05)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0b2e2def73e61cbe.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -14,8 +14,9 @@
     });
   });
 </script>
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><div class="sidebar-resizer"></div>
-    <main><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../competitive/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -463,15 +464,15 @@
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="kw-2">&amp;mut </span>(M::Agg, M::Act) {
-        <a class="self" href="#56">self</a>.seg.entry(<a href="#56">k</a>).or_insert((M::agg_unit(), M::act_unit()))
+        <a class="self" href="#56">self</a>.seg.entry(<a href="#56">k</a>).or_insert((<a href="../algebra/monoid_action.rs.html#19-21">M::agg_unit</a>(), <a href="../algebra/monoid_action.rs.html#23-25">M::act_unit</a>()))
     }
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>update_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: <span class="kw-2">&amp;</span>M::Act) {
         <span class="kw">let </span>n = <a class="self" href="#60">self</a>.n;
         <span class="kw">let </span>a = <a class="self" href="#60">self</a>.<a href="#56-58">get_mut</a>(<a href="#60">k</a>);
-        <span class="kw">let </span>nx = M::act_agg(<span class="kw-2">&amp;</span><a href="#62">a</a>.<span class="number">0</span>, <a href="#60">x</a>);
+        <span class="kw">let </span>nx = <a href="../algebra/monoid_action.rs.html#15">M::act_agg</a>(<span class="kw-2">&amp;</span><a href="#62">a</a>.<span class="number">0</span>, <a href="#60">x</a>);
         <span class="kw">if </span>k &lt; n {
-            <a href="#62">a</a>.<span class="number">1 </span>= M::act_operate(<span class="kw-2">&amp;</span><a href="#62">a</a>.<span class="number">1</span>, <a href="#60">x</a>);
+            <a href="#62">a</a>.<span class="number">1 </span>= <a href="../algebra/monoid_action.rs.html#31-33">M::act_operate</a>(<span class="kw-2">&amp;</span><a href="#62">a</a>.<span class="number">1</span>, <a href="#60">x</a>);
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(nx) = <a href="#63">nx</a> {
             <a href="#62">a</a>.<span class="number">0 </span>= <a href="#67">nx</a>;
@@ -485,10 +486,10 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>recalc_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>x = <span class="kw">match </span>(<a class="self" href="#77">self</a>.seg.get(<span class="kw-2">&amp;</span>(<span class="number">2 </span>* <a href="#77">k</a>)), <a class="self" href="#77">self</a>.seg.get(<span class="kw-2">&amp;</span>(<span class="number">2 </span>* <a href="#77">k</a> + <span class="number">1</span>))) {
-            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; M::agg_unit(),
+            (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <a href="../algebra/monoid_action.rs.html#19-21">M::agg_unit</a>(),
             (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>((y, <span class="kw">_</span>))) =&gt; <a href="#80">y</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
             (<span class="prelude-val">Some</span>((x, <span class="kw">_</span>)), <span class="prelude-val">None</span>) =&gt; <a href="#81">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
-            (<span class="prelude-val">Some</span>((x, <span class="kw">_</span>)), <span class="prelude-val">Some</span>((y, <span class="kw">_</span>))) =&gt; M::agg_operate(<a href="#82">x</a>, <a href="#82">y</a>),
+            (<span class="prelude-val">Some</span>((x, <span class="kw">_</span>)), <span class="prelude-val">Some</span>((y, <span class="kw">_</span>))) =&gt; <a href="../algebra/monoid_action.rs.html#27-29">M::agg_operate</a>(<a href="#82">x</a>, <a href="#82">y</a>),
         };
         <a class="self" href="#77">self</a>.<a href="#56-58">get_mut</a>(<a href="#77">k</a>).<span class="number">0 </span>= <a href="#78">x</a>;
     }
@@ -496,8 +497,8 @@
     </span><span class="kw">fn </span>propagate_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(k &lt; <span class="self">self</span>.n);
         <span class="kw">let </span>x = <span class="kw">match </span><a class="self" href="#87">self</a>.seg.get_mut(<span class="kw-2">&amp;</span><a href="#87">k</a>) {
-            <span class="prelude-val">Some</span>((<span class="kw">_</span>, x)) =&gt; <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<a href="#90">x</a>, M::act_unit()),
-            <span class="prelude-val">None </span>=&gt; M::act_unit(),
+            <span class="prelude-val">Some</span>((<span class="kw">_</span>, x)) =&gt; <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<a href="#90">x</a>, <a href="../algebra/monoid_action.rs.html#23-25">M::act_unit</a>()),
+            <span class="prelude-val">None </span>=&gt; <a href="../algebra/monoid_action.rs.html#23-25">M::act_unit</a>(),
         };
         <a class="self" href="#87">self</a>.<a href="#60-75">update_at</a>(<span class="number">2 </span>* <a href="#87">k</a>, <span class="kw-2">&amp;</span><a href="#89">x</a>);
         <a class="self" href="#87">self</a>.<a href="#60-75">update_at</a>(<span class="number">2 </span>* <a href="#87">k</a> + <span class="number">1</span>, <span class="kw-2">&amp;</span><a href="#89">x</a>);
@@ -549,8 +550,8 @@
         <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="#136">r</a> + <a class="self" href="#136">self</a>.n;
         <a class="self" href="#136">self</a>.<a href="#97-104">propagate</a>(<a href="#139">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
         <a class="self" href="#136">self</a>.<a href="#97-104">propagate</a>(<a href="#140">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>vl = M::agg_unit();
-        <span class="kw">let </span><span class="kw-2">mut </span>vr = M::agg_unit();
+        <span class="kw">let </span><span class="kw-2">mut </span>vl = <a href="../algebra/monoid_action.rs.html#19-21">M::agg_unit</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>vr = <a href="../algebra/monoid_action.rs.html#19-21">M::agg_unit</a>();
         <span class="kw">while </span>l &lt; r {
             <span class="kw">if </span>l &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
                 <span class="kw">if let </span><span class="prelude-val">Some</span>((x, <span class="kw">_</span>)) = <span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>l) {
@@ -567,12 +568,12 @@
             l /= <span class="number">2</span>;
             r /= <span class="number">2</span>;
         }
-        M::agg_operate(<span class="kw-2">&amp;</span><a href="#143">vl</a>, <span class="kw-2">&amp;</span><a href="#144">vr</a>)
+        <a href="../algebra/monoid_action.rs.html#27-29">M::agg_operate</a>(<span class="kw-2">&amp;</span><a href="#143">vl</a>, <span class="kw-2">&amp;</span><a href="#144">vr</a>)
     }
     <span class="kw">pub fn </span>set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, x: M::Agg) {
         <span class="kw">let </span>k = <a href="#163">k</a> + <a class="self" href="#163">self</a>.n;
         <a class="self" href="#163">self</a>.<a href="#97-104">propagate</a>(<a href="#164">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
-        <span class="kw-2">*</span><a class="self" href="#163">self</a>.<a href="#56-58">get_mut</a>(<a href="#164">k</a>) = (<a href="#163">x</a>, M::act_unit());
+        <span class="kw-2">*</span><a class="self" href="#163">self</a>.<a href="#56-58">get_mut</a>(<a href="#164">k</a>) = (<a href="#163">x</a>, <a href="../algebra/monoid_action.rs.html#23-25">M::act_unit</a>());
         <a class="self" href="#163">self</a>.<a href="#106-113">recalc</a>(<a href="#164">k</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
     }
     <span class="kw">pub fn </span>get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::Agg {
@@ -627,7 +628,7 @@
         <a class="self" href="#212">self</a>.<a href="#97-104">propagate</a>(<a href="#216">l</a>, <span class="bool-val">false</span>, <span class="bool-val">true</span>);
         <a class="self" href="#212">self</a>.<a href="#97-104">propagate</a>(<a href="#217">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
+        <span class="kw">let </span><span class="kw-2">mut </span>acc = <a href="../algebra/monoid_action.rs.html#19-21">M::agg_unit</a>();
         <span class="kw">while </span>l &lt; r &gt;&gt; k {
             <span class="kw">if </span>l &amp; <span class="number">1 </span>!= <span class="number">0 </span>{
                 <span class="kw">let </span>nacc = <span class="kw">match </span><span class="self">self</span>.seg.get(<span class="kw-2">&amp;</span>l) {
@@ -669,7 +670,7 @@
         <a class="self" href="#253">self</a>.<a href="#97-104">propagate</a>(<a href="#258">r</a>, <span class="bool-val">true</span>, <span class="bool-val">true</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>k = <span class="number">0usize</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>acc = M::agg_unit();
+        <span class="kw">let </span><span class="kw-2">mut </span>acc = <a href="../algebra/monoid_action.rs.html#19-21">M::agg_unit</a>();
         <span class="kw">while </span>l &gt;&gt; k &lt; r {
             c &lt;&lt;= <span class="number">1</span>;
             <span class="kw">if </span>l &amp; <span class="number">1 </span>&lt;&lt; k != <span class="number">0 </span>{
