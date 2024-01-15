@@ -167,6 +167,7 @@ macro_rules! scan_value {
     (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty, $($t:tt)*)                         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $($t)*) };
     (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                               => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
     (@$tag:ident $scanner:expr, [$($args:tt)*])                                           => { ::std::compile_error!(::std::stringify!($($args)*)) };
+    (src = $src:expr, $($t:tt)*)                                                          => { { let mut __scanner = Scanner::new($src); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
     ($scanner:expr, $($t:tt)*)                                                            => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
 }
 
@@ -198,6 +199,7 @@ macro_rules! scan {
         let $($p)* = $crate::scan_value!($scanner, $($tt)*);
         $crate::scan!(@pat $scanner, [] [] $($t)*)
     };
+    (src = $src:expr, $($t:tt)*) => { let mut __scanner = Scanner::new($src); $crate::scan!(@pat __scanner, [] [] $($t)*) };
     ($scanner:expr, $($t:tt)*) => { $crate::scan!(@pat $scanner, [] [] $($t)*) }
 }
 
@@ -403,4 +405,8 @@ fn test_scan() {
     assert_eq!(c, (1, 1));
     assert_eq!(d, vec![1, 1]);
     assert_eq!(e, [2, 3]);
+
+    scan!(src = "1", x);
+    assert_eq!(x, 1);
+    assert_eq!(scan_value!(src = "1", usize), 1);
 }
