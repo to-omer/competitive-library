@@ -1,4 +1,7 @@
-use super::Monoid;
+use super::{
+    Container, ContainerEntry, ContainerFactory, FixedVecMapFactory, HashMapFactory, Monoid,
+    VecMap, VecMapFactory,
+};
 use std::{
     borrow::Borrow,
     cmp::Ordering,
@@ -15,13 +18,12 @@ pub trait Automaton {
     fn initial(&self) -> Self::State;
     fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State>;
     fn accept(&self, state: &Self::State) -> bool;
-    fn dp<M>(&self, init: M::T) -> Automatondp<M, &Self>
+    fn dp<M>(&self, init: M::T) -> InitAutomatonDp<M, &Self>
     where
         Self: Sized,
-        Self::State: Eq + Hash,
         M: Monoid,
     {
-        Automatondp::new(self, init)
+        InitAutomatonDp::new(self, init)
     }
 }
 
@@ -42,24 +44,82 @@ where
     }
 }
 
-#[derive(Clone)]
-pub struct Automatondp<M, A>
+#[derive(Debug, Clone)]
+pub struct InitAutomatonDp<M, A>
 where
     M: Monoid,
     A: Automaton,
-    A::State: Eq + Hash,
 {
     dfa: A,
-    pub dp: HashMap<A::State, M::T>,
-    ndp: HashMap<A::State, M::T>,
+    init: M::T,
 }
 
-impl<M, A> Debug for Automatondp<M, A>
+impl<M, A> InitAutomatonDp<M, A>
+where
+    M: Monoid,
+    A: Automaton,
+{
+    pub fn new(dfa: A, init: M::T) -> Self {
+        Self { dfa, init }
+    }
+    pub fn with_factory<F>(self, factory: F) -> Automatondp<M, A, F::Container>
+    where
+        F: ContainerFactory,
+        F::Container: Container<Key = A::State, Value = M::T>,
+    {
+        Automatondp::new(self.dfa, self.init, factory)
+    }
+    pub fn with_hashmap(self) -> Automatondp<M, A, HashMap<A::State, M::T>>
+    where
+        A::State: Eq + Hash,
+    {
+        Automatondp::new(self.dfa, self.init, HashMapFactory::default())
+    }
+    pub fn with_vecmap<F>(
+        self,
+        key_to_index: F,
+    ) -> Automatondp<M, A, VecMap<false, A::State, M::T, F>>
+    where
+        F: Fn(&A::State) -> usize + Clone,
+    {
+        Automatondp::new(self.dfa, self.init, VecMapFactory::new(key_to_index))
+    }
+    pub fn with_fixed_vecmap<F>(
+        self,
+        key_to_index: F,
+        len: usize,
+    ) -> Automatondp<M, A, VecMap<true, A::State, M::T, F>>
+    where
+        F: Fn(&A::State) -> usize + Clone,
+    {
+        Automatondp::new(
+            self.dfa,
+            self.init,
+            FixedVecMapFactory::new(key_to_index, len),
+        )
+    }
+}
+
+#[derive(Clone)]
+pub struct Automatondp<M, A, C>
+where
+    M: Monoid,
+    A: Automaton,
+    C: Container<Key = A::State, Value = M::T>,
+{
+    dfa: A,
+    pub dp: C,
+    ndp: C,
+    _marker: PhantomData<fn() -> M>,
+}
+
+impl<M, A, C> Debug for Automatondp<M, A, C>
 where
     M: Monoid,
     A: Automaton + Debug,
-    A::State: Eq + Hash + Debug,
+    A::State: Debug,
     M::T: Debug,
+    C: Container<Key = A::State, Value = M::T> + Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("Automatondp")
@@ -70,17 +130,25 @@ where
     }
 }
 
-impl<M, A> Automatondp<M, A>
+impl<M, A, C> Automatondp<M, A, C>
 where
     M: Monoid,
     A: Automaton,
-    A::State: Eq + Hash,
+    C: Container<Key = A::State, Value = M::T>,
 {
-    pub fn new(dfa: A, init: M::T) -> Self {
-        let mut dp = HashMap::new();
-        let ndp = HashMap::new();
+    pub fn new<F>(dfa: A, init: M::T, factory: F) -> Self
+    where
+        F: ContainerFactory<Container = C>,
+    {
+        let mut dp = factory.create_container();
+        let ndp = factory.create_container();
         dp.insert(dfa.initial(), init);
-        Self { dfa, dp, ndp }
+        Self {
+            dfa,
+            dp,
+            ndp,
+            _marker: PhantomData,
+        }
     }
     pub fn step<S, I, B>(&mut self, mut sigma: S)
     where
@@ -129,12 +197,11 @@ where
         }
         acc
     }
-    pub fn map_fold_accept<U, F>(&self, mut f: F) -> HashMap<U, M::T>
+    pub fn map_fold_accept<U, F, D>(&self, mut f: F, mut map: D) -> D
     where
-        U: Eq + Hash,
         F: FnMut(&A::State) -> U,
+        D: Container<Key = U, Value = M::T>,
     {
-        let mut map = HashMap::new();
         for (state, value) in self.dp.iter() {
             if self.dfa.accept(state) {
                 map.entry(f(state))
@@ -739,15 +806,33 @@ mod tests {
         let mut rng = Xorshift::default();
         for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
             let nd = n.to_digit_sequence_radix(r);
-            assert_eq!(n + 1, automaton!(<= nd).dp::<A>(1).run(|| 0..r, nd.len()));
-            assert_eq!(n, automaton!(< nd).dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(
+                n + 1,
+                automaton!(<= nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                n,
+                automaton!(< nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
+            );
             assert_eq!(
                 r.pow(nd.len() as _) - n,
-                automaton!(>= nd).dp::<A>(1).run(|| 0..r, nd.len())
+                automaton!(>= nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
             );
             assert_eq!(
                 r.pow(nd.len() as _) - n - 1,
-                automaton!(> nd).dp::<A>(1).run(|| 0..r, nd.len())
+                automaton!(> nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
             );
         }
     }
@@ -759,15 +844,33 @@ mod tests {
         let mut rng = Xorshift::default();
         for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
             let nd = n.to_digit_sequence_radix(r);
-            assert_eq!(n + 1, automaton!(!<= nd).dp::<A>(1).run(|| 0..r, nd.len()));
-            assert_eq!(n, automaton!(!< nd).dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(
+                n + 1,
+                automaton!(!<= nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                n,
+                automaton!(!< nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
+            );
             assert_eq!(
                 r.pow(nd.len() as _) - n,
-                automaton!(!>= nd).dp::<A>(1).run(|| 0..r, nd.len())
+                automaton!(!>= nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
             );
             assert_eq!(
                 r.pow(nd.len() as _) - n - 1,
-                automaton!(!> nd).dp::<A>(1).run(|| 0..r, nd.len())
+                automaton!(!> nd)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(|| 0..r, nd.len())
             );
         }
     }
@@ -795,11 +898,23 @@ mod tests {
         for (n, r, c) in rng.gen_iter((0..10usize.pow(18), 2..=10, 2..200)).take(Q) {
             let nd = n.to_digit_sequence_radix(r);
             let dfa = automaton!((< nd) & (C(c, r)));
-            assert_eq!((n + c - 1) / c, dfa.dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(
+                (n + c - 1) / c,
+                dfa.dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
+            );
 
             let dfa =
                 automaton!((< nd) & (=> || 0usize, |s, a| Some((s * r + a) % c), |s| *s == 0));
-            assert_eq!((n + c - 1) / c, dfa.dp::<A>(1).run(|| 0..r, nd.len()));
+            assert_eq!(
+                (n + c - 1) / c,
+                dfa.dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                (n + c - 1) / c,
+                dfa.dp::<A>(1)
+                    .with_vecmap(|s| s.1 * 2 + (s.0).1 as usize)
+                    .run(|| 0..r, nd.len())
+            );
         }
     }
 }

@@ -84,7 +84,10 @@ pub use self::wavelet_matrix::WaveletMatrix;
 mod accumulate;
 #[cfg_attr(nightly, codesnip::entry("Allocator"))]
 mod allocator;
-#[cfg_attr(nightly, codesnip::entry("automaton", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("automaton", include("algebra", "container", "VecMap"))
+)]
 mod automaton;
 #[cfg_attr(nightly, codesnip::entry("BinaryIndexedTree", include("algebra")))]
 mod binary_indexed_tree;
