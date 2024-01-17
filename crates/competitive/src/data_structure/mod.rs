@@ -33,6 +33,11 @@ pub use self::compressed_segment_tree::{
     CompressedSegmentTree, CompressedSegmentTree1d, CompressedSegmentTree2d,
     CompressedSegmentTree3d, CompressedSegmentTree4d,
 };
+#[codesnip::entry("container")]
+pub use self::container::{
+    BTreeMapFactory, Container, ContainerEntry, ContainerFactory, HashMapFactory,
+    HashMapFactoryWithCapacity,
+};
 #[codesnip::entry("Counter")]
 pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DisjointSparseTable")]
@@ -67,6 +72,8 @@ pub use self::trie::Trie;
 pub use self::union_find::{
     MergingUnionFind, PotentializedUnionFind, UndoableUnionFind, UnionFind, UnionFindBase,
 };
+#[codesnip::entry("VecMap")]
+pub use self::vec_map::{FixedVecMapFactory, VecMap, VecMapFactory, VecMapFactoryWithCapacity};
 #[codesnip::entry("WaveletMatrix")]
 pub use self::wavelet_matrix::WaveletMatrix;
 
@@ -107,6 +114,8 @@ mod compressed_binary_indexed_tree;
     )
 )]
 mod compressed_segment_tree;
+#[cfg_attr(nightly, codesnip::entry("container"))]
+mod container;
 #[cfg_attr(nightly, codesnip::entry("Counter"))]
 mod counter;
 #[cfg_attr(nightly, codesnip::entry("DisjointSparseTable", include("algebra")))]
@@ -157,5 +166,7 @@ mod trie;
     codesnip::entry("UnionFind", include("algebra", "TupleOperation"))
 )]
 pub mod union_find;
+#[cfg_attr(nightly, codesnip::entry("VecMap", include("container")))]
+mod vec_map;
 #[cfg_attr(nightly, codesnip::entry("WaveletMatrix", include("BitVector")))]
 mod wavelet_matrix;
