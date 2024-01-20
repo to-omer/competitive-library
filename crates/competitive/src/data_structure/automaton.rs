@@ -770,8 +770,8 @@ macro_rules! automaton {
     (@inner $e:ident !<=)                                    => { RevLexicographicalAutomaton::greater_than_or_equal(&$e) };
     (@inner $e:ident !>)                                     => { RevLexicographicalAutomaton::less_than(&$e) };
     (@inner $e:ident !<)                                     => { RevLexicographicalAutomaton::greater_than(&$e) };
-    (@inner => $f:expr, $g:expr, $h:expr, ($($t:tt)*) $(,)?) => { AlphabetMappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
     (@inner => ($($t:tt)*) $f:expr, $g:expr, $h:expr $(,)?)  => { MappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
+    (@inner => $f:expr, $g:expr, $h:expr, ($($t:tt)*) $(,)?) => { AlphabetMappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
     (@inner => $f:expr, $g:expr, $h:expr $(,)?)              => { FunctionalAutomaton::new($f, $g, $h) };
     (@inner @)                                               => { AlwaysAcceptingAutomaton::new() };
     (@inner $($t:tt)*)                                       => { $crate::automaton!(@union [] [] $($t)*) };
