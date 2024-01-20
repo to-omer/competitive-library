@@ -13,13 +13,13 @@ pub struct Complex<T> {
 
 impl<T> Complex<T> {
     pub fn new(re: T, im: T) -> Self {
-        Complex { re, im }
+        Self { re, im }
     }
     pub fn transpose(self) -> Self {
-        Complex {
-            re: self.im,
-            im: self.re,
-        }
+        Self::new(self.im, self.re)
+    }
+    pub fn map<U>(self, mut f: impl FnMut(T) -> U) -> Complex<U> {
+        Complex::new(f(self.re), f(self.im))
     }
 }
 impl<T> Zero for Complex<T>

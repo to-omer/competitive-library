@@ -75,6 +75,18 @@ where
     pub fn inner(self) -> T {
         self.num / self.den
     }
+    pub fn map<U>(self, mut f: impl FnMut(T) -> U) -> Rational<U>
+    where
+        U: Signed,
+    {
+        Rational::new(f(self.num), f(self.den))
+    }
+    pub fn map_unchecked<U>(self, mut f: impl FnMut(T) -> U) -> Rational<U>
+    where
+        U: Signed,
+    {
+        Rational::new_unchecked(f(self.num), f(self.den))
+    }
 }
 
 impl<T> Bounded for Rational<T>
