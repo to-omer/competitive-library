@@ -8,7 +8,10 @@ pub struct WaveletMatrix {
 }
 
 impl WaveletMatrix {
-    pub fn new<T: Clone + RankSelectDictionaries>(mut v: Vec<T>, bit_length: usize) -> Self {
+    pub fn new<T>(mut v: Vec<T>, bit_length: usize) -> Self
+    where
+        T: Clone + RankSelectDictionaries,
+    {
         let len = v.len();
         let mut table = Vec::new();
         for d in (0..bit_length).rev() {
@@ -22,6 +25,24 @@ impl WaveletMatrix {
                 .collect();
         }
         Self { len, table }
+    }
+    pub fn new_with_init<T, F>(v: Vec<T>, bit_length: usize, mut f: F) -> Self
+    where
+        T: Clone + RankSelectDictionaries,
+        F: FnMut(usize, usize, T),
+    {
+        let this = Self::new(v.clone(), bit_length);
+        for (mut k, v) in v.into_iter().enumerate() {
+            for (d, &(c, ref b)) in this.table.iter().rev().enumerate().rev() {
+                if v.access(d) {
+                    k = c + b.rank1(k);
+                } else {
+                    k = b.rank0(k);
+                }
+                f(d, k, v.clone());
+            }
+        }
+        this
     }
     /// get k-th value
     pub fn access(&self, mut k: usize) -> usize {
@@ -130,6 +151,21 @@ impl WaveletMatrix {
     /// the number of valrange in range
     pub fn rank_range(&self, valrange: Range<usize>, range: Range<usize>) -> usize {
         self.rank_lessthan(valrange.end, range.clone()) - self.rank_lessthan(valrange.start, range)
+    }
+    pub fn query_less_than<F>(&self, val: usize, mut range: Range<usize>, mut f: F)
+    where
+        F: FnMut(usize, Range<usize>),
+    {
+        for (d, &(c, ref b)) in self.table.iter().rev().enumerate().rev() {
+            if val.access(d) {
+                f(d, b.rank0(range.start)..b.rank0(range.end));
+                range.start = c + b.rank1(range.start);
+                range.end = c + b.rank1(range.end);
+            } else {
+                range.start = b.rank0(range.start);
+                range.end = b.rank0(range.end);
+            }
+        }
     }
 }
 
