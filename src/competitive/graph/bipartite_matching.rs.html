@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/bipartite_matching.rs`."><title>bipartite_matching.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/bipartite_matching.rs`."><title>bipartite_matching.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -414,7 +414,7 @@
     <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, l: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, r: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(l &lt; <span class="self">self</span>.left_size);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(r &lt; <span class="self">self</span>.right_size);
-        <a class="self" href="#24">self</a>.left_graph[<a href="#24">l</a>].push(<a href="#24">r</a>);
+        <a class="self" href="#24">self</a>.left_graph[<a href="#24">l</a>].<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#24">r</a>);
         <a class="self" href="#24">self</a>.matching_size = !<span class="number">0</span>;
     }
     <span class="kw">pub fn </span>from_edges(left_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, right_size: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, lr: <span class="kw-2">&amp;</span>[(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)]) -&gt; <span class="self">Self </span>{
@@ -422,7 +422,7 @@
         <span class="kw">for </span><span class="kw-2">&amp;</span>(l, <span class="kw">_</span>) <span class="kw">in </span>lr {
             deg[l] += <span class="number">1</span>;
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>left_graph: Vec&lt;<span class="kw">_</span>&gt; = <a href="#31">deg</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(Vec::with_capacity).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>left_graph: Vec&lt;<span class="kw">_</span>&gt; = <a href="#31">deg</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(Vec::with_capacity).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
         <span class="kw">for </span><span class="kw-2">&amp;</span>(l, r) <span class="kw">in </span>lr {
             <span class="macro">assert!</span>(l &lt; left_size);
             <span class="macro">assert!</span>(r &lt; right_size);
@@ -439,7 +439,7 @@
     }
     <span class="kw">pub fn </span>hopcroft_karp(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">fn </span>bfs(bm: <span class="kw-2">&amp;</span><a href="#4-11">BipartiteMatching</a>, deq: <span class="kw-2">&amp;mut </span>VecDeque&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, level: <span class="kw-2">&amp;mut </span>[<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>]) {
-            <a href="#51">deq</a>.clear();
+            <a href="#51">deq</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.clear">clear</a>();
             <span class="kw">for </span>(i, r) <span class="kw">in </span>bm.left_match.iter().enumerate() {
                 <span class="kw">if </span>r.is_none() {
                     deq.push_back(i);
@@ -480,10 +480,10 @@
         <span class="kw">if </span><span class="self">self</span>.matching_size != !<span class="number">0 </span>{
             <span class="kw">return</span>;
         }
-        <a class="self" href="#50">self</a>.matching_size = <a class="self" href="#50">self</a>.left_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|r| <a href="#93">r</a>.is_some()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">count</a>();
+        <a class="self" href="#50">self</a>.matching_size = <a class="self" href="#50">self</a>.left_match.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|r| <a href="#93">r</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_some">is_some</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.count">count</a>();
         <span class="kw">let </span><span class="kw-2">mut </span>used = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <a class="self" href="#50">self</a>.left_size];
         <span class="kw">let </span><span class="kw-2">mut </span>level = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0</span>; <a class="self" href="#50">self</a>.left_size];
-        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<a class="self" href="#50">self</a>.left_size);
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.with_capacity">VecDeque::with_capacity</a>(<a class="self" href="#50">self</a>.left_size);
         <span class="kw">loop </span>{
             <a href="#51-69">bfs</a>(<a class="self" href="#50">self</a>, <span class="kw-2">&amp;mut </span><a href="#96">deq</a>, <span class="kw-2">&amp;mut </span><a href="#95">level</a>);
             <span class="kw">let </span>prev_size = <a class="self" href="#50">self</a>.matching_size;
@@ -507,8 +507,8 @@
         <span class="kw">if </span><span class="self">self</span>.matching_size != !<span class="number">0 </span>{
             <span class="kw">return</span>;
         }
-        <a class="self" href="#116">self</a>.matching_size = <a class="self" href="#116">self</a>.left_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|r| <a href="#120">r</a>.is_some()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">count</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::with_capacity(<a class="self" href="#116">self</a>.left_size);
+        <a class="self" href="#116">self</a>.matching_size = <a class="self" href="#116">self</a>.left_match.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|r| <a href="#120">r</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_some">is_some</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.count">count</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.with_capacity">VecDeque::with_capacity</a>(<a class="self" href="#116">self</a>.left_size);
         <span class="kw">let </span><span class="kw-2">mut </span>prev = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0usize</span>; <a class="self" href="#116">self</a>.left_size];
         <span class="kw">let </span><span class="kw-2">mut </span>root = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[!<span class="number">0usize</span>; <a class="self" href="#116">self</a>.left_size];
         <span class="kw">loop </span>{
@@ -561,16 +561,16 @@
     <span class="kw">pub fn </span>maximum_matching(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; {
         <a class="self" href="#171">self</a>.<a href="#116-170">kuhn_multi_start_bfs</a>();
         <a class="self" href="#171">self</a>.left_match
-            .iter()
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(l, r)| <a href="#176">r</a>.map(|r| (<a href="#176">l</a>, <a href="#176">r</a>)))
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(l, r)| <a href="#176">r</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|r| (<a href="#176">l</a>, <a href="#176">r</a>)))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>()
     }
     <span class="kw">pub fn </span>minimum_edge_cover(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; {
         <a class="self" href="#179">self</a>.<a href="#116-170">kuhn_multi_start_bfs</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::with_capacity(<a class="self" href="#179">self</a>.left_size + <a class="self" href="#179">self</a>.right_size - <a class="self" href="#179">self</a>.matching_size);
-        <span class="kw">let </span><span class="kw-2">mut </span>left_used: Vec&lt;<span class="kw">_</span>&gt; = <a class="self" href="#179">self</a>.left_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(Option::is_some).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>right_used: Vec&lt;<span class="kw">_</span>&gt; = <a class="self" href="#179">self</a>.right_match.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(Option::is_some).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>res = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a class="self" href="#179">self</a>.left_size + <a class="self" href="#179">self</a>.right_size - <a class="self" href="#179">self</a>.matching_size);
+        <span class="kw">let </span><span class="kw-2">mut </span>left_used: Vec&lt;<span class="kw">_</span>&gt; = <a class="self" href="#179">self</a>.left_match.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(Option::is_some).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>right_used: Vec&lt;<span class="kw">_</span>&gt; = <a class="self" href="#179">self</a>.right_match.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(Option::is_some).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
         <span class="kw">for </span>(l, lg) <span class="kw">in </span><span class="self">self</span>.left_graph.iter().enumerate() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = <span class="self">self</span>.left_match[l] {
                 res.push((l, r));
@@ -594,7 +594,7 @@
         <a class="self" href="#198">self</a>.<a href="#116-170">kuhn_multi_start_bfs</a>();
         <span class="kw">let </span><span class="kw-2">mut </span>left_used = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <a class="self" href="#198">self</a>.left_size];
         <span class="kw">let </span><span class="kw-2">mut </span>right_used = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <a class="self" href="#198">self</a>.right_size];
-        <span class="kw">let </span><span class="kw-2">mut </span>deq = VecDeque::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>deq = <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.new">VecDeque::new</a>();
         <span class="kw">for </span>(l, r) <span class="kw">in </span><span class="self">self</span>.left_match.iter().enumerate() {
             <span class="kw">if </span>r.is_none() {
                 left_used[l] = <span class="bool-val">true</span>;
@@ -602,7 +602,7 @@
             }
         }
         <span class="kw">loop </span>{
-            <span class="kw">match </span><a href="#207">deq</a>.pop_front() {
+            <span class="kw">match </span><a href="#207">deq</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.pop_front">pop_front</a>() {
                 <span class="prelude-val">Some</span>(<a href="#201">Either::Left</a>(l)) =&gt; {
                     <span class="kw">for </span><span class="kw-2">&amp;</span>r <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.left_graph[l] {
                         <span class="kw">if </span><span class="self">self</span>.left_match[l] != <span class="prelude-val">Some</span>(r) &amp;&amp; !right_used[r] {
@@ -615,7 +615,7 @@
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(l) = <a class="self" href="#198">self</a>.right_match[<a href="#224">r</a>] {
                         <span class="kw">if </span>!left_used[l] {
                             <a href="#205">left_used</a>[<a href="#225">l</a>] = <span class="bool-val">true</span>;
-                            <a href="#207">deq</a>.push_back(<a href="#201">Either::Left</a>(<a href="#225">l</a>));
+                            <a href="#207">deq</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.push_back">push_back</a>(<a href="#201">Either::Left</a>(<a href="#225">l</a>));
                         }
                     }
                 }
@@ -628,30 +628,30 @@
         <span class="kw">let </span>(left_used, right_used) = <a class="self" href="#237">self</a>.<a href="#198-236">reachable</a>();
         (
             <a href="#238">left_used</a>
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(l, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(<a href="#243">l</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(l, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(<a href="#243">l</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>(),
             <a href="#238">right_used</a>
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(r, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(<a href="#248">r</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(r, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(<a href="#248">r</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>(),
         )
     }
     <span class="kw">pub fn </span>maximum_independent_set(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; (Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;) {
         <span class="kw">let </span>(left_used, right_used) = <a class="self" href="#252">self</a>.<a href="#198-236">reachable</a>();
         (
             <a href="#253">left_used</a>
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(l, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(<a href="#258">l</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(l, b)| <span class="kw">if </span>b { <span class="prelude-val">Some</span>(<a href="#258">l</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>(),
             <a href="#253">right_used</a>
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">enumerate</a>()
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>(|(r, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(<a href="#263">r</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
-                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(r, b)| <span class="kw">if </span>!b { <span class="prelude-val">Some</span>(<a href="#263">r</a>) } <span class="kw">else </span>{ <span class="prelude-val">None </span>})
+                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>(),
         )
     }
 }

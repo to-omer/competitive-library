@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/vec_map.rs`."><title>vec_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/vec_map.rs`."><title>vec_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -347,7 +347,7 @@
 <span class="kw">use </span>std::{
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>},
     iter::{<a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">repeat_with</a>, <a href="https://doc.rust-lang.org/nightly/core/iter/adapters/filter_map/struct.FilterMap.html">FilterMap</a>, <a href="https://doc.rust-lang.org/nightly/core/iter/adapters/map/struct.Map.html">Map</a>},
-    marker::PhantomData,
+    <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">marker::PhantomData</a>,
     <a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">mem::replace</a>,
     <a href="https://doc.rust-lang.org/nightly/alloc/slice/index.html">slice</a>,
 };
@@ -384,9 +384,9 @@
     V: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#41">f</a>.debug_map()
-            .entries(<a class="self" href="#41">self</a>.data.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">flatten</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|(k, v): <span class="kw-2">&amp;</span>(K, V)| (<a href="#43">k</a>, <a href="#43">v</a>)))
-            .finish()
+        <a href="#41">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_map">debug_map</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugMap.html#method.entries">entries</a>(<a class="self" href="#41">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.flatten">flatten</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|(k, v): <span class="kw-2">&amp;</span>(K, V)| (<a href="#43">k</a>, <a href="#43">v</a>)))
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugMap.html#method.finish">finish</a>()
     }
 }
 
@@ -400,7 +400,7 @@
     <span class="kw">pub fn </span>new(key_to_index: F) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#55">key_to_index</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -413,8 +413,8 @@
 
     <span class="kw">fn </span>create_container(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Container {
         <a href="#31-34">VecMap</a> {
-            data: Vec::new(),
-            key_to_index: <a class="self" href="#69">self</a>.key_to_index.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            data: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">Vec::new</a>(),
+            key_to_index: <a class="self" href="#69">self</a>.key_to_index.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
         }
     }
 }
@@ -424,7 +424,7 @@
         <span class="self">Self </span>{
             <a href="#78">key_to_index</a>,
             <a href="#78">len</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -437,8 +437,8 @@
 
     <span class="kw">fn </span>create_container(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Container {
         <a href="#31-34">VecMap</a> {
-            data: <a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">repeat_with</a>(|| <span class="prelude-val">None</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">take</a>(<a class="self" href="#93">self</a>.len).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>(),
-            key_to_index: <a class="self" href="#93">self</a>.key_to_index.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            data: <a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">repeat_with</a>(|| <span class="prelude-val">None</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.take">take</a>(<a class="self" href="#93">self</a>.len).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>(),
+            key_to_index: <a class="self" href="#93">self</a>.key_to_index.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
         }
     }
 }
@@ -448,7 +448,7 @@
         <span class="self">Self </span>{
             <a href="#102">key_to_index</a>,
             <a href="#102">capacity</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -461,8 +461,8 @@
 
     <span class="kw">fn </span>create_container(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Container {
         <a href="#31-34">VecMap</a> {
-            data: Vec::with_capacity(<a class="self" href="#117">self</a>.capacity),
-            key_to_index: <a class="self" href="#117">self</a>.key_to_index.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            data: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a class="self" href="#117">self</a>.capacity),
+            key_to_index: <a class="self" href="#117">self</a>.key_to_index.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
         }
     }
 }
@@ -494,26 +494,26 @@
 
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::Value&gt; {
         <span class="kw">let </span>index = (<a class="self" href="#150">self</a>.key_to_index)(<a href="#150">key</a>);
-        <a class="self" href="#150">self</a>.data.get(<a href="#151">index</a>).and_then(|x| <a href="#152">x</a>.as_ref()).map(|x| <span class="kw-2">&amp;</span><a href="#152">x</a>.<span class="number">1</span>)
+        <a class="self" href="#150">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get">get</a>(<a href="#151">index</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.and_then">and_then</a>(|x| <a href="#152">x</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_ref">as_ref</a>()).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|x| <span class="kw-2">&amp;</span><a href="#152">x</a>.<span class="number">1</span>)
     }
 
     <span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Value&gt; {
         <span class="kw">let </span>index = (<a class="self" href="#155">self</a>.key_to_index)(<a href="#155">key</a>);
         <a class="self" href="#155">self</a>.data
-            .get_mut(<a href="#156">index</a>)
-            .and_then(|x| <a href="#159">x</a>.as_mut())
-            .map(|x| <span class="kw-2">&amp;mut </span><a href="#160">x</a>.<span class="number">1</span>)
+            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_mut">get_mut</a>(<a href="#156">index</a>)
+            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.and_then">and_then</a>(|x| <a href="#159">x</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_mut">as_mut</a>())
+            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|x| <span class="kw-2">&amp;mut </span><a href="#160">x</a>.<span class="number">1</span>)
     }
 
     <span class="kw">fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="self">Self</span>::Key, value: <span class="self">Self</span>::Value) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Value&gt; {
         <span class="kw">let </span>index = (<a class="self" href="#163">self</a>.key_to_index)(<span class="kw-2">&amp;</span><a href="#163">key</a>);
         <span class="kw">let </span>entry = <span class="kw">if </span>FIXED {
-            <a class="self" href="#163">self</a>.data.get_mut(<a href="#164">index</a>).unwrap()
+            <a class="self" href="#163">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_mut">get_mut</a>(<a href="#164">index</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>()
         } <span class="kw">else </span>{
             <span class="kw">if </span>index &gt;= <span class="self">self</span>.data.len() {
-                <a class="self" href="#163">self</a>.data.resize_with(<a href="#164">index</a> + <span class="number">1</span>, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>);
+                <a class="self" href="#163">self</a>.data.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(<a href="#164">index</a> + <span class="number">1</span>, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>);
             }
-            <span class="kw">unsafe </span>{ <a class="self" href="#163">self</a>.data.get_unchecked_mut(<a href="#164">index</a>) }
+            <span class="kw">unsafe </span>{ <a class="self" href="#163">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked_mut">get_unchecked_mut</a>(<a href="#164">index</a>) }
         };
         <span class="kw">match </span><a href="#165">entry</a> {
             <span class="prelude-val">Some</span>((<span class="kw">_</span>, v)) =&gt; <span class="prelude-val">Some</span>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<a href="#174">v</a>, <a href="#163">value</a>)),
@@ -526,33 +526,33 @@
 
     <span class="kw">fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Value&gt; {
         <span class="kw">let </span>index = (<a class="self" href="#182">self</a>.key_to_index)(<a href="#182">key</a>);
-        <a class="self" href="#182">self</a>.data.get_mut(<a href="#183">index</a>).and_then(|x| <a href="#184">x</a>.take()).map(|x| <a href="#184">x</a>.<span class="number">1</span>)
+        <a class="self" href="#182">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_mut">get_mut</a>(<a href="#183">index</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.and_then">and_then</a>(|x| <a href="#184">x</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.take">take</a>()).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|x| <a href="#184">x</a>.<span class="number">1</span>)
     }
 
     <span class="kw">fn </span>entry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Entry&lt;<span class="lifetime">'_</span>&gt; {
         <span class="kw">let </span>index = (<a class="self" href="#187">self</a>.key_to_index)(<span class="kw-2">&amp;</span><a href="#187">key</a>);
         <span class="kw">let </span>entry = <span class="kw">if </span>FIXED {
-            <a class="self" href="#187">self</a>.data.get_mut(<a href="#188">index</a>).unwrap()
+            <a class="self" href="#187">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_mut">get_mut</a>(<a href="#188">index</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>()
         } <span class="kw">else </span>{
             <span class="kw">if </span>index &gt;= <span class="self">self</span>.data.len() {
-                <a class="self" href="#187">self</a>.data.resize_with(<a href="#188">index</a> + <span class="number">1</span>, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>);
+                <a class="self" href="#187">self</a>.data.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(<a href="#188">index</a> + <span class="number">1</span>, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>);
             }
-            <span class="kw">unsafe </span>{ <a class="self" href="#187">self</a>.data.get_unchecked_mut(<a href="#188">index</a>) }
+            <span class="kw">unsafe </span>{ <a class="self" href="#187">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked_mut">get_unchecked_mut</a>(<a href="#188">index</a>) }
         };
         <a href="#49-52">Entry</a> { <a href="#187">key</a>, <a href="#189">entry</a> }
     }
 
     <span class="kw">fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter&lt;<span class="lifetime">'_</span>&gt; {
         <a class="self" href="#200">self</a>.data
-            .iter()
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>::&lt;<span class="kw">_</span>, <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;(K, V)&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(K, V)&gt;&gt;(Option::as_ref)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>::&lt;<span class="kw">_</span>, <span class="kw">fn</span>(<span class="kw-2">&amp;</span>(K, V)) -&gt; (<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt;(|(k, v)| (<a href="#204">k</a>, <a href="#204">v</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>::&lt;<span class="kw">_</span>, <span class="kw">fn</span>(<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;(K, V)&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(K, V)&gt;&gt;(Option::as_ref)
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>::&lt;<span class="kw">_</span>, <span class="kw">fn</span>(<span class="kw-2">&amp;</span>(K, V)) -&gt; (<span class="kw-2">&amp;</span>K, <span class="kw-2">&amp;</span>V)&gt;(|(k, v)| (<a href="#204">k</a>, <a href="#204">v</a>))
     }
 
     <span class="kw">fn </span>drain(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Drain&lt;<span class="lifetime">'_</span>&gt; {
         <a class="self" href="#207">self</a>.data
-            .iter_mut()
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter_map</a>::&lt;<span class="kw">_</span>, <span class="kw">fn</span>(<span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;(K, V)&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(K, V)&gt;&gt;(Option::take)
+            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter_mut">iter_mut</a>()
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>::&lt;<span class="kw">_</span>, <span class="kw">fn</span>(<span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;(K, V)&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;(K, V)&gt;&gt;(Option::take)
     }
 }
 
@@ -567,8 +567,8 @@
         <span class="kw">match </span><a class="self" href="#218">self</a>.entry {
             <span class="prelude-val">Some</span>((<span class="kw">_</span>, value)) =&gt; <a href="#223">value</a>,
             entry =&gt; {
-                <span class="kw-2">*</span><a href="#224">entry</a> = <span class="prelude-val">Some</span>((<a class="self" href="#218">self</a>.key, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()));
-                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#224">entry</a>.as_mut().unwrap_unchecked().<span class="number">1 </span>}
+                <span class="kw-2">*</span><a href="#224">entry</a> = <span class="prelude-val">Some</span>((<a class="self" href="#218">self</a>.key, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>()));
+                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#224">entry</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_mut">as_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_unchecked">unwrap_unchecked</a>().<span class="number">1 </span>}
             }
         }
     }
@@ -578,7 +578,7 @@
             <span class="prelude-val">Some</span>((<span class="kw">_</span>, value)) =&gt; <a href="#233">value</a>,
             entry =&gt; {
                 <span class="kw-2">*</span><a href="#234">entry</a> = <span class="prelude-val">Some</span>((<a class="self" href="#231">self</a>.key, <a href="#231">default</a>));
-                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#234">entry</a>.as_mut().unwrap_unchecked().<span class="number">1 </span>}
+                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#234">entry</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_mut">as_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_unchecked">unwrap_unchecked</a>().<span class="number">1 </span>}
             }
         }
     }
@@ -591,7 +591,7 @@
             <span class="prelude-val">Some</span>((<span class="kw">_</span>, value)) =&gt; <a href="#246">value</a>,
             entry =&gt; {
                 <span class="kw-2">*</span><a href="#247">entry</a> = <span class="prelude-val">Some</span>((<a class="self" href="#241">self</a>.key, <a href="#241">default</a>()));
-                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#247">entry</a>.as_mut().unwrap_unchecked().<span class="number">1 </span>}
+                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#247">entry</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_mut">as_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_unchecked">unwrap_unchecked</a>().<span class="number">1 </span>}
             }
         }
     }
@@ -605,7 +605,7 @@
             entry =&gt; {
                 <span class="kw">let </span>default = <a href="#254">default</a>(<span class="kw-2">&amp;</span><a class="self" href="#254">self</a>.key);
                 <span class="kw-2">*</span><a href="#260">entry</a> = <span class="prelude-val">Some</span>((<a class="self" href="#254">self</a>.key, <a href="#261">default</a>));
-                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#260">entry</a>.as_mut().unwrap_unchecked().<span class="number">1 </span>}
+                <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut </span><a href="#260">entry</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.as_mut">as_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_unchecked">unwrap_unchecked</a>().<span class="number">1 </span>}
             }
         }
     }

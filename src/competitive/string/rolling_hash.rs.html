@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/string/rolling_hash.rs`."><title>rolling_hash.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/string/rolling_hash.rs`."><title>rolling_hash.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -633,7 +633,7 @@
 <span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>,
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>},
-    marker::PhantomData,
+    <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">marker::PhantomData</a>,
     ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html">Bound</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">RangeBounds</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.RangeInclusive.html">RangeInclusive</a>},
 };
 
@@ -669,11 +669,11 @@
     <span class="kw">fn </span>new(hashed: Vec&lt;Hasher::Hash&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#38">hashed</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
     <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="#44">self</a>.hashed.len() - <span class="number">1
+        <a class="self" href="#44">self</a>.hashed.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>() - <span class="number">1
     </span>}
     <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="self" href="#47">self</a>.<a href="#44-46">len</a>() == <span class="number">0
@@ -734,9 +734,9 @@
             (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; {
                 <span class="kw">let </span>x = <a class="self" href="#100">self</a>.<a href="#153-158">hash_range</a>(<a href="#101">n</a>..=<a href="#101">n</a>);
                 <span class="kw">let </span>y = <a href="#100">other</a>.<a href="#153-158">hash_range</a>(<a href="#101">n</a>..=<a href="#101">n</a>);
-                <a href="#104">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html">partial_cmp</a>(<span class="kw-2">&amp;</span><a href="#105">y</a>.hash)
+                <a href="#104">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#tymethod.partial_cmp">partial_cmp</a>(<span class="kw-2">&amp;</span><a href="#105">y</a>.hash)
             }
-            (x, y) =&gt; <span class="prelude-val">Some</span>(<a href="#108">x</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#108">y</a>)),
+            (x, y) =&gt; <span class="prelude-val">Some</span>(<a href="#108">x</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">cmp</a>(<span class="kw-2">&amp;</span><a href="#108">y</a>)),
         }
     }
 }
@@ -752,9 +752,9 @@
             (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; {
                 <span class="kw">let </span>x = <a class="self" href="#118">self</a>.<a href="#153-158">hash_range</a>(<a href="#119">n</a>..=<a href="#119">n</a>);
                 <span class="kw">let </span>y = <a href="#118">other</a>.<a href="#153-158">hash_range</a>(<a href="#119">n</a>..=<a href="#119">n</a>);
-                <a href="#122">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#123">y</a>.hash)
+                <a href="#122">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">cmp</a>(<span class="kw-2">&amp;</span><a href="#123">y</a>.hash)
             }
-            (x, y) =&gt; <a href="#126">x</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#126">y</a>),
+            (x, y) =&gt; <a href="#126">x</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">cmp</a>(<span class="kw-2">&amp;</span><a href="#126">y</a>),
         }
     }
 }
@@ -766,11 +766,11 @@
     <span class="kw">fn </span>new(hashed: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[Hasher::Hash]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#135">hashed</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
     <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="#141">self</a>.hashed.len() - <span class="number">1
+        <a class="self" href="#141">self</a>.hashed.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>() - <span class="number">1
     </span>}
     <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="self" href="#144">self</a>.<a href="#141-143">len</a>() == <span class="number">0
@@ -791,7 +791,7 @@
         <a href="#21">Hasher::hash_substr</a>(<a class="self" href="#159">self</a>.hashed)
     }
     <span class="kw">pub fn </span>longest_common_prefix(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <span class="kw">let </span>n = <a class="self" href="#162">self</a>.<a href="#141-143">len</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#162">other</a>.<a href="#141-143">len</a>());
+        <span class="kw">let </span>n = <a class="self" href="#162">self</a>.<a href="#141-143">len</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.min">min</a>(<a href="#162">other</a>.<a href="#141-143">len</a>());
         <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="number">0usize</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>err = <a href="#163">n</a> + <span class="number">1</span>;
         <span class="kw">while </span>ok + <span class="number">1 </span>&lt; err {
@@ -805,7 +805,7 @@
         <a href="#164">ok</a>
     }
     <span class="kw">pub fn </span>chainable(<span class="self">self</span>) -&gt; HashedRangeChained&lt;<span class="lifetime">'a</span>, Hasher&gt; {
-        <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="self">self</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html">into</a>()
+        <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="self">self</span>].<a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into">into</a>()
     }
 }
 
@@ -823,9 +823,9 @@
     Hasher::Hash: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#194">f</a>.debug_struct(<span class="string">"HashedRangeChained"</span>)
-            .field(<span class="string">"chained"</span>, <span class="kw-2">&amp;</span><a class="self" href="#194">self</a>.chained)
-            .finish()
+        <a href="#194">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_struct">debug_struct</a>(<span class="string">"HashedRangeChained"</span>)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"chained"</span>, <span class="kw-2">&amp;</span><a class="self" href="#194">self</a>.chained)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.finish">finish</a>()
     }
 }
 
@@ -835,8 +835,8 @@
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            chained: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
-            _marker: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
+            chained: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
         }
     }
 }
@@ -847,7 +847,7 @@
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            chained: <a class="self" href="#217">self</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            chained: <a class="self" href="#217">self</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
             _marker: <a class="self" href="#217">self</a>._marker,
         }
     }
@@ -858,8 +858,8 @@
     </span>Hasher: <a href="#9-23">RollingHasher</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
 {
     <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <span class="kw">let </span><span class="kw-2">mut </span>a = <a class="self" href="#229">self</a>.chained.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="#229">other</a>.chained.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <a class="self" href="#229">self</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.cloned">cloned</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="#229">other</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.cloned">cloned</a>();
         <span class="macro">macro_rules! </span>next {
             (<span class="macro-nonterminal">$iter</span>:expr) =&gt; {
                 <span class="kw">loop </span>{
@@ -883,14 +883,14 @@
                 <a href="#246">y</a> = <a class="macro" href="#232-244">next!</a>(b);
             }
             <span class="kw">if let </span>(<span class="prelude-val">Some</span>(x), <span class="prelude-val">Some</span>(y)) = (<span class="kw-2">&amp;mut </span><a href="#245">x</a>, <span class="kw-2">&amp;mut </span><a href="#246">y</a>) {
-                <span class="kw">let </span>k = <a href="#254">x</a>.<a href="#141-143">len</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">min</a>(<a href="#254">y</a>.<a href="#141-143">len</a>());
+                <span class="kw">let </span>k = <a href="#254">x</a>.<a href="#141-143">len</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.min">min</a>(<a href="#254">y</a>.<a href="#141-143">len</a>());
                 <span class="kw">if </span>x.range(..k) != y.range(..k) {
                     <span class="kw">return </span><span class="bool-val">false</span>;
                 }
                 <span class="kw-2">*</span><a href="#254">x</a> = <a href="#254">x</a>.<a href="#147-152">range</a>(<a href="#255">k</a>..);
                 <span class="kw-2">*</span><a href="#254">y</a> = <a href="#254">y</a>.<a href="#147-152">range</a>(<a href="#255">k</a>..);
             } <span class="kw">else </span>{
-                <span class="kw">break </span><a href="#245">x</a>.is_none() == <a href="#246">y</a>.is_none();
+                <span class="kw">break </span><a href="#245">x</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_none">is_none</a>() == <a href="#246">y</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_none">is_none</a>();
             }
         }
     }
@@ -904,8 +904,8 @@
     Hasher::Hash: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html">PartialOrd</a>,
 {
     <span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>a = <a class="self" href="#275">self</a>.chained.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="#275">other</a>.chained.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <a class="self" href="#275">self</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.cloned">cloned</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="#275">other</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.cloned">cloned</a>();
         <span class="macro">macro_rules! </span>next {
             (<span class="macro-nonterminal">$iter</span>:expr) =&gt; {
                 <span class="kw">loop </span>{
@@ -933,12 +933,12 @@
                 <span class="kw">if </span>x.len() &gt; k &amp;&amp; y.len() &gt; k {
                     <span class="kw">let </span>x = <a href="#300">x</a>.<a href="#153-158">hash_range</a>(<a href="#301">k</a>..=<a href="#301">k</a>);
                     <span class="kw">let </span>y = <a href="#300">y</a>.<a href="#153-158">hash_range</a>(<a href="#301">k</a>..=<a href="#301">k</a>);
-                    <span class="kw">break </span><a href="#303">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html">partial_cmp</a>(<span class="kw-2">&amp;</span><a href="#304">y</a>.hash);
+                    <span class="kw">break </span><a href="#303">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#tymethod.partial_cmp">partial_cmp</a>(<span class="kw-2">&amp;</span><a href="#304">y</a>.hash);
                 };
                 <span class="kw-2">*</span><a href="#300">x</a> = <a href="#300">x</a>.<a href="#147-152">range</a>(<a href="#301">k</a>..);
                 <span class="kw-2">*</span><a href="#300">y</a> = <a href="#300">y</a>.<a href="#147-152">range</a>(<a href="#301">k</a>..);
             } <span class="kw">else </span>{
-                <span class="kw">break </span><a href="#291">x</a>.is_some().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html">partial_cmp</a>(<span class="kw-2">&amp;</span><a href="#292">y</a>.is_some());
+                <span class="kw">break </span><a href="#291">x</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_some">is_some</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html#tymethod.partial_cmp">partial_cmp</a>(<span class="kw-2">&amp;</span><a href="#292">y</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_some">is_some</a>());
             }
         }
     }
@@ -950,8 +950,8 @@
     Hasher::Hash: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a> {
-        <span class="kw">let </span><span class="kw-2">mut </span>a = <a class="self" href="#321">self</a>.chained.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="#321">other</a>.chained.iter().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">cloned</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>a = <a class="self" href="#321">self</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.cloned">cloned</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="#321">other</a>.chained.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.cloned">cloned</a>();
         <span class="macro">macro_rules! </span>next {
             (<span class="macro-nonterminal">$iter</span>:expr) =&gt; {
                 <span class="kw">loop </span>{
@@ -979,12 +979,12 @@
                 <span class="kw">if </span>x.len() &gt; k &amp;&amp; y.len() &gt; k {
                     <span class="kw">let </span>x = <a href="#346">x</a>.<a href="#153-158">hash_range</a>(<a href="#347">k</a>..=<a href="#347">k</a>);
                     <span class="kw">let </span>y = <a href="#346">y</a>.<a href="#153-158">hash_range</a>(<a href="#347">k</a>..=<a href="#347">k</a>);
-                    <span class="kw">break </span><a href="#349">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#350">y</a>.hash);
+                    <span class="kw">break </span><a href="#349">x</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">cmp</a>(<span class="kw-2">&amp;</span><a href="#350">y</a>.hash);
                 };
                 <span class="kw-2">*</span><a href="#346">x</a> = <a href="#346">x</a>.<a href="#147-152">range</a>(<a href="#347">k</a>..);
                 <span class="kw-2">*</span><a href="#346">y</a> = <a href="#346">y</a>.<a href="#147-152">range</a>(<a href="#347">k</a>..);
             } <span class="kw">else </span>{
-                <span class="kw">break </span><a href="#337">x</a>.is_some().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<span class="kw-2">&amp;</span><a href="#338">y</a>.is_some());
+                <span class="kw">break </span><a href="#337">x</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_some">is_some</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">cmp</a>(<span class="kw-2">&amp;</span><a href="#338">y</a>.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.is_some">is_some</a>());
             }
         }
     }
@@ -997,7 +997,7 @@
     <span class="kw">fn </span>from(hashed: Vec&lt;HashedRange&lt;<span class="lifetime">'a</span>, Hasher&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             chained: <a href="#366">hashed</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -1007,11 +1007,11 @@
     </span>Hasher: <a href="#9-23">RollingHasher</a> + <span class="question-mark">?</span><a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
 {
     <span class="kw">pub fn </span>chain(<span class="kw-2">mut </span><span class="self">self</span>, x: HashedRange&lt;<span class="lifetime">'a</span>, Hasher&gt;) -&gt; <span class="self">Self </span>{
-        <a class="self" href="#378">self</a>.chained.push(<a href="#378">x</a>);
+        <a class="self" href="#378">self</a>.chained.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#378">x</a>);
         <span class="self"><a href="#378">self</a>
     </span>}
     <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: HashedRange&lt;<span class="lifetime">'a</span>, Hasher&gt;) {
-        <a class="self" href="#382">self</a>.chained.push(<a href="#382">x</a>);
+        <a class="self" href="#382">self</a>.chained.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#382">x</a>);
     }
 }
 
@@ -1019,15 +1019,15 @@
 <span class="kw">where
     </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
-    <span class="kw">let </span>l = <span class="kw">match </span><a href="#387">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">start_bound</a>() {
-        Bound::Included(l) =&gt; <span class="kw-2">*</span><a href="#392">l</a>,
-        Bound::Excluded(l) =&gt; <a href="#393">l</a> + <span class="number">1</span>,
-        Bound::Unbounded =&gt; <span class="number">0</span>,
+    <span class="kw">let </span>l = <span class="kw">match </span><a href="#387">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html#tymethod.start_bound">start_bound</a>() {
+        <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html#variant.Included">Bound::Included</a>(l) =&gt; <span class="kw-2">*</span><a href="#392">l</a>,
+        <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html#variant.Excluded">Bound::Excluded</a>(l) =&gt; <a href="#393">l</a> + <span class="number">1</span>,
+        <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html#variant.Unbounded">Bound::Unbounded</a> =&gt; <span class="number">0</span>,
     };
-    <span class="kw">let </span>r = <span class="kw">match </span><a href="#387">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html">end_bound</a>() {
-        Bound::Included(r) =&gt; <a href="#397">r</a> + <span class="number">1</span>,
-        Bound::Excluded(r) =&gt; <span class="kw-2">*</span><a href="#398">r</a>,
-        Bound::Unbounded =&gt; <a href="#387">ub</a>,
+    <span class="kw">let </span>r = <span class="kw">match </span><a href="#387">range</a>.<a href="https://doc.rust-lang.org/nightly/core/ops/range/trait.RangeBounds.html#tymethod.end_bound">end_bound</a>() {
+        <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html#variant.Included">Bound::Included</a>(r) =&gt; <a href="#397">r</a> + <span class="number">1</span>,
+        <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html#variant.Excluded">Bound::Excluded</a>(r) =&gt; <span class="kw-2">*</span><a href="#398">r</a>,
+        <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html#variant.Unbounded">Bound::Unbounded</a> =&gt; <a href="#387">ub</a>,
     };
     <a href="#391">l</a>..=<a href="#396">r</a>
 }
@@ -1048,9 +1048,9 @@
     Hasher::Hash: <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">std::hash::Hash</a>,
 {
     <span class="kw">fn </span>hash&lt;H: <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html">std::hash::Hasher</a>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
-        <a class="self" href="#419">self</a>.len.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">hash</a>(<a href="#419">state</a>);
-        <a class="self" href="#419">self</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">hash</a>(<a href="#419">state</a>);
-        <a class="self" href="#419">self</a>._marker.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">hash</a>(<a href="#419">state</a>);
+        <a class="self" href="#419">self</a>.len.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash">hash</a>(<a href="#419">state</a>);
+        <a class="self" href="#419">self</a>.hash.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash">hash</a>(<a href="#419">state</a>);
+        <a class="self" href="#419">self</a>._marker.<a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash">hash</a>(<a href="#419">state</a>);
     }
 }
 
@@ -1062,7 +1062,7 @@
         <span class="self">Self </span>{
             <a href="#430">len</a>,
             <a href="#430">hash</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
     <span class="kw">pub fn </span>concat(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self </span>{
@@ -1108,8 +1108,8 @@
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            base: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
-            pow: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
+            base: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
+            pow: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
         }
     }
 }
@@ -1127,9 +1127,9 @@
     }
     <span class="kw">fn </span>ensure_pow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">if </span><span class="self">self</span>.pow.len() &lt;= len {
-            <a class="self" href="#497">self</a>.pow.reserve(<a href="#497">len</a> - <a class="self" href="#497">self</a>.pow.len() + <span class="number">1</span>);
+            <a class="self" href="#497">self</a>.pow.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.reserve">reserve</a>(<a href="#497">len</a> - <a class="self" href="#497">self</a>.pow.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>() + <span class="number">1</span>);
             <span class="kw">if </span><span class="self">self</span>.pow.is_empty() {
-                <a class="self" href="#497">self</a>.pow.push(<a href="../algebra/ring.rs.html#16-18">R::one</a>());
+                <a class="self" href="#497">self</a>.pow.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="../algebra/ring.rs.html#16-18">R::one</a>());
             }
             <span class="kw">for _ in </span><span class="number">0</span>..=len - <span class="self">self</span>.pow.len() {
                 <span class="self">self</span>.pow.push(R::mul(<span class="self">self</span>.pow.last().unwrap(), <span class="kw-2">&amp;</span><span class="self">self</span>.base));

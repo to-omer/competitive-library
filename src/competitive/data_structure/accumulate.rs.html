@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/accumulate.rs`."><title>accumulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/accumulate.rs`."><title>accumulate.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -343,9 +343,9 @@
     M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#21">f</a>.debug_struct(<span class="string">"Accumulate"</span>)
-            .field(<span class="string">"data"</span>, <span class="kw-2">&amp;</span><a class="self" href="#21">self</a>.data)
-            .finish()
+        <a href="#21">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_struct">debug_struct</a>(<span class="string">"Accumulate"</span>)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"data"</span>, <span class="kw-2">&amp;</span><a class="self" href="#21">self</a>.data)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.finish">finish</a>()
     }
 }
 
@@ -357,16 +357,16 @@
     </span><span class="kw">where
         </span>T: IntoIterator&lt;Item = M::T&gt;,
     {
-        <span class="kw">let </span>iter = <a href="#32">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>();
-        <span class="kw">let </span>(lower, <span class="kw">_</span>) = <a href="#36">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">size_hint</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity(<a href="#37">lower</a>.saturating_add(<span class="number">1</span>));
+        <span class="kw">let </span>iter = <a href="#32">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>();
+        <span class="kw">let </span>(lower, <span class="kw">_</span>) = <a href="#36">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.size_hint">size_hint</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>data = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#37">lower</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.saturating_add">saturating_add</a>(<span class="number">1</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>acc = <a href="../algebra/magma.rs.html#30">M::unit</a>();
         <span class="kw">for </span>x <span class="kw">in </span>iter {
             <span class="kw">let </span>y = M::operate(<span class="kw-2">&amp;</span>acc, <span class="kw-2">&amp;</span>x);
             data.push(acc);
             acc = y;
         }
-        <a href="#38">data</a>.push(<a href="#39">acc</a>);
+        <a href="#38">data</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#39">acc</a>);
         <span class="self">Self </span>{ <a href="#38">data</a> }
     }
 }
@@ -383,7 +383,7 @@
             <span class="self">self</span>.data.len(),
             k
         );
-        <span class="kw">unsafe </span>{ <a class="self" href="#55">self</a>.data.get_unchecked(<a href="#55">k</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        <span class="kw">unsafe </span>{ <a class="self" href="#55">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#55">k</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()
     }
 }
 
@@ -396,12 +396,12 @@
     <span class="kw">where
         </span>R: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <span class="kw">let </span>n = <a class="self" href="#71">self</a>.data.len() - <span class="number">1</span>;
-        <span class="kw">let </span>range = <a href="#71">range</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a href="#75">n</a>).expect(<span class="string">"invalid range"</span>);
+        <span class="kw">let </span>n = <a class="self" href="#71">self</a>.data.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>() - <span class="number">1</span>;
+        <span class="kw">let </span>range = <a href="#71">range</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a href="#75">n</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.expect">expect</a>(<span class="string">"invalid range"</span>);
         <span class="kw">let </span>(l, r) = (<a href="#76">range</a>.start, <a href="#76">range</a>.end);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(l &lt;= r, <span class="string">"bad range [{}, {})"</span>, l, r);
-        <a href="../algebra/magma.rs.html#8">M::operate</a>(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#65">M::inverse</a>(<span class="kw">unsafe </span>{ <a class="self" href="#71">self</a>.data.get_unchecked(<a href="#77">l</a>) }), <span class="kw">unsafe </span>{
-            <a class="self" href="#71">self</a>.data.get_unchecked(<a href="#77">r</a>)
+        <a href="../algebra/magma.rs.html#8">M::operate</a>(<span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#65">M::inverse</a>(<span class="kw">unsafe </span>{ <a class="self" href="#71">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#77">l</a>) }), <span class="kw">unsafe </span>{
+            <a class="self" href="#71">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#77">r</a>)
         })
     }
 }
@@ -421,13 +421,13 @@
     </span>M: <a href="../algebra/magma.rs.html#81">AbelianMonoid</a>,
 {
     <span class="kw">pub fn </span>new(arr2d: <span class="kw-2">&amp;</span>[Vec&lt;M::T&gt;]) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>h = <a href="#99">arr2d</a>.len();
+        <span class="kw">let </span>h = <a href="#99">arr2d</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>();
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(h &gt; <span class="number">0</span>);
-        <span class="kw">let </span>w = <a href="#99">arr2d</a>[<span class="number">0</span>].len();
+        <span class="kw">let </span>w = <a href="#99">arr2d</a>[<span class="number">0</span>].<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(w &gt; <span class="number">0</span>);
         <span class="kw">let </span>w1 = <a href="#102">w</a> + <span class="number">1</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity((<a href="#100">h</a> + <span class="number">1</span>) * <a href="#104">w1</a>);
-        <a href="#105">data</a>.resize_with(<a href="#104">w1</a>, M::unit);
+        <span class="kw">let </span><span class="kw-2">mut </span>data = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>((<a href="#100">h</a> + <span class="number">1</span>) * <a href="#104">w1</a>);
+        <a href="#105">data</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(<a href="#104">w1</a>, M::unit);
         <span class="kw">for </span>(i, arr) <span class="kw">in </span>arr2d.iter().enumerate() {
             <span class="macro">assert_eq!</span>(w, arr.len(), <span class="string">"expected 2d array"</span>);
             <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
@@ -445,8 +445,8 @@
         </span>F: FnMut(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T,
     {
         <span class="kw">let </span>w1 = <a href="#119">w</a> + <span class="number">1</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::with_capacity((<a href="#119">h</a> + <span class="number">1</span>) * <a href="#123">w1</a>);
-        <a href="#124">data</a>.resize_with(<a href="#123">w1</a>, M::unit);
+        <span class="kw">let </span><span class="kw-2">mut </span>data = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>((<a href="#119">h</a> + <span class="number">1</span>) * <a href="#123">w1</a>);
+        <a href="#124">data</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(<a href="#123">w1</a>, M::unit);
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..h {
             <span class="kw">let </span><span class="kw-2">mut </span>acc = M::unit();
             <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..w {
@@ -480,7 +480,7 @@
             w1,
             y
         );
-        <span class="kw">unsafe </span>{ <a class="self" href="#144">self</a>.data.get_unchecked(<a href="#146">w1</a> * <a href="#144">x</a> + <a href="#144">y</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+        <span class="kw">unsafe </span>{ <a class="self" href="#144">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#146">w1</a> * <a href="#144">x</a> + <a href="#144">y</a>) }.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()
     }
 }
 
@@ -494,8 +494,8 @@
         </span>R0: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
         R1: RangeBounds&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     {
-        <span class="kw">let </span>range0 = <a href="#168">range0</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a class="self" href="#168">self</a>.h).expect(<span class="string">"invalid range"</span>);
-        <span class="kw">let </span>range1 = <a href="#168">range1</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a class="self" href="#168">self</a>.w).expect(<span class="string">"invalid range"</span>);
+        <span class="kw">let </span>range0 = <a href="#168">range0</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a class="self" href="#168">self</a>.h).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.expect">expect</a>(<span class="string">"invalid range"</span>);
+        <span class="kw">let </span>range1 = <a href="#168">range1</a>.<a href="../num/discrete_steps.rs.html#168-173">to_range_bounded</a>(<span class="number">0</span>, <a class="self" href="#168">self</a>.w).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.expect">expect</a>(<span class="string">"invalid range"</span>);
         <span class="kw">let </span>(xl, xr) = (<a href="#173">range0</a>.start, <a href="#173">range0</a>.end);
         <span class="kw">let </span>(yl, yr) = (<a href="#174">range1</a>.start, <a href="#174">range1</a>.end);
         <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(xl &lt;= xr, <span class="string">"bad range [{}, {})"</span>, xl, xr);
@@ -504,12 +504,12 @@
         <span class="kw">unsafe </span>{
             <a href="../algebra/magma.rs.html#67-69">M::rinv_operate</a>(
                 <span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#8">M::operate</a>(
-                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xl</a> + <a href="#176">yl</a>),
-                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xr</a> + <a href="#176">yr</a>),
+                    <a class="self" href="#168">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#179">w1</a> * <a href="#175">xl</a> + <a href="#176">yl</a>),
+                    <a class="self" href="#168">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#179">w1</a> * <a href="#175">xr</a> + <a href="#176">yr</a>),
                 ),
                 <span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#8">M::operate</a>(
-                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xl</a> + <a href="#176">yr</a>),
-                    <a class="self" href="#168">self</a>.data.get_unchecked(<a href="#179">w1</a> * <a href="#175">xr</a> + <a href="#176">yl</a>),
+                    <a class="self" href="#168">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#179">w1</a> * <a href="#175">xl</a> + <a href="#176">yr</a>),
+                    <a class="self" href="#168">self</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get_unchecked">get_unchecked</a>(<a href="#179">w1</a> * <a href="#175">xr</a> + <a href="#176">yl</a>),
                 ),
             )
         }

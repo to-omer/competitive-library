@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/discrete_logarithm.rs`."><title>discrete_logarithm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/discrete_logarithm.rs`."><title>discrete_logarithm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -701,12 +701,12 @@
     <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             primes: <a href="prime_list.rs.html#19-23">PrimeList::new</a>(<span class="number">2</span>),
-            br_primes: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
-            ic: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
+            br_primes: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
+            ic: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
         }
     }
     <span class="kw">fn </span>discrete_logarithm(<span class="kw-2">&amp;mut </span><span class="self">self</span>, a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; {
-        <span class="kw">let </span>lim = ((((<a href="#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).log2() * (<a href="#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).log2().log2()).sqrt() / <span class="number">2.0 </span>+ <span class="number">1.</span>).exp2() * <span class="number">0.9</span>)
+        <span class="kw">let </span>lim = ((((<a href="#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.log2">log2</a>() * (<a href="#67">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.log2">log2</a>().<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.log2">log2</a>()).<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.sqrt">sqrt</a>() / <span class="number">2.0 </span>+ <span class="number">1.</span>).<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.exp2">exp2</a>() * <span class="number">0.9</span>)
             <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <a class="self" href="#67">self</a>.primes.<a href="prime_list.rs.html#70-145">reserve</a>(<a href="#68">lim</a>);
         <span class="kw">let </span>primes = <a class="self" href="#67">self</a>.primes.<a href="prime_list.rs.html#27-31">primes_lte</a>(<a href="#68">lim</a>);
@@ -714,10 +714,10 @@
             <span class="kw">let </span>br = BarrettReduction::&lt;u64&gt;::new(primes[<span class="self">self</span>.br_primes.len()]);
             <span class="self">self</span>.br_primes.push(br);
         }
-        <span class="kw">let </span>br_primes = <span class="kw-2">&amp;</span><a class="self" href="#67">self</a>.br_primes[..<a href="#71">primes</a>.len()];
+        <span class="kw">let </span>br_primes = <span class="kw-2">&amp;</span><a class="self" href="#67">self</a>.br_primes[..<a href="#71">primes</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>()];
         <a class="self" href="#67">self</a>.ic
-            .entry(<a href="#67">p</a>)
-            .or_insert_with(|| <a href="#258-270">IndexCalculusWithPrimitiveRoot::new</a>(<a href="#67">p</a>, <a href="#76">br_primes</a>))
+            .<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.entry">entry</a>(<a href="#67">p</a>)
+            .<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_insert_with">or_insert_with</a>(|| <a href="#258-270">IndexCalculusWithPrimitiveRoot::new</a>(<a href="#67">p</a>, <a href="#76">br_primes</a>))
             .<a href="#313-334">discrete_logarithm</a>(<a href="#67">a</a>, <a href="#67">b</a>, <a href="#76">br_primes</a>)
     }
 }
@@ -761,12 +761,12 @@
 
 <span class="kw">impl </span><a href="#113-119">QdrtPowPrec</a> {
     <span class="kw">fn </span>new(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, ord: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>qdrt = (<a href="#122">ord</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).powf(<span class="number">0.25</span>).ceil() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+        <span class="kw">let </span>qdrt = (<a href="#122">ord</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.powf">powf</a>(<span class="number">0.25</span>).<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.ceil">ceil</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">let </span>br_qdrt = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new(<a href="#123">qdrt</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p1 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p2 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
-        <span class="kw">let </span><span class="kw-2">mut </span>p3 = Vec::with_capacity(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p0 = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p1 = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p2 = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
+        <span class="kw">let </span><span class="kw-2">mut </span>p3 = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#123">qdrt</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1u64</span>;
         <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
             p0.push(acc);
@@ -830,11 +830,11 @@
     <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="#188">br_ord</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#189">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#189">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
     <span class="kw">let </span>sub = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <span class="kw">if </span>x &lt; y { <a href="#190">x</a> + <a href="#184">ord</a> - <a href="#190">y</a> } <span class="kw">else </span>{ <a href="#190">x</a> - <a href="#190">y</a> };
 
-    <span class="kw">let </span>pc = <a href="#185">br_primes</a>.len();
+    <span class="kw">let </span>pc = <a href="#185">br_primes</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>();
     <span class="kw">let </span><span class="kw-2">mut </span>mat: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;&gt; = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
     <span class="kw">let </span><span class="kw-2">mut </span>rows: Vec&lt;Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;&gt; = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
 
-    <span class="kw">let </span><span class="kw-2">mut </span>rng = <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Xorshift::default</a>();
+    <span class="kw">let </span><span class="kw-2">mut </span>rng = <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Xorshift::default</a>();
     <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#183">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
 
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..pc {
@@ -884,7 +884,7 @@
         }
         mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
     }
-    (<span class="number">0</span>..<a href="#192">pc</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| (<a href="#193">mat</a>[<a href="#246">i</a>][<a href="#192">pc</a>])).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>()
+    (<span class="number">0</span>..<a href="#192">pc</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|i| (<a href="#193">mat</a>[<a href="#246">i</a>][<a href="#192">pc</a>])).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>()
 }
 
 <span class="attr">#[derive(Debug)]
@@ -922,7 +922,7 @@
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>rng = <a href="../tools/xorshift.rs.html#17-19">Xorshift::new</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>row = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0u64</span>; <a href="#271">br_primes</a>.len()];
+        <span class="kw">let </span><span class="kw-2">mut </span>row = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">0u64</span>; <a href="#271">br_primes</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>()];
         <span class="kw">let </span><span class="kw-2">mut </span>kk = <a href="#283">rng</a>.<a href="../tools/xorshift.rs.html#28-30">rand</a>(<a href="#273">ord</a> - <span class="number">1</span>) + <span class="number">1</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>gkk = <a class="self" href="#271">self</a>.prec.<a href="#160-179">pow</a>(<a href="#285">kk</a>, <span class="kw-2">&amp;</span><a href="#274">br</a>);
         <span class="kw">let </span><span class="kw-2">mut </span>k = <a href="#285">kk</a>;
@@ -980,17 +980,17 @@
 );
 
 <span class="kw">pub fn </span><a href="../../../competitive/math/fn.discrete_logarithm_prime_mod.html">discrete_logarithm_prime_mod</a>(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
-    <a href="#337-339">IC</a>.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="#342">ic</a>.get() }.<a href="#67-81">discrete_logarithm</a>(<a href="#341">a</a>, <a href="#341">b</a>, <a href="#341">p</a>))
-        .map(|t| <a href="#343">t</a>.<span class="number">0</span>)
+    <a href="#337-339">IC</a>.<a href="https://doc.rust-lang.org/nightly/std/thread/local/struct.LocalKey.html#method.with">with</a>(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="#342">ic</a>.<a href="https://doc.rust-lang.org/nightly/core/cell/struct.UnsafeCell.html#method.get">get</a>() }.<a href="#67-81">discrete_logarithm</a>(<a href="#341">a</a>, <a href="#341">b</a>, <a href="#341">p</a>))
+        .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|t| <a href="#343">t</a>.<span class="number">0</span>)
 }
 
 <span class="doccomment">/// a^x ≡ b (mod n), a has order p^e
 </span><span class="kw">fn </span>pohlig_hellman_prime_power_order(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, e: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
     <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#347">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
     <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="#348">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#349">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#349">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
-    <span class="kw">let </span>block_size = (<a href="#347">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).sqrt().ceil() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
+    <span class="kw">let </span>block_size = (<a href="#347">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.f64.html">f64</a>).<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.sqrt">sqrt</a>().<a href="https://doc.rust-lang.org/nightly/std/foreigntype.f64.html#method.ceil">ceil</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
     <span class="kw">let </span><span class="kw-2">mut </span>baby = HashMap::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;::new();
-    <span class="kw">let </span>g = <a href="#7-18">pow</a>(<a href="#347">a</a>, <a href="#347">p</a>.pow(<a href="#347">e</a> - <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="#348">br</a>);
+    <span class="kw">let </span>g = <a href="#7-18">pow</a>(<a href="#347">a</a>, <a href="#347">p</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.pow">pow</a>(<a href="#347">e</a> - <span class="number">1</span>), <span class="kw-2">&amp;</span><a href="#348">br</a>);
     <span class="kw">let </span><span class="kw-2">mut </span>xj = <span class="number">1</span>;
     <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..block_size {
         baby.entry(xj).or_insert(j);
@@ -1020,7 +1020,7 @@
 </span><span class="kw">fn </span>discrete_logarithm_prime_power(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, p: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, e: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="prelude-ty">Option</span>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; {
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(p, <span class="number">0</span>);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_ne.html">assert_ne!</a>(e, <span class="number">0</span>);
-    <span class="kw">let </span>n = <a href="#379">p</a>.pow(<a href="#379">e</a>);
+    <span class="kw">let </span>n = <a href="#379">p</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.pow">pow</a>(<a href="#379">e</a>);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(a &lt; n);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(b &lt; n);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(gcd(a, p), <span class="number">1</span>);
@@ -1034,7 +1034,7 @@
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
     <span class="kw">if </span>e == <span class="number">1 </span>{
-        <span class="kw">return </span><a href="#337-339">IC</a>.with(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="#396">ic</a>.get() }.<a href="#67-81">discrete_logarithm</a>(<a href="#379">a</a>, <a href="#379">b</a>, <a href="#379">p</a>));
+        <span class="kw">return </span><a href="#337-339">IC</a>.<a href="https://doc.rust-lang.org/nightly/std/thread/local/struct.LocalKey.html#method.with">with</a>(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="#396">ic</a>.<a href="https://doc.rust-lang.org/nightly/core/cell/struct.UnsafeCell.html#method.get">get</a>() }.<a href="#67-81">discrete_logarithm</a>(<a href="#379">a</a>, <a href="#379">b</a>, <a href="#379">p</a>));
     }
     <span class="kw">let </span>br = BarrettReduction::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#382">n</a> <span class="kw">as _</span>);
     <span class="kw">if </span>p == <span class="number">2 </span>{
@@ -1075,10 +1075,10 @@
         <span class="kw">let </span>ord = <a href="#382">n</a> - <a href="#382">n</a> / <a href="#379">p</a>;
         <span class="kw">let </span>pf_ord = <a href="prime_factors.rs.html#67-79">prime_factors</a>(<a href="#434">ord</a>);
         <span class="kw">let </span>g = (<span class="number">2</span>..)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">find</a>(|<span class="kw-2">&amp;</span>g| <a href="primitive_root.rs.html#15-34">check_primitive_root</a>(<a href="#437">g</a>, <a href="#434">ord</a>, <span class="kw-2">&amp;</span><a href="#398">br</a>, <span class="kw-2">&amp;</span><a href="#435">pf_ord</a>))
-            .unwrap();
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.find">find</a>(|<span class="kw-2">&amp;</span>g| <a href="primitive_root.rs.html#15-34">check_primitive_root</a>(<a href="#437">g</a>, <a href="#434">ord</a>, <span class="kw-2">&amp;</span><a href="#398">br</a>, <span class="kw-2">&amp;</span><a href="#435">pf_ord</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>();
         <span class="kw">let </span><span class="kw-2">mut </span>pf_p = <a href="prime_factors.rs.html#67-79">prime_factors</a>(<a href="#379">p</a> - <span class="number">1</span>);
-        <a href="#439">pf_p</a>.push((<a href="#379">p</a>, <a href="#379">e</a> - <span class="number">1</span>));
+        <a href="#439">pf_p</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<a href="#379">p</a>, <a href="#379">e</a> - <span class="number">1</span>));
         <span class="kw">let </span><span class="kw-2">mut </span>abm = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
         <span class="kw">for </span>(q, c) <span class="kw">in </span>pf_p {
             <span class="kw">let </span>m = q.pow(c);
@@ -1098,7 +1098,7 @@
 </span><span class="kw">pub fn </span><a href="../../../competitive/math/fn.discrete_logarithm.html">discrete_logarithm</a>(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt; {
     <span class="kw">let </span>a = <a href="#457">a</a> % <a href="#457">n</a>;
     <span class="kw">let </span>b = <a href="#457">b</a> % <a href="#457">n</a>;
-    <span class="kw">let </span>d = <span class="number">2</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">max</a>(<span class="number">64 </span>- <a href="#457">n</a>.leading_zeros() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
+    <span class="kw">let </span>d = <span class="number">2</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(<span class="number">64 </span>- <a href="#457">n</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.leading_zeros">leading_zeros</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>);
     <span class="kw">let </span><span class="kw-2">mut </span>pw = <span class="number">1 </span>% <a href="#457">n</a>;
     <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..d {
         <span class="kw">if </span>pw == b {
@@ -1119,7 +1119,7 @@
         <span class="kw">let </span>x = discrete_logarithm_prime_power(a % q, b % q, p, e)<span class="question-mark">?</span>;
         abm.push((<span class="number">1</span>, x.<span class="number">0</span>, x.<span class="number">1</span>));
     }
-    <a href="#29-50">solve_linear_congruences</a>(<a href="#475">abm</a>).map(|x| <a href="#481">x</a>.<span class="number">0 </span>+ <a href="#460">d</a>)
+    <a href="#29-50">solve_linear_congruences</a>(<a href="#475">abm</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|x| <a href="#481">x</a>.<span class="number">0 </span>+ <a href="#460">d</a>)
 }
 
 <span class="attr">#[cfg(test)]

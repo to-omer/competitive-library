@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -946,7 +946,7 @@
     <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">collections::HashMap</a>,
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>},
     <a href="https://doc.rust-lang.org/nightly/core/hash/macros/derive.Hash.html">hash::Hash</a>,
-    marker::PhantomData,
+    <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">marker::PhantomData</a>,
     <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>,
 };
 
@@ -1011,7 +1011,7 @@
     <span class="kw">where
         </span>A::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
     {
-        <a href="#139-152">Automatondp::new</a>(<a class="self" href="#72">self</a>.dfa, <a class="self" href="#72">self</a>.init, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">HashMapFactory::default</a>())
+        <a href="#139-152">Automatondp::new</a>(<a class="self" href="#72">self</a>.dfa, <a class="self" href="#72">self</a>.init, <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">HashMapFactory::default</a>())
     }
     <span class="kw">pub fn </span>with_vecmap&lt;F&gt;(
         <span class="self">self</span>,
@@ -1060,11 +1060,11 @@
     C: Container&lt;Key = A::State, Value = M::T&gt; + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#124">f</a>.debug_struct(<span class="string">"Automatondp"</span>)
-            .field(<span class="string">"dfa"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.dfa)
-            .field(<span class="string">"dp"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.dp)
-            .field(<span class="string">"ndp"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.ndp)
-            .finish()
+        <a href="#124">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_struct">debug_struct</a>(<span class="string">"Automatondp"</span>)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"dfa"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.dfa)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"dp"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.dp)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"ndp"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.ndp)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.finish">finish</a>()
     }
 }
 
@@ -1085,7 +1085,7 @@
             <a href="#139">dfa</a>,
             <a href="#143">dp</a>,
             <a href="#144">ndp</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
     <span class="kw">pub fn </span>step&lt;S, I, B&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S)
@@ -1320,7 +1320,7 @@
             <a href="#380">fn_initial</a>,
             <a href="#380">fn_next</a>,
             <a href="#380">fn_accept</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -1370,7 +1370,7 @@
             <a href="#429">fn_initial</a>,
             <a href="#429">fn_next</a>,
             <a href="#429">fn_accept</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -1389,7 +1389,7 @@
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
         <a class="self" href="#451">self</a>.dfa
             .<a href="#19">next</a>(<span class="kw-2">&amp;</span><a href="#451">state</a>.<span class="number">0</span>, <a href="#451">alph</a>)
-            .and_then(|s| (<a class="self" href="#451">self</a>.fn_next)(<a href="#451">state</a>, <a href="#451">alph</a>).map(|ss| (<a href="#454">s</a>, <a href="#454">ss</a>)))
+            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.and_then">and_then</a>(|s| (<a class="self" href="#451">self</a>.fn_next)(<a href="#451">state</a>, <a href="#451">alph</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|ss| (<a href="#454">s</a>, <a href="#454">ss</a>)))
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="self" href="#456">self</a>.dfa.<a href="#20">accept</a>(<span class="kw-2">&amp;</span><a href="#456">state</a>.<span class="number">0</span>) &amp;&amp; (<a class="self" href="#456">self</a>.fn_accept)(<a href="#456">state</a>)
@@ -1423,7 +1423,7 @@
             <a href="#482">fn_initial</a>,
             <a href="#482">fn_next</a>,
             <a href="#482">fn_accept</a>,
-            _marker: PhantomData,
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -1441,7 +1441,7 @@
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
         (<a class="self" href="#504">self</a>.fn_next)(<span class="kw-2">&amp;</span><a href="#504">state</a>.<span class="number">1</span>, <a href="#504">alph</a>)
-            .and_then(|(s1, a)| <a class="self" href="#504">self</a>.dfa.<a href="#19">next</a>(<span class="kw-2">&amp;</span><a href="#504">state</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span><a href="#506">a</a>).map(|s0| (<a href="#506">s0</a>, <a href="#506">s1</a>)))
+            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.and_then">and_then</a>(|(s1, a)| <a class="self" href="#504">self</a>.dfa.<a href="#19">next</a>(<span class="kw-2">&amp;</span><a href="#504">state</a>.<span class="number">0</span>, <span class="kw-2">&amp;</span><a href="#506">a</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|s0| (<a href="#506">s0</a>, <a href="#506">s1</a>)))
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="self" href="#508">self</a>.dfa.<a href="#20">accept</a>(<span class="kw-2">&amp;</span><a href="#508">state</a>.<span class="number">0</span>) &amp;&amp; (<a class="self" href="#508">self</a>.fn_accept)(<span class="kw-2">&amp;</span><a href="#508">state</a>.<span class="number">1</span>)
@@ -1459,28 +1459,28 @@
     <span class="kw">pub fn </span>less_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#521">sequence</a>,
-            ordering: Ordering::Less,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Less">Ordering::Less</a>,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>less_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#528">sequence</a>,
-            ordering: Ordering::Less,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Less">Ordering::Less</a>,
             equal: <span class="bool-val">true</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#535">sequence</a>,
-            ordering: Ordering::Greater,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Greater">Ordering::Greater</a>,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#542">sequence</a>,
-            ordering: Ordering::Greater,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Greater">Ordering::Greater</a>,
             equal: <span class="bool-val">true</span>,
         }
     }
@@ -1497,9 +1497,9 @@
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
         <a class="self" href="#560">self</a>.sequence
-            .get(<a href="#560">state</a>.<span class="number">0</span>)
-            .and_then(|c| <span class="kw">match </span>(<a href="#560">state</a>.<span class="number">1</span>, <a href="#563">c</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<a href="#560">alph</a>)) {
-                (<span class="bool-val">true</span>, Ordering::Equal) =&gt; <span class="prelude-val">Some</span>((<a href="#560">state</a>.<span class="number">0 </span>+ <span class="number">1</span>, <span class="bool-val">true</span>)),
+            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get">get</a>(<a href="#560">state</a>.<span class="number">0</span>)
+            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.and_then">and_then</a>(|c| <span class="kw">match </span>(<a href="#560">state</a>.<span class="number">1</span>, <a href="#563">c</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">cmp</a>(<a href="#560">alph</a>)) {
+                (<span class="bool-val">true</span>, <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Equal">Ordering::Equal</a>) =&gt; <span class="prelude-val">Some</span>((<a href="#560">state</a>.<span class="number">0 </span>+ <span class="number">1</span>, <span class="bool-val">true</span>)),
                 (<span class="bool-val">true</span>, ord) <span class="kw">if </span><a href="#565">ord</a> == <a class="self" href="#560">self</a>.ordering =&gt; <span class="prelude-val">None</span>,
                 <span class="kw">_ </span>=&gt; <span class="prelude-val">Some</span>((<a href="#560">state</a>.<span class="number">0 </span>+ <span class="number">1</span>, <span class="bool-val">false</span>)),
             })
@@ -1520,28 +1520,28 @@
     <span class="kw">pub fn </span>less_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#582">sequence</a>,
-            ordering: Ordering::Less,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Less">Ordering::Less</a>,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>less_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#589">sequence</a>,
-            ordering: Ordering::Less,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Less">Ordering::Less</a>,
             equal: <span class="bool-val">true</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#596">sequence</a>,
-            ordering: Ordering::Greater,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Greater">Ordering::Greater</a>,
             equal: <span class="bool-val">false</span>,
         }
     }
     <span class="kw">pub fn </span>greater_than_or_equal(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#603">sequence</a>,
-            ordering: Ordering::Greater,
+            ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Greater">Ordering::Greater</a>,
             equal: <span class="bool-val">true</span>,
         }
     }
@@ -1554,13 +1554,13 @@
     <span class="doccomment">/// (next position of sequence, is equal)
     </span><span class="kw">type </span>State = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>);
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {
-        (<a class="self" href="#618">self</a>.sequence.len(), Ordering::Equal)
+        (<a class="self" href="#618">self</a>.sequence.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>(), <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#variant.Equal">Ordering::Equal</a>)
     }
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt; {
-        <span class="kw">let </span>index = <a href="#621">state</a>.<span class="number">0</span>.wrapping_add(!<span class="number">0</span>);
+        <span class="kw">let </span>index = <a href="#621">state</a>.<span class="number">0</span>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.wrapping_add">wrapping_add</a>(!<span class="number">0</span>);
         <a class="self" href="#621">self</a>.sequence
-            .get(<a href="#622">index</a>)
-            .map(|c| (<a href="#622">index</a>, <a href="#621">alph</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">cmp</a>(<a href="#625">c</a>).then(<a href="#621">state</a>.<span class="number">1</span>)))
+            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get">get</a>(<a href="#622">index</a>)
+            .<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.map">map</a>(|c| (<a href="#622">index</a>, <a href="#621">alph</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.cmp">cmp</a>(<a href="#625">c</a>).<a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html#method.then">then</a>(<a href="#621">state</a>.<span class="number">1</span>)))
     }
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a href="#627">state</a>.<span class="number">1 </span>== <a class="self" href="#627">self</a>.ordering || <a class="self" href="#627">self</a>.equal &amp;&amp; <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(state.<span class="number">1</span>, Ordering::Equal)
@@ -1576,7 +1576,7 @@
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
+        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>()
     }
 }
 <span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>MonoidalAutomaton&lt;M&gt;
@@ -1584,7 +1584,7 @@
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(PhantomData)
+        <span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>)
     }
 }
 <span class="kw">impl</span>&lt;M&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>MonoidalAutomaton&lt;M&gt;
@@ -1608,12 +1608,12 @@
 </span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.AlwaysAcceptingAutomaton.html">AlwaysAcceptingAutomaton</a>&lt;A&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; A&gt;);
 <span class="kw">impl</span>&lt;A&gt; AlwaysAcceptingAutomaton&lt;A&gt; {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>()
+        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>()
     }
 }
 <span class="kw">impl</span>&lt;A&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>AlwaysAcceptingAutomaton&lt;A&gt; {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(PhantomData)
+        <span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>)
     }
 }
 <span class="kw">impl</span>&lt;A&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>AlwaysAcceptingAutomaton&lt;A&gt; {

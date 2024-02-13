@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/maximum_flow.rs`."><title>maximum_flow.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/maximum_flow.rs`."><title>maximum_flow.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -173,14 +173,14 @@
     <span class="kw">pub fn </span>new(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#11">vsize</a>,
-            edges: Vec::with_capacity(<a href="#11">esize_expect</a>),
-            capacities: Vec::with_capacity(<a href="#11">esize_expect</a> * <span class="number">2</span>),
+            edges: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#11">esize_expect</a>),
+            capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#11">esize_expect</a> * <span class="number">2</span>),
         }
     }
     <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, to: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
-        <a class="self" href="#18">self</a>.edges.push((<a href="#18">from</a>, <a href="#18">to</a>));
-        <a class="self" href="#18">self</a>.capacities.push(<a href="#18">cap</a>);
-        <a class="self" href="#18">self</a>.capacities.push(<span class="number">0</span>);
+        <a class="self" href="#18">self</a>.edges.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<a href="#18">from</a>, <a href="#18">to</a>));
+        <a class="self" href="#18">self</a>.capacities.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#18">cap</a>);
+        <a class="self" href="#18">self</a>.capacities.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<span class="number">0</span>);
     }
     <span class="kw">pub fn </span>gen_graph(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a> {
         <span class="kw">let </span>edges = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#23">self</a>.edges);
@@ -193,9 +193,9 @@
         <a href="#49-55">Dinic</a> {
             <a href="#27">graph</a>,
             <a href="#29">capacities</a>,
-            iter: Vec::with_capacity(<a href="#29">vsize</a>),
-            level: Vec::with_capacity(<a href="#29">vsize</a>),
-            deq: VecDeque::with_capacity(<a href="#29">vsize</a>),
+            iter: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#29">vsize</a>),
+            level: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#29">vsize</a>),
+            deq: <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.with_capacity">VecDeque::with_capacity</a>(<a href="#29">vsize</a>),
         }
     }
 }
@@ -220,11 +220,11 @@
         <a href="#11-17">DinicBuilder::new</a>(<a href="#57">vsize</a>, <a href="#57">esize_expect</a>)
     }
     <span class="kw">fn </span>bfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-        <a class="self" href="#60">self</a>.level.clear();
-        <a class="self" href="#60">self</a>.level.resize(<a class="self" href="#60">self</a>.graph.<a href="sparse_graph.rs.html#39-41">vertices_size</a>(), usize::MAX);
+        <a class="self" href="#60">self</a>.level.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.clear">clear</a>();
+        <a class="self" href="#60">self</a>.level.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize">resize</a>(<a class="self" href="#60">self</a>.graph.<a href="sparse_graph.rs.html#39-41">vertices_size</a>(), usize::MAX);
         <a class="self" href="#60">self</a>.level[<a href="#60">s</a>] = <span class="number">0</span>;
-        <a class="self" href="#60">self</a>.deq.clear();
-        <a class="self" href="#60">self</a>.deq.push_back(<a href="#60">s</a>);
+        <a class="self" href="#60">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.clear">clear</a>();
+        <a class="self" href="#60">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.push_back">push_back</a>(<a href="#60">s</a>);
         <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
             <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
                 <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.level[a.to] == usize::MAX {
@@ -283,8 +283,8 @@
     <span class="kw">pub fn </span>minimum_cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>visited = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <a class="self" href="#121">self</a>.graph.<a href="sparse_graph.rs.html#39-41">vertices_size</a>()];
         <a href="#122">visited</a>[<a href="#121">s</a>] = <span class="bool-val">true</span>;
-        <a class="self" href="#121">self</a>.deq.clear();
-        <a class="self" href="#121">self</a>.deq.push_back(<a href="#121">s</a>);
+        <a class="self" href="#121">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.clear">clear</a>();
+        <a class="self" href="#121">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.push_back">push_back</a>(<a href="#121">s</a>);
         <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
             <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
                 <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; <span class="number">0 </span>&amp;&amp; !visited[a.to] {

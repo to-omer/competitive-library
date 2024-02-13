@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/union_find.rs`."><title>union_find.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/union_find.rs`."><title>union_find.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -730,7 +730,7 @@
 <span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">collections::HashMap</a>,
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>},
-    marker::PhantomData,
+    <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">marker::PhantomData</a>,
     <a href="https://doc.rust-lang.org/nightly/core/mem/fn.swap.html">mem::swap</a>,
 };
 
@@ -761,9 +761,9 @@
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            cells: <a class="self" href="#34">self</a>.cells.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
-            merger: <a class="self" href="#34">self</a>.merger.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
-            history: <a class="self" href="#34">self</a>.history.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>(),
+            cells: <a class="self" href="#34">self</a>.cells.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
+            merger: <a class="self" href="#34">self</a>.merger.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
+            history: <a class="self" href="#34">self</a>.history.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
             _marker: <a class="self" href="#34">self</a>._marker,
         }
     }
@@ -782,10 +782,10 @@
     H::History: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
-        <a href="#56">f</a>.debug_struct(<span class="string">"UnionFindBase"</span>)
-            .field(<span class="string">"cells"</span>, <span class="kw-2">&amp;</span><a class="self" href="#56">self</a>.cells)
-            .field(<span class="string">"history"</span>, <span class="kw-2">&amp;</span><a class="self" href="#56">self</a>.history)
-            .finish()
+        <a href="#56">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_struct">debug_struct</a>(<span class="string">"UnionFindBase"</span>)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"cells"</span>, <span class="kw-2">&amp;</span><a class="self" href="#56">self</a>.cells)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"history"</span>, <span class="kw-2">&amp;</span><a class="self" href="#56">self</a>.history)
+            .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.finish">finish</a>()
     }
 }
 
@@ -809,8 +809,8 @@
 {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span><span class="self"><a href="#82">self</a> </span>{
-            <span class="self">Self</span>::Root(data) =&gt; <a href="#70"><span class="self">Self</span>::Root</a>(<a href="#84">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()),
-            <span class="self">Self</span>::Child(data) =&gt; <a href="#71"><span class="self">Self</span>::Child</a>(<a href="#85">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()),
+            <span class="self">Self</span>::Root(data) =&gt; <a href="#70"><span class="self">Self</span>::Root</a>(<a href="#84">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()),
+            <span class="self">Self</span>::Child(data) =&gt; <a href="#71"><span class="self">Self</span>::Child</a>(<a href="#85">data</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()),
         }
     }
 }
@@ -826,8 +826,8 @@
 {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
         <span class="kw">match </span><span class="self"><a href="#99">self</a> </span>{
-            <span class="self">Self</span>::Root(data) =&gt; <a href="#99">f</a>.debug_tuple(<span class="string">"Root"</span>).field(<a href="#101">data</a>).finish(),
-            <span class="self">Self</span>::Child(data) =&gt; <a href="#99">f</a>.debug_tuple(<span class="string">"Child"</span>).field(<a href="#102">data</a>).finish(),
+            <span class="self">Self</span>::Root(data) =&gt; <a href="#99">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_tuple">debug_tuple</a>(<span class="string">"Root"</span>).<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugTuple.html#method.field">field</a>(<a href="#101">data</a>).<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugTuple.html#method.finish">finish</a>(),
+            <span class="self">Self</span>::Child(data) =&gt; <a href="#99">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_tuple">debug_tuple</a>(<span class="string">"Child"</span>).<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugTuple.html#method.field">field</a>(<a href="#102">data</a>).<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugTuple.html#method.finish">finish</a>(),
         }
     }
 }
@@ -970,13 +970,13 @@
     <span class="kw">type </span>History = Vec&lt;[(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, T); <span class="number">2</span>]&gt;;
 
     <span class="kw">fn </span>unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cells: <span class="kw-2">&amp;</span>[T]) {
-        <span class="kw">let </span>cx = <a href="#244">cells</a>[<a href="#244">x</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
-        <span class="kw">let </span>cy = <a href="#244">cells</a>[<a href="#244">y</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>();
-        <a href="#244">history</a>.push([(<a href="#244">x</a>, <a href="#245">cx</a>), (<a href="#244">y</a>, <a href="#246">cy</a>)]);
+        <span class="kw">let </span>cx = <a href="#244">cells</a>[<a href="#244">x</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+        <span class="kw">let </span>cy = <a href="#244">cells</a>[<a href="#244">y</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+        <a href="#244">history</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>([(<a href="#244">x</a>, <a href="#245">cx</a>), (<a href="#244">y</a>, <a href="#246">cy</a>)]);
     }
 
     <span class="kw">fn </span>undo_unite(history: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::History, cells: <span class="kw-2">&amp;mut </span>[T]) {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>([(x, cx), (y, cy)]) = <a href="#250">history</a>.pop() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>([(x, cx), (y, cy)]) = <a href="#250">history</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>() {
             <a href="#250">cells</a>[<a href="#251">x</a>] = <a href="#251">cx</a>;
             <a href="#250">cells</a>[<a href="#251">y</a>] = <a href="#251">cy</a>;
         }
@@ -1002,17 +1002,17 @@
 {
     <span class="kw">pub fn </span>new(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<a href="#275">n</a>)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|<span class="kw">_</span>| <a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), ())))
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|<span class="kw">_</span>| <a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), ())))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
         <span class="self">Self </span>{
             <a href="#276">cells</a>,
             merger: (),
-            history: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
-            _marker: PhantomData,
+            history: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
     <span class="kw">pub fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <a class="self" href="#286">self</a>.cells.push(<a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), ())));
+        <a class="self" href="#286">self</a>.cells.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), ())));
     }
 }
 
@@ -1026,16 +1026,16 @@
 {
     <span class="kw">pub fn </span>new_with_merger(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>init: <span class="kw">impl </span>FnMut(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T, merge: Merge) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>cells: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<a href="#299">n</a>)
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">map</a>(|i| <a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), <a href="#299">init</a>(<a href="#301">i</a>))))
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">collect</a>();
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|i| <a href="#70">UfCell::Root</a>((<a href="#143">U::single_info</a>(), <a href="#299">init</a>(<a href="#301">i</a>))))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
         <span class="self">Self </span>{
             <a href="#300">cells</a>,
             merger: <a href="#202-205">FnMerger</a> {
                 f: <a href="#299">merge</a>,
-                _marker: PhantomData,
+                _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
             },
-            history: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default::default</a>(),
-            _marker: PhantomData,
+            history: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>(),
+            _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>,
         }
     }
 }
@@ -1049,7 +1049,7 @@
 {
     <span class="kw">pub fn </span>size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; &lt;<a href="#148">UnionBySize</a> <span class="kw">as </span>UnionStrategy&gt;::Info {
         <span class="kw">let </span>root = <a class="self" href="#322">self</a>.<a href="#399-416">find_root</a>(<a href="#322">x</a>);
-        <a class="self" href="#322">self</a>.<a href="#336-341">root_info</a>(<a href="#323">root</a>).unwrap()
+        <a class="self" href="#322">self</a>.<a href="#336-341">root_info</a>(<a href="#323">root</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>()
     }
 }
 
@@ -1063,7 +1063,7 @@
 {
     <span class="kw">fn </span>root_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;U::Info&gt; {
         <span class="kw">match </span><span class="kw-2">&amp;</span><a class="self" href="#336">self</a>.cells[<a href="#336">x</a>] {
-            <a href="#70">UfCell::Root</a>((info, <span class="kw">_</span>)) =&gt; <span class="prelude-val">Some</span>(<a href="#338">info</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()),
+            <a href="#70">UfCell::Root</a>((info, <span class="kw">_</span>)) =&gt; <span class="prelude-val">Some</span>(<a href="#338">info</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()),
             <a href="#71">UfCell::Child</a>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
         }
     }
@@ -1096,11 +1096,11 @@
     }
 
     <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; + <span class="lifetime">'_ </span>{
-        (<span class="number">0</span>..<a class="self" href="#370">self</a>.cells.len()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|<span class="kw-2">&amp;</span>x| <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(<span class="self">self</span>.cells[x], UfCell::Root(<span class="kw">_</span>)))
+        (<span class="number">0</span>..<a class="self" href="#370">self</a>.cells.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|<span class="kw-2">&amp;</span>x| <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.matches.html">matches!</a>(<span class="self">self</span>.cells[x], UfCell::Root(<span class="kw">_</span>)))
     }
 
     <span class="kw">pub fn </span>all_group_members(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>groups_map = HashMap::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>groups_map = <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.new">HashMap::new</a>();
         <span class="kw">for </span>x <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.cells.len() {
             <span class="kw">let </span>r = <span class="self">self</span>.find_root(x);
             groups_map.entry(r).or_insert_with(Vec::new).push(x);
@@ -1113,11 +1113,11 @@
             <a href="#71">UfCell::Child</a>((parent, <span class="kw">_</span>)) =&gt; <a class="self" href="#383">self</a>.<a href="#383-397">find</a>(<span class="kw-2">*</span><a href="#385">parent</a>),
             <a href="#70">UfCell::Root</a>(<span class="kw">_</span>) =&gt; <span class="kw">return </span>(<a href="#383">x</a>, <a href="../algebra/magma.rs.html#30">P::unit</a>()),
         };
-        <span class="kw">let </span>(parent, potential) = <a class="self" href="#383">self</a>.cells[<a href="#383">x</a>].<a href="#119-124">child_mut</a>().unwrap();
+        <span class="kw">let </span>(parent, potential) = <a class="self" href="#383">self</a>.cells[<a href="#383">x</a>].<a href="#119-124">child_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>();
         <span class="kw">let </span>potential = <span class="kw">if </span>F::CHENGE_ROOT {
             <span class="kw-2">*</span><a href="#388">parent</a> = <a href="#384">parent_parent</a>;
             <span class="kw-2">*</span><a href="#388">potential</a> = <a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#384">parent_potential</a>, <a href="#388">potential</a>);
-            <a href="#388">potential</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">clone</a>()
+            <a href="#388">potential</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()
         } <span class="kw">else </span>{
             <a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#384">parent_potential</a>, <a href="#388">potential</a>)
         };
@@ -1131,10 +1131,10 @@
         };
         <span class="kw">if </span>F::CHENGE_ROOT {
             <span class="kw">let </span>(cx, cp) = {
-                <span class="kw">let </span>ptr = <a class="self" href="#399">self</a>.cells.as_mut_ptr();
-                <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#406">ptr</a>.add(<a href="#399">x</a>), <span class="kw-2">&amp;*</span><a href="#406">ptr</a>.add(<a href="#400">parent</a>)) }
+                <span class="kw">let </span>ptr = <a class="self" href="#399">self</a>.cells.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.as_mut_ptr">as_mut_ptr</a>();
+                <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#406">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#399">x</a>), <span class="kw-2">&amp;*</span><a href="#406">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#400">parent</a>)) }
             };
-            <span class="kw">let </span>(parent, potential) = <a href="#405">cx</a>.<a href="#119-124">child_mut</a>().unwrap();
+            <span class="kw">let </span>(parent, potential) = <a href="#405">cx</a>.<a href="#119-124">child_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>();
             <span class="kw-2">*</span><a href="#409">parent</a> = <a href="#400">parent_parent</a>;
             <span class="kw">if let </span><a href="#71">UfCell::Child</a>((<span class="kw">_</span>, ppot)) = <span class="kw-2">&amp;</span><a href="#405">cp</a> {
                 <span class="kw-2">*</span><a href="#409">potential</a> = <a href="../algebra/magma.rs.html#8">P::operate</a>(<a href="#411">ppot</a>, <a href="#409">potential</a>);
@@ -1151,13 +1151,13 @@
         }
         <a href="#229">H::unite</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#418">self</a>.history, <a href="#419">rx</a>, <a href="#420">ry</a>, <span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.cells);
         {
-            <span class="kw">let </span>ptr = <a class="self" href="#418">self</a>.cells.as_mut_ptr();
-            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#426">ptr</a>.add(<a href="#419">rx</a>), <span class="kw-2">&amp;mut *</span><a href="#426">ptr</a>.add(<a href="#420">ry</a>)) };
+            <span class="kw">let </span>ptr = <a class="self" href="#418">self</a>.cells.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.as_mut_ptr">as_mut_ptr</a>();
+            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#426">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#419">rx</a>), <span class="kw-2">&amp;mut *</span><a href="#426">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#420">ry</a>)) };
             <a class="self" href="#418">self</a>.merger
-                .<a href="#198">merge</a>(<span class="kw-2">&amp;mut </span><a href="#427">cx</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>, <span class="kw-2">&amp;mut </span><a href="#427">cy</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>);
+                .<a href="#198">merge</a>(<span class="kw-2">&amp;mut </span><a href="#427">cx</a>.<a href="#113-118">root_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>().<span class="number">1</span>, <span class="kw-2">&amp;mut </span><a href="#427">cy</a>.<a href="#113-118">root_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>().<span class="number">1</span>);
         }
-        <span class="kw-2">*</span><a class="self" href="#418">self</a>.<a href="#343-348">root_info_mut</a>(<a href="#419">rx</a>).unwrap() =
-            <a href="#145">U::unite</a>(<span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#419">rx</a>).unwrap(), <span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#420">ry</a>).unwrap());
+        <span class="kw-2">*</span><a class="self" href="#418">self</a>.<a href="#343-348">root_info_mut</a>(<a href="#419">rx</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>() =
+            <a href="#145">U::unite</a>(<span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#419">rx</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>(), <span class="kw-2">&amp;</span><a class="self" href="#418">self</a>.<a href="#336-341">root_info</a>(<a href="#420">ry</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>());
         <a class="self" href="#418">self</a>.cells[<a href="#420">ry</a>] = <a href="#71">UfCell::Child</a>((<a href="#419">rx</a>, <a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#419">potx</a>, <span class="kw-2">&amp;</span><a href="#418">potential</a>)));
         <span class="bool-val">true
     </span>}
@@ -1187,8 +1187,8 @@
         <span class="kw">if </span>rx == ry {
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>xinfo = <a class="self" href="#456">self</a>.<a href="#336-341">root_info</a>(<a href="#457">rx</a>).unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>yinfo = <a class="self" href="#456">self</a>.<a href="#336-341">root_info</a>(<a href="#458">ry</a>).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>xinfo = <a class="self" href="#456">self</a>.<a href="#336-341">root_info</a>(<a href="#457">rx</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>yinfo = <a class="self" href="#456">self</a>.<a href="#336-341">root_info</a>(<a href="#458">ry</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>();
         <span class="kw">let </span>inverse = !<a href="#144">U::check_directoin</a>(<span class="kw-2">&amp;</span><a href="#462">xinfo</a>, <span class="kw-2">&amp;</span><a href="#463">yinfo</a>);
         <span class="kw">let </span>potential = <span class="kw">if </span>inverse {
             <a href="../algebra/magma.rs.html#67-69">P::rinv_operate</a>(<span class="kw-2">&amp;</span><a href="#458">poty</a>, <span class="kw-2">&amp;</span><a href="../algebra/magma.rs.html#8">P::operate</a>(<span class="kw-2">&amp;</span><a href="#457">potx</a>, <span class="kw-2">&amp;</span><a href="#456">potential</a>))
@@ -1201,12 +1201,12 @@
         }
         <a href="#229">H::unite</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#456">self</a>.history, <a href="#457">rx</a>, <a href="#458">ry</a>, <span class="kw-2">&amp;</span><a class="self" href="#456">self</a>.cells);
         {
-            <span class="kw">let </span>ptr = <a class="self" href="#456">self</a>.cells.as_mut_ptr();
-            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#476">ptr</a>.add(<a href="#457">rx</a>), <span class="kw-2">&amp;mut *</span><a href="#476">ptr</a>.add(<a href="#458">ry</a>)) };
+            <span class="kw">let </span>ptr = <a class="self" href="#456">self</a>.cells.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.as_mut_ptr">as_mut_ptr</a>();
+            <span class="kw">let </span>(cx, cy) = <span class="kw">unsafe </span>{ (<span class="kw-2">&amp;mut *</span><a href="#476">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#457">rx</a>), <span class="kw-2">&amp;mut *</span><a href="#476">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#458">ry</a>)) };
             <a class="self" href="#456">self</a>.merger
-                .<a href="#198">merge</a>(<span class="kw-2">&amp;mut </span><a href="#477">cx</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>, <span class="kw-2">&amp;mut </span><a href="#477">cy</a>.<a href="#113-118">root_mut</a>().unwrap().<span class="number">1</span>);
+                .<a href="#198">merge</a>(<span class="kw-2">&amp;mut </span><a href="#477">cx</a>.<a href="#113-118">root_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>().<span class="number">1</span>, <span class="kw-2">&amp;mut </span><a href="#477">cy</a>.<a href="#113-118">root_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>().<span class="number">1</span>);
         }
-        <span class="kw-2">*</span><a class="self" href="#456">self</a>.<a href="#343-348">root_info_mut</a>(<a href="#457">rx</a>).unwrap() = <a href="#145">U::unite</a>(<span class="kw-2">&amp;</span><a href="#462">xinfo</a>, <span class="kw-2">&amp;</span><a href="#463">yinfo</a>);
+        <span class="kw-2">*</span><a class="self" href="#456">self</a>.<a href="#343-348">root_info_mut</a>(<a href="#457">rx</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>() = <a href="#145">U::unite</a>(<span class="kw-2">&amp;</span><a href="#462">xinfo</a>, <span class="kw-2">&amp;</span><a href="#463">yinfo</a>);
         <a class="self" href="#456">self</a>.cells[<a href="#458">ry</a>] = <a href="#71">UfCell::Child</a>((<a href="#457">rx</a>, <a href="#465">potential</a>));
         <span class="bool-val">true
     </span>}

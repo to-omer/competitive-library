@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/prime_factors.rs`."><title>prime_factors.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/prime_factors.rs`."><title>prime_factors.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -132,7 +132,7 @@
     <span class="kw">if </span>miller_rabin_with_br(n, <span class="kw-2">&amp;</span>br) {
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
-    <span class="kw">let </span>m = <span class="number">1u64 </span>&lt;&lt; ((<span class="number">63 </span>- <a href="#3">n</a>.leading_zeros()) / <span class="number">5</span>);
+    <span class="kw">let </span>m = <span class="number">1u64 </span>&lt;&lt; ((<span class="number">63 </span>- <a href="#3">n</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.leading_zeros">leading_zeros</a>()) / <span class="number">5</span>);
     <span class="kw">let </span>sub = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <span class="kw">if </span>x &gt; y { <a href="#9">x</a> - <a href="#9">y</a> } <span class="kw">else </span>{ <a href="#9">y</a> - <a href="#9">x</a> };
     <span class="kw">let </span>mul = |x: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, y: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>| <a href="#4">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#10">x</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="#10">y</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
     <span class="kw">for </span>c <span class="kw">in </span><span class="number">12</span>.. {
@@ -173,7 +173,7 @@
     <span class="kw">if </span>n == <span class="number">0 </span>{
         <span class="kw">return </span><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
     }
-    <span class="kw">let </span>k = <a href="#45">n</a>.trailing_zeros();
+    <span class="kw">let </span>k = <a href="#45">n</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.trailing_zeros">trailing_zeros</a>();
     <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">2</span>; <a href="#49">k</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>];
     <a href="#45">n</a> &gt;&gt;= <a href="#49">k</a>;
     <span class="kw">if </span>n != <span class="number">1 </span>{
@@ -187,12 +187,12 @@
             }
         }
     }
-    <a href="#50">res</a>.sort_unstable();
+    <a href="#50">res</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.sort_unstable">sort_unstable</a>();
     <a href="#50">res</a>
 }
 
 <span class="kw">pub fn </span><a href="../../../competitive/math/fn.prime_factors.html">prime_factors</a>(n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>res = Vec::new();
+    <span class="kw">let </span><span class="kw-2">mut </span>res = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">Vec::new</a>();
     <span class="kw">for </span>a <span class="kw">in </span>prime_factors_flatten(n) {
         <span class="kw">if let </span><span class="prelude-val">Some</span>((p, len)) = res.last_mut() {
             <span class="kw">if </span>p == <span class="kw-2">&amp;</span>a {
@@ -217,7 +217,7 @@
             acc <span class="kw-2">*</span>= p;
         }
     }
-    <a href="#82">d</a>.sort_unstable();
+    <a href="#82">d</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.sort_unstable">sort_unstable</a>();
     <a href="#82">d</a>
 }
 

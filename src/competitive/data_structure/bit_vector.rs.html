@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/bit_vector.rs`."><title>bit_vector.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (f067fd608 2024-02-05)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/bit_vector.rs`."><title>bit_vector.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-5bc39a1768837dd0.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (1a648b397 2024-02-11)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-48f368f3872407c8.js"></script><script defer src="../../../static.files/scrape-examples-ef1e698c1d417c0c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -245,7 +245,7 @@
     </span><span class="kw">fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
     <span class="doccomment">/// the number of 1 in [0, k)
     </span><span class="kw">fn </span>rank1(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        (<span class="number">0</span>..<a href="#10">k</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">filter</a>(|<span class="kw-2">&amp;</span>i| <a class="self" href="#10">self</a>.<a href="#8">access</a>(<a href="#11">i</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">count</a>()
+        (<span class="number">0</span>..<a href="#10">k</a>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|<span class="kw-2">&amp;</span>i| <a class="self" href="#10">self</a>.<a href="#8">access</a>(<a href="#11">i</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.count">count</a>()
     }
     <span class="doccomment">/// the number of 0 in [0, k)
     </span><span class="kw">fn </span>rank0(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
@@ -321,21 +321,21 @@
     sum: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
 <span class="kw">impl </span><a href="#81-85">BitVector</a> {
-    <span class="kw">const </span>WORD_SIZE: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = <span class="number">0usize</span>.count_zeros() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
+    <span class="kw">const </span>WORD_SIZE: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = <span class="number">0usize</span>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.count_zeros">count_zeros</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>;
 }
 <span class="kw">impl </span><a href="#5-51">RankSelectDictionaries</a> <span class="kw">for </span><a href="#81-85">BitVector</a> {
     <span class="kw">fn </span>bit_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="#90">self</a>.data.len() * <span class="self">Self</span>::WORD_SIZE
+        <a class="self" href="#90">self</a>.data.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>() * <span class="self">Self</span>::WORD_SIZE
     }
     <span class="kw">fn </span>access(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
         <a class="self" href="#93">self</a>.data[<a href="#93">k</a> / <span class="self">Self</span>::WORD_SIZE].<span class="number">0 </span>&amp; (<span class="number">1 </span>&lt;&lt; (<a href="#93">k</a> % <span class="self">Self</span>::WORD_SIZE)) != <span class="number">0
     </span>}
     <span class="kw">fn </span>rank1(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <span class="kw">let </span>(bit, sum) = <a class="self" href="#96">self</a>.data[<a href="#96">k</a> / <span class="self">Self</span>::WORD_SIZE];
-        <a href="#97">sum</a> + (<a href="#97">bit</a> &amp; !(usize::MAX &lt;&lt; (<a href="#96">k</a> % <span class="self">Self</span>::WORD_SIZE))).count_ones() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
+        <a href="#97">sum</a> + (<a href="#97">bit</a> &amp; !(usize::MAX &lt;&lt; (<a href="#96">k</a> % <span class="self">Self</span>::WORD_SIZE))).<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.count_ones">count_ones</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>
     }
     <span class="kw">fn </span>select1(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, <a class="self" href="#100">self</a>.data.len());
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, <a class="self" href="#100">self</a>.data.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>());
         <span class="kw">if </span><span class="self">self</span>.sum &lt;= k {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
@@ -349,10 +349,10 @@
         }
         <span class="kw">let </span>(bit, sum) = <a class="self" href="#100">self</a>.data[<a href="#101">l</a>];
         <a href="#100">k</a> -= <a href="#113">sum</a>;
-        <span class="prelude-val">Some</span>(<a href="#101">l</a> * <span class="self">Self</span>::WORD_SIZE + <a href="#113">bit</a>.<a href="#18-33">select1</a>(<a href="#100">k</a>).unwrap())
+        <span class="prelude-val">Some</span>(<a href="#101">l</a> * <span class="self">Self</span>::WORD_SIZE + <a href="#113">bit</a>.<a href="#18-33">select1</a>(<a href="#100">k</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>())
     }
     <span class="kw">fn </span>select0(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, <a class="self" href="#117">self</a>.data.len());
+        <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (<span class="number">0</span>, <a class="self" href="#117">self</a>.data.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>());
         <span class="kw">if </span>r * <span class="self">Self</span>::WORD_SIZE - <span class="self">self</span>.sum &lt;= k {
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
@@ -366,13 +366,13 @@
         }
         <span class="kw">let </span>(bit, sum) = <a class="self" href="#117">self</a>.data[<a href="#118">l</a>];
         <a href="#117">k</a> -= <a href="#118">l</a> * <span class="self">Self</span>::WORD_SIZE - <a href="#130">sum</a>;
-        <span class="prelude-val">Some</span>(<a href="#118">l</a> * <span class="self">Self</span>::WORD_SIZE + <a href="#130">bit</a>.<a href="#35-50">select0</a>(<a href="#117">k</a>).unwrap())
+        <span class="prelude-val">Some</span>(<a href="#118">l</a> * <span class="self">Self</span>::WORD_SIZE + <a href="#130">bit</a>.<a href="#35-50">select0</a>(<a href="#117">k</a>).<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>())
     }
 }
 <span class="kw">impl </span>FromIterator&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt; <span class="kw">for </span><a href="#81-85">BitVector</a> {
     <span class="kw">fn </span>from_iter&lt;T: IntoIterator&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;&gt;(iter: T) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>iter = <a href="#136">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">into_iter</a>();
-        <span class="kw">let </span><span class="kw-2">mut </span>data = Vec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = <a href="#136">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>data = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">Vec::new</a>();
         <span class="kw">let </span><span class="kw-2">mut </span>sum = <span class="number">0</span>;
         <span class="lifetime">'outer</span>: <span class="kw">loop </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>bit = <span class="number">0</span>;
@@ -389,7 +389,7 @@
                     <span class="kw">break </span><span class="lifetime">'outer</span>;
                 }
             }
-            <a href="#138">data</a>.push((<a href="#141">bit</a>, <a href="#139">sum</a>));
+            <a href="#138">data</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<a href="#141">bit</a>, <a href="#139">sum</a>));
             <a href="#139">sum</a> = <a href="#142">nsum</a>;
         }
         <span class="self">Self </span>{ <a href="#138">data</a>, <a href="#139">sum</a> }
