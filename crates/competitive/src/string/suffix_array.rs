@@ -1,3 +1,6 @@
+use super::binary_search;
+use std::{cmp::Ordering, ops::Range};
+
 #[derive(Clone, Debug)]
 pub struct SuffixArray<T> {
     pat: Vec<T>,
@@ -48,6 +51,49 @@ impl<T: Ord> SuffixArray<T> {
             lcp[self.rank[i] - 2] = h;
         }
         lcp
+    }
+    pub fn range(&self, t: &[T], next: impl Fn(&T) -> T) -> Range<usize> {
+        let l = binary_search(
+            |&i| {
+                let mut si = self.sa[i as usize];
+                let mut ti = 0;
+                while si < self.pat.len() && ti < t.len() {
+                    match self.pat[si].cmp(&t[ti]) {
+                        Ordering::Less => return false,
+                        Ordering::Greater => return true,
+                        Ordering::Equal => {}
+                    }
+                    si += 1;
+                    ti += 1;
+                }
+                !(si >= self.pat.len() && ti < t.len())
+            },
+            self.sa.len() as isize,
+            -1,
+        ) as usize;
+        let r = binary_search(
+            |&i| {
+                let mut si = self.sa[i as usize];
+                let mut ti = 0;
+                while si < self.pat.len() && ti < t.len() {
+                    match if ti + 1 == t.len() {
+                        self.pat[si].cmp(&next(&t[ti]))
+                    } else {
+                        self.pat[si].cmp(&t[ti])
+                    } {
+                        Ordering::Less => return false,
+                        Ordering::Greater => return true,
+                        Ordering::Equal => {}
+                    }
+                    si += 1;
+                    ti += 1;
+                }
+                !(si >= self.pat.len() && ti < t.len())
+            },
+            self.sa.len() as isize,
+            l as isize - 1,
+        ) as usize;
+        l..r
     }
 }
 impl<T> std::ops::Index<usize> for SuffixArray<T> {

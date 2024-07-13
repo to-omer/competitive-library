@@ -1,6 +1,7 @@
 //! string algorithems
 
 use crate::algebra::{Gf2_63, Invertible, Mersenne61, Ring, SemiRing};
+use crate::algorithm::binary_search;
 use crate::math::{Convolve, ConvolveSteps};
 use crate::num::{montgomery, Zero};
 use crate::tools::Xorshift;
@@ -29,7 +30,7 @@ mod knuth_morris_pratt;
     )
 )]
 pub mod rolling_hash;
-#[cfg_attr(nightly, codesnip::entry("SuffixArray"))]
+#[cfg_attr(nightly, codesnip::entry("SuffixArray", include("binary_search")))]
 mod suffix_array;
 #[cfg_attr(nightly, codesnip::entry(include("NumberTheoreticTransform")))]
 mod wildcard_pattern_matching;
