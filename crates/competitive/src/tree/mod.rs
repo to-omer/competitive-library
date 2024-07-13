@@ -23,6 +23,8 @@ mod generator;
 mod heavy_light_decomposition;
 mod rerooting;
 mod tree_center;
+#[cfg_attr(nightly, codesnip::entry("tree_centroid", include("SparseGraph")))]
+mod tree_centroid;
 mod tree_dp;
 mod tree_hash;
 mod tree_order;
