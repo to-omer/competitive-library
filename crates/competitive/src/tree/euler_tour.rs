@@ -182,7 +182,7 @@ pub struct LcaMonoid<D: LcaMonoidDispatch = LcaMonoidDefaultId> {
 pub mod impl_lcam {
     use super::*;
     thread_local! {
-        static DEPTH: std::cell::Cell<Vec<u64>> = std::cell::Cell::new(Vec::new());
+        static DEPTH: std::cell::Cell<Vec<u64>> = const { std::cell::Cell::new(Vec::new()) };
     }
     impl LcaMonoidDispatch for LcaMonoidDefaultId {
         fn vsize() -> usize {

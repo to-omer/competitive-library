@@ -513,7 +513,7 @@ mod tests {
         #[derive(Debug)]
         struct CheckDrop<T>(T);
         thread_local! {
-            static CNT: RefCell<usize> = RefCell::new(0);
+            static CNT: RefCell<usize> = const { RefCell::new(0) };
         }
         impl<T> Drop for CheckDrop<T> {
             fn drop(&mut self) {
