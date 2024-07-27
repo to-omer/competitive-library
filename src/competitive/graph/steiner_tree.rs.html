@@ -96,13 +96,11 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{
     <a href="graph_base.rs.html#26-29">AdjacencyIndex</a>, <a href="graph_base.rs.html#46-49">AdjacencyIndexWithValue</a>, <a href="graph_base.rs.html#262-268">AdjacencyView</a>, <a href="../algorithm/bitdp.rs.html#2">BitDp</a>, <a href="../tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>,
     <a href="shortest_path.rs.html#9-15">ShortestPathSemiRing</a>, <a href="graph_base.rs.html#208-218">VertexMap</a>, <a href="graph_base.rs.html#17-20">Vertices</a>,
 };
-<span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/cmp/struct.Reverse.html">cmp::Reverse</a>, <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">collections::BinaryHeap</a>};
+<span class="kw">use </span>std::{<a href="https://doc.rust-lang.org/nightly/core/cmp/struct.Reverse.html">cmp::Reverse</a>, <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">collections::BinaryHeap</a>, <a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">iter::repeat_with</a>};
 
 <span class="kw">pub trait </span><a href="../../../competitive/graph/trait.SteinerTreeExt.html">SteinerTreeExt</a>&lt;<span class="lifetime">'g</span>&gt;: Vertices&lt;<span class="lifetime">'g</span>&gt; {
     <span class="kw">fn </span>steiner_tree&lt;<span class="lifetime">'a</span>, S, M, I&gt;(
@@ -117,12 +115,12 @@
     {
         <span class="kw">let </span>tsize = <a href="#10">terminals</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/exact_size/trait.ExactSizeIterator.html#tymethod.len">len</a>();
         <span class="kw">if </span>tsize == <span class="number">0 </span>{
-            <span class="kw">return </span><a href="#65-72">SteinerTreeOutput</a> {
+            <span class="kw">return </span><a href="#63-70">SteinerTreeOutput</a> {
                 g: <a class="self" href="#9">self</a>,
                 dp: <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[],
             };
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>dp: Vec&lt;<span class="kw">_</span>&gt; = <a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">std::iter::repeat_with</a>(|| <a class="self" href="#9">self</a>.<a href="graph_base.rs.html#210-212">construct_vmap</a>(S::inf))
+        <span class="kw">let </span><span class="kw-2">mut </span>dp: Vec&lt;<span class="kw">_</span>&gt; = <a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">repeat_with</a>(|| <a class="self" href="#9">self</a>.<a href="graph_base.rs.html#210-212">construct_vmap</a>(S::inf))
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.take">take</a>(<span class="number">1 </span>&lt;&lt; <a href="#18">tsize</a>)
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
         <span class="kw">for </span>(i, t) <span class="kw">in </span>terminals.into_iter().enumerate() {
@@ -138,27 +136,25 @@
                     }
                 }
             }
-            <span class="kw">let </span><span class="kw-2">mut </span>heap = BinaryHeap::new();
-            <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
-                heap.push(PartialIgnoredOrd(
-                    Reverse(<span class="self">self</span>.vmap_get(<span class="kw-2">&amp;</span>dp[bit], u).clone()),
-                    u,
-                ));
-            }
+            <span class="kw">let </span>dp = <span class="kw-2">&amp;mut </span>dp[bit];
+            <span class="kw">let </span><span class="kw-2">mut </span>heap: BinaryHeap&lt;<span class="kw">_</span>&gt; = <span class="self">self
+                </span>.vertices()
+                .map(|u| PartialIgnoredOrd(Reverse(<span class="self">self</span>.vmap_get(dp, u).clone()), u))
+                .collect();
             <span class="kw">while let </span><span class="prelude-val">Some</span>(PartialIgnoredOrd(Reverse(d), u)) = heap.pop() {
-                <span class="kw">if </span><span class="self">self</span>.vmap_get(<span class="kw-2">&amp;</span>dp[bit], u) != <span class="kw-2">&amp;</span>d {
+                <span class="kw">if </span><span class="self">self</span>.vmap_get(dp, u) != <span class="kw-2">&amp;</span>d {
                     <span class="kw">continue</span>;
                 }
                 <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.aviews(weight, u) {
                     <span class="kw">let </span>v = a.vindex();
                     <span class="kw">let </span>nd = S::mul(<span class="kw-2">&amp;</span>d, <span class="kw-2">&amp;</span>a.avalue());
-                    <span class="kw">if </span>S::add_assign(<span class="self">self</span>.vmap_get_mut(<span class="kw-2">&amp;mut </span>dp[bit], v), <span class="kw-2">&amp;</span>nd) {
+                    <span class="kw">if </span>S::add_assign(<span class="self">self</span>.vmap_get_mut(dp, v), <span class="kw-2">&amp;</span>nd) {
                         heap.push(PartialIgnoredOrd(Reverse(nd), v));
                     }
                 }
             }
         }
-        <a href="#65-72">SteinerTreeOutput</a> { g: <a class="self" href="#9">self</a>, <a href="#25">dp</a> }
+        <a href="#63-70">SteinerTreeOutput</a> { g: <a class="self" href="#9">self</a>, <a href="#25">dp</a> }
     }
 }
 <span class="kw">impl</span>&lt;<span class="lifetime">'g</span>, G&gt; SteinerTreeExt&lt;<span class="lifetime">'g</span>&gt; <span class="kw">for </span>G <span class="kw">where </span>G: Vertices&lt;<span class="lifetime">'g</span>&gt; {}
@@ -176,8 +172,8 @@
     S: <a href="shortest_path.rs.html#9-15">ShortestPathSemiRing</a>,
 {
     <span class="kw">pub fn </span>minimum_from_source(<span class="kw-2">&amp;</span><span class="self">self</span>, source: G::VIndex) -&gt; S::T {
-        <span class="kw">match </span><a class="self" href="#78">self</a>.dp.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.last">last</a>() {
-            <span class="prelude-val">Some</span>(dp) =&gt; <a class="self" href="#78">self</a>.g.<a href="graph_base.rs.html#213">vmap_get</a>(<a href="#80">dp</a>, <a href="#78">source</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
+        <span class="kw">match </span><a class="self" href="#76">self</a>.dp.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.last">last</a>() {
+            <span class="prelude-val">Some</span>(dp) =&gt; <a class="self" href="#76">self</a>.g.<a href="graph_base.rs.html#213">vmap_get</a>(<a href="#78">dp</a>, <a href="#76">source</a>).<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>(),
             <span class="prelude-val">None </span>=&gt; <a href="shortest_path.rs.html#11">S::source</a>(),
         }
     }

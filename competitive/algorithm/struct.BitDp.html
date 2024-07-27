@@ -78,8 +78,6 @@
 <span>58</span>
 <span>59</span>
 <span>60</span>
-<span>61</span>
-<span>62</span>
 </pre></div><pre class="rust"><code><button class="expand">&varr;</button>    <span class="kw">fn </span>steiner_tree&lt;<span class="lifetime">'a</span>, S, M, I&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">'g </span><span class="self">self</span>,
         terminals: I,
@@ -97,7 +95,7 @@
                 dp: <span class="macro">vec!</span>[],
             };
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>dp: Vec&lt;<span class="kw">_</span>&gt; = std::iter::repeat_with(|| <span class="self">self</span>.construct_vmap(S::inf))
+        <span class="kw">let </span><span class="kw-2">mut </span>dp: Vec&lt;<span class="kw">_</span>&gt; = repeat_with(|| <span class="self">self</span>.construct_vmap(S::inf))
             .take(<span class="number">1 </span>&lt;&lt; tsize)
             .collect();
         <span class="kw">for </span>(i, t) <span class="kw">in </span>terminals.into_iter().enumerate() {
@@ -113,21 +111,19 @@
                     }
                 }
             }
-            <span class="kw">let </span><span class="kw-2">mut </span>heap = BinaryHeap::new();
-            <span class="kw">for </span>u <span class="kw">in </span><span class="self">self</span>.vertices() {
-                heap.push(PartialIgnoredOrd(
-                    Reverse(<span class="self">self</span>.vmap_get(<span class="kw-2">&amp;</span>dp[bit], u).clone()),
-                    u,
-                ));
-            }
+            <span class="kw">let </span>dp = <span class="kw-2">&amp;mut </span>dp[bit];
+            <span class="kw">let </span><span class="kw-2">mut </span>heap: BinaryHeap&lt;<span class="kw">_</span>&gt; = <span class="self">self
+                </span>.vertices()
+                .map(|u| PartialIgnoredOrd(Reverse(<span class="self">self</span>.vmap_get(dp, u).clone()), u))
+                .collect();
             <span class="kw">while let </span><span class="prelude-val">Some</span>(PartialIgnoredOrd(Reverse(d), u)) = heap.pop() {
-                <span class="kw">if </span><span class="self">self</span>.vmap_get(<span class="kw-2">&amp;</span>dp[bit], u) != <span class="kw-2">&amp;</span>d {
+                <span class="kw">if </span><span class="self">self</span>.vmap_get(dp, u) != <span class="kw-2">&amp;</span>d {
                     <span class="kw">continue</span>;
                 }
                 <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.aviews(weight, u) {
                     <span class="kw">let </span>v = a.vindex();
                     <span class="kw">let </span>nd = S::mul(<span class="kw-2">&amp;</span>d, <span class="kw-2">&amp;</span>a.avalue());
-                    <span class="kw">if </span>S::add_assign(<span class="self">self</span>.vmap_get_mut(<span class="kw-2">&amp;mut </span>dp[bit], v), <span class="kw-2">&amp;</span>nd) {
+                    <span class="kw">if </span>S::add_assign(<span class="self">self</span>.vmap_get_mut(dp, v), <span class="kw-2">&amp;</span>nd) {
                         heap.push(PartialIgnoredOrd(Reverse(nd), v));
                     }
                 }
