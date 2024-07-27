@@ -2,6 +2,7 @@
 
 use crate::{
     algebra::{Monoid, SemiRing},
+    algorithm::BitDp,
     num::Bounded,
     tools::{IterScan, MarkedIterScan, PartialIgnoredOrd},
 };
@@ -32,6 +33,8 @@ pub use self::project_selection_problem::ProjectSelectionProblem;
 pub use self::shortest_path::*;
 #[codesnip::entry("SparseGraph")]
 pub use self::sparse_graph::*;
+#[codesnip::entry("steiner_tree")]
+pub use self::steiner_tree::SteinerTreeExt;
 #[codesnip::entry("StronglyConnectedComponent")]
 pub use self::strongly_connected_component::StronglyConnectedComponent;
 #[codesnip::entry("TwoSatisfiability")]
@@ -82,6 +85,11 @@ mod shortest_path;
     codesnip::entry("SparseGraph", include("scanner", "GraphBase"))
 )]
 mod sparse_graph;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("steiner_tree", include("shortest_path", "BitDp"))
+)]
+mod steiner_tree;
 #[cfg_attr(
     nightly,
     codesnip::entry("StronglyConnectedComponent", include("SparseGraph"))
