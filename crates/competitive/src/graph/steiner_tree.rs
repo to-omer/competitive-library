@@ -2,7 +2,7 @@ use super::{
     AdjacencyIndex, AdjacencyIndexWithValue, AdjacencyView, BitDp, PartialIgnoredOrd,
     ShortestPathSemiRing, VertexMap, Vertices,
 };
-use std::{cmp::Reverse, collections::BinaryHeap};
+use std::{cmp::Reverse, collections::BinaryHeap, iter::repeat_with};
 
 pub trait SteinerTreeExt<'g>: Vertices<'g> {
     fn steiner_tree<'a, S, M, I>(
@@ -22,7 +22,7 @@ pub trait SteinerTreeExt<'g>: Vertices<'g> {
                 dp: vec![],
             };
         }
-        let mut dp: Vec<_> = std::iter::repeat_with(|| self.construct_vmap(S::inf))
+        let mut dp: Vec<_> = repeat_with(|| self.construct_vmap(S::inf))
             .take(1 << tsize)
             .collect();
         for (i, t) in terminals.into_iter().enumerate() {
@@ -38,21 +38,19 @@ pub trait SteinerTreeExt<'g>: Vertices<'g> {
                     }
                 }
             }
-            let mut heap = BinaryHeap::new();
-            for u in self.vertices() {
-                heap.push(PartialIgnoredOrd(
-                    Reverse(self.vmap_get(&dp[bit], u).clone()),
-                    u,
-                ));
-            }
+            let dp = &mut dp[bit];
+            let mut heap: BinaryHeap<_> = self
+                .vertices()
+                .map(|u| PartialIgnoredOrd(Reverse(self.vmap_get(dp, u).clone()), u))
+                .collect();
             while let Some(PartialIgnoredOrd(Reverse(d), u)) = heap.pop() {
-                if self.vmap_get(&dp[bit], u) != &d {
+                if self.vmap_get(dp, u) != &d {
                     continue;
                 }
                 for a in self.aviews(weight, u) {
                     let v = a.vindex();
                     let nd = S::mul(&d, &a.avalue());
-                    if S::add_assign(self.vmap_get_mut(&mut dp[bit], v), &nd) {
+                    if S::add_assign(self.vmap_get_mut(dp, v), &nd) {
                         heap.push(PartialIgnoredOrd(Reverse(nd), v));
                     }
                 }
