@@ -1002,3 +1002,97 @@ mod concatenate_operation {
     impl<T> Associative for SortedConcatenateOperation<T> {}
     impl<T> Commutative for SortedConcatenateOperation<T> {}
 }
+
+#[codesnip::entry("ShortestIntervalMovementOperation")]
+pub use self::shortest_interval_movement_impl::{
+    ShortestIntervalMovement, ShortestIntervalMovementOperation,
+};
+#[codesnip::entry(
+    "ShortestIntervalMovementOperation",
+    include("algebra", "bounded", "zero_one")
+)]
+mod shortest_interval_movement_impl {
+    use super::*;
+    use std::{
+        marker::PhantomData,
+        ops::{Add, Sub},
+    };
+
+    pub struct ShortestIntervalMovementOperation<T> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    #[derive(Debug, Clone)]
+    pub struct ShortestIntervalMovement<T> {
+        pos_range: (T, T),
+        move_range: (T, T),
+        cost: T,
+    }
+    impl<T> ShortestIntervalMovement<T>
+    where
+        T: Clone + Zero,
+    {
+        pub fn new(l: T, r: T) -> Self {
+            Self {
+                pos_range: (l.clone(), r.clone()),
+                move_range: (l, r),
+                cost: T::zero(),
+            }
+        }
+    }
+    impl<T> ShortestIntervalMovement<T>
+    where
+        T: Clone + Ord + Zero,
+    {
+        pub fn position(&self, x: &T) -> T {
+            x.clamp(&self.pos_range.0, &self.pos_range.1).clone()
+        }
+    }
+    impl<T> ShortestIntervalMovement<T>
+    where
+        T: Clone + Ord + Add<Output = T> + Sub<Output = T> + Zero,
+    {
+        pub fn move_cost(&self, x: &T) -> T {
+            x.max(&self.move_range.0).clone() - x.min(&self.move_range.1).clone()
+                + self.cost.clone()
+        }
+    }
+    impl<T> Magma for ShortestIntervalMovementOperation<T>
+    where
+        T: Clone + Ord + Add<Output = T> + Sub<Output = T> + Zero,
+    {
+        type T = ShortestIntervalMovement<T>;
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            let pos_range = (
+                (&x.pos_range.0)
+                    .clamp(&y.pos_range.0, &y.pos_range.1)
+                    .clone(),
+                (&x.pos_range.1)
+                    .clamp(&y.pos_range.0, &y.pos_range.1)
+                    .clone(),
+            );
+            let move_range = (
+                (&y.move_range.0)
+                    .clamp(&x.move_range.0, &x.move_range.1)
+                    .clone(),
+                (&y.move_range.1)
+                    .clamp(&x.move_range.0, &x.move_range.1)
+                    .clone(),
+            );
+            let cost = x.cost.clone() + y.move_cost(&x.position(&move_range.0));
+            ShortestIntervalMovement {
+                pos_range,
+                move_range,
+                cost,
+            }
+        }
+    }
+    impl<T> Associative for ShortestIntervalMovementOperation<T> {}
+    impl<T> Unital for ShortestIntervalMovementOperation<T>
+    where
+        T: Clone + Ord + Add<Output = T> + Sub<Output = T> + Zero + Bounded,
+    {
+        fn unit() -> Self::T {
+            ShortestIntervalMovement::new(T::minimum(), T::maximum())
+        }
+    }
+}
