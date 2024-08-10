@@ -25,7 +25,7 @@ impl SumMinimum {
         Self {
             sum: x,
             prefix_min: 0.min(x),
-            suffix_min: 0.min(-x),
+            suffix_min: 0.max(x),
         }
     }
 }
@@ -36,7 +36,7 @@ impl Magma for SumMinimum {
         Self {
             sum: x.sum + y.sum,
             prefix_min: x.prefix_min.min(x.sum + y.prefix_min),
-            suffix_min: y.suffix_min.min(x.suffix_min - y.sum),
+            suffix_min: y.suffix_min.max(x.suffix_min + y.sum),
         }
     }
 }
@@ -99,7 +99,7 @@ where
         let p = self.flow.fold(i..self.n).sum;
         let j = if p < 0 {
             self.flow
-                .rposition_acc(0..i, |s| s.suffix_min - p <= 0)
+                .rposition_acc(0..i, |s| s.suffix_min + p >= 0)
                 .unwrap_or(0)
         } else {
             i
@@ -132,7 +132,7 @@ where
         let p = self.flow.fold(i..self.n).sum;
         let j = if p < 0 {
             self.flow
-                .rposition_acc(0..i, |s| s.suffix_min - p <= 0)
+                .rposition_acc(0..i, |s| s.suffix_min + p >= 0)
                 .unwrap_or(0)
         } else {
             i
