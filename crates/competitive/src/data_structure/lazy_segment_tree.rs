@@ -57,6 +57,17 @@ where
         }
         Self { n, seg }
     }
+    pub fn from_keys(keys: impl ExactSizeIterator<Item = M::Key>) -> Self {
+        let n = keys.len();
+        let mut seg = vec![(M::agg_unit(), M::act_unit()); 2 * n];
+        for (i, key) in keys.enumerate() {
+            seg[i + n].0 = M::single_agg(&key);
+        }
+        for i in (1..n).rev() {
+            seg[i].0 = M::agg_operate(&seg[2 * i].0, &seg[2 * i + 1].0);
+        }
+        Self { n, seg }
+    }
     #[inline]
     fn update_at(&mut self, k: usize, x: &M::Act) {
         let nx = M::act_agg(&self.seg[k].0, x);

@@ -261,12 +261,43 @@ mod monoid_action_impls {
         }
     }
 
+    pub struct RangeMaxRangeAdd<T> {
+        _marker: PhantomData<fn() -> T>,
+    }
+    impl<T> MonoidAction for RangeMaxRangeAdd<T>
+    where
+        T: Clone + Ord + Bounded + Zero + Add<Output = T>,
+    {
+        type Key = T;
+        type Agg = T;
+        type Act = T;
+        type AggMonoid = MaxOperation<T>;
+        type ActMonoid = AdditiveOperation<T>;
+        fn single_agg(key: &Self::Key) -> Self::Agg {
+            key.clone()
+        }
+        fn act_key(x: &Self::Key, a: &Self::Act) -> Self::Key {
+            if <Self::ActMonoid as Unital>::is_unit(a) {
+                x.clone()
+            } else {
+                x.clone() + a.clone()
+            }
+        }
+        fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+            Some(if <Self::ActMonoid as Unital>::is_unit(a) {
+                x.clone()
+            } else {
+                x.clone() + a.clone()
+            })
+        }
+    }
+
     pub struct RangeMinRangeAdd<T> {
         _marker: PhantomData<fn() -> T>,
     }
     impl<T> MonoidAction for RangeMinRangeAdd<T>
     where
-        T: Copy + Ord + Bounded + Zero + Add<Output = T>,
+        T: Clone + Ord + Bounded + Zero + Add<Output = T>,
     {
         type Key = T;
         type Agg = T;
@@ -274,20 +305,20 @@ mod monoid_action_impls {
         type AggMonoid = MinOperation<T>;
         type ActMonoid = AdditiveOperation<T>;
         fn single_agg(key: &Self::Key) -> Self::Agg {
-            *key
+            key.clone()
         }
-        fn act_key(&x: &Self::Key, &a: &Self::Act) -> Self::Key {
-            if <Self::ActMonoid as Unital>::is_unit(&a) {
-                x
+        fn act_key(x: &Self::Key, a: &Self::Act) -> Self::Key {
+            if <Self::ActMonoid as Unital>::is_unit(a) {
+                x.clone()
             } else {
-                x + a
+                x.clone() + a.clone()
             }
         }
-        fn act_agg(&x: &Self::Agg, &a: &Self::Act) -> Option<Self::Agg> {
-            Some(if <Self::ActMonoid as Unital>::is_unit(&a) {
-                x
+        fn act_agg(x: &Self::Agg, a: &Self::Act) -> Option<Self::Agg> {
+            Some(if <Self::ActMonoid as Unital>::is_unit(a) {
+                x.clone()
             } else {
-                x + a
+                x.clone() + a.clone()
             })
         }
     }

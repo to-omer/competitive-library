@@ -66,6 +66,9 @@ where
             k /= 2;
         }
     }
+    pub fn clear(&mut self, k: usize) {
+        self.set(k, M::unit());
+    }
     pub fn update(&mut self, k: usize, x: M::T) {
         assert!(k < self.n);
         let mut k = k + self.n;

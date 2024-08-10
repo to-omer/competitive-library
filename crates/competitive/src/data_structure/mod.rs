@@ -1,6 +1,9 @@
 //! data structures
 
-use crate::algebra::{AbelianGroup, AbelianMonoid, Group, Monoid, MonoidAction, SemiGroup};
+use crate::algebra::{
+    AbelianGroup, AbelianMonoid, Associative, Group, Magma, MaxOperation, MinOperation, Monoid,
+    MonoidAction, SemiGroup, Unital,
+};
 use crate::algorithm::SliceBisectExt;
 use crate::num::{Bounded, RangeBoundsExt};
 use crate::tools::GetDistinctMut;
@@ -52,6 +55,8 @@ pub use self::lazy_segment_tree::LazySegmentTree;
 pub use self::lazy_segment_tree_map::LazySegmentTreeMap;
 #[codesnip::entry("LineSet")]
 pub use self::line_set::LineSet;
+#[codesnip::entry("PartiallyRetroactivePriorityQueue")]
+pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriorityQueue;
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 #[codesnip::entry("RangeMap")]
@@ -136,6 +141,14 @@ mod lazy_segment_tree;
 mod lazy_segment_tree_map;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
 mod line_set;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "PartiallyRetroactivePriorityQueue",
+        include("bounded", "SegmentTree", "MaxOperation", "MinOperation")
+    )
+)]
+pub mod partially_retroactive_priority_queue;
 #[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]
 mod range_ap_add;
 #[cfg_attr(nightly, codesnip::entry("RangeMap"))]
