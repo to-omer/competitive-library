@@ -412,6 +412,7 @@ fn discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -> Option<(u64
                 (true, true) => Some(t),
                 (false, true) if t.0 % 2 == 0 => Some((t.0, lcm(t.1, 2))),
                 (false, false) if t.0 % 2 == 1 => Some((t.0, lcm(t.1, 2))),
+                (false, false) if a == b => Some((1, lcm(t.1, 2))),
                 _ => None,
             }
         } else if a == 1 {
@@ -606,6 +607,21 @@ mod tests {
             let b = rng.gen(0..n);
             let l = discrete_logarithm(a, b, n);
             check(a, b, n, l, i >= Q - 200);
+        }
+    }
+
+    #[test]
+    fn test_discrete_logarithm_medium_yes() {
+        const Q: usize = 10_000;
+        let mut rng = Xorshift::default();
+        for _ in 0..Q {
+            let n = rng.gen(80_000..100_000);
+            DynMIntU64::set_mod(n);
+            let a = rng.gen(0..n);
+            let m = rng.gen(0..n) as usize;
+            let b = DynMIntU64::from(a).pow(m).inner();
+            let l = discrete_logarithm(a, b, n);
+            check(a, b, n, l, true);
         }
     }
 
