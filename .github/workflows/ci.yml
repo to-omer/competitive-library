@@ -205,14 +205,15 @@ jobs:
     - name: Merge Artifacts
       uses: actions/upload-artifact/merge@v4
       with:
-        name: all-artifact
+        name: artifact
         pattern: artifact-*
+        delete-merged: true
 
     - name: Download artifacts
       uses: actions/download-artifact@v4
 
     - name: Arrange artifacts
-      run: cp -r all-artifact/* .
+      run: cp -r artifact/* .
 
     - name: cargo-build
       run: cargo build --workspace --lib --features verify_doc
