@@ -92,6 +92,20 @@ where
     data: Vec<M::T>,
 }
 
+impl<M> Debug for Accumulate2d<M>
+where
+    M: AbelianMonoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Accumulate2d")
+            .field("h", &self.h)
+            .field("w", &self.w)
+            .field("data", &self.data)
+            .finish()
+    }
+}
+
 impl<M> Accumulate2d<M>
 where
     M: AbelianMonoid,
@@ -134,12 +148,6 @@ where
         }
         Self { h, w, data }
     }
-}
-
-impl<M> Accumulate2d<M>
-where
-    M: AbelianMonoid,
-{
     /// Return fold of \[0, x\) × \[0, y\)
     pub fn accumulate(&self, x: usize, y: usize) -> M::T {
         let h1 = self.h + 1;
@@ -189,6 +197,117 @@ where
                 ),
             )
         }
+    }
+}
+
+pub struct AccumulateKd<const K: usize, M>
+where
+    M: AbelianMonoid,
+{
+    dim: [usize; K],
+    offset: [usize; K],
+    data: Vec<M::T>,
+}
+
+impl<const K: usize, M> Debug for AccumulateKd<K, M>
+where
+    M: AbelianMonoid,
+    M::T: Debug,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("AccumulateKd")
+            .field("dim", &self.dim)
+            .field("offset", &self.offset)
+            .field("data", &self.data)
+            .finish()
+    }
+}
+
+impl<const K: usize, M> AccumulateKd<K, M>
+where
+    M: AbelianMonoid,
+{
+    pub fn from_fn(dim: [usize; K], mut f: impl FnMut([usize; K]) -> M::T) -> Self {
+        fn fill<const K: usize, T>(
+            dim: &[usize; K],
+            offset: &[usize; K],
+            data: &mut [T],
+            f: &mut impl FnMut([usize; K]) -> T,
+            mut index: [usize; K],
+            pos: usize,
+        ) {
+            if pos < K {
+                for i in 0..dim[pos] {
+                    index[pos] = i;
+                    fill(dim, offset, data, f, index, pos + 1);
+                }
+            } else {
+                let i: usize = index.iter().zip(offset).map(|(x, y)| (x + 1) * y).sum();
+                data[i] = f(index);
+            }
+        }
+
+        let mut offset = [1; K];
+        for d in (1..K).rev() {
+            offset[d - 1] = offset[d] * (dim[d] + 1);
+        }
+        let size = offset[0] * (dim[0] + 1);
+        let mut data = vec![M::unit(); size];
+        fill(&dim, &offset, &mut data, &mut f, [0; K], 0);
+        for d in 0..K {
+            for i in 1..size {
+                if i / offset[d] % (dim[d] + 1) != 0 {
+                    data[i] = M::operate(&data[i], &data[i - offset[d]]);
+                }
+            }
+        }
+        Self { dim, offset, data }
+    }
+    pub fn accumulate(&self, x: [usize; K]) -> M::T {
+        for (d, x) in x.into_iter().enumerate() {
+            assert!(
+                x <= self.dim[d],
+                "index out of range: the len is {} but the index is {}",
+                self.dim[d] + 1,
+                x
+            );
+        }
+        let p: usize = x.iter().zip(&self.offset).map(|(x, y)| x * y).sum();
+        unsafe { self.data.get_unchecked(p) }.clone()
+    }
+}
+
+impl<const K: usize, M> AccumulateKd<K, M>
+where
+    M: AbelianGroup,
+{
+    pub fn fold<R>(&self, ranges: [R; K]) -> M::T
+    where
+        R: RangeBounds<usize>,
+    {
+        let ranges: [_; K] = std::array::from_fn(|i| {
+            let range = ranges[i]
+                .to_range_bounded(0, self.dim[i])
+                .expect("invalid range");
+            let (l, r) = (range.start, range.end);
+            assert!(l <= r, "bad range [{}, {})", l, r);
+            [l, r]
+        });
+        let mut acc = M::unit();
+        for bit in 0..1 << K {
+            let p: usize = ranges
+                .iter()
+                .zip(&self.offset)
+                .enumerate()
+                .map(|(d, (range, offset))| range[bit >> d & 1 ^ 1] * offset)
+                .sum();
+            if bit.count_ones() & 1 == 0 {
+                acc = M::operate(&acc, unsafe { self.data.get_unchecked(p) });
+            } else {
+                acc = M::rinv_operate(&acc, unsafe { self.data.get_unchecked(p) });
+            }
+        }
+        acc
     }
 }
 
@@ -297,6 +416,92 @@ mod tests {
                                     .fold(A::unit(), |x, y| A::operate(&x, y)),
                                 acc2d.fold(xl..xr, yl..yr)
                             );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_accumlatekd_from_fn_3d() {
+        let mut rng = Xorshift::default();
+        const N: usize = 5;
+        for i in 0..N * N * N {
+            let dim = [i % N, i / N % N, i / N / N % N];
+            rand!(rng, v: [[[D; dim[2]]; dim[1]]; dim[0]]);
+            let acc = AccumulateKd::<3, A>::from_fn(dim, |[i, j, k]| v[i][j][k]);
+            for xr in 0..=dim[0] {
+                for yr in 0..=dim[1] {
+                    for zr in 0..=dim[2] {
+                        assert_eq!(
+                            v[..xr]
+                                .iter()
+                                .flat_map(|v| v[..yr].iter().flat_map(|v| v[..zr].iter()))
+                                .fold(A::unit(), |x, y| A::operate(&x, y)),
+                            acc.accumulate([xr, yr, zr])
+                        );
+                        for xl in 0..=xr {
+                            for yl in 0..=yr {
+                                for zl in 0..=zr {
+                                    assert_eq!(
+                                        v[xl..xr]
+                                            .iter()
+                                            .flat_map(|v| v[yl..yr]
+                                                .iter()
+                                                .flat_map(|v| v[zl..zr].iter()))
+                                            .fold(A::unit(), |x, y| A::operate(&x, y)),
+                                        acc.fold([xl..xr, yl..yr, zl..zr])
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_accumlatekd_from_fn_4d() {
+        let mut rng = Xorshift::default();
+        const N: usize = 4;
+        for i in 0..N * N * N * N {
+            let dim = [i % N, i / N % N, i / N / N % N, i / N / N / N % N];
+            rand!(rng, v: [[[[D; dim[3]]; dim[2]]; dim[1]]; dim[0]]);
+            let acc = AccumulateKd::<4, A>::from_fn(dim, |[i, j, k, l]| v[i][j][k][l]);
+            for xr in 0..=dim[0] {
+                for yr in 0..=dim[1] {
+                    for zr in 0..=dim[2] {
+                        for wr in 0..=dim[3] {
+                            assert_eq!(
+                                v[..xr]
+                                    .iter()
+                                    .flat_map(|v| v[..yr]
+                                        .iter()
+                                        .flat_map(|v| v[..zr].iter().flat_map(|v| v[..wr].iter())))
+                                    .fold(A::unit(), |x, y| A::operate(&x, y)),
+                                acc.accumulate([xr, yr, zr, wr])
+                            );
+                            for xl in 0..=xr {
+                                for yl in 0..=yr {
+                                    for zl in 0..=zr {
+                                        for wl in 0..=wr {
+                                            assert_eq!(
+                                                v[xl..xr]
+                                                    .iter()
+                                                    .flat_map(|v| v[yl..yr]
+                                                        .iter()
+                                                        .flat_map(|v| v[zl..zr]
+                                                            .iter()
+                                                            .flat_map(|v| v[wl..wr].iter())))
+                                                    .fold(A::unit(), |x, y| A::operate(&x, y)),
+                                                acc.fold([xl..xr, yl..yr, zl..zr, wl..wr])
+                                            );
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
