@@ -55,12 +55,12 @@ impl PrimeList {
         let mut d = vec![1u64];
         for (p, c) in self.trial_division(n) {
             let k = d.len();
-            let mut acc = p;
+            let mut acc = 1;
             for _ in 0..c {
+                acc *= p;
                 for i in 0..k {
                     d.push(d[i] * acc);
                 }
-                acc *= p;
             }
         }
         d.sort_unstable();

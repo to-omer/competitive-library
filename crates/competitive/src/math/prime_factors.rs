@@ -82,28 +82,56 @@ pub fn divisors(n: u64) -> Vec<u64> {
     let mut d = vec![1u64];
     for (p, c) in prime_factors(n) {
         let k = d.len();
-        let mut acc = p;
+        let mut acc = 1;
         for _ in 0..c {
+            acc *= p;
             for i in 0..k {
                 d.push(d[i] * acc);
             }
-            acc *= p;
         }
     }
     d.sort_unstable();
     d
 }
 
-#[test]
-fn test_prime_factors_rho() {
-    use crate::{math::miller_rabin, tools::Xorshift};
-    const Q: usize = 2_000;
-    let mut rng = Xorshift::default();
-    for _ in 0..Q {
-        let x = rng.rand64();
-        let factors = prime_factors_flatten(x);
-        assert!(factors.iter().all(|&p| miller_rabin(p)));
-        let p = factors.into_iter().product::<u64>();
-        assert_eq!(x, p);
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
+
+    pub fn naive_divisors(n: u64) -> Vec<u64> {
+        let mut res = vec![];
+        for i in 1..(n as f32).sqrt() as u64 + 1 {
+            if n % i == 0 {
+                res.push(i);
+                if i * i != n {
+                    res.push(n / i);
+                }
+            }
+        }
+        res.sort_unstable();
+        res
+    }
+
+    #[test]
+    fn test_prime_factors_rho() {
+        use crate::{math::miller_rabin, tools::Xorshift};
+        const Q: usize = 2_000;
+        let mut rng = Xorshift::default();
+        for _ in 0..Q {
+            let x = rng.rand64();
+            let factors = prime_factors_flatten(x);
+            assert!(factors.iter().all(|&p| miller_rabin(p)));
+            let p = factors.into_iter().product::<u64>();
+            assert_eq!(x, p);
+        }
+    }
+
+    #[test]
+    fn test_divisors() {
+        let mut rng = Xorshift::default();
+        for n in (1..1000).chain(rng.gen_iter(1..=20000000).take(100)) {
+            assert_eq!(divisors(n), naive_divisors(n));
+        }
     }
 }

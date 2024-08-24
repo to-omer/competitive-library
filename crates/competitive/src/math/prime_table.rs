@@ -77,12 +77,12 @@ impl PrimeTable {
         let mut d = vec![1u32];
         self.trial_division(n, |p, c| {
             let k = d.len();
-            let mut acc = p;
+            let mut acc = 1;
             for _ in 0..c {
+                acc *= p;
                 for i in 0..k {
                     d.push(d[i] * acc);
                 }
-                acc *= p;
             }
         });
         d.sort_unstable();
@@ -90,33 +90,62 @@ impl PrimeTable {
     }
 }
 
-#[test]
-fn test_prime_table() {
-    const N: u32 = 100_000;
-    let primes = PrimeTable::new(N);
-    assert!(!primes.is_prime(N));
-    assert!(primes.is_prime(99991));
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
 
-    let factors = primes.prime_factors(99991);
-    assert_eq!(factors, vec![(99991, 1)]);
-    let factors = primes.prime_factors(2016);
-    assert_eq!(factors, vec![(2, 5), (3, 2), (7, 1)]);
-    for i in 1..=N {
-        assert_eq!(
-            i,
-            primes
-                .prime_factors(i)
-                .into_iter()
-                .map(|(p, c)| p.pow(c))
-                .product::<u32>()
-        );
-        assert_eq!(
-            primes
-                .prime_factors(i)
-                .into_iter()
-                .map(|(_, c)| c + 1)
-                .product::<u32>(),
-            primes.count_divisors(i)
-        );
+    pub fn divisors(n: u32) -> Vec<u32> {
+        let mut res = vec![];
+        for i in 1..(n as f32).sqrt() as u32 + 1 {
+            if n % i == 0 {
+                res.push(i);
+                if i * i != n {
+                    res.push(n / i);
+                }
+            }
+        }
+        res.sort_unstable();
+        res
+    }
+
+    #[test]
+    fn test_prime_table() {
+        const N: u32 = 100_000;
+        let primes = PrimeTable::new(N);
+        assert!(!primes.is_prime(N));
+        assert!(primes.is_prime(99991));
+
+        let factors = primes.prime_factors(99991);
+        assert_eq!(factors, vec![(99991, 1)]);
+        let factors = primes.prime_factors(2016);
+        assert_eq!(factors, vec![(2, 5), (3, 2), (7, 1)]);
+        for i in 1..=N {
+            assert_eq!(
+                i,
+                primes
+                    .prime_factors(i)
+                    .into_iter()
+                    .map(|(p, c)| p.pow(c))
+                    .product::<u32>()
+            );
+            assert_eq!(
+                primes
+                    .prime_factors(i)
+                    .into_iter()
+                    .map(|(_, c)| c + 1)
+                    .product::<u32>(),
+                primes.count_divisors(i)
+            );
+        }
+    }
+
+    #[test]
+    fn test_divisors() {
+        let mut rng = Xorshift::default();
+        let pt = PrimeTable::new(200001);
+        for n in (1..1000).chain(rng.gen_iter(1..=200000).take(100)) {
+            assert_eq!(pt.divisors(n), divisors(n));
+        }
     }
 }
