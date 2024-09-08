@@ -48,6 +48,8 @@ pub use self::prime_list::{with_prime_list, PrimeList};
 pub use self::prime_table::PrimeTable;
 #[codesnip::entry("primitive_root")]
 pub use self::primitive_root::{check_primitive_root, primitive_root};
+#[codesnip::entry("QuotientArray")]
+pub use self::quotient_array::QuotientArray;
 #[codesnip::entry("SubsetConvolve")]
 pub use self::subset_convolve::SubsetConvolve;
 
@@ -150,6 +152,11 @@ mod prime_list;
 mod prime_table;
 #[cfg_attr(nightly, codesnip::entry("primitive_root", include("prime_factors")))]
 mod primitive_root;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("QuotientArray", include("algebra", "ring", "zero_one", "PrimeList"))
+)]
+mod quotient_array;
 #[cfg_attr(
     nightly,
     codesnip::entry("SubsetConvolve", include("BitwiseorConvolve"))
