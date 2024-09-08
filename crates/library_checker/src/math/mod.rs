@@ -1,6 +1,7 @@
 pub mod bitwise_and_convolution;
 pub mod convolution_mod;
 pub mod convolution_mod_1000000007;
+pub mod counting_primes;
 pub mod discrete_logarithm_mod;
 pub mod enumerate_primes;
 pub mod exp_of_formal_power_series;
@@ -20,4 +21,5 @@ pub mod sqrt_mod;
 pub mod sqrt_of_formal_power_series;
 pub mod subset_convolution;
 pub mod sum_of_floor_of_linear;
+pub mod sum_of_totient_function;
 pub mod two_sat;

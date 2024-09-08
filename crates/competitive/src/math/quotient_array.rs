@@ -79,7 +79,7 @@ impl<T> QuotientArray<T> {
     }
 
     /// convert $\sum_{i\leq n, i\text{ is prime}} f(i)$ to $\sum_{i\leq n} f(i)$
-    pub fn min_25_sieve<R>(&self, f: impl Fn(u64, u32) -> T) -> Self
+    pub fn min_25_sieve<R>(&self, mut f: impl FnMut(u64, u32) -> T) -> Self
     where
         T: Clone + One,
         R: Ring<T = T>,
