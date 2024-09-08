@@ -67,6 +67,10 @@ pub trait Invertible: Magma {
     fn rinv_operate(x: &Self::T, y: &Self::T) -> Self::T {
         Self::operate(x, &Self::inverse(y))
     }
+    #[inline]
+    fn rinv_operate_assign(x: &mut Self::T, y: &Self::T) {
+        *x = Self::rinv_operate(x, y);
+    }
 }
 
 /// associative binary operation and an identity element and inverse elements
