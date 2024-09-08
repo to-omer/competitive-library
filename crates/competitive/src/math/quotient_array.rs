@@ -141,8 +141,8 @@ mod tests {
         let pl = PrimeList::new(100_000);
         for n in 1..=100 {
             let n = if n <= 10 { n } else { rng.gen(1..10_000) };
-            let qa = QuotientArray::from_fn(n, |i| i as i64 - 1);
-            let qa = qa.lucy_dp::<AdditiveOperation<_>>(|x, _p| x);
+            let qa = QuotientArray::from_fn(n, |i| i as i64 - 1)
+                .lucy_dp::<AdditiveOperation<_>>(|x, _p| x);
             assert_eq!(pl.primes_lte(n).len(), qa[n] as usize);
         }
     }
@@ -154,19 +154,18 @@ mod tests {
         for n in 1..=100 {
             let n = if n <= 10 { n } else { rng.gen(1..10_000) };
             let qa = QuotientArray::from_fn(n, |i| [i as i64, i as i64 * (i as i64 + 1) / 2])
-                .map(|[x, y]| [x - 1, y - 1]);
-            let qa = qa
-                .lucy_dp::<ArrayOperation<AdditiveOperation<_>, 2>>(|[x, y], p| [x, y * p as i64]);
-            let qa = qa.map(|[x, y]| x + y);
-            let qa = qa.min_25_sieve::<AddMulOperation<_>>(|p, c| {
-                let mut x = 1;
-                let mut s = 1;
-                for _ in 0..c {
-                    x *= p as i64;
-                    s += x;
-                }
-                s
-            });
+                .map(|[x, y]| [x - 1, y - 1])
+                .lucy_dp::<ArrayOperation<AdditiveOperation<_>, 2>>(|[x, y], p| [x, y * p as i64])
+                .map(|[x, y]| x + y)
+                .min_25_sieve::<AddMulOperation<_>>(|p, c| {
+                    let mut x = 1;
+                    let mut s = 1;
+                    for _ in 0..c {
+                        x *= p as i64;
+                        s += x;
+                    }
+                    s
+                });
             assert_eq!(
                 (1..=n)
                     .flat_map(|i| pt.divisors(i as _))
