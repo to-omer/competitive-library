@@ -623,6 +623,50 @@ mod tuple_operation_impl {
     impl_tuple_operation!(A B C D E F G H I J, 0 1 2 3 4 5 6 7 8 9);
 }
 
+#[codesnip::entry("ArrayOperation")]
+pub use self::array_operation_impl::ArrayOperation;
+#[codesnip::entry("ArrayOperation", include("algebra", "array"))]
+mod array_operation_impl {
+    #![allow(unused_variables, clippy::unused_unit)]
+    use super::*;
+    use crate::array;
+    use std::marker::PhantomData;
+    pub struct ArrayOperation<M, const N: usize> {
+        _marker: PhantomData<fn() -> M>,
+    }
+    impl<M, const N: usize> Magma for ArrayOperation<M, N>
+    where
+        M: Magma,
+    {
+        type T = [M::T; N];
+        #[inline]
+        fn operate(x: &Self::T, y: &Self::T) -> Self::T {
+            array!(|i| M::operate(&x[i], &y[i]); N)
+        }
+    }
+    impl<M, const N: usize> Unital for ArrayOperation<M, N>
+    where
+        M: Unital,
+    {
+        #[inline]
+        fn unit() -> Self::T {
+            array!(|| M::unit(); N)
+        }
+    }
+    impl<M, const N: usize> Associative for ArrayOperation<M, N> where M: Associative {}
+    impl<M, const N: usize> Commutative for ArrayOperation<M, N> where M: Commutative {}
+    impl<M, const N: usize> Idempotent for ArrayOperation<M, N> where M: Idempotent {}
+    impl<M, const N: usize> Invertible for ArrayOperation<M, N>
+    where
+        M: Invertible,
+    {
+        #[inline]
+        fn inverse(x: &Self::T) -> Self::T {
+            array!(|i| M::inverse(&x[i]); N)
+        }
+    }
+}
+
 #[codesnip::entry("CountingOperation")]
 pub use self::counting_operation_impl::CountingOperation;
 #[codesnip::entry("CountingOperation", include("algebra"))]
