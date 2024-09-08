@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/lcm_convolve.rs`."><title>lcm_convolve.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-405f8b29f52305f8.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (9c01301c5 2024-09-05)" data-channel="nightly" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-7e3bb6c46e92e77c.js" ><script src="../../../static.files/storage-29b1d5a9048d38fe.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-14659ec02b58af51.js"></script><script defer src="../../../static.files/scrape-examples-5ae8dca501e56595.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-40f72c9259523cb3.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/lcm_convolve.rs`."><title>lcm_convolve.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-405f8b29f52305f8.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0-nightly (12b26c13f 2024-09-07)" data-channel="nightly" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-7e3bb6c46e92e77c.js" ><script src="../../../static.files/storage-29b1d5a9048d38fe.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-14659ec02b58af51.js"></script><script defer src="../../../static.files/scrape-examples-5ae8dca501e56595.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-40f72c9259523cb3.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -134,7 +134,7 @@
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
 <a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a></pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="prime_list.rs.html#182-194">with_prime_list</a>, <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a>, <a href="../algebra/magma.rs.html#73">Group</a>, <a href="../algebra/magma.rs.html#63-70">Invertible</a>, <a href="../algebra/magma.rs.html#45-58">Monoid</a>, <a href="../algebra/ring.rs.html#29-41">Ring</a>};
+<a href="#120" id="120">120</a></pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="prime_list.rs.html#182-194">with_prime_list</a>, <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a>, <a href="../algebra/magma.rs.html#77">Group</a>, <a href="../algebra/magma.rs.html#63-74">Invertible</a>, <a href="../algebra/magma.rs.html#45-58">Monoid</a>, <a href="../algebra/ring.rs.html#29-41">Ring</a>};
 <span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">std::marker::PhantomData</a>;
 
 <span class="kw">pub struct </span><a href="../../../competitive/math/struct.LcmConvolve.html">LcmConvolve</a>&lt;M&gt; {
@@ -160,7 +160,7 @@
 
 <span class="kw">impl</span>&lt;G&gt; LcmConvolve&lt;G&gt;
 <span class="kw">where
-    </span>G: <a href="../algebra/magma.rs.html#73">Group</a>,
+    </span>G: <a href="../algebra/magma.rs.html#77">Group</a>,
 {
     <span class="doccomment">/// $$f(m) = \sum_{n \mid m}h(n)$$
     </span><span class="kw">pub fn </span>mobius_transform(f: <span class="kw-2">&amp;mut </span>[G::T]) {
@@ -178,7 +178,7 @@
 <span class="kw">impl</span>&lt;R&gt; <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a> <span class="kw">for </span>LcmConvolve&lt;R&gt;
 <span class="kw">where
     </span>R: <a href="../algebra/ring.rs.html#29-41">Ring</a>,
-    R::Additive: <a href="../algebra/magma.rs.html#63-70">Invertible</a>,
+    R::Additive: <a href="../algebra/magma.rs.html#63-74">Invertible</a>,
 {
     <span class="kw">type </span>T = Vec&lt;R::T&gt;;
     <span class="kw">type </span>F = Vec&lt;R::T&gt;;
