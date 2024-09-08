@@ -1,4 +1,4 @@
-use super::{Gf2_63, Invertible, Mersenne61, Ring, SemiRing, Xorshift};
+use super::{Gf2_63, Invertible, Mersenne61, Monoid, Ring, SemiRing, Xorshift};
 use std::{
     cmp::Ordering,
     fmt::{self, Debug},
@@ -509,10 +509,20 @@ where
         R::add(&R::mul(x, &self.base), y)
     }
     fn muln_add(&mut self, x: &R::T, y: &R::T, n: usize) -> R::T {
-        R::add(&R::mul(x, &self.pow[n]), y)
+        if let Some(pow) = self.pow.get(n) {
+            R::add(&R::mul(x, pow), y)
+        } else {
+            let pow = <R::Multiplicative as Monoid>::pow(self.base.clone(), n);
+            R::add(&R::mul(x, &pow), y)
+        }
     }
     fn muln_sub(&mut self, l: &R::T, r: &R::T, n: usize) -> R::T {
-        R::sub(r, &R::mul(l, &self.pow[n]))
+        if let Some(pow) = self.pow.get(n) {
+            R::sub(r, &R::mul(l, pow))
+        } else {
+            let pow = <R::Multiplicative as Monoid>::pow(self.base.clone(), n);
+            R::sub(r, &R::mul(l, &pow))
+        }
     }
 }
 
@@ -611,3 +621,50 @@ impl_rolling_hasher!(Mersenne61x3, Mersenne61, [_ _ _]);
 impl_rolling_hasher!(Gf2_63x1, Gf2_63, [_]);
 impl_rolling_hasher!(Gf2_63x2, Gf2_63, [_ _]);
 impl_rolling_hasher!(Gf2_63x3, Gf2_63, [_ _ _]);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
+
+    #[test]
+    fn test_rolling_hash() {
+        const N: usize = 200;
+        let mut rng = Xorshift::default();
+        let a: Vec<_> = rng.gen_iter(0..10u64).take(N).collect();
+        Mersenne61x3::init(N);
+        let h = Mersenne61x3::hash_sequence(a.iter().copied());
+        for k in 1..=N {
+            for l1 in 0..=N - k {
+                for l2 in 0..=N - k {
+                    assert_eq!(
+                        a[l1..l1 + k] == a[l2..l2 + k],
+                        h.range(l1..l1 + k) == h.range(l2..l2 + k),
+                        "a1: {:?}, a2: {:?}",
+                        &a[l1..l1 + k],
+                        &a[l2..l2 + k]
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rolling_hash_pow() {
+        const N: usize = 200;
+        let mut rng = Xorshift::default();
+        let a: Vec<_> = rng.gen_iter(0..10u64).take(N).collect();
+        Mersenne61x3::init(0);
+        let h = Mersenne61x3::hash_sequence(a.iter().copied());
+        for k in 1..=N {
+            for l1 in 0..=N - k {
+                for l2 in 0..=N - k {
+                    assert_eq!(
+                        a[l1..l1 + k] == a[l2..l2 + k],
+                        h.range(l1..l1 + k) == h.range(l2..l2 + k)
+                    );
+                }
+            }
+        }
+    }
+}

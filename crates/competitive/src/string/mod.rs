@@ -1,6 +1,6 @@
 //! string algorithems
 
-use crate::algebra::{Gf2_63, Invertible, Mersenne61, Ring, SemiRing};
+use crate::algebra::{Gf2_63, Invertible, Mersenne61, Monoid, Ring, SemiRing};
 use crate::algorithm::binary_search;
 use crate::math::{Convolve, ConvolveSteps};
 use crate::num::{montgomery, Zero};
