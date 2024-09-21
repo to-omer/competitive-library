@@ -72,7 +72,7 @@ where
     pub fn abs(self) -> Self {
         Self::new_unchecked(self.num.abs(), self.den)
     }
-    pub fn inner(self) -> T {
+    pub fn eval(self) -> T {
         self.num / self.den
     }
     pub fn map<U>(self, mut f: impl FnMut(T) -> U) -> Rational<U>
@@ -86,6 +86,12 @@ where
         U: Signed,
     {
         Rational::new_unchecked(f(self.num), f(self.den))
+    }
+    pub fn map_eval<U>(self, mut f: impl FnMut(T) -> U) -> <U as Div>::Output
+    where
+        U: Div,
+    {
+        f(self.num) / f(self.den)
     }
 }
 
