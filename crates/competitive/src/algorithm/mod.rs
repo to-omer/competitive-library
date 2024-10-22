@@ -1,6 +1,7 @@
 //! algorithm
 
 use crate::algebra::{Magma, Monoid, Unital};
+use crate::data_structure::{union_find, UnionFindBase};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, Zero};
 
@@ -26,6 +27,8 @@ pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer}
 #[codesnip::entry("RhoPath")]
 pub use self::rho_path::RhoPath;
 pub use self::slide_minimum::*;
+#[codesnip::entry("01_on_tree")]
+pub use self::solve_01_on_tree::solve_01_on_tree;
 #[codesnip::entry("sort")]
 pub use self::sort::SliceSortExt;
 #[codesnip::entry("SqrtDecomposition")]
@@ -64,6 +67,8 @@ mod partisan_game;
 #[cfg_attr(nightly, codesnip::entry("RhoPath"))]
 mod rho_path;
 mod slide_minimum;
+#[cfg_attr(nightly, codesnip::entry("01_on_tree", include("UnionFind")))]
+mod solve_01_on_tree;
 #[cfg_attr(nightly, codesnip::entry("sort"))]
 mod sort;
 #[cfg_attr(nightly, codesnip::entry("SqrtDecomposition", include("algebra")))]
