@@ -288,18 +288,23 @@ impl<'t> VerifyConfig<'t> {
         File::create(path)?.write_all(buf)
     }
     pub fn finalize(&self, result: BoxResult<VerifyResults>) -> BoxResult<()> {
-        if let Ok(results) = &result {
-            let mut map = std::collections::BTreeMap::<_, usize>::new();
-            for result in results.results.iter() {
-                *map.entry(result.status).or_default() += 1;
+        match &result {
+            Ok(results) => {
+                let mut map = std::collections::BTreeMap::<_, usize>::new();
+                for result in results.results.iter() {
+                    *map.entry(result.status).or_default() += 1;
+                }
+                let res = map
+                    .iter()
+                    .map(|(k, v)| format!("{} × {};", k, v))
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                log::info!("{}", res);
             }
-            let res = map
-                .iter()
-                .map(|(k, v)| format!("{} × {};", k, v))
-                .collect::<Vec<_>>()
-                .join(" ");
-            log::info!("{}", res);
-        };
+            Err(error) => {
+                log::error!("{}", error);
+            }
+        }
         self.emit_md(self.gen_md_contents(&result).as_bytes())?;
         result.and_then(|r| {
             if r.is_ac() {
