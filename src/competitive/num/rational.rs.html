@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/num/rational.rs`."><title>rational.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (3ed6e3cc6 2024-10-17)" data-channel="nightly" data-search-js="search-e056c65ede92db13.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f070b9041d14864c.js"></script><script defer src="../../../static.files/scrape-examples-46fc985aa763a438.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/num/rational.rs`."><title>rational.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a5dc3bae.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (439284741 2024-10-21)" data-channel="nightly" data-search-js="search-c5a66128.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -211,7 +211,13 @@
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a></pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="bounded.rs.html#2-17">Bounded</a>, <a href="zero_one.rs.html#15-28">One</a>, <a href="integer.rs.html#127-135">Signed</a>, <a href="integer.rs.html#74-125">Unsigned</a>, <a href="zero_one.rs.html#1-14">Zero</a>};
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a></pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="bounded.rs.html#2-17">Bounded</a>, <a href="zero_one.rs.html#15-28">One</a>, <a href="integer.rs.html#127-135">Signed</a>, <a href="integer.rs.html#74-125">Unsigned</a>, <a href="zero_one.rs.html#1-14">Zero</a>};
 <span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">cmp::Ordering</a>,
     fmt::{<a class="self" href="https://doc.rust-lang.org/nightly/alloc/fmt/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/fmt/macros/derive.Debug.html">Debug</a>},
@@ -285,7 +291,7 @@
     <span class="kw">pub fn </span>abs(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <a href="#69-71"><span class="self">Self</span>::new_unchecked</a>(<a class="self" href="#72">self</a>.num.<a href="integer.rs.html#130">abs</a>(), <a class="self" href="#72">self</a>.den)
     }
-    <span class="kw">pub fn </span>inner(<span class="self">self</span>) -&gt; T {
+    <span class="kw">pub fn </span>eval(<span class="self">self</span>) -&gt; T {
         <a class="self" href="#75">self</a>.num / <a class="self" href="#75">self</a>.den
     }
     <span class="kw">pub fn </span>map&lt;U&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(T) -&gt; U) -&gt; Rational&lt;U&gt;
@@ -299,6 +305,12 @@
         </span>U: <a href="integer.rs.html#127-135">Signed</a>,
     {
         <a href="#69-71">Rational::new_unchecked</a>(<a href="#84">f</a>(<a class="self" href="#84">self</a>.num), <a href="#84">f</a>(<a class="self" href="#84">self</a>.den))
+    }
+    <span class="kw">pub fn </span>map_eval&lt;U&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(T) -&gt; U) -&gt; &lt;U <span class="kw">as </span>Div&gt;::Output
+    <span class="kw">where
+        </span>U: <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html">Div</a>,
+    {
+        <a href="#90">f</a>(<a class="self" href="#90">self</a>.num) / <a href="#90">f</a>(<a class="self" href="#90">self</a>.den)
     }
 }
 
@@ -337,7 +349,7 @@
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#126">self</a>.num * <a href="#126">rhs</a>.den + <a class="self" href="#126">self</a>.den * <a href="#126">rhs</a>.num, <a class="self" href="#126">self</a>.den * <a href="#126">rhs</a>.den)
+        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#132">self</a>.num * <a href="#132">rhs</a>.den + <a class="self" href="#132">self</a>.den * <a href="#132">rhs</a>.num, <a class="self" href="#132">self</a>.den * <a href="#132">rhs</a>.den)
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">Sub</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -346,7 +358,7 @@
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#135">self</a>.num * <a href="#135">rhs</a>.den - <a class="self" href="#135">self</a>.den * <a href="#135">rhs</a>.num, <a class="self" href="#135">self</a>.den * <a href="#135">rhs</a>.den)
+        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#141">self</a>.num * <a href="#141">rhs</a>.den - <a class="self" href="#141">self</a>.den * <a href="#141">rhs</a>.num, <a class="self" href="#141">self</a>.den * <a href="#141">rhs</a>.den)
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html">Mul</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -355,7 +367,7 @@
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>mul(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#144">self</a>.num * <a href="#144">rhs</a>.num, <a class="self" href="#144">self</a>.den * <a href="#144">rhs</a>.den)
+        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#150">self</a>.num * <a href="#150">rhs</a>.num, <a class="self" href="#150">self</a>.den * <a href="#150">rhs</a>.den)
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Div.html">Div</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -364,7 +376,7 @@
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>div(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#153">self</a>.num * <a href="#153">rhs</a>.den, <a class="self" href="#153">self</a>.den * <a href="#153">rhs</a>.num)
+        <a href="#64-68"><span class="self">Self</span>::new</a>(<a class="self" href="#159">self</a>.num * <a href="#159">rhs</a>.den, <a class="self" href="#159">self</a>.den * <a href="#159">rhs</a>.num)
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html">Neg</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -373,7 +385,7 @@
 {
     <span class="kw">type </span>Output = <span class="self">Self</span>;
     <span class="kw">fn </span>neg(<span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
-        <a href="#69-71"><span class="self">Self</span>::new_unchecked</a>(-<a class="self" href="#162">self</a>.num, <a class="self" href="#162">self</a>.den)
+        <a href="#69-71"><span class="self">Self</span>::new_unchecked</a>(-<a class="self" href="#168">self</a>.num, <a class="self" href="#168">self</a>.den)
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html">AddAssign</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -381,7 +393,7 @@
     </span>T: <a href="integer.rs.html#127-135">Signed</a>,
 {
     <span class="kw">fn </span>add_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="self">Self</span>) {
-        <span class="kw-2">*</span><span class="self"><a href="#170">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#170">self</a> </span>+ <a href="#170">rhs</a>;
+        <span class="kw-2">*</span><span class="self"><a href="#176">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#176">self</a> </span>+ <a href="#176">rhs</a>;
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.SubAssign.html">SubAssign</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -389,7 +401,7 @@
     </span>T: <a href="integer.rs.html#127-135">Signed</a>,
 {
     <span class="kw">fn </span>sub_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="self">Self</span>) {
-        <span class="kw-2">*</span><span class="self"><a href="#178">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#178">self</a> </span>- <a href="#178">rhs</a>;
+        <span class="kw-2">*</span><span class="self"><a href="#184">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#184">self</a> </span>- <a href="#184">rhs</a>;
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.MulAssign.html">MulAssign</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -397,7 +409,7 @@
     </span>T: <a href="integer.rs.html#127-135">Signed</a>,
 {
     <span class="kw">fn </span>mul_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="self">Self</span>) {
-        <span class="kw-2">*</span><span class="self"><a href="#186">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#186">self</a> </span>* <a href="#186">rhs</a>;
+        <span class="kw-2">*</span><span class="self"><a href="#192">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#192">self</a> </span>* <a href="#192">rhs</a>;
     }
 }
 <span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.DivAssign.html">DivAssign</a> <span class="kw">for </span>Rational&lt;T&gt;
@@ -405,7 +417,7 @@
     </span>T: <a href="integer.rs.html#127-135">Signed</a>,
 {
     <span class="kw">fn </span>div_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: <span class="self">Self</span>) {
-        <span class="kw-2">*</span><span class="self"><a href="#194">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#194">self</a> </span>/ <a href="#194">rhs</a>;
+        <span class="kw-2">*</span><span class="self"><a href="#200">self</a> </span>= <span class="kw-2">*</span><span class="self"><a href="#200">self</a> </span>/ <a href="#200">rhs</a>;
     }
 }
 </code></pre></div></section></main></body></html>

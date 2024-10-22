@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algorithm/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (3ed6e3cc6 2024-10-17)" data-channel="nightly" data-search-js="search-e056c65ede92db13.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f070b9041d14864c.js"></script><script defer src="../../../static.files/scrape-examples-46fc985aa763a438.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/algorithm/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a5dc3bae.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (439284741 2024-10-21)" data-channel="nightly" data-search-js="search-c5a66128.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -92,9 +92,15 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a></pre></div><pre class="rust"><code><span class="doccomment">//! algorithm
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a></pre></div><pre class="rust"><code><span class="doccomment">//! algorithm
 
 </span><span class="kw">use </span><span class="kw">crate</span>::algebra::{<a href="../algebra/magma.rs.html#4-17">Magma</a>, <a href="../algebra/magma.rs.html#45-58">Monoid</a>, <a href="../algebra/magma.rs.html#28-42">Unital</a>};
+<span class="kw">use </span><span class="kw">crate</span>::data_structure::{<a href="../data_structure/mod.rs.html#184">union_find</a>, <a href="../data_structure/union_find.rs.html#9-21">UnionFindBase</a>};
 <span class="kw">use </span><a href="../math/matrix.rs.html#5-8"><span class="kw">crate</span>::math::Matrix</a>;
 <span class="kw">use </span><span class="kw">crate</span>::num::{<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>, <a href="../num/mint/mint_base.rs.html#27-52">MIntBase</a>, <a href="../num/zero_one.rs.html#15-28">One</a>, <a href="../num/zero_one.rs.html#1-14">Zero</a>};
 
@@ -114,12 +120,14 @@
 </span><span class="kw">pub use </span><span class="self">self</span>::esper::{<a href="esper.rs.html#13-23">EsperEstimator</a>, <a href="esper.rs.html#26-36">EsperSolver</a>};
 <span class="attr">#[codesnip::entry(<span class="string">"ImpartialGame"</span>)]
 </span><span class="kw">pub use </span><span class="self">self</span>::impartial_game::{<a href="impartial_game.rs.html#9-13">ImpartialGame</a>, <a href="impartial_game.rs.html#50-57">ImpartialGameAnalyzer</a>, <a href="impartial_game.rs.html#15-22">ImpartialGamer</a>};
-<span class="kw">pub use </span><a href="#61"><span class="self">self</span>::other</a>::<span class="kw-2">*</span>;
+<span class="kw">pub use </span><a href="#64"><span class="self">self</span>::other</a>::<span class="kw-2">*</span>;
 <span class="attr">#[codesnip::entry(<span class="string">"PartisanGame"</span>)]
 </span><span class="kw">pub use </span><span class="self">self</span>::partisan_game::{<a href="partisan_game.rs.html#5-11">PartisanGame</a>, <a href="partisan_game.rs.html#60-67">PartisanGameAnalyzer</a>, <a href="partisan_game.rs.html#13-23">PartisanGamer</a>};
 <span class="attr">#[codesnip::entry(<span class="string">"RhoPath"</span>)]
 </span><span class="kw">pub use </span><a href="rho_path.rs.html#7-10"><span class="self">self</span>::rho_path::RhoPath</a>;
-<span class="kw">pub use </span><a href="#66"><span class="self">self</span>::slide_minimum</a>::<span class="kw-2">*</span>;
+<span class="kw">pub use </span><a href="#69"><span class="self">self</span>::slide_minimum</a>::<span class="kw-2">*</span>;
+<span class="attr">#[codesnip::entry(<span class="string">"01_on_tree"</span>)]
+</span><span class="kw">pub use </span><a href="solve_01_on_tree.rs.html#37-64"><span class="self">self</span>::solve_01_on_tree::solve_01_on_tree</a>;
 <span class="attr">#[codesnip::entry(<span class="string">"sort"</span>)]
 </span><span class="kw">pub use </span><a href="sort.rs.html#3-22"><span class="self">self</span>::sort::SliceSortExt</a>;
 <span class="attr">#[codesnip::entry(<span class="string">"SqrtDecomposition"</span>)]
@@ -158,6 +166,8 @@
 <span class="attr">#[cfg_attr(nightly, codesnip::entry(<span class="string">"RhoPath"</span>))]
 </span><span class="kw">mod </span><a href="rho_path.rs.html#1-56">rho_path</a>;
 <span class="kw">mod </span><a href="slide_minimum.rs.html#1-69">slide_minimum</a>;
+<span class="attr">#[cfg_attr(nightly, codesnip::entry(<span class="string">"01_on_tree"</span>, include(<span class="string">"UnionFind"</span>)))]
+</span><span class="kw">mod </span><a href="solve_01_on_tree.rs.html#1-64">solve_01_on_tree</a>;
 <span class="attr">#[cfg_attr(nightly, codesnip::entry(<span class="string">"sort"</span>))]
 </span><span class="kw">mod </span><a href="sort.rs.html#1-238">sort</a>;
 <span class="attr">#[cfg_attr(nightly, codesnip::entry(<span class="string">"SqrtDecomposition"</span>, include(<span class="string">"algebra"</span>)))]

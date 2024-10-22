@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/container.rs`."><title>container.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (3ed6e3cc6 2024-10-17)" data-channel="nightly" data-search-js="search-e056c65ede92db13.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-f070b9041d14864c.js"></script><script defer src="../../../static.files/scrape-examples-46fc985aa763a438.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/container.rs`."><title>container.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a5dc3bae.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (439284741 2024-10-21)" data-channel="nightly" data-search-js="search-c5a66128.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -364,7 +364,31 @@
 <a href="#347" id="347">347</a>
 <a href="#348" id="348">348</a>
 <a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a></pre></div><pre class="rust"><code><span class="kw">use </span>std::{
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a></pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     <a href="https://doc.rust-lang.org/nightly/core/cmp/derive.Ord.html">cmp::Ord</a>,
     collections::{<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree_map/index.html">btree_map</a>, <a href="https://doc.rust-lang.org/nightly/std/collections/hash_map/index.html">hash_map</a>, <a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html">BTreeMap</a>, <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">HashMap</a>},
     <a href="https://doc.rust-lang.org/nightly/core/hash/macros/derive.Hash.html">hash::Hash</a>,
@@ -472,36 +496,48 @@
 {
     <span class="kw">type </span>Key = K;
     <span class="kw">type </span>Value = V;
-    <span class="kw">type </span>Entry&lt;<span class="lifetime">'a</span>&gt; = btree_map::Entry&lt;<span class="lifetime">'a</span>, K, V&gt; <span class="kw">where </span>K: <span class="lifetime">'a</span>, V: <span class="lifetime">'a</span>;
-    <span class="kw">type </span>Iter&lt;<span class="lifetime">'a</span>&gt; = btree_map::Iter&lt;<span class="lifetime">'a</span>, K, V&gt; <span class="kw">where </span>K: <span class="lifetime">'a</span>, V: <span class="lifetime">'a</span>;
-    <span class="kw">type </span>Drain&lt;<span class="lifetime">'a</span>&gt; = BTreeMapDrain&lt;<span class="lifetime">'a</span>, K, V&gt; <span class="kw">where </span>K: <span class="lifetime">'a</span>, V: <span class="lifetime">'a</span>;
+    <span class="kw">type </span>Entry&lt;<span class="lifetime">'a</span>&gt;
+        = btree_map::Entry&lt;<span class="lifetime">'a</span>, K, V&gt;
+    <span class="kw">where
+        </span>K: <span class="lifetime">'a</span>,
+        V: <span class="lifetime">'a</span>;
+    <span class="kw">type </span>Iter&lt;<span class="lifetime">'a</span>&gt;
+        = btree_map::Iter&lt;<span class="lifetime">'a</span>, K, V&gt;
+    <span class="kw">where
+        </span>K: <span class="lifetime">'a</span>,
+        V: <span class="lifetime">'a</span>;
+    <span class="kw">type </span>Drain&lt;<span class="lifetime">'a</span>&gt;
+        = BTreeMapDrain&lt;<span class="lifetime">'a</span>, K, V&gt;
+    <span class="kw">where
+        </span>K: <span class="lifetime">'a</span>,
+        V: <span class="lifetime">'a</span>;
 
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#113">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.get">get</a>(<a href="#113">key</a>)
+        <a class="self" href="#125">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.get">get</a>(<a href="#125">key</a>)
     }
 
     <span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#117">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.get_mut">get_mut</a>(<a href="#117">key</a>)
+        <a class="self" href="#129">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.get_mut">get_mut</a>(<a href="#129">key</a>)
     }
 
     <span class="kw">fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="self">Self</span>::Key, value: <span class="self">Self</span>::Value) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#121">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.insert">insert</a>(<a href="#121">key</a>, <a href="#121">value</a>)
+        <a class="self" href="#133">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.insert">insert</a>(<a href="#133">key</a>, <a href="#133">value</a>)
     }
 
     <span class="kw">fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#125">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.remove">remove</a>(<a href="#125">key</a>)
+        <a class="self" href="#137">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.remove">remove</a>(<a href="#137">key</a>)
     }
 
     <span class="kw">fn </span>entry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Entry&lt;<span class="lifetime">'_</span>&gt; {
-        <a class="self" href="#129">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.entry">entry</a>(<a href="#129">key</a>)
+        <a class="self" href="#141">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.entry">entry</a>(<a href="#141">key</a>)
     }
 
     <span class="kw">fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter&lt;<span class="lifetime">'_</span>&gt; {
-        <a class="self" href="#133">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.iter">iter</a>()
+        <a class="self" href="#145">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.iter">iter</a>()
     }
 
     <span class="kw">fn </span>drain(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Drain&lt;<span class="lifetime">'_</span>&gt; {
-        <a href="#88-90">BTreeMapDrain</a> { inner: <span class="self"><a href="#137">self</a> </span>}
+        <a href="#88-90">BTreeMapDrain</a> { inner: <span class="self"><a href="#149">self</a> </span>}
     }
 }
 
@@ -512,7 +548,7 @@
     <span class="kw">type </span>Item = (K, V);
 
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <a class="self" href="#148">self</a>.inner.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.pop_first">pop_first</a>()
+        <a class="self" href="#160">self</a>.inner.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.pop_first">pop_first</a>()
     }
 }
 
@@ -521,7 +557,7 @@
     </span>K: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <a class="self" href="#157">self</a>.inner.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.pop_last">pop_last</a>()
+        <a class="self" href="#169">self</a>.inner.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.pop_last">pop_last</a>()
     }
 }
 
@@ -530,7 +566,7 @@
     </span>K: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
-        <a class="self" href="#166">self</a>.inner.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.len">len</a>()
+        <a class="self" href="#178">self</a>.inner.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/struct.BTreeMap.html#method.len">len</a>()
     }
 }
 
@@ -548,36 +584,36 @@
     <span class="kw">where
         </span><span class="self">Self</span>::Value: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a>,
     {
-        <a class="self" href="#181">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_default">or_default</a>()
+        <a class="self" href="#193">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_default">or_default</a>()
     }
 
     <span class="kw">fn </span>or_insert(<span class="self">self</span>, default: <span class="self">Self</span>::Value) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">Self</span>::Value {
-        <a class="self" href="#188">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_insert">or_insert</a>(<a href="#188">default</a>)
+        <a class="self" href="#200">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_insert">or_insert</a>(<a href="#200">default</a>)
     }
 
     <span class="kw">fn </span>or_insert_with&lt;F&gt;(<span class="self">self</span>, default: F) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">Self</span>::Value
     <span class="kw">where
         </span>F: FnOnce() -&gt; <span class="self">Self</span>::Value,
     {
-        <a class="self" href="#192">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_insert_with">or_insert_with</a>(<a href="#192">default</a>)
+        <a class="self" href="#204">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_insert_with">or_insert_with</a>(<a href="#204">default</a>)
     }
 
     <span class="kw">fn </span>or_insert_with_key&lt;F&gt;(<span class="self">self</span>, default: F) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">Self</span>::Value
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Value,
     {
-        <a class="self" href="#199">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_insert_with_key">or_insert_with_key</a>(<a href="#199">default</a>)
+        <a class="self" href="#211">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.or_insert_with_key">or_insert_with_key</a>(<a href="#211">default</a>)
     }
 
     <span class="kw">fn </span>key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Key {
-        <a class="self" href="#206">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.key">key</a>()
+        <a class="self" href="#218">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.key">key</a>()
     }
 
     <span class="kw">fn </span>and_modify&lt;F&gt;(<span class="self">self</span>, f: F) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Value),
     {
-        <a class="self" href="#210">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.and_modify">and_modify</a>(<a href="#210">f</a>)
+        <a class="self" href="#222">self</a>.<a href="https://doc.rust-lang.org/nightly/alloc/collections/btree/map/entry/enum.Entry.html#method.and_modify">and_modify</a>(<a href="#222">f</a>)
     }
 }
 
@@ -627,7 +663,7 @@
     <span class="kw">type </span>Container = HashMap&lt;K, V&gt;;
 
     <span class="kw">fn </span>create_container(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Container {
-        <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.with_capacity">HashMap::with_capacity</a>(<a class="self" href="#263">self</a>.capacity)
+        <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.with_capacity">HashMap::with_capacity</a>(<a class="self" href="#275">self</a>.capacity)
     }
 }
 
@@ -637,36 +673,48 @@
 {
     <span class="kw">type </span>Key = K;
     <span class="kw">type </span>Value = V;
-    <span class="kw">type </span>Entry&lt;<span class="lifetime">'a</span>&gt; = hash_map::Entry&lt;<span class="lifetime">'a</span>, K, V&gt; <span class="kw">where </span>K: <span class="lifetime">'a</span>, V: <span class="lifetime">'a</span>;
-    <span class="kw">type </span>Iter&lt;<span class="lifetime">'a</span>&gt; = hash_map::Iter&lt;<span class="lifetime">'a</span>, K, V&gt; <span class="kw">where </span>K: <span class="lifetime">'a</span>, V: <span class="lifetime">'a</span>;
-    <span class="kw">type </span>Drain&lt;<span class="lifetime">'a</span>&gt; = hash_map::Drain&lt;<span class="lifetime">'a</span>, K, V&gt; <span class="kw">where </span>K: <span class="lifetime">'a</span>, V: <span class="lifetime">'a</span>;
+    <span class="kw">type </span>Entry&lt;<span class="lifetime">'a</span>&gt;
+        = hash_map::Entry&lt;<span class="lifetime">'a</span>, K, V&gt;
+    <span class="kw">where
+        </span>K: <span class="lifetime">'a</span>,
+        V: <span class="lifetime">'a</span>;
+    <span class="kw">type </span>Iter&lt;<span class="lifetime">'a</span>&gt;
+        = hash_map::Iter&lt;<span class="lifetime">'a</span>, K, V&gt;
+    <span class="kw">where
+        </span>K: <span class="lifetime">'a</span>,
+        V: <span class="lifetime">'a</span>;
+    <span class="kw">type </span>Drain&lt;<span class="lifetime">'a</span>&gt;
+        = hash_map::Drain&lt;<span class="lifetime">'a</span>, K, V&gt;
+    <span class="kw">where
+        </span>K: <span class="lifetime">'a</span>,
+        V: <span class="lifetime">'a</span>;
 
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#278">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.get">get</a>(<a href="#278">key</a>)
+        <a class="self" href="#302">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.get">get</a>(<a href="#302">key</a>)
     }
 
     <span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#282">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.get_mut">get_mut</a>(<a href="#282">key</a>)
+        <a class="self" href="#306">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.get_mut">get_mut</a>(<a href="#306">key</a>)
     }
 
     <span class="kw">fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="self">Self</span>::Key, value: <span class="self">Self</span>::Value) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#286">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.insert">insert</a>(<a href="#286">key</a>, <a href="#286">value</a>)
+        <a class="self" href="#310">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.insert">insert</a>(<a href="#310">key</a>, <a href="#310">value</a>)
     }
 
     <span class="kw">fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Value&gt; {
-        <a class="self" href="#290">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.remove">remove</a>(<a href="#290">key</a>)
+        <a class="self" href="#314">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.remove">remove</a>(<a href="#314">key</a>)
     }
 
     <span class="kw">fn </span>entry(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Entry&lt;<span class="lifetime">'_</span>&gt; {
-        <a class="self" href="#294">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.entry">entry</a>(<a href="#294">key</a>)
+        <a class="self" href="#318">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.entry">entry</a>(<a href="#318">key</a>)
     }
 
     <span class="kw">fn </span>iter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Iter&lt;<span class="lifetime">'_</span>&gt; {
-        <a class="self" href="#298">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.iter">iter</a>()
+        <a class="self" href="#322">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.iter">iter</a>()
     }
 
     <span class="kw">fn </span>drain(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Drain&lt;<span class="lifetime">'_</span>&gt; {
-        <a class="self" href="#302">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.drain">drain</a>()
+        <a class="self" href="#326">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html#method.drain">drain</a>()
     }
 }
 
@@ -682,36 +730,36 @@
     <span class="kw">where
         </span><span class="self">Self</span>::Value: <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a>,
     {
-        <a class="self" href="#315">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_default">or_default</a>()
+        <a class="self" href="#339">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_default">or_default</a>()
     }
 
     <span class="kw">fn </span>or_insert(<span class="self">self</span>, default: <span class="self">Self</span>::Value) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">Self</span>::Value {
-        <a class="self" href="#322">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_insert">or_insert</a>(<a href="#322">default</a>)
+        <a class="self" href="#346">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_insert">or_insert</a>(<a href="#346">default</a>)
     }
 
     <span class="kw">fn </span>or_insert_with&lt;F&gt;(<span class="self">self</span>, default: F) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">Self</span>::Value
     <span class="kw">where
         </span>F: FnOnce() -&gt; <span class="self">Self</span>::Value,
     {
-        <a class="self" href="#326">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_insert_with">or_insert_with</a>(<a href="#326">default</a>)
+        <a class="self" href="#350">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_insert_with">or_insert_with</a>(<a href="#350">default</a>)
     }
 
     <span class="kw">fn </span>or_insert_with_key&lt;F&gt;(<span class="self">self</span>, default: F) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">Self</span>::Value
     <span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;</span><span class="self">Self</span>::Key) -&gt; <span class="self">Self</span>::Value,
     {
-        <a class="self" href="#333">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_insert_with_key">or_insert_with_key</a>(<a href="#333">default</a>)
+        <a class="self" href="#357">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.or_insert_with_key">or_insert_with_key</a>(<a href="#357">default</a>)
     }
 
     <span class="kw">fn </span>key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Key {
-        <a class="self" href="#340">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.key">key</a>()
+        <a class="self" href="#364">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.key">key</a>()
     }
 
     <span class="kw">fn </span>and_modify&lt;F&gt;(<span class="self">self</span>, f: F) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>F: FnOnce(<span class="kw-2">&amp;mut </span><span class="self">Self</span>::Value),
     {
-        <a class="self" href="#344">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.and_modify">and_modify</a>(<a href="#344">f</a>)
+        <a class="self" href="#368">self</a>.<a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/enum.Entry.html#method.and_modify">and_modify</a>(<a href="#368">f</a>)
     }
 }
 </code></pre></div></section></main></body></html>
