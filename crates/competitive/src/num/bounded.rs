@@ -19,8 +19,8 @@ pub trait Bounded: Sized + PartialOrd {
 macro_rules! impl_bounded_num {
     ($($t:ident)*) => {
         $(impl Bounded for $t {
-            fn maximum() -> Self { std::$t::MAX }
-            fn minimum() -> Self { std::$t::MIN }
+            fn maximum() -> Self { $t::MAX }
+            fn minimum() -> Self { $t::MIN }
         })*
     };
 }

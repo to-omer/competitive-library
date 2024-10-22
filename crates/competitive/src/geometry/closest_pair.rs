@@ -9,7 +9,7 @@ fn closest_pair_inner(a: &mut [Complex<f64>]) -> f64 {
     use std::cmp::min;
     let n = a.len();
     if n <= 1 {
-        return std::f64::INFINITY;
+        return f64::INFINITY;
     }
     let m = n / 2;
     let x = a[m].re;

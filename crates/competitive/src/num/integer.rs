@@ -705,7 +705,7 @@ mod tests {
             $(
                 mod $t {
                     use super::*;
-                    const A: $t = $t::max_value() / 2;
+                    const A: $t = $t::MAX / 2;
                     fn gcd(mut a: $t, mut b: $t) -> $t {
                         while b != 0 {
                             a %= b;

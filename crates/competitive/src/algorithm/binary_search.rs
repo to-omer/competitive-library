@@ -165,11 +165,22 @@ mod tests {
         let expect = 1.414_213_562_73;
         assert!(expect - 1e-8 <= sq2 && sq2 <= expect + 1e-8);
 
-        use std::i64::{MAX, MIN};
-        assert_eq!(binary_search(|&x| x < MAX, MIN, MAX), MAX - 1);
-        assert_eq!(binary_search(|&x| x == MIN, MIN, MAX), MIN);
-        assert_eq!(binary_search(|&x| x == MAX, MAX, MIN), MAX);
-        assert_eq!(binary_search(|&x| x > MIN, MAX, MIN), MIN + 1);
+        assert_eq!(
+            binary_search(|&x| x < i64::MAX, i64::MIN, i64::MAX),
+            i64::MAX - 1
+        );
+        assert_eq!(
+            binary_search(|&x| x == i64::MIN, i64::MIN, i64::MAX),
+            i64::MIN
+        );
+        assert_eq!(
+            binary_search(|&x| x == i64::MAX, i64::MAX, i64::MIN),
+            i64::MAX
+        );
+        assert_eq!(
+            binary_search(|&x| x > i64::MIN, i64::MAX, i64::MIN),
+            i64::MIN + 1
+        );
     }
 
     #[test]

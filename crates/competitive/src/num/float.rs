@@ -169,20 +169,20 @@ macro_rules! impl_primitive_float {
             fn from_bits(v: u64) -> Self { $t::from_bits(v.try_into().unwrap()) }
             fn total_cmp(&self, other: &Self) -> Ordering { $t::total_cmp(self, other) }
             fn clamp(self, min: Self, max: Self) -> Self { $t::clamp(self, min, max) }
-            const RADIX: u32 = std::$t::RADIX;
-            const MANTISSA_DIGITS: u32 = std::$t::MANTISSA_DIGITS;
-            const DIGITS: u32 = std::$t::DIGITS;
-            const EPSILON: Self = std::$t::EPSILON;
-            const MIN: Self = std::$t::MIN;
-            const MIN_POSITIVE: Self = std::$t::MIN_POSITIVE;
-            const MAX: Self = std::$t::MAX;
-            const MIN_EXP: i32 = std::$t::MIN_EXP;
-            const MAX_EXP: i32 = std::$t::MAX_EXP;
-            const MIN_10_EXP: i32 = std::$t::MIN_10_EXP;
-            const MAX_10_EXP: i32 = std::$t::MAX_10_EXP;
-            const NAN: Self = std::$t::NAN;
-            const INFINITY: Self = std::$t::INFINITY;
-            const NEG_INFINITY: Self = std::$t::NEG_INFINITY;
+            const RADIX: u32 = $t::RADIX;
+            const MANTISSA_DIGITS: u32 = $t::MANTISSA_DIGITS;
+            const DIGITS: u32 = $t::DIGITS;
+            const EPSILON: Self = $t::EPSILON;
+            const MIN: Self = $t::MIN;
+            const MIN_POSITIVE: Self = $t::MIN_POSITIVE;
+            const MAX: Self = $t::MAX;
+            const MIN_EXP: i32 = $t::MIN_EXP;
+            const MAX_EXP: i32 = $t::MAX_EXP;
+            const MIN_10_EXP: i32 = $t::MIN_10_EXP;
+            const MAX_10_EXP: i32 = $t::MAX_10_EXP;
+            const NAN: Self = $t::NAN;
+            const INFINITY: Self = $t::INFINITY;
+            const NEG_INFINITY: Self = $t::NEG_INFINITY;
             const PI: Self = std::$t::consts::PI;
             const TAU: Self = std::$t::consts::PI * 2.0;
             const FRAC_PI_2: Self = std::$t::consts::FRAC_PI_2;
