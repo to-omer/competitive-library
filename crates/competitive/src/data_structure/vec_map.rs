@@ -128,12 +128,14 @@ where
 {
     type Key = K;
     type Value = V;
-    type Entry<'a> = Entry<'a, K, V>
+    type Entry<'a>
+        = Entry<'a, K, V>
     where
         Self: 'a,
         Self::Key: 'a,
         Self::Value: 'a;
-    type Iter<'a> = Map<
+    type Iter<'a>
+        = Map<
         FilterMap<slice::Iter<'a, Option<(K, V)>>, fn(&Option<(K, V)>) -> Option<&(K, V)>>,
         fn(&(K, V)) -> (&K, &V),
     >
@@ -141,7 +143,8 @@ where
         Self: 'a,
         Self::Key: 'a,
         Self::Value: 'a;
-    type Drain<'a> = FilterMap<slice::IterMut<'a, Option<(K, V)>>, fn(&mut Option<(K, V)>) -> Option<(K, V)>>
+    type Drain<'a>
+        = FilterMap<slice::IterMut<'a, Option<(K, V)>>, fn(&mut Option<(K, V)>) -> Option<(K, V)>>
     where
         Self: 'a,
         Self::Key: 'a,

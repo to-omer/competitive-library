@@ -106,9 +106,21 @@ where
 {
     type Key = K;
     type Value = V;
-    type Entry<'a> = btree_map::Entry<'a, K, V> where K: 'a, V: 'a;
-    type Iter<'a> = btree_map::Iter<'a, K, V> where K: 'a, V: 'a;
-    type Drain<'a> = BTreeMapDrain<'a, K, V> where K: 'a, V: 'a;
+    type Entry<'a>
+        = btree_map::Entry<'a, K, V>
+    where
+        K: 'a,
+        V: 'a;
+    type Iter<'a>
+        = btree_map::Iter<'a, K, V>
+    where
+        K: 'a,
+        V: 'a;
+    type Drain<'a>
+        = BTreeMapDrain<'a, K, V>
+    where
+        K: 'a,
+        V: 'a;
 
     fn get(&self, key: &Self::Key) -> Option<&Self::Value> {
         self.get(key)
@@ -271,9 +283,21 @@ where
 {
     type Key = K;
     type Value = V;
-    type Entry<'a> = hash_map::Entry<'a, K, V> where K: 'a, V: 'a;
-    type Iter<'a> = hash_map::Iter<'a, K, V> where K: 'a, V: 'a;
-    type Drain<'a> = hash_map::Drain<'a, K, V> where K: 'a, V: 'a;
+    type Entry<'a>
+        = hash_map::Entry<'a, K, V>
+    where
+        K: 'a,
+        V: 'a;
+    type Iter<'a>
+        = hash_map::Iter<'a, K, V>
+    where
+        K: 'a,
+        V: 'a;
+    type Drain<'a>
+        = hash_map::Drain<'a, K, V>
+    where
+        K: 'a,
+        V: 'a;
 
     fn get(&self, key: &Self::Key) -> Option<&Self::Value> {
         self.get(key)
