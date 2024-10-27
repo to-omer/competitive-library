@@ -151,7 +151,7 @@ where
     }
 }
 
-impl<'a, K, V> Iterator for BTreeMapDrain<'a, K, V>
+impl<K, V> Iterator for BTreeMapDrain<'_, K, V>
 where
     K: Ord,
 {
@@ -162,7 +162,7 @@ where
     }
 }
 
-impl<'a, K, V> DoubleEndedIterator for BTreeMapDrain<'a, K, V>
+impl<K, V> DoubleEndedIterator for BTreeMapDrain<'_, K, V>
 where
     K: Ord,
 {
@@ -171,7 +171,7 @@ where
     }
 }
 
-impl<'a, K, V> ExactSizeIterator for BTreeMapDrain<'a, K, V>
+impl<K, V> ExactSizeIterator for BTreeMapDrain<'_, K, V>
 where
     K: Ord,
 {
@@ -180,7 +180,7 @@ where
     }
 }
 
-impl<'a, K, V> FusedIterator for BTreeMapDrain<'a, K, V> where K: Ord {}
+impl<K, V> FusedIterator for BTreeMapDrain<'_, K, V> where K: Ord {}
 
 impl<'a, K, V> ContainerEntry<'a> for btree_map::Entry<'a, K, V>
 where

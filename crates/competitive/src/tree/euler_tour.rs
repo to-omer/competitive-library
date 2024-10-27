@@ -160,7 +160,7 @@ pub struct LowestCommonAncestor<'a, D: LcaMonoidDispatch> {
     dst: DisjointSparseTable<LcaMonoid<D>>,
 }
 #[codesnip::entry("LowestCommonAncestor")]
-impl<'a, D: LcaMonoidDispatch> LowestCommonAncestor<'a, D> {
+impl<D: LcaMonoidDispatch> LowestCommonAncestor<'_, D> {
     pub fn lca(&self, u: usize, v: usize) -> usize {
         self.euler.query(u, v, |l, r| self.dst.fold(l, r))
     }

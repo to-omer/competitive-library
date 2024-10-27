@@ -123,7 +123,7 @@ pub struct ScannerIter<'a, 'b, T> {
     inner: &'b mut Scanner<'a>,
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-impl<'a, 'b, T> Iterator for ScannerIter<'a, 'b, T>
+impl<T> Iterator for ScannerIter<'_, '_, T>
 where
     T: IterScan,
 {

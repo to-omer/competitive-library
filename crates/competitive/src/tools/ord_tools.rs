@@ -79,7 +79,7 @@ mod tests {
     macro_rules! assert_eq_f64 {
         ($l:expr, $r:expr) => { assert_eq_f64!($l, $r,) };
         ($l:expr, $r:expr, $($t:tt)*) => {
-            ::std::assert!(($l - $r).abs() < ::std::f64::EPSILON, $($t)*);
+            ::std::assert!(($l - $r).abs() < f64::EPSILON, $($t)*);
         };
     }
 

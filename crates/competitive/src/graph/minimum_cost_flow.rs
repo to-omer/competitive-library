@@ -69,7 +69,7 @@ pub struct PrimalDual<'a> {
     prev_edge: Vec<usize>,
     has_negedge: bool,
 }
-impl<'a> PrimalDual<'a> {
+impl PrimalDual<'_> {
     pub fn builder(vsize: usize, esize_expect: usize) -> PrimalDualBuilder {
         PrimalDualBuilder::new(vsize, esize_expect)
     }

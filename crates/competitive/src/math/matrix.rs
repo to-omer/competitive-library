@@ -68,7 +68,7 @@ impl<T> IndexMut<(usize, usize)> for Matrix<T> {
         &mut self.data[index.0][index.1]
     }
 }
-impl<'a, T> Add for &'a Matrix<T>
+impl<T> Add for &Matrix<T>
 where
     T: Copy + Zero + Add<Output = T>,
 {
@@ -84,7 +84,7 @@ where
         res
     }
 }
-impl<'a, T> Sub for &'a Matrix<T>
+impl<T> Sub for &Matrix<T>
 where
     T: Copy + Zero + Sub<Output = T>,
 {
@@ -100,7 +100,7 @@ where
         res
     }
 }
-impl<'a, T> Mul for &'a Matrix<T>
+impl<T> Mul for &Matrix<T>
 where
     T: Copy + Zero + Add<Output = T> + Mul<Output = T>,
 {

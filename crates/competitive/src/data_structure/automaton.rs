@@ -547,7 +547,7 @@ impl<'a, T> LexicographicalAutomaton<'a, T> {
         }
     }
 }
-impl<'a, T> Automaton for LexicographicalAutomaton<'a, T>
+impl<T> Automaton for LexicographicalAutomaton<'_, T>
 where
     T: Ord,
 {
@@ -608,7 +608,7 @@ impl<'a, T> RevLexicographicalAutomaton<'a, T> {
         }
     }
 }
-impl<'a, T> Automaton for RevLexicographicalAutomaton<'a, T>
+impl<T> Automaton for RevLexicographicalAutomaton<'_, T>
 where
     T: Ord,
 {

@@ -278,7 +278,7 @@ where
             );
         }
         if let Some(k) = self.iter().position(|x| !x.is_zero()) {
-            if k >= (deg + rhs - 1) / rhs {
+            if k >= deg.div_ceil(rhs) {
                 Self::zeros(deg)
             } else {
                 let mut x0 = self[k].clone();

@@ -186,7 +186,7 @@ where
     _marker: PhantomData<fn() -> Hasher>,
 }
 
-impl<'a, Hasher: Debug> Debug for HashedRangeChained<'a, Hasher>
+impl<Hasher: Debug> Debug for HashedRangeChained<'_, Hasher>
 where
     Hasher: RollingHasher + ?Sized,
     Hasher::Hash: Debug,
@@ -198,9 +198,9 @@ where
     }
 }
 
-impl<'a, Hasher: Default> Default for HashedRangeChained<'a, Hasher>
+impl<Hasher: Default> Default for HashedRangeChained<'_, Hasher>
 where
-    Hasher: RollingHasher + ?Sized,
+    Hasher: RollingHasher,
 {
     fn default() -> Self {
         Self {
@@ -210,9 +210,9 @@ where
     }
 }
 
-impl<'a, Hasher: Clone> Clone for HashedRangeChained<'a, Hasher>
+impl<Hasher: Clone> Clone for HashedRangeChained<'_, Hasher>
 where
-    Hasher: RollingHasher + ?Sized,
+    Hasher: RollingHasher,
 {
     fn clone(&self) -> Self {
         Self {

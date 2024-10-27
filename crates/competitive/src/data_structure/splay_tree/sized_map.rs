@@ -45,7 +45,7 @@ where
         }
     }
 }
-impl<'a, K, V, Q> SplaySeeker for SeekByKey<'a, K, V, Q>
+impl<K, V, Q> SplaySeeker for SeekByKey<'_, K, V, Q>
 where
     K: Borrow<Q>,
     Q: Ord + ?Sized,
@@ -290,7 +290,7 @@ where
 pub struct Iter<'a, K, V> {
     iter: NodeRange<'a, SizedSplay<(K, V)>>,
 }
-impl<'a, K, V> Iterator for Iter<'a, K, V>
+impl<K, V> Iterator for Iter<'_, K, V>
 where
     K: Clone,
     V: Clone,
@@ -315,7 +315,7 @@ where
     V: Clone,
 {
 }
-impl<'a, K, V> DoubleEndedIterator for Iter<'a, K, V>
+impl<K, V> DoubleEndedIterator for Iter<'_, K, V>
 where
     K: Clone,
     V: Clone,

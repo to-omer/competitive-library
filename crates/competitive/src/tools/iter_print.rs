@@ -242,7 +242,7 @@ mod tests {
             @it2d (0..3).map(|i| (14..=15).map(move |j| i * 2 + j));
             @ns @ittup (0..2).map(|i| (i * 2 + 20, i * 2 + 21));
             @flush,
-            @cw ('a' [0, 1, 2].iter().cloned());
+            @bw (b'a' [0, 1, 2].iter().cloned());
             @sp @it1 (0..2)
         );
         let expected = r#"1 2.3.4

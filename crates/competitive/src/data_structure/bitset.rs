@@ -179,7 +179,7 @@ impl<'a> BitOr<&'a BitSet> for BitSet {
         self
     }
 }
-impl<'a, 'b> BitOr<&'b BitSet> for &'a BitSet {
+impl<'b> BitOr<&'b BitSet> for &BitSet {
     type Output = BitSet;
     #[inline]
     fn bitor(self, rhs: &'b BitSet) -> Self::Output {
@@ -204,7 +204,7 @@ impl<'a> BitAnd<&'a BitSet> for BitSet {
         self
     }
 }
-impl<'a, 'b> BitAnd<&'b BitSet> for &'a BitSet {
+impl<'b> BitAnd<&'b BitSet> for &BitSet {
     type Output = BitSet;
     #[inline]
     fn bitand(self, rhs: &'b BitSet) -> Self::Output {
@@ -230,7 +230,7 @@ impl<'a> BitXor<&'a BitSet> for BitSet {
         self
     }
 }
-impl<'a, 'b> BitXor<&'b BitSet> for &'a BitSet {
+impl<'b> BitXor<&'b BitSet> for &BitSet {
     type Output = BitSet;
     #[inline]
     fn bitxor(self, rhs: &'b BitSet) -> Self::Output {
@@ -250,7 +250,7 @@ impl Not for BitSet {
         self
     }
 }
-impl<'a> Not for &'a BitSet {
+impl Not for &BitSet {
     type Output = BitSet;
     #[inline]
     fn not(self) -> Self::Output {

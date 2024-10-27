@@ -53,7 +53,7 @@ pub struct Dinic<'a> {
     level: Vec<usize>,
     deq: VecDeque<usize>,
 }
-impl<'a> Dinic<'a> {
+impl Dinic<'_> {
     pub fn builder(vsize: usize, esize_expect: usize) -> DinicBuilder {
         DinicBuilder::new(vsize, esize_expect)
     }

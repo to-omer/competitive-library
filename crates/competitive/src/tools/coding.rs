@@ -72,7 +72,7 @@ fn to_bytestring(bytes: &[u8]) -> String {
     let mut extra_min = !0usize;
     for s in 0u8..128 {
         let mut extra = 0usize;
-        for &b in &[b'\n', b'\r', b'\t', b'\\', b'\0', b'\"'] {
+        for &b in b"\n\r\t\\\0\"" {
             extra += count[(b ^ s) as usize];
             extra += (b == s) as usize;
         }
