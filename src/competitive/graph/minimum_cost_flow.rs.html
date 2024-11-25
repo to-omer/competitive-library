@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/minimum_cost_flow.rs`."><title>minimum_cost_flow.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (5ec7d6eee 2024-11-17)" data-channel="nightly" data-search-js="search-53f21e11.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/minimum_cost_flow.rs`."><title>minimum_cost_flow.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.85.0-nightly (a47555110 2024-11-22)" data-channel="nightly" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -177,9 +177,9 @@
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/graph/struct.PrimalDualBuilder.html">PrimalDualBuilder</a> {
     vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
-    edges: Vec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
-    capacities: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
-    costs: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    edges: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
+    capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+    costs: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
     has_negedge: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 }
 <span class="kw">impl </span><a href="#4-10">PrimalDualBuilder</a> {
@@ -204,7 +204,7 @@
         <span class="kw">let </span>edges = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#29">self</a>.edges);
         <a href="sparse_graph.rs.html#71-73">BidirectionalSparseGraph::from_edges</a>(<a class="self" href="#29">self</a>.vsize, <a href="#30">edges</a>)
     }
-    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span><a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>) -&gt; PrimalDual&lt;<span class="lifetime">'_</span>&gt; {
+    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span><a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>) -&gt; <a href="#62-71">PrimalDual</a>&lt;<span class="lifetime">'_</span>&gt; {
         <span class="kw">let </span><a href="#4-10">PrimalDualBuilder</a> {
             vsize,
             capacities,
@@ -224,8 +224,8 @@
         }
     }
 }
-<span class="kw">impl </span>Extend&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt; <span class="kw">for </span><a href="#4-10">PrimalDualBuilder</a> {
-    <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
+<span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">Extend</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt; <span class="kw">for </span><a href="#4-10">PrimalDualBuilder</a> {
+    <span class="kw">fn </span>extend&lt;T: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
         <span class="kw">for </span>(from, to, cap, cost) <span class="kw">in </span>iter {
             <span class="self">self</span>.add_edge(from, to, cap, cost)
         }
@@ -235,15 +235,15 @@
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/graph/struct.PrimalDual.html">PrimalDual</a>&lt;<span class="lifetime">'a</span>&gt; {
     graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>,
-    capacities: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
-    costs: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
-    potential: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
-    dist: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
-    prev_vertex: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-    prev_edge: Vec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
+    costs: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    potential: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    dist: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>&gt;,
+    prev_vertex: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    prev_edge: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
     has_negedge: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 }
-<span class="kw">impl </span>PrimalDual&lt;<span class="lifetime">'_</span>&gt; {
+<span class="kw">impl </span><a href="#62-71">PrimalDual</a>&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">pub fn </span>builder(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="#4-10">PrimalDualBuilder</a> {
         <a href="#12-20">PrimalDualBuilder::new</a>(<a href="#73">vsize</a>, <a href="#73">esize_expect</a>)
     }

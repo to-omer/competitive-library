@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/heuristic/beam_search.rs`."><title>beam_search.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (5ec7d6eee 2024-11-17)" data-channel="nightly" data-search-js="search-53f21e11.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/heuristic/beam_search.rs`."><title>beam_search.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.85.0-nightly (a47555110 2024-11-22)" data-channel="nightly" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -311,7 +311,7 @@
     <span class="kw">type </span>Operation: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>;
     <span class="kw">type </span>Score: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>;
     <span class="kw">type </span>Hash: <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>;
-    <span class="kw">type </span>Cands: Iterator&lt;Item = <span class="self">Self</span>::Operation&gt;;
+    <span class="kw">type </span>Cands: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a>&lt;Item = <span class="self">Self</span>::Operation&gt;;
     <span class="kw">fn </span>score(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Score;
     <span class="kw">fn </span>hash(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Hash;
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
@@ -348,7 +348,7 @@
     accept: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 }
 
-<span class="kw">impl</span>&lt;S&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span>Candidate&lt;S&gt;
+<span class="kw">impl</span>&lt;S&gt; <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a> <span class="kw">for </span><a href="#33-42">Candidate</a>&lt;S&gt;
 <span class="kw">where
     </span>S: <a href="#3-30">ModifiableState</a>,
 {
@@ -377,7 +377,7 @@
     hash: S::Hash,
 }
 
-<span class="kw">impl</span>&lt;S&gt; Node&lt;S&gt;
+<span class="kw">impl</span>&lt;S&gt; <a href="#60-71">Node</a>&lt;S&gt;
 <span class="kw">where
     </span>S: <a href="#3-30">ModifiableState</a>,
 {
@@ -401,11 +401,11 @@
 {
     state: S,
     latest: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
-    nodes: Vec&lt;Node&lt;S&gt;&gt;,
+    nodes: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="#60-71">Node</a>&lt;S&gt;&gt;,
     cur_node: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
 }
 
-<span class="kw">impl</span>&lt;S&gt; Tree&lt;S&gt;
+<span class="kw">impl</span>&lt;S&gt; <a href="#91-99">Tree</a>&lt;S&gt;
 <span class="kw">where
     </span>S: <a href="#3-30">ModifiableState</a>,
 {
@@ -461,7 +461,7 @@
         }
     }
 
-    <span class="kw">pub fn </span>operations(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>idx: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;S::Operation&gt; {
+    <span class="kw">pub fn </span>operations(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>idx: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;S::Operation&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>ret = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
         <span class="kw">loop </span>{
             <span class="kw">let </span><a href="#60-71">Node</a> { op, parent, .. } = <span class="kw-2">&amp;</span><a class="self" href="#157">self</a>.nodes[<a href="#157">idx</a>];
@@ -475,7 +475,7 @@
         <a href="#158">ret</a>
     }
 
-    <span class="kw">fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cands: <span class="kw-2">&amp;mut </span>Vec&lt;Candidate&lt;S&gt;&gt;, beam_weidth: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, minimize: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
+    <span class="kw">fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cands: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="#33-42">Candidate</a>&lt;S&gt;&gt;, beam_weidth: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, minimize: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
         <span class="kw">if </span>cands.len() &gt; beam_weidth {
             <span class="kw">if </span>minimize {
                 <a href="#171">cands</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.select_nth_unstable_by_key">select_nth_unstable_by_key</a>(<a href="#171">beam_weidth</a>, |s| <a href="#174">s</a>.score.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>());
@@ -503,7 +503,7 @@
         <a class="self" href="#171">self</a>.latest = <a href="#180">len</a>;
     }
 
-    <span class="kw">pub fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cands: <span class="kw-2">&amp;mut </span>Vec&lt;Candidate&lt;S&gt;&gt;, set: <span class="kw-2">&amp;</span>HashSet&lt;S::Hash&gt;, single: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
+    <span class="kw">pub fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cands: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="#33-42">Candidate</a>&lt;S&gt;&gt;, set: <span class="kw-2">&amp;</span><a href="https://doc.rust-lang.org/nightly/std/collections/hash/set/struct.HashSet.html">HashSet</a>&lt;S::Hash&gt;, single: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) {
         <span class="kw">let </span>node = <span class="kw-2">&amp;</span><a class="self" href="#199">self</a>.nodes[<a class="self" href="#199">self</a>.cur_node];
         <span class="kw">if </span>node.child == !<span class="number">0 </span>{
             <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(node.score == <span class="self">self</span>.state.score());
@@ -552,9 +552,9 @@
 
     <span class="kw">pub fn </span>take_best(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        cands: <span class="kw-2">&amp;</span>[Candidate&lt;S&gt;],
+        cands: <span class="kw-2">&amp;</span>[<a href="#33-42">Candidate</a>&lt;S&gt;],
         minimize: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;(S::Score, Vec&lt;S::Operation&gt;)&gt; {
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;(S::Score, <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;S::Operation&gt;)&gt; {
         <span class="kw">let </span>cands = <a href="#248">cands</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|cand| <a href="#251">cand</a>.accept);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="#33-42">Candidate</a> {
             op, parent, score, ..
@@ -577,13 +577,13 @@
     init_op: S::Operation,
     beam_weidth: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
     minimize: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
-) -&gt; <span class="prelude-ty">Option</span>&lt;(S::Score, Vec&lt;S::Operation&gt;)&gt;
+) -&gt; <span class="prelude-ty">Option</span>&lt;(S::Score, <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;S::Operation&gt;)&gt;
 <span class="kw">where
     </span>S: <a href="#3-30">ModifiableState</a>,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>tree = <a href="#105-113">Tree::new</a>(<a href="#269">state</a>, <a href="#270">init_op</a>);
     <span class="kw">let </span><span class="kw-2">mut </span>cands = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
-    <span class="kw">let </span><span class="kw-2">mut </span>set = HashSet::&lt;S::Hash&gt;::default();
+    <span class="kw">let </span><span class="kw-2">mut </span>set = <a href="https://doc.rust-lang.org/nightly/std/collections/hash/set/struct.HashSet.html">HashSet</a>::&lt;S::Hash&gt;::default();
     <span class="kw">loop </span>{
         <a href="#277">tree</a>.<a href="#199-244">dfs</a>(<span class="kw-2">&amp;mut </span><a href="#278">cands</a>, <span class="kw-2">&amp;</span><a href="#279">set</a>, <span class="bool-val">true</span>);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(res) = <a href="#277">tree</a>.<a href="#246-265">take_best</a>(<span class="kw-2">&amp;</span><a href="#278">cands</a>, <a href="#272">minimize</a>) {

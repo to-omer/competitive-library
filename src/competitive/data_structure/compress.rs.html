@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/compress.rs`."><title>compress.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (5ec7d6eee 2024-11-17)" data-channel="nightly" data-search-js="search-53f21e11.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/compress.rs`."><title>compress.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.85.0-nightly (a47555110 2024-11-22)" data-channel="nightly" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -127,7 +127,7 @@
 
 <span class="kw">pub trait </span><a href="../../../competitive/data_structure/trait.Compressor.html">Compressor</a>&lt;T&gt;
 <span class="kw">where
-    </span><span class="self">Self</span>: FromIterator&lt;T&gt;,
+    </span><span class="self">Self</span>: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html">FromIterator</a>&lt;T&gt;,
     T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">fn </span>index_exact(<span class="kw-2">&amp;</span><span class="self">self</span>, index: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Option</span>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;;
@@ -137,25 +137,25 @@
 
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.VecCompress.html">VecCompress</a>&lt;T&gt; {
-    data: Vec&lt;T&gt;,
+    data: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;,
 }
 
-<span class="kw">impl</span>&lt;T&gt; FromIterator&lt;T&gt; <span class="kw">for </span>VecCompress&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html">FromIterator</a>&lt;T&gt; <span class="kw">for </span><a href="#20-22">VecCompress</a>&lt;T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
     <span class="kw">fn </span>from_iter&lt;I&gt;(iter: I) -&gt; <span class="self">Self
     </span><span class="kw">where
-        </span>I: IntoIterator&lt;Item = T&gt;,
+        </span>I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = T&gt;,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>data: Vec&lt;<span class="kw">_</span>&gt; = <a href="#28">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>data: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="kw">_</span>&gt; = <a href="#28">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
         <a href="#32">data</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.sort_unstable">sort_unstable</a>();
         <a href="#32">data</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.dedup">dedup</a>();
         <span class="self">Self </span>{ <a href="#32">data</a> }
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; Compressor&lt;T&gt; <span class="kw">for </span>VecCompress&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="#9-17">Compressor</a>&lt;T&gt; <span class="kw">for </span><a href="#20-22">VecCompress</a>&lt;T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
@@ -174,29 +174,29 @@
 
 <span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.HashCompress.html">HashCompress</a>&lt;T&gt; {
-    data: HashMap&lt;T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    data: <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">HashMap</a>&lt;T, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 }
 
-<span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>HashCompress&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span><a href="#57-59">HashCompress</a>&lt;T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">fmt::Formatter</a>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
         <a href="#65">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_struct">debug_struct</a>(<span class="string">"HashCompress"</span>)
             .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"data"</span>, <span class="kw-2">&amp;</span><a class="self" href="#65">self</a>.data)
             .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.finish">finish</a>()
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; FromIterator&lt;T&gt; <span class="kw">for </span>HashCompress&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.FromIterator.html">FromIterator</a>&lt;T&gt; <span class="kw">for </span><a href="#57-59">HashCompress</a>&lt;T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
 {
     <span class="kw">fn </span>from_iter&lt;I&gt;(iter: I) -&gt; <span class="self">Self
     </span><span class="kw">where
-        </span>I: IntoIterator&lt;Item = T&gt;,
+        </span>I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = T&gt;,
     {
-        <span class="kw">let </span><span class="kw-2">mut </span>data: Vec&lt;<span class="kw">_</span>&gt; = <a href="#76">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+        <span class="kw">let </span><span class="kw-2">mut </span>data: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="kw">_</span>&gt; = <a href="#76">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
         <a href="#80">data</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.sort_unstable">sort_unstable</a>();
         <a href="#80">data</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.dedup">dedup</a>();
         <span class="kw">let </span>data = <a href="#80">data</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|(i, t)| (<a href="#83">t</a>, <a href="#83">i</a>)).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
@@ -204,7 +204,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; Compressor&lt;T&gt; <span class="kw">for </span>HashCompress&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="#9-17">Compressor</a>&lt;T&gt; <span class="kw">for </span><a href="#57-59">HashCompress</a>&lt;T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
 {

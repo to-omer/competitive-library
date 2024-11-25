@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (5ec7d6eee 2024-11-17)" data-channel="nightly" data-search-js="search-53f21e11.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/automaton.rs`."><title>automaton.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.85.0-nightly (a47555110 2024-11-22)" data-channel="nightly" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -954,7 +954,7 @@
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State;
     <span class="kw">fn </span>next(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State, alph: <span class="kw-2">&amp;</span><span class="self">Self</span>::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::State&gt;;
     <span class="kw">fn </span>accept(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span><span class="self">Self</span>::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>;
-    <span class="kw">fn </span>dp&lt;M&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, init: M::T) -&gt; InitAutomatonDp&lt;M, <span class="kw-2">&amp;</span><span class="self">Self</span>&gt;
+    <span class="kw">fn </span>dp&lt;M&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, init: M::T) -&gt; <a href="#48-55">InitAutomatonDp</a>&lt;M, <span class="kw-2">&amp;</span><span class="self">Self</span>&gt;
     <span class="kw">where
         </span><span class="self">Self</span>: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a>,
         M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
@@ -990,7 +990,7 @@
     init: M::T,
 }
 
-<span class="kw">impl</span>&lt;M, A&gt; InitAutomatonDp&lt;M, A&gt;
+<span class="kw">impl</span>&lt;M, A&gt; <a href="#48-55">InitAutomatonDp</a>&lt;M, A&gt;
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
     A: <a href="#15-28">Automaton</a>,
@@ -998,14 +998,14 @@
     <span class="kw">pub fn </span>new(dfa: A, init: M::T) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ <a href="#62">dfa</a>, <a href="#62">init</a> }
     }
-    <span class="kw">pub fn </span>with_factory&lt;F&gt;(<span class="self">self</span>, factory: F) -&gt; Automatondp&lt;M, A, F::Container&gt;
+    <span class="kw">pub fn </span>with_factory&lt;F&gt;(<span class="self">self</span>, factory: F) -&gt; <a href="#104-114">Automatondp</a>&lt;M, A, F::Container&gt;
     <span class="kw">where
         </span>F: <a href="container.rs.html#9-13">ContainerFactory</a>,
-        F::Container: Container&lt;Key = A::State, Value = M::T&gt;,
+        F::Container: <a href="container.rs.html#15-41">Container</a>&lt;Key = A::State, Value = M::T&gt;,
     {
         <a href="#139-152">Automatondp::new</a>(<a class="self" href="#65">self</a>.dfa, <a class="self" href="#65">self</a>.init, <a href="#65">factory</a>)
     }
-    <span class="kw">pub fn </span>with_hashmap(<span class="self">self</span>) -&gt; Automatondp&lt;M, A, HashMap&lt;A::State, M::T&gt;&gt;
+    <span class="kw">pub fn </span>with_hashmap(<span class="self">self</span>) -&gt; <a href="#104-114">Automatondp</a>&lt;M, A, <a href="https://doc.rust-lang.org/nightly/std/collections/hash/map/struct.HashMap.html">HashMap</a>&lt;A::State, M::T&gt;&gt;
     <span class="kw">where
         </span>A::State: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html">Eq</a> + <a href="https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html">Hash</a>,
     {
@@ -1014,9 +1014,9 @@
     <span class="kw">pub fn </span>with_vecmap&lt;F&gt;(
         <span class="self">self</span>,
         key_to_index: F,
-    ) -&gt; Automatondp&lt;M, A, VecMap&lt;<span class="bool-val">false</span>, A::State, M::T, F&gt;&gt;
+    ) -&gt; <a href="#104-114">Automatondp</a>&lt;M, A, <a href="vec_map.rs.html#31-34">VecMap</a>&lt;<span class="bool-val">false</span>, A::State, M::T, F&gt;&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>A::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+        </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>A::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
     {
         <a href="#139-152">Automatondp::new</a>(<a class="self" href="#79">self</a>.dfa, <a class="self" href="#79">self</a>.init, <a href="vec_map.rs.html#55-60">VecMapFactory::new</a>(<a href="#80">key_to_index</a>))
     }
@@ -1024,9 +1024,9 @@
         <span class="self">self</span>,
         key_to_index: F,
         len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
-    ) -&gt; Automatondp&lt;M, A, VecMap&lt;<span class="bool-val">true</span>, A::State, M::T, F&gt;&gt;
+    ) -&gt; <a href="#104-114">Automatondp</a>&lt;M, A, <a href="vec_map.rs.html#31-34">VecMap</a>&lt;<span class="bool-val">true</span>, A::State, M::T, F&gt;&gt;
     <span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>A::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
+        </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>A::State) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html">Clone</a>,
     {
         <a href="#139-152">Automatondp::new</a>(
             <a class="self" href="#88">self</a>.dfa,
@@ -1041,23 +1041,23 @@
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
     A: <a href="#15-28">Automaton</a>,
-    C: Container&lt;Key = A::State, Value = M::T&gt;,
+    C: <a href="container.rs.html#15-41">Container</a>&lt;Key = A::State, Value = M::T&gt;,
 {
     dfa: A,
     <span class="kw">pub </span>dp: C,
     ndp: C,
-    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;,
+    _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; M&gt;,
 }
 
-<span class="kw">impl</span>&lt;M, A, C&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span>Automatondp&lt;M, A, C&gt;
+<span class="kw">impl</span>&lt;M, A, C&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a> <span class="kw">for </span><a href="#104-114">Automatondp</a>&lt;M, A, C&gt;
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
     A: <a href="#15-28">Automaton</a> + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     A::State: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
     M::T: <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
-    C: Container&lt;Key = A::State, Value = M::T&gt; + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
+    C: <a href="container.rs.html#15-41">Container</a>&lt;Key = A::State, Value = M::T&gt; + <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html">Debug</a>,
 {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span><a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html">Formatter</a>&lt;<span class="lifetime">'_</span>&gt;) -&gt; <a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">fmt::Result</a> {
         <a href="#124">f</a>.<a href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html#method.debug_struct">debug_struct</a>(<span class="string">"Automatondp"</span>)
             .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"dfa"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.dfa)
             .<a href="https://doc.rust-lang.org/nightly/core/fmt/builders/struct.DebugStruct.html#method.field">field</a>(<span class="string">"dp"</span>, <span class="kw-2">&amp;</span><a class="self" href="#124">self</a>.dp)
@@ -1066,15 +1066,15 @@
     }
 }
 
-<span class="kw">impl</span>&lt;M, A, C&gt; Automatondp&lt;M, A, C&gt;
+<span class="kw">impl</span>&lt;M, A, C&gt; <a href="#104-114">Automatondp</a>&lt;M, A, C&gt;
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
     A: <a href="#15-28">Automaton</a>,
-    C: Container&lt;Key = A::State, Value = M::T&gt;,
+    C: <a href="container.rs.html#15-41">Container</a>&lt;Key = A::State, Value = M::T&gt;,
 {
     <span class="kw">pub fn </span>new&lt;F&gt;(dfa: A, init: M::T, factory: F) -&gt; <span class="self">Self
     </span><span class="kw">where
-        </span>F: ContainerFactory&lt;Container = C&gt;,
+        </span>F: <a href="container.rs.html#9-13">ContainerFactory</a>&lt;Container = C&gt;,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>dp = <a href="#139">factory</a>.<a href="container.rs.html#12">create_container</a>();
         <span class="kw">let </span>ndp = <a href="#139">factory</a>.<a href="container.rs.html#12">create_container</a>();
@@ -1088,9 +1088,9 @@
     }
     <span class="kw">pub fn </span>step&lt;S, I, B&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S)
     <span class="kw">where
-        </span>S: FnMut() -&gt; I,
-        I: IntoIterator&lt;Item = B&gt;,
-        B: Borrow&lt;A::Alphabet&gt;,
+        </span>S: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>() -&gt; I,
+        I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = B&gt;,
+        B: <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">Borrow</a>&lt;A::Alphabet&gt;,
     {
         <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.drain() {
             <span class="kw">for </span>alph <span class="kw">in </span>sigma() {
@@ -1106,10 +1106,10 @@
     }
     <span class="kw">pub fn </span>step_effect&lt;S, I, B, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S, <span class="kw-2">mut </span>effect: F)
     <span class="kw">where
-        </span>S: FnMut() -&gt; I,
-        I: IntoIterator&lt;Item = B&gt;,
-        B: Borrow&lt;A::Alphabet&gt;,
-        F: FnMut(<span class="kw-2">&amp;</span>M::T, <span class="kw-2">&amp;</span>A::State, <span class="kw-2">&amp;</span>A::Alphabet, <span class="kw-2">&amp;</span>A::State) -&gt; M::T,
+        </span>S: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>() -&gt; I,
+        I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = B&gt;,
+        B: <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">Borrow</a>&lt;A::Alphabet&gt;,
+        F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<span class="kw-2">&amp;</span>M::T, <span class="kw-2">&amp;</span>A::State, <span class="kw-2">&amp;</span>A::Alphabet, <span class="kw-2">&amp;</span>A::State) -&gt; M::T,
     {
         <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.drain() {
             <span class="kw">for </span>alph <span class="kw">in </span>sigma() {
@@ -1135,8 +1135,8 @@
     }
     <span class="kw">pub fn </span>map_fold_accept&lt;U, F, D&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: F, <span class="kw-2">mut </span>map: D) -&gt; D
     <span class="kw">where
-        </span>F: FnMut(<span class="kw-2">&amp;</span>A::State) -&gt; U,
-        D: Container&lt;Key = U, Value = M::T&gt;,
+        </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<span class="kw-2">&amp;</span>A::State) -&gt; U,
+        D: <a href="container.rs.html#15-41">Container</a>&lt;Key = U, Value = M::T&gt;,
     {
         <span class="kw">for </span>(state, value) <span class="kw">in </span><span class="self">self</span>.dp.iter() {
             <span class="kw">if </span><span class="self">self</span>.dfa.accept(state) {
@@ -1149,9 +1149,9 @@
     }
     <span class="kw">pub fn </span>run&lt;S, I, B&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; M::T
     <span class="kw">where
-        </span>S: FnMut() -&gt; I,
-        I: IntoIterator&lt;Item = B&gt;,
-        B: Borrow&lt;A::Alphabet&gt;,
+        </span>S: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>() -&gt; I,
+        I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = B&gt;,
+        B: <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">Borrow</a>&lt;A::Alphabet&gt;,
     {
         <span class="kw">for _ in </span><span class="number">0</span>..len {
             <span class="self">self</span>.step(<span class="kw-2">&amp;mut </span>sigma);
@@ -1160,10 +1160,10 @@
     }
     <span class="kw">pub fn </span>run_effect&lt;S, I, B, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>sigma: S, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <span class="kw-2">mut </span>effect: F) -&gt; M::T
     <span class="kw">where
-        </span>S: FnMut() -&gt; I,
-        I: IntoIterator&lt;Item = B&gt;,
-        B: Borrow&lt;A::Alphabet&gt;,
-        F: FnMut(<span class="kw-2">&amp;</span>M::T, <span class="kw-2">&amp;</span>A::State, <span class="kw-2">&amp;</span>A::Alphabet, <span class="kw-2">&amp;</span>A::State) -&gt; M::T,
+        </span>S: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>() -&gt; I,
+        I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = B&gt;,
+        B: <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html">Borrow</a>&lt;A::Alphabet&gt;,
+        F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<span class="kw-2">&amp;</span>M::T, <span class="kw-2">&amp;</span>A::State, <span class="kw-2">&amp;</span>A::Alphabet, <span class="kw-2">&amp;</span>A::State) -&gt; M::T,
     {
         <span class="kw">for _ in </span><span class="number">0</span>..len {
             <span class="self">self</span>.step_effect(<span class="kw-2">&amp;mut </span>sigma, <span class="kw-2">&amp;mut </span>effect);
@@ -1298,20 +1298,20 @@
 <span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.FunctionalAutomaton.html">FunctionalAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
-    </span>F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     fn_initial: F,
     fn_next: G,
     fn_accept: H,
-    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; (A, S)&gt;,
+    _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; (A, S)&gt;,
 }
-<span class="kw">impl</span>&lt;A, S, F, G, H&gt; FunctionalAutomaton&lt;A, S, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#363-373">FunctionalAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
-    </span>F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">pub fn </span>new(fn_initial: F, fn_next: G, fn_accept: H) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -1322,11 +1322,11 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>FunctionalAutomaton&lt;A, S, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span><a href="#363-373">FunctionalAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
-    </span>F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>A) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">type </span>Alphabet = A;
     <span class="kw">type </span>State = S;
@@ -1345,22 +1345,22 @@
 </span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.MappingAutomaton.html">MappingAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
     </span>A: <a href="#15-28">Automaton</a>,
-    F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     dfa: A,
     fn_initial: F,
     fn_next: G,
     fn_accept: H,
-    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; S&gt;,
+    _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; S&gt;,
 }
-<span class="kw">impl</span>&lt;A, S, F, G, H&gt; MappingAutomaton&lt;A, S, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#409-421">MappingAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
     </span>A: <a href="#15-28">Automaton</a>,
-    F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">pub fn </span>new(dfa: A, fn_initial: F, fn_next: G, fn_accept: H) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -1372,12 +1372,12 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>MappingAutomaton&lt;A, S, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, F, G, H&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span><a href="#409-421">MappingAutomaton</a>&lt;A, S, F, G, H&gt;
 <span class="kw">where
     </span>A: <a href="#15-28">Automaton</a>,
-    F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>(A::State, S), <span class="kw-2">&amp;</span>A::Alphabet) -&gt; <span class="prelude-ty">Option</span>&lt;S&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>(A::State, S)) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">type </span>Alphabet = A::Alphabet;
     <span class="kw">type </span>State = (A::State, S);
@@ -1398,22 +1398,22 @@
 </span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.AlphabetMappingAutomaton.html">AlphabetMappingAutomaton</a>&lt;A, S, B, F, G, H&gt;
 <span class="kw">where
     </span>A: <a href="#15-28">Automaton</a>,
-    F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     dfa: A,
     fn_initial: F,
     fn_next: G,
     fn_accept: H,
-    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; (S, B)&gt;,
+    _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; (S, B)&gt;,
 }
-<span class="kw">impl</span>&lt;A, S, B, F, G, H&gt; AlphabetMappingAutomaton&lt;A, S, B, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, B, F, G, H&gt; <a href="#462-474">AlphabetMappingAutomaton</a>&lt;A, S, B, F, G, H&gt;
 <span class="kw">where
     </span>A: <a href="#15-28">Automaton</a>,
-    F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">pub fn </span>new(dfa: A, fn_initial: F, fn_next: G, fn_accept: H) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -1425,12 +1425,12 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;A, S, B, F, G, H&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>AlphabetMappingAutomaton&lt;A, S, B, F, G, H&gt;
+<span class="kw">impl</span>&lt;A, S, B, F, G, H&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span><a href="#462-474">AlphabetMappingAutomaton</a>&lt;A, S, B, F, G, H&gt;
 <span class="kw">where
     </span>A: <a href="#15-28">Automaton</a>,
-    F: Fn() -&gt; S,
-    G: Fn(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
-    H: Fn(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>() -&gt; S,
+    G: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>B) -&gt; <span class="prelude-ty">Option</span>&lt;(S, A::Alphabet)&gt;,
+    H: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html">Fn</a>(<span class="kw-2">&amp;</span>S) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 {
     <span class="kw">type </span>Alphabet = B;
     <span class="kw">type </span>State = (A::State, S);
@@ -1453,7 +1453,7 @@
     ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>,
     equal: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; LexicographicalAutomaton&lt;<span class="lifetime">'a</span>, T&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; <a href="#515-519">LexicographicalAutomaton</a>&lt;<span class="lifetime">'a</span>, T&gt; {
     <span class="kw">pub fn </span>less_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#521">sequence</a>,
@@ -1483,7 +1483,7 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;T&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>LexicographicalAutomaton&lt;<span class="lifetime">'_</span>, T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span><a href="#515-519">LexicographicalAutomaton</a>&lt;<span class="lifetime">'_</span>, T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
@@ -1514,7 +1514,7 @@
     ordering: <a href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html">Ordering</a>,
     equal: <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; RevLexicographicalAutomaton&lt;<span class="lifetime">'a</span>, T&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T&gt; <a href="#576-580">RevLexicographicalAutomaton</a>&lt;<span class="lifetime">'a</span>, T&gt; {
     <span class="kw">pub fn </span>less_than(sequence: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#582">sequence</a>,
@@ -1544,7 +1544,7 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;T&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>RevLexicographicalAutomaton&lt;<span class="lifetime">'_</span>, T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span><a href="#576-580">RevLexicographicalAutomaton</a>&lt;<span class="lifetime">'_</span>, T&gt;
 <span class="kw">where
     </span>T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
@@ -1566,10 +1566,10 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.MonoidalAutomaton.html">MonoidalAutomaton</a>&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;)
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.MonoidalAutomaton.html">MonoidalAutomaton</a>&lt;M&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; M&gt;)
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>;
-<span class="kw">impl</span>&lt;M&gt; MonoidalAutomaton&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="#633-635">MonoidalAutomaton</a>&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
@@ -1577,7 +1577,7 @@
         <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>()
     }
 }
-<span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>MonoidalAutomaton&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="#633-635">MonoidalAutomaton</a>&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
@@ -1585,7 +1585,7 @@
         <span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>)
     }
 }
-<span class="kw">impl</span>&lt;M&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>MonoidalAutomaton&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span><a href="#633-635">MonoidalAutomaton</a>&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="../algebra/magma.rs.html#45-58">Monoid</a>,
 {
@@ -1603,18 +1603,18 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.AlwaysAcceptingAutomaton.html">AlwaysAcceptingAutomaton</a>&lt;A&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; A&gt;);
-<span class="kw">impl</span>&lt;A&gt; AlwaysAcceptingAutomaton&lt;A&gt; {
+</span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.AlwaysAcceptingAutomaton.html">AlwaysAcceptingAutomaton</a>&lt;A&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; A&gt;);
+<span class="kw">impl</span>&lt;A&gt; <a href="#670">AlwaysAcceptingAutomaton</a>&lt;A&gt; {
     <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>()
     }
 }
-<span class="kw">impl</span>&lt;A&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span>AlwaysAcceptingAutomaton&lt;A&gt; {
+<span class="kw">impl</span>&lt;A&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="#670">AlwaysAcceptingAutomaton</a>&lt;A&gt; {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>)
     }
 }
-<span class="kw">impl</span>&lt;A&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span>AlwaysAcceptingAutomaton&lt;A&gt; {
+<span class="kw">impl</span>&lt;A&gt; <a href="#15-28">Automaton</a> <span class="kw">for </span><a href="#670">AlwaysAcceptingAutomaton</a>&lt;A&gt; {
     <span class="kw">type </span>Alphabet = A;
     <span class="kw">type </span>State = ();
     <span class="kw">fn </span>initial(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::State {}
@@ -1627,10 +1627,10 @@
 }
 
 <span class="kw">pub trait </span><a href="../../../competitive/data_structure/trait.ToDigitSequence.html">ToDigitSequence</a>: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html">Sized</a> {
-    <span class="kw">fn </span>to_digit_sequence(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="self">Self</span>&gt;;
-    <span class="kw">fn </span>to_digit_sequence_radix(<span class="kw-2">&amp;</span><span class="self">self</span>, radix: <span class="self">Self</span>) -&gt; Vec&lt;<span class="self">Self</span>&gt;;
-    <span class="kw">fn </span>to_digit_sequence_len(<span class="kw-2">&amp;</span><span class="self">self</span>, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<span class="self">Self</span>&gt;;
-    <span class="kw">fn </span>to_digit_sequence_radix_len(<span class="kw-2">&amp;</span><span class="self">self</span>, radix: <span class="self">Self</span>, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Vec&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>to_digit_sequence(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>to_digit_sequence_radix(<span class="kw-2">&amp;</span><span class="self">self</span>, radix: <span class="self">Self</span>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>to_digit_sequence_len(<span class="kw-2">&amp;</span><span class="self">self</span>, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>to_digit_sequence_radix_len(<span class="kw-2">&amp;</span><span class="self">self</span>, radix: <span class="self">Self</span>, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<span class="self">Self</span>&gt;;
 }
 
 <span class="macro">macro_rules!</span> impl_to_digit_sequence {

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/number_theoretic_transform.rs`."><title>number_theoretic_transform.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (5ec7d6eee 2024-11-17)" data-channel="nightly" data-search-js="search-53f21e11.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/number_theoretic_transform.rs`."><title>number_theoretic_transform.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.85.0-nightly (a47555110 2024-11-22)" data-channel="nightly" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -550,9 +550,9 @@
 <a href="#533" id="533">533</a></pre></div><pre class="rust"><code><span class="kw">use super</span>::{<a href="../num/mint/mod.rs.html#21">montgomery</a>::<span class="kw-2">*</span>, <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a>, <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>, <a href="../num/mint/mint_base.rs.html#27-52">MIntBase</a>, <a href="../num/mint/mint_base.rs.html#21-25">MIntConvert</a>, <a href="../num/zero_one.rs.html#15-28">One</a>, <a href="../num/zero_one.rs.html#1-14">Zero</a>};
 <span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">std::marker::PhantomData</a>;
 
-<span class="kw">pub struct </span><a href="../../../competitive/math/struct.Convolve.html">Convolve</a>&lt;M&gt;(PhantomData&lt;<span class="kw">fn</span>() -&gt; M&gt;);
-<span class="kw">pub type </span><a href="../../../competitive/math/type.Convolve998244353.html">Convolve998244353</a> = Convolve&lt;<a href="../num/mint/montgomery.rs.html#239-244">Modulo998244353</a>&gt;;
-<span class="kw">pub type </span><a href="../../../competitive/math/type.MIntConvolve.html">MIntConvolve</a>&lt;M&gt; = Convolve&lt;(M, (<a href="../num/mint/montgomery.rs.html#239-244">Modulo2013265921</a>, <a href="../num/mint/montgomery.rs.html#239-244">Modulo1811939329</a>, <a href="../num/mint/montgomery.rs.html#239-244">Modulo2113929217</a>))&gt;;
+<span class="kw">pub struct </span><a href="../../../competitive/math/struct.Convolve.html">Convolve</a>&lt;M&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; M&gt;);
+<span class="kw">pub type </span><a href="../../../competitive/math/type.Convolve998244353.html">Convolve998244353</a> = <a href="#4">Convolve</a>&lt;<a href="../num/mint/montgomery.rs.html#239-244">Modulo998244353</a>&gt;;
+<span class="kw">pub type </span><a href="../../../competitive/math/type.MIntConvolve.html">MIntConvolve</a>&lt;M&gt; = <a href="#4">Convolve</a>&lt;(M, (<a href="../num/mint/montgomery.rs.html#239-244">Modulo2013265921</a>, <a href="../num/mint/montgomery.rs.html#239-244">Modulo1811939329</a>, <a href="../num/mint/montgomery.rs.html#239-244">Modulo2113929217</a>))&gt;;
 
 <span class="macro">macro_rules!</span> impl_ntt_modulus {
     ($([<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$g</span>:expr]),<span class="kw-2">*</span>) =&gt; {
@@ -688,7 +688,7 @@
 }
 
 <a class="macro" href="../tools/avx_helper.rs.html#2-62">crate::avx_helper!</a>(
-    @avx2 <span class="kw">fn </span>ntt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+    @avx2 <span class="kw">fn </span>ntt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;])
     <span class="kw">where
         </span>[M: <a href="#43-76">Montgomery32NttModulus</a>]
     {
@@ -739,7 +739,7 @@
     }
 );
 <a class="macro" href="../tools/avx_helper.rs.html#2-62">crate::avx_helper!</a>(
-    @avx2 <span class="kw">fn </span>intt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+    @avx2 <span class="kw">fn </span>intt&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;])
     <span class="kw">where
         </span>[M: <a href="#43-76">Montgomery32NttModulus</a>]
     {
@@ -791,7 +791,7 @@
     }
 );
 
-<span class="kw">fn </span>convolve_naive&lt;M&gt;(a: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;], b: <span class="kw-2">&amp;</span>[MInt&lt;M&gt;]) -&gt; Vec&lt;MInt&lt;M&gt;&gt;
+<span class="kw">fn </span>convolve_naive&lt;M&gt;(a: <span class="kw-2">&amp;</span>[<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;], b: <span class="kw-2">&amp;</span>[<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;]) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;&gt;
 <span class="kw">where
     </span>M: <a href="../num/mint/mint_base.rs.html#27-52">MIntBase</a>,
 {
@@ -799,7 +799,7 @@
         <span class="kw">return </span><a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">Vec::new</a>();
     }
     <span class="kw">let </span>len = <a href="#245">a</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>() + <a href="#245">b</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>() - <span class="number">1</span>;
-    <span class="kw">let </span><span class="kw-2">mut </span>c = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::zero(); <a href="#252">len</a>];
+    <span class="kw">let </span><span class="kw-2">mut </span>c = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;M&gt;::zero(); <a href="#252">len</a>];
     <span class="kw">if </span>a.len() &lt; b.len() {
         <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>b) <span class="kw">in </span>b.iter().enumerate() {
             <span class="kw">for </span>(a, c) <span class="kw">in </span>a.iter().zip(<span class="kw-2">&amp;mut </span>c[i..]) {
@@ -815,12 +815,12 @@
     }
     <a href="#253">c</a>
 }
-<span class="kw">impl</span>&lt;M&gt; <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a> <span class="kw">for </span>Convolve&lt;M&gt;
+<span class="kw">impl</span>&lt;M&gt; <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a> <span class="kw">for </span><a href="#4">Convolve</a>&lt;M&gt;
 <span class="kw">where
     </span>M: <a href="#43-76">Montgomery32NttModulus</a>,
 {
-    <span class="kw">type </span>T = Vec&lt;MInt&lt;M&gt;&gt;;
-    <span class="kw">type </span>F = Vec&lt;MInt&lt;M&gt;&gt;;
+    <span class="kw">type </span>T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;&gt;;
+    <span class="kw">type </span>F = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;&gt;;
     <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <a href="#275">t</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>()
     }
@@ -853,7 +853,7 @@
         <span class="kw">if </span>len &lt;= size / <span class="number">2 </span>+ <span class="number">2 </span>{
             <span class="kw">let </span>xa = <a href="#298">a</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>();
             <span class="kw">let </span>xb = <a href="#298">b</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>();
-            <span class="kw">let </span><span class="kw-2">mut </span>c = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[MInt::&lt;M&gt;::zero(); <a href="#302">len</a>];
+            <span class="kw">let </span><span class="kw-2">mut </span>c = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;M&gt;::zero(); <a href="#302">len</a>];
             <span class="kw-2">*</span><a href="#307">c</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.last_mut">last_mut</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>() = <a href="#305">xa</a> * <a href="#306">xb</a>;
             <span class="kw">for </span>(a, c) <span class="kw">in </span>a.iter().zip(<span class="kw-2">&amp;mut </span>c[b.len()..]) {
                 <span class="kw-2">*</span>c += <span class="kw-2">*</span>a * xb;
@@ -880,25 +880,25 @@
         <a href="convolve_steps.rs.html#6"><span class="self">Self</span>::inverse_transform</a>(<a href="#322">a</a>, <a href="#302">len</a>)
     }
 }
-<span class="kw">type </span>MVec&lt;M&gt; = Vec&lt;MInt&lt;M&gt;&gt;;
-<span class="kw">impl</span>&lt;M, N1, N2, N3&gt; <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a> <span class="kw">for </span>Convolve&lt;(M, (N1, N2, N3))&gt;
+<span class="kw">type </span>MVec&lt;M&gt; = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;&gt;;
+<span class="kw">impl</span>&lt;M, N1, N2, N3&gt; <a href="convolve_steps.rs.html#1-15">ConvolveSteps</a> <span class="kw">for </span><a href="#4">Convolve</a>&lt;(M, (N1, N2, N3))&gt;
 <span class="kw">where
-    </span>M: <a href="../num/mint/mint_base.rs.html#21-25">MIntConvert</a> + MIntConvert&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,
+    </span>M: <a href="../num/mint/mint_base.rs.html#21-25">MIntConvert</a> + <a href="../num/mint/mint_base.rs.html#21-25">MIntConvert</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,
     N1: <a href="#43-76">Montgomery32NttModulus</a>,
     N2: <a href="#43-76">Montgomery32NttModulus</a>,
     N3: <a href="#43-76">Montgomery32NttModulus</a>,
 {
-    <span class="kw">type </span>T = MVec&lt;M&gt;;
-    <span class="kw">type </span>F = (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;);
+    <span class="kw">type </span>T = <a href="#334">MVec</a>&lt;M&gt;;
+    <span class="kw">type </span>F = (<a href="#334">MVec</a>&lt;N1&gt;, <a href="#334">MVec</a>&lt;N2&gt;, <a href="#334">MVec</a>&lt;N3&gt;);
     <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> {
         <a href="#344">t</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>()
     }
     <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::F {
         <span class="kw">let </span>npot = <a href="#347">len</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(<span class="number">2</span>).<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.next_power_of_two">next_power_of_two</a>();
         <span class="kw">let </span><span class="kw-2">mut </span>f = (
-            MVec::&lt;N1&gt;::with_capacity(<a href="#348">npot</a>),
-            MVec::&lt;N2&gt;::with_capacity(<a href="#348">npot</a>),
-            MVec::&lt;N3&gt;::with_capacity(<a href="#348">npot</a>),
+            <a href="#334">MVec</a>::&lt;N1&gt;::with_capacity(<a href="#348">npot</a>),
+            <a href="#334">MVec</a>::&lt;N2&gt;::with_capacity(<a href="#348">npot</a>),
+            <a href="#334">MVec</a>::&lt;N3&gt;::with_capacity(<a href="#348">npot</a>),
         );
         <span class="kw">for </span>t <span class="kw">in </span>t {
             f.<span class="number">0</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
@@ -914,21 +914,21 @@
         <a href="#349">f</a>
     }
     <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self</span>::T {
-        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(<a href="../num/mint/mint_base.rs.html#29">N1::get_mod</a>()).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
-        <span class="kw">let </span>m1 = MInt::&lt;M&gt;::from(<a href="../num/mint/mint_base.rs.html#29">N1::get_mod</a>());
-        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(<a href="../num/mint/mint_base.rs.html#29">N1::get_mod</a>());
-        <span class="kw">let </span>t2 = (<a href="#370">m1_3</a> * MInt::&lt;N3&gt;::new(<a href="../num/mint/mint_base.rs.html#29">N2::get_mod</a>())).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
-        <span class="kw">let </span>m2 = <a href="#369">m1</a> * MInt::&lt;M&gt;::from(<a href="../num/mint/mint_base.rs.html#29">N2::get_mod</a>());
-        Convolve::&lt;N1&gt;::inverse_transform(<a href="#367">f</a>.<span class="number">0</span>, <a href="#367">len</a>)
+        <span class="kw">let </span>t1 = <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;N2&gt;::new(<a href="../num/mint/mint_base.rs.html#29">N1::get_mod</a>()).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
+        <span class="kw">let </span>m1 = <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;M&gt;::from(<a href="../num/mint/mint_base.rs.html#29">N1::get_mod</a>());
+        <span class="kw">let </span>m1_3 = <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;N3&gt;::new(<a href="../num/mint/mint_base.rs.html#29">N1::get_mod</a>());
+        <span class="kw">let </span>t2 = (<a href="#370">m1_3</a> * <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;N3&gt;::new(<a href="../num/mint/mint_base.rs.html#29">N2::get_mod</a>())).<a href="../num/mint/mint_base.rs.html#83-85">inv</a>();
+        <span class="kw">let </span>m2 = <a href="#369">m1</a> * <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;M&gt;::from(<a href="../num/mint/mint_base.rs.html#29">N2::get_mod</a>());
+        <a href="#4">Convolve</a>::&lt;N1&gt;::inverse_transform(<a href="#367">f</a>.<span class="number">0</span>, <a href="#367">len</a>)
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.zip">zip</a>(Convolve::&lt;N2&gt;::inverse_transform(<a href="#367">f</a>.<span class="number">1</span>, <a href="#367">len</a>))
-            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.zip">zip</a>(Convolve::&lt;N3&gt;::inverse_transform(<a href="#367">f</a>.<span class="number">2</span>, <a href="#367">len</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.zip">zip</a>(<a href="#4">Convolve</a>::&lt;N2&gt;::inverse_transform(<a href="#367">f</a>.<span class="number">1</span>, <a href="#367">len</a>))
+            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.zip">zip</a>(<a href="#4">Convolve</a>::&lt;N3&gt;::inverse_transform(<a href="#367">f</a>.<span class="number">2</span>, <a href="#367">len</a>))
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|((c1, c2), c3)| {
                 <span class="kw">let </span>d1 = <a href="#377">c1</a>.<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
-                <span class="kw">let </span>d2 = ((<a href="#377">c2</a> - MInt::&lt;N2&gt;::from(<a href="#378">d1</a>)) * <a href="#368">t1</a>).<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
-                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(<a href="#378">d1</a>) + MInt::&lt;N3&gt;::new(<a href="#379">d2</a>) * <a href="#370">m1_3</a>;
+                <span class="kw">let </span>d2 = ((<a href="#377">c2</a> - <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;N2&gt;::from(<a href="#378">d1</a>)) * <a href="#368">t1</a>).<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
+                <span class="kw">let </span>x = <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;N3&gt;::new(<a href="#378">d1</a>) + <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;N3&gt;::new(<a href="#379">d2</a>) * <a href="#370">m1_3</a>;
                 <span class="kw">let </span>d3 = ((<a href="#377">c3</a> - <a href="#380">x</a>) * <a href="#371">t2</a>).<a href="../num/mint/mint_base.rs.html#87-89">inner</a>();
-                MInt::&lt;M&gt;::from(<a href="#378">d1</a>) + MInt::&lt;M&gt;::from(<a href="#379">d2</a>) * <a href="#369">m1</a> + MInt::&lt;M&gt;::from(<a href="#381">d3</a>) * <a href="#372">m2</a>
+                <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;M&gt;::from(<a href="#378">d1</a>) + <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;M&gt;::from(<a href="#379">d2</a>) * <a href="#369">m1</a> + <a href="../num/mint/mint_base.rs.html#13-19">MInt</a>::&lt;M&gt;::from(<a href="#381">d3</a>) * <a href="#372">m2</a>
             })
             .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>()
     }

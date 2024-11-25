@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tools/random_generator.rs`."><title>random_generator.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0-nightly (5ec7d6eee 2024-11-17)" data-channel="nightly" data-search-js="search-53f21e11.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/tools/random_generator.rs`."><title>random_generator.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.85.0-nightly (a47555110 2024-11-22)" data-channel="nightly" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -395,7 +395,7 @@
     <span class="doccomment">/// Return a random value.
     </span><span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; T;
     <span class="doccomment">/// Return an iterator that generates random values.
-    </span><span class="kw">fn </span>rand_iter(<span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; RandIter&lt;<span class="lifetime">'_</span>, T, <span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>rand_iter(<span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; <a href="#38-45">RandIter</a>&lt;<span class="lifetime">'_</span>, T, <span class="self">Self</span>&gt; {
         <a href="#38-45">RandIter</a> {
             spec: <a class="self" href="#13">self</a>,
             <a href="#13">rng</a>,
@@ -407,13 +407,13 @@
 <span class="kw">impl </span><a href="xorshift.rs.html#8-10">Xorshift</a> {
     <span class="kw">pub fn </span>gen&lt;T, R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, spec: R) -&gt; T
     <span class="kw">where
-        </span>R: RandomSpec&lt;T&gt;,
+        </span>R: <a href="#9-20">RandomSpec</a>&lt;T&gt;,
     {
         <a href="#23">spec</a>.<a href="#11">rand</a>(<a class="self" href="#23">self</a>)
     }
-    <span class="kw">pub fn </span>gen_iter&lt;T, R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, spec: R) -&gt; RandIter&lt;<span class="lifetime">'_</span>, T, R&gt;
+    <span class="kw">pub fn </span>gen_iter&lt;T, R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, spec: R) -&gt; <a href="#38-45">RandIter</a>&lt;<span class="lifetime">'_</span>, T, R&gt;
     <span class="kw">where
-        </span>R: RandomSpec&lt;T&gt;,
+        </span>R: <a href="#9-20">RandomSpec</a>&lt;T&gt;,
     {
         <a href="#29">spec</a>.<a href="#13-19">rand_iter</a>(<a class="self" href="#29">self</a>)
     }
@@ -422,16 +422,16 @@
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/tools/struct.RandIter.html">RandIter</a>&lt;<span class="lifetime">'r</span>, T, R&gt;
 <span class="kw">where
-    </span>R: RandomSpec&lt;T&gt;,
+    </span>R: <a href="#9-20">RandomSpec</a>&lt;T&gt;,
 {
     spec: R,
     rng: <span class="kw-2">&amp;</span><span class="lifetime">'r </span><span class="kw-2">mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>,
-    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+    _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
 
-<span class="kw">impl</span>&lt;T, R&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a> <span class="kw">for </span>RandIter&lt;<span class="lifetime">'_</span>, T, R&gt;
+<span class="kw">impl</span>&lt;T, R&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a> <span class="kw">for </span><a href="#38-45">RandIter</a>&lt;<span class="lifetime">'_</span>, T, R&gt;
 <span class="kw">where
-    </span>R: RandomSpec&lt;T&gt;,
+    </span>R: <a href="#9-20">RandomSpec</a>&lt;T&gt;,
 {
     <span class="kw">type </span>Item = T;
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
@@ -450,12 +450,12 @@
 }
 <a class="macro" href="#57-65">impl_random_spec_range_full!</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>);
 
-<span class="kw">impl </span>RandomSpec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt; <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.RangeFull.html">RangeFull</a> {
+<span class="kw">impl </span><a href="#9-20">RandomSpec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt; <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.RangeFull.html">RangeFull</a> {
     <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> {
         (<a href="#69">rng</a>.<a href="xorshift.rs.html#21-26">rand64</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) &lt;&lt; <span class="number">64 </span>| <a href="#69">rng</a>.<a href="xorshift.rs.html#21-26">rand64</a>() <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>
     }
 }
-<span class="kw">impl </span>RandomSpec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>&gt; <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.RangeFull.html">RangeFull</a> {
+<span class="kw">impl </span><a href="#9-20">RandomSpec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>&gt; <span class="kw">for </span><a href="https://doc.rust-lang.org/nightly/core/ops/range/struct.RangeFull.html">RangeFull</a> {
     <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> {
         <a href="#74">rng</a>.<a href="#23-28">gen</a>::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>, <span class="kw">_</span>&gt;(..) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a>
     }
@@ -574,17 +574,17 @@
 }
 <a class="macro" href="#181-189">impl_random_spec_primitive!</a>(() <a href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">u16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i8.html">i8</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">i16</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i32.html">i32</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.i128.html">i128</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> <a href="https://doc.rust-lang.org/nightly/std/primitive.char.html">char</a>);
 
-<span class="kw">impl</span>&lt;T, R&gt; RandomSpec&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>R
+<span class="kw">impl</span>&lt;T, R&gt; <a href="#9-20">RandomSpec</a>&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>R
 <span class="kw">where
-    </span>R: RandomSpec&lt;T&gt;,
+    </span>R: <a href="#9-20">RandomSpec</a>&lt;T&gt;,
 {
     <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; T {
         &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<a class="self" href="#196">self</a>, <a href="#196">rng</a>)
     }
 }
-<span class="kw">impl</span>&lt;T, R&gt; RandomSpec&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;mut </span>R
+<span class="kw">impl</span>&lt;T, R&gt; <a href="#9-20">RandomSpec</a>&lt;T&gt; <span class="kw">for </span><span class="kw-2">&amp;mut </span>R
 <span class="kw">where
-    </span>R: RandomSpec&lt;T&gt;,
+    </span>R: <a href="#9-20">RandomSpec</a>&lt;T&gt;,
 {
     <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; T {
         &lt;R <span class="kw">as </span>RandomSpec&lt;T&gt;&gt;::rand(<a class="self" href="#204">self</a>, <a href="#204">rng</a>)
@@ -594,9 +594,9 @@
 <span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 </span><span class="doccomment">/// Left-close Right-open No Empty Segment
 </span><span class="kw">pub struct </span><a href="../../../competitive/tools/struct.NotEmptySegment.html">NotEmptySegment</a>&lt;T&gt;(<span class="kw">pub </span>T);
-<span class="kw">impl</span>&lt;T&gt; RandomSpec&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; <span class="kw">for </span>NotEmptySegment&lt;T&gt;
+<span class="kw">impl</span>&lt;T&gt; <a href="#9-20">RandomSpec</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt; <span class="kw">for </span><a href="#211">NotEmptySegment</a>&lt;T&gt;
 <span class="kw">where
-    </span>T: RandomSpec&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    </span>T: <a href="#9-20">RandomSpec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
 {
     <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) {
         <span class="kw">let </span>n = <a href="#216">rng</a>.<a href="#23-28">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="#216">self</a>.<span class="number">0</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
@@ -609,9 +609,9 @@
 <span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 </span><span class="kw">pub struct </span><a href="../../../competitive/tools/struct.RandRange.html">RandRange</a>&lt;Q, T&gt; {
     data: Q,
-    _marker: PhantomData&lt;<span class="kw">fn</span>() -&gt; T&gt;,
+    _marker: <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; T&gt;,
 }
-<span class="kw">impl</span>&lt;Q, T&gt; RandRange&lt;Q, T&gt; {
+<span class="kw">impl</span>&lt;Q, T&gt; <a href="#225-228">RandRange</a>&lt;Q, T&gt; {
     <span class="kw">pub fn </span>new(data: Q) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <a href="#230">data</a>,
@@ -619,12 +619,12 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;Q, T&gt; RandomSpec&lt;(Bound&lt;T&gt;, Bound&lt;T&gt;)&gt; <span class="kw">for </span>RandRange&lt;Q, T&gt;
+<span class="kw">impl</span>&lt;Q, T&gt; <a href="#9-20">RandomSpec</a>&lt;(<a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html">Bound</a>&lt;T&gt;, <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html">Bound</a>&lt;T&gt;)&gt; <span class="kw">for </span><a href="#225-228">RandRange</a>&lt;Q, T&gt;
 <span class="kw">where
-    </span>Q: RandomSpec&lt;T&gt;,
+    </span>Q: <a href="#9-20">RandomSpec</a>&lt;T&gt;,
     T: <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a>,
 {
-    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; (Bound&lt;T&gt;, Bound&lt;T&gt;) {
+    <span class="kw">fn </span>rand(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span><a href="xorshift.rs.html#8-10">Xorshift</a>) -&gt; (<a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html">Bound</a>&lt;T&gt;, <a href="https://doc.rust-lang.org/nightly/core/ops/range/enum.Bound.html">Bound</a>&lt;T&gt;) {
         <span class="kw">let </span><span class="kw-2">mut </span>l = <a href="#242">rng</a>.<a href="#23-28">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="#242">self</a>.data);
         <span class="kw">let </span><span class="kw-2">mut </span>r = <a href="#242">rng</a>.<a href="#23-28">gen</a>(<span class="kw-2">&amp;</span><a class="self" href="#242">self</a>.data);
         <span class="kw">if </span>l &gt; r {
