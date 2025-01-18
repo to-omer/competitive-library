@@ -576,12 +576,12 @@ where
 
 #[derive(Debug, Clone)]
 /// DFA to accept Less/Greater than (or equal to) the sequence
-pub struct LexicographicalAutomaton<'a, T> {
+pub struct LexicographicalSequenceAutomaton<'a, T> {
     sequence: &'a [T],
     ordering: Ordering,
     equal: bool,
 }
-impl<'a, T> LexicographicalAutomaton<'a, T> {
+impl<'a, T> LexicographicalSequenceAutomaton<'a, T> {
     pub fn less_than(sequence: &'a [T]) -> Self {
         Self {
             sequence,
@@ -611,7 +611,7 @@ impl<'a, T> LexicographicalAutomaton<'a, T> {
         }
     }
 }
-impl<T> Automaton for LexicographicalAutomaton<'_, T>
+impl<T> Automaton for LexicographicalSequenceAutomaton<'_, T>
 where
     T: Ord,
 {
@@ -637,12 +637,12 @@ where
 
 #[derive(Debug, Clone)]
 /// DFA to accept Less/Greater than (or equal to) the reversed sequence
-pub struct RevLexicographicalAutomaton<'a, T> {
+pub struct RevLexicographicalSequenceAutomaton<'a, T> {
     sequence: &'a [T],
     ordering: Ordering,
     equal: bool,
 }
-impl<'a, T> RevLexicographicalAutomaton<'a, T> {
+impl<'a, T> RevLexicographicalSequenceAutomaton<'a, T> {
     pub fn less_than(sequence: &'a [T]) -> Self {
         Self {
             sequence,
@@ -672,7 +672,7 @@ impl<'a, T> RevLexicographicalAutomaton<'a, T> {
         }
     }
 }
-impl<T> Automaton for RevLexicographicalAutomaton<'_, T>
+impl<T> Automaton for RevLexicographicalSequenceAutomaton<'_, T>
 where
     T: Ord,
 {
@@ -690,6 +690,120 @@ where
     }
     fn accept(&self, state: &Self::State) -> bool {
         state.1 == self.ordering || self.equal && matches!(state.1, Ordering::Equal)
+    }
+}
+
+#[derive(Debug, Clone)]
+/// DFA to accept Less/Greater than (or equal to) in lexicographical order
+pub struct LexicographicalAutomaton<T> {
+    ordering: Ordering,
+    equal: bool,
+    _marker: PhantomData<fn() -> T>,
+}
+impl<T> LexicographicalAutomaton<T> {
+    pub fn less_than() -> Self {
+        Self {
+            ordering: Ordering::Less,
+            equal: false,
+            _marker: PhantomData,
+        }
+    }
+    pub fn less_than_or_equal() -> Self {
+        Self {
+            ordering: Ordering::Less,
+            equal: true,
+            _marker: PhantomData,
+        }
+    }
+    pub fn greater_than() -> Self {
+        Self {
+            ordering: Ordering::Greater,
+            equal: false,
+            _marker: PhantomData,
+        }
+    }
+    pub fn greater_than_or_equal() -> Self {
+        Self {
+            ordering: Ordering::Greater,
+            equal: true,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<T> Automaton for LexicographicalAutomaton<T>
+where
+    T: Ord,
+{
+    type Alphabet = (T, T);
+    /// is equal
+    type State = bool;
+    fn initial(&self) -> Self::State {
+        true
+    }
+    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+        match (state, alph.1.cmp(&alph.0)) {
+            (true, Ordering::Equal) => Some(true),
+            (true, ord) if ord == self.ordering => None,
+            _ => Some(false),
+        }
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        self.equal || !state
+    }
+}
+
+#[derive(Debug, Clone)]
+/// DFA to accept Less/Greater than (or equal to) in reversed lexicographical order
+pub struct RevLexicographicalAutomaton<T> {
+    ordering: Ordering,
+    equal: bool,
+    _marker: PhantomData<fn() -> T>,
+}
+impl<T> RevLexicographicalAutomaton<T> {
+    pub fn less_than() -> Self {
+        Self {
+            ordering: Ordering::Less,
+            equal: false,
+            _marker: PhantomData,
+        }
+    }
+    pub fn less_than_or_equal() -> Self {
+        Self {
+            ordering: Ordering::Less,
+            equal: true,
+            _marker: PhantomData,
+        }
+    }
+    pub fn greater_than() -> Self {
+        Self {
+            ordering: Ordering::Greater,
+            equal: false,
+            _marker: PhantomData,
+        }
+    }
+    pub fn greater_than_or_equal() -> Self {
+        Self {
+            ordering: Ordering::Greater,
+            equal: true,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<T> Automaton for RevLexicographicalAutomaton<T>
+where
+    T: Ord,
+{
+    type Alphabet = (T, T);
+    /// is equal
+    type State = Ordering;
+    fn initial(&self) -> Self::State {
+        Ordering::Equal
+    }
+    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+        Some(alph.0.cmp(&alph.1).then(*state))
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        *state == self.ordering || self.equal && matches!(state, Ordering::Equal)
     }
 }
 
@@ -800,14 +914,22 @@ impl_to_digit_sequence!(u8 u16 u32 u64 u128 usize);
 /// build automaton
 ///
 /// - `automaton!(A)`
-/// - `<= seq`, `seq >=`: [`LexicographicalAutomaton::less_than_or_equal(&seq)`](`LexicographicalAutomaton::less_than_or_equal`)
-/// - `>= seq`, `seq <=`: [`LexicographicalAutomaton::greater_than_or_equal(&seq)`](`LexicographicalAutomaton::greater_than_or_equal`)
-/// - `< seq`, `seq >`: [`LexicographicalAutomaton::greater_than(&seq)`](`LexicographicalAutomaton::greater_than`)
-/// - `> seq`, `seq <`: [`LexicographicalAutomaton::greater_than(&seq)`](`LexicographicalAutomaton::greater_than`)
-/// - `!<= seq`, `seq !>=`: [`RevLexicographicalAutomaton::less_than_or_equal(&seq)`](`RevLexicographicalAutomaton::less_than_or_equal`)
-/// - `!>= seq`, `seq !<=`: [`RevLexicographicalAutomaton::greater_than_or_equal(&seq)`](`RevLexicographicalAutomaton::greater_than_or_equal`)
-/// - `!< seq`, `seq !>`: [`RevLexicographicalAutomaton::greater_than(&seq)`](`RevLexicographicalAutomaton::greater_than`)
-/// - `!> seq`, `seq !<`: [`RevLexicographicalAutomaton::greater_than(&seq)`](`RevLexicographicalAutomaton::greater_than`)
+/// - `<= seq`, `seq >=`: [`LexicographicalSequenceAutomaton::less_than_or_equal(&seq)`](`LexicographicalSequenceAutomaton::less_than_or_equal`)
+/// - `>= seq`, `seq <=`: [`LexicographicalSequenceAutomaton::greater_than_or_equal(&seq)`](`LexicographicalSequenceAutomaton::greater_than_or_equal`)
+/// - `< seq`, `seq >`: [`LexicographicalSequenceAutomaton::less_than(&seq)`](`LexicographicalSequenceAutomaton::less_than`)
+/// - `> seq`, `seq <`: [`LexicographicalSequenceAutomaton::greater_than(&seq)`](`LexicographicalSequenceAutomaton::greater_than`)
+/// - `!<= seq`, `seq !>=`: [`RevLexicographicalSequenceAutomaton::less_than_or_equal(&seq)`](`RevLexicographicalSequenceAutomaton::less_than_or_equal`)
+/// - `!>= seq`, `seq !<=`: [`RevLexicographicalSequenceAutomaton::greater_than_or_equal(&seq)`](`RevLexicographicalSequenceAutomaton::greater_than_or_equal`)
+/// - `!< seq`, `seq !>`: [`RevLexicographicalSequenceAutomaton::less_than(&seq)`](`RevLexicographicalSequenceAutomaton::less_than`)
+/// - `!> seq`, `seq !<`: [`RevLexicographicalSequenceAutomaton::greater_than(&seq)`](`RevLexicographicalSequenceAutomaton::greater_than`)
+/// - `<=`: [`LexicographicalAutomaton::less_than_or_equal()`](`LexicographicalAutomaton::less_than_or_equal`)
+/// - `>=`: [`LexicographicalAutomaton::greater_than_or_equal()`](`LexicographicalAutomaton::greater_than_or_equal`)
+/// - `<`: [`LexicographicalAutomaton::less_than()`](`LexicographicalAutomaton::less_than`)
+/// - `>`: [`LexicographicalAutomaton::greater_than()`](`LexicographicalAutomaton::greater_than`)
+/// - `!<=`: [`RevLexicographicalAutomaton::less_than_or_equal()`](`RevLexicographicalAutomaton::less_than_or_equal`)
+/// - `!>=`: [`RevLexicographicalAutomaton::greater_than_or_equal()`](`RevLexicographicalAutomaton::greater_than_or_equal`)
+/// - `!<`: [`RevLexicographicalAutomaton::less_than()`](`RevLexicographicalAutomaton::less_than`)
+/// - `!>`: [`RevLexicographicalAutomaton::greater_than()`](`RevLexicographicalAutomaton::greater_than`)
 /// - `=> f g h`: [`FunctionalAutomaton::new(f, g, h)`](`FunctionalAutomaton`)
 /// - `=> (A) f g h`: [`MappingAutomaton::new(A, f, g, h)`](`MappingAutomaton`)
 /// - `=> f g h (A)`: [`AlphabetMappingAutomaton::new(A, f, g, h)`](`AlphabetMappingAutomaton`)
@@ -818,25 +940,34 @@ impl_to_digit_sequence!(u8 u16 u32 u64 u128 usize);
 #[macro_export]
 macro_rules! automaton {
     (@inner ($($t:tt)*))                                     => { $crate::automaton!(@inner $($t)*) };
-    (@inner <= $e:expr)                                      => { LexicographicalAutomaton::less_than_or_equal(&$e) };
-    (@inner >= $e:expr)                                      => { LexicographicalAutomaton::greater_than_or_equal(&$e) };
-    (@inner < $e:expr)                                       => { LexicographicalAutomaton::less_than(&$e) };
-    (@inner > $e:expr)                                       => { LexicographicalAutomaton::greater_than(&$e) };
-    (@inner !<= $e:expr)                                     => { RevLexicographicalAutomaton::less_than_or_equal(&$e) };
-    (@inner !>= $e:expr)                                     => { RevLexicographicalAutomaton::greater_than_or_equal(&$e) };
-    (@inner !< $e:expr)                                      => { RevLexicographicalAutomaton::less_than(&$e) };
-    (@inner !> $e:expr)                                      => { RevLexicographicalAutomaton::greater_than(&$e) };
-    (@inner $e:ident >=)                                     => { LexicographicalAutomaton::less_than_or_equal(&$e) };
-    (@inner $e:ident <=)                                     => { LexicographicalAutomaton::greater_than_or_equal(&$e) };
-    (@inner $e:ident >)                                      => { LexicographicalAutomaton::less_than(&$e) };
-    (@inner $e:ident <)                                      => { LexicographicalAutomaton::greater_than(&$e) };
-    (@inner $e:ident !>=)                                    => { RevLexicographicalAutomaton::less_than_or_equal(&$e) };
-    (@inner $e:ident !<=)                                    => { RevLexicographicalAutomaton::greater_than_or_equal(&$e) };
-    (@inner $e:ident !>)                                     => { RevLexicographicalAutomaton::less_than(&$e) };
-    (@inner $e:ident !<)                                     => { RevLexicographicalAutomaton::greater_than(&$e) };
+    (@inner <= $e:expr)                                      => { LexicographicalSequenceAutomaton::less_than_or_equal(&$e) };
+    (@inner >= $e:expr)                                      => { LexicographicalSequenceAutomaton::greater_than_or_equal(&$e) };
+    (@inner < $e:expr)                                       => { LexicographicalSequenceAutomaton::less_than(&$e) };
+    (@inner > $e:expr)                                       => { LexicographicalSequenceAutomaton::greater_than(&$e) };
+    (@inner !<= $e:expr)                                     => { RevLexicographicalSequenceAutomaton::less_than_or_equal(&$e) };
+    (@inner !>= $e:expr)                                     => { RevLexicographicalSequenceAutomaton::greater_than_or_equal(&$e) };
+    (@inner !< $e:expr)                                      => { RevLexicographicalSequenceAutomaton::less_than(&$e) };
+    (@inner !> $e:expr)                                      => { RevLexicographicalSequenceAutomaton::greater_than(&$e) };
+    (@inner $e:ident >=)                                     => { LexicographicalSequenceAutomaton::less_than_or_equal(&$e) };
+    (@inner $e:ident <=)                                     => { LexicographicalSequenceAutomaton::greater_than_or_equal(&$e) };
+    (@inner $e:ident >)                                      => { LexicographicalSequenceAutomaton::less_than(&$e) };
+    (@inner $e:ident <)                                      => { LexicographicalSequenceAutomaton::greater_than(&$e) };
+    (@inner $e:ident !>=)                                    => { RevLexicographicalSequenceAutomaton::less_than_or_equal(&$e) };
+    (@inner $e:ident !<=)                                    => { RevLexicographicalSequenceAutomaton::greater_than_or_equal(&$e) };
+    (@inner $e:ident !>)                                     => { RevLexicographicalSequenceAutomaton::less_than(&$e) };
+    (@inner $e:ident !<)                                     => { RevLexicographicalSequenceAutomaton::greater_than(&$e) };
+    (@inner <=)                                              => { LexicographicalAutomaton::less_than_or_equal() };
+    (@inner >=)                                              => { LexicographicalAutomaton::greater_than_or_equal() };
+    (@inner <)                                               => { LexicographicalAutomaton::less_than() };
+    (@inner >)                                               => { LexicographicalAutomaton::greater_than() };
+    (@inner !<=)                                             => { RevLexicographicalAutomaton::less_than_or_equal() };
+    (@inner !>=)                                             => { RevLexicographicalAutomaton::greater_than_or_equal() };
+    (@inner !<)                                              => { RevLexicographicalAutomaton::less_than() };
+    (@inner !>)                                              => { RevLexicographicalAutomaton::greater_than() };
     (@inner => ($($t:tt)*) $f:expr, $g:expr, $h:expr $(,)?)  => { MappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
     (@inner => $f:expr, $g:expr, $h:expr, ($($t:tt)*) $(,)?) => { AlphabetMappingAutomaton::new($crate::automaton!(@inner $($t)*), $f, $g, $h) };
     (@inner => $f:expr, $g:expr, $h:expr $(,)?)              => { FunctionalAutomaton::new($f, $g, $h) };
+    (@inner @<$t:ty>)                                        => { AlwaysAcceptingAutomaton::<$t>::new() };
     (@inner @)                                               => { AlwaysAcceptingAutomaton::new() };
     (@inner $($t:tt)*)                                       => { $crate::automaton!(@union [] [] $($t)*) };
     (@union [$([$($a:tt)*])*])                               => { UnionAutomaton(($($crate::automaton!(@inner $($a)*),)*)) };
@@ -864,7 +995,7 @@ mod tests {
     use crate::{algebra::AdditiveOperation, automaton, tools::Xorshift};
 
     #[test]
-    fn test_lexicographical() {
+    fn test_lexicographical_sequence() {
         type A = AdditiveOperation<usize>;
         const Q: usize = 100;
         let mut rng = Xorshift::default();
@@ -902,7 +1033,7 @@ mod tests {
     }
 
     #[test]
-    fn test_revlexicographical() {
+    fn test_revlexicographical_sequence() {
         type A = AdditiveOperation<usize>;
         const Q: usize = 100;
         let mut rng = Xorshift::default();
@@ -935,6 +1066,122 @@ mod tests {
                     .dp::<A>(1)
                     .with_hashmap()
                     .run(|| 0..r, nd.len())
+            );
+        }
+    }
+
+    #[test]
+    fn test_lexicographical() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
+            let nd = n.to_digit_sequence_radix(r);
+            assert_eq!(
+                n + 1,
+                automaton!((=>
+                    || 0usize,
+                    |&i, &a| Some((i + 1, (a, nd[i]))),
+                    |&_| true,
+                    (<=)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                n,
+                automaton!((=>
+                    || 0usize,
+                    |&i, &a| Some((i + 1, (a, nd[i]))),
+                    |&_| true,
+                    (<)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                r.pow(nd.len() as _) - n,
+                automaton!((=>
+                    || 0usize,
+                    |&i, &a| Some((i + 1, (a, nd[i]))),
+                    |&_| true,
+                    (>=)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                r.pow(nd.len() as _) - n - 1,
+                automaton!((=>
+                    || 0usize,
+                    |&i, &a| Some((i + 1, (a, nd[i]))),
+                    |&_| true,
+                    (>)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
+            );
+        }
+    }
+
+    #[test]
+    fn test_revlexicographical() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
+            let nd = n.to_digit_sequence_radix(r);
+            assert_eq!(
+                n + 1,
+                automaton!((=>
+                    || nd.len(),
+                    |&i, &a| Some((i.wrapping_sub(1), (a, nd[i - 1]))),
+                    |&_| true,
+                    (!<=)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                n,
+                automaton!((=>
+                    || nd.len(),
+                    |&i, &a| Some((i.wrapping_sub(1), (a, nd[i - 1]))),
+                    |&_| true,
+                    (!<)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                r.pow(nd.len() as _) - n,
+                automaton!((=>
+                    || nd.len(),
+                    |&i, &a| Some((i.wrapping_sub(1), (a, nd[i - 1]))),
+                    |&_| true,
+                    (!>=)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
+            );
+            assert_eq!(
+                r.pow(nd.len() as _) - n - 1,
+                automaton!((=>
+                    || nd.len(),
+                    |&i, &a| Some((i.wrapping_sub(1), (a, nd[i - 1]))),
+                    |&_| true,
+                    (!>)
+                ))
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| 0..r, nd.len())
             );
         }
     }
