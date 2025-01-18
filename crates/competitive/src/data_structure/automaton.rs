@@ -899,18 +899,18 @@ mod tests {
             let nd = n.to_digit_sequence_radix(r);
             let dfa = automaton!((< nd) & (C(c, r)));
             assert_eq!(
-                (n + c - 1) / c,
+                n.div_ceil(c),
                 dfa.dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
             );
 
             let dfa =
                 automaton!((< nd) & (=> || 0usize, |s, a| Some((s * r + a) % c), |s| *s == 0));
             assert_eq!(
-                (n + c - 1) / c,
+                n.div_ceil(c),
                 dfa.dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
             );
             assert_eq!(
-                (n + c - 1) / c,
+                n.div_ceil(c),
                 dfa.dp::<A>(1)
                     .with_vecmap(|s| s.1 * 2 + (s.0).1 as usize)
                     .run(|| 0..r, nd.len())

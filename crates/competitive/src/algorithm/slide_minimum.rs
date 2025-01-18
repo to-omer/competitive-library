@@ -48,7 +48,7 @@ impl<'a> SlideMinimum<'a> {
         while self
             .deq
             .back()
-            .map_or(false, |&v| self.seq[v] >= self.seq[self.right])
+            .is_some_and(|&v| self.seq[v] >= self.seq[self.right])
         {
             self.deq.pop_back();
         }
