@@ -25,6 +25,23 @@ pub trait Automaton {
     {
         InitAutomatonDp::new(self, init)
     }
+    fn filter<G, H>(self, g: G, h: H) -> FilterAutomaton<Self, G, H>
+    where
+        Self: Sized,
+        G: Fn(&Self::State, &Self::Alphabet) -> bool,
+        H: Fn(&Self::State) -> bool,
+    {
+        FilterAutomaton::new(self, g, h)
+    }
+    fn map<S, F, G, H>(self, f: F, g: G, h: H) -> MappingAutomaton<Self, S, F, G, H>
+    where
+        Self: Sized,
+        F: Fn() -> S,
+        G: Fn(&(Self::State, S), &Self::Alphabet) -> Option<S>,
+        H: Fn(&(Self::State, S)) -> bool,
+    {
+        MappingAutomaton::new(self, f, g, h)
+    }
 }
 
 impl<A> Automaton for &A
@@ -399,6 +416,53 @@ where
     }
     fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
         (self.fn_next)(state, alph)
+    }
+    fn accept(&self, state: &Self::State) -> bool {
+        (self.fn_accept)(state)
+    }
+}
+
+pub struct FilterAutomaton<A, G, H>
+where
+    A: Automaton,
+    G: Fn(&A::State, &A::Alphabet) -> bool,
+    H: Fn(&A::State) -> bool,
+{
+    dfa: A,
+    fn_next: G,
+    fn_accept: H,
+    _marker: PhantomData<fn() -> A>,
+}
+impl<A, G, H> FilterAutomaton<A, G, H>
+where
+    A: Automaton,
+    G: Fn(&A::State, &A::Alphabet) -> bool,
+    H: Fn(&A::State) -> bool,
+{
+    pub fn new(dfa: A, fn_next: G, fn_accept: H) -> Self {
+        Self {
+            dfa,
+            fn_next,
+            fn_accept,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<A, G, H> Automaton for FilterAutomaton<A, G, H>
+where
+    A: Automaton,
+    G: Fn(&A::State, &A::Alphabet) -> bool,
+    H: Fn(&A::State) -> bool,
+{
+    type Alphabet = A::Alphabet;
+    type State = A::State;
+    fn initial(&self) -> Self::State {
+        self.dfa.initial()
+    }
+    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
+        self.dfa
+            .next(state, alph)
+            .and_then(|s| (self.fn_next)(state, alph).then_some(s))
     }
     fn accept(&self, state: &Self::State) -> bool {
         (self.fn_accept)(state)
