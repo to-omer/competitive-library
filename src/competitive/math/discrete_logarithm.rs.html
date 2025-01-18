@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/discrete_logarithm.rs`."><title>discrete_logarithm.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-46132b98.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0-nightly (eb54a5083 2025-01-11)" data-channel="nightly" data-search-js="search-75f5ac3e.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/discrete_logarithm.rs`."><title>discrete_logarithm.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c579a84d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0-nightly (6067b3631 2025-01-17)" data-channel="nightly" data-search-js="search-ccb196c1.js" data-settings-js="settings-0f613d39.js" ><script src="../../../static.files/storage-59e33391.js"></script><script defer src="../../../static.files/src-script-56102188.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5f194d8c.js"></script><script defer src="../../../static.files/scrape-examples-d508a8a9.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -675,10 +675,10 @@
 <span class="kw">fn </span>solve_linear_congruence(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, b: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, m: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; {
     <span class="kw">let </span>g = <a href="gcd.rs.html#11-31">gcd</a>(<a href="#20">a</a>, <a href="#20">m</a>);
     <span class="kw">if </span>b % g != <span class="number">0 </span>{
-        <span class="kw">return </span><span class="prelude-val">None</span>;
+        <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
     }
     <span class="kw">let </span>(a, b, m) = (<a href="#20">a</a> / <a href="#21">g</a>, <a href="#20">b</a> / <a href="#21">g</a>, <a href="#20">m</a> / <a href="#21">g</a>);
-    <span class="prelude-val">Some</span>(((<a href="#25">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="gcd.rs.html#111-122">modinv</a>(<a href="#25">a</a>, <a href="#25">m</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> % <a href="#25">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as _</span>, <a href="#25">m</a>))
+    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(((<a href="#25">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="gcd.rs.html#111-122">modinv</a>(<a href="#25">a</a>, <a href="#25">m</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> % <a href="#25">m</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as _</span>, <a href="#25">m</a>))
 }
 
 <span class="kw">fn </span>solve_linear_congruences&lt;I&gt;(abm: I) -&gt; <a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt;
@@ -701,7 +701,7 @@
         x += (b <span class="kw">as </span>u128 * modinv(a, m) <span class="kw">as </span>u128 % m <span class="kw">as </span>u128 * m0 <span class="kw">as </span>u128) <span class="kw">as </span>u64;
         m0 <span class="kw-2">*</span>= m;
     }
-    <span class="prelude-val">Some</span>((<a href="#33">x</a>, <a href="#34">m0</a>))
+    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<a href="#33">x</a>, <a href="#34">m0</a>))
 }
 
 <span class="attr">#[derive(Debug)]
@@ -929,10 +929,10 @@
         <span class="kw">let </span>br = <a href="../num/barrett_reduction.rs.html#2-5">BarrettReduction</a>::&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>&gt;::new(<a href="#272">p</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>);
         <span class="kw">let </span>a = <a href="#274">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#271">a</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">if </span>a == <span class="number">1 </span>{
-            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="number">0</span>);
+            <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<span class="number">0</span>);
         }
         <span class="kw">if </span>p == <span class="number">2 </span>{
-            <span class="kw">return </span><span class="prelude-val">None</span>;
+            <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>rng = <a href="../tools/xorshift.rs.html#17-19">Xorshift::new</a>();
@@ -952,7 +952,7 @@
                         }
                     }
                 }
-                <span class="kw">return </span><span class="prelude-val">Some</span>(<a href="#291">res</a>);
+                <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#291">res</a>);
             }
             <span class="kw">if </span>k + kk &lt; ord {
                 <a href="#287">k</a> += <a href="#285">kk</a>;
@@ -977,10 +977,10 @@
         <span class="kw">let </span>a = <a href="#321">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#315">a</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">let </span>b = <a href="#321">br</a>.<a href="../num/barrett_reduction.rs.html#39-52">rem</a>(<a href="#316">b</a> <span class="kw">as _</span>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
         <span class="kw">if </span>a == <span class="number">0 </span>{
-            <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
+            <span class="kw">return if </span>b == <span class="number">0 </span>{ <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a> </a>};
         }
         <span class="kw">if </span>b == <span class="number">0 </span>{
-            <span class="kw">return </span><span class="prelude-val">None</span>;
+            <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
         }
 
         <span class="kw">let </span>x = <a class="self" href="#314">self</a>.<a href="#271-312">index_calculus</a>(<a href="#322">a</a>, <a href="#317">br_primes</a>)<span class="question-mark">?</span>;
@@ -1027,7 +1027,7 @@
             <span class="kw">return </span><span class="prelude-val">None</span>;
         }
     }
-    <span class="prelude-val">Some</span>(<a href="#359">t</a>)
+    <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#359">t</a>)
 }
 
 <span class="doccomment">/// a^x ≡ b (mod p^e)
@@ -1039,13 +1039,13 @@
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(b &lt; n);
     <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(gcd(a, p), <span class="number">1</span>);
     <span class="kw">if </span>p == <span class="number">1 </span>{
-        <span class="kw">return </span><span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">1</span>));
+        <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<span class="number">0</span>, <span class="number">1</span>));
     }
     <span class="kw">if </span>a == <span class="number">0 </span>{
-        <span class="kw">return if </span>b == <span class="number">0 </span>{ <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <span class="prelude-val">None </span>};
+        <span class="kw">return if </span>b == <span class="number">0 </span>{ <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<span class="number">1</span>, <span class="number">1</span>)) } <span class="kw">else </span>{ <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a> </a>};
     }
     <span class="kw">if </span>b == <span class="number">0 </span>{
-        <span class="kw">return </span><span class="prelude-val">None</span>;
+        <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
     }
     <span class="kw">if </span>e == <span class="number">1 </span>{
         <span class="kw">return </span><a href="#337-339">IC</a>.<a href="https://doc.rust-lang.org/nightly/std/thread/local/struct.LocalKey.html#method.with">with</a>(|ic| <span class="kw">unsafe </span>{ <span class="kw-2">&amp;mut *</span><a href="#396">ic</a>.<a href="https://doc.rust-lang.org/nightly/core/cell/struct.UnsafeCell.html#method.get">get</a>() }.<a href="#67-81">discrete_logarithm</a>(<a href="#379">a</a>, <a href="#379">b</a>, <a href="#379">p</a>));
@@ -1054,7 +1054,7 @@
     <span class="kw">if </span>p == <span class="number">2 </span>{
         <span class="kw">if </span>e &gt;= <span class="number">3 </span>{
             <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>&amp;&amp; b % <span class="number">4 </span>!= <span class="number">1 </span>{
-                <span class="kw">return </span><span class="prelude-val">None</span>;
+                <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
             }
             <span class="kw">let </span>aa = <span class="kw">if </span>a % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="#379">a</a> } <span class="kw">else </span>{ <a href="#382">n</a> - <a href="#379">a</a> };
             <span class="kw">let </span>bb = <span class="kw">if </span>b % <span class="number">4 </span>== <span class="number">1 </span>{ <a href="#379">b</a> } <span class="kw">else </span>{ <a href="#382">n</a> - <a href="#379">b</a> };
@@ -1064,27 +1064,27 @@
             <span class="kw">let </span>y = <a href="#347-376">pohlig_hellman_prime_power_order</a>(<a href="#406">g</a>, <a href="#405">bb</a>, <a href="#382">n</a>, <a href="#379">p</a>, <a href="#379">e</a> - <span class="number">2</span>)<span class="question-mark">?</span>;
             <span class="kw">let </span>t = <a href="#20-27">solve_linear_congruence</a>(<a href="#408">x</a>, <a href="#409">y</a>, <a href="#407">ord</a>)<span class="question-mark">?</span>;
             <span class="kw">match </span>(<a href="#379">a</a> % <span class="number">4 </span>== <span class="number">1</span>, <a href="#379">b</a> % <span class="number">4 </span>== <span class="number">1</span>) {
-                (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Some</span>(<a href="#410">t</a>),
-                (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="kw">if </span><a href="#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>=&gt; <span class="prelude-val">Some</span>((<a href="#410">t</a>.<span class="number">0</span>, <a href="gcd.rs.html#34-36">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
-                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span><a href="#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">1 </span>=&gt; <span class="prelude-val">Some</span>((<a href="#410">t</a>.<span class="number">0</span>, <a href="gcd.rs.html#34-36">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
-                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span><a href="#379">a</a> == <a href="#379">b</a> =&gt; <span class="prelude-val">Some</span>((<span class="number">1</span>, <a href="gcd.rs.html#34-36">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
-                <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+                (<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#410">t</a>),
+                (<span class="bool-val">false</span>, <span class="bool-val">true</span>) <span class="kw">if </span><a href="#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">0 </span>=&gt; <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<a href="#410">t</a>.<span class="number">0</span>, <a href="gcd.rs.html#34-36">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
+                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span><a href="#410">t</a>.<span class="number">0 </span>% <span class="number">2 </span>== <span class="number">1 </span>=&gt; <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<a href="#410">t</a>.<span class="number">0</span>, <a href="gcd.rs.html#34-36">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
+                (<span class="bool-val">false</span>, <span class="bool-val">false</span>) <span class="kw">if </span><a href="#379">a</a> == <a href="#379">b</a> =&gt; <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<span class="number">1</span>, <a href="gcd.rs.html#34-36">lcm</a>(<a href="#410">t</a>.<span class="number">1</span>, <span class="number">2</span>))),
+                <span class="kw">_ </span>=&gt; <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>,
             }
         } <span class="kw">else if </span>a == <span class="number">1 </span>{
             <span class="kw">if </span>b == <span class="number">1 </span>{
-                <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">1</span>))
+                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<span class="number">0</span>, <span class="number">1</span>))
             } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>}
+                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>
+            </a>}
         } <span class="kw">else </span>{
             <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert_eq.html">assert_eq!</a>(a, <span class="number">3</span>);
             <span class="kw">if </span>b == <span class="number">1 </span>{
-                <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">2</span>))
+                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<span class="number">0</span>, <span class="number">2</span>))
             } <span class="kw">else if </span>b == <span class="number">3 </span>{
-                <span class="prelude-val">Some</span>((<span class="number">1</span>, <span class="number">2</span>))
+                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<span class="number">1</span>, <span class="number">2</span>))
             } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>}
+                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>
+            </a>}
         }
     } <span class="kw">else </span>{
         <span class="kw">let </span>ord = <a href="#382">n</a> - <a href="#382">n</a> / <a href="#379">p</a>;
@@ -1123,7 +1123,7 @@
     }
     <span class="kw">let </span>g = <a href="gcd.rs.html#11-31">gcd</a>(<a href="#462">pw</a>, <a href="#458">n</a>);
     <span class="kw">if </span>b % g != <span class="number">0 </span>{
-        <span class="kw">return </span><span class="prelude-val">None</span>;
+        <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
     }
     <span class="kw">let </span>n = <a href="#458">n</a> / <a href="#469">g</a>;
     <span class="kw">let </span>b = (<a href="#460">b</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> * <a href="gcd.rs.html#111-122">modinv</a>(<a href="#462">pw</a>, <a href="#473">n</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a> % <a href="#473">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">u128</a>) <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
