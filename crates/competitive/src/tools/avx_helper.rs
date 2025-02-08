@@ -1,8 +1,8 @@
 #[macro_export]
 macro_rules! avx_helper {
-    (@avx512 $(#[$meta:meta])* $vis:vis fn $name:ident($($i:ident: $t:ty),*) -> $ret:ty where [$($clauses:tt)*] $body:block) => {
+    (@avx512 $(#[$meta:meta])* $vis:vis fn $name:ident$(<$($T:ident),+>)?($($i:ident: $t:ty),*) -> $ret:ty where [$($clauses:tt)*] $body:block) => {
         $(#[$meta])*
-        $vis fn $name($($i: $t),*) -> $ret
+        $vis fn $name$(<$($T)*>)?($($i: $t),*) -> $ret
         where
             $($clauses)*
         {
@@ -12,11 +12,11 @@ macro_rules! avx_helper {
                 && is_x86_feature_detected!("avx512bw")
                 && is_x86_feature_detected!("avx512vl")
             {
-                $crate::avx_helper!(@def_avx512 fn avx512($($i: $t),*) -> $ret where [$($clauses)*] $body);
-                unsafe { avx512($($i),*) }
+                $crate::avx_helper!(@def_avx512 fn avx512$(<$($T)*>)?($($i: $t),*) -> $ret where [$($clauses)*] $body);
+                unsafe { avx512$(::<$($T),*>)?($($i),*) }
             } else if is_x86_feature_detected!("avx2") {
-                $crate::avx_helper!(@def_avx2 fn avx2($($i: $t),*) -> $ret where [$($clauses)*] $body);
-                unsafe { avx2($($i),*) }
+                $crate::avx_helper!(@def_avx2 fn avx2$(<$($T)*>)?($($i: $t),*) -> $ret where [$($clauses)*] $body);
+                unsafe { avx2$(::<$($T),*>)?($($i),*) }
             } else {
                 $body
             }
@@ -60,7 +60,3 @@ macro_rules! avx_helper {
         ::std::compile_error!($($t)*);
     }
 }
-
-avx_helper!(
-    @avx2 #[allow(dead_code)] pub fn f<M>() {}
-);
