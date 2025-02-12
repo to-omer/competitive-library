@@ -18,7 +18,8 @@ pub trait Automaton {
     fn initial(&self) -> Self::State;
     fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State>;
     fn accept(&self, state: &Self::State) -> bool;
-    fn dp<M>(&self, init: M::T) -> InitAutomatonDp<M, &Self>
+    fn stepout(&mut self) {}
+    fn dp<M>(self, init: M::T) -> InitAutomatonDp<M, Self>
     where
         Self: Sized,
         M: Monoid,
@@ -41,23 +42,6 @@ pub trait Automaton {
         H: Fn(&(Self::State, S)) -> bool,
     {
         MappingAutomaton::new(self, f, g, h)
-    }
-}
-
-impl<A> Automaton for &A
-where
-    A: Automaton,
-{
-    type Alphabet = A::Alphabet;
-    type State = A::State;
-    fn initial(&self) -> Self::State {
-        A::initial(self)
-    }
-    fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
-        A::next(self, state, alph)
-    }
-    fn accept(&self, state: &Self::State) -> bool {
-        A::accept(self, state)
     }
 }
 
@@ -184,6 +168,7 @@ where
             }
         }
         swap(&mut self.dp, &mut self.ndp);
+        self.dfa.stepout();
     }
     pub fn step_effect<S, I, B, F>(&mut self, mut sigma: S, mut effect: F)
     where
@@ -204,6 +189,7 @@ where
             }
         }
         swap(&mut self.dp, &mut self.ndp);
+        self.dfa.stepout();
     }
     pub fn fold_accept(&self) -> M::T {
         let mut acc = M::unit();
@@ -279,6 +265,10 @@ macro_rules! impl_intersection_automaton {
                 let Self(($($a,)*)) = self;
                 $($a.accept($s))&&*
             }
+            fn stepout(&mut self) {
+                let Self(($($a,)*)) = self;
+                $($a.stepout();)*
+            }
         }
     };
     (@inc $($T:ident)*, $($a:ident)*, $($s:ident)*, $U:ident $b:ident $t:ident) => {
@@ -320,6 +310,10 @@ macro_rules! impl_union_automaton {
                 let Self(($($a,)*)) = self;
                 $($a.accept($s))||*
             }
+            fn stepout(&mut self) {
+                let Self(($($a,)*)) = self;
+                $($a.stepout();)*
+            }
         }
     };
     (@inc $($T:ident)*, $($a:ident)*, $($s:ident)*, $U:ident $b:ident $t:ident) => {
@@ -360,6 +354,10 @@ macro_rules! impl_product_automaton {
             fn accept(&self, ($($s,)*): &Self::State) -> bool {
                 let Self(($($a,)*)) = self;
                 $($a.accept($s))&&*
+            }
+            fn stepout(&mut self) {
+                let Self(($($a,)*)) = self;
+                $($a.stepout();)*
             }
         }
     };
@@ -467,6 +465,9 @@ where
     fn accept(&self, state: &Self::State) -> bool {
         (self.fn_accept)(state)
     }
+    fn stepout(&mut self) {
+        self.dfa.stepout();
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -520,6 +521,9 @@ where
     fn accept(&self, state: &Self::State) -> bool {
         self.dfa.accept(&state.0) && (self.fn_accept)(state)
     }
+    fn stepout(&mut self) {
+        self.dfa.stepout();
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -572,6 +576,9 @@ where
     fn accept(&self, state: &Self::State) -> bool {
         self.dfa.accept(&state.0) && (self.fn_accept)(&state.1)
     }
+    fn stepout(&mut self) {
+        self.dfa.stepout();
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -616,22 +623,27 @@ where
     T: Ord,
 {
     type Alphabet = T;
-    /// (next position of sequence, is equal)
-    type State = (usize, bool);
+    /// is equal
+    type State = bool;
     fn initial(&self) -> Self::State {
-        (0, true)
+        true
     }
     fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
         self.sequence
-            .get(state.0)
-            .and_then(|c| match (state.1, c.cmp(alph)) {
-                (true, Ordering::Equal) => Some((state.0 + 1, true)),
+            .first()
+            .and_then(|c| match (state, c.cmp(alph)) {
+                (true, Ordering::Equal) => Some(true),
                 (true, ord) if ord == self.ordering => None,
-                _ => Some((state.0 + 1, false)),
+                _ => Some(false),
             })
     }
     fn accept(&self, state: &Self::State) -> bool {
-        self.equal || !state.1
+        self.equal || !state
+    }
+    fn stepout(&mut self) {
+        if !self.sequence.is_empty() {
+            self.sequence = &self.sequence[1..];
+        }
     }
 }
 
@@ -677,19 +689,21 @@ where
     T: Ord,
 {
     type Alphabet = T;
-    /// (next position of sequence, is equal)
-    type State = (usize, Ordering);
+    /// is equal
+    type State = Ordering;
     fn initial(&self) -> Self::State {
-        (self.sequence.len(), Ordering::Equal)
+        Ordering::Equal
     }
     fn next(&self, state: &Self::State, alph: &Self::Alphabet) -> Option<Self::State> {
-        let index = state.0.wrapping_add(!0);
-        self.sequence
-            .get(index)
-            .map(|c| (index, alph.cmp(c).then(state.1)))
+        self.sequence.last().map(|c| alph.cmp(c).then(*state))
     }
     fn accept(&self, state: &Self::State) -> bool {
-        state.1 == self.ordering || self.equal && matches!(state.1, Ordering::Equal)
+        *state == self.ordering || self.equal && matches!(state, Ordering::Equal)
+    }
+    fn stepout(&mut self) {
+        if !self.sequence.is_empty() {
+            self.sequence = &self.sequence[..self.sequence.len() - 1];
+        }
     }
 }
 
@@ -1218,12 +1232,12 @@ mod tests {
                 automaton!((< nd) & (=> || 0usize, |s, a| Some((s * r + a) % c), |s| *s == 0));
             assert_eq!(
                 n.div_ceil(c),
-                dfa.dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
+                dfa.clone().dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
             );
             assert_eq!(
                 n.div_ceil(c),
                 dfa.dp::<A>(1)
-                    .with_vecmap(|s| s.1 * 2 + (s.0).1 as usize)
+                    .with_vecmap(|s| s.1 * 2 + s.0 as usize)
                     .run(|| 0..r, nd.len())
             );
         }
