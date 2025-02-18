@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="binary search for monotone segment"><title>binary_search in competitive::algorithm - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-cf3c48c1.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0-nightly (92bedea1c 2025-02-11)" data-channel="nightly" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><script defer src="../../static.files/scrape-examples-2ea993ec.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="binary search for monotone segment"><title>binary_search in competitive::algorithm - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.87.0-nightly (ce36a966c 2025-02-17)" data-channel="nightly" data-search-js="search-f7327375.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-5332ae0c.js"></script><script defer src="../../static.files/scrape-examples-5e967b76.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -19,130 +19,65 @@
     F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,</div></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>binary search for monotone segment</p>
 <p>if <code>ok &lt; err</code> then search [ok, err) where t(<code>ok</code>), t, t, …. t, t(<code>ret</code>), f,  … f, f, f, <code>err</code></p>
 <p>if <code>err &lt; ok</code> then search (err, ok] where <code>err</code>, f, f, f, … f, t(<code>ret</code>), … t, t, t(<code>ok</code>)</p>
-</div></details><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/algorithm/chromatic_number.rs.html#31&#34;,&#34;line 31&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/chromatic_number.rs (<a href="../../src/competitive/algorithm/chromatic_number.rs.html#31">line 31</a>)</div><div class="example-wrap"><div class="src-line-numbers" data-nosnippet><pre>
-<span>30</span>
-<span>31</span>
-<span>32</span></pre></div><pre class="rust"><code>    <span class="kw">pub fn </span>chromatic_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="highlight focus">binary_search</span>(|<span class="kw-2">&amp;</span>k| <span class="self">self</span>.k_colorable(k), <span class="self">self</span>.n, <span class="number">0</span>)
-    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/algorithm/binary_search.rs.html#107&#34;,&#34;line 107&#34;],[[4,4],&#34;../../src/competitive/algorithm/binary_search.rs.html#110&#34;,&#34;line 110&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/binary_search.rs (<a href="../../src/competitive/algorithm/binary_search.rs.html#107">line 107</a>)</div><div class="example-wrap"><div class="src-line-numbers" data-nosnippet><pre>
-<span>106</span>
-<span>107</span>
-<span>108</span>
-<span>109</span>
-<span>110</span>
-<span>111</span></pre></div><pre class="rust"><code>    <span class="kw">fn </span>position_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize {
-        <span class="highlight focus">binary_search</span>(|i| f(<span class="kw-2">&amp;</span><span class="self">self</span>[<span class="kw-2">*</span>i <span class="kw">as </span>usize]), <span class="self">self</span>.len() <span class="kw">as </span>i64, -<span class="number">1</span>) <span class="kw">as </span>usize
-    }
-    <span class="kw">fn </span>rposition_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize {
-        <span class="highlight">binary_search</span>(|i| f(<span class="kw-2">&amp;</span><span class="self">self</span>[i - <span class="number">1</span>]), <span class="number">0</span>, <span class="self">self</span>.len() + <span class="number">1</span>)
-    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,9],&#34;../../src/library_checker/math/min_of_mod_of_linear.rs.html#11-15&#34;,&#34;lines 11-15&#34;]]"><div class="scraped-example-title">crates/library_checker/src/math/min_of_mod_of_linear.rs (<a href="../../src/library_checker/math/min_of_mod_of_linear.rs.html#11-15">lines 11-15</a>)</div><div class="example-wrap"><div class="src-line-numbers" data-nosnippet><pre>
-<span>6</span>
-<span>7</span>
-<span>8</span>
-<span>9</span>
-<span>10</span>
-<span>11</span>
-<span>12</span>
-<span>13</span>
-<span>14</span>
-<span>15</span>
-<span>16</span>
-<span>17</span>
-<span>18</span></pre></div><pre class="rust"><code><span class="kw">pub fn </span>min_of_mod_of_linear(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
-    <span class="kw">let </span>s = read_all_unchecked(reader);
-    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
-    <span class="macro">scan!</span>(scanner, t, query: [(i64, u64, i64, i64)]);
-    <span class="kw">for </span>(n, m, a, b) <span class="kw">in </span>query.take(t) {
-        <span class="kw">let </span>x = <span class="highlight focus">binary_search</span>(
-            |<span class="kw-2">&amp;</span>x| floor_sum_range_freq(<span class="number">0</span>, n, a, b, m, <span class="number">0</span>..x + <span class="number">1</span>) &gt; <span class="number">0</span>,
-            m <span class="kw">as </span>i64 - <span class="number">1</span>,
-            -<span class="number">1</span>,
-        );
-        <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, x).ok();
-    }
-}</code></pre></div></div><div class="scraped-example" data-locs="[[[1,18],&#34;../../src/competitive/string/suffix_array.rs.html#56-73&#34;,&#34;lines 56-73&#34;],[[19,40],&#34;../../src/competitive/string/suffix_array.rs.html#74-95&#34;,&#34;lines 74-95&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_array.rs (<a href="../../src/competitive/string/suffix_array.rs.html#56-73">lines 56-73</a>)</div><div class="example-wrap"><div class="src-line-numbers" data-nosnippet><pre>
-<span>55</span>
-<span>56</span>
-<span>57</span>
-<span>58</span>
-<span>59</span>
-<span>60</span>
-<span>61</span>
-<span>62</span>
-<span>63</span>
-<span>64</span>
-<span>65</span>
-<span>66</span>
-<span>67</span>
-<span>68</span>
-<span>69</span>
-<span>70</span>
-<span>71</span>
-<span>72</span>
-<span>73</span>
-<span>74</span>
-<span>75</span>
-<span>76</span>
-<span>77</span>
-<span>78</span>
-<span>79</span>
-<span>80</span>
-<span>81</span>
-<span>82</span>
-<span>83</span>
-<span>84</span>
-<span>85</span>
-<span>86</span>
-<span>87</span>
-<span>88</span>
-<span>89</span>
-<span>90</span>
-<span>91</span>
-<span>92</span>
-<span>93</span>
-<span>94</span>
-<span>95</span>
-<span>96</span>
-<span>97</span></pre></div><pre class="rust"><code>    <span class="kw">pub fn </span>range(<span class="kw-2">&amp;</span><span class="self">self</span>, t: <span class="kw-2">&amp;</span>[T], next: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T) -&gt; T) -&gt; Range&lt;usize&gt; {
-        <span class="kw">let </span>l = <span class="highlight focus">binary_search</span>(
-            |<span class="kw-2">&amp;</span>i| {
-                <span class="kw">let </span><span class="kw-2">mut </span>si = <span class="self">self</span>.sa[i <span class="kw">as </span>usize];
-                <span class="kw">let </span><span class="kw-2">mut </span>ti = <span class="number">0</span>;
-                <span class="kw">while </span>si &lt; <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len() {
-                    <span class="kw">match </span><span class="self">self</span>.pat[si].cmp(<span class="kw-2">&amp;</span>t[ti]) {
-                        Ordering::Less =&gt; <span class="kw">return </span><span class="bool-val">false</span>,
-                        Ordering::Greater =&gt; <span class="kw">return </span><span class="bool-val">true</span>,
-                        Ordering::Equal =&gt; {}
-                    }
-                    si += <span class="number">1</span>;
-                    ti += <span class="number">1</span>;
-                }
-                !(si &gt;= <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len())
-            },
-            <span class="self">self</span>.sa.len() <span class="kw">as </span>isize,
-            -<span class="number">1</span>,
-        ) <span class="kw">as </span>usize;
-        <span class="kw">let </span>r = <span class="highlight">binary_search</span>(
-            |<span class="kw-2">&amp;</span>i| {
-                <span class="kw">let </span><span class="kw-2">mut </span>si = <span class="self">self</span>.sa[i <span class="kw">as </span>usize];
-                <span class="kw">let </span><span class="kw-2">mut </span>ti = <span class="number">0</span>;
-                <span class="kw">while </span>si &lt; <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len() {
-                    <span class="kw">match if </span>ti + <span class="number">1 </span>== t.len() {
-                        <span class="self">self</span>.pat[si].cmp(<span class="kw-2">&amp;</span>next(<span class="kw-2">&amp;</span>t[ti]))
-                    } <span class="kw">else </span>{
-                        <span class="self">self</span>.pat[si].cmp(<span class="kw-2">&amp;</span>t[ti])
-                    } {
-                        Ordering::Less =&gt; <span class="kw">return </span><span class="bool-val">false</span>,
-                        Ordering::Greater =&gt; <span class="kw">return </span><span class="bool-val">true</span>,
-                        Ordering::Equal =&gt; {}
-                    }
-                    si += <span class="number">1</span>;
-                    ti += <span class="number">1</span>;
-                }
-                !(si &gt;= <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len())
-            },
-            <span class="self">self</span>.sa.len() <span class="kw">as </span>isize,
-            l <span class="kw">as </span>isize - <span class="number">1</span>,
-        ) <span class="kw">as </span>usize;
-        l..r
-    }</code></pre></div></div></div></details></div></section></div></main></body></html>
+</div></details><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/algorithm/chromatic_number.rs.html#31&#34;,&#34;line 31&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/chromatic_number.rs (<a href="../../src/competitive/algorithm/chromatic_number.rs.html#31">line 31</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>30</span>    <span class="kw">pub fn </span>chromatic_number(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+<span data-nosnippet>31</span>        <span class="highlight focus">binary_search</span>(|<span class="kw-2">&amp;</span>k| <span class="self">self</span>.k_colorable(k), <span class="self">self</span>.n, <span class="number">0</span>)
+<span data-nosnippet>32</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/algorithm/binary_search.rs.html#107&#34;,&#34;line 107&#34;],[[4,4],&#34;../../src/competitive/algorithm/binary_search.rs.html#110&#34;,&#34;line 110&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/binary_search.rs (<a href="../../src/competitive/algorithm/binary_search.rs.html#107">line 107</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>106</span>    <span class="kw">fn </span>position_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize {
+<span data-nosnippet>107</span>        <span class="highlight focus">binary_search</span>(|i| f(<span class="kw-2">&amp;</span><span class="self">self</span>[<span class="kw-2">*</span>i <span class="kw">as </span>usize]), <span class="self">self</span>.len() <span class="kw">as </span>i64, -<span class="number">1</span>) <span class="kw">as </span>usize
+<span data-nosnippet>108</span>    }
+<span data-nosnippet>109</span>    <span class="kw">fn </span>rposition_bisect(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>f: <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>T) -&gt; bool) -&gt; usize {
+<span data-nosnippet>110</span>        <span class="highlight">binary_search</span>(|i| f(<span class="kw-2">&amp;</span><span class="self">self</span>[i - <span class="number">1</span>]), <span class="number">0</span>, <span class="self">self</span>.len() + <span class="number">1</span>)
+<span data-nosnippet>111</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[5,9],&#34;../../src/library_checker/math/min_of_mod_of_linear.rs.html#11-15&#34;,&#34;lines 11-15&#34;]]"><div class="scraped-example-title">crates/library_checker/src/math/min_of_mod_of_linear.rs (<a href="../../src/library_checker/math/min_of_mod_of_linear.rs.html#11-15">lines 11-15</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>min_of_mod_of_linear(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, t, query: [(i64, u64, i64, i64)]);
+<span data-nosnippet>10</span>    <span class="kw">for </span>(n, m, a, b) <span class="kw">in </span>query.take(t) {
+<span data-nosnippet>11</span>        <span class="kw">let </span>x = <span class="highlight focus">binary_search</span>(
+<span data-nosnippet>12</span>            |<span class="kw-2">&amp;</span>x| floor_sum_range_freq(<span class="number">0</span>, n, a, b, m, <span class="number">0</span>..x + <span class="number">1</span>) &gt; <span class="number">0</span>,
+<span data-nosnippet>13</span>            m <span class="kw">as </span>i64 - <span class="number">1</span>,
+<span data-nosnippet>14</span>            -<span class="number">1</span>,
+<span data-nosnippet>15</span>        );
+<span data-nosnippet>16</span>        <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, x).ok();
+<span data-nosnippet>17</span>    }
+<span data-nosnippet>18</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[1,18],&#34;../../src/competitive/string/suffix_array.rs.html#56-73&#34;,&#34;lines 56-73&#34;],[[19,40],&#34;../../src/competitive/string/suffix_array.rs.html#74-95&#34;,&#34;lines 74-95&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_array.rs (<a href="../../src/competitive/string/suffix_array.rs.html#56-73">lines 56-73</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>55</span>    <span class="kw">pub fn </span>range(<span class="kw-2">&amp;</span><span class="self">self</span>, t: <span class="kw-2">&amp;</span>[T], next: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>T) -&gt; T) -&gt; Range&lt;usize&gt; {
+<span data-nosnippet>56</span>        <span class="kw">let </span>l = <span class="highlight focus">binary_search</span>(
+<span data-nosnippet>57</span>            |<span class="kw-2">&amp;</span>i| {
+<span data-nosnippet>58</span>                <span class="kw">let </span><span class="kw-2">mut </span>si = <span class="self">self</span>.sa[i <span class="kw">as </span>usize];
+<span data-nosnippet>59</span>                <span class="kw">let </span><span class="kw-2">mut </span>ti = <span class="number">0</span>;
+<span data-nosnippet>60</span>                <span class="kw">while </span>si &lt; <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len() {
+<span data-nosnippet>61</span>                    <span class="kw">match </span><span class="self">self</span>.pat[si].cmp(<span class="kw-2">&amp;</span>t[ti]) {
+<span data-nosnippet>62</span>                        Ordering::Less =&gt; <span class="kw">return </span><span class="bool-val">false</span>,
+<span data-nosnippet>63</span>                        Ordering::Greater =&gt; <span class="kw">return </span><span class="bool-val">true</span>,
+<span data-nosnippet>64</span>                        Ordering::Equal =&gt; {}
+<span data-nosnippet>65</span>                    }
+<span data-nosnippet>66</span>                    si += <span class="number">1</span>;
+<span data-nosnippet>67</span>                    ti += <span class="number">1</span>;
+<span data-nosnippet>68</span>                }
+<span data-nosnippet>69</span>                !(si &gt;= <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len())
+<span data-nosnippet>70</span>            },
+<span data-nosnippet>71</span>            <span class="self">self</span>.sa.len() <span class="kw">as </span>isize,
+<span data-nosnippet>72</span>            -<span class="number">1</span>,
+<span data-nosnippet>73</span>        ) <span class="kw">as </span>usize;
+<span data-nosnippet>74</span>        <span class="kw">let </span>r = <span class="highlight">binary_search</span>(
+<span data-nosnippet>75</span>            |<span class="kw-2">&amp;</span>i| {
+<span data-nosnippet>76</span>                <span class="kw">let </span><span class="kw-2">mut </span>si = <span class="self">self</span>.sa[i <span class="kw">as </span>usize];
+<span data-nosnippet>77</span>                <span class="kw">let </span><span class="kw-2">mut </span>ti = <span class="number">0</span>;
+<span data-nosnippet>78</span>                <span class="kw">while </span>si &lt; <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len() {
+<span data-nosnippet>79</span>                    <span class="kw">match if </span>ti + <span class="number">1 </span>== t.len() {
+<span data-nosnippet>80</span>                        <span class="self">self</span>.pat[si].cmp(<span class="kw-2">&amp;</span>next(<span class="kw-2">&amp;</span>t[ti]))
+<span data-nosnippet>81</span>                    } <span class="kw">else </span>{
+<span data-nosnippet>82</span>                        <span class="self">self</span>.pat[si].cmp(<span class="kw-2">&amp;</span>t[ti])
+<span data-nosnippet>83</span>                    } {
+<span data-nosnippet>84</span>                        Ordering::Less =&gt; <span class="kw">return </span><span class="bool-val">false</span>,
+<span data-nosnippet>85</span>                        Ordering::Greater =&gt; <span class="kw">return </span><span class="bool-val">true</span>,
+<span data-nosnippet>86</span>                        Ordering::Equal =&gt; {}
+<span data-nosnippet>87</span>                    }
+<span data-nosnippet>88</span>                    si += <span class="number">1</span>;
+<span data-nosnippet>89</span>                    ti += <span class="number">1</span>;
+<span data-nosnippet>90</span>                }
+<span data-nosnippet>91</span>                !(si &gt;= <span class="self">self</span>.pat.len() &amp;&amp; ti &lt; t.len())
+<span data-nosnippet>92</span>            },
+<span data-nosnippet>93</span>            <span class="self">self</span>.sa.len() <span class="kw">as </span>isize,
+<span data-nosnippet>94</span>            l <span class="kw">as </span>isize - <span class="number">1</span>,
+<span data-nosnippet>95</span>        ) <span class="kw">as </span>usize;
+<span data-nosnippet>96</span>        l..r
+<span data-nosnippet>97</span>    }</code></pre></div></div></div></details></div></section></div></main></body></html>
