@@ -38,11 +38,32 @@ pub trait Transducer {
         InitTransducerDp::new(self, init)
     }
 
-    fn with_input(self) -> ChainTransducer<(Self, IdentityTransducer<Self::Input>)>
+    fn intersection<U>(self, other: U) -> IntersectionTransducer<(Self, U)>
+    where
+        Self: Sized,
+        U: Transducer<Input = Self::Input>,
+    {
+        IntersectionTransducer((self, other))
+    }
+    fn product<U>(self, other: U) -> ProductTransducer<(Self, U)>
+    where
+        Self: Sized,
+        U: Transducer,
+    {
+        ProductTransducer((self, other))
+    }
+    fn chain<U>(self, other: U) -> ChainTransducer<(Self, U)>
+    where
+        Self: Sized,
+        U: Transducer<Input = Self::Output>,
+    {
+        ChainTransducer((self, other))
+    }
+    fn with_input(self) -> IntersectionTransducer<(Self, IdentityTransducer<Self::Input>)>
     where
         Self: Sized,
     {
-        ChainTransducer((self, IdentityTransducer::new()))
+        IntersectionTransducer((self, IdentityTransducer::new()))
     }
     fn map<U, F>(self, f: F) -> ChainMapTrasducer<Self, Self::Output, U, F>
     where
@@ -1005,14 +1026,14 @@ macro_rules! transducer {
     (@inner !>= $e:expr)                                     => { $crate::transducer!(((@id & (@rseq &$e)) . !>=)) };
     (@inner !< $e:expr)                                      => { $crate::transducer!(((@id & (@rseq &$e)) . !<)) };
     (@inner !> $e:expr)                                      => { $crate::transducer!(((@id & (@rseq &$e)) . !>)) };
-    (@inner $e:ident >=)                                     => { $crate::transducer!((((@seq &$e) & @id) . <=)) };
-    (@inner $e:ident <=)                                     => { $crate::transducer!((((@seq &$e) & @id) . >=)) };
-    (@inner $e:ident >)                                      => { $crate::transducer!((((@seq &$e) & @id) . <)) };
-    (@inner $e:ident <)                                      => { $crate::transducer!((((@seq &$e) & @id) . >)) };
-    (@inner $e:ident !>=)                                    => { $crate::transducer!((((@rseq &$e) & @id) . !<=)) };
-    (@inner $e:ident !<=)                                    => { $crate::transducer!((((@rseq &$e) & @id) . !>=)) };
-    (@inner $e:ident !>)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !<)) };
-    (@inner $e:ident !<)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !>)) };
+    (@inner $e:ident <=)                                     => { $crate::transducer!((((@seq &$e) & @id) . <=)) };
+    (@inner $e:ident >=)                                     => { $crate::transducer!((((@seq &$e) & @id) . >=)) };
+    (@inner $e:ident <)                                      => { $crate::transducer!((((@seq &$e) & @id) . <)) };
+    (@inner $e:ident >)                                      => { $crate::transducer!((((@seq &$e) & @id) . >)) };
+    (@inner $e:ident !<=)                                    => { $crate::transducer!((((@rseq &$e) & @id) . !<=)) };
+    (@inner $e:ident !>=)                                    => { $crate::transducer!((((@rseq &$e) & @id) . !>=)) };
+    (@inner $e:ident !<)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !<)) };
+    (@inner $e:ident !>)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !>)) };
     (@inner <=)                                              => { LexicographicalTransducer::less_than_or_equal() };
     (@inner >=)                                              => { LexicographicalTransducer::greater_than_or_equal() };
     (@inner <)                                               => { LexicographicalTransducer::less_than() };
@@ -1046,6 +1067,12 @@ macro_rules! transducer {
     (@chain [$($a:tt)*] [$($b:tt)*])                         => { $crate::transducer!(@chain [$($a)* [$($b)*]]) };
     (@chain [$($a:tt)*] [$($b:tt)*] . $($t:tt)*)             => { $crate::transducer!(@chain [$($a)* [$($b)*]] [] $($t)*) };
     (@chain [$($a:tt)*] [$($b:tt)*] $op:tt $($t:tt)*)        => { $crate::transducer!(@chain [$($a)*] [$($b)* $op] $($t)*) };
+    (@id $($t:tt)*)                                          => { $crate::transducer!(@inner @id $($t)*) };
+    (@it $($t:tt)*)                                          => { $crate::transducer!(@inner @it $($t)*) };
+    (@map $($t:tt)*)                                         => { $crate::transducer!(@inner @map $($t)*) };
+    (@fmap $($t:tt)*)                                        => { $crate::transducer!(@inner @fmap $($t)*) };
+    (@seq $($t:tt)*)                                         => { $crate::transducer!(@inner @seq $($t)*) };
+    (@rseq $($t:tt)*)                                        => { $crate::transducer!(@inner @rseq $($t)*) };
     (@$tag:ident $($t:tt)*)                                  => { compile_error!(stringify!($tag, $($t)*)) };
     ($($t:tt)*)                                              => { $crate::transducer!(@inner $($t)*) };
 }
@@ -1053,7 +1080,121 @@ macro_rules! transducer {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{algebra::AdditiveOperation, tools::Xorshift, transducer};
+    use crate::{
+        algebra::AdditiveOperation,
+        tools::{NotEmptySegment, Xorshift},
+        transducer,
+    };
+
+    #[test]
+    fn test_lexicographical_transducer() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for ((l, r), radix) in rng
+            .gen_iter((NotEmptySegment(10usize.pow(9)), 2..=10))
+            .take(Q)
+        {
+            let rr = r.to_digit_sequence_radix(radix);
+            let ll = l.to_digit_sequence_radix_len(radix, rr.len());
+            let n = r - l;
+            assert_eq!(
+                n * (n + 1) / 2,
+                transducer!((((ll <=) & (< rr)) * ((ll <=) & (< rr))) & <=)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+            assert_eq!(
+                n * (n + 1) / 2,
+                transducer!((((ll <=) & (< rr)) * ((ll <=) & (< rr))) & >=)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+            assert_eq!(
+                n * (n - 1) / 2,
+                transducer!((((ll <=) & (< rr)) * ((ll <=) & (< rr))) & <)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+            assert_eq!(
+                n * (n - 1) / 2,
+                transducer!((((ll <=) & (< rr)) * ((ll <=) & (< rr))) & >)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+        }
+    }
+
+    #[test]
+    fn test_revlexicographical_transducer() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for ((l, r), radix) in rng
+            .gen_iter((NotEmptySegment(10usize.pow(9)), 2..=10))
+            .take(Q)
+        {
+            let rr = r.to_digit_sequence_radix(radix);
+            let ll = l.to_digit_sequence_radix_len(radix, rr.len());
+            let n = r - l;
+            assert_eq!(
+                n * (n + 1) / 2,
+                transducer!((((ll !<=) & (!< rr)) * ((ll !<=) & (!< rr))) & !<=)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+            assert_eq!(
+                n * (n + 1) / 2,
+                transducer!((((ll !<=) & (!< rr)) * ((ll !<=) & (!< rr))) & !>=)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+            assert_eq!(
+                n * (n - 1) / 2,
+                transducer!((((ll !<=) & (!< rr)) * ((ll !<=) & (!< rr))) & !<)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+            assert_eq!(
+                n * (n - 1) / 2,
+                transducer!((((ll !<=) & (!< rr)) * ((ll !<=) & (!< rr))) & !>)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+        }
+    }
 
     #[test]
     fn test_lexicographical_sequence() {
@@ -1138,18 +1279,55 @@ mod tests {
         let mut rng = Xorshift::default();
         for (n, r, c) in rng.gen_iter((0..10usize.pow(18), 2..=10, 2..200)).take(Q) {
             let nd = n.to_digit_sequence_radix(r);
-            let dfa = transducer!((< nd) & (=> || 0usize, |s, a| Some(((s * r + a) % c, ())), |s| *s == 0));
+            let fst = transducer!((< nd) & (=> || 0usize, |s, a| Some(((s * r + a) % c, ())), |s| *s == 0));
             assert_eq!(
                 n.div_ceil(c),
-                dfa.clone().dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
+                fst.clone().dp::<A>(1).with_hashmap().run(|| 0..r, nd.len())
             );
 
             assert_eq!(
                 n.div_ceil(c),
-                dfa.dp::<A>(1)
+                fst.dp::<A>(1)
                     .with_vecmap(|&((_, s0), s1): &((((), ()), bool), usize)| s1 * 2 + s0 as usize)
                     .run(|| 0..r, nd.len())
             );
+        }
+    }
+
+    #[test]
+    fn test_add_lte() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        // (x, y) where x + a <= y, l <= x, y <= r
+        for ((l, r), a) in rng
+            .gen_iter((NotEmptySegment(100usize), 0usize..100))
+            .take(Q)
+        {
+            let ll = l.to_digit_sequence_radix_len(2, 20);
+            let rr = r.to_digit_sequence_radix_len(2, 20);
+            let aa = a.to_digit_sequence_radix_len(2, 20);
+
+            let fst = transducer!(
+                ((ll !<=) * (!<= rr)) & (
+                    (
+                        (
+                            ((@rseq &aa) & (@id))
+                            . (@map |&(a, (x, _y))| x + a)
+                            . (=> || 0usize, |s, i| Some(((s + i) / 2, (s + i) % 2)), |s| *s == 0)
+                        ) & (@map |&(_x, y)| y)
+                    ) . (!<=)
+                )
+            );
+
+            let result = fst
+                .dp::<A>(1)
+                .with_hashmap()
+                .run(|| (0usize..4).map(|bit| (bit & 1, bit >> 1 & 1)), 20);
+            let expected: usize = (l..=r)
+                .map(|x| (l..=r).filter(|&y| x + a <= y).count())
+                .sum();
+            assert_eq!(expected, result);
         }
     }
 }

@@ -987,6 +987,7 @@ mod find_majority_operation_impl {
     impl<T> Associative for FindMajorityOperation<T> {}
 }
 
+pub use self::concatenate_operation::{ConcatenateOperation, SortedConcatenateOperation};
 mod concatenate_operation {
     use super::*;
     use std::marker::PhantomData;
