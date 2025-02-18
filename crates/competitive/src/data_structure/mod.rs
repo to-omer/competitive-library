@@ -12,8 +12,6 @@ use crate::tools::GetDistinctMut;
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};
 #[codesnip::entry("Allocator")]
 pub use self::allocator::{Allocator, MemoryPool};
-#[codesnip::entry("automaton")]
-pub use self::automaton::*;
 #[codesnip::entry("BinaryIndexedTree")]
 pub use self::binary_indexed_tree::BinaryIndexedTree;
 #[codesnip::entry("BinaryIndexedTree2D")]
@@ -71,6 +69,8 @@ pub use self::sliding_winsow_aggregation::{DequeAggregation, QueueAggregation};
 pub use self::slope_trick::SlopeTrick;
 #[codesnip::entry("SplayTree")]
 pub use self::splay_tree::{SplayMap, SplaySequence};
+#[codesnip::entry("transducer")]
+pub use self::transducer::*;
 #[codesnip::entry("Trie")]
 pub use self::trie::Trie;
 #[codesnip::entry("UnionFind")]
@@ -89,11 +89,6 @@ pub use self::wavelet_matrix::WaveletMatrix;
 mod accumulate;
 #[cfg_attr(nightly, codesnip::entry("Allocator"))]
 mod allocator;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("automaton", include("algebra", "container", "VecMap"))
-)]
-mod automaton;
 #[cfg_attr(nightly, codesnip::entry("BinaryIndexedTree", include("algebra")))]
 mod binary_indexed_tree;
 #[cfg_attr(nightly, codesnip::entry("BinaryIndexedTree2D", include("algebra")))]
@@ -175,6 +170,11 @@ mod slope_trick;
     codesnip::entry("SplayTree", include("Allocator", "MonoidAction"))
 )]
 pub mod splay_tree;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("transducer", include("algebra", "container", "VecMap"))
+)]
+mod transducer;
 #[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
 mod trie;
 #[cfg_attr(
