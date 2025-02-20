@@ -65,13 +65,21 @@ pub fn bench_barrett_reduction_u64(c: &mut Criterion) {
 
 pub fn bench_barrett_reduction_u128(c: &mut Criterion) {
     let mut rng = Xorshift::default();
-    let spec = (0u64.., rng.random(1u64..) as u128 * rng.random(1u64..) as u128);
+    let spec = (
+        0u64..,
+        rng.random(1u64..) as u128 * rng.random(1u64..) as u128,
+    );
     let mut group = c.benchmark_group("barrett_reduction_u128");
     group.bench_function("barrett_reduction", |b| {
         let mut rng = Xorshift::default();
         let br = BarrettReduction::<u128>::new(spec.1);
         b.iter_batched(
-            || (rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128, spec.1),
+            || {
+                (
+                    rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128,
+                    spec.1,
+                )
+            },
             |(a, _b)| br.div_rem(a),
             BatchSize::SmallInput,
         )
@@ -79,7 +87,12 @@ pub fn bench_barrett_reduction_u128(c: &mut Criterion) {
     group.bench_function("naive_div_rem", |b| {
         let mut rng = Xorshift::default();
         b.iter_batched(
-            || (rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128, spec.1),
+            || {
+                (
+                    rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128,
+                    spec.1,
+                )
+            },
             |(a, b)| (a / b, a % b),
             BatchSize::SmallInput,
         )
@@ -87,7 +100,12 @@ pub fn bench_barrett_reduction_u128(c: &mut Criterion) {
     group.bench_function("naive_div", |b| {
         let mut rng = Xorshift::default();
         b.iter_batched(
-            || (rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128, spec.1),
+            || {
+                (
+                    rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128,
+                    spec.1,
+                )
+            },
             |(a, b)| a / b,
             BatchSize::SmallInput,
         )
@@ -95,7 +113,12 @@ pub fn bench_barrett_reduction_u128(c: &mut Criterion) {
     group.bench_function("naive_rem", |b| {
         let mut rng = Xorshift::default();
         b.iter_batched(
-            || (rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128, spec.1),
+            || {
+                (
+                    rng.random(&spec.0) as u128 * rng.random(&spec.0) as u128,
+                    spec.1,
+                )
+            },
             |(a, b)| a % b,
             BatchSize::SmallInput,
         )

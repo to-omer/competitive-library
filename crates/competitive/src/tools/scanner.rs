@@ -1,5 +1,5 @@
 use std::{
-    iter::{from_fn, repeat_with, FromIterator},
+    iter::{FromIterator, from_fn, repeat_with},
     marker::PhantomData,
 };
 

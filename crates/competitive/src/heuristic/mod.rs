@@ -1,7 +1,7 @@
 use crate::tools::Xorshift;
 
 #[codesnip::entry("beam_search")]
-pub use self::beam_search::{beam_search, ModifiableState};
+pub use self::beam_search::{ModifiableState, beam_search};
 #[codesnip::entry("SimuratedAnnealing")]
 pub use self::simurated_annealing::SimuratedAnnealing;
 

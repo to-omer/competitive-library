@@ -1,14 +1,14 @@
 //! algorithm
 
 use crate::algebra::{Magma, Monoid, Unital};
-use crate::data_structure::{union_find, UnionFindBase};
+use crate::data_structure::{UnionFindBase, union_find};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, Zero};
 
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
 pub use self::baby_step_giant_step::baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
-pub use self::binary_search::{binary_search, parallel_binary_search, Bisect, SliceBisectExt};
+pub use self::binary_search::{Bisect, SliceBisectExt, binary_search, parallel_binary_search};
 #[codesnip::entry("BitDp")]
 pub use self::bitdp::{BitDp, Combinations, Subsets};
 #[codesnip::entry("chromatic_number")]

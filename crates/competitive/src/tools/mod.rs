@@ -3,7 +3,7 @@ pub use self::associated_value::AssociatedValue;
 #[codesnip::entry("char_convert")]
 pub use self::char_convert::{CharConvertTryFrom, CharConvertTryInto};
 #[codesnip::entry("coding")]
-pub use self::coding::{unescape, SerdeByteStr};
+pub use self::coding::{SerdeByteStr, unescape};
 #[codesnip::entry("_iter_print")]
 pub use self::iter_print::IterPrint;
 #[codesnip::entry("ord_tools")]

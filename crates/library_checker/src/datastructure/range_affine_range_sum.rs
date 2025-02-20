@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{
     algebra::RangeSumRangeLinear,
     data_structure::LazySegmentTree,
-    num::{mint_basic::MInt998244353, MInt, One},
+    num::{MInt, One, mint_basic::MInt998244353},
 };
 
 #[verify::library_checker("range_affine_range_sum")]

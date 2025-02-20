@@ -2,7 +2,7 @@
 #![allow(clippy::crate_in_macro_def)]
 
 #[codesnip::skip]
-use crate::tools::{read_stdin_all_unchecked, Scanner};
+use crate::tools::{Scanner, read_stdin_all_unchecked};
 
 #[cfg_attr(any(), rust_minify::skip)]
 pub fn solve() {

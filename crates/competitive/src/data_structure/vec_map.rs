@@ -1,7 +1,7 @@
 use super::{Container, ContainerEntry, ContainerFactory};
 use std::{
     fmt::{self, Debug},
-    iter::{repeat_with, FilterMap, Map},
+    iter::{FilterMap, Map, repeat_with},
     marker::PhantomData,
     mem::replace,
     slice,

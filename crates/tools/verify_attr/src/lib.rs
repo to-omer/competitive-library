@@ -3,11 +3,11 @@ use crate::proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
 use syn::{
+    Expr, ExprLit, Ident, ItemFn, Lit, LitFloat, LitStr, Meta, Token,
     parse::{Parse, Parser},
     parse_macro_input,
     punctuated::Punctuated,
     spanned::Spanned,
-    Expr, ExprLit, Ident, ItemFn, Lit, LitFloat, LitStr, Meta, Token,
 };
 
 struct VerifyAttribute {
@@ -68,7 +68,7 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                                 return Err(syn::Error::new(
                                     litstr.span(),
                                     "extra problem_id specified",
-                                ))
+                                ));
                             }
                         },
                         _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
@@ -81,11 +81,11 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                             None => match litstr.value().parse::<f64>() {
                                 Ok(_) => eps = Some(LitFloat::new(&litstr.value(), litstr.span())),
                                 Err(_) => {
-                                    return Err(syn::Error::new(litstr.span(), "parse eps error"))
+                                    return Err(syn::Error::new(litstr.span(), "parse eps error"));
                                 }
                             },
                             Some(_) => {
-                                return Err(syn::Error::new(litstr.span(), "extra eps specified"))
+                                return Err(syn::Error::new(litstr.span(), "extra eps specified"));
                             }
                         },
                         _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
@@ -97,7 +97,7 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                         }) => match special_judge {
                             None => special_judge = Some(litstr2ident(litstr)),
                             Some(_) => {
-                                return Err(syn::Error::new(litstr.span(), "extra judge specified"))
+                                return Err(syn::Error::new(litstr.span(), "extra judge specified"));
                             }
                         },
                         _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
@@ -108,7 +108,7 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
             LitOrMeta::Lit(Lit::Str(litstr)) => match problem_id {
                 None => problem_id = Some(litstr.clone()),
                 Some(_) => {
-                    return Err(syn::Error::new(litstr.span(), "extra problem_id specified"))
+                    return Err(syn::Error::new(litstr.span(), "extra problem_id specified"));
                 }
             },
             _ => return Err(syn::Error::new(item.span(), "unknown meta value")),

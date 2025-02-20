@@ -1,6 +1,6 @@
 use super::{
-    node::{marker, Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec},
     Allocator, MemoryPool,
+    node::{Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec, marker},
 };
 use std::{
     borrow::Borrow,
@@ -8,7 +8,7 @@ use std::{
     fmt::{self, Debug},
     iter::FusedIterator,
     marker::PhantomData,
-    mem::{replace, ManuallyDrop},
+    mem::{ManuallyDrop, replace},
     ops::{Bound, DerefMut, RangeBounds},
 };
 
@@ -197,7 +197,7 @@ where
                 return Some(replace(
                     &mut (self.root.root_data_mut().unwrap().data_mut().0).1,
                     value,
-                ))
+                ));
             }
             Some(Ordering::Less) => unsafe {
                 self.root.insert_left(NodeRef::from_data(

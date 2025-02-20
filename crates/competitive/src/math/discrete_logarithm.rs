@@ -1,6 +1,6 @@
 use super::{
-    check_primitive_root, gcd, lcm, modinv, prime_factors, primitive_root, BarrettReduction,
-    PrimeList, Xorshift,
+    BarrettReduction, PrimeList, Xorshift, check_primitive_root, gcd, lcm, modinv, prime_factors,
+    primitive_root,
 };
 use std::{cell::UnsafeCell, collections::HashMap};
 
@@ -416,11 +416,7 @@ fn discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -> Option<(u64
                 _ => None,
             }
         } else if a == 1 {
-            if b == 1 {
-                Some((0, 1))
-            } else {
-                None
-            }
+            if b == 1 { Some((0, 1)) } else { None }
         } else {
             assert_eq!(a, 3);
             if b == 1 {

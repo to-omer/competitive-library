@@ -1,12 +1,12 @@
 use super::{
-    node::{marker, Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec},
     Allocator, MemoryPool, MonoidAction,
+    node::{Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec, marker},
 };
 use std::{
     cmp::Ordering,
     fmt::{self, Debug},
     marker::PhantomData,
-    mem::{replace, ManuallyDrop},
+    mem::{ManuallyDrop, replace},
     ops::{Bound, DerefMut, RangeBounds},
 };
 

@@ -1,7 +1,7 @@
 //! mathematical datas
 
 use crate::algebra::{Group, Invertible, Monoid, Ring};
-use crate::num::{montgomery, BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Zero};
+use crate::num::{BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Zero, montgomery};
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
 #[codesnip::entry("berlekamp_massey")]
@@ -43,7 +43,7 @@ pub use self::prime::*;
 #[codesnip::entry("prime_factors")]
 pub use self::prime_factors::{divisors, prime_factors, prime_factors_flatten};
 #[codesnip::entry("PrimeList")]
-pub use self::prime_list::{with_prime_list, PrimeList};
+pub use self::prime_list::{PrimeList, with_prime_list};
 #[codesnip::entry("PrimeTable")]
 pub use self::prime_table::PrimeTable;
 #[codesnip::entry("primitive_root")]

@@ -1,4 +1,4 @@
-use super::{montgomery::*, ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero};
+use super::{ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, montgomery::*};
 use std::marker::PhantomData;
 
 pub struct Convolve<M>(PhantomData<fn() -> M>);

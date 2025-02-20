@@ -2,7 +2,7 @@ use self::library_checker::CheckerBinary;
 use chrono::{DateTime, FixedOffset, SecondsFormat, Utc};
 use dirs::cache_dir;
 use rand::prelude::*;
-use reqwest::{blocking, Client};
+use reqwest::{Client, blocking};
 use serde::Deserialize;
 use std::{
     borrow::Borrow,
@@ -395,11 +395,7 @@ pub enum VerifyStatus {
 }
 impl From<bool> for VerifyStatus {
     fn from(b: bool) -> Self {
-        if b {
-            Self::Accepted
-        } else {
-            Self::WrongAnswer
-        }
+        if b { Self::Accepted } else { Self::WrongAnswer }
     }
 }
 impl Display for VerifyStatus {

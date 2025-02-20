@@ -4,7 +4,7 @@ pub use competitive::{
     algebra::{LinearOperation, ReverseOperation},
     data_structure::SegmentTree,
     graph::TreeGraphScanner,
-    num::{mint_basic::MInt998244353, MInt},
+    num::{MInt, mint_basic::MInt998244353},
     tree::HeavyLightDecomposition,
 };
 

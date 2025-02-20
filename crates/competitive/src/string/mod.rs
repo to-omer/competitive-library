@@ -3,7 +3,7 @@
 use crate::algebra::{Gf2_63, Invertible, Mersenne61, Monoid, Ring, SemiRing};
 use crate::algorithm::binary_search;
 use crate::math::{Convolve, ConvolveSteps};
-use crate::num::{montgomery, Zero};
+use crate::num::{Zero, montgomery};
 use crate::tools::Xorshift;
 
 #[codesnip::entry("KnuthMorrisPratt")]

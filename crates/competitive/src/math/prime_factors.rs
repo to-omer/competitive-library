@@ -1,4 +1,4 @@
-use super::{gcd, miller_rabin_with_br, BarrettReduction};
+use super::{BarrettReduction, gcd, miller_rabin_with_br};
 
 fn find_factor(n: u64) -> Option<u64> {
     let br = BarrettReduction::<u128>::new(n as u128);

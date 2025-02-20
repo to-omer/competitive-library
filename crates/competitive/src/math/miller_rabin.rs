@@ -115,11 +115,7 @@ pub fn miller_rabin_with_br(n: u64, br: &BarrettReduction<u128>) -> bool {
     if n % 7 == 0 {
         return n == 7;
     }
-    if n < 121 {
-        n > 2
-    } else {
-        mr64(n, br)
-    }
+    if n < 121 { n > 2 } else { mr64(n, br) }
 }
 
 pub fn miller_rabin(n: u64) -> bool {

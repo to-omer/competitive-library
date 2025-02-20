@@ -1,7 +1,7 @@
 use std::{
     marker::PhantomData,
     mem::{replace, size_of, take},
-    ptr::{self, read, write, NonNull},
+    ptr::{self, NonNull, read, write},
 };
 
 pub trait Allocator<T> {

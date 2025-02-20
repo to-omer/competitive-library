@@ -1,4 +1,4 @@
-use super::{with_prime_list, ConvolveSteps, Group, Invertible, Monoid, Ring};
+use super::{ConvolveSteps, Group, Invertible, Monoid, Ring, with_prime_list};
 use std::marker::PhantomData;
 
 pub struct LcmConvolve<M> {

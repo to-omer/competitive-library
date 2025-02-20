@@ -1,4 +1,4 @@
-use crate::{app_cache_directory, BoxResult, ProblemNotFound, TestCase, VerifyStatus};
+use crate::{BoxResult, ProblemNotFound, TestCase, VerifyStatus, app_cache_directory};
 use serde::{Deserialize, Serialize};
 use std::{
     env::consts::OS,

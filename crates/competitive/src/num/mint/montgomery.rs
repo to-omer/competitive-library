@@ -21,11 +21,7 @@ where
     fn mod_add(x: Self::Inner, y: Self::Inner) -> Self::Inner {
         let z = x + y;
         let m = Self::get_mod();
-        if z >= m {
-            z - m
-        } else {
-            z
-        }
+        if z >= m { z - m } else { z }
     }
     #[inline]
     fn mod_sub(x: Self::Inner, y: Self::Inner) -> Self::Inner {
@@ -45,11 +41,7 @@ where
     }
     #[inline]
     fn mod_neg(x: Self::Inner) -> Self::Inner {
-        if x == 0 {
-            0
-        } else {
-            Self::get_mod() - x
-        }
+        if x == 0 { 0 } else { Self::get_mod() - x }
     }
     fn mod_inv(x: Self::Inner) -> Self::Inner {
         let p = Self::get_mod() as i32;

@@ -1,4 +1,4 @@
-use crate::{app_cache_directory, build_client, gen_case, TestCase};
+use crate::{TestCase, app_cache_directory, build_client, gen_case};
 use serde::Deserialize;
 use std::{
     fs::{create_dir, create_dir_all, remove_dir_all},
