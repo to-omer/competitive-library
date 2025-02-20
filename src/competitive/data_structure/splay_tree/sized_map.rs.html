@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/splay_tree/sized_map.rs`."><title>sized_map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.87.0-nightly (ce36a966c 2025-02-17)" data-channel="nightly" data-search-js="search-f7327375.js" data-settings-js="settings-6dad6058.js" ><script src="../../../../static.files/storage-3a5871a4.js"></script><script defer src="../../../../static.files/src-script-b8d3f215.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-5332ae0c.js"></script><script defer src="../../../../static.files/scrape-examples-5e967b76.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/splay_tree/sized_map.rs`."><title>sized_map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.87.0-nightly (f280acf4c 2025-02-19)" data-channel="nightly" data-search-js="search-f7327375.js" data-settings-js="settings-6dad6058.js" ><script src="../../../../static.files/storage-3a5871a4.js"></script><script defer src="../../../../static.files/src-script-b8d3f215.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-5332ae0c.js"></script><script defer src="../../../../static.files/scrape-examples-5e967b76.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -395,7 +395,7 @@
 <a href=#379 id=379 data-nosnippet>379</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
 <a href=#380 id=380 data-nosnippet>380</a>        <span class="kw">for </span>v <span class="kw">in </span><span class="number">1</span>..=Q {
 <a href=#381 id=381 data-nosnippet>381</a>            <span class="kw">let </span>k = rng.rand(A);
-<a href=#382 id=382 data-nosnippet>382</a>            <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">3</span>) {
+<a href=#382 id=382 data-nosnippet>382</a>            <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">3</span>) {
 <a href=#383 id=383 data-nosnippet>383</a>                <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(btree.remove(<span class="kw-2">&amp;</span>k), stree.remove(<span class="kw-2">&amp;</span>k)),
 <a href=#384 id=384 data-nosnippet>384</a>                <span class="number">1 </span>=&gt; <span class="macro">assert_eq!</span>(btree.insert(k, v), stree.insert(k, v)),
 <a href=#385 id=385 data-nosnippet>385</a>                <span class="kw">_ </span>=&gt; <span class="macro">assert_eq!</span>(btree.get_key_value(<span class="kw-2">&amp;</span>k), stree.get_key_value(<span class="kw-2">&amp;</span>k)),
@@ -414,8 +414,8 @@
 <a href=#398 id=398 data-nosnippet>398</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
 <a href=#399 id=399 data-nosnippet>399</a>        <span class="kw">for </span>v <span class="kw">in </span><span class="number">1</span>..=Q {
 <a href=#400 id=400 data-nosnippet>400</a>            <span class="kw">let </span>k = rng.rand(A);
-<a href=#401 id=401 data-nosnippet>401</a>            <span class="kw">let </span>i = rng.gen(<span class="number">0</span>..=btree.len());
-<a href=#402 id=402 data-nosnippet>402</a>            <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">3</span>) {
+<a href=#401 id=401 data-nosnippet>401</a>            <span class="kw">let </span>i = rng.random(<span class="number">0</span>..=btree.len());
+<a href=#402 id=402 data-nosnippet>402</a>            <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">3</span>) {
 <a href=#403 id=403 data-nosnippet>403</a>                <span class="number">0 </span>=&gt; {
 <a href=#404 id=404 data-nosnippet>404</a>                    <span class="kw">if let </span><span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span>k, <span class="kw">_</span>)) = btree.iter().nth(i) {
 <a href=#405 id=405 data-nosnippet>405</a>                        <span class="macro">assert_eq!</span>(btree.remove(<span class="kw-2">&amp;</span>k).map(|v| (k, v)), stree.remove_at(i));
@@ -439,7 +439,7 @@
 <a href=#423 id=423 data-nosnippet>423</a>        <span class="kw">for </span>v <span class="kw">in </span><span class="number">1</span>..=Q {
 <a href=#424 id=424 data-nosnippet>424</a>            <span class="kw">for </span>v <span class="kw">in </span>v * <span class="number">100</span>..(v + <span class="number">1</span>) * <span class="number">100 </span>{
 <a href=#425 id=425 data-nosnippet>425</a>                <span class="kw">let </span>k = rng.rand(A);
-<a href=#426 id=426 data-nosnippet>426</a>                <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">2</span>) {
+<a href=#426 id=426 data-nosnippet>426</a>                <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">2</span>) {
 <a href=#427 id=427 data-nosnippet>427</a>                    <span class="number">0 </span>=&gt; <span class="macro">assert_eq!</span>(btree.remove(<span class="kw-2">&amp;</span>k), stree.remove(<span class="kw-2">&amp;</span>k)),
 <a href=#428 id=428 data-nosnippet>428</a>                    <span class="kw">_ </span>=&gt; <span class="macro">assert_eq!</span>(btree.insert(k, v), stree.insert(k, v)),
 <a href=#429 id=429 data-nosnippet>429</a>                }
@@ -449,9 +449,9 @@
 <a href=#433 id=433 data-nosnippet>433</a>            <span class="kw">let </span>a = stree.dump();
 <a href=#434 id=434 data-nosnippet>434</a>            <span class="macro">assert_eq!</span>(b, a);
 <a href=#435 id=435 data-nosnippet>435</a>
-<a href=#436 id=436 data-nosnippet>436</a>            <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">3</span>) {
+<a href=#436 id=436 data-nosnippet>436</a>            <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">3</span>) {
 <a href=#437 id=437 data-nosnippet>437</a>                <span class="number">0 </span>=&gt; {
-<a href=#438 id=438 data-nosnippet>438</a>                    <span class="kw">let </span>a: Vec&lt;<span class="kw">_</span>&gt; = <span class="kw">if </span>rng.gen(<span class="number">0</span>..<span class="number">2</span>) == <span class="number">0 </span>{
+<a href=#438 id=438 data-nosnippet>438</a>                    <span class="kw">let </span>a: Vec&lt;<span class="kw">_</span>&gt; = <span class="kw">if </span>rng.random(<span class="number">0</span>..<span class="number">2</span>) == <span class="number">0 </span>{
 <a href=#439 id=439 data-nosnippet>439</a>                        stree.iter().collect()
 <a href=#440 id=440 data-nosnippet>440</a>                    } <span class="kw">else </span>{
 <a href=#441 id=441 data-nosnippet>441</a>                        <span class="kw">let </span><span class="kw-2">mut </span>a: Vec&lt;<span class="kw">_</span>&gt; = stree.iter().rev().collect();
@@ -461,16 +461,16 @@
 <a href=#445 id=445 data-nosnippet>445</a>                    <span class="macro">assert_eq!</span>(b, a);
 <a href=#446 id=446 data-nosnippet>446</a>                }
 <a href=#447 id=447 data-nosnippet>447</a>                <span class="number">1 </span><span class="kw">if </span>!stree.is_empty() =&gt; {
-<a href=#448 id=448 data-nosnippet>448</a>                    <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (rng.gen(<span class="number">0</span>..=stree.len()), rng.gen(<span class="number">0</span>..=stree.len()));
+<a href=#448 id=448 data-nosnippet>448</a>                    <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (rng.random(<span class="number">0</span>..=stree.len()), rng.random(<span class="number">0</span>..=stree.len()));
 <a href=#449 id=449 data-nosnippet>449</a>                    <span class="kw">if </span>l &gt; r {
 <a href=#450 id=450 data-nosnippet>450</a>                        swap(<span class="kw-2">&amp;mut </span>l, <span class="kw-2">&amp;mut </span>r);
 <a href=#451 id=451 data-nosnippet>451</a>                    }
-<a href=#452 id=452 data-nosnippet>452</a>                    <span class="kw">let </span>l = <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">3</span>) {
+<a href=#452 id=452 data-nosnippet>452</a>                    <span class="kw">let </span>l = <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">3</span>) {
 <a href=#453 id=453 data-nosnippet>453</a>                        <span class="number">0 </span>=&gt; Bound::Included(l),
 <a href=#454 id=454 data-nosnippet>454</a>                        <span class="number">1 </span>=&gt; Bound::Excluded(l),
 <a href=#455 id=455 data-nosnippet>455</a>                        <span class="kw">_ </span>=&gt; Bound::Unbounded,
 <a href=#456 id=456 data-nosnippet>456</a>                    };
-<a href=#457 id=457 data-nosnippet>457</a>                    <span class="kw">let </span>r = <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">3</span>) {
+<a href=#457 id=457 data-nosnippet>457</a>                    <span class="kw">let </span>r = <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">3</span>) {
 <a href=#458 id=458 data-nosnippet>458</a>                        <span class="number">0 </span>=&gt; Bound::Included(r),
 <a href=#459 id=459 data-nosnippet>459</a>                        <span class="number">1 </span>=&gt; Bound::Excluded(r),
 <a href=#460 id=460 data-nosnippet>460</a>                        <span class="kw">_ </span>=&gt; Bound::Unbounded,
@@ -495,16 +495,16 @@
 <a href=#479 id=479 data-nosnippet>479</a>                    <span class="macro">assert_eq!</span>(b, a);
 <a href=#480 id=480 data-nosnippet>480</a>                }
 <a href=#481 id=481 data-nosnippet>481</a>                <span class="kw">_ </span>=&gt; {
-<a href=#482 id=482 data-nosnippet>482</a>                    <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (rng.gen(<span class="number">0</span>..=A), rng.gen(<span class="number">0</span>..=A));
+<a href=#482 id=482 data-nosnippet>482</a>                    <span class="kw">let </span>(<span class="kw-2">mut </span>l, <span class="kw-2">mut </span>r) = (rng.random(<span class="number">0</span>..=A), rng.random(<span class="number">0</span>..=A));
 <a href=#483 id=483 data-nosnippet>483</a>                    <span class="kw">if </span>l &gt; r {
 <a href=#484 id=484 data-nosnippet>484</a>                        swap(<span class="kw-2">&amp;mut </span>l, <span class="kw-2">&amp;mut </span>r);
 <a href=#485 id=485 data-nosnippet>485</a>                    }
-<a href=#486 id=486 data-nosnippet>486</a>                    <span class="kw">let </span>l = <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">3</span>) {
+<a href=#486 id=486 data-nosnippet>486</a>                    <span class="kw">let </span>l = <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">3</span>) {
 <a href=#487 id=487 data-nosnippet>487</a>                        <span class="number">0 </span>=&gt; Bound::Included(l),
 <a href=#488 id=488 data-nosnippet>488</a>                        <span class="number">1 </span>=&gt; Bound::Excluded(l),
 <a href=#489 id=489 data-nosnippet>489</a>                        <span class="kw">_ </span>=&gt; Bound::Unbounded,
 <a href=#490 id=490 data-nosnippet>490</a>                    };
-<a href=#491 id=491 data-nosnippet>491</a>                    <span class="kw">let </span>r = <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">3</span>) {
+<a href=#491 id=491 data-nosnippet>491</a>                    <span class="kw">let </span>r = <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">3</span>) {
 <a href=#492 id=492 data-nosnippet>492</a>                        <span class="number">0 </span>=&gt; Bound::Included(r),
 <a href=#493 id=493 data-nosnippet>493</a>                        <span class="number">1 </span><span class="kw">if </span>l == Bound::Excluded(r) =&gt; Bound::Excluded(r + <span class="number">1</span>),
 <a href=#494 id=494 data-nosnippet>494</a>                        <span class="number">1 </span>=&gt; Bound::Excluded(r),

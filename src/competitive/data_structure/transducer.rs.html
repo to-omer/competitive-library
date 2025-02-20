@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/transducer.rs`."><title>transducer.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.87.0-nightly (ce36a966c 2025-02-17)" data-channel="nightly" data-search-js="search-f7327375.js" data-settings-js="settings-6dad6058.js" ><script src="../../../static.files/storage-3a5871a4.js"></script><script defer src="../../../static.files/src-script-b8d3f215.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5332ae0c.js"></script><script defer src="../../../static.files/scrape-examples-5e967b76.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/transducer.rs`."><title>transducer.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.87.0-nightly (f280acf4c 2025-02-19)" data-channel="nightly" data-search-js="search-f7327375.js" data-settings-js="settings-6dad6058.js" ><script src="../../../static.files/storage-3a5871a4.js"></script><script defer src="../../../static.files/src-script-b8d3f215.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5332ae0c.js"></script><script defer src="../../../static.files/scrape-examples-5e967b76.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -1111,7 +1111,7 @@
 <a href=#1095 id=1095 data-nosnippet>1095</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
 <a href=#1096 id=1096 data-nosnippet>1096</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
 <a href=#1097 id=1097 data-nosnippet>1097</a>        <span class="kw">for </span>((l, r), radix) <span class="kw">in </span>rng
-<a href=#1098 id=1098 data-nosnippet>1098</a>            .gen_iter((NotEmptySegment(<span class="number">10usize</span>.pow(<span class="number">9</span>)), <span class="number">2</span>..=<span class="number">10</span>))
+<a href=#1098 id=1098 data-nosnippet>1098</a>            .random_iter((NotEmptySegment(<span class="number">10usize</span>.pow(<span class="number">9</span>)), <span class="number">2</span>..=<span class="number">10</span>))
 <a href=#1099 id=1099 data-nosnippet>1099</a>            .take(Q)
 <a href=#1100 id=1100 data-nosnippet>1100</a>        {
 <a href=#1101 id=1101 data-nosnippet>1101</a>            <span class="kw">let </span>rr = r.to_digit_sequence_radix(radix);
@@ -1166,7 +1166,7 @@
 <a href=#1150 id=1150 data-nosnippet>1150</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
 <a href=#1151 id=1151 data-nosnippet>1151</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
 <a href=#1152 id=1152 data-nosnippet>1152</a>        <span class="kw">for </span>((l, r), radix) <span class="kw">in </span>rng
-<a href=#1153 id=1153 data-nosnippet>1153</a>            .gen_iter((NotEmptySegment(<span class="number">10usize</span>.pow(<span class="number">9</span>)), <span class="number">2</span>..=<span class="number">10</span>))
+<a href=#1153 id=1153 data-nosnippet>1153</a>            .random_iter((NotEmptySegment(<span class="number">10usize</span>.pow(<span class="number">9</span>)), <span class="number">2</span>..=<span class="number">10</span>))
 <a href=#1154 id=1154 data-nosnippet>1154</a>            .take(Q)
 <a href=#1155 id=1155 data-nosnippet>1155</a>        {
 <a href=#1156 id=1156 data-nosnippet>1156</a>            <span class="kw">let </span>rr = r.to_digit_sequence_radix(radix);
@@ -1220,7 +1220,7 @@
 <a href=#1204 id=1204 data-nosnippet>1204</a>        <span class="kw">type </span>A = AdditiveOperation&lt;usize&gt;;
 <a href=#1205 id=1205 data-nosnippet>1205</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
 <a href=#1206 id=1206 data-nosnippet>1206</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#1207 id=1207 data-nosnippet>1207</a>        <span class="kw">for </span>(n, r) <span class="kw">in </span>rng.gen_iter((<span class="number">0</span>..<span class="number">10usize</span>.pow(<span class="number">18</span>), <span class="number">2</span>..=<span class="number">10</span>)).take(Q) {
+<a href=#1207 id=1207 data-nosnippet>1207</a>        <span class="kw">for </span>(n, r) <span class="kw">in </span>rng.random_iter((<span class="number">0</span>..<span class="number">10usize</span>.pow(<span class="number">18</span>), <span class="number">2</span>..=<span class="number">10</span>)).take(Q) {
 <a href=#1208 id=1208 data-nosnippet>1208</a>            <span class="kw">let </span>nd = n.to_digit_sequence_radix(r);
 <a href=#1209 id=1209 data-nosnippet>1209</a>            <span class="macro">assert_eq!</span>(
 <a href=#1210 id=1210 data-nosnippet>1210</a>                n + <span class="number">1</span>,
@@ -1258,7 +1258,7 @@
 <a href=#1242 id=1242 data-nosnippet>1242</a>        <span class="kw">type </span>A = AdditiveOperation&lt;usize&gt;;
 <a href=#1243 id=1243 data-nosnippet>1243</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
 <a href=#1244 id=1244 data-nosnippet>1244</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#1245 id=1245 data-nosnippet>1245</a>        <span class="kw">for </span>(n, r) <span class="kw">in </span>rng.gen_iter((<span class="number">0</span>..<span class="number">10usize</span>.pow(<span class="number">18</span>), <span class="number">2</span>..=<span class="number">10</span>)).take(Q) {
+<a href=#1245 id=1245 data-nosnippet>1245</a>        <span class="kw">for </span>(n, r) <span class="kw">in </span>rng.random_iter((<span class="number">0</span>..<span class="number">10usize</span>.pow(<span class="number">18</span>), <span class="number">2</span>..=<span class="number">10</span>)).take(Q) {
 <a href=#1246 id=1246 data-nosnippet>1246</a>            <span class="kw">let </span>nd = n.to_digit_sequence_radix(r);
 <a href=#1247 id=1247 data-nosnippet>1247</a>            <span class="macro">assert_eq!</span>(
 <a href=#1248 id=1248 data-nosnippet>1248</a>                n + <span class="number">1</span>,
@@ -1296,57 +1296,60 @@
 <a href=#1280 id=1280 data-nosnippet>1280</a>        <span class="kw">type </span>A = AdditiveOperation&lt;usize&gt;;
 <a href=#1281 id=1281 data-nosnippet>1281</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
 <a href=#1282 id=1282 data-nosnippet>1282</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#1283 id=1283 data-nosnippet>1283</a>        <span class="kw">for </span>(n, r, c) <span class="kw">in </span>rng.gen_iter((<span class="number">0</span>..<span class="number">10usize</span>.pow(<span class="number">18</span>), <span class="number">2</span>..=<span class="number">10</span>, <span class="number">2</span>..<span class="number">200</span>)).take(Q) {
-<a href=#1284 id=1284 data-nosnippet>1284</a>            <span class="kw">let </span>nd = n.to_digit_sequence_radix(r);
-<a href=#1285 id=1285 data-nosnippet>1285</a>            <span class="kw">let </span>fst = <span class="macro">transducer!</span>((&lt; nd) &amp; (=&gt; || <span class="number">0usize</span>, |s, a| <span class="prelude-val">Some</span>(((s * r + a) % c, ())), |s| <span class="kw-2">*</span>s == <span class="number">0</span>));
-<a href=#1286 id=1286 data-nosnippet>1286</a>            <span class="macro">assert_eq!</span>(
-<a href=#1287 id=1287 data-nosnippet>1287</a>                n.div_ceil(c),
-<a href=#1288 id=1288 data-nosnippet>1288</a>                fst.clone().dp::&lt;A&gt;(<span class="number">1</span>).with_hashmap().run(|| <span class="number">0</span>..r, nd.len())
-<a href=#1289 id=1289 data-nosnippet>1289</a>            );
-<a href=#1290 id=1290 data-nosnippet>1290</a>
-<a href=#1291 id=1291 data-nosnippet>1291</a>            <span class="macro">assert_eq!</span>(
-<a href=#1292 id=1292 data-nosnippet>1292</a>                n.div_ceil(c),
-<a href=#1293 id=1293 data-nosnippet>1293</a>                fst.dp::&lt;A&gt;(<span class="number">1</span>)
-<a href=#1294 id=1294 data-nosnippet>1294</a>                    .with_vecmap(|<span class="kw-2">&amp;</span>((<span class="kw">_</span>, s0), s1): <span class="kw-2">&amp;</span>((((), ()), bool), usize)| s1 * <span class="number">2 </span>+ s0 <span class="kw">as </span>usize)
-<a href=#1295 id=1295 data-nosnippet>1295</a>                    .run(|| <span class="number">0</span>..r, nd.len())
-<a href=#1296 id=1296 data-nosnippet>1296</a>            );
-<a href=#1297 id=1297 data-nosnippet>1297</a>        }
-<a href=#1298 id=1298 data-nosnippet>1298</a>    }
-<a href=#1299 id=1299 data-nosnippet>1299</a>
-<a href=#1300 id=1300 data-nosnippet>1300</a>    <span class="attr">#[test]
-<a href=#1301 id=1301 data-nosnippet>1301</a>    </span><span class="kw">fn </span>test_add_lte() {
-<a href=#1302 id=1302 data-nosnippet>1302</a>        <span class="kw">type </span>A = AdditiveOperation&lt;usize&gt;;
-<a href=#1303 id=1303 data-nosnippet>1303</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
-<a href=#1304 id=1304 data-nosnippet>1304</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#1305 id=1305 data-nosnippet>1305</a>        <span class="comment">// (x, y) where x + a &lt;= y, l &lt;= x, y &lt;= r
-<a href=#1306 id=1306 data-nosnippet>1306</a>        </span><span class="kw">for </span>((l, r), a) <span class="kw">in </span>rng
-<a href=#1307 id=1307 data-nosnippet>1307</a>            .gen_iter((NotEmptySegment(<span class="number">100usize</span>), <span class="number">0usize</span>..<span class="number">100</span>))
-<a href=#1308 id=1308 data-nosnippet>1308</a>            .take(Q)
-<a href=#1309 id=1309 data-nosnippet>1309</a>        {
-<a href=#1310 id=1310 data-nosnippet>1310</a>            <span class="kw">let </span>ll = l.to_digit_sequence_radix_len(<span class="number">2</span>, <span class="number">20</span>);
-<a href=#1311 id=1311 data-nosnippet>1311</a>            <span class="kw">let </span>rr = r.to_digit_sequence_radix_len(<span class="number">2</span>, <span class="number">20</span>);
-<a href=#1312 id=1312 data-nosnippet>1312</a>            <span class="kw">let </span>aa = a.to_digit_sequence_radix_len(<span class="number">2</span>, <span class="number">20</span>);
-<a href=#1313 id=1313 data-nosnippet>1313</a>
-<a href=#1314 id=1314 data-nosnippet>1314</a>            <span class="kw">let </span>fst = <span class="macro">transducer!</span>(
-<a href=#1315 id=1315 data-nosnippet>1315</a>                ((ll !&lt;=) * (!&lt;= rr)) &amp; (
-<a href=#1316 id=1316 data-nosnippet>1316</a>                    (
-<a href=#1317 id=1317 data-nosnippet>1317</a>                        (
-<a href=#1318 id=1318 data-nosnippet>1318</a>                            ((@rseq <span class="kw-2">&amp;</span>aa) &amp; (@id))
-<a href=#1319 id=1319 data-nosnippet>1319</a>                            . (@map |<span class="kw-2">&amp;</span>(a, (x, _y))| x + a)
-<a href=#1320 id=1320 data-nosnippet>1320</a>                            . (=&gt; || <span class="number">0usize</span>, |s, i| <span class="prelude-val">Some</span>(((s + i) / <span class="number">2</span>, (s + i) % <span class="number">2</span>)), |s| <span class="kw-2">*</span>s == <span class="number">0</span>)
-<a href=#1321 id=1321 data-nosnippet>1321</a>                        ) &amp; (@map |<span class="kw-2">&amp;</span>(_x, y)| y)
-<a href=#1322 id=1322 data-nosnippet>1322</a>                    ) . (!&lt;=)
-<a href=#1323 id=1323 data-nosnippet>1323</a>                )
-<a href=#1324 id=1324 data-nosnippet>1324</a>            );
-<a href=#1325 id=1325 data-nosnippet>1325</a>
-<a href=#1326 id=1326 data-nosnippet>1326</a>            <span class="kw">let </span>result = fst
-<a href=#1327 id=1327 data-nosnippet>1327</a>                .dp::&lt;A&gt;(<span class="number">1</span>)
-<a href=#1328 id=1328 data-nosnippet>1328</a>                .with_hashmap()
-<a href=#1329 id=1329 data-nosnippet>1329</a>                .run(|| (<span class="number">0usize</span>..<span class="number">4</span>).map(|bit| (bit &amp; <span class="number">1</span>, bit &gt;&gt; <span class="number">1 </span>&amp; <span class="number">1</span>)), <span class="number">20</span>);
-<a href=#1330 id=1330 data-nosnippet>1330</a>            <span class="kw">let </span>expected: usize = (l..=r)
-<a href=#1331 id=1331 data-nosnippet>1331</a>                .map(|x| (l..=r).filter(|<span class="kw-2">&amp;</span>y| x + a &lt;= y).count())
-<a href=#1332 id=1332 data-nosnippet>1332</a>                .sum();
-<a href=#1333 id=1333 data-nosnippet>1333</a>            <span class="macro">assert_eq!</span>(expected, result);
-<a href=#1334 id=1334 data-nosnippet>1334</a>        }
-<a href=#1335 id=1335 data-nosnippet>1335</a>    }
-<a href=#1336 id=1336 data-nosnippet>1336</a>}</code></pre></div></section></main></body></html>
+<a href=#1283 id=1283 data-nosnippet>1283</a>        <span class="kw">for </span>(n, r, c) <span class="kw">in </span>rng
+<a href=#1284 id=1284 data-nosnippet>1284</a>            .random_iter((<span class="number">0</span>..<span class="number">10usize</span>.pow(<span class="number">18</span>), <span class="number">2</span>..=<span class="number">10</span>, <span class="number">2</span>..<span class="number">200</span>))
+<a href=#1285 id=1285 data-nosnippet>1285</a>            .take(Q)
+<a href=#1286 id=1286 data-nosnippet>1286</a>        {
+<a href=#1287 id=1287 data-nosnippet>1287</a>            <span class="kw">let </span>nd = n.to_digit_sequence_radix(r);
+<a href=#1288 id=1288 data-nosnippet>1288</a>            <span class="kw">let </span>fst = <span class="macro">transducer!</span>((&lt; nd) &amp; (=&gt; || <span class="number">0usize</span>, |s, a| <span class="prelude-val">Some</span>(((s * r + a) % c, ())), |s| <span class="kw-2">*</span>s == <span class="number">0</span>));
+<a href=#1289 id=1289 data-nosnippet>1289</a>            <span class="macro">assert_eq!</span>(
+<a href=#1290 id=1290 data-nosnippet>1290</a>                n.div_ceil(c),
+<a href=#1291 id=1291 data-nosnippet>1291</a>                fst.clone().dp::&lt;A&gt;(<span class="number">1</span>).with_hashmap().run(|| <span class="number">0</span>..r, nd.len())
+<a href=#1292 id=1292 data-nosnippet>1292</a>            );
+<a href=#1293 id=1293 data-nosnippet>1293</a>
+<a href=#1294 id=1294 data-nosnippet>1294</a>            <span class="macro">assert_eq!</span>(
+<a href=#1295 id=1295 data-nosnippet>1295</a>                n.div_ceil(c),
+<a href=#1296 id=1296 data-nosnippet>1296</a>                fst.dp::&lt;A&gt;(<span class="number">1</span>)
+<a href=#1297 id=1297 data-nosnippet>1297</a>                    .with_vecmap(|<span class="kw-2">&amp;</span>((<span class="kw">_</span>, s0), s1): <span class="kw-2">&amp;</span>((((), ()), bool), usize)| s1 * <span class="number">2 </span>+ s0 <span class="kw">as </span>usize)
+<a href=#1298 id=1298 data-nosnippet>1298</a>                    .run(|| <span class="number">0</span>..r, nd.len())
+<a href=#1299 id=1299 data-nosnippet>1299</a>            );
+<a href=#1300 id=1300 data-nosnippet>1300</a>        }
+<a href=#1301 id=1301 data-nosnippet>1301</a>    }
+<a href=#1302 id=1302 data-nosnippet>1302</a>
+<a href=#1303 id=1303 data-nosnippet>1303</a>    <span class="attr">#[test]
+<a href=#1304 id=1304 data-nosnippet>1304</a>    </span><span class="kw">fn </span>test_add_lte() {
+<a href=#1305 id=1305 data-nosnippet>1305</a>        <span class="kw">type </span>A = AdditiveOperation&lt;usize&gt;;
+<a href=#1306 id=1306 data-nosnippet>1306</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
+<a href=#1307 id=1307 data-nosnippet>1307</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
+<a href=#1308 id=1308 data-nosnippet>1308</a>        <span class="comment">// (x, y) where x + a &lt;= y, l &lt;= x, y &lt;= r
+<a href=#1309 id=1309 data-nosnippet>1309</a>        </span><span class="kw">for </span>((l, r), a) <span class="kw">in </span>rng
+<a href=#1310 id=1310 data-nosnippet>1310</a>            .random_iter((NotEmptySegment(<span class="number">100usize</span>), <span class="number">0usize</span>..<span class="number">100</span>))
+<a href=#1311 id=1311 data-nosnippet>1311</a>            .take(Q)
+<a href=#1312 id=1312 data-nosnippet>1312</a>        {
+<a href=#1313 id=1313 data-nosnippet>1313</a>            <span class="kw">let </span>ll = l.to_digit_sequence_radix_len(<span class="number">2</span>, <span class="number">20</span>);
+<a href=#1314 id=1314 data-nosnippet>1314</a>            <span class="kw">let </span>rr = r.to_digit_sequence_radix_len(<span class="number">2</span>, <span class="number">20</span>);
+<a href=#1315 id=1315 data-nosnippet>1315</a>            <span class="kw">let </span>aa = a.to_digit_sequence_radix_len(<span class="number">2</span>, <span class="number">20</span>);
+<a href=#1316 id=1316 data-nosnippet>1316</a>
+<a href=#1317 id=1317 data-nosnippet>1317</a>            <span class="kw">let </span>fst = <span class="macro">transducer!</span>(
+<a href=#1318 id=1318 data-nosnippet>1318</a>                ((ll !&lt;=) * (!&lt;= rr)) &amp; (
+<a href=#1319 id=1319 data-nosnippet>1319</a>                    (
+<a href=#1320 id=1320 data-nosnippet>1320</a>                        (
+<a href=#1321 id=1321 data-nosnippet>1321</a>                            ((@rseq <span class="kw-2">&amp;</span>aa) &amp; (@id))
+<a href=#1322 id=1322 data-nosnippet>1322</a>                            . (@map |<span class="kw-2">&amp;</span>(a, (x, _y))| x + a)
+<a href=#1323 id=1323 data-nosnippet>1323</a>                            . (=&gt; || <span class="number">0usize</span>, |s, i| <span class="prelude-val">Some</span>(((s + i) / <span class="number">2</span>, (s + i) % <span class="number">2</span>)), |s| <span class="kw-2">*</span>s == <span class="number">0</span>)
+<a href=#1324 id=1324 data-nosnippet>1324</a>                        ) &amp; (@map |<span class="kw-2">&amp;</span>(_x, y)| y)
+<a href=#1325 id=1325 data-nosnippet>1325</a>                    ) . (!&lt;=)
+<a href=#1326 id=1326 data-nosnippet>1326</a>                )
+<a href=#1327 id=1327 data-nosnippet>1327</a>            );
+<a href=#1328 id=1328 data-nosnippet>1328</a>
+<a href=#1329 id=1329 data-nosnippet>1329</a>            <span class="kw">let </span>result = fst
+<a href=#1330 id=1330 data-nosnippet>1330</a>                .dp::&lt;A&gt;(<span class="number">1</span>)
+<a href=#1331 id=1331 data-nosnippet>1331</a>                .with_hashmap()
+<a href=#1332 id=1332 data-nosnippet>1332</a>                .run(|| (<span class="number">0usize</span>..<span class="number">4</span>).map(|bit| (bit &amp; <span class="number">1</span>, (bit &gt;&gt; <span class="number">1</span>) &amp; <span class="number">1</span>)), <span class="number">20</span>);
+<a href=#1333 id=1333 data-nosnippet>1333</a>            <span class="kw">let </span>expected: usize = (l..=r)
+<a href=#1334 id=1334 data-nosnippet>1334</a>                .map(|x| (l..=r).filter(|<span class="kw-2">&amp;</span>y| x + a &lt;= y).count())
+<a href=#1335 id=1335 data-nosnippet>1335</a>                .sum();
+<a href=#1336 id=1336 data-nosnippet>1336</a>            <span class="macro">assert_eq!</span>(expected, result);
+<a href=#1337 id=1337 data-nosnippet>1337</a>        }
+<a href=#1338 id=1338 data-nosnippet>1338</a>    }
+<a href=#1339 id=1339 data-nosnippet>1339</a>}</code></pre></div></section></main></body></html>

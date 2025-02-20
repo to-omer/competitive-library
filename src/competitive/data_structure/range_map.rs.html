@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/range_map.rs`."><title>range_map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.87.0-nightly (ce36a966c 2025-02-17)" data-channel="nightly" data-search-js="search-f7327375.js" data-settings-js="settings-6dad6058.js" ><script src="../../../static.files/storage-3a5871a4.js"></script><script defer src="../../../static.files/src-script-b8d3f215.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5332ae0c.js"></script><script defer src="../../../static.files/scrape-examples-5e967b76.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/range_map.rs`."><title>range_map.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.87.0-nightly (f280acf4c 2025-02-19)" data-channel="nightly" data-search-js="search-f7327375.js" data-settings-js="settings-6dad6058.js" ><script src="../../../static.files/storage-3a5871a4.js"></script><script defer src="../../../static.files/src-script-b8d3f215.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5332ae0c.js"></script><script defer src="../../../static.files/scrape-examples-5e967b76.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -444,9 +444,9 @@
 <a href=#428 id=428 data-nosnippet>428</a>        <span class="kw">let </span><span class="kw-2">mut </span>map: RangeMap&lt;usize, i64&gt; = Default::default();
 <a href=#429 id=429 data-nosnippet>429</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr = <span class="macro">vec!</span>[<span class="prelude-val">None</span>; N];
 <a href=#430 id=430 data-nosnippet>430</a>        <span class="kw">for _ in </span><span class="number">0</span>..Q {
-<a href=#431 id=431 data-nosnippet>431</a>            <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">5</span>) {
+<a href=#431 id=431 data-nosnippet>431</a>            <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">5</span>) {
 <a href=#432 id=432 data-nosnippet>432</a>                <span class="number">0 </span>=&gt; {
-<a href=#433 id=433 data-nosnippet>433</a>                    <span class="kw">let </span>key = rng.gen(..N);
+<a href=#433 id=433 data-nosnippet>433</a>                    <span class="kw">let </span>key = rng.random(..N);
 <a href=#434 id=434 data-nosnippet>434</a>                    <span class="kw">if let </span><span class="prelude-val">Some</span>((r, <span class="kw-2">&amp;</span>v)) = map.get_range_value(<span class="kw-2">&amp;</span>key) {
 <a href=#435 id=435 data-nosnippet>435</a>                        arr[r.<span class="number">0</span>..r.<span class="number">1</span>].iter_mut().for_each(|a| {
 <a href=#436 id=436 data-nosnippet>436</a>                            <span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(v), <span class="kw-2">*</span>a);
@@ -454,7 +454,7 @@
 <a href=#438 id=438 data-nosnippet>438</a>                    };
 <a href=#439 id=439 data-nosnippet>439</a>                }
 <a href=#440 id=440 data-nosnippet>440</a>                <span class="number">1 </span>=&gt; {
-<a href=#441 id=441 data-nosnippet>441</a>                    <span class="kw">let </span>range = rng.gen(Nes(N));
+<a href=#441 id=441 data-nosnippet>441</a>                    <span class="kw">let </span>range = rng.random(Nes(N));
 <a href=#442 id=442 data-nosnippet>442</a>                    map.drain_with(range, |r, v| {
 <a href=#443 id=443 data-nosnippet>443</a>                        arr[r.<span class="number">0</span>.max(range.<span class="number">0</span>)..r.<span class="number">1</span>.min(range.<span class="number">1</span>)]
 <a href=#444 id=444 data-nosnippet>444</a>                            .iter_mut()
@@ -468,8 +468,8 @@
 <a href=#452 id=452 data-nosnippet>452</a>                        .for_each(|a| <span class="macro">assert_eq!</span>(<span class="kw-2">*</span>a, <span class="prelude-val">None</span>));
 <a href=#453 id=453 data-nosnippet>453</a>                }
 <a href=#454 id=454 data-nosnippet>454</a>                <span class="kw">_ </span>=&gt; {
-<a href=#455 id=455 data-nosnippet>455</a>                    <span class="kw">let </span>range = rng.gen(Nes(N));
-<a href=#456 id=456 data-nosnippet>456</a>                    <span class="kw">let </span>value = rng.gen(-A..=A);
+<a href=#455 id=455 data-nosnippet>455</a>                    <span class="kw">let </span>range = rng.random(Nes(N));
+<a href=#456 id=456 data-nosnippet>456</a>                    <span class="kw">let </span>value = rng.random(-A..=A);
 <a href=#457 id=457 data-nosnippet>457</a>                    map.insert_with(range, value, |r, v| {
 <a href=#458 id=458 data-nosnippet>458</a>                        arr[r.<span class="number">0</span>.max(range.<span class="number">0</span>)..r.<span class="number">1</span>.min(range.<span class="number">1</span>)]
 <a href=#459 id=459 data-nosnippet>459</a>                            .iter_mut()
@@ -504,9 +504,9 @@
 <a href=#488 id=488 data-nosnippet>488</a>        <span class="kw">let </span><span class="kw-2">mut </span>set: RangeSet&lt;usize&gt; = Default::default();
 <a href=#489 id=489 data-nosnippet>489</a>        <span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="bool-val">false</span>; N];
 <a href=#490 id=490 data-nosnippet>490</a>        <span class="kw">for _ in </span><span class="number">0</span>..Q {
-<a href=#491 id=491 data-nosnippet>491</a>            <span class="kw">match </span>rng.gen(<span class="number">0</span>..<span class="number">5</span>) {
+<a href=#491 id=491 data-nosnippet>491</a>            <span class="kw">match </span>rng.random(<span class="number">0</span>..<span class="number">5</span>) {
 <a href=#492 id=492 data-nosnippet>492</a>                <span class="number">0 </span>=&gt; {
-<a href=#493 id=493 data-nosnippet>493</a>                    <span class="kw">let </span>key = rng.gen(..N);
+<a href=#493 id=493 data-nosnippet>493</a>                    <span class="kw">let </span>key = rng.random(..N);
 <a href=#494 id=494 data-nosnippet>494</a>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(r) = set.get_range(<span class="kw-2">&amp;</span>key) {
 <a href=#495 id=495 data-nosnippet>495</a>                        arr[r.<span class="number">0</span>..r.<span class="number">1</span>].iter_mut().for_each(|a| {
 <a href=#496 id=496 data-nosnippet>496</a>                            <span class="macro">assert!</span>(<span class="kw-2">*</span>a);
@@ -514,7 +514,7 @@
 <a href=#498 id=498 data-nosnippet>498</a>                    };
 <a href=#499 id=499 data-nosnippet>499</a>                }
 <a href=#500 id=500 data-nosnippet>500</a>                <span class="number">1 </span>=&gt; {
-<a href=#501 id=501 data-nosnippet>501</a>                    <span class="kw">let </span>range = rng.gen(Nes(N));
+<a href=#501 id=501 data-nosnippet>501</a>                    <span class="kw">let </span>range = rng.random(Nes(N));
 <a href=#502 id=502 data-nosnippet>502</a>                    set.drain_with(range, |r| {
 <a href=#503 id=503 data-nosnippet>503</a>                        arr[r.<span class="number">0</span>.max(range.<span class="number">0</span>)..r.<span class="number">1</span>.min(range.<span class="number">1</span>)]
 <a href=#504 id=504 data-nosnippet>504</a>                            .iter_mut()
@@ -526,7 +526,7 @@
 <a href=#510 id=510 data-nosnippet>510</a>                    arr[range.<span class="number">0</span>..range.<span class="number">1</span>].iter_mut().for_each(|a| <span class="macro">assert!</span>(!<span class="kw-2">*</span>a));
 <a href=#511 id=511 data-nosnippet>511</a>                }
 <a href=#512 id=512 data-nosnippet>512</a>                <span class="kw">_ </span>=&gt; {
-<a href=#513 id=513 data-nosnippet>513</a>                    <span class="kw">let </span>range = rng.gen(Nes(N));
+<a href=#513 id=513 data-nosnippet>513</a>                    <span class="kw">let </span>range = rng.random(Nes(N));
 <a href=#514 id=514 data-nosnippet>514</a>                    set.insert_with(range, |r| {
 <a href=#515 id=515 data-nosnippet>515</a>                        arr[r.<span class="number">0</span>.max(range.<span class="number">0</span>)..r.<span class="number">1</span>.min(range.<span class="number">1</span>)]
 <a href=#516 id=516 data-nosnippet>516</a>                            .iter_mut()
