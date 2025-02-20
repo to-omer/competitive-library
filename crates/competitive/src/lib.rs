@@ -1,10 +1,9 @@
 // #![warn(missing_docs)]
 #![allow(clippy::many_single_char_names)]
 #![allow(clippy::missing_safety_doc)]
-// FIXME: Remove this (supported since 1.73.0)
-#![allow(clippy::manual_div_ceil)]
-// FIXME: Remove this (supported since 1.82.0)
-#![allow(clippy::unnecessary_map_or)]
+#![allow(clippy::manual_div_ceil)] // FIXME: Remove this (supported since 1.73.0)
+#![allow(clippy::unnecessary_map_or)] // FIXME: Remove this (supported since 1.82.0)
+#![allow(unsafe_op_in_unsafe_fn)] // FIXME
 
 //! [github]
 //!
