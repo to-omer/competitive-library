@@ -97,7 +97,10 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                         }) => match special_judge {
                             None => special_judge = Some(litstr2ident(litstr)),
                             Some(_) => {
-                                return Err(syn::Error::new(litstr.span(), "extra judge specified"));
+                                return Err(syn::Error::new(
+                                    litstr.span(),
+                                    "extra judge specified",
+                                ));
                             }
                         },
                         _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
