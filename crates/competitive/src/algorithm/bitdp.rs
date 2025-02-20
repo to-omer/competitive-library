@@ -3,7 +3,7 @@ pub struct BitDp(pub usize);
 
 impl BitDp {
     pub fn is_element(mask: usize, x: usize) -> bool {
-        mask & 1 << x != 0
+        mask & (1 << x) != 0
     }
     pub fn elements(self, mask: usize) -> impl Iterator<Item = usize> {
         (0..self.0).filter(move |&x| Self::is_element(mask, x))

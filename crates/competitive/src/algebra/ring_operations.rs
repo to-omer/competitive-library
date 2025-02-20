@@ -19,7 +19,7 @@ mod gf2_63 {
                 let c = _mm_clmulepi64_si128(a, b, 0);
                 let lo = _mm_extract_epi64(c, 0) as u64;
                 let hi = _mm_extract_epi64(c, 1) as u64;
-                let hi = hi << 1 | lo >> 63;
+                let hi = (hi << 1) | (lo >> 63);
                 let lo = lo & !(!(0u64) << 63);
                 lo ^ hi ^ (hi << 1)
             }

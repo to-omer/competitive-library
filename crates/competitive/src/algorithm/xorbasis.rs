@@ -15,7 +15,7 @@ impl XorBasis {
         let mut coord = 0u64;
         for (i, (u, c, _)) in self.bases.iter().enumerate() {
             if x > u ^ x {
-                coord ^= c ^ 1 << i;
+                coord ^= c ^ (1 << i);
                 x ^= u;
             }
         }
@@ -47,7 +47,7 @@ impl XorBasis {
                 self.bases
                     .iter()
                     .enumerate()
-                    .filter_map(|(i, (_, _, b))| if coord & 1 << i != 0 { Some(*b) } else { None })
+                    .filter_map(|(i, (_, _, b))| if coord & (1 << i) != 0 { Some(*b) } else { None })
                     .collect(),
             )
         } else {
@@ -92,7 +92,7 @@ mod tests {
             .map(|i| {
                 b.iter()
                     .enumerate()
-                    .map(|(j, &b)| if i & 1 << j != 0 { b } else { 0 })
+                    .map(|(j, &b)| if i & (1 << j) != 0 { b } else { 0 })
                     .fold(0, std::ops::BitXor::bitxor)
             })
             .collect()

@@ -299,7 +299,7 @@ where
                 .iter()
                 .zip(&self.offset)
                 .enumerate()
-                .map(|(d, (range, offset))| range[bit >> d & 1 ^ 1] * offset)
+                .map(|(d, (range, offset))| range[(bit >> d) & 1 ^ 1] * offset)
                 .sum();
             if bit.count_ones() & 1 == 0 {
                 acc = M::operate(&acc, unsafe { self.data.get_unchecked(p) });

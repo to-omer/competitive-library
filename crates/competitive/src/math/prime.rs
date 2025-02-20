@@ -59,7 +59,7 @@ pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     for i in 0..1 << m {
         let (mut mu, mut d) = (1, 1);
         for (j, p) in primes.iter().enumerate() {
-            if i & 1 << j != 0 {
+            if i & (1 << j) != 0 {
                 mu *= -1;
                 d *= p;
             }

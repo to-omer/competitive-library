@@ -303,7 +303,7 @@ mod tests {
                         continue;
                     }
                     for &(l, r) in &lr {
-                        chmin!(dp[bitl | 1 << l][bitr | 1 << r], dp[bitl][bitr] + 1);
+                        chmin!(dp[bitl | (1 << l)][bitr | (1 << r)], dp[bitl][bitr] + 1);
                     }
                 }
             }
@@ -331,7 +331,7 @@ mod tests {
                 for bitr in 0usize..1 << m {
                     if lr
                         .iter()
-                        .all(|&(l, r)| bitl & 1 << l != 0 || bitr & 1 << r != 0)
+                        .all(|&(l, r)| bitl & (1 << l) != 0 || bitr & (1 << r) != 0)
                     {
                         chmin!(ans, (bitl.count_ones() + bitr.count_ones()) as usize);
                     }
@@ -356,7 +356,7 @@ mod tests {
                 for bitr in 0usize..1 << m {
                     if lr
                         .iter()
-                        .all(|&(l, r)| bitl & 1 << l == 0 || bitr & 1 << r == 0)
+                        .all(|&(l, r)| bitl & (1 << l) == 0 || bitr & (1 << r) == 0)
                     {
                         chmax!(ans, (bitl.count_ones() + bitr.count_ones()) as usize);
                     }

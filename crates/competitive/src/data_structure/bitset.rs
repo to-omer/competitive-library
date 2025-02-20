@@ -27,7 +27,7 @@ impl BitSet {
     }
     #[inline]
     pub fn get(&self, i: usize) -> bool {
-        self.bits[i >> 6] & 1 << (i & 63) != 0
+        self.bits[i >> 6] & (1 << (i & 63)) != 0
     }
     #[inline]
     pub fn set(&mut self, i: usize, b: bool) {
@@ -65,7 +65,7 @@ impl BitSet {
                 }
             } else {
                 for i in (1..n - k).rev() {
-                    self.bits[i + k] |= self.bits[i] << d | self.bits[i - 1] >> (64 - d);
+                    self.bits[i + k] |= (self.bits[i] << d) | (self.bits[i - 1] >> (64 - d));
                 }
                 self.bits[k] |= self.bits[0] << d;
             }
@@ -84,7 +84,7 @@ impl BitSet {
                 }
             } else {
                 for i in k..n - 1 {
-                    self.bits[i - k] |= self.bits[i] >> d | self.bits[i + 1] << (64 - d);
+                    self.bits[i - k] |= (self.bits[i] >> d) | (self.bits[i + 1] << (64 - d));
                 }
                 self.bits[n - k - 1] |= self.bits[n - 1] >> d;
             }
@@ -108,7 +108,7 @@ impl ShlAssign<usize> for BitSet {
                 }
             } else {
                 for i in (1..n - k).rev() {
-                    self.bits[i + k] = self.bits[i] << d | self.bits[i - 1] >> (64 - d);
+                    self.bits[i + k] = (self.bits[i] << d) | (self.bits[i - 1] >> (64 - d));
                 }
                 self.bits[k] = self.bits[0] << d;
             }
@@ -144,7 +144,7 @@ impl ShrAssign<usize> for BitSet {
                 }
             } else {
                 for i in k..n - 1 {
-                    self.bits[i - k] = self.bits[i] >> d | self.bits[i + 1] << (64 - d);
+                    self.bits[i - k] = (self.bits[i] >> d) | (self.bits[i + 1] << (64 - d));
                 }
                 self.bits[n - k - 1] = self.bits[n - 1] >> d;
             }

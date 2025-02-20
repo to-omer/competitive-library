@@ -189,7 +189,7 @@ where
         let mut acc = M::unit();
         while l >> k < r {
             c <<= 1;
-            if l & 1 << k != 0 {
+            if l & (1 << k) != 0 {
                 l += 1 << k;
                 c += 1;
             }

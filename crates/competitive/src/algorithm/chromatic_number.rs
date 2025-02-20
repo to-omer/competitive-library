@@ -12,7 +12,7 @@ impl<M: MIntBase> IndependentSubSet<M> {
         ind.push(MInt::one());
         for s in 1usize..1 << n {
             let v = s.trailing_zeros() as usize;
-            ind.push(ind[s - (1 << v)] + ind[s & !(g[v] | 1 << v)]);
+            ind.push(ind[s - (1 << v)] + ind[s & !(g[v] | (1 << v))]);
         }
         Self { n, ind }
     }

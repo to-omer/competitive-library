@@ -39,7 +39,7 @@ impl Xorshift {
         let x = self.rand64();
         let tmp = UPPER_MASK | (x & LOWER_MASK);
         let result: f64 = f64::from_bits(tmp);
-        f64::from_bits(f64::to_bits(result - 1.0) ^ x >> 63)
+        f64::from_bits(f64::to_bits(result - 1.0) ^ (x >> 63))
     }
 
     pub fn gen_bool(&mut self, p: f64) -> bool {

@@ -67,7 +67,7 @@ impl_random_spec_range_full!(u8 u16 u32 u64 usize i8 i16 i32 i64 isize);
 
 impl RandomSpec<u128> for RangeFull {
     fn rand(&self, rng: &mut Xorshift) -> u128 {
-        (rng.rand64() as u128) << 64 | rng.rand64() as u128
+        ((rng.rand64() as u128) << 64) | rng.rand64() as u128
     }
 }
 impl RandomSpec<i128> for RangeFull {

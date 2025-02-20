@@ -54,13 +54,13 @@ fn to_bytestring(bytes: &[u8]) -> String {
     let mut w = 0u32;
     for &b in bytes {
         w += 1;
-        count[(c | b >> w) as usize] += 1;
+        count[(c | (b >> w)) as usize] += 1;
         if w == 7 {
             count[(b & 0b1111111u8) as usize] += 1;
             c = 0;
             w = 0;
         } else {
-            c = b << (7 - w) & 0b1111111u8;
+            c = (b << (7 - w)) & 0b1111111u8;
         }
     }
     if w > 0 {
@@ -106,13 +106,13 @@ fn to_bytestring(bytes: &[u8]) -> String {
     escape!(0);
     for &b in bytes {
         w += 1;
-        escape!(c | b >> w);
+        escape!(c | (b >> w));
         if w == 7 {
             escape!(b & 0b1111111u8);
             c = 0;
             w = 0;
         } else {
-            c = b << (7 - w) & 0b1111111u8;
+            c = (b << (7 - w)) & 0b1111111u8;
         }
     }
     if w > 0 {
@@ -137,7 +137,7 @@ fn from_bytestring(bytes: &[u8]) -> Vec<u8> {
             w = 7;
         } else {
             w -= 1;
-            buf.push(c | b >> w);
+            buf.push(c | (b >> w));
             c = if w > 0 { b << (8 - w) } else { 0 };
         }
     }
@@ -222,7 +222,7 @@ impl<'a> BitReader<'a> {
         Self { bytes, pos: 0 }
     }
     fn read_bit(&mut self) -> bool {
-        let b = self.bytes[0] >> (7 - self.pos) & 1 == 1;
+        let b = (self.bytes[0] >> (7 - self.pos)) & 1 == 1;
         self.pos += 1;
         if self.pos == 8 {
             self.pos = 0;
@@ -236,7 +236,7 @@ impl<'a> BitReader<'a> {
         if self.pos == 0 {
             b
         } else {
-            b | self.bytes[0] >> (8 - self.pos)
+            b | (self.bytes[0] >> (8 - self.pos))
         }
     }
 }
@@ -249,7 +249,7 @@ fn huffman_coding(bytes: &[u8]) -> Vec<u8> {
             }
             HuffmanTree::Node(l, r) => {
                 make_table(l, code << 1, len + 1, table);
-                make_table(r, code << 1 | 1, len + 1, table);
+                make_table(r, (code << 1) | 1, len + 1, table);
             }
         }
     }

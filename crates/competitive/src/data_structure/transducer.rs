@@ -1326,7 +1326,7 @@ mod tests {
             let result = fst
                 .dp::<A>(1)
                 .with_hashmap()
-                .run(|| (0usize..4).map(|bit| (bit & 1, bit >> 1 & 1)), 20);
+                .run(|| (0usize..4).map(|bit| (bit & 1, (bit >> 1) & 1)), 20);
             let expected: usize = (l..=r)
                 .map(|x| (l..=r).filter(|&y| x + a <= y).count())
                 .sum();
