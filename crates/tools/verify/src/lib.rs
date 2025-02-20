@@ -87,7 +87,7 @@ async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
         if let Ok(()) = gen_case_inner(&url, &file).await {
             return Ok(());
         };
-        sleep(Duration::from_secs_f64(rng.gen_range(1f64..5f64))).await;
+        sleep(Duration::from_secs_f64(rng.random_range(1f64..5f64))).await;
     }
     gen_case_inner(&url, &file).await
 }

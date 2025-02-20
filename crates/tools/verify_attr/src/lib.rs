@@ -3,8 +3,11 @@ use crate::proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
 use syn::{
-    parse::Parser, parse_macro_input, punctuated::Punctuated, spanned::Spanned, Ident, ItemFn, Lit,
-    LitFloat, LitStr, Meta, NestedMeta, Token,
+    parse::{Parse, Parser},
+    parse_macro_input,
+    punctuated::Punctuated,
+    spanned::Spanned,
+    Expr, ExprLit, Ident, ItemFn, Lit, LitFloat, LitStr, Meta, Token,
 };
 
 struct VerifyAttribute {
@@ -17,22 +20,49 @@ fn litstr2ident(litstr: &LitStr) -> Ident {
     Ident::new(&litstr.value(), litstr.span())
 }
 
+enum LitOrMeta {
+    Lit(Lit),
+    Meta(Meta),
+}
+
+impl Parse for LitOrMeta {
+    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
+        if input.peek(Lit) {
+            Ok(LitOrMeta::Lit(input.parse()?))
+        } else {
+            Ok(LitOrMeta::Meta(input.parse()?))
+        }
+    }
+}
+
+impl quote::ToTokens for LitOrMeta {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        match self {
+            LitOrMeta::Lit(lit) => lit.to_tokens(tokens),
+            LitOrMeta::Meta(meta) => meta.to_tokens(tokens),
+        }
+    }
+}
+
 fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
-    let punc = Punctuated::<NestedMeta, Token!(,)>::parse_terminated.parse(attr)?;
+    let punc = Punctuated::<LitOrMeta, Token!(,)>::parse_terminated.parse(attr)?;
     let mut problem_id = None;
     let mut eps = None;
     let mut special_judge = None;
-    for nmeta in punc.iter() {
-        match nmeta {
-            NestedMeta::Meta(Meta::NameValue(nv)) => {
+    for item in punc.iter() {
+        match item {
+            LitOrMeta::Meta(Meta::NameValue(nv)) => {
                 let ident = nv
                     .path
                     .get_ident()
                     .ok_or_else(|| syn::Error::new(nv.path.span(), "unknown parameter"))?
                     .to_string();
                 match ident.as_str() {
-                    "problem_id" => match &nv.lit {
-                        Lit::Str(litstr) => match problem_id {
+                    "problem_id" => match &nv.value {
+                        Expr::Lit(ExprLit {
+                            lit: Lit::Str(litstr),
+                            ..
+                        }) => match problem_id {
                             None => problem_id = Some(litstr.clone()),
                             Some(_) => {
                                 return Err(syn::Error::new(
@@ -41,10 +71,13 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                                 ))
                             }
                         },
-                        _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
+                        _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
                     },
-                    "eps" => match &nv.lit {
-                        Lit::Str(litstr) => match eps {
+                    "eps" => match &nv.value {
+                        Expr::Lit(ExprLit {
+                            lit: Lit::Str(litstr),
+                            ..
+                        }) => match eps {
                             None => match litstr.value().parse::<f64>() {
                                 Ok(_) => eps = Some(LitFloat::new(&litstr.value(), litstr.span())),
                                 Err(_) => {
@@ -55,27 +88,30 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
                                 return Err(syn::Error::new(litstr.span(), "extra eps specified"))
                             }
                         },
-                        _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
+                        _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
                     },
-                    "judge" => match &nv.lit {
-                        Lit::Str(litstr) => match special_judge {
+                    "judge" => match &nv.value {
+                        Expr::Lit(ExprLit {
+                            lit: Lit::Str(litstr),
+                            ..
+                        }) => match special_judge {
                             None => special_judge = Some(litstr2ident(litstr)),
                             Some(_) => {
                                 return Err(syn::Error::new(litstr.span(), "extra judge specified"))
                             }
                         },
-                        _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
+                        _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
                     },
                     _ => (),
                 }
             }
-            NestedMeta::Lit(Lit::Str(litstr)) => match problem_id {
+            LitOrMeta::Lit(Lit::Str(litstr)) => match problem_id {
                 None => problem_id = Some(litstr.clone()),
                 Some(_) => {
                     return Err(syn::Error::new(litstr.span(), "extra problem_id specified"))
                 }
             },
-            _ => return Err(syn::Error::new(nmeta.span(), "unknown meta value")),
+            _ => return Err(syn::Error::new(item.span(), "unknown meta value")),
         }
     }
     if eps.is_some() && special_judge.is_some() {
@@ -114,7 +150,7 @@ macro_rules! define_verify {
                     } else {
                         quote! { case.judge_with_checker(buf.as_ref(), &checker) }
                     };
-                    let gen = quote! {
+                    let body = quote! {
                         #[cfg_attr(feature = "verify_doc", cfg_attr(all(), doc = include_str!(#md)))]
                         #[cfg_attr(feature = "verify_doc", doc(alias = "verify"))]
                         #ast
@@ -172,7 +208,7 @@ macro_rules! define_verify {
                             ::std::assert!(res.is_ok(), "{}", ::std::stringify!(#fn_name));
                         }
                     };
-                    gen.into()
+                    body.into()
                 }
                 Err(err) => err.to_compile_error().into(),
             }
