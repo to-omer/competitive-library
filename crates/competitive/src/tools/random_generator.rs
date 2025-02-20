@@ -287,9 +287,6 @@ macro_rules! rand_value {
     ($rng:expr, [$($t:tt)*]) => {
         ::std::iter::repeat_with(|| $crate::rand_value!($rng, $($t)*))
     };
-    ($rng:expr, {$s:expr}) => {
-        ($rng).gen($s)
-    };
     ($rng:expr, $s:expr) => {
         ($rng).gen($s)
     };
@@ -297,22 +294,30 @@ macro_rules! rand_value {
 #[macro_export]
 /// Declare random values using [`RandomSpec`].
 macro_rules! rand {
+    (@assert $p:pat) => {};
+    (@assert $($p:tt)*) => { ::std::compile_error!(::std::concat!("expected pattern, found `", ::std::stringify!($($p)*), "`")); };
+    (@pat $rng:expr, [] [])                                          => {};
+    (@pat $rng:expr, [] [] , $($t:tt)*)                              => { $crate::rand!(@pat $rng, [] [] $($t)*) };
+    (@pat $rng:expr, [$($p:tt)*] [] $x:ident $($t:tt)*)              => { $crate::rand!(@pat $rng, [$($p)* $x] [] $($t)*) };
+    (@pat $rng:expr, [$($p:tt)*] [] :: $($t:tt)*)                    => { $crate::rand!(@pat $rng, [$($p)* ::] [] $($t)*) };
+    (@pat $rng:expr, [$($p:tt)*] [] & $($t:tt)*)                     => { $crate::rand!(@pat $rng, [$($p)* &] [] $($t)*) };
+    (@pat $rng:expr, [$($p:tt)*] [] ($($x:tt)*) $($t:tt)*)           => { $crate::rand!(@pat $rng, [$($p)* ($($x)*)] [] $($t)*) };
+    (@pat $rng:expr, [$($p:tt)*] [] [$($x:tt)*] $($t:tt)*)           => { $crate::rand!(@pat $rng, [$($p)* [$($x)*]] [] $($t)*) };
+    (@pat $rng:expr, [$($p:tt)*] [] {$($x:tt)*} $($t:tt)*)           => { $crate::rand!(@pat $rng, [$($p)* {$($x)*}] [] $($t)*) };
+    (@pat $rng:expr, [$($p:tt)*] [] : $($t:tt)*)                     => { $crate::rand!(@ty  $rng, [$($p)*] [] $($t)*) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] ($($x:tt)*) $($t:tt)*) => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* ($($x)*)] $($t)*) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] [$($x:tt)*] $($t:tt)*) => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* [$($x)*]] $($t)*) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] $e:expr)               => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* $e]) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] $e:expr, $($t:tt)*)    => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* $e], $($t)*) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] $e:tt)                 => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* $e]) };
+    (@ty  $rng:expr, [$($p:tt)*] [$($tt:tt)*] $e:tt, $($t:tt)*)      => { $crate::rand!(@let $rng, [$($p)*] [$($tt)* $e], $($t)*) };
+    (@let $rng:expr, [$($p:tt)*] [$($tt:tt)*] $($t:tt)*) => {
+        $crate::rand!{@assert $($p)*}
+        let $($p)* = $crate::rand_value!($rng, $($tt)*);
+        $crate::rand!(@pat $rng, [] [] $($t)*)
+    };
     ($rng:expr) => {};
-    ($rng:expr,) => {};
-    ($rng:expr, $var:tt: $t:tt) => {
-        let $var = $crate::rand_value!($rng, $t);
-    };
-    ($rng:expr, mut $var:tt: $t:tt) => {
-        let mut $var = $crate::rand_value!($rng, $t);
-    };
-    ($rng:expr, $var:tt: $t:tt, $($rest:tt)*) => {
-        let $var = $crate::rand_value!($rng, $t);
-        rand!($rng, $($rest)*)
-    };
-    ($rng:expr, mut $var:tt: $t:tt, $($rest:tt)*) => {
-        let mut $var = $crate::rand_value!($rng, $t);
-        rand!($rng, $($rest)*)
-    };
+    ($rng:expr, $($t:tt)*) => { $crate::rand!(@pat $rng, [] [] $($t)*) };
 }
 
 #[cfg(test)]
@@ -357,9 +362,9 @@ mod tests {
     fn test_rand_macro() {
         let mut rng = Xorshift::default();
         rand!(
-            &mut rng,
-            _x: (..10),
-            _lr: (NotEmptySegment(10)),
+            rng,
+            _x: ..10,
+            _lr: NotEmptySegment(10),
             _a: [..10; 10],
             _t: (..10,),
             _r: (&(..10),&mut (..10)),
