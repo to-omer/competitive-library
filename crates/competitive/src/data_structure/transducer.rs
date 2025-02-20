@@ -1017,6 +1017,7 @@ impl_to_digit_sequence!(u8 u16 u32 u64 u128 usize);
 /// - `A & B`: [`IntersectionTransducer((A, B))`](`IntersectionTransducer`)
 #[macro_export]
 macro_rules! transducer {
+    (@check $e:expr)                                         => {{ #[inline(always)] fn check_transucer<T>(fst: T) -> T where T: Transducer { fst } check_transucer($e) }};
     (@inner ($($t:tt)*))                                     => { $crate::transducer!(@inner $($t)*) };
     (@inner <= $e:expr)                                      => { $crate::transducer!(((@id & (@seq &$e)) . <=)) };
     (@inner >= $e:expr)                                      => { $crate::transducer!(((@id & (@seq &$e)) . >=)) };
@@ -1034,36 +1035,36 @@ macro_rules! transducer {
     (@inner $e:ident !>=)                                    => { $crate::transducer!((((@rseq &$e) & @id) . !>=)) };
     (@inner $e:ident !<)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !<)) };
     (@inner $e:ident !>)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !>)) };
-    (@inner <=)                                              => { check_transucer(LexicographicalTransducer::less_than_or_equal()) };
-    (@inner >=)                                              => { check_transucer(LexicographicalTransducer::greater_than_or_equal()) };
-    (@inner <)                                               => { check_transucer(LexicographicalTransducer::less_than()) };
-    (@inner >)                                               => { check_transucer(LexicographicalTransducer::greater_than()) };
-    (@inner !<=)                                             => { check_transucer(RevLexicographicalTransducer::less_than_or_equal()) };
-    (@inner !>=)                                             => { check_transucer(RevLexicographicalTransducer::greater_than_or_equal()) };
-    (@inner !<)                                              => { check_transucer(RevLexicographicalTransducer::less_than()) };
-    (@inner !>)                                              => { check_transucer(RevLexicographicalTransducer::greater_than()) };
-    (@inner => $f:expr, $g:expr, $h:expr $(,)?)              => { check_transucer(FunctionalTransducer::new($f, $g, $h)) };
-    (@inner @id)                                             => { check_transucer(IdentityTransducer::new()) };
-    (@inner @it $e:expr)                                     => { check_transucer(IteratorTransducer::new($e)) };
-    (@inner @map $f:expr)                                    => { check_transucer(MapTransducer::new($f)) };
-    (@inner @fmap $f:expr)                                   => { check_transucer(FilterMapTransducer::new($f)) };
-    (@inner @seq $e:expr)                                    => { check_transucer(SequenceTransducer::new($e)) };
-    (@inner @rseq $e:expr)                                   => { check_transucer(RevSequenceTransducer::new($e)) };
-    (@inner @<$t:ty>)                                        => { check_transucer(AlwaysAcceptingTransducer::<$t>::new()) };
-    (@inner @)                                               => { check_transucer(AlwaysAcceptingTransducer::new()) };
+    (@inner <=)                                              => { $crate::transducer!(@check LexicographicalTransducer::less_than_or_equal()) };
+    (@inner >=)                                              => { $crate::transducer!(@check LexicographicalTransducer::greater_than_or_equal()) };
+    (@inner <)                                               => { $crate::transducer!(@check LexicographicalTransducer::less_than()) };
+    (@inner >)                                               => { $crate::transducer!(@check LexicographicalTransducer::greater_than()) };
+    (@inner !<=)                                             => { $crate::transducer!(@check RevLexicographicalTransducer::less_than_or_equal()) };
+    (@inner !>=)                                             => { $crate::transducer!(@check RevLexicographicalTransducer::greater_than_or_equal()) };
+    (@inner !<)                                              => { $crate::transducer!(@check RevLexicographicalTransducer::less_than()) };
+    (@inner !>)                                              => { $crate::transducer!(@check RevLexicographicalTransducer::greater_than()) };
+    (@inner => $f:expr, $g:expr, $h:expr $(,)?)              => { $crate::transducer!(@check FunctionalTransducer::new($f, $g, $h)) };
+    (@inner @id)                                             => { $crate::transducer!(@check IdentityTransducer::new()) };
+    (@inner @it $e:expr)                                     => { $crate::transducer!(@check IteratorTransducer::new($e)) };
+    (@inner @map $f:expr)                                    => { $crate::transducer!(@check MapTransducer::new($f)) };
+    (@inner @fmap $f:expr)                                   => { $crate::transducer!(@check FilterMapTransducer::new($f)) };
+    (@inner @seq $e:expr)                                    => { $crate::transducer!(@check SequenceTransducer::new($e)) };
+    (@inner @rseq $e:expr)                                   => { $crate::transducer!(@check RevSequenceTransducer::new($e)) };
+    (@inner @<$t:ty>)                                        => { $crate::transducer!(@check AlwaysAcceptingTransducer::<$t>::new()) };
+    (@inner @)                                               => { $crate::transducer!(@check AlwaysAcceptingTransducer::new()) };
     (@inner $($t:tt)*)                                       => { $crate::transducer!(@inter [] [] $($t)*) };
-    (@inter [$([$($a:tt)*])*])                               => { check_transucer(IntersectionTransducer(($($crate::transducer!(@inner $($a)*),)*))) };
+    (@inter [$([$($a:tt)*])*])                               => { $crate::transducer!(@check IntersectionTransducer(($($crate::transducer!(@inner $($a)*),)*))) };
     (@inter [] [$($b:tt)*])                                  => { $crate::transducer!(@prod [] [] $($b)*) };
     (@inter [$($a:tt)*] [$($b:tt)*])                         => { $crate::transducer!(@inter [$($a)* [$($b)*]]) };
     (@inter [$($a:tt)*] [$($b:tt)*] & $($t:tt)*)             => { $crate::transducer!(@inter [$($a)* [$($b)*]] [] $($t)*) };
     (@inter [$($a:tt)*] [$($b:tt)*] $op:tt $($t:tt)*)        => { $crate::transducer!(@inter [$($a)*] [$($b)* $op] $($t)*) };
-    (@prod [$([$($a:tt)*])*])                                => { check_transucer(ProductTransducer(($($crate::transducer!(@inner $($a)*),)*))) };
+    (@prod [$([$($a:tt)*])*])                                => { $crate::transducer!(@check ProductTransducer(($($crate::transducer!(@inner $($a)*),)*))) };
     (@prod [] [$($b:tt)*])                                   => { $crate::transducer!(@chain [] [] $($b)*) };
     (@prod [$($a:tt)*] [$($b:tt)*])                          => { $crate::transducer!(@prod [$($a)* [$($b)*]]) };
     (@prod [$($a:tt)*] [$($b:tt)*] * $($t:tt)*)              => { $crate::transducer!(@prod [$($a)* [$($b)*]] [] $($t)*) };
     (@prod [$($a:tt)*] [$($b:tt)*] $op:tt $($t:tt)*)         => { $crate::transducer!(@prod [$($a)*] [$($b)* $op] $($t)*) };
-    (@chain [$([$($a:tt)*])*])                               => { check_transucer(ChainTransducer(($($crate::transducer!(@inner $($a)*),)*))) };
-    (@chain [] [$($b:tt)*])                                  => { check_transucer($($b)*) };
+    (@chain [$([$($a:tt)*])*])                               => { $crate::transducer!(@check ChainTransducer(($($crate::transducer!(@inner $($a)*),)*))) };
+    (@chain [] [$($b:tt)*])                                  => { $crate::transducer!(@check $($b)*) };
     (@chain [$($a:tt)*] [$($b:tt)*])                         => { $crate::transducer!(@chain [$($a)* [$($b)*]]) };
     (@chain [$($a:tt)*] [$($b:tt)*] . $($t:tt)*)             => { $crate::transducer!(@chain [$($a)* [$($b)*]] [] $($t)*) };
     (@chain [$($a:tt)*] [$($b:tt)*] $op:tt $($t:tt)*)        => { $crate::transducer!(@chain [$($a)*] [$($b)* $op] $($t)*) };
@@ -1073,11 +1074,8 @@ macro_rules! transducer {
     (@fmap $($t:tt)*)                                        => { $crate::transducer!(@inner @fmap $($t)*) };
     (@seq $($t:tt)*)                                         => { $crate::transducer!(@inner @seq $($t)*) };
     (@rseq $($t:tt)*)                                        => { $crate::transducer!(@inner @rseq $($t)*) };
-    (@$tag:ident $($t:tt)*)                                  => { compile_error!(stringify!($tag, $($t)*)) };
-    ($($t:tt)*)                                              => {{
-        fn check_transucer<T>(fst: T) -> T where T: Transducer { fst }
-        check_transucer($crate::transducer!(@inner $($t)*))
-    }};
+    (@$tag:ident $($t:tt)*)                                  => { ::std::compile_error!(::std::stringify!($tag, $($t)*)) };
+    ($($t:tt)*)                                              => {{ $crate::transducer!(@inner $($t)*) }};
 }
 
 #[cfg(test)]
