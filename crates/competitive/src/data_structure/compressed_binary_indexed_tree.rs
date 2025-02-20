@@ -220,15 +220,15 @@ mod tests {
         const N: usize = 100;
         const Q: usize = 5000;
         const A: RangeTo<u64> = ..1_000;
-        let mut points: Vec<_> = rng.gen_iter(((A), (A, (A, (A,))))).take(N).collect();
+        let mut points: Vec<_> = rng.random_iter(((A), (A, (A, (A,))))).take(N).collect();
         points.sort();
         points.dedup();
         let mut map: HashMap<_, _> = points.iter().map(|p| (p, 0u64)).collect();
         let mut bit =
             CompressedBinaryIndexedTree4d::<AdditiveOperation<u64>, _, _, _, _>::new(&points);
         for _ in 0..Q {
-            let p = &points[rng.gen(0..points.len())];
-            let x = rng.gen(A);
+            let p = &points[rng.random(0..points.len())];
+            let x = rng.random(A);
             *map.get_mut(p).unwrap() += x;
             bit.update(p, &x);
 
@@ -236,8 +236,8 @@ mod tests {
                 (
                     Bound::Unbounded,
                     match rng.rand(3) {
-                        0 => Bound::Excluded(rng.gen(A)),
-                        1 => Bound::Included(rng.gen(A)),
+                        0 => Bound::Excluded(rng.random(A)),
+                        1 => Bound::Included(rng.random(A)),
                         _ => Bound::Unbounded,
                     },
                 )

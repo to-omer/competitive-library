@@ -810,7 +810,7 @@ mod topk_operation_impl {
                 for _ in 0..100 {
                     let mut y = [i64::MIN; 4];
                     for y in &mut y {
-                        *y = rng.gen(0..1000);
+                        *y = rng.random(0..1000);
                     }
                     y.sort_unstable();
                     y.reverse();
@@ -888,7 +888,7 @@ mod bottomk_operation_impl {
                 for _ in 0..100 {
                     let mut y = [i64::MAX; 4];
                     for y in &mut y {
-                        *y = rng.gen(0..1000);
+                        *y = rng.random(0..1000);
                     }
                     y.sort_unstable();
                     let z = {

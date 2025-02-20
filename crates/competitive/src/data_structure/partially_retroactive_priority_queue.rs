@@ -279,14 +279,14 @@ mod tests {
     fn test_partially_retroactive_priority_queue() {
         let mut rng = Xorshift::default();
         for t in 0..100 {
-            let n = rng.gen(1..=100);
+            let n = rng.random(1..=100);
             let mut a = vec![None; n];
             let mut prpq = PartiallyRetroactivePriorityQueue::<i64>::new(n);
             let mut pq = Vec::new();
             for _ in 0..1000 {
-                let i = rng.gen(0..n);
+                let i = rng.random(0..n);
                 let q = if rng.gen_bool(t as f64 / 99.) {
-                    Query::Push(rng.gen(-3..=3))
+                    Query::Push(rng.random(-3..=3))
                 } else {
                     Query::Pop
                 };

@@ -53,8 +53,8 @@ fn test_linear_congruence() {
     for _ in 0..Q {
         let abm: Vec<_> = (0..N)
             .map(|_| {
-                let m = rng.gen(2u64..=20);
-                (rng.gen(1..m), rng.gen(0..m), m)
+                let m = rng.random(2u64..=20);
+                (rng.random(1..m), rng.random(0..m), m)
             })
             .collect();
         if let Some((x, m0)) = linear_congruence(abm.iter().cloned()) {

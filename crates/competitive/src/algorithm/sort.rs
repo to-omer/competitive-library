@@ -194,9 +194,9 @@ mod tests {
         (@large $sort_method:ident, $n_ub:expr) => {{
             let mut rng = Xorshift::default();
             for _ in 0..10 {
-                let n = rng.gen(..$n_ub);
-                let ub = 1 << rng.gen(0..20);
-                let a: Vec<_> = rng.gen_iter(0..ub).take(n).collect();
+                let n = rng.random(..$n_ub);
+                let ub = 1 << rng.random(0..20);
+                let a: Vec<_> = rng.random_iter(0..ub).take(n).collect();
                 let mut x = a.to_vec();
                 let mut y = a.to_vec();
                 x.sort();

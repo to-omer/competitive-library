@@ -189,7 +189,7 @@ fn test_wavelet_matrix() {
         );
 
         if wm.rank(a, 0..N) > 0 {
-            let k = rng.gen(..wm.rank(a, 0..N));
+            let k = rng.random(..wm.rank(a, 0..N));
             assert_eq!(
                 wm.select(a, k).unwrap().min(N),
                 (0..N)
@@ -224,7 +224,7 @@ fn test_wavelet_matrix() {
             v[l..r].iter().filter(|&&x| x < a).count()
         );
 
-        let (p, q) = rng.gen(Nes(A - 1));
+        let (p, q) = rng.random(Nes(A - 1));
         assert_eq!(
             wm.rank_range(p..q, l..r),
             v[l..r].iter().filter(|&&x| p <= x && x < q).count()

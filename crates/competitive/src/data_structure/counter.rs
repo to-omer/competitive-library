@@ -276,10 +276,10 @@ mod tests {
         let mut cnt = HashCounter::<usize>::new();
         let mut arr = vec![0usize; N];
         for _ in 0..Q {
-            let x = rng.gen(..N);
-            let c = rng.gen(..N);
+            let x = rng.random(..N);
+            let c = rng.random(..N);
             assert_eq!(cnt.get(&x), arr[x]);
-            match rng.gen(0..4) {
+            match rng.random(0..4) {
                 0 => {
                     cnt.add(x);
                     arr[x] += 1;
@@ -311,10 +311,10 @@ mod tests {
         let mut cnt = BTreeCounter::<usize>::new();
         let mut arr = vec![0usize; N];
         for _ in 0..Q {
-            let x = rng.gen(..N);
-            let c = rng.gen(..N);
+            let x = rng.random(..N);
+            let c = rng.random(..N);
             assert_eq!(cnt.get(&x), arr[x]);
-            match rng.gen(0..4) {
+            match rng.random(0..4) {
                 0 => {
                     cnt.add(x);
                     arr[x] += 1;

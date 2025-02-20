@@ -264,8 +264,8 @@ mod tests {
         DynModuloU32::set_mod(2);
         let fact = SmallModMemorizedFactorial::<DynModuloU32>::new();
         for _ in 0..Q {
-            let n = rng.gen(1..=1_000_000_000_000_000_000);
-            let k = rng.gen(0..=n);
+            let n = rng.random(1..=1_000_000_000_000_000_000);
+            let k = rng.random(0..=n);
             let x = fact.factorial(n).1 - fact.factorial(k).1 - fact.factorial(n - k).1;
             assert_eq!(x == 0, (n & k) == k);
             let x = fact.combination(n, k);

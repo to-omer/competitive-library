@@ -50,7 +50,7 @@ fn test_range_ap_add() {
     let mut rng = Xorshift::new();
     let mut v = vec![0i64; N];
     let mut ap = RangeArithmeticProgressionAdd::new(N);
-    for ((l, r), a, d) in rng.gen_iter((Nes(N), -A..=A, -A..=A)).take(Q) {
+    for ((l, r), a, d) in rng.random_iter((Nes(N), -A..=A, -A..=A)).take(Q) {
         for (i, v) in v[l..r].iter_mut().enumerate() {
             *v += a + i as i64 * d;
         }

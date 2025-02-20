@@ -242,7 +242,7 @@ mod tests {
     struct D;
     impl RandomSpec<DynMIntU32> for D {
         fn rand(&self, rng: &mut Xorshift) -> DynMIntU32 {
-            DynMIntU32::new_unchecked(rng.gen(..DynMIntU32::get_mod()))
+            DynMIntU32::new_unchecked(rng.random(..DynMIntU32::get_mod()))
         }
     }
 
@@ -252,9 +252,9 @@ mod tests {
         let mut rng = Xorshift::new();
         let ps = [2, 3, 1_000_000_007];
         for _ in 0..Q {
-            let m = ps[rng.gen(..ps.len())];
+            let m = ps[rng.random(..ps.len())];
             DynMIntU32::set_mod(m);
-            let n = rng.gen(2..=30);
+            let n = rng.random(2..=30);
             let mat = Matrix::from_vec(rand_value!(rng, [[D; n]; n]));
             let rank = mat.clone().rank();
             let inv = mat.inverse();

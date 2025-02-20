@@ -238,18 +238,18 @@ mod tests {
         const N: usize = 100;
         const Q: usize = 5000;
         const A: Range<i64> = -1_000..1_000;
-        let mut points: Vec<_> = rng.gen_iter(((A), (A, (A, (A,))))).take(N).collect();
+        let mut points: Vec<_> = rng.random_iter(((A), (A, (A, (A,))))).take(N).collect();
         points.sort();
         points.dedup();
         let mut map: HashMap<_, _> = points.iter().map(|p| (p, 0i64)).collect();
         let mut seg = CompressedSegmentTree4d::<AdditiveOperation<i64>, _, _, _, _>::new(&points);
         for _ in 0..Q {
-            let p = &points[rng.gen(0..points.len())];
-            let x = rng.gen(A);
+            let p = &points[rng.random(0..points.len())];
+            let x = rng.random(A);
             *map.get_mut(p).unwrap() += x;
             seg.update(p, &x);
 
-            let range = rng.gen((RR::new(A), (RR::new(A), (RR::new(A), (RR::new(A),)))));
+            let range = rng.random((RR::new(A), (RR::new(A), (RR::new(A), (RR::new(A),)))));
             let (r0, (r1, (r2, (r3,)))) = range;
             let expected: i64 = map
                 .iter()

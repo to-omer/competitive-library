@@ -265,7 +265,7 @@ mod tests {
         );
         assert_eq!(Modulo998244353::reduce(Modulo998244353::N1 as u64), 1);
         for _ in 0..Q {
-            let x = rng.gen(..MInt998244353::get_mod());
+            let x = rng.random(..MInt998244353::get_mod());
             assert_eq!(x, MInt998244353::new(x).inner());
             assert_eq!((-M::new(x)).inner(), (-MInt998244353::new(x)).inner());
             assert_eq!(x, MInt998244353::new(x).inv().inv().inner());
@@ -273,8 +273,8 @@ mod tests {
         }
 
         for _ in 0..Q {
-            let x = rng.gen(..MInt998244353::get_mod());
-            let y = rng.gen(..MInt998244353::get_mod());
+            let x = rng.random(..MInt998244353::get_mod());
+            let y = rng.random(..MInt998244353::get_mod());
             assert_eq!(
                 (M::new(x) + M::new(y)).inner(),
                 (MInt998244353::new(x) + MInt998244353::new(y)).inner()

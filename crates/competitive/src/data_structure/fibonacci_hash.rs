@@ -171,8 +171,8 @@ mod tests {
         let mut fh = FibHashSet::default();
         let mut rh = HashSet::new();
         for _ in 0..Q {
-            let n = rng.gen(0..20);
-            let a: Vec<_> = rng.gen_iter(0u64..).take(n).collect();
+            let n = rng.random(0..20);
+            let a: Vec<_> = rng.random_iter(0u64..).take(n).collect();
             fh.insert(a.to_vec());
             rh.insert(a.to_vec());
         }

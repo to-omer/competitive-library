@@ -531,7 +531,7 @@ mod tests {
         let mut rng = Xorshift::default();
         for &p in [998_244_353, 1_000_000_007].iter() {
             for i in 0..Q {
-                let (a, b) = rng.gen((1..p, 1..p));
+                let (a, b) = rng.random((1..p, 1..p));
                 let l = discrete_logarithm_prime_mod(a, b, p);
                 check(a, b, p, l, i >= Q - 20);
             }
@@ -543,7 +543,7 @@ mod tests {
         let mut rng = Xorshift::default();
         let p = 1_000_000_000_000 - 11;
         for _ in 0..20 {
-            let (a, b) = rng.gen((1..p, 1..p));
+            let (a, b) = rng.random((1..p, 1..p));
             let l = discrete_logarithm_prime_mod(a, b, p);
             check(a, b, p, l, false);
         }
@@ -596,15 +596,15 @@ mod tests {
         const Q: usize = 10_000;
         let mut rng = Xorshift::default();
         for i in 0..Q {
-            let n = rng.gen(
+            let n = rng.random(
                 1..if i < Q - 1 {
                     1_000_000
                 } else {
                     1_000_000_000_000
                 },
             );
-            let a = rng.gen(0..n);
-            let b = rng.gen(0..n);
+            let a = rng.random(0..n);
+            let b = rng.random(0..n);
             let l = discrete_logarithm(a, b, n);
             check(a, b, n, l, i >= Q - 200);
         }
@@ -615,10 +615,10 @@ mod tests {
         const Q: usize = 10_000;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let n = rng.gen(80_000..100_000);
+            let n = rng.random(80_000..100_000);
             DynMIntU64::set_mod(n);
-            let a = rng.gen(0..n);
-            let m = rng.gen(0..n) as usize;
+            let a = rng.random(0..n);
+            let m = rng.random(0..n) as usize;
             let b = DynMIntU64::from(a).pow(m).inner();
             let l = discrete_logarithm(a, b, n);
             check(a, b, n, l, true);
@@ -629,9 +629,9 @@ mod tests {
     fn test_discrete_logarithm_large() {
         let mut rng = Xorshift::default();
         for _ in 0..20 {
-            let n = rng.gen(1..1_000_000_000_000_000_000);
-            let a = rng.gen(0..n);
-            let b = rng.gen(0..n);
+            let n = rng.random(1..1_000_000_000_000_000_000);
+            let a = rng.random(0..n);
+            let b = rng.random(0..n);
             let l = discrete_logarithm(a, b, n);
             check(a, b, n, l, false);
         }

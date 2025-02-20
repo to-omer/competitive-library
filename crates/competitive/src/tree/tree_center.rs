@@ -119,8 +119,8 @@ mod tests {
         const N: usize = 200;
         const Q: usize = 200;
         for _ in 0..Q {
-            let n = rng.gen(1..=N);
-            let g = rng.gen(MixedTree(n));
+            let n = rng.random(1..=N);
+            let g = rng.random(MixedTree(n));
             assert_eq!(g.tree_center(), g.naive_tree_center());
         }
     }

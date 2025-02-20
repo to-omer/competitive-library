@@ -47,7 +47,13 @@ impl XorBasis {
                 self.bases
                     .iter()
                     .enumerate()
-                    .filter_map(|(i, (_, _, b))| if coord & (1 << i) != 0 { Some(*b) } else { None })
+                    .filter_map(|(i, (_, _, b))| {
+                        if coord & (1 << i) != 0 {
+                            Some(*b)
+                        } else {
+                            None
+                        }
+                    })
                     .collect(),
             )
         } else {
@@ -77,7 +83,7 @@ mod tests {
 
         for _ in 0..Q {
             let mut basis = XorBasis::new();
-            for x in rng.gen_iter(0u64..).take(Q) {
+            for x in rng.random_iter(0u64..).take(Q) {
                 if let Some(b) = basis.basis(x) {
                     assert_eq!(x, b.into_iter().fold(0, std::ops::BitXor::bitxor));
                 }
@@ -108,7 +114,7 @@ mod tests {
             rand!(rng, k: (0usize..=L + 2), b: [0u64..1 << L; k]);
             let cons = consistables(&b);
             let basis: XorBasis = b.into_iter().collect();
-            for x in rng.gen_iter(0u64..1 << L).take(Q) {
+            for x in rng.random_iter(0u64..1 << L).take(Q) {
                 assert_eq!(cons.contains(&x), basis.find(x).is_some());
             }
         }

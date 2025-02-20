@@ -248,7 +248,7 @@ mod tests {
         let mut rng = Xorshift::new();
         let mut arr = vec![0; N + 1];
         let mut seg = SegmentTreeMap::<AdditiveOperation<_>>::new(N);
-        for (k, v) in rng.gen_iter((..N, 1..=A)).take(Q) {
+        for (k, v) in rng.random_iter((..N, 1..=A)).take(Q) {
             seg.set(k, v);
             arr[k + 1] = v;
         }
@@ -260,13 +260,13 @@ mod tests {
                 assert_eq!(seg.fold(i..j), arr[j] - arr[i]);
             }
         }
-        for v in rng.gen_iter(1..=A * N as i64).take(Q) {
+        for v in rng.random_iter(1..=A * N as i64).take(Q) {
             assert_eq!(
                 seg.position_acc(0..N, |&x| v <= x).unwrap_or(N),
                 arr[1..].position_bisect(|&x| x >= v)
             );
         }
-        for ((l, r), v) in rng.gen_iter((Nes(N), 1..=A)).take(Q) {
+        for ((l, r), v) in rng.random_iter((Nes(N), 1..=A)).take(Q) {
             assert_eq!(
                 seg.position_acc(l..r, |&x| v <= x).unwrap_or(r),
                 arr[l + 1..r + 1].position_bisect(|&x| x >= v + arr[l]) + l
@@ -282,11 +282,11 @@ mod tests {
         for (i, a) in arr.iter().cloned().enumerate() {
             seg.set(i, a);
         }
-        for (k, v) in rng.gen_iter((..N, -A..=A)).take(Q) {
+        for (k, v) in rng.random_iter((..N, -A..=A)).take(Q) {
             seg.set(k, v);
             arr[k] = v;
         }
-        for (l, r) in rng.gen_iter(Nes(N)).take(Q) {
+        for (l, r) in rng.random_iter(Nes(N)).take(Q) {
             let res = arr[l..r].iter().max().cloned().unwrap_or_default();
             assert_eq!(seg.fold(l..r), res);
         }

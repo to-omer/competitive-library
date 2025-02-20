@@ -140,7 +140,7 @@ mod tests {
         let mut rng = Xorshift::default();
         let pl = PrimeList::new(100_000);
         for n in 1..=100 {
-            let n = if n <= 10 { n } else { rng.gen(1..10_000) };
+            let n = if n <= 10 { n } else { rng.random(1..10_000) };
             let qa = QuotientArray::from_fn(n, |i| i as i64 - 1)
                 .lucy_dp::<AdditiveOperation<_>>(|x, _p| x);
             assert_eq!(pl.primes_lte(n).len(), qa[n] as usize);
@@ -152,7 +152,7 @@ mod tests {
         let mut rng = Xorshift::default();
         let pt = PrimeTable::new(10_000);
         for n in 1..=100 {
-            let n = if n <= 10 { n } else { rng.gen(1..10_000) };
+            let n = if n <= 10 { n } else { rng.random(1..10_000) };
             let qa = QuotientArray::from_fn(n, |i| [i as i64, i as i64 * (i as i64 + 1) / 2])
                 .map(|[x, y]| [x - 1, y - 1])
                 .lucy_dp::<ArrayOperation<AdditiveOperation<_>, 2>>(|[x, y], p| [x, y * p as i64])

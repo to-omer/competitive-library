@@ -551,7 +551,7 @@ mod tests {
     struct Mspec;
     impl RandomSpec<M> for Mspec {
         fn rand(&self, rng: &mut Xorshift) -> M {
-            M::new_unchecked(rng.gen(0..M::get_mod()))
+            M::new_unchecked(rng.random(0..M::get_mod()))
         }
     }
 

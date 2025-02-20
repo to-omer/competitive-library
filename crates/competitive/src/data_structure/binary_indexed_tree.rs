@@ -138,9 +138,9 @@ mod tests {
     #[test]
     fn test_binary_indexed_tree() {
         let mut rng = Xorshift::new();
-        let mut arr: Vec<_> = rng.gen_iter(..A).take(N).collect();
+        let mut arr: Vec<_> = rng.random_iter(..A).take(N).collect();
         let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
-        for (k, v) in rng.gen_iter((..N, ..A)).take(Q) {
+        for (k, v) in rng.random_iter((..N, ..A)).take(Q) {
             bit.update(k, v);
             arr[k] += v;
         }
@@ -151,9 +151,9 @@ mod tests {
             assert_eq!(bit.accumulate(i), a);
         }
 
-        let mut arr: Vec<_> = rng.gen_iter(..A).take(N).collect();
+        let mut arr: Vec<_> = rng.random_iter(..A).take(N).collect();
         let mut bit = BinaryIndexedTree::<MaxOperation<_>>::from_slice(&arr);
-        for (k, v) in rng.gen_iter((..N, ..A)).take(Q) {
+        for (k, v) in rng.random_iter((..N, ..A)).take(Q) {
             bit.update(k, v);
             arr[k] = std::cmp::max(arr[k], v);
         }
@@ -169,9 +169,9 @@ mod tests {
     fn test_group_binary_indexed_tree() {
         const N: usize = 2_000;
         let mut rng = Xorshift::new();
-        let mut arr: Vec<_> = rng.gen_iter(-B..B).take(N).collect();
+        let mut arr: Vec<_> = rng.random_iter(-B..B).take(N).collect();
         let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
-        for (k, v) in rng.gen_iter((..N, -B..B)).take(Q) {
+        for (k, v) in rng.random_iter((..N, -B..B)).take(Q) {
             bit.set(k, v);
             arr[k] = v;
         }
@@ -191,16 +191,16 @@ mod tests {
     #[test]
     fn test_binary_indexed_tree_lower_bound() {
         let mut rng = Xorshift::new();
-        let mut arr: Vec<_> = rng.gen_iter(1..B).take(N).collect();
+        let mut arr: Vec<_> = rng.random_iter(1..B).take(N).collect();
         let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
-        for (k, v) in rng.gen_iter((..N, 1..B)).take(Q) {
+        for (k, v) in rng.random_iter((..N, 1..B)).take(Q) {
             bit.set(k, v);
             arr[k] = v;
         }
         for i in 0..N - 1 {
             arr[i + 1] += arr[i];
         }
-        for x in rng.gen_iter(1..B * N as i64).take(Q) {
+        for x in rng.random_iter(1..B * N as i64).take(Q) {
             assert_eq!(bit.lower_bound(x), arr.position_bisect(|&a| a >= x));
         }
     }

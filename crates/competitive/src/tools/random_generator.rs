@@ -20,13 +20,13 @@ pub trait RandomSpec<T>: Sized {
 }
 
 impl Xorshift {
-    pub fn gen<T, R>(&mut self, spec: R) -> T
+    pub fn random<T, R>(&mut self, spec: R) -> T
     where
         R: RandomSpec<T>,
     {
         spec.rand(self)
     }
-    pub fn gen_iter<T, R>(&mut self, spec: R) -> RandIter<'_, T, R>
+    pub fn random_iter<T, R>(&mut self, spec: R) -> RandIter<'_, T, R>
     where
         R: RandomSpec<T>,
     {
@@ -72,7 +72,7 @@ impl RandomSpec<u128> for RangeFull {
 }
 impl RandomSpec<i128> for RangeFull {
     fn rand(&self, rng: &mut Xorshift) -> i128 {
-        rng.gen::<u128, _>(..) as i128
+        rng.random::<u128, _>(..) as i128
     }
 }
 
@@ -83,27 +83,27 @@ macro_rules! impl_random_spec_ranges {
                 fn rand(&self, rng: &mut Xorshift) -> $u {
                     assert!(self.start < self.end);
                     let len = self.end - self.start;
-                    (self.start + rng.gen::<$u, _>(..) % len)
+                    (self.start + rng.random::<$u, _>(..) % len)
                 }
             }
             impl RandomSpec<$i> for Range<$i> {
                 fn rand(&self, rng: &mut Xorshift) -> $i {
                     assert!(self.start < self.end);
                     let len = self.end.abs_diff(self.start);
-                    self.start.wrapping_add_unsigned(rng.gen::<$u, _>(..) % len)
+                    self.start.wrapping_add_unsigned(rng.random::<$u, _>(..) % len)
                 }
             }
             impl RandomSpec<$u> for RangeFrom<$u> {
                 fn rand(&self, rng: &mut Xorshift) -> $u {
                     let len = ($u::MAX - self.start).wrapping_add(1);
-                    let x = rng.gen::<$u, _>(..);
+                    let x = rng.random::<$u, _>(..);
                     self.start + if len != 0 { x % len } else { x }
                 }
             }
             impl RandomSpec<$i> for RangeFrom<$i> {
                 fn rand(&self, rng: &mut Xorshift) -> $i {
                     let len = ($i::MAX.abs_diff(self.start)).wrapping_add(1);
-                    let x = rng.gen::<$u, _>(..);
+                    let x = rng.random::<$u, _>(..);
                     self.start.wrapping_add_unsigned(if len != 0 { x % len } else { x })
                 }
             }
@@ -111,7 +111,7 @@ macro_rules! impl_random_spec_ranges {
                 fn rand(&self, rng: &mut Xorshift) -> $u {
                     assert!(self.start() <= self.end());
                     let len = (self.end() - self.start()).wrapping_add(1);
-                    let x = rng.gen::<$u, _>(..);
+                    let x = rng.random::<$u, _>(..);
                     self.start() + if len != 0 { x % len } else { x }
                 }
             }
@@ -119,33 +119,33 @@ macro_rules! impl_random_spec_ranges {
                 fn rand(&self, rng: &mut Xorshift) -> $i {
                     assert!(self.start() <= self.end());
                     let len = (self.end().abs_diff(*self.start())).wrapping_add(1);
-                    let x = rng.gen::<$u, _>(..);
+                    let x = rng.random::<$u, _>(..);
                     self.start().wrapping_add_unsigned(if len != 0 { x % len } else { x })
                 }
             }
             impl RandomSpec<$u> for RangeTo<$u> {
                 fn rand(&self, rng: &mut Xorshift) -> $u {
                     let len = self.end;
-                    rng.gen::<$u, _>(..) % len
+                    rng.random::<$u, _>(..) % len
                 }
             }
             impl RandomSpec<$i> for RangeTo<$i> {
                 fn rand(&self, rng: &mut Xorshift) -> $i {
                     let len = self.end.abs_diff($i::MIN);
-                    $i::MIN.wrapping_add_unsigned(rng.gen::<$u, _>(..) % len)
+                    $i::MIN.wrapping_add_unsigned(rng.random::<$u, _>(..) % len)
                 }
             }
             impl RandomSpec<$u> for RangeToInclusive<$u> {
                 fn rand(&self, rng: &mut Xorshift) -> $u {
                     let len = (self.end).wrapping_add(1);
-                    let x = rng.gen::<$u, _>(..);
+                    let x = rng.random::<$u, _>(..);
                     if len != 0 { x % len } else { x }
                 }
             }
             impl RandomSpec<$i> for RangeToInclusive<$i> {
                 fn rand(&self, rng: &mut Xorshift) -> $i {
                     let len = (self.end.abs_diff($i::MIN)).wrapping_add(1);
-                    let x = rng.gen::<$u, _>(..);
+                    let x = rng.random::<$u, _>(..);
                     $i::MIN.wrapping_add_unsigned(if len != 0 { x % len } else { x })
                 }
             }
@@ -214,7 +214,7 @@ where
     T: RandomSpec<usize>,
 {
     fn rand(&self, rng: &mut Xorshift) -> (usize, usize) {
-        let n = rng.gen(&self.0) as u64;
+        let n = rng.random(&self.0) as u64;
         let k = randint_uniform(rng, n);
         let l = randint_uniform(rng, n - k) as usize;
         (l, l + k as usize + 1)
@@ -240,8 +240,8 @@ where
     T: Ord,
 {
     fn rand(&self, rng: &mut Xorshift) -> (Bound<T>, Bound<T>) {
-        let mut l = rng.gen(&self.data);
-        let mut r = rng.gen(&self.data);
+        let mut l = rng.random(&self.data);
+        let mut r = rng.random(&self.data);
         if l > r {
             swap(&mut l, &mut r);
         }
@@ -282,13 +282,13 @@ macro_rules! rand_value {
         ::std::iter::repeat_with(|| $crate::rand_value!($rng, $t)).take($len).collect::<Vec<_>>()
     };
     ($rng:expr, [$s:expr; $len:expr]) => {
-        ($rng).gen_iter($s).take($len).collect::<Vec<_>>()
+        ($rng).random_iter($s).take($len).collect::<Vec<_>>()
     };
     ($rng:expr, [$($t:tt)*]) => {
         ::std::iter::repeat_with(|| $crate::rand_value!($rng, $($t)*))
     };
     ($rng:expr, $s:expr) => {
-        ($rng).gen($s)
+        ($rng).random($s)
     };
 }
 #[macro_export]
@@ -327,14 +327,14 @@ mod tests {
     #[test]
     fn test_random_range() {
         let mut rng = Xorshift::default();
-        assert_eq!(rng.gen(1i32..2), 1);
-        assert_eq!(rng.gen(1u32..2), 1);
-        assert_eq!(rng.gen(1i32..=1), 1);
-        assert_eq!(rng.gen(1u32..=1), 1);
-        assert_eq!(rng.gen(i32::MAX..), i32::MAX);
-        assert_eq!(rng.gen(u32::MAX..), u32::MAX);
-        assert_eq!(rng.gen(..=i32::MIN), i32::MIN);
-        assert_eq!(rng.gen(..=u32::MIN), u32::MIN);
+        assert_eq!(rng.random(1i32..2), 1);
+        assert_eq!(rng.random(1u32..2), 1);
+        assert_eq!(rng.random(1i32..=1), 1);
+        assert_eq!(rng.random(1u32..=1), 1);
+        assert_eq!(rng.random(i32::MAX..), i32::MAX);
+        assert_eq!(rng.random(u32::MAX..), u32::MAX);
+        assert_eq!(rng.random(..=i32::MIN), i32::MIN);
+        assert_eq!(rng.random(..=u32::MIN), u32::MIN);
     }
 
     #[test]

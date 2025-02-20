@@ -72,54 +72,54 @@ mod tests {
         };
     }
     test_barrett!(test_barrett_u32_small, u32, |rng| (
-        rng.gen(..=100),
-        rng.gen(1..=100)
+        rng.random(..=100),
+        rng.random(1..=100)
     ));
     test_barrett!(test_barrett_u64_small, u64, |rng| (
-        rng.gen(..=100),
-        rng.gen(1..=100)
+        rng.random(..=100),
+        rng.random(1..=100)
     ));
     test_barrett!(test_barrett_u128_small, u128, |rng| {
         (
-            rng.gen(..=100u64) as u128 * rng.gen(..=100u64) as u128,
-            rng.gen(1..=100u64) as u128 * rng.gen(1..=100u64) as u128,
+            rng.random(..=100u64) as u128 * rng.random(..=100u64) as u128,
+            rng.random(1..=100u64) as u128 * rng.random(1..=100u64) as u128,
         )
     });
 
     test_barrett!(test_barrett_u32_large, u32, |rng| (
-        rng.gen(..=!0),
-        rng.gen(1..=!0)
+        rng.random(..=!0),
+        rng.random(1..=!0)
     ));
     test_barrett!(test_barrett_u64_large, u64, |rng| (
-        rng.gen(..=!0),
-        rng.gen(1..=!0)
+        rng.random(..=!0),
+        rng.random(1..=!0)
     ));
     test_barrett!(test_barrett_u128_large, u128, |rng| {
         (
-            rng.gen(..=!0u64) as u128 * rng.gen(..=!0u64) as u128,
-            rng.gen(1..=!0u64) as u128 * rng.gen(1..=!0u64) as u128,
+            rng.random(..=!0u64) as u128 * rng.random(..=!0u64) as u128,
+            rng.random(1..=!0u64) as u128 * rng.random(1..=!0u64) as u128,
         )
     });
 
     test_barrett!(test_barrett_u32_max, u32, |rng| (
-        rng.gen(!0 - 100..=!0),
-        rng.gen(!0 - 100..=!0)
+        rng.random(!0 - 100..=!0),
+        rng.random(!0 - 100..=!0)
     ));
     test_barrett!(test_barrett_u64_max, u64, |rng| (
-        rng.gen(!0 - 100..=!0),
-        rng.gen(!0 - 100..=!0)
+        rng.random(!0 - 100..=!0),
+        rng.random(!0 - 100..=!0)
     ));
     test_barrett!(test_barrett_u128_max, u128, |rng| {
         (
-            rng.gen(!0 - 100..=!0u64) as u128 * rng.gen(!0 - 100..=!0u64) as u128,
-            rng.gen(!0 - 100..=!0u64) as u128 * rng.gen(!0 - 100..=!0u64) as u128,
+            rng.random(!0 - 100..=!0u64) as u128 * rng.random(!0 - 100..=!0u64) as u128,
+            rng.random(!0 - 100..=!0u64) as u128 * rng.random(!0 - 100..=!0u64) as u128,
         )
     });
 
     test_barrett!(test_barrett_u128_mul, u128, |rng| {
         (
-            rng.gen(0u64..) as u128 * rng.gen(0u64..) as u128,
-            rng.gen(0u64..) as u128,
+            rng.random(0u64..) as u128 * rng.random(0u64..) as u128,
+            rng.random(0u64..) as u128,
         )
     });
 }

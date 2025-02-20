@@ -178,8 +178,8 @@ fn test_convolve_fft() {
                 for rm in 0..2 {
                     let n = 2usize.pow(n);
                     let m = 2usize.pow(m);
-                    let n = n - rng.gen(0..n) * rn;
-                    let m = m - rng.gen(0..m) * rm;
+                    let n = n - rng.random(0..n) * rn;
+                    let m = m - rng.random(0..m) * rm;
                     const A: i64 = 100_000;
                     rand!(rng, a: [-A..=A; n], b: [-A..=A; m]);
                     let mut c = vec![0; n + m - 1];

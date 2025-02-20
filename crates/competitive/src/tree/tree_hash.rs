@@ -134,7 +134,7 @@ mod tests {
         let mut hasher = TreeHasher::new();
         let mut h2s = HashMap::<u64, Vec<bool>>::new();
         let mut s2h = BTreeMap::new();
-        for g in rng.gen_iter(MixedTree(1..=N)).take(Q) {
+        for g in rng.random_iter(MixedTree(1..=N)).take(Q) {
             let h = hasher.hash(&g);
             let s = g.canonical();
             h2s.entry(h)

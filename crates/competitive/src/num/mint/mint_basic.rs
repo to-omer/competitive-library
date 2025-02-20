@@ -272,7 +272,7 @@ mod tests {
                 const Q: usize = 10_000;
                 for _ in 0..Q {
                     $($mint::set_mod(rng.gen(..$m));)?
-                    let a = $mint::new_unchecked(rng.gen(1..$mint::get_mod()));
+                    let a = $mint::new_unchecked(rng.random(1..$mint::get_mod()));
                     let x = a.inv();
                     assert!(x.inner() < $mint::get_mod());
                     assert_eq!(a * x, $mint::one());

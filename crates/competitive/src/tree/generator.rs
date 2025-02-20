@@ -5,10 +5,10 @@ pub struct PruferSequence<T>(pub T);
 
 impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for PruferSequence<T> {
     fn rand(&self, rng: &mut Xorshift) -> UndirectedSparseGraph {
-        let n = rng.gen(&self.0);
+        let n = rng.random(&self.0);
         let edges = from_prufer_sequence(
             n,
-            &rng.gen_iter(0..n)
+            &rng.random_iter(0..n)
                 .take(n.saturating_sub(2))
                 .collect::<Vec<usize>>(),
         );
@@ -20,7 +20,7 @@ pub struct PathTree<T>(pub T);
 
 impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for PathTree<T> {
     fn rand(&self, rng: &mut Xorshift) -> UndirectedSparseGraph {
-        let n = rng.gen(&self.0);
+        let n = rng.random(&self.0);
         let edges = (1..n).map(|u| (u - 1, u)).collect();
         UndirectedSparseGraph::from_edges(n, edges)
     }
@@ -30,7 +30,7 @@ pub struct StarTree<T>(pub T);
 
 impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for StarTree<T> {
     fn rand(&self, rng: &mut Xorshift) -> UndirectedSparseGraph {
-        let n = rng.gen(&self.0);
+        let n = rng.random(&self.0);
         let edges = (1..n).map(|u| (0, u)).collect();
         UndirectedSparseGraph::from_edges(n, edges)
     }
@@ -43,13 +43,13 @@ impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for MixedTree<T> {
         fn rand_inner(n: usize, rng: &mut Xorshift) -> Vec<(usize, usize)> {
             let mut edges = Vec::with_capacity(n.saturating_sub(1));
             if n >= 2 {
-                let k = rng.gen(1..n);
+                let k = rng.random(1..n);
                 for n in [k, n - k].iter().cloned() {
                     let ty = rng.rand(6);
                     edges.extend(match ty {
                         0 => from_prufer_sequence(
                             n,
-                            &rng.gen_iter(0..n)
+                            &rng.random_iter(0..n)
                                 .take(n.saturating_sub(2))
                                 .collect::<Vec<usize>>(),
                         ),
@@ -62,11 +62,11 @@ impl<T: RandomSpec<usize>> RandomSpec<UndirectedSparseGraph> for MixedTree<T> {
                     *u += k;
                     *v += k;
                 }
-                edges.push((rng.gen(0..k), rng.gen(k..n)));
+                edges.push((rng.random(0..k), rng.random(k..n)));
             }
             edges
         }
-        let n = rng.gen(&self.0);
+        let n = rng.random(&self.0);
         let edges = rand_inner(n, rng);
         UndirectedSparseGraph::from_edges(n, edges)
     }
@@ -129,7 +129,7 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let g = rng.gen(PruferSequence(1..=N));
+            let g = rng.random(PruferSequence(1..=N));
             assert!(is_tree(&g));
         }
     }
@@ -140,7 +140,7 @@ mod tests {
         const N: usize = 10_000;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let g = rng.gen(PruferSequence(N - Q..=N));
+            let g = rng.random(PruferSequence(N - Q..=N));
             assert!(is_tree(&g));
         }
     }
@@ -150,7 +150,7 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         for n in 0..=N {
-            let g = rng.gen(PathTree(n));
+            let g = rng.random(PathTree(n));
             assert!(is_tree(&g));
         }
     }
@@ -161,7 +161,7 @@ mod tests {
         const N: usize = 10_000;
         let mut rng = Xorshift::default();
         for n in N - Q..=N {
-            let g = rng.gen(PathTree(n));
+            let g = rng.random(PathTree(n));
             assert!(is_tree(&g));
         }
     }
@@ -171,7 +171,7 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         for n in 0..=N {
-            let g = rng.gen(StarTree(n));
+            let g = rng.random(StarTree(n));
             assert!(is_tree(&g));
         }
     }
@@ -182,7 +182,7 @@ mod tests {
         const N: usize = 10_000;
         let mut rng = Xorshift::default();
         for n in N - Q..=N {
-            let g = rng.gen(StarTree(n));
+            let g = rng.random(StarTree(n));
             assert!(is_tree(&g));
         }
     }
@@ -193,7 +193,7 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let g = rng.gen(MixedTree(1..=N));
+            let g = rng.random(MixedTree(1..=N));
             assert!(is_tree(&g));
         }
     }
@@ -204,7 +204,7 @@ mod tests {
         const N: usize = 10_000;
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            let g = rng.gen(MixedTree(N - Q..=N));
+            let g = rng.random(MixedTree(N - Q..=N));
             assert!(is_tree(&g));
         }
     }

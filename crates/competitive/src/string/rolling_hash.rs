@@ -631,7 +631,7 @@ mod tests {
     fn test_rolling_hash() {
         const N: usize = 200;
         let mut rng = Xorshift::default();
-        let a: Vec<_> = rng.gen_iter(0..10u64).take(N).collect();
+        let a: Vec<_> = rng.random_iter(0..10u64).take(N).collect();
         Mersenne61x3::init(N);
         let h = Mersenne61x3::hash_sequence(a.iter().copied());
         for k in 1..=N {
@@ -653,7 +653,7 @@ mod tests {
     fn test_rolling_hash_pow() {
         const N: usize = 200;
         let mut rng = Xorshift::default();
-        let a: Vec<_> = rng.gen_iter(0..10u64).take(N).collect();
+        let a: Vec<_> = rng.random_iter(0..10u64).take(N).collect();
         Mersenne61x3::init(0);
         let h = Mersenne61x3::hash_sequence(a.iter().copied());
         for k in 1..=N {

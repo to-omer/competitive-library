@@ -379,7 +379,7 @@ mod tests {
         let mut rng = Xorshift::default();
         for v in 1..=Q {
             let k = rng.rand(A);
-            match rng.gen(0..3) {
+            match rng.random(0..3) {
                 0 => assert_eq!(btree.remove(&k), stree.remove(&k)),
                 1 => assert_eq!(btree.insert(k, v), stree.insert(k, v)),
                 _ => assert_eq!(btree.get_key_value(&k), stree.get_key_value(&k)),
@@ -398,8 +398,8 @@ mod tests {
         let mut rng = Xorshift::default();
         for v in 1..=Q {
             let k = rng.rand(A);
-            let i = rng.gen(0..=btree.len());
-            match rng.gen(0..3) {
+            let i = rng.random(0..=btree.len());
+            match rng.random(0..3) {
                 0 => {
                     if let Some((&k, _)) = btree.iter().nth(i) {
                         assert_eq!(btree.remove(&k).map(|v| (k, v)), stree.remove_at(i));
@@ -423,7 +423,7 @@ mod tests {
         for v in 1..=Q {
             for v in v * 100..(v + 1) * 100 {
                 let k = rng.rand(A);
-                match rng.gen(0..2) {
+                match rng.random(0..2) {
                     0 => assert_eq!(btree.remove(&k), stree.remove(&k)),
                     _ => assert_eq!(btree.insert(k, v), stree.insert(k, v)),
                 }
@@ -433,9 +433,9 @@ mod tests {
             let a = stree.dump();
             assert_eq!(b, a);
 
-            match rng.gen(0..3) {
+            match rng.random(0..3) {
                 0 => {
-                    let a: Vec<_> = if rng.gen(0..2) == 0 {
+                    let a: Vec<_> = if rng.random(0..2) == 0 {
                         stree.iter().collect()
                     } else {
                         let mut a: Vec<_> = stree.iter().rev().collect();
@@ -445,16 +445,16 @@ mod tests {
                     assert_eq!(b, a);
                 }
                 1 if !stree.is_empty() => {
-                    let (mut l, mut r) = (rng.gen(0..=stree.len()), rng.gen(0..=stree.len()));
+                    let (mut l, mut r) = (rng.random(0..=stree.len()), rng.random(0..=stree.len()));
                     if l > r {
                         swap(&mut l, &mut r);
                     }
-                    let l = match rng.gen(0..3) {
+                    let l = match rng.random(0..3) {
                         0 => Bound::Included(l),
                         1 => Bound::Excluded(l),
                         _ => Bound::Unbounded,
                     };
-                    let r = match rng.gen(0..3) {
+                    let r = match rng.random(0..3) {
                         0 => Bound::Included(r),
                         1 => Bound::Excluded(r),
                         _ => Bound::Unbounded,
@@ -479,16 +479,16 @@ mod tests {
                     assert_eq!(b, a);
                 }
                 _ => {
-                    let (mut l, mut r) = (rng.gen(0..=A), rng.gen(0..=A));
+                    let (mut l, mut r) = (rng.random(0..=A), rng.random(0..=A));
                     if l > r {
                         swap(&mut l, &mut r);
                     }
-                    let l = match rng.gen(0..3) {
+                    let l = match rng.random(0..3) {
                         0 => Bound::Included(l),
                         1 => Bound::Excluded(l),
                         _ => Bound::Unbounded,
                     };
-                    let r = match rng.gen(0..3) {
+                    let r = match rng.random(0..3) {
                         0 => Bound::Included(r),
                         1 if l == Bound::Excluded(r) => Bound::Excluded(r + 1),
                         1 => Bound::Excluded(r),

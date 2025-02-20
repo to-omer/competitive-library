@@ -273,7 +273,7 @@ mod tests {
     fn test_prime_list() {
         let mut rng = Xorshift::default();
 
-        for n in (0..1000).chain(rng.gen_iter(0..=20000).take(100)) {
+        for n in (0..1000).chain(rng.random_iter(0..=20000).take(100)) {
             let pl = PrimeList::new(n);
             let ps: Vec<_> = primes(n as _).into_iter().map(|p| p as u64).collect();
             assert_eq!(pl.primes(), ps.as_slice());
@@ -292,7 +292,7 @@ mod tests {
         }
 
         let pl = PrimeList::new(100_000);
-        for n in (0..1000).chain(rng.gen_iter(0..=1_000_000_000).take(100)) {
+        for n in (0..1000).chain(rng.random_iter(0..=1_000_000_000).take(100)) {
             assert_eq!(prime_factors(n), pl.prime_factors(n));
         }
     }
@@ -324,7 +324,7 @@ mod tests {
     fn test_divisors() {
         let mut rng = Xorshift::default();
         let pl = PrimeList::new(20000);
-        for n in (1..1000).chain(rng.gen_iter(1..=20000000).take(100)) {
+        for n in (1..1000).chain(rng.random_iter(1..=20000000).take(100)) {
             assert_eq!(pl.divisors(n), divisors(n));
         }
     }

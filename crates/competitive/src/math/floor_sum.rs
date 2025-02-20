@@ -86,12 +86,12 @@ fn test_floor_sum() {
     const Q: usize = 1_000;
     let mut rng = Xorshift::new();
     for _ in 0..Q {
-        let (n, a, b, m) = rng.gen((..A, ..A, ..A, 1..A));
+        let (n, a, b, m) = rng.random((..A, ..A, ..A, 1..A));
         let expected: u64 = (0..n).map(|i| (a * i + b) / m).sum();
         let result = floor_sum(n, a, b, m);
         assert_eq!(expected, result);
 
-        let (mut l, mut r, a, b) = rng.gen((-B..B, -B..B, -B..B, -B..B));
+        let (mut l, mut r, a, b) = rng.random((-B..B, -B..B, -B..B, -B..B));
         if l > r {
             swap(&mut l, &mut r);
         }
@@ -99,7 +99,7 @@ fn test_floor_sum() {
         let result = floor_sum_i64(l, r, a, b, m);
         assert_eq!(expected, result);
 
-        let (mut lv, mut rv) = rng.gen((0..m as i64, 0..m as i64));
+        let (mut lv, mut rv) = rng.random((0..m as i64, 0..m as i64));
         if lv > rv {
             swap(&mut lv, &mut rv);
         }

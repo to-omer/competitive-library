@@ -66,10 +66,10 @@ mod tests {
     fn test_bsgs_midium() {
         let mut rng = Xorshift::new();
         for _ in 0..10 {
-            let n = rng.gen(2..100_000u32);
+            let n = rng.random(2..100_000u32);
             DynMIntU32::set_mod(n);
-            let x = DynMIntU32::new(rng.gen(..n));
-            let y = DynMIntU32::new(rng.gen(..n));
+            let x = DynMIntU32::new(rng.random(..n));
+            let y = DynMIntU32::new(rng.random(..n));
             let exp = (0..n).position(|i| x.pow(i as _) == y);
             let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(x, y, n as _);
             assert_eq!(exp, ans);
@@ -80,10 +80,10 @@ mod tests {
     fn test_bsgs_large() {
         let mut rng = Xorshift::new();
         for _ in 0..20 {
-            let n = rng.gen(2..1_000_000_000u32);
+            let n = rng.random(2..1_000_000_000u32);
             DynMIntU32::set_mod(n);
-            let x = DynMIntU32::new(rng.gen(..n));
-            let y = DynMIntU32::new(rng.gen(..n));
+            let x = DynMIntU32::new(rng.random(..n));
+            let y = DynMIntU32::new(rng.random(..n));
             let ans = baby_step_giant_step::<MulOp<DynMIntU32>>(x, y, n as _);
             if let Some(i) = ans {
                 assert_eq!(x.pow(i), y);

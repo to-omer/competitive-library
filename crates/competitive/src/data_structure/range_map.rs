@@ -428,9 +428,9 @@ mod tests {
         let mut map: RangeMap<usize, i64> = Default::default();
         let mut arr = vec![None; N];
         for _ in 0..Q {
-            match rng.gen(0..5) {
+            match rng.random(0..5) {
                 0 => {
-                    let key = rng.gen(..N);
+                    let key = rng.random(..N);
                     if let Some((r, &v)) = map.get_range_value(&key) {
                         arr[r.0..r.1].iter_mut().for_each(|a| {
                             assert_eq!(Some(v), *a);
@@ -438,7 +438,7 @@ mod tests {
                     };
                 }
                 1 => {
-                    let range = rng.gen(Nes(N));
+                    let range = rng.random(Nes(N));
                     map.drain_with(range, |r, v| {
                         arr[r.0.max(range.0)..r.1.min(range.1)]
                             .iter_mut()
@@ -452,8 +452,8 @@ mod tests {
                         .for_each(|a| assert_eq!(*a, None));
                 }
                 _ => {
-                    let range = rng.gen(Nes(N));
-                    let value = rng.gen(-A..=A);
+                    let range = rng.random(Nes(N));
+                    let value = rng.random(-A..=A);
                     map.insert_with(range, value, |r, v| {
                         arr[r.0.max(range.0)..r.1.min(range.1)]
                             .iter_mut()
@@ -488,9 +488,9 @@ mod tests {
         let mut set: RangeSet<usize> = Default::default();
         let mut arr = [false; N];
         for _ in 0..Q {
-            match rng.gen(0..5) {
+            match rng.random(0..5) {
                 0 => {
-                    let key = rng.gen(..N);
+                    let key = rng.random(..N);
                     if let Some(r) = set.get_range(&key) {
                         arr[r.0..r.1].iter_mut().for_each(|a| {
                             assert!(*a);
@@ -498,7 +498,7 @@ mod tests {
                     };
                 }
                 1 => {
-                    let range = rng.gen(Nes(N));
+                    let range = rng.random(Nes(N));
                     set.drain_with(range, |r| {
                         arr[r.0.max(range.0)..r.1.min(range.1)]
                             .iter_mut()
@@ -510,7 +510,7 @@ mod tests {
                     arr[range.0..range.1].iter_mut().for_each(|a| assert!(!*a));
                 }
                 _ => {
-                    let range = rng.gen(Nes(N));
+                    let range = rng.random(Nes(N));
                     set.insert_with(range, |r| {
                         arr[r.0.max(range.0)..r.1.min(range.1)]
                             .iter_mut()

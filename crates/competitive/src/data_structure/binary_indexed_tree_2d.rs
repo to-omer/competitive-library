@@ -125,7 +125,7 @@ mod tests {
         const W: usize = 250;
         let mut bit = BinaryIndexedTree2D::<AdditiveOperation<_>>::new(H, W);
         let mut arr = vec![vec![0; W]; H];
-        for (i, j, v) in rng.gen_iter((..H, ..W, ..A)).take(Q) {
+        for (i, j, v) in rng.random_iter((..H, ..W, ..A)).take(Q) {
             bit.update(i, j, v);
             arr[i][j] += v;
         }
@@ -147,7 +147,7 @@ mod tests {
 
         let mut bit = BinaryIndexedTree2D::<MaxOperation<_>>::new(H, W);
         let mut arr = vec![vec![0; W]; H];
-        for (i, j, v) in rng.gen_iter((..H, ..W, ..A)).take(Q) {
+        for (i, j, v) in rng.random_iter((..H, ..W, ..A)).take(Q) {
             bit.update(i, j, v);
             arr[i][j] = std::cmp::max(arr[i][j], v);
         }
@@ -175,7 +175,7 @@ mod tests {
         const W: usize = 25;
         let mut bit = BinaryIndexedTree2D::<AdditiveOperation<_>>::new(H, W);
         let mut arr = vec![vec![0; W + 1]; H + 1];
-        for (i, j, v) in rng.gen_iter((..H, ..W, -B..B)).take(Q) {
+        for (i, j, v) in rng.random_iter((..H, ..W, -B..B)).take(Q) {
             bit.set(i, j, v);
             arr[i + 1][j + 1] = v;
         }

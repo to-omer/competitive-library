@@ -1095,7 +1095,7 @@ mod tests {
         const Q: usize = 100;
         let mut rng = Xorshift::default();
         for ((l, r), radix) in rng
-            .gen_iter((NotEmptySegment(10usize.pow(9)), 2..=10))
+            .random_iter((NotEmptySegment(10usize.pow(9)), 2..=10))
             .take(Q)
         {
             let rr = r.to_digit_sequence_radix(radix);
@@ -1150,7 +1150,7 @@ mod tests {
         const Q: usize = 100;
         let mut rng = Xorshift::default();
         for ((l, r), radix) in rng
-            .gen_iter((NotEmptySegment(10usize.pow(9)), 2..=10))
+            .random_iter((NotEmptySegment(10usize.pow(9)), 2..=10))
             .take(Q)
         {
             let rr = r.to_digit_sequence_radix(radix);
@@ -1204,7 +1204,7 @@ mod tests {
         type A = AdditiveOperation<usize>;
         const Q: usize = 100;
         let mut rng = Xorshift::default();
-        for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
+        for (n, r) in rng.random_iter((0..10usize.pow(18), 2..=10)).take(Q) {
             let nd = n.to_digit_sequence_radix(r);
             assert_eq!(
                 n + 1,
@@ -1242,7 +1242,7 @@ mod tests {
         type A = AdditiveOperation<usize>;
         const Q: usize = 100;
         let mut rng = Xorshift::default();
-        for (n, r) in rng.gen_iter((0..10usize.pow(18), 2..=10)).take(Q) {
+        for (n, r) in rng.random_iter((0..10usize.pow(18), 2..=10)).take(Q) {
             let nd = n.to_digit_sequence_radix(r);
             assert_eq!(
                 n + 1,
@@ -1280,7 +1280,10 @@ mod tests {
         type A = AdditiveOperation<usize>;
         const Q: usize = 100;
         let mut rng = Xorshift::default();
-        for (n, r, c) in rng.gen_iter((0..10usize.pow(18), 2..=10, 2..200)).take(Q) {
+        for (n, r, c) in rng
+            .random_iter((0..10usize.pow(18), 2..=10, 2..200))
+            .take(Q)
+        {
             let nd = n.to_digit_sequence_radix(r);
             let fst = transducer!((< nd) & (=> || 0usize, |s, a| Some(((s * r + a) % c, ())), |s| *s == 0));
             assert_eq!(
@@ -1304,7 +1307,7 @@ mod tests {
         let mut rng = Xorshift::default();
         // (x, y) where x + a <= y, l <= x, y <= r
         for ((l, r), a) in rng
-            .gen_iter((NotEmptySegment(100usize), 0usize..100))
+            .random_iter((NotEmptySegment(100usize), 0usize..100))
             .take(Q)
         {
             let ll = l.to_digit_sequence_radix_len(2, 20);

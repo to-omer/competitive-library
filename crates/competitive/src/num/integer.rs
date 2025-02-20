@@ -716,7 +716,7 @@ mod tests {
                     #[test]
                     fn test_gcd() {
                         let mut rng = Xorshift::default();
-                            for (a, b) in rng.gen_iter((0..=A, 0..=A)).take(Q) {
+                            for (a, b) in rng.random_iter((0..=A, 0..=A)).take(Q) {
                             assert_eq!(a.gcd(b), gcd(a, b));
                         }
                         assert_eq!($t::zero().gcd(0), 0);
@@ -725,7 +725,7 @@ mod tests {
                     #[test]
                     fn test_extgcd() {
                         let mut rng = Xorshift::default();
-                        for (a, b) in rng.gen_iter((0..=A, 0..=A)).take(Q) {
+                        for (a, b) in rng.random_iter((0..=A, 0..=A)).take(Q) {
                             let ExtendedGcd { g, x, y } = a.extgcd(b);
                             assert_eq!(g, a.gcd(b));
                             assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g as i128);
@@ -735,8 +735,8 @@ mod tests {
                     fn test_modinv() {
                         let mut rng = Xorshift::default();
                         for _ in 0..Q {
-                            let m = rng.gen(2..=A);
-                            let a = rng.gen(1..m);
+                            let m = rng.random(2..=A);
+                            let a = rng.random(1..m);
                             let g = a.gcd(m);
                             let m = m / g;
                             let a = a / g;

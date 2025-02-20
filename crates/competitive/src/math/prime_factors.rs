@@ -130,7 +130,7 @@ mod tests {
     #[test]
     fn test_divisors() {
         let mut rng = Xorshift::default();
-        for n in (1..1000).chain(rng.gen_iter(1..=20000000).take(100)) {
+        for n in (1..1000).chain(rng.random_iter(1..=20000000).take(100)) {
             assert_eq!(divisors(n), naive_divisors(n));
         }
     }
