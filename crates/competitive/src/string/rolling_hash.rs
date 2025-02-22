@@ -20,6 +20,7 @@ pub trait RollingHasher {
         I: IntoIterator<Item = Self::T>;
     fn hash_substr(hashed: &[Self::Hash]) -> Hashed<Self>;
     fn concat_hash(x: &Hashed<Self>, y: &Hashed<Self>) -> Hashed<Self>;
+    fn empty_hash() -> Hashed<Self>;
 }
 
 #[derive(Debug)]
@@ -437,6 +438,19 @@ where
     pub fn concat(&self, other: &Self) -> Self {
         Hasher::concat_hash(self, other)
     }
+    pub fn pow(&self, n: usize) -> Self {
+        let mut res = Hasher::empty_hash();
+        let mut x = *self;
+        let mut n = n;
+        while n > 0 {
+            if n & 1 == 1 {
+                res = res.concat(&x);
+            }
+            x = x.concat(&x);
+            n >>= 1;
+        }
+        res
+    }
 }
 
 impl<Hasher> Clone for Hashed<Hasher>
@@ -608,6 +622,10 @@ macro_rules! impl_rolling_hasher {
                 };
                 Hashed::new(x.len + y.len, hash)
             }
+
+            fn empty_hash() -> Hashed<Self> {
+                Hashed::new(0, [$({ $s; <$R>::zero() },)+])
+            }
         }
     };
     ($T:ident, $R:ty, [$($tt:tt)+]) => {
@@ -650,7 +668,7 @@ mod tests {
     }
 
     #[test]
-    fn test_rolling_hash_pow() {
+    fn test_rolling_hash_limited_precalc() {
         const N: usize = 200;
         let mut rng = Xorshift::default();
         let a: Vec<_> = rng.random_iter(0..10u64).take(N).collect();
@@ -663,6 +681,27 @@ mod tests {
                         a[l1..l1 + k] == a[l2..l2 + k],
                         h.range(l1..l1 + k) == h.range(l2..l2 + k)
                     );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rolling_hash_pow() {
+        const N: usize = 20;
+        let mut rng = Xorshift::default();
+        let a: Vec<_> = rng.random_iter(0..10u64).take(N).collect();
+        Mersenne61x3::init(N);
+        for k in 0..=N {
+            for l in 0..=N - k {
+                let a = &a[l..l + k];
+                for n in 0..=N {
+                    let b = a.repeat(n);
+                    let ha = Mersenne61x3::hash_sequence(a.iter().copied())
+                        .hash_range(..)
+                        .pow(n);
+                    let hb = Mersenne61x3::hash_sequence(b.iter().copied()).hash_range(..);
+                    assert_eq!(ha, hb);
                 }
             }
         }
