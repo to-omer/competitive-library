@@ -677,20 +677,23 @@ where
 {
     type Input = (T, T);
     type Output = ();
-    /// is equal
-    type State = Ordering;
+    /// accept
+    type State = bool;
     fn start(&self) -> Self::State {
-        Ordering::Equal
+        self.equal
     }
     fn relation(
         &self,
         state: &Self::State,
         input: &Self::Input,
     ) -> Option<(Self::State, Self::Output)> {
-        Some((input.0.cmp(&input.1).then(*state), ()))
+        match input.0.cmp(&input.1) {
+            Ordering::Equal => Some((*state, ())),
+            ord => Some((ord == self.ordering, ())),
+        }
     }
     fn accept(&self, state: &Self::State) -> bool {
-        *state == self.ordering || self.equal && matches!(state, Ordering::Equal)
+        *state
     }
 }
 
