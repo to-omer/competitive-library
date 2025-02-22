@@ -571,6 +571,38 @@ where
 }
 
 #[derive(Debug, Clone)]
+pub struct EqualTransducer<T>(PhantomData<fn() -> T>);
+impl<T> EqualTransducer<T> {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+impl<T> Default for EqualTransducer<T> {
+    fn default() -> Self {
+        Self(PhantomData)
+    }
+}
+impl<T> Transducer for EqualTransducer<T>
+where
+    T: PartialEq,
+{
+    type Input = (T, T);
+    type Output = ();
+    type State = ();
+    fn start(&self) -> Self::State {}
+    fn relation(
+        &self,
+        _state: &Self::State,
+        input: &Self::Input,
+    ) -> Option<(Self::State, Self::Output)> {
+        (input.0 == input.1).then_some(((), ()))
+    }
+    fn accept(&self, _state: &Self::State) -> bool {
+        true
+    }
+}
+
+#[derive(Debug, Clone)]
 /// DFA to accept Less/Greater than (or equal to) in lexicographical order
 pub struct LexicographicalTransducer<T> {
     ordering: Ordering,
@@ -687,10 +719,13 @@ where
         state: &Self::State,
         input: &Self::Input,
     ) -> Option<(Self::State, Self::Output)> {
-        match input.0.cmp(&input.1) {
-            Ordering::Equal => Some((*state, ())),
-            ord => Some((ord == self.ordering, ())),
-        }
+        Some((
+            match input.0.cmp(&input.1) {
+                Ordering::Equal => *state,
+                ord => ord == self.ordering,
+            },
+            (),
+        ))
     }
     fn accept(&self, state: &Self::State) -> bool {
         *state
@@ -1022,6 +1057,8 @@ impl_to_digit_sequence!(u8 u16 u32 u64 u128 usize);
 macro_rules! transducer {
     (@check $e:expr)                                         => {{ #[inline(always)] fn check_transucer<T>(fst: T) -> T where T: Transducer { fst } check_transucer($e) }};
     (@inner ($($t:tt)*))                                     => { $crate::transducer!(@inner $($t)*) };
+    (@inner => $f:expr, $g:expr, $h:expr $(,)?)              => { $crate::transducer!(@check FunctionalTransducer::new($f, $g, $h)) };
+    (@inner = $e:expr)                                       => { $crate::transducer!(((@id & (@seq &$e)) . =)) };
     (@inner <= $e:expr)                                      => { $crate::transducer!(((@id & (@seq &$e)) . <=)) };
     (@inner >= $e:expr)                                      => { $crate::transducer!(((@id & (@seq &$e)) . >=)) };
     (@inner < $e:expr)                                       => { $crate::transducer!(((@id & (@seq &$e)) . <)) };
@@ -1030,6 +1067,7 @@ macro_rules! transducer {
     (@inner !>= $e:expr)                                     => { $crate::transducer!(((@id & (@rseq &$e)) . !>=)) };
     (@inner !< $e:expr)                                      => { $crate::transducer!(((@id & (@rseq &$e)) . !<)) };
     (@inner !> $e:expr)                                      => { $crate::transducer!(((@id & (@rseq &$e)) . !>)) };
+    (@inner $e:ident =)                                      => { $crate::transducer!((((@seq &$e) & @id) . =)) };
     (@inner $e:ident <=)                                     => { $crate::transducer!((((@seq &$e) & @id) . <=)) };
     (@inner $e:ident >=)                                     => { $crate::transducer!((((@seq &$e) & @id) . >=)) };
     (@inner $e:ident <)                                      => { $crate::transducer!((((@seq &$e) & @id) . <)) };
@@ -1038,6 +1076,7 @@ macro_rules! transducer {
     (@inner $e:ident !>=)                                    => { $crate::transducer!((((@rseq &$e) & @id) . !>=)) };
     (@inner $e:ident !<)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !<)) };
     (@inner $e:ident !>)                                     => { $crate::transducer!((((@rseq &$e) & @id) . !>)) };
+    (@inner =)                                               => { $crate::transducer!(@check EqualTransducer::new()) };
     (@inner <=)                                              => { $crate::transducer!(@check LexicographicalTransducer::less_than_or_equal()) };
     (@inner >=)                                              => { $crate::transducer!(@check LexicographicalTransducer::greater_than_or_equal()) };
     (@inner <)                                               => { $crate::transducer!(@check LexicographicalTransducer::less_than()) };
@@ -1046,7 +1085,6 @@ macro_rules! transducer {
     (@inner !>=)                                             => { $crate::transducer!(@check RevLexicographicalTransducer::greater_than_or_equal()) };
     (@inner !<)                                              => { $crate::transducer!(@check RevLexicographicalTransducer::less_than()) };
     (@inner !>)                                              => { $crate::transducer!(@check RevLexicographicalTransducer::greater_than()) };
-    (@inner => $f:expr, $g:expr, $h:expr $(,)?)              => { $crate::transducer!(@check FunctionalTransducer::new($f, $g, $h)) };
     (@inner @id)                                             => { $crate::transducer!(@check IdentityTransducer::new()) };
     (@inner @it $e:expr)                                     => { $crate::transducer!(@check IteratorTransducer::new($e)) };
     (@inner @map $f:expr)                                    => { $crate::transducer!(@check MapTransducer::new($f)) };
@@ -1089,6 +1127,31 @@ mod tests {
         tools::{NotEmptySegment, Xorshift},
         transducer,
     };
+
+    #[test]
+    fn test_equal_transducer() {
+        type A = AdditiveOperation<usize>;
+        const Q: usize = 100;
+        let mut rng = Xorshift::default();
+        for ((l, r), radix) in rng
+            .random_iter((NotEmptySegment(10usize.pow(9)), 2..=10))
+            .take(Q)
+        {
+            let rr = r.to_digit_sequence_radix(radix);
+            let ll = l.to_digit_sequence_radix_len(radix, rr.len());
+            let n = r - l;
+            assert_eq!(
+                n,
+                transducer!((((ll <=) & (< rr)) * ((ll <=) & (< rr))) & =)
+                    .dp::<A>(1)
+                    .with_hashmap()
+                    .run(
+                        || (0..radix * radix).map(|x| (x / radix, x % radix)),
+                        ll.len()
+                    )
+            );
+        }
+    }
 
     #[test]
     fn test_lexicographical_transducer() {
