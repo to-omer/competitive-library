@@ -1,42 +1,50 @@
 use std::marker::PhantomData;
 
-pub trait GraphBase<'g> {
+pub trait GraphBase {
     type VIndex: Copy + Eq;
 }
-pub trait EIndexedGraph<'g>: GraphBase<'g> {
+pub trait EIndexedGraph: GraphBase {
     type EIndex: Copy + Eq;
 }
 
-pub trait VertexSize<'g>: GraphBase<'g> {
-    fn vsize(&'g self) -> usize;
+pub trait VertexSize: GraphBase {
+    fn vsize(&self) -> usize;
 }
-pub trait EdgeSize<'g>: GraphBase<'g> {
-    fn esize(&'g self) -> usize;
+pub trait EdgeSize: GraphBase {
+    fn esize(&self) -> usize;
 }
 
-pub trait Vertices<'g>: GraphBase<'g> {
-    type VIter: 'g + Iterator<Item = Self::VIndex>;
-    fn vertices(&'g self) -> Self::VIter;
+pub trait Vertices: GraphBase {
+    type VIter<'g>: Iterator<Item = Self::VIndex>
+    where
+        Self: 'g;
+    fn vertices(&self) -> Self::VIter<'_>;
 }
-pub trait Edges<'g>: EIndexedGraph<'g> {
-    type EIter: 'g + Iterator<Item = Self::EIndex>;
-    fn edges(&'g self) -> Self::EIter;
+pub trait Edges: EIndexedGraph {
+    type EIter<'g>: Iterator<Item = Self::EIndex>
+    where
+        Self: 'g;
+    fn edges<'g>(&self) -> Self::EIter<'g>;
 }
 
 pub trait AdjacencyIndex {
     type VIndex: Copy + Eq;
     fn vindex(&self) -> Self::VIndex;
 }
-pub trait Adjacencies<'g>: GraphBase<'g> {
-    type AIndex: 'g + AdjacencyIndex<VIndex = Self::VIndex>;
-    type AIter: 'g + Iterator<Item = Self::AIndex>;
-    fn adjacencies(&'g self, vid: Self::VIndex) -> Self::AIter;
+pub trait Adjacencies: GraphBase {
+    type AIndex: AdjacencyIndex<VIndex = Self::VIndex>;
+    type AIter<'g>: Iterator<Item = Self::AIndex>
+    where
+        Self: 'g;
+    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_>;
 }
 
-pub trait AdjacenciesWithEindex<'g>: EIndexedGraph<'g> {
-    type AIndex: 'g + AdjacencyIndexWithEindex<VIndex = Self::VIndex, EIndex = Self::EIndex>;
-    type AIter: 'g + Iterator<Item = Self::AIndex>;
-    fn adjacencies_with_eindex(&'g self, vid: Self::VIndex) -> Self::AIter;
+pub trait AdjacenciesWithEindex: EIndexedGraph {
+    type AIndex: AdjacencyIndexWithEindex<VIndex = Self::VIndex, EIndex = Self::EIndex>;
+    type AIter<'g>: Iterator<Item = Self::AIndex>
+    where
+        Self: 'g;
+    fn adjacencies_with_eindex(&self, vid: Self::VIndex) -> Self::AIter<'_>;
 }
 pub trait AdjacencyIndexWithEindex: AdjacencyIndex {
     type EIndex: Copy + Eq;
@@ -47,13 +55,15 @@ pub trait AdjacencyIndexWithValue: AdjacencyIndex {
     type AValue: Clone;
     fn avalue(&self) -> Self::AValue;
 }
-pub trait AdjacenciesWithValue<'g, T>: GraphBase<'g>
+pub trait AdjacenciesWithValue<T>: GraphBase
 where
     T: Clone,
 {
-    type AIndex: 'g + AdjacencyIndexWithValue<VIndex = Self::VIndex, AValue = T>;
-    type AIter: 'g + Iterator<Item = Self::AIndex>;
-    fn adjacencies_with_value(&'g self, vid: Self::VIndex) -> Self::AIter;
+    type AIndex: AdjacencyIndexWithValue<VIndex = Self::VIndex, AValue = T>;
+    type AIter<'g>: Iterator<Item = Self::AIndex>
+    where
+        Self: 'g;
+    fn adjacencies_with_value(&self, vid: Self::VIndex) -> Self::AIter<'_>;
 }
 
 impl AdjacencyIndex for usize {
@@ -205,7 +215,7 @@ impl<V, E, T> VIndexWithEIndexValue<V, E, T> {
     }
 }
 
-pub trait VertexMap<'g, T>: GraphBase<'g> {
+pub trait VertexMap<T>: GraphBase {
     type Vmap;
     fn construct_vmap<F>(&self, f: F) -> Self::Vmap
     where
@@ -216,13 +226,13 @@ pub trait VertexMap<'g, T>: GraphBase<'g> {
         *self.vmap_get_mut(map, vid) = x;
     }
 }
-pub trait VertexView<'g, M, T>: GraphBase<'g>
+pub trait VertexView<M, T>: GraphBase
 where
     M: ?Sized,
 {
     fn vview(&self, map: &M, vid: Self::VIndex) -> T;
 }
-pub trait EdgeMap<'g, T>: EIndexedGraph<'g> {
+pub trait EdgeMap<T>: EIndexedGraph {
     type Emap;
     fn construct_emap<F>(&self, f: F) -> Self::Emap
     where
@@ -233,25 +243,25 @@ pub trait EdgeMap<'g, T>: EIndexedGraph<'g> {
         *self.emap_get_mut(map, eid) = x;
     }
 }
-pub trait EdgeView<'g, M, T>: EIndexedGraph<'g>
+pub trait EdgeView<M, T>: EIndexedGraph
 where
     M: ?Sized,
 {
     fn eview(&self, map: &M, eid: Self::EIndex) -> T;
 }
 
-impl<'g, G, F, T> VertexView<'g, F, T> for G
+impl<G, F, T> VertexView<F, T> for G
 where
-    G: GraphBase<'g>,
+    G: GraphBase,
     F: Fn(Self::VIndex) -> T,
 {
     fn vview(&self, map: &F, vid: Self::VIndex) -> T {
         (map)(vid)
     }
 }
-impl<'g, G, F, T> EdgeView<'g, F, T> for G
+impl<G, F, T> EdgeView<F, T> for G
 where
-    G: EIndexedGraph<'g>,
+    G: EIndexedGraph,
     F: Fn(Self::EIndex) -> T,
 {
     fn eview(&self, map: &F, eid: Self::EIndex) -> T {
@@ -259,28 +269,31 @@ where
     }
 }
 
-pub trait AdjacencyView<'g, 'a, M, T>: GraphBase<'g>
+pub trait AdjacencyView<'a, M, T>: GraphBase
 where
     M: ?Sized,
 {
-    type AViewIter: Iterator<Item = VIndexWithValue<Self::VIndex, T>>;
-    fn aviews(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter;
+    type AViewIter<'g>: Iterator<Item = VIndexWithValue<Self::VIndex, T>>
+    where
+        M: 'a,
+        Self: 'g;
+    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g>;
 }
 
 pub struct AdjacencyViewIterFromEindex<'g, 'a, G, M, T>
 where
-    G: AdjacenciesWithEindex<'g>,
+    G: AdjacenciesWithEindex,
 {
-    iter: G::AIter,
+    iter: G::AIter<'g>,
     g: &'g G,
     map: &'a M,
     _marker: PhantomData<fn() -> T>,
 }
 impl<'g, 'a, G, M, T> AdjacencyViewIterFromEindex<'g, 'a, G, M, T>
 where
-    G: AdjacenciesWithEindex<'g>,
+    G: AdjacenciesWithEindex,
 {
-    pub fn new(iter: G::AIter, g: &'g G, map: &'a M) -> Self {
+    pub fn new(iter: G::AIter<'g>, g: &'g G, map: &'a M) -> Self {
         Self {
             iter,
             g,
@@ -289,9 +302,9 @@ where
         }
     }
 }
-impl<'g, 'a, G, M, T> Iterator for AdjacencyViewIterFromEindex<'g, 'a, G, M, T>
+impl<'a, G, M, T> Iterator for AdjacencyViewIterFromEindex<'_, 'a, G, M, T>
 where
-    G: 'g + AdjacenciesWithEindex<'g> + EdgeView<'g, M, T>,
+    G: AdjacenciesWithEindex + EdgeView<M, T>,
     M: 'a,
 {
     type Item = VIndexWithValue<G::VIndex, T>;
@@ -304,19 +317,19 @@ where
 
 pub struct AdjacencyViewIterFromValue<'g, 'a, G, M, T, U>
 where
-    G: AdjacenciesWithValue<'g, T>,
+    G: 'g + AdjacenciesWithValue<T>,
     T: Clone,
 {
-    iter: G::AIter,
+    iter: G::AIter<'g>,
     map: &'a M,
     _marker: PhantomData<fn() -> U>,
 }
 impl<'g, 'a, G, M, T, U> AdjacencyViewIterFromValue<'g, 'a, G, M, T, U>
 where
-    G: AdjacenciesWithValue<'g, T>,
+    G: AdjacenciesWithValue<T>,
     T: Clone,
 {
-    pub fn new(iter: G::AIter, map: &'a M) -> Self {
+    pub fn new(iter: G::AIter<'g>, map: &'a M) -> Self {
         Self {
             iter,
             map,
@@ -324,9 +337,9 @@ where
         }
     }
 }
-impl<'g, 'a, G, M, T, U> Iterator for AdjacencyViewIterFromValue<'g, 'a, G, M, T, U>
+impl<'a, G, M, T, U> Iterator for AdjacencyViewIterFromValue<'_, 'a, G, M, T, U>
 where
-    G: 'g + AdjacenciesWithValue<'g, T>,
+    G: AdjacenciesWithValue<T>,
     T: Clone,
     M: 'a + Fn(T) -> U,
 {

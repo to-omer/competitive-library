@@ -110,25 +110,25 @@ where
     }
 }
 
-pub trait ShortestPathExt<'g>: GraphBase<'g> {
+pub trait ShortestPathExt: GraphBase {
     fn bfs_distance_ss<'a, S, M>(
-        &'g self,
+        &self,
         source: Self::VIndex,
         weight: &'a M,
-    ) -> <Self as VertexMap<'g, S::T>>::Vmap
+    ) -> <Self as VertexMap<S::T>>::Vmap
     where
-        Self: VertexMap<'g, S::T> + AdjacencyView<'g, 'a, M, S::T>,
+        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
     {
         self.bfs_distance_ms::<S, M, _>(once(source), weight)
     }
     fn bfs_distance_ms<'a, S, M, I>(
-        &'g self,
+        &self,
         sources: I,
         weight: &'a M,
-    ) -> <Self as VertexMap<'g, S::T>>::Vmap
+    ) -> <Self as VertexMap<S::T>>::Vmap
     where
-        Self: VertexMap<'g, S::T> + AdjacencyView<'g, 'a, M, S::T>,
+        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
         I: IntoIterator<Item = Self::VIndex>,
     {
@@ -156,23 +156,19 @@ pub trait ShortestPathExt<'g>: GraphBase<'g> {
         cost
     }
     fn dijkstra_ss<'a, S, M>(
-        &'g self,
+        &self,
         source: Self::VIndex,
         weight: &'a M,
-    ) -> <Self as VertexMap<'g, S::T>>::Vmap
+    ) -> <Self as VertexMap<S::T>>::Vmap
     where
-        Self: VertexMap<'g, S::T> + AdjacencyView<'g, 'a, M, S::T>,
+        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
     {
         self.dijkstra_ms::<S, M, _>(once(source), weight)
     }
-    fn dijkstra_ms<'a, S, M, I>(
-        &'g self,
-        sources: I,
-        weight: &'a M,
-    ) -> <Self as VertexMap<'g, S::T>>::Vmap
+    fn dijkstra_ms<'a, S, M, I>(&self, sources: I, weight: &'a M) -> <Self as VertexMap<S::T>>::Vmap
     where
-        Self: VertexMap<'g, S::T> + AdjacencyView<'g, 'a, M, S::T>,
+        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
         I: IntoIterator<Item = Self::VIndex>,
     {
@@ -198,25 +194,25 @@ pub trait ShortestPathExt<'g>: GraphBase<'g> {
         cost
     }
     fn bellman_ford_ss<'a, S, M>(
-        &'g self,
+        &self,
         source: Self::VIndex,
         weight: &'a M,
         check: bool,
-    ) -> Option<<Self as VertexMap<'g, S::T>>::Vmap>
+    ) -> Option<<Self as VertexMap<S::T>>::Vmap>
     where
-        Self: Vertices<'g> + VertexMap<'g, S::T> + AdjacencyView<'g, 'a, M, S::T> + VertexSize<'g>,
+        Self: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
         S: ShortestPathSemiRing,
     {
         self.bellman_ford_ms::<S, M, _>(once(source), weight, check)
     }
     fn bellman_ford_ms<'a, S, M, I>(
-        &'g self,
+        &self,
         sources: I,
         weight: &'a M,
         check: bool,
-    ) -> Option<<Self as VertexMap<'g, S::T>>::Vmap>
+    ) -> Option<<Self as VertexMap<S::T>>::Vmap>
     where
-        Self: Vertices<'g> + VertexMap<'g, S::T> + AdjacencyView<'g, 'a, M, S::T> + VertexSize<'g>,
+        Self: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
         S: ShortestPathSemiRing,
         I: IntoIterator<Item = Self::VIndex>,
     {
@@ -252,15 +248,15 @@ pub trait ShortestPathExt<'g>: GraphBase<'g> {
         Some(cost)
     }
     fn warshall_floyd_ap<'a, S, M>(
-        &'g self,
+        &self,
         weight: &'a M,
-    ) -> <Self as VertexMap<'g, <Self as VertexMap<'g, S::T>>::Vmap>>::Vmap
+    ) -> <Self as VertexMap<<Self as VertexMap<S::T>>::Vmap>>::Vmap
     where
-        Self: Vertices<'g>
-            + VertexMap<'g, S::T>
-            + VertexMap<'g, <Self as VertexMap<'g, S::T>>::Vmap>
-            + AdjacencyView<'g, 'a, M, S::T>,
-        <Self as VertexMap<'g, S::T>>::Vmap: Clone,
+        Self: Vertices
+            + VertexMap<S::T>
+            + VertexMap<<Self as VertexMap<S::T>>::Vmap>
+            + AdjacencyView<'a, M, S::T>,
+        <Self as VertexMap<S::T>>::Vmap: Clone,
         S: ShortestPathSemiRing,
     {
         let mut cost = self.construct_vmap(|| self.construct_vmap(S::inf));
@@ -285,4 +281,4 @@ pub trait ShortestPathExt<'g>: GraphBase<'g> {
         cost
     }
 }
-impl<'g, G> ShortestPathExt<'g> for G where G: GraphBase<'g> {}
+impl<G> ShortestPathExt for G where G: GraphBase {}

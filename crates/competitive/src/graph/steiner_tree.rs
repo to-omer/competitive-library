@@ -4,14 +4,10 @@ use super::{
 };
 use std::{cmp::Reverse, collections::BinaryHeap, iter::repeat_with};
 
-pub trait SteinerTreeExt<'g>: Vertices<'g> {
-    fn steiner_tree<'a, S, M, I>(
-        &'g self,
-        terminals: I,
-        weight: &'a M,
-    ) -> SteinerTreeOutput<'g, S, Self>
+pub trait SteinerTreeExt: Vertices {
+    fn steiner_tree<'a, S, M, I>(&self, terminals: I, weight: &'a M) -> SteinerTreeOutput<S, Self>
     where
-        Self: VertexMap<'g, S::T> + AdjacencyView<'g, 'a, M, S::T>,
+        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
         I: IntoIterator<Item = Self::VIndex> + ExactSizeIterator,
     {
@@ -59,18 +55,18 @@ pub trait SteinerTreeExt<'g>: Vertices<'g> {
         SteinerTreeOutput { g: self, dp }
     }
 }
-impl<'g, G> SteinerTreeExt<'g> for G where G: Vertices<'g> {}
+impl<G> SteinerTreeExt for G where G: Vertices {}
 pub struct SteinerTreeOutput<'g, S, G>
 where
-    G: VertexMap<'g, S::T> + ?Sized,
+    G: VertexMap<S::T> + ?Sized,
     S: ShortestPathSemiRing,
 {
     g: &'g G,
     dp: Vec<G::Vmap>,
 }
-impl<'g, S, G> SteinerTreeOutput<'g, S, G>
+impl<S, G> SteinerTreeOutput<'_, S, G>
 where
-    G: VertexMap<'g, S::T> + ?Sized,
+    G: VertexMap<S::T> + ?Sized,
     S: ShortestPathSemiRing,
 {
     pub fn minimum_from_source(&self, source: G::VIndex) -> S::T {

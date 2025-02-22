@@ -14,45 +14,54 @@ impl<Fa> UsizeGraph<Fa> {
     }
 }
 
-impl<Fa> GraphBase<'_> for UsizeGraph<Fa> {
+impl<Fa> GraphBase for UsizeGraph<Fa> {
     type VIndex = usize;
 }
 
-impl<Fa> Vertices<'_> for UsizeGraph<Fa> {
-    type VIter = Range<usize>;
-    fn vertices(&self) -> Self::VIter {
+impl<Fa> Vertices for UsizeGraph<Fa> {
+    type VIter<'g>
+        = Range<usize>
+    where
+        Fa: 'g;
+    fn vertices(&self) -> Self::VIter<'_> {
         0..self.vsize
     }
 }
 
-impl<'g, Fa, I, T> Adjacencies<'g> for UsizeGraph<Fa>
+impl<Fa, I, T> Adjacencies for UsizeGraph<Fa>
 where
-    I: 'g + Iterator<Item = (usize, T)>,
+    I: Iterator<Item = (usize, T)>,
     Fa: Fn(usize) -> I,
-    T: 'g + Clone,
+    T: Clone,
 {
     type AIndex = VIndexWithValue<usize, T>;
-    type AIter = Map<I, fn((usize, T)) -> VIndexWithValue<usize, T>>;
+    type AIter<'g>
+        = Map<I, fn((usize, T)) -> VIndexWithValue<usize, T>>
+    where
+        Fa: 'g;
 
-    fn adjacencies(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         (self.adj)(vid).map(|a| a.into())
     }
 }
-impl<'g, Fa, I, T> AdjacenciesWithValue<'g, T> for UsizeGraph<Fa>
+impl<Fa, I, T> AdjacenciesWithValue<T> for UsizeGraph<Fa>
 where
-    I: 'g + Iterator<Item = (usize, T)>,
+    I: Iterator<Item = (usize, T)>,
     Fa: Fn(usize) -> I,
-    T: 'g + Clone,
+    T: Clone,
 {
     type AIndex = VIndexWithValue<usize, T>;
-    type AIter = Map<I, fn((usize, T)) -> VIndexWithValue<usize, T>>;
+    type AIter<'g>
+        = Map<I, fn((usize, T)) -> VIndexWithValue<usize, T>>
+    where
+        Fa: 'g;
 
-    fn adjacencies_with_value(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies_with_value(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         (self.adj)(vid).map(|a| a.into())
     }
 }
 
-impl<Fa, T> VertexMap<'_, T> for UsizeGraph<Fa> {
+impl<Fa, T> VertexMap<T> for UsizeGraph<Fa> {
     type Vmap = Vec<T>;
     fn construct_vmap<F>(&self, f: F) -> Self::Vmap
     where
@@ -71,7 +80,7 @@ impl<Fa, T> VertexMap<'_, T> for UsizeGraph<Fa> {
         unsafe { map.get_unchecked_mut(vid) }
     }
 }
-impl<Fa, T> VertexView<'_, Vec<T>, T> for UsizeGraph<Fa>
+impl<Fa, T> VertexView<Vec<T>, T> for UsizeGraph<Fa>
 where
     T: Clone,
 {
@@ -79,7 +88,7 @@ where
         self.vmap_get(map, vid).clone()
     }
 }
-impl<Fa, T> VertexView<'_, [T], T> for UsizeGraph<Fa>
+impl<Fa, T> VertexView<[T], T> for UsizeGraph<Fa>
 where
     T: Clone,
 {
@@ -88,15 +97,18 @@ where
         unsafe { map.get_unchecked(vid) }.clone()
     }
 }
-impl<'g, 'a: 'g, Fa, M, I, T, U> AdjacencyView<'g, 'a, M, U> for UsizeGraph<Fa>
+impl<'a, Fa, M, I, T, U> AdjacencyView<'a, M, U> for UsizeGraph<Fa>
 where
-    I: 'g + Iterator<Item = (usize, T)>,
-    Fa: 'g + Fn(usize) -> I,
-    T: 'g + Clone,
+    I: Iterator<Item = (usize, T)>,
+    Fa: Fn(usize) -> I,
+    T: Clone,
     M: 'a + Fn(T) -> U,
 {
-    type AViewIter = AdjacencyViewIterFromValue<'g, 'a, Self, M, T, U>;
-    fn aviews(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter {
+    type AViewIter<'g>
+        = AdjacencyViewIterFromValue<'g, 'a, Self, M, T, U>
+    where
+        Fa: 'g;
+    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
         AdjacencyViewIterFromValue::new(self.adjacencies_with_value(vid), map)
     }
 }
@@ -117,55 +129,70 @@ impl<V, Fv, Fa> ClosureGraph<V, Fv, Fa> {
     }
 }
 
-impl<V, Fv, Fa> GraphBase<'_> for ClosureGraph<V, Fv, Fa>
+impl<V, Fv, Fa> GraphBase for ClosureGraph<V, Fv, Fa>
 where
     V: Eq + Copy,
 {
     type VIndex = V;
 }
 
-impl<'g, V, Fv, Fa, Iv> Vertices<'g> for ClosureGraph<V, Fv, Fa>
+impl<V, Fv, Fa, Iv> Vertices for ClosureGraph<V, Fv, Fa>
 where
-    V: 'g + Eq + Copy,
-    Iv: 'g + Iterator<Item = V>,
+    V: Eq + Copy,
+    Iv: Iterator<Item = V>,
     Fv: Fn() -> Iv,
 {
-    type VIter = Iv;
-    fn vertices(&'g self) -> Self::VIter {
+    type VIter<'g>
+        = Iv
+    where
+        V: 'g,
+        Fv: 'g,
+        Fa: 'g;
+    fn vertices(&self) -> Self::VIter<'_> {
         (self.vs)()
     }
 }
 
-impl<'g, V, Fv, Fa, Ia, T> Adjacencies<'g> for ClosureGraph<V, Fv, Fa>
+impl<V, Fv, Fa, Ia, T> Adjacencies for ClosureGraph<V, Fv, Fa>
 where
-    V: 'g + Eq + Copy,
-    Ia: 'g + Iterator<Item = (V, T)>,
+    V: Eq + Copy,
+    Ia: Iterator<Item = (V, T)>,
     Fa: Fn(V) -> Ia,
-    T: 'g + Clone,
+    T: Clone,
 {
     type AIndex = VIndexWithValue<V, T>;
-    type AIter = Map<Ia, fn((V, T)) -> VIndexWithValue<V, T>>;
+    type AIter<'g>
+        = Map<Ia, fn((V, T)) -> VIndexWithValue<V, T>>
+    where
+        V: 'g,
+        Fv: 'g,
+        Fa: 'g;
 
-    fn adjacencies(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         (self.adj)(vid).map(|a| a.into())
     }
 }
-impl<'g, V, Fv, Fa, Ia, T> AdjacenciesWithValue<'g, T> for ClosureGraph<V, Fv, Fa>
+impl<V, Fv, Fa, Ia, T> AdjacenciesWithValue<T> for ClosureGraph<V, Fv, Fa>
 where
-    V: 'g + Eq + Copy,
-    Ia: 'g + Iterator<Item = (V, T)>,
+    V: Eq + Copy,
+    Ia: Iterator<Item = (V, T)>,
     Fa: Fn(V) -> Ia,
-    T: 'g + Clone,
+    T: Clone,
 {
     type AIndex = VIndexWithValue<V, T>;
-    type AIter = Map<Ia, fn((V, T)) -> VIndexWithValue<V, T>>;
+    type AIter<'g>
+        = Map<Ia, fn((V, T)) -> VIndexWithValue<V, T>>
+    where
+        V: 'g,
+        Fv: 'g,
+        Fa: 'g;
 
-    fn adjacencies_with_value(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies_with_value(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         (self.adj)(vid).map(|a| a.into())
     }
 }
 
-impl<V, Fv, Fa, T> VertexMap<'_, T> for ClosureGraph<V, Fv, Fa>
+impl<V, Fv, Fa, T> VertexMap<T> for ClosureGraph<V, Fv, Fa>
 where
     V: Eq + Copy + Hash,
     T: Clone,
@@ -184,7 +211,7 @@ where
         map.entry(vid).or_insert_with(|| val.clone())
     }
 }
-impl<V, Fv, Fa, T> VertexView<'_, (HashMap<V, T>, T), T> for ClosureGraph<V, Fv, Fa>
+impl<V, Fv, Fa, T> VertexView<(HashMap<V, T>, T), T> for ClosureGraph<V, Fv, Fa>
 where
     V: Eq + Copy + Hash,
     T: Clone,
@@ -193,17 +220,21 @@ where
         self.vmap_get(map, vid).clone()
     }
 }
-impl<'g, 'a: 'g, V, Fv, Fa, M, Ia, T, U> AdjacencyView<'g, 'a, M, U> for ClosureGraph<V, Fv, Fa>
+impl<'a, V, Fv, Fa, M, Ia, T, U> AdjacencyView<'a, M, U> for ClosureGraph<V, Fv, Fa>
 where
-    V: 'g + Eq + Copy,
-    Ia: 'g + Iterator<Item = (V, T)>,
-    Fv: 'g,
-    Fa: 'g + Fn(V) -> Ia,
-    T: 'g + Clone,
+    V: Eq + Copy,
+    Ia: Iterator<Item = (V, T)>,
+    Fa: Fn(V) -> Ia,
+    T: Clone,
     M: 'a + Fn(T) -> U,
 {
-    type AViewIter = AdjacencyViewIterFromValue<'g, 'a, Self, M, T, U>;
-    fn aviews(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter {
+    type AViewIter<'g>
+        = AdjacencyViewIterFromValue<'g, 'a, Self, M, T, U>
+    where
+        Fa: 'g,
+        Fv: 'g,
+        V: 'g;
+    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
         AdjacencyViewIterFromValue::new(self.adjacencies_with_value(vid), map)
     }
 }

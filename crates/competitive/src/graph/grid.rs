@@ -63,13 +63,16 @@ impl<A> GridGraph<A> {
     }
 }
 
-impl<A> GraphBase<'_> for GridGraph<A> {
+impl<A> GraphBase for GridGraph<A> {
     type VIndex = (usize, usize);
 }
 
-impl<A> Vertices<'_> for GridGraph<A> {
-    type VIter = GridVertices;
-    fn vertices(&self) -> Self::VIter {
+impl<A> Vertices for GridGraph<A> {
+    type VIter<'g>
+        = GridVertices
+    where
+        A: 'g;
+    fn vertices(&self) -> Self::VIter<'_> {
         GridVertices {
             xrange: 0..self.height,
             yrange: 0..self.width,
@@ -138,63 +141,63 @@ impl GridDirection {
     }
 }
 
-impl<'g> Adjacencies<'g> for GridGraph<Adj4> {
+impl Adjacencies for GridGraph<Adj4> {
     type AIndex = VIndexWithValue<(usize, usize), GridDirection>;
-    type AIter = Map<
+    type AIter<'g> = Map<
         GridAdjacency<'g, Adj4>,
         fn(((usize, usize), GridDirection)) -> VIndexWithValue<(usize, usize), GridDirection>,
     >;
-    fn adjacencies(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         self.adj4(vid).map(Into::into)
     }
 }
-impl<'g> Adjacencies<'g> for GridGraph<Adj8> {
+impl Adjacencies for GridGraph<Adj8> {
     type AIndex = VIndexWithValue<(usize, usize), GridDirection>;
-    type AIter = Map<
+    type AIter<'g> = Map<
         GridAdjacency<'g, Adj8>,
         fn(((usize, usize), GridDirection)) -> VIndexWithValue<(usize, usize), GridDirection>,
     >;
-    fn adjacencies(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         self.adj8(vid).map(Into::into)
     }
 }
 
-impl<'g> AdjacenciesWithValue<'g, GridDirection> for GridGraph<Adj4> {
+impl AdjacenciesWithValue<GridDirection> for GridGraph<Adj4> {
     type AIndex = VIndexWithValue<(usize, usize), GridDirection>;
-    type AIter = Map<
+    type AIter<'g> = Map<
         GridAdjacency<'g, Adj4>,
         fn(((usize, usize), GridDirection)) -> VIndexWithValue<(usize, usize), GridDirection>,
     >;
-    fn adjacencies_with_value(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies_with_value(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         self.adjacencies(vid)
     }
 }
-impl<'g> AdjacenciesWithValue<'g, GridDirection> for GridGraph<Adj8> {
+impl AdjacenciesWithValue<GridDirection> for GridGraph<Adj8> {
     type AIndex = VIndexWithValue<(usize, usize), GridDirection>;
-    type AIter = Map<
+    type AIter<'g> = Map<
         GridAdjacency<'g, Adj8>,
         fn(((usize, usize), GridDirection)) -> VIndexWithValue<(usize, usize), GridDirection>,
     >;
-    fn adjacencies_with_value(&'g self, vid: Self::VIndex) -> Self::AIter {
+    fn adjacencies_with_value(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         self.adjacencies(vid)
     }
 }
 
-impl<'g, 'a, M, T> AdjacencyView<'g, 'a, M, T> for GridGraph<Adj4>
+impl<'a, M, T> AdjacencyView<'a, M, T> for GridGraph<Adj4>
 where
     M: 'a + Fn(GridDirection) -> T,
 {
-    type AViewIter = AdjacencyViewIterFromValue<'g, 'a, Self, M, GridDirection, T>;
-    fn aviews(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter {
+    type AViewIter<'g> = AdjacencyViewIterFromValue<'g, 'a, Self, M, GridDirection, T>;
+    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
         AdjacencyViewIterFromValue::new(self.adjacencies(vid), map)
     }
 }
-impl<'g, 'a, M, T> AdjacencyView<'g, 'a, M, T> for GridGraph<Adj8>
+impl<'a, M, T> AdjacencyView<'a, M, T> for GridGraph<Adj8>
 where
     M: 'a + Fn(GridDirection) -> T,
 {
-    type AViewIter = AdjacencyViewIterFromValue<'g, 'a, Self, M, GridDirection, T>;
-    fn aviews(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter {
+    type AViewIter<'g> = AdjacencyViewIterFromValue<'g, 'a, Self, M, GridDirection, T>;
+    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
         AdjacencyViewIterFromValue::new(self.adjacencies(vid), map)
     }
 }
@@ -281,7 +284,7 @@ where
     }
 }
 
-impl<A, T> VertexMap<'_, T> for GridGraph<A> {
+impl<A, T> VertexMap<T> for GridGraph<A> {
     type Vmap = Vec<Vec<T>>;
     fn construct_vmap<F>(&self, mut f: F) -> Self::Vmap
     where
@@ -302,7 +305,7 @@ impl<A, T> VertexMap<'_, T> for GridGraph<A> {
         unsafe { map.get_unchecked_mut(x).get_unchecked_mut(y) }
     }
 }
-impl<A, T> VertexView<'_, Vec<Vec<T>>, T> for GridGraph<A>
+impl<A, T> VertexView<Vec<Vec<T>>, T> for GridGraph<A>
 where
     T: Clone,
 {

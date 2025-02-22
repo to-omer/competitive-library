@@ -274,43 +274,52 @@ where
     }
 }
 
-impl<D> GraphBase<'_> for SparseGraph<D> {
+impl<D> GraphBase for SparseGraph<D> {
     type VIndex = usize;
 }
-impl<D> EIndexedGraph<'_> for SparseGraph<D> {
+impl<D> EIndexedGraph for SparseGraph<D> {
     type EIndex = usize;
 }
 
-impl<D> VertexSize<'_> for SparseGraph<D> {
+impl<D> VertexSize for SparseGraph<D> {
     fn vsize(&self) -> usize {
         self.vsize
     }
 }
-impl<D> EdgeSize<'_> for SparseGraph<D> {
+impl<D> EdgeSize for SparseGraph<D> {
     fn esize(&self) -> usize {
         self.edges.len()
     }
 }
 
-impl<D> Vertices<'_> for SparseGraph<D> {
-    type VIter = ops::Range<usize>;
-    fn vertices(&self) -> Self::VIter {
+impl<D> Vertices for SparseGraph<D> {
+    type VIter<'g>
+        = ops::Range<usize>
+    where
+        D: 'g;
+    fn vertices(&self) -> Self::VIter<'_> {
         0..self.vsize
     }
 }
-impl<'g, D> Adjacencies<'g> for SparseGraph<D> {
+impl<D> Adjacencies for SparseGraph<D> {
     type AIndex = Adjacency;
-    type AIter = Cloned<slice::Iter<'g, Adjacency>>;
-    fn adjacencies(&'g self, vid: Self::VIndex) -> Self::AIter {
+    type AIter<'g>
+        = Cloned<slice::Iter<'g, Adjacency>>
+    where
+        D: 'g;
+    fn adjacencies(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         self.elist[self.start[vid]..self.start[vid + 1]]
             .iter()
             .cloned()
     }
 }
-impl<'g, D> AdjacenciesWithEindex<'g> for SparseGraph<D> {
+impl<D> AdjacenciesWithEindex for SparseGraph<D> {
     type AIndex = Adjacency;
-    type AIter = Cloned<slice::Iter<'g, Adjacency>>;
-    fn adjacencies_with_eindex(&'g self, vid: Self::VIndex) -> Self::AIter {
+    type AIter<'g>
+        = Cloned<slice::Iter<'g, Adjacency>>
+    where
+        D: 'g;
+    fn adjacencies_with_eindex(&self, vid: Self::VIndex) -> Self::AIter<'_> {
         self.elist[self.start[vid]..self.start[vid + 1]]
             .iter()
             .cloned()
@@ -330,7 +339,7 @@ impl AdjacencyIndexWithEindex for Adjacency {
     }
 }
 
-impl<D, T> VertexMap<'_, T> for SparseGraph<D> {
+impl<D, T> VertexMap<T> for SparseGraph<D> {
     type Vmap = Vec<T>;
     fn construct_vmap<F>(&self, f: F) -> Self::Vmap
     where
@@ -349,7 +358,7 @@ impl<D, T> VertexMap<'_, T> for SparseGraph<D> {
         unsafe { map.get_unchecked_mut(vid) }
     }
 }
-impl<D, T> VertexView<'_, Vec<T>, T> for SparseGraph<D>
+impl<D, T> VertexView<Vec<T>, T> for SparseGraph<D>
 where
     T: Clone,
 {
@@ -357,7 +366,7 @@ where
         self.vmap_get(map, vid).clone()
     }
 }
-impl<D, T> VertexView<'_, [T], T> for SparseGraph<D>
+impl<D, T> VertexView<[T], T> for SparseGraph<D>
 where
     T: Clone,
 {
@@ -367,7 +376,7 @@ where
     }
 }
 
-impl<D, T> EdgeMap<'_, T> for SparseGraph<D> {
+impl<D, T> EdgeMap<T> for SparseGraph<D> {
     type Emap = Vec<T>;
     fn construct_emap<F>(&self, f: F) -> Self::Emap
     where
@@ -388,7 +397,7 @@ impl<D, T> EdgeMap<'_, T> for SparseGraph<D> {
         unsafe { map.get_unchecked_mut(eid) }
     }
 }
-impl<D, T> EdgeView<'_, Vec<T>, T> for SparseGraph<D>
+impl<D, T> EdgeView<Vec<T>, T> for SparseGraph<D>
 where
     T: Clone,
 {
@@ -397,7 +406,7 @@ where
     }
 }
 
-impl<D, T> EdgeView<'_, [T], T> for SparseGraph<D>
+impl<D, T> EdgeView<[T], T> for SparseGraph<D>
 where
     T: Clone,
 {
@@ -408,14 +417,17 @@ where
     }
 }
 
-impl<'g, 'a, D: 'g, M, T> AdjacencyView<'g, 'a, M, T> for SparseGraph<D>
+impl<'a, D, M, T> AdjacencyView<'a, M, T> for SparseGraph<D>
 where
-    Self: AdjacenciesWithEindex<'g> + EdgeView<'g, M, T>,
+    Self: AdjacenciesWithEindex + EdgeView<M, T>,
     T: Clone,
     M: 'a,
 {
-    type AViewIter = AdjacencyViewIterFromEindex<'g, 'a, Self, M, T>;
-    fn aviews(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter {
+    type AViewIter<'g>
+        = AdjacencyViewIterFromEindex<'g, 'a, Self, M, T>
+    where
+        D: 'g;
+    fn aviews<'g>(&'g self, map: &'a M, vid: Self::VIndex) -> Self::AViewIter<'g> {
         AdjacencyViewIterFromEindex::new(self.adjacencies_with_eindex(vid), self, map)
     }
 }
