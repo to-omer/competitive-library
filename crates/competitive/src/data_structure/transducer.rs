@@ -328,6 +328,10 @@ impl_intersection_transducer!(
     T3 a3 b3
     T4 a4 b4
     T5 a5 b5
+    T6 a6 b6
+    T7 a7 b7
+    T8 a8 b8
+    T9 a9 b9
 );
 
 #[derive(Debug, Clone)]
@@ -383,6 +387,10 @@ impl_product_transducer!(
     T3 a3 b3 c3
     T4 a4 b4 c4
     T5 a5 b5 c5
+    T6 a6 b6 c6
+    T7 a7 b7 c7
+    T8 a8 b8 c8
+    T9 a9 b9 c9
 );
 
 #[derive(Debug, Clone)]
@@ -441,6 +449,10 @@ impl_chain_transducer!(
     T3 a3 b3 c3
     T4 a4 b4 c4
     T5 a5 b5 c5
+    T6 a6 b6 c6
+    T7 a7 b7 c7
+    T8 a8 b8 c8
+    T9 a9 b9 c9
 );
 
 #[derive(Debug, Clone)]
@@ -494,6 +506,7 @@ where
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct MapTransducer<T, U, F>
 where
     F: Fn(&T) -> U,
@@ -532,6 +545,7 @@ where
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct FilterMapTransducer<T, U, F>
 where
     F: Fn(&T) -> Option<U>,
