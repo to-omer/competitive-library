@@ -1,7 +1,9 @@
 //! mathematical datas
 
 use crate::algebra::{Group, Invertible, Monoid, Ring};
-use crate::num::{BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Zero, montgomery};
+use crate::num::{
+    BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Unsigned, Zero, montgomery,
+};
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
 #[codesnip::entry("berlekamp_massey")]
@@ -31,13 +33,14 @@ pub use self::gcd_convolve::GcdConvolve;
 pub use self::lagrange_interpolation::{lagrange_interpolation, lagrange_interpolation_polynomial};
 #[codesnip::entry("LcmConvolve")]
 pub use self::lcm_convolve::LcmConvolve;
+#[codesnip::entry("linear_congruence")]
+pub use self::linear_congruence::{solve_linear_congruence, solve_simultaneous_linear_congruence};
 #[codesnip::entry("Matrix")]
 pub use self::matrix::Matrix;
 #[codesnip::entry("miller_rabin")]
 pub use self::miller_rabin::{miller_rabin, miller_rabin_with_br};
 #[codesnip::entry("NumberTheoreticTransform")]
 pub use self::number_theoretic_transform::{Convolve, Convolve998244353, MIntConvolve};
-pub use self::nums::*;
 pub use self::polynomial::*;
 pub use self::prime::*;
 #[codesnip::entry("prime_factors")]
@@ -124,6 +127,8 @@ mod lagrange_interpolation;
     codesnip::entry("LcmConvolve", include("_zeta_transform", "PrimeList"))
 )]
 mod lcm_convolve;
+#[cfg_attr(nightly, codesnip::entry(include("integer")))]
+mod linear_congruence;
 #[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one")))]
 mod matrix;
 #[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
@@ -138,7 +143,6 @@ mod mod_sqrt;
     )
 )]
 mod number_theoretic_transform;
-mod nums;
 mod polynomial;
 mod prime;
 #[cfg_attr(

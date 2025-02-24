@@ -1,43 +1,39 @@
-use crate::math::gcd::{gcd, modinv};
+use super::Unsigned;
 
-pub fn binary_exponentiation<T: Clone + std::ops::MulAssign>(
-    mut x: T,
-    mut y: usize,
-    mut one: T,
-) -> T {
-    while y > 0 {
-        if y & 1 == 1 {
-            one *= x.clone();
-        }
-        x *= x.clone();
-        y >>= 1;
+/// return: (y,z)
+///
+/// ax = b mod m, where x = y mod z
+pub fn solve_linear_congruence<T>(a: T, b: T, m: T) -> Option<(T, T)>
+where
+    T: Unsigned,
+{
+    let g = a.gcd(m);
+    if b % g != T::zero() {
+        return None;
     }
-    one
+    let (a, b, m) = (a / g, b / g, m / g);
+    Some((b * a.modinv(m) % m, m))
 }
 
 /// return: (y,z)
 ///
 /// forall (a,b,m), ax = b mod m, where x = y mod z
-#[codesnip::entry(include("gcd", "modinv"))]
-pub fn linear_congruence<I>(abm: I) -> Option<(u64, u64)>
+pub fn solve_simultaneous_linear_congruence<T, I>(abm: I) -> Option<(T, T)>
 where
-    I: IntoIterator<Item = (u64, u64, u64)>,
+    T: Unsigned,
+    I: IntoIterator<Item = (T, T, T)>,
 {
-    let mut x = 0u64;
-    let mut m0 = 1u64;
+    let mut x = T::zero();
+    let mut m0 = T::one();
     for (a, b, m) in abm {
         let mut b = b + m - a * x % m;
         if b >= m {
             b -= m;
         }
         let a = a * m0;
-        let g = gcd(a, m);
-        if b % g != 0 {
-            return None;
-        }
-        let (a, b, m) = (a / g, b / g, m / g);
-        x += b * modinv(a, m) % m * m0;
-        m0 *= m;
+        let (y, z) = solve_linear_congruence(a, b, m)?;
+        x += y * m0;
+        m0 *= z;
     }
     x %= m0;
     Some((x, m0))
@@ -57,7 +53,7 @@ fn test_linear_congruence() {
                 (rng.random(1..m), rng.random(0..m), m)
             })
             .collect();
-        if let Some((x, m0)) = linear_congruence(abm.iter().cloned()) {
+        if let Some((x, m0)) = solve_simultaneous_linear_congruence(abm.iter().cloned()) {
             assert!(x < m0);
             for (a, b, m) in abm.iter().cloned() {
                 assert!(a * x % m == b);
