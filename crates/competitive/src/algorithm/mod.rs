@@ -44,7 +44,7 @@ pub use self::zero_sum_game::{ZeroSumGame, ZeroSumGameAnalyzer, ZeroSumGamer};
 mod baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry)]
 mod binary_search;
-#[cfg_attr(nightly, codesnip::entry("BitDp"))]
+#[cfg_attr(nightly, codesnip::entry("BitDp", include("zero_one")))]
 mod bitdp;
 #[cfg_attr(
     nightly,
