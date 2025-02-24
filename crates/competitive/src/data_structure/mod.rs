@@ -67,6 +67,8 @@ pub use self::segment_tree_map::SegmentTreeMap;
 pub use self::sliding_winsow_aggregation::{DequeAggregation, QueueAggregation};
 #[codesnip::entry("slope_trick")]
 pub use self::slope_trick::SlopeTrick;
+#[codesnip::entry("SparseSet")]
+pub use self::sparse_set::SparseSet;
 #[codesnip::entry("SplayTree")]
 pub use self::splay_tree::{SplayMap, SplaySequence};
 #[codesnip::entry("transducer")]
@@ -165,6 +167,8 @@ mod segment_tree_map;
 mod sliding_winsow_aggregation;
 #[cfg_attr(nightly, codesnip::entry("slope_trick"))]
 mod slope_trick;
+#[cfg_attr(nightly, codesnip::entry("SparseSet"))]
+mod sparse_set;
 #[cfg_attr(
     nightly,
     codesnip::entry("SplayTree", include("Allocator", "MonoidAction"))
