@@ -1,75 +1,108 @@
-#[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
-pub struct BitDp(pub usize);
+use super::{One, Zero};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Not, Shl, Shr, Sub};
 
-impl BitDp {
-    pub fn is_element(mask: usize, x: usize) -> bool {
-        mask & (1 << x) != 0
+pub trait BitDpExt:
+    Sized
+    + Copy
+    + Default
+    + PartialEq
+    + Eq
+    + PartialOrd
+    + Ord
+    + Not<Output = Self>
+    + BitAnd<Output = Self>
+    + BitOr<Output = Self>
+    + BitXor<Output = Self>
+    + Shl<Self, Output = Self>
+    + Shr<Self, Output = Self>
+    + Add<Output = Self>
+    + Sub<Output = Self>
+    + Div<Output = Self>
+    + Zero
+    + One
+{
+    fn contains(self, x: Self) -> bool {
+        self & (Self::one() << x) != Self::zero()
     }
-    pub fn elements(self, mask: usize) -> impl Iterator<Item = usize> {
-        (0..self.0).filter(move |&x| Self::is_element(mask, x))
+    fn insert(self, x: Self) -> Self {
+        self | (Self::one() << x)
     }
-    pub fn not_elements(self, mask: usize) -> impl Iterator<Item = usize> {
-        (0..self.0).filter(move |&x| !Self::is_element(mask, x))
+    fn remove(self, x: Self) -> Self {
+        self & !(Self::one() << x)
     }
-    pub fn is_subset(mask: usize, elements: usize) -> bool {
-        mask & elements == elements
+    fn is_subset(self, elements: Self) -> bool {
+        self & elements == elements
     }
-    fn next_subset(mask: usize, cur: usize) -> Option<usize> {
-        if cur == 0 {
-            None
-        } else {
-            Some((cur - 1) & mask)
-        }
+    fn is_superset(self, elements: Self) -> bool {
+        elements.is_subset(self)
     }
-    pub fn subsets(mask: usize) -> Subsets {
+    fn subsets(self) -> Subsets<Self> {
         Subsets {
-            mask,
-            cur: Some(mask),
+            mask: self,
+            cur: Some(self),
         }
     }
-    fn next_combination(cur: usize) -> Option<usize> {
-        if cur == 0 {
-            None
-        } else {
-            let x = cur & (!cur + 1);
-            let y = cur + x;
-            Some(((cur & !y) / x / 2) | y)
-        }
-    }
-    pub fn combinations(self, k: usize) -> Combinations {
+    fn combinations(self, k: Self) -> Combinations<Self> {
         Combinations {
-            mask: 1 << self.0,
-            cur: Some((1 << k) - 1),
+            mask: Self::one() << self,
+            cur: Some((Self::one() << k) - Self::one()),
         }
     }
 }
+
+impl BitDpExt for u8 {}
+impl BitDpExt for u16 {}
+impl BitDpExt for u32 {}
+impl BitDpExt for u64 {}
+impl BitDpExt for u128 {}
+impl BitDpExt for usize {}
+
 #[derive(Debug, Clone)]
-pub struct Subsets {
-    mask: usize,
-    cur: Option<usize>,
+pub struct Subsets<T> {
+    mask: T,
+    cur: Option<T>,
 }
-impl Iterator for Subsets {
-    type Item = usize;
+
+impl<T> Iterator for Subsets<T>
+where
+    T: BitDpExt,
+{
+    type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(cur) = self.cur {
-            self.cur = BitDp::next_subset(self.mask, cur);
+            self.cur = if cur == T::zero() {
+                None
+            } else {
+                Some((cur - T::one()) & self.mask)
+            };
             Some(cur)
         } else {
             None
         }
     }
 }
+
 #[derive(Debug, Clone)]
-pub struct Combinations {
-    mask: usize,
-    cur: Option<usize>,
+pub struct Combinations<T> {
+    mask: T,
+    cur: Option<T>,
 }
-impl Iterator for Combinations {
-    type Item = usize;
+
+impl<T> Iterator for Combinations<T>
+where
+    T: BitDpExt,
+{
+    type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(cur) = self.cur {
             if cur < self.mask {
-                self.cur = BitDp::next_combination(cur);
+                self.cur = if cur == T::zero() {
+                    None
+                } else {
+                    let x = cur & (!cur + T::one());
+                    let y = cur + x;
+                    Some(((cur & !y) / x / (T::one() + T::one())) | y)
+                };
                 Some(cur)
             } else {
                 None
@@ -85,66 +118,52 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_elements() {
-        let b = BitDp(0);
-        assert_eq!(b.elements(0).collect::<Vec<_>>(), vec![]);
-        assert_eq!(b.elements(1).collect::<Vec<_>>(), vec![]);
-
-        let b = BitDp(1);
-        assert_eq!(b.elements(0b0).collect::<Vec<_>>(), vec![]);
-        assert_eq!(b.elements(0b1).collect::<Vec<_>>(), vec![0]);
-
-        let b = BitDp(2);
-        assert_eq!(b.elements(0b00).collect::<Vec<_>>(), vec![]);
-        assert_eq!(b.elements(0b01).collect::<Vec<_>>(), vec![0]);
-        assert_eq!(b.elements(0b10).collect::<Vec<_>>(), vec![1]);
-        assert_eq!(b.elements(0b11).collect::<Vec<_>>(), vec![0, 1]);
-
-        let b = BitDp(3);
-        assert_eq!(b.elements(0b000).collect::<Vec<_>>(), vec![]);
-        assert_eq!(b.elements(0b001).collect::<Vec<_>>(), vec![0]);
-        assert_eq!(b.elements(0b010).collect::<Vec<_>>(), vec![1]);
-        assert_eq!(b.elements(0b011).collect::<Vec<_>>(), vec![0, 1]);
-        assert_eq!(b.elements(0b100).collect::<Vec<_>>(), vec![2]);
-        assert_eq!(b.elements(0b101).collect::<Vec<_>>(), vec![0, 2]);
-        assert_eq!(b.elements(0b110).collect::<Vec<_>>(), vec![1, 2]);
-        assert_eq!(b.elements(0b111).collect::<Vec<_>>(), vec![0, 1, 2]);
+    fn test_contains() {
+        assert!(!0b1010u8.contains(0));
+        assert!(0b1010u8.contains(1));
+        assert!(!0b1010u8.contains(2));
+        assert!(0b1010u8.contains(3));
     }
 
     #[test]
-    fn test_not_elements() {
-        let b = BitDp(0);
-        assert_eq!(b.not_elements(0).collect::<Vec<_>>(), vec![]);
-        assert_eq!(b.not_elements(1).collect::<Vec<_>>(), vec![]);
+    fn test_insert() {
+        assert_eq!(0b1010u8.insert(0), 0b1011);
+        assert_eq!(0b1010u8.insert(1), 0b1010);
+        assert_eq!(0b1010u8.insert(2), 0b1110);
+        assert_eq!(0b1010u8.insert(3), 0b1010);
+    }
 
-        let b = BitDp(1);
-        assert_eq!(b.not_elements(0b0).collect::<Vec<_>>(), vec![0]);
-        assert_eq!(b.not_elements(0b1).collect::<Vec<_>>(), vec![]);
+    #[test]
+    fn test_remove() {
+        assert_eq!(0b1010u8.remove(0), 0b1010);
+        assert_eq!(0b1010u8.remove(1), 0b1000);
+        assert_eq!(0b1010u8.remove(2), 0b1010);
+        assert_eq!(0b1010u8.remove(3), 0b0010);
+    }
 
-        let b = BitDp(2);
-        assert_eq!(b.not_elements(0b00).collect::<Vec<_>>(), vec![0, 1]);
-        assert_eq!(b.not_elements(0b01).collect::<Vec<_>>(), vec![1]);
-        assert_eq!(b.not_elements(0b10).collect::<Vec<_>>(), vec![0]);
-        assert_eq!(b.not_elements(0b11).collect::<Vec<_>>(), vec![]);
+    #[test]
+    fn test_is_subset() {
+        assert!(0b1010u8.is_subset(0b1010));
+        assert!(0b1010u8.is_subset(0b0000));
+        assert!(!0b1010u8.is_subset(0b0100));
+        assert!(!0b1010u8.is_subset(0b10000));
+    }
 
-        let b = BitDp(3);
-        assert_eq!(b.not_elements(0b000).collect::<Vec<_>>(), vec![0, 1, 2]);
-        assert_eq!(b.not_elements(0b001).collect::<Vec<_>>(), vec![1, 2]);
-        assert_eq!(b.not_elements(0b010).collect::<Vec<_>>(), vec![0, 2]);
-        assert_eq!(b.not_elements(0b011).collect::<Vec<_>>(), vec![2]);
-        assert_eq!(b.not_elements(0b100).collect::<Vec<_>>(), vec![0, 1]);
-        assert_eq!(b.not_elements(0b101).collect::<Vec<_>>(), vec![1]);
-        assert_eq!(b.not_elements(0b110).collect::<Vec<_>>(), vec![0]);
-        assert_eq!(b.not_elements(0b111).collect::<Vec<_>>(), vec![]);
+    #[test]
+    fn test_is_superset() {
+        assert!(0b1010u8.is_superset(0b1010));
+        assert!(0b1010u8.is_superset(0b1111));
+        assert!(!0b1010u8.is_superset(0b0000));
+        assert!(!0b1010u8.is_superset(0b10000));
     }
 
     #[test]
     fn test_subsets() {
-        for mask in 0..1 << 12 {
-            let mut subsets = BitDp::subsets(mask).collect::<Vec<_>>();
+        for mask in 0usize..1 << 12 {
+            let mut subsets = mask.subsets().collect::<Vec<_>>();
             let n = subsets.len();
             assert_eq!(n, 1 << mask.count_ones());
-            assert!(subsets.iter().all(|&s| BitDp::is_subset(mask, s)));
+            assert!(subsets.iter().all(|&s| mask.is_subset(s)));
             subsets.sort_unstable();
             subsets.dedup();
             assert_eq!(n, subsets.len());
@@ -163,9 +182,8 @@ mod tests {
         }
 
         for n in 0..=12 {
-            let b = BitDp(n);
             for k in 0..=n {
-                let mut combinations = b.combinations(k).collect::<Vec<_>>();
+                let mut combinations = n.combinations(k).collect::<Vec<_>>();
                 let len = combinations.len();
                 assert_eq!(len, comb[n - k][k]);
                 assert!(combinations.iter().all(|&s| s.count_ones() as usize == k));

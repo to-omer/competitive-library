@@ -10,7 +10,7 @@ pub use self::baby_step_giant_step::baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
 pub use self::binary_search::{Bisect, SliceBisectExt, binary_search, parallel_binary_search};
 #[codesnip::entry("BitDp")]
-pub use self::bitdp::{BitDp, Combinations, Subsets};
+pub use self::bitdp::{BitDpExt, Combinations, Subsets};
 #[codesnip::entry("chromatic_number")]
 pub use self::chromatic_number::IndependentSubSet;
 #[codesnip::entry("combinations")]

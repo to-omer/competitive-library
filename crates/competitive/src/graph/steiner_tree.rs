@@ -1,5 +1,5 @@
 use super::{
-    AdjacencyIndex, AdjacencyIndexWithValue, AdjacencyView, BitDp, PartialIgnoredOrd,
+    AdjacencyIndex, AdjacencyIndexWithValue, AdjacencyView, BitDpExt, PartialIgnoredOrd,
     ShortestPathSemiRing, VertexMap, Vertices,
 };
 use std::{cmp::Reverse, collections::BinaryHeap, iter::repeat_with};
@@ -26,7 +26,7 @@ pub trait SteinerTreeExt: Vertices {
         }
         for bit in 1..1 << tsize {
             for u in self.vertices() {
-                for sub in BitDp::subsets(bit) {
+                for sub in bit.subsets() {
                     if sub != 0 {
                         let cost =
                             S::mul(self.vmap_get(&dp[sub], u), self.vmap_get(&dp[bit ^ sub], u));

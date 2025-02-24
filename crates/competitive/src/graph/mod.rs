@@ -2,7 +2,7 @@
 
 use crate::{
     algebra::{Monoid, SemiRing},
-    algorithm::BitDp,
+    algorithm::BitDpExt,
     num::Bounded,
     tools::{IterScan, MarkedIterScan, PartialIgnoredOrd},
 };
