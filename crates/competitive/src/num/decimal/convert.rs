@@ -133,7 +133,7 @@ impl Display for Decimal {
             }
             debug_assert!(last % POW10[l] == 0);
             debug_assert!(r == RADIX_LEN || last % POW10[r] != 0);
-            write!(f, "{}", last / POW10[l])?;
+            write!(f, "{:0width$}", last / POW10[l], width = RADIX_LEN - l)?;
         }
 
         Ok(())
@@ -309,6 +309,11 @@ mod tests {
         Decimal { sign: Sign::Plus, integer: vec![345678901234567890, 12], decimal: vec![123456789012345678, 900000000000000000] },
         "12345678901234567890.1234567890123456789";
         "long"
+    )]
+    #[test_case(
+        Decimal { sign: Sign::Plus, integer: vec![0], decimal: vec![1] },
+        "0.000000000000000001";
+        "small decimal"
     )]
     fn test_display(decimal: Decimal, expected: &str) {
         assert_eq!(expected, decimal.to_string());
