@@ -5,7 +5,7 @@ use std::{
 };
 
 fn add_carry(carry: bool, lhs: u64, rhs: u64, out: &mut u64) -> bool {
-    let mut sum = unsafe { lhs.unchecked_add(rhs).unchecked_add(carry as u64) };
+    let mut sum = lhs + rhs + carry as u64;
     let cond = sum >= RADIX;
     if cond {
         sum -= RADIX;
