@@ -41,7 +41,7 @@ pub mod decimal;
 mod discrete_steps;
 #[cfg_attr(
     nightly,
-    codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner"))
+    codesnip::entry("DoubleDouble", include("zero_one", "bounded", "scanner", "Decimal"))
 )]
 mod double_double;
 #[cfg_attr(nightly, codesnip::entry("DualNumber", include("zero_one")))]
@@ -53,7 +53,7 @@ mod integer;
 mod mint;
 #[cfg_attr(
     nightly,
-    codesnip::entry("QuadDouble", include("zero_one", "bounded", "scanner"))
+    codesnip::entry("QuadDouble", include("zero_one", "bounded", "scanner", "Decimal"))
 )]
 mod quad_double;
 #[cfg_attr(nightly, codesnip::entry("Rational", include("integer")))]

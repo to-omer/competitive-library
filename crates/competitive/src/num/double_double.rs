@@ -1,6 +1,6 @@
 #![allow(clippy::suspicious_arithmetic_impl)]
 
-use super::{Bounded, IterScan, One, Zero};
+use super::{Bounded, Decimal, IterScan, One, Zero};
 use std::{
     cmp::Ordering,
     fmt::{self, Display},
@@ -171,14 +171,35 @@ impl From<f64> for DoubleDouble {
 
 impl Display for DoubleDouble {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.1 + self.0)
+        write!(f, "{}", Decimal::from(self.0) + Decimal::from(self.1))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum ParseDoubleDoubleError {
+    ParseFloatError(ParseFloatError),
+    ParseDecimalError(super::decimal::convert::ParseDecimalError),
+}
+
+impl From<ParseFloatError> for ParseDoubleDoubleError {
+    fn from(e: ParseFloatError) -> Self {
+        Self::ParseFloatError(e)
+    }
+}
+
+impl From<super::decimal::convert::ParseDecimalError> for ParseDoubleDoubleError {
+    fn from(e: super::decimal::convert::ParseDecimalError) -> Self {
+        Self::ParseDecimalError(e)
     }
 }
 
 impl FromStr for DoubleDouble {
-    type Err = ParseFloatError;
+    type Err = ParseDoubleDoubleError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        s.parse::<f64>().map(Self::from)
+        let f0: f64 = s.parse()?;
+        let d1 = Decimal::from_str(s)? - Decimal::from(f0);
+        let f1: f64 = d1.to_string().parse()?;
+        Ok(Self::renormalize(f0, f1, 0.))
     }
 }
 
@@ -260,5 +281,37 @@ impl DoubleDouble {
     }
     fn div2(self, rhs: f64) -> Self {
         Self(self.0 / rhs, self.1 / rhs)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_display() {
+        let x = DoubleDouble::from(1.234);
+        assert_eq!(x.to_string(), "1.234");
+        let x = DoubleDouble::from(1.234e-10);
+        assert_eq!(x.to_string(), "0.0000000001234");
+        let x = DoubleDouble::from(1.234e10);
+        assert_eq!(x.to_string(), "12340000000");
+        let x = DoubleDouble::from(1.234e-10) + DoubleDouble::from(1.234e10);
+        assert_eq!(x.to_string(), "12340000000.0000000001234");
+    }
+
+    #[test]
+    fn test_from_str() {
+        let x = DoubleDouble::from_str("1.234").unwrap();
+        assert_eq!(x, DoubleDouble::from(1.234));
+        let x = DoubleDouble::from_str("0.0000000001234").unwrap();
+        assert_eq!(x, DoubleDouble::from(1.234e-10));
+        let x = DoubleDouble::from_str("12340000000").unwrap();
+        assert_eq!(x, DoubleDouble::from(1.234e10));
+        let x = DoubleDouble::from_str("12340000000.0000000001234").unwrap();
+        assert_eq!(
+            x,
+            DoubleDouble::from(1.234e10) + DoubleDouble::from(1.234e-10)
+        );
     }
 }
