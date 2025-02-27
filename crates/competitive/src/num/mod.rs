@@ -6,6 +6,8 @@ pub use self::barrett_reduction::BarrettReduction;
 pub use self::bounded::Bounded;
 #[codesnip::entry("Complex")]
 pub use self::complex::Complex;
+#[codesnip::entry("Decimal")]
+pub use self::decimal::Decimal;
 #[codesnip::entry("discrete_steps")]
 pub use self::discrete_steps::{DiscreteSteps, RangeBoundsExt};
 #[codesnip::entry("DoubleDouble")]
@@ -33,6 +35,8 @@ mod bounded;
     codesnip::entry("Complex", include("zero_one", "scanner", "float"))
 )]
 mod complex;
+#[cfg_attr(nightly, codesnip::entry("Decimal", include("zero_one", "scanner")))]
+pub mod decimal;
 #[cfg_attr(nightly, codesnip::entry(include("bounded")))]
 mod discrete_steps;
 #[cfg_attr(
