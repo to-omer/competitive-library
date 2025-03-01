@@ -560,7 +560,7 @@ mod tests {
         const N: usize = 20;
         let mut rng = Xorshift::default();
         for _ in 0..1000 {
-            rand!(rng, n: (1..=N), m: (1..=n * n));
+            rand!(rng, n: 1..=N, m: 1..=n * n);
             let edges = distinct_edges(&mut rng, n, m);
 
             macro_rules! test_uf {
@@ -618,7 +618,7 @@ mod tests {
         let mut rng = Xorshift::default();
         type G = LinearOperation<M>;
         for _ in 0..1000 {
-            rand!(rng, n: (1..=N), g: (MixedTree(n)), p: [(Mspec, Mspec); n - 1], k: (0..n));
+            rand!(rng, n: 1..=N, g: MixedTree(n), p: [(Mspec, Mspec); n - 1], k: 0..n);
 
             macro_rules! test_uf {
                 ($union:ty, $find:ty) => {{
@@ -663,7 +663,7 @@ mod tests {
         const M: usize = 200;
         let mut rng = Xorshift::default();
         for _ in 0..10 {
-            rand!(rng, n: (1..=N), m: (1..=M), g: (MixedTree(m)), p: [(0..n, 0..n); m]);
+            rand!(rng, n: 1..=N, m: 1..=M, g: MixedTree(m), p: [(0..n, 0..n); m]);
 
             macro_rules! test_uf {
                 ($union:ty, $find:ty) => {{

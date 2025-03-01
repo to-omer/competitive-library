@@ -107,7 +107,7 @@ mod tests {
         const L: usize = 12;
 
         for _ in 0..Q {
-            rand!(rng, k: (0usize..=L + 2), b: [0u64..1 << L; k]);
+            rand!(rng, k: 0usize..=L + 2, b: [0u64..1 << L; k]);
             let cons = consistables(&b);
             let basis: XorBasis = b.into_iter().collect();
             for x in rng.random_iter(0u64..1 << L).take(Q) {

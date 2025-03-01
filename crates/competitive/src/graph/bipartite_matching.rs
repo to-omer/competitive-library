@@ -276,7 +276,7 @@ mod tests {
         let mut uf = UnionFind::new(n + m);
         let mut lr = vec![];
         while uf.size(0) < n + m {
-            rand!(rng, l: (0..n), r: (0..m));
+            rand!(rng, l: 0..n, r: 0..m);
             uf.unite(l, r + n);
             lr.push((l, r));
         }
@@ -293,7 +293,7 @@ mod tests {
     fn test_minimum_edge_cover() {
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            rand!(rng, n: (4..=N), m: (4..=M));
+            rand!(rng, n: 4..=N, m: 4..=M);
             let lr = gen_graph(n, m);
             let mut dp = vec![vec![!0usize; 1 << m]; 1 << n];
             dp[0][0] = 0;
@@ -324,7 +324,7 @@ mod tests {
     fn test_minimum_vertex_cover() {
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            rand!(rng, n: (4..=N), m: (4..=M));
+            rand!(rng, n: 4..=N, m: 4..=M);
             let lr = gen_graph(n, m);
             let mut ans = !0usize;
             for bitl in 0usize..1 << n {
@@ -349,7 +349,7 @@ mod tests {
     fn test_maximum_independent_set() {
         let mut rng = Xorshift::default();
         for _ in 0..Q {
-            rand!(rng, n: (4..=N), m: (4..=M));
+            rand!(rng, n: 4..=N, m: 4..=M);
             let lr = gen_graph(n, m);
             let mut ans = 0usize;
             for bitl in 0usize..1 << n {

@@ -272,24 +272,24 @@ fn randint_uniform(rng: &mut Xorshift, k: u64) -> u64 {
 #[macro_export]
 /// Return a random value using [`RandomSpec`].
 macro_rules! rand_value {
-    ($rng:expr, ($($e:expr),*)) => {
-        ($($crate::rand_value!($rng, $e)),*)
-    };
-    ($rng:expr, ($($t:tt),*)) => {
-        ($($crate::rand_value!($rng, $t)),*)
-    };
-    ($rng:expr, [$t:tt; $len:expr]) => {
-        ::std::iter::repeat_with(|| $crate::rand_value!($rng, $t)).take($len).collect::<Vec<_>>()
-    };
-    ($rng:expr, [$s:expr; $len:expr]) => {
-        ($rng).random_iter($s).take($len).collect::<Vec<_>>()
-    };
-    ($rng:expr, [$($t:tt)*]) => {
-        ::std::iter::repeat_with(|| $crate::rand_value!($rng, $($t)*))
-    };
-    ($rng:expr, $s:expr) => {
-        ($rng).random($s)
-    };
+    (@repeat $rng:expr, [$($t:tt)*] $($len:expr)?)                                    => { ::std::iter::repeat_with(|| $crate::rand_value!(@inner $rng, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
+    (@array $rng:expr, [$($t:tt)*] $len:expr)                                         => { $crate::array![|| $crate::rand_value!(@inner $rng, [] $($t)*); $len] };
+    (@tuple $rng:expr, [$([$($args:tt)*])*])                                          => { ($($($args)*,)*) };
+    (@$tag:ident $rng:expr, [[$($args:tt)*]])                                         => { $($args)* };
+    (@$tag:ident $rng:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)                 => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@tuple $rng, [] $($tuple)*)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [[$($tt:tt)*]; const $len:expr] $($t:tt)*) => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [[$($tt)*]] $len)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [[$($tt:tt)*]; $len:expr] $($t:tt)*)       => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [[$($tt)*]] $len)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [($($tt:tt)*); const $len:expr] $($t:tt)*) => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [($($tt)*)] $len)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [($($tt:tt)*); $len:expr] $($t:tt)*)       => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [($($tt)*)] $len)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [$ty:expr; const $len:expr] $($t:tt)*)     => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [$ty] $len)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [$ty:expr; $len:expr] $($t:tt)*)           => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [$ty] $len)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)                    => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@repeat $rng, [$($tt)*])]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] $ty:expr)                                  => { $crate::rand_value!(@$tag $rng, [$($args)* [($rng).random($ty)]]) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] $ty:expr, $($t:tt)*)                       => { $crate::rand_value!(@$tag $rng, [$($args)* [($rng).random($ty)]] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*] , $($t:tt)*)                               => { $crate::rand_value!(@$tag $rng, [$($args)*] $($t)*) };
+    (@$tag:ident $rng:expr, [$($args:tt)*])                                           => { ::std::compile_error!(::std::stringify!($($args)*)) };
+    (seed = $src:expr, $($t:tt)*)                                                     => { { let mut __rng = Xorshift::new_with_seed($src); $crate::rand_value!(@inner __rng, [] $($t)*) } };
+    ($rng:expr, $($t:tt)*)                                                            => { $crate::rand_value!(@inner $rng, [] $($t)*) }
 }
 #[macro_export]
 /// Declare random values using [`RandomSpec`].

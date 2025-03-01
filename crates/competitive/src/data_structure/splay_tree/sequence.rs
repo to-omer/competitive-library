@@ -503,15 +503,15 @@ mod tests {
         seq.extend(arr.iter().cloned());
         for _ in 0..Q {
             assert_eq!(arr.len(), seq.len());
-            rand!(rng, ty: (0..6), (l, r): (NotEmptySegment(arr.len())));
+            rand!(rng, ty: 0..6, (l, r): NotEmptySegment(arr.len()));
             match ty {
                 0 if arr.len() < N * 2 => {
-                    rand!(rng, i: (..=arr.len()), x: (-A..A));
+                    rand!(rng, i: ..=arr.len(), x: -A..A);
                     seq.insert(i, x);
                     arr.insert(i, x);
                 }
                 1 if arr.len() > 1 => {
-                    rand!(rng, i: (..arr.len()));
+                    rand!(rng, i: ..arr.len());
                     assert_eq!(arr.remove(i), seq.remove(i).unwrap());
                 }
                 2 => {
@@ -519,7 +519,7 @@ mod tests {
                     assert_eq!(seq.fold(l..r), res);
                 }
                 3 => {
-                    rand!(rng, x: (-A..A));
+                    rand!(rng, x: -A..A);
                     seq.update(l..r, Some(x));
                     arr[l..r].iter_mut().for_each(|a| *a = x);
                 }
@@ -528,7 +528,7 @@ mod tests {
                     seq.reverse(l..r);
                 }
                 5 => {
-                    rand!(rng, x: (-A..A));
+                    rand!(rng, x: -A..A);
                     assert_eq!(
                         seq.position_acc(l..r, |&d| d >= x),
                         arr[l..r]
@@ -542,7 +542,7 @@ mod tests {
                     );
                 }
                 6 => {
-                    rand!(rng, x: (-A..A));
+                    rand!(rng, x: -A..A);
                     assert_eq!(
                         seq.rposition_acc(l..r, |&d| d >= x),
                         arr[l..r]
@@ -557,17 +557,17 @@ mod tests {
                     );
                 }
                 7 => {
-                    rand!(rng, i: (..=arr.len()));
+                    rand!(rng, i: ..=arr.len());
                     seq.rotate_left(i);
                     arr.rotate_left(i);
                 }
                 8 => {
-                    rand!(rng, i: (..=arr.len()));
+                    rand!(rng, i: ..=arr.len());
                     seq.rotate_right(i);
                     arr.rotate_right(i);
                 }
                 _ => {
-                    rand!(rng, i: (..arr.len()));
+                    rand!(rng, i: ..arr.len());
                     assert_eq!(arr.get(i), seq.get(i));
                 }
             }

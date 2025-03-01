@@ -323,10 +323,10 @@ mod tests {
             seg.set(i, (0i64, 1i64));
         }
         for _ in 0..Q {
-            rand!(rng, (l, r): (NotEmptySegment(N)));
+            rand!(rng, (l, r): NotEmptySegment(N));
             if rng.rand(2) == 0 {
                 // Range Add Query
-                rand!(rng, x: (-A..A));
+                rand!(rng, x: -A..A);
                 seg.update(l, r, x);
                 for a in arr[l..r].iter_mut() {
                     *a += x;
@@ -342,11 +342,11 @@ mod tests {
         let mut arr = vec![i64::MIN; N];
         let mut seg = LazySegmentTreeMap::<RangeMaxRangeUpdate<_>>::new(N);
         for _ in 0..Q {
-            rand!(rng, ty: (0..4), (l, r): (NotEmptySegment(N)));
+            rand!(rng, ty: 0..4, (l, r): NotEmptySegment(N));
             match ty {
                 0 => {
                     // Range Update Query
-                    rand!(rng, x: (-A..A));
+                    rand!(rng, x: -A..A);
                     seg.update(l, r, Some(x));
                     arr[l..r].iter_mut().for_each(|a| *a = x);
                 }
@@ -357,7 +357,7 @@ mod tests {
                 }
                 2 => {
                     // Binary Search Query
-                    rand!(rng, x: (-A..A));
+                    rand!(rng, x: -A..A);
                     assert_eq!(
                         seg.position_acc(l, r, |&d| d >= x),
                         arr[l..r]
@@ -372,7 +372,7 @@ mod tests {
                 }
                 _ => {
                     // Binary Search Query
-                    rand!(rng, x: (-A..A));
+                    rand!(rng, x: -A..A);
                     assert_eq!(
                         seg.rposition_acc(l, r, |&d| d >= x),
                         arr[l..r]
