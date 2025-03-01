@@ -271,8 +271,10 @@ where
 {
     pub unsafe fn into_inner(self) -> NonNull<Node<S::T>> {
         let node = self.node;
-        debug_assert!((*node.as_ptr()).left.is_none());
-        debug_assert!((*node.as_ptr()).right.is_none());
+        unsafe {
+            debug_assert!((*node.as_ptr()).left.is_none());
+            debug_assert!((*node.as_ptr()).right.is_none());
+        }
         node
     }
     pub unsafe fn into_data<A>(self, allocator: &mut A) -> S::T
@@ -468,15 +470,15 @@ where
         Self { root }
     }
     pub unsafe fn from_single_nodes(nodes: Vec<NodeRef<marker::Owned, S>>) -> Self {
-        Self::from_single_nodes_inner(&nodes)
+        unsafe { Self::from_single_nodes_inner(&nodes) }
     }
     unsafe fn from_single_nodes_inner(nodes: &[NodeRef<marker::Owned, S>]) -> Self {
         if nodes.is_empty() {
             Self::new(None)
         } else {
             let m = nodes.len() / 2;
-            let left = Self::from_single_nodes_inner(&nodes[..m]);
-            let right = Self::from_single_nodes_inner(&nodes[m + 1..]);
+            let left = unsafe { Self::from_single_nodes_inner(&nodes[..m]) };
+            let right = unsafe { Self::from_single_nodes_inner(&nodes[m + 1..]) };
             let mut node = NodeRef::new(nodes[m].node);
             node.borrow_mut().set_left(left.root);
             node.borrow_mut().set_right(right.root);
