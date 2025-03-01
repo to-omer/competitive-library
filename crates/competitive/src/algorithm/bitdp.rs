@@ -13,21 +13,21 @@ pub trait BitDpExt:
     + BitAnd<Output = Self>
     + BitOr<Output = Self>
     + BitXor<Output = Self>
-    + Shl<Self, Output = Self>
-    + Shr<Self, Output = Self>
+    + Shl<usize, Output = Self>
+    + Shr<usize, Output = Self>
     + Add<Output = Self>
     + Sub<Output = Self>
     + Div<Output = Self>
     + Zero
     + One
 {
-    fn contains(self, x: Self) -> bool {
+    fn contains(self, x: usize) -> bool {
         self & (Self::one() << x) != Self::zero()
     }
-    fn insert(self, x: Self) -> Self {
+    fn insert(self, x: usize) -> Self {
         self | (Self::one() << x)
     }
-    fn remove(self, x: Self) -> Self {
+    fn remove(self, x: usize) -> Self {
         self & !(Self::one() << x)
     }
     fn is_subset(self, elements: Self) -> bool {
@@ -42,9 +42,9 @@ pub trait BitDpExt:
             cur: Some(self),
         }
     }
-    fn combinations(self, k: Self) -> Combinations<Self> {
+    fn combinations(n: usize, k: usize) -> Combinations<Self> {
         Combinations {
-            mask: Self::one() << self,
+            mask: Self::one() << n,
             cur: Some((Self::one() << k) - Self::one()),
         }
     }
@@ -183,7 +183,7 @@ mod tests {
 
         for n in 0..=12 {
             for k in 0..=n {
-                let mut combinations = n.combinations(k).collect::<Vec<_>>();
+                let mut combinations = usize::combinations(n, k).collect::<Vec<_>>();
                 let len = combinations.len();
                 assert_eq!(len, comb[n - k][k]);
                 assert!(combinations.iter().all(|&s| s.count_ones() as usize == k));
