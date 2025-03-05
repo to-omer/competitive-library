@@ -5,12 +5,49 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
   integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", () => {
     renderMathInElement(document.body, {
       delimiters: [
         { left: "$$", right: "$$", display: true },
         { left: "$", right: "$", display: false }
       ]
     });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector("#settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://github.com/search?q=repo%3Ato-omer%2Fcompetitive_archive+${itemName}&type=code">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
   });
 </script>
