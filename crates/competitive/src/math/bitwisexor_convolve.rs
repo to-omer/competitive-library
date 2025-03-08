@@ -131,7 +131,7 @@ mod tests {
     const A: i64 = 100_000;
 
     #[test]
-    fn test_bitwiseor_convolve() {
+    fn test_bitwisexor_convolve() {
         let mut rng = Xorshift::new();
 
         for k in 0..12 {
