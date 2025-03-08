@@ -8,6 +8,8 @@ use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
+#[codesnip::entry("bitwise_transform")]
+pub use self::bitwise_transform::bitwise_transform;
 #[codesnip::entry("BitwiseandConvolve")]
 pub use self::bitwiseand_convolve::BitwiseandConvolve;
 #[codesnip::entry("BitwiseorConvolve")]
@@ -58,14 +60,16 @@ pub use self::subset_convolve::SubsetConvolve;
 
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
+#[cfg_attr(nightly, codesnip::entry("bitwise_transform"))]
+mod bitwise_transform;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BitwiseandConvolve", include("_zeta_transform", "avx_helper"))
+    codesnip::entry("BitwiseandConvolve", include("_zeta_transform", "bitwise_transform"))
 )]
 mod bitwiseand_convolve;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BitwiseorConvolve", include("_zeta_transform", "avx_helper"))
+    codesnip::entry("BitwiseorConvolve", include("_zeta_transform", "bitwise_transform"))
 )]
 mod bitwiseor_convolve;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]

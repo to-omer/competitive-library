@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Group, Invertible, Monoid, Ring};
+use super::{ConvolveSteps, Group, Invertible, Monoid, Ring, bitwise_transform};
 use std::marker::PhantomData;
 
 pub struct BitwiseorConvolve<M> {
@@ -11,48 +11,7 @@ where
 {
     /// $$g(m) = \sum_{n \mid m}f(n)$$
     pub fn zeta_transform(f: &mut [M::T]) {
-        crate::avx_helper!(
-            @avx2 fn zeta_transform<M>(f: &mut [M::T])
-            where
-                [M: Monoid]
-            {
-                let k = f.len().trailing_zeros() as usize;
-                assert_eq!(f.len(), 1 << k);
-                for i in 0..k {
-                    if i == 0 {
-                        for c in f.chunks_exact_mut(2) {
-                            let (y, x) = c.split_at_mut(1);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = M::operate(x, y);
-                            }
-                        }
-                    } else if i == 1 {
-                        for c in f.chunks_exact_mut(4) {
-                            let (y, x) = c.split_at_mut(2);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = M::operate(x, y);
-                            }
-                        }
-                    } else if i == 2 {
-                        for c in f.chunks_exact_mut(8) {
-                            let (y, x) = c.split_at_mut(4);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = M::operate(x, y);
-                            }
-                        }
-                    } else {
-                        assert!(i >= 3);
-                        for c in f.chunks_exact_mut(2 << i) {
-                            let (y, x) = c.split_at_mut(1 << i);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = M::operate(x, y);
-                            }
-                        }
-                    }
-                }
-            }
-        );
-        zeta_transform::<M>(f);
+        bitwise_transform(f, |y, x| *x = M::operate(x, y));
     }
 }
 
@@ -62,48 +21,7 @@ where
 {
     /// $$f(m) = \sum_{n \mid m}h(n)$$
     pub fn mobius_transform(f: &mut [G::T]) {
-        crate::avx_helper!(
-            @avx2 fn mobius_transform<G>(f: &mut [G::T])
-            where
-                [G: Group]
-            {
-                let k = f.len().trailing_zeros() as usize;
-                assert_eq!(f.len(), 1 << k);
-                for i in 0..k {
-                    if i == 0 {
-                        for c in f.chunks_exact_mut(2) {
-                            let (y, x) = c.split_at_mut(1);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = G::rinv_operate(x, y);
-                            }
-                        }
-                    } else if i == 1 {
-                        for c in f.chunks_exact_mut(4) {
-                            let (y, x) = c.split_at_mut(2);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = G::rinv_operate(x, y);
-                            }
-                        }
-                    } else if i == 2 {
-                        for c in f.chunks_exact_mut(8) {
-                            let (y, x) = c.split_at_mut(4);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = G::rinv_operate(x, y);
-                            }
-                        }
-                    } else {
-                        assert!(i >= 3);
-                        for c in f.chunks_exact_mut(2 << i) {
-                            let (y, x) = c.split_at_mut(1 << i);
-                            for (x, y) in x.iter_mut().zip(y) {
-                                *x = G::rinv_operate(x, y);
-                            }
-                        }
-                    }
-                }
-            }
-        );
-        mobius_transform::<G>(f);
+        bitwise_transform(f, |y, x| *x = G::rinv_operate(x, y));
     }
 }
 
