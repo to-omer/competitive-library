@@ -1,6 +1,6 @@
 //! mathematical datas
 
-use crate::algebra::{Group, Invertible, Monoid, Ring};
+use crate::algebra::{Field, Group, Invertible, Monoid, Ring};
 use crate::num::{
     BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Unsigned, Zero, montgomery,
 };
@@ -14,6 +14,8 @@ pub use self::bitwise_transform::bitwise_transform;
 pub use self::bitwiseand_convolve::BitwiseandConvolve;
 #[codesnip::entry("BitwiseorConvolve")]
 pub use self::bitwiseor_convolve::BitwiseorConvolve;
+#[codesnip::entry("BitwisexorConvolve")]
+pub use self::bitwisexor_convolve::BitwisexorConvolve;
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
 #[codesnip::entry("discrete_logarithm")]
@@ -72,6 +74,11 @@ mod bitwiseand_convolve;
     codesnip::entry("BitwiseorConvolve", include("_zeta_transform", "bitwise_transform"))
 )]
 mod bitwiseor_convolve;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("BitwisexorConvolve", include("_zeta_transform", "bitwise_transform"))
+)]
+mod bitwisexor_convolve;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
 mod convolve_steps;
 #[cfg_attr(

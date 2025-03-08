@@ -36,7 +36,7 @@ where
     }
     /// additive right inversed operaion: $-$
     fn sub(x: &Self::T, y: &Self::T) -> Self::T {
-        Self::add(x, &Self::neg(y))
+        <Self::Additive as Invertible>::rinv_operate(x, y)
     }
 }
 
@@ -54,11 +54,11 @@ where
 {
     /// multiplicative inverse: $-$
     fn inv(x: &Self::T) -> Self::T {
-        <Self::Additive as Invertible>::inverse(x)
+        <Self::Multiplicative as Invertible>::inverse(x)
     }
     /// multiplicative right inversed operaion: $-$
     fn div(x: &Self::T, y: &Self::T) -> Self::T {
-        Self::mul(x, &Self::inv(y))
+        <Self::Multiplicative as Invertible>::rinv_operate(x, y)
     }
 }
 
