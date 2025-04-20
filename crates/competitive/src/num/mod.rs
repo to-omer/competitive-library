@@ -17,7 +17,10 @@ pub use self::dual_number::DualNumber;
 #[codesnip::entry("float")]
 pub use self::float::{Float, Float32, Float64};
 #[codesnip::entry("integer")]
-pub use self::integer::{BinaryRepr, ExtendedGcd, IntBase, Saturating, Signed, Unsigned, Wrapping};
+pub use self::integer::{
+    BinaryRepr, ExtendedGcd, IntBase, Saturating, Saturatingable, Signed, Unsigned, Wrapping,
+    Wrappingable,
+};
 pub use self::mint::*;
 #[codesnip::entry("QuadDouble")]
 pub use self::quad_double::QuadDouble;

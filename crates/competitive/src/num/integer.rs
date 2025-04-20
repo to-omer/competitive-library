@@ -234,6 +234,15 @@ macro_rules! impl_binop {
                 Self($Trait::$impl(self.0, rhs.0))
             }
         }
+        impl<$T> $Trait<$T> for $t
+        where
+            $T: $Trait<Output = $T>,
+        {
+            type Output = Self;
+            fn $impl(self, rhs: $T) -> Self::Output {
+                Self($Trait::$impl(self.0, rhs))
+            }
+        }
     };
 }
 macro_rules! impl_opassign {
@@ -246,6 +255,32 @@ macro_rules! impl_opassign {
                 $Trait::$impl(&mut self.0, rhs.0)
             }
         }
+        impl<$T> $Trait<$T> for $t
+        where
+            $T: $Trait,
+        {
+            fn $impl(&mut self, rhs: $T) {
+                $Trait::$impl(&mut self.0, rhs)
+            }
+        }
+    };
+    (impl<$T:ident> $Trait:ident $impl:ident for $t:ty => $F:ident $f:ident) => {
+        impl<$T> $Trait for $t
+        where
+            $t: $F<Output = $t> + Copy,
+        {
+            fn $impl(&mut self, rhs: Self) {
+                *self = $F::$f(*self, rhs);
+            }
+        }
+        impl<$T> $Trait<$T> for $t
+        where
+            $t: $F<$T, Output = $t> + Copy,
+        {
+            fn $impl(&mut self, rhs: $T) {
+                *self = $F::$f(*self, rhs);
+            }
+        }
     };
 }
 
@@ -253,6 +288,62 @@ macro_rules! impl_opassign {
 #[repr(transparent)]
 /// Wrapper type of arithmetic `saturating_*` operations.
 pub struct Saturating<T>(pub T);
+pub trait Saturatingable: Sized
+where
+    Saturating<Self>: Copy
+        + Bounded
+        + Zero
+        + One
+        + Eq
+        + Ord
+        + Default
+        + FromStr
+        + Display
+        + Add<Output = Saturating<Self>>
+        + Sub<Output = Saturating<Self>>
+        + Mul<Output = Saturating<Self>>
+        + Div<Output = Saturating<Self>>
+        + Rem<Output = Saturating<Self>>
+        + BitAnd<Output = Saturating<Self>>
+        + BitOr<Output = Saturating<Self>>
+        + BitXor<Output = Saturating<Self>>
+        + Shl<u32, Output = Saturating<Self>>
+        + Shr<u32, Output = Saturating<Self>>
+        + AddAssign
+        + SubAssign
+        + MulAssign
+        + DivAssign
+        + RemAssign
+        + BitAndAssign
+        + BitOrAssign
+        + BitXorAssign
+        + ShlAssign<u32>
+        + ShrAssign<u32>
+        + Not<Output = Saturating<Self>>
+        + Add<Self, Output = Saturating<Self>>
+        + Sub<Self, Output = Saturating<Self>>
+        + Mul<Self, Output = Saturating<Self>>
+        + Div<Self, Output = Saturating<Self>>
+        + Rem<Self, Output = Saturating<Self>>
+        + BitAnd<Self, Output = Saturating<Self>>
+        + BitOr<Self, Output = Saturating<Self>>
+        + BitXor<Self, Output = Saturating<Self>>
+        + AddAssign<Self>
+        + SubAssign<Self>
+        + MulAssign<Self>
+        + DivAssign<Self>
+        + RemAssign<Self>
+        + BitAndAssign<Self>
+        + BitOrAssign<Self>
+        + BitXorAssign<Self>,
+{
+    fn to_saturating(self) -> Saturating<Self> {
+        Saturating(self)
+    }
+    fn from_saturating(s: Saturating<Self>) -> Self {
+        s.0
+    }
+}
 
 impl<T> fmt::Debug for Saturating<T>
 where
@@ -320,6 +411,9 @@ impl_binop!(impl<T> Rem rem for Saturating<T>);
 impl_binop!(impl<T> BitAnd bitand for Saturating<T>);
 impl_binop!(impl<T> BitOr bitor for Saturating<T>);
 impl_binop!(impl<T> BitXor bitxor for Saturating<T>);
+impl_opassign!(impl<T> AddAssign add_assign for Saturating<T> => Add add);
+impl_opassign!(impl<T> SubAssign sub_assign for Saturating<T> => Sub sub);
+impl_opassign!(impl<T> MulAssign mul_assign for Saturating<T> => Mul mul);
 impl_opassign!(impl<T> DivAssign div_assign for Saturating<T>);
 impl_opassign!(impl<T> RemAssign rem_assign for Saturating<T>);
 impl_opassign!(impl<T> BitAndAssign bitand_assign for Saturating<T>);
@@ -338,10 +432,17 @@ where
 macro_rules! impl_int_base_for_saturating {
     ($($t:ty)*) => {
         $(
+            impl Saturatingable for $t {}
             impl Add for Saturating<$t> {
                 type Output = Self;
                 fn add(self, rhs: Self) -> Self::Output {
                     Self(self.0.saturating_add(rhs.0))
+                }
+            }
+            impl Add<$t> for Saturating<$t> {
+                type Output = Self;
+                fn add(self, rhs: $t) -> Self::Output {
+                    Self(self.0.saturating_add(rhs))
                 }
             }
             impl Sub for Saturating<$t> {
@@ -350,25 +451,22 @@ macro_rules! impl_int_base_for_saturating {
                     Self(self.0.saturating_sub(rhs.0))
                 }
             }
+            impl Sub<$t> for Saturating<$t> {
+                type Output = Self;
+                fn sub(self, rhs: $t) -> Self::Output {
+                    Self(self.0.saturating_sub(rhs))
+                }
+            }
             impl Mul for Saturating<$t> {
                 type Output = Self;
                 fn mul(self, rhs: Self) -> Self::Output {
                     Self(self.0.saturating_mul(rhs.0))
                 }
             }
-            impl AddAssign for Saturating<$t> {
-                fn add_assign(&mut self, rhs: Self) {
-                    *self = Add::add(*self, rhs);
-                }
-            }
-            impl SubAssign for Saturating<$t> {
-                fn sub_assign(&mut self, rhs: Self) {
-                    *self = Sub::sub(*self, rhs);
-                }
-            }
-            impl MulAssign for Saturating<$t> {
-                fn mul_assign(&mut self, rhs: Self) {
-                    *self = Mul::mul(*self, rhs);
+            impl Mul<$t> for Saturating<$t> {
+                type Output = Self;
+                fn mul(self, rhs: $t) -> Self::Output {
+                    Self(self.0.saturating_mul(rhs))
                 }
             }
             impl IntBase for Saturating<$t> {
@@ -467,6 +565,62 @@ impl_binary_repr_for_saturating!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize i
 #[repr(transparent)]
 /// Wrapper type of arithmetic `wrapping_*` operations.
 pub struct Wrapping<T>(pub T);
+pub trait Wrappingable: Sized
+where
+    Wrapping<Self>: Copy
+        + Bounded
+        + Zero
+        + One
+        + Eq
+        + Ord
+        + Default
+        + FromStr
+        + Display
+        + Add<Output = Wrapping<Self>>
+        + Sub<Output = Wrapping<Self>>
+        + Mul<Output = Wrapping<Self>>
+        + Div<Output = Wrapping<Self>>
+        + Rem<Output = Wrapping<Self>>
+        + BitAnd<Output = Wrapping<Self>>
+        + BitOr<Output = Wrapping<Self>>
+        + BitXor<Output = Wrapping<Self>>
+        + Shl<u32, Output = Wrapping<Self>>
+        + Shr<u32, Output = Wrapping<Self>>
+        + AddAssign
+        + SubAssign
+        + MulAssign
+        + DivAssign
+        + RemAssign
+        + BitAndAssign
+        + BitOrAssign
+        + BitXorAssign
+        + ShlAssign<u32>
+        + ShrAssign<u32>
+        + Not<Output = Wrapping<Self>>
+        + Add<Self, Output = Wrapping<Self>>
+        + Sub<Self, Output = Wrapping<Self>>
+        + Mul<Self, Output = Wrapping<Self>>
+        + Div<Self, Output = Wrapping<Self>>
+        + Rem<Self, Output = Wrapping<Self>>
+        + BitAnd<Self, Output = Wrapping<Self>>
+        + BitOr<Self, Output = Wrapping<Self>>
+        + BitXor<Self, Output = Wrapping<Self>>
+        + AddAssign<Self>
+        + SubAssign<Self>
+        + MulAssign<Self>
+        + DivAssign<Self>
+        + RemAssign<Self>
+        + BitAndAssign<Self>
+        + BitOrAssign<Self>
+        + BitXorAssign<Self>,
+{
+    fn to_wrapping(self) -> Wrapping<Self> {
+        Wrapping(self)
+    }
+    fn from_wrapping(w: Wrapping<Self>) -> Self {
+        w.0
+    }
+}
 
 impl<T> fmt::Debug for Wrapping<T>
 where
@@ -532,6 +686,11 @@ where
 impl_binop!(impl<T> BitAnd bitand for Wrapping<T>);
 impl_binop!(impl<T> BitOr bitor for Wrapping<T>);
 impl_binop!(impl<T> BitXor bitxor for Wrapping<T>);
+impl_opassign!(impl<T> AddAssign add_assign for Wrapping<T> => Add add);
+impl_opassign!(impl<T> SubAssign sub_assign for Wrapping<T> => Sub sub);
+impl_opassign!(impl<T> MulAssign mul_assign for Wrapping<T> => Mul mul);
+impl_opassign!(impl<T> DivAssign div_assign for Wrapping<T> => Div div);
+impl_opassign!(impl<T> RemAssign rem_assign for Wrapping<T> => Rem rem);
 impl_opassign!(impl<T> BitAndAssign bitand_assign for Wrapping<T>);
 impl_opassign!(impl<T> BitOrAssign bitor_assign for Wrapping<T>);
 impl_opassign!(impl<T> BitXorAssign bitxor_assign for Wrapping<T>);
@@ -548,10 +707,17 @@ where
 macro_rules! impl_int_base_for_wrapping {
     ($($t:ty)*) => {
         $(
+            impl Wrappingable for $t {}
             impl Add for Wrapping<$t> {
                 type Output = Self;
                 fn add(self, rhs: Self) -> Self::Output {
                     Self(self.0.wrapping_add(rhs.0))
+                }
+            }
+            impl Add<$t> for Wrapping<$t> {
+                type Output = Self;
+                fn add(self, rhs: $t) -> Self::Output {
+                    Self(self.0.wrapping_add(rhs))
                 }
             }
             impl Sub for Wrapping<$t> {
@@ -560,10 +726,22 @@ macro_rules! impl_int_base_for_wrapping {
                     Self(self.0.wrapping_sub(rhs.0))
                 }
             }
+            impl Sub<$t> for Wrapping<$t> {
+                type Output = Self;
+                fn sub(self, rhs: $t) -> Self::Output {
+                    Self(self.0.wrapping_sub(rhs))
+                }
+            }
             impl Mul for Wrapping<$t> {
                 type Output = Self;
                 fn mul(self, rhs: Self) -> Self::Output {
                     Self(self.0.wrapping_mul(rhs.0))
+                }
+            }
+            impl Mul<$t> for Wrapping<$t> {
+                type Output = Self;
+                fn mul(self, rhs: $t) -> Self::Output {
+                    Self(self.0.wrapping_mul(rhs))
                 }
             }
             impl Div for Wrapping<$t> {
@@ -572,35 +750,22 @@ macro_rules! impl_int_base_for_wrapping {
                     Self(self.0.wrapping_div(rhs.0))
                 }
             }
+            impl Div<$t> for Wrapping<$t> {
+                type Output = Self;
+                fn div(self, rhs: $t) -> Self::Output {
+                    Self(self.0.wrapping_div(rhs))
+                }
+            }
             impl Rem for Wrapping<$t> {
                 type Output = Self;
                 fn rem(self, rhs: Self) -> Self::Output {
                     Self(self.0.wrapping_rem(rhs.0))
                 }
             }
-            impl AddAssign for Wrapping<$t> {
-                fn add_assign(&mut self, rhs: Self) {
-                    *self = Add::add(*self, rhs);
-                }
-            }
-            impl SubAssign for Wrapping<$t> {
-                fn sub_assign(&mut self, rhs: Self) {
-                    *self = Sub::sub(*self, rhs);
-                }
-            }
-            impl MulAssign for Wrapping<$t> {
-                fn mul_assign(&mut self, rhs: Self) {
-                    *self = Mul::mul(*self, rhs);
-                }
-            }
-            impl DivAssign for Wrapping<$t> {
-                fn div_assign(&mut self, rhs: Self) {
-                    *self = Div::div(*self, rhs);
-                }
-            }
-            impl RemAssign for Wrapping<$t> {
-                fn rem_assign(&mut self, rhs: Self) {
-                    *self = Rem::rem(*self, rhs);
+            impl Rem<$t> for Wrapping<$t> {
+                type Output = Self;
+                fn rem(self, rhs: $t) -> Self::Output {
+                    Self(self.0.wrapping_rem(rhs))
                 }
             }
             impl IntBase for Wrapping<$t> {
