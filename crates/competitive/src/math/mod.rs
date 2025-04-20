@@ -2,7 +2,8 @@
 
 use crate::algebra::{Field, Group, Invertible, Monoid, Ring};
 use crate::num::{
-    BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Unsigned, Zero, montgomery,
+    BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Unsigned, Wrapping, Zero,
+    montgomery,
 };
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
 
@@ -105,7 +106,10 @@ mod factorial;
     )
 )]
 mod fast_fourier_transform;
-#[cfg_attr(nightly, codesnip::entry("floor_sum", include("BarrettReduction")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("floor_sum", include("integer", "BarrettReduction"))
+)]
 mod floor_sum;
 #[cfg_attr(
     nightly,
