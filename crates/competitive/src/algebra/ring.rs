@@ -24,6 +24,14 @@ pub trait SemiRing {
     fn mul(x: &Self::T, y: &Self::T) -> Self::T {
         <Self::Multiplicative as Magma>::operate(x, y)
     }
+
+    fn add_assign(x: &mut Self::T, y: &Self::T) {
+        <Self::Additive as Magma>::operate_assign(x, y);
+    }
+
+    fn mul_assign(x: &mut Self::T, y: &Self::T) {
+        <Self::Multiplicative as Magma>::operate_assign(x, y);
+    }
 }
 
 pub trait Ring: SemiRing
@@ -37,6 +45,10 @@ where
     /// additive right inversed operaion: $-$
     fn sub(x: &Self::T, y: &Self::T) -> Self::T {
         <Self::Additive as Invertible>::rinv_operate(x, y)
+    }
+
+    fn sub_assign(x: &mut Self::T, y: &Self::T) {
+        <Self::Additive as Invertible>::rinv_operate_assign(x, y);
     }
 }
 
@@ -59,6 +71,10 @@ where
     /// multiplicative right inversed operaion: $-$
     fn div(x: &Self::T, y: &Self::T) -> Self::T {
         <Self::Multiplicative as Invertible>::rinv_operate(x, y)
+    }
+
+    fn div_assign(x: &mut Self::T, y: &Self::T) {
+        <Self::Multiplicative as Invertible>::rinv_operate_assign(x, y);
     }
 }
 

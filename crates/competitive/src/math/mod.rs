@@ -1,6 +1,9 @@
 //! mathematical datas
 
-use crate::algebra::{Field, Group, Invertible, Monoid, Ring};
+use crate::algebra::{
+    AddMulOperation, Associative, Field, Group, Invertible, Magma, Monoid, Ring, SemiRing, Unital,
+};
+use crate::array;
 use crate::num::{
     BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Unsigned, Wrapping, Zero,
     montgomery,
@@ -25,7 +28,9 @@ pub use self::factorial::*;
 #[codesnip::entry("fast_fourier_transform")]
 pub use self::fast_fourier_transform::ConvolveRealFft;
 #[codesnip::entry("floor_sum")]
-pub use self::floor_sum::{floor_sum, floor_sum_i64, floor_sum_range_freq};
+pub use self::floor_sum::{
+    floor_sum, floor_sum_i64, floor_sum_polynomial, floor_sum_polynomial_i64, floor_sum_range_freq,
+};
 #[codesnip::entry("FormalPowerSeries")]
 pub use self::formal_power_series::{
     FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
@@ -108,7 +113,7 @@ mod factorial;
 mod fast_fourier_transform;
 #[cfg_attr(
     nightly,
-    codesnip::entry("floor_sum", include("integer", "BarrettReduction"))
+    codesnip::entry("floor_sum", include("algebra", "ring", "integer", "BarrettReduction"))
 )]
 mod floor_sum;
 #[cfg_attr(
@@ -173,7 +178,7 @@ mod prime_table;
 mod primitive_root;
 #[cfg_attr(
     nightly,
-    codesnip::entry("QuotientArray", include("algebra", "ring", "zero_one", "PrimeList"))
+    codesnip::entry("QuotientArray", include("algebra", "ring", "PrimeList"))
 )]
 mod quotient_array;
 #[cfg_attr(

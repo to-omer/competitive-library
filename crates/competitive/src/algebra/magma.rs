@@ -46,6 +46,12 @@ pub trait ExpBits {
     fn bits(self) -> Self::Iter;
 }
 
+pub trait SignedExpBits {
+    type T: ExpBits;
+
+    fn neg_and_bits(self) -> (bool, Self::T);
+}
+
 pub struct Bits<T> {
     n: T,
 }
@@ -71,10 +77,30 @@ macro_rules! impl_exp_bits_for_uint {
                     Bits { n: self }
                 }
             }
+            impl SignedExpBits for $t {
+                type T = $t;
+                fn neg_and_bits(self) -> (bool, Self::T) {
+                    (false, self)
+                }
+            }
         )*
     };
 }
 impl_exp_bits_for_uint!(u8 u16 u32 u64 u128 usize);
+
+macro_rules! impl_signed_exp_bits_for_sint {
+    ($($s:ty, $u:ty;)*) => {
+        $(
+            impl SignedExpBits for $s {
+                type T = $u;
+                fn neg_and_bits(self) -> (bool, Self::T) {
+                    (self < 0, self.unsigned_abs())
+                }
+            }
+        )*
+    };
+}
+impl_signed_exp_bits_for_sint!(i8, u8; i16, u16; i32, u32; i64, u64; i128, u128; isize, usize;);
 
 /// associative binary operation and an identity element
 pub trait Monoid: SemiGroup + Unital {
@@ -91,6 +117,18 @@ pub trait Monoid: SemiGroup + Unital {
             x = Self::operate(&x, &x);
         }
         res
+    }
+
+    fn fold<I>(iter: I) -> Self::T
+    where
+        I: IntoIterator<Item = Self::T>,
+    {
+        let mut iter = iter.into_iter();
+        if let Some(item) = iter.next() {
+            iter.fold(item, |acc, x| Self::operate(&acc, &x))
+        } else {
+            Self::unit()
+        }
     }
 }
 
@@ -111,7 +149,16 @@ pub trait Invertible: Magma {
 }
 
 /// associative binary operation and an identity element and inverse elements
-pub trait Group: Monoid + Invertible {}
+pub trait Group: Monoid + Invertible {
+    fn signed_pow<E>(x: Self::T, exp: E) -> Self::T
+    where
+        E: SignedExpBits,
+    {
+        let (neg, exp) = E::neg_and_bits(exp);
+        let res = Self::pow(x, exp);
+        if neg { Self::inverse(&res) } else { res }
+    }
+}
 
 impl<G> Group for G where G: Monoid + Invertible {}
 
