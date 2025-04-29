@@ -41,17 +41,54 @@ pub trait Unital: Magma {
     }
 }
 
+pub trait ExpBits {
+    type Iter: Iterator<Item = bool>;
+    fn bits(self) -> Self::Iter;
+}
+
+pub struct Bits<T> {
+    n: T,
+}
+
+macro_rules! impl_exp_bits_for_uint {
+    ($($t:ty)*) => {
+        $(
+            impl Iterator for Bits<$t> {
+                type Item = bool;
+                fn next(&mut self) -> Option<bool> {
+                    if self.n == 0 {
+                        None
+                    } else {
+                        let bit = (self.n & 1) == 1;
+                        self.n >>= 1;
+                        Some(bit)
+                    }
+                }
+            }
+            impl ExpBits for $t {
+                type Iter = Bits<$t>;
+                fn bits(self) -> Self::Iter {
+                    Bits { n: self }
+                }
+            }
+        )*
+    };
+}
+impl_exp_bits_for_uint!(u8 u16 u32 u64 u128 usize);
+
 /// associative binary operation and an identity element
 pub trait Monoid: SemiGroup + Unital {
     /// binary exponentiation: $x^n = x\circ\ddots\circ x$
-    fn pow(mut x: Self::T, mut n: usize) -> Self::T {
+    fn pow<E>(mut x: Self::T, exp: E) -> Self::T
+    where
+        E: ExpBits,
+    {
         let mut res = Self::unit();
-        while n > 0 {
-            if n & 1 == 1 {
+        for bit in exp.bits() {
+            if bit {
                 res = Self::operate(&res, &x);
             }
             x = Self::operate(&x, &x);
-            n >>= 1;
         }
         res
     }
@@ -129,7 +166,18 @@ macro_rules! define_monoid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{algebra::operations::MaxOperation, monoid_fold};
+    use crate::{
+        algebra::operations::{AdditiveOperation, MaxOperation},
+        monoid_fold,
+    };
+
+    #[test]
+    fn test_monoid_pow() {
+        assert_eq!(AdditiveOperation::pow(2, 0u32), 0);
+        assert_eq!(AdditiveOperation::pow(2, 1u32), 2);
+        assert_eq!(AdditiveOperation::pow(2, 3u32), 6);
+        assert_eq!(AdditiveOperation::pow(2, 4usize), 8);
+    }
 
     #[test]
     #[allow(clippy::eq_op)]
