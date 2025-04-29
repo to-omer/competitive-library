@@ -283,7 +283,7 @@ pub fn floor_sum_polynomial<T, const X: usize, const Y: usize>(
     m: u64,
 ) -> [[T; Y]; X]
 where
-    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>,
+    T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
 {
     debug_assert!(a == 0 || n < (u64::MAX - b) / a);
     floor_monoid_product::<FloorSum<AddMulOperation<T>, X, Y>>(
@@ -306,7 +306,7 @@ pub fn floor_sum_polynomial_i64<T, const X: usize, const Y: usize>(
     m: u64,
 ) -> [[T; Y]; X]
 where
-    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>,
+    T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
     <AddMulOperation<T> as SemiRing>::Additive: Invertible,
 {
     assert!(l <= r);
