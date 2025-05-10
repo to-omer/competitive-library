@@ -1,14 +1,19 @@
+#![allow(clippy::type_complexity)]
+
 use super::{Magma, Monoid, Unital};
 
 pub trait SqrtDecomposition: Sized {
-    type M: Monoid<T = Self::T>;
-    type T: Clone;
+    type M: Monoid;
     type B;
     fn bucket(bsize: usize) -> Self::B;
-    fn update_bucket(bucket: &mut Self::B, x: &Self::T);
-    fn update_cell(bucket: &mut Self::B, cell: &mut Self::T, x: &Self::T);
-    fn fold_bucket(bucket: &Self::B) -> Self::T;
-    fn fold_cell(bucket: &Self::B, cell: &Self::T) -> Self::T;
+    fn update_bucket(bucket: &mut Self::B, x: &<Self::M as Magma>::T);
+    fn update_cell(
+        bucket: &mut Self::B,
+        cell: &mut <Self::M as Magma>::T,
+        x: &<Self::M as Magma>::T,
+    );
+    fn fold_bucket(bucket: &Self::B) -> <Self::M as Magma>::T;
+    fn fold_cell(bucket: &Self::B, cell: &<Self::M as Magma>::T) -> <Self::M as Magma>::T;
     fn sqrt_decomposition(n: usize, bucket_size: usize) -> SqrtDecompositionBuckets<Self> {
         let mut buckets = vec![];
         for l in (0..n).step_by(bucket_size) {
@@ -29,14 +34,19 @@ where
     S: SqrtDecomposition,
 {
     bucket_size: usize,
-    buckets: Vec<(Vec<S::T>, S::B)>,
+    buckets: Vec<(Vec<<S::M as Magma>::T>, S::B)>,
     _marker: std::marker::PhantomData<fn() -> S>,
 }
 impl<S> SqrtDecompositionBuckets<S>
 where
     S: SqrtDecomposition,
 {
-    pub fn update(&mut self, l: usize, r: usize, x: S::T) {
+    pub fn update_cell(&mut self, i: usize, x: <S::M as Magma>::T) {
+        let (cells, bucket) = &mut self.buckets[i / self.bucket_size];
+        let j = i % self.bucket_size;
+        S::update_cell(bucket, &mut cells[j], &x);
+    }
+    pub fn update(&mut self, l: usize, r: usize, x: <S::M as Magma>::T) {
         for (i, (cells, bucket)) in self.buckets.iter_mut().enumerate() {
             let s = i * self.bucket_size;
             let t = s + cells.len();
@@ -50,7 +60,12 @@ where
             }
         }
     }
-    pub fn fold(&self, l: usize, r: usize) -> S::T {
+    pub fn get(&self, i: usize) -> <S::M as Magma>::T {
+        let (cells, bucket) = &self.buckets[i / self.bucket_size];
+        let j = i % self.bucket_size;
+        S::fold_cell(bucket, &cells[j])
+    }
+    pub fn fold(&self, l: usize, r: usize) -> <S::M as Magma>::T {
         let mut res = S::M::unit();
         for (i, (cells, bucket)) in self.buckets.iter().enumerate() {
             let s = i * self.bucket_size;
