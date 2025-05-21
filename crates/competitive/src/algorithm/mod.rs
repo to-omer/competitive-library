@@ -3,7 +3,7 @@
 use crate::algebra::{Magma, Monoid, Unital};
 use crate::data_structure::{UnionFindBase, union_find};
 use crate::math::Matrix;
-use crate::num::{MInt, MIntBase, One, Zero};
+use crate::num::{MInt, MIntBase, One, RangeBoundsExt, Zero};
 
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
 pub use self::baby_step_giant_step::baby_step_giant_step;
@@ -69,7 +69,10 @@ mod rho_path;
 mod solve_01_on_tree;
 #[cfg_attr(nightly, codesnip::entry("sort"))]
 mod sort;
-#[cfg_attr(nightly, codesnip::entry("SqrtDecomposition", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SqrtDecomposition", include("algebra", "discrete_steps"))
+)]
 mod sqrt_decomposition;
 #[cfg_attr(nightly, codesnip::entry)]
 mod syakutori;

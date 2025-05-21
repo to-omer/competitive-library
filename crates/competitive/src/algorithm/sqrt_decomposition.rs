@@ -1,6 +1,7 @@
 #![allow(clippy::type_complexity)]
 
-use super::{Magma, Monoid, Unital};
+use super::{Magma, Monoid, RangeBoundsExt, Unital};
+use std::ops::RangeBounds;
 
 pub trait SqrtDecomposition: Sized {
     type M: Monoid;
@@ -22,6 +23,7 @@ pub trait SqrtDecomposition: Sized {
             buckets.push((vec![Self::M::unit(); bsize], x));
         }
         SqrtDecompositionBuckets {
+            n,
             bucket_size,
             buckets,
             _marker: std::marker::PhantomData,
@@ -33,6 +35,7 @@ pub struct SqrtDecompositionBuckets<S>
 where
     S: SqrtDecomposition,
 {
+    n: usize,
     bucket_size: usize,
     buckets: Vec<(Vec<<S::M as Magma>::T>, S::B)>,
     _marker: std::marker::PhantomData<fn() -> S>,
@@ -46,15 +49,19 @@ where
         let j = i % self.bucket_size;
         S::update_cell(bucket, &mut cells[j], &x);
     }
-    pub fn update(&mut self, l: usize, r: usize, x: <S::M as Magma>::T) {
+    pub fn update<R>(&mut self, range: R, x: <S::M as Magma>::T)
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
         for (i, (cells, bucket)) in self.buckets.iter_mut().enumerate() {
             let s = i * self.bucket_size;
             let t = s + cells.len();
-            if t <= l || r <= s {
-            } else if l <= s && t <= r {
+            if t <= range.start || range.end <= s {
+            } else if range.start <= s && t <= range.end {
                 S::update_bucket(bucket, &x);
             } else {
-                for cell in &mut cells[l.max(s) - s..r.min(t) - s] {
+                for cell in &mut cells[range.start.max(s) - s..range.end.min(t) - s] {
                     S::update_cell(bucket, cell, &x);
                 }
             }
@@ -65,16 +72,20 @@ where
         let j = i % self.bucket_size;
         S::fold_cell(bucket, &cells[j])
     }
-    pub fn fold(&self, l: usize, r: usize) -> <S::M as Magma>::T {
+    pub fn fold<R>(&self, range: R) -> <S::M as Magma>::T
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
         let mut res = S::M::unit();
         for (i, (cells, bucket)) in self.buckets.iter().enumerate() {
             let s = i * self.bucket_size;
             let t = s + cells.len();
-            if t <= l || r <= s {
-            } else if l <= s && t <= r {
+            if t <= range.start || range.end <= s {
+            } else if range.start <= s && t <= range.end {
                 <S::M as Magma>::operate_assign(&mut res, &S::fold_bucket(bucket));
             } else {
-                for cell in &cells[l.max(s) - s..r.min(t) - s] {
+                for cell in &cells[range.start.max(s) - s..range.end.min(t) - s] {
                     <S::M as Magma>::operate_assign(&mut res, &S::fold_cell(bucket, cell));
                 }
             }
