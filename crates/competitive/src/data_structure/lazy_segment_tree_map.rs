@@ -1,8 +1,9 @@
-use super::MonoidAction;
+use super::{MonoidAction, RangeBoundsExt};
 use std::{
     collections::HashMap,
     fmt::{self, Debug, Formatter},
     mem::replace,
+    ops::RangeBounds,
 };
 
 pub struct LazySegmentTreeMap<M>
@@ -111,11 +112,13 @@ where
             }
         }
     }
-    pub fn update(&mut self, l: usize, r: usize, x: M::Act) {
-        debug_assert!(l <= r);
-        debug_assert!(r <= self.n);
-        let mut a = l + self.n;
-        let mut b = r + self.n;
+    pub fn update<R>(&mut self, range: R, x: M::Act)
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        let mut a = range.start + self.n;
+        let mut b = range.end + self.n;
         self.propagate(a, false, false);
         self.propagate(b, true, false);
         while a < b {
@@ -130,14 +133,16 @@ where
             a /= 2;
             b /= 2;
         }
-        self.recalc(l + self.n, false, false);
-        self.recalc(r + self.n, true, false);
+        self.recalc(range.start + self.n, false, false);
+        self.recalc(range.end + self.n, true, false);
     }
-    pub fn fold(&mut self, l: usize, r: usize) -> M::Agg {
-        debug_assert!(l <= r);
-        debug_assert!(r <= self.n);
-        let mut l = l + self.n;
-        let mut r = r + self.n;
+    pub fn fold<R>(&mut self, range: R) -> M::Agg
+    where
+        R: RangeBounds<usize>,
+    {
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        let mut l = range.start + self.n;
+        let mut r = range.end + self.n;
         self.propagate(l, false, true);
         self.propagate(r, true, true);
         let mut vl = M::agg_unit();
@@ -167,10 +172,10 @@ where
         self.recalc(k, false, true);
     }
     pub fn get(&mut self, k: usize) -> M::Agg {
-        self.fold(k, k + 1)
+        self.fold(k..k + 1)
     }
     pub fn fold_all(&mut self) -> M::Agg {
-        self.fold(0, self.n)
+        self.fold(0..self.n)
     }
     fn bisect_perfect<P>(&mut self, mut pos: usize, mut acc: M::Agg, p: P) -> (usize, M::Agg)
     where
@@ -209,12 +214,14 @@ where
         (pos - self.n, acc)
     }
     /// Returns the first index that satisfies a accumlative predicate.
-    pub fn position_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
+    pub fn position_acc<R, P>(&mut self, range: R, p: P) -> Option<usize>
     where
+        R: RangeBounds<usize>,
         P: Fn(&M::Agg) -> bool,
     {
-        let mut l = l + self.n;
-        let r = r + self.n;
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        let mut l = range.start + self.n;
+        let r = range.end + self.n;
         self.propagate(l, false, true);
         self.propagate(r, true, true);
         let mut k = 0usize;
@@ -250,12 +257,14 @@ where
         None
     }
     /// Returns the last index that satisfies a accumlative predicate.
-    pub fn rposition_acc<P>(&mut self, l: usize, r: usize, p: P) -> Option<usize>
+    pub fn rposition_acc<R, P>(&mut self, range: R, p: P) -> Option<usize>
     where
+        R: RangeBounds<usize>,
         P: Fn(&M::Agg) -> bool,
     {
-        let mut l = l + self.n;
-        let mut r = r + self.n;
+        let range = range.to_range_bounded(0, self.n).expect("invalid range");
+        let mut l = range.start + self.n;
+        let mut r = range.end + self.n;
         self.propagate(l, false, true);
         self.propagate(r, true, true);
         let mut c = 0usize;
@@ -327,14 +336,14 @@ mod tests {
             if rng.rand(2) == 0 {
                 // Range Add Query
                 rand!(rng, x: -A..A);
-                seg.update(l, r, x);
+                seg.update(l..r, x);
                 for a in arr[l..r].iter_mut() {
                     *a += x;
                 }
             } else {
                 // Range Sum Query
                 let res = arr[l..r].iter().sum();
-                assert_eq!(seg.fold(l, r).0, res);
+                assert_eq!(seg.fold(l..r).0, res);
             }
         }
 
@@ -347,19 +356,19 @@ mod tests {
                 0 => {
                     // Range Update Query
                     rand!(rng, x: -A..A);
-                    seg.update(l, r, Some(x));
+                    seg.update(l..r, Some(x));
                     arr[l..r].iter_mut().for_each(|a| *a = x);
                 }
                 1 => {
                     // Range Max Query
                     let res = arr[l..r].iter().max().cloned().unwrap_or_default();
-                    assert_eq!(seg.fold(l, r), res);
+                    assert_eq!(seg.fold(l..r), res);
                 }
                 2 => {
                     // Binary Search Query
                     rand!(rng, x: -A..A);
                     assert_eq!(
-                        seg.position_acc(l, r, |&d| d >= x),
+                        seg.position_acc(l..r, |&d| d >= x),
                         arr[l..r]
                             .iter()
                             .scan(i64::MIN, |acc, &a| {
@@ -374,7 +383,7 @@ mod tests {
                     // Binary Search Query
                     rand!(rng, x: -A..A);
                     assert_eq!(
-                        seg.rposition_acc(l, r, |&d| d >= x),
+                        seg.rposition_acc(l..r, |&d| d >= x),
                         arr[l..r]
                             .iter()
                             .rev()

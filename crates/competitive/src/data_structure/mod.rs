@@ -129,11 +129,14 @@ mod disjoint_sparse_table;
 mod fibonacci_hash;
 #[cfg_attr(nightly, codesnip::entry("Static2DTree"))]
 mod kdtree;
-#[cfg_attr(nightly, codesnip::entry("LazySegmentTree", include("MonoidAction")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("LazySegmentTree", include("MonoidAction", "discrete_steps"))
+)]
 mod lazy_segment_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("LazySegmentTreeMap", include("MonoidAction"))
+    codesnip::entry("LazySegmentTreeMap", include("MonoidAction", "discrete_steps"))
 )]
 mod lazy_segment_tree_map;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]

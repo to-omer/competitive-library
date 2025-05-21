@@ -12,11 +12,11 @@ pub fn dsl_2_i(reader: impl Read, mut writer: impl Write) {
         match scanner.scan::<usize>() {
             0 => {
                 scan!(scanner, s, t, x: i64);
-                seg.update(s, t + 1, Some(x));
+                seg.update(s..t + 1, Some(x));
             }
             1 => {
                 scan!(scanner, s, t);
-                writeln!(writer, "{}", seg.fold(s, t + 1).0).ok();
+                writeln!(writer, "{}", seg.fold(s..t + 1).0).ok();
             }
             _ => panic!("unknown query"),
         }

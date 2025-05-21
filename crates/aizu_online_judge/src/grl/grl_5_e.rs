@@ -28,11 +28,11 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
         match scanner.scan::<usize>() {
             0 => {
                 scan!(scanner, v, w: u64);
-                hld.update(0, v, true, |l, r| seg.update(l, r, w));
+                hld.update(0, v, true, |l, r| seg.update(l..r, w));
             }
             1 => {
                 scan!(scanner, u);
-                let ans = hld.query::<M, _>(0, u, true, |l, r| seg.fold(l, r)).0;
+                let ans = hld.query::<M, _>(0, u, true, |l, r| seg.fold(l..r)).0;
                 writeln!(writer, "{}", ans).ok();
             }
             _ => panic!("unknown query"),

@@ -20,19 +20,19 @@ pub fn range_chmin_chmax_add_range_sum(reader: impl Read, mut writer: impl Write
         match scanner.scan::<usize>() {
             0 => {
                 scan!(scanner, l, r, b: Saturating<i64>);
-                seg.update(l, r, RangeChminChmaxAdd::chmin(b));
+                seg.update(l..r, RangeChminChmaxAdd::chmin(b));
             }
             1 => {
                 scan!(scanner, l, r, b: Saturating<i64>);
-                seg.update(l, r, RangeChminChmaxAdd::chmax(b));
+                seg.update(l..r, RangeChminChmaxAdd::chmax(b));
             }
             2 => {
                 scan!(scanner, l, r, b: Saturating<i64>);
-                seg.update(l, r, RangeChminChmaxAdd::add(b));
+                seg.update(l..r, RangeChminChmaxAdd::add(b));
             }
             3 => {
                 scan!(scanner, l, r);
-                writeln!(writer, "{}", seg.fold(l, r).sum).ok();
+                writeln!(writer, "{}", seg.fold(l..r).sum).ok();
             }
             _ => panic!("unknown query"),
         }

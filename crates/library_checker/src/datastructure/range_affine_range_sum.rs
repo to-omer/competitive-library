@@ -18,11 +18,11 @@ pub fn range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
         match scanner.scan::<usize>() {
             0 => {
                 scan!(scanner, l, r, bc: (MInt998244353, MInt998244353));
-                seg.update(l, r, bc);
+                seg.update(l..r, bc);
             }
             1 => {
                 scan!(scanner, l, r);
-                writeln!(writer, "{}", seg.fold(l, r).0).ok();
+                writeln!(writer, "{}", seg.fold(l..r).0).ok();
             }
             _ => panic!("unknown query"),
         }
