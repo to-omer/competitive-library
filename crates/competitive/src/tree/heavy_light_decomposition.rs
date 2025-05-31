@@ -1,14 +1,12 @@
-use crate::algebra::Monoid;
-use crate::graph::UndirectedSparseGraph;
+use super::{Monoid, UndirectedSparseGraph};
 
-#[codesnip::entry("HeavyLightDecomposition", include("algebra", "SparseGraph"))]
 pub struct HeavyLightDecomposition {
     pub par: Vec<usize>,
     size: Vec<usize>,
     head: Vec<usize>,
     pub vidx: Vec<usize>,
 }
-#[codesnip::entry("HeavyLightDecomposition")]
+
 impl HeavyLightDecomposition {
     pub fn new(root: usize, graph: &mut UndirectedSparseGraph) -> Self {
         let mut self_ = Self {
@@ -20,6 +18,7 @@ impl HeavyLightDecomposition {
         self_.build(root, graph);
         self_
     }
+
     fn dfs_size(&mut self, u: usize, p: usize, graph: &mut UndirectedSparseGraph) {
         self.par[u] = p;
         self.size[u] = 1;
@@ -38,6 +37,7 @@ impl HeavyLightDecomposition {
             }
         }
     }
+
     fn dfs_hld(&mut self, u: usize, p: usize, t: &mut usize, graph: &UndirectedSparseGraph) {
         self.vidx[u] = *t;
         *t += 1;
@@ -51,12 +51,14 @@ impl HeavyLightDecomposition {
             self.dfs_hld(a.to, u, t, graph);
         }
     }
+
     fn build(&mut self, root: usize, graph: &mut UndirectedSparseGraph) {
         self.head[root] = root;
         self.dfs_size(root, graph.vertices_size(), graph);
         let mut t = 0;
         self.dfs_hld(root, graph.vertices_size(), &mut t, graph);
     }
+
     pub fn lca(&self, mut u: usize, mut v: usize) -> usize {
         loop {
             if self.vidx[u] > self.vidx[v] {
@@ -68,6 +70,7 @@ impl HeavyLightDecomposition {
             v = self.par[self.head[v]];
         }
     }
+
     pub fn update<F: FnMut(usize, usize)>(
         &self,
         mut u: usize,
@@ -87,6 +90,7 @@ impl HeavyLightDecomposition {
         }
         f(self.vidx[u] + is_edge as usize, self.vidx[v] + 1);
     }
+
     pub fn query<M: Monoid, F: FnMut(usize, usize) -> M::T>(
         &self,
         mut u: usize,
@@ -111,6 +115,7 @@ impl HeavyLightDecomposition {
             &r,
         )
     }
+
     pub fn query_noncom<
         M: Monoid,
         F1: FnMut(usize, usize) -> M::T,
