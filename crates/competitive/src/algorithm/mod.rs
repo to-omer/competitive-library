@@ -3,7 +3,7 @@
 use crate::algebra::{Magma, Monoid, Unital};
 use crate::data_structure::{UnionFindBase, union_find};
 use crate::math::Matrix;
-use crate::num::{MInt, MIntBase, One, RangeBoundsExt, Zero};
+use crate::num::{MInt, MIntBase, One, RangeBoundsExt, Rational, Signed, Zero};
 
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
 pub use self::baby_step_giant_step::baby_step_giant_step;
@@ -32,6 +32,8 @@ pub use self::solve_01_on_tree::solve_01_on_tree;
 pub use self::sort::SliceSortExt;
 #[codesnip::entry("SqrtDecomposition")]
 pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
+#[codesnip::entry("stern_brocot_tree")]
+pub use self::stern_brocot_tree::*;
 #[codesnip::entry("ternary_search")]
 pub use self::ternary_search::ternary_search;
 #[codesnip::entry("XorBasis")]
@@ -74,6 +76,8 @@ mod sort;
     codesnip::entry("SqrtDecomposition", include("algebra", "discrete_steps"))
 )]
 mod sqrt_decomposition;
+#[cfg_attr(nightly, codesnip::entry("stern_brocot_tree", include("Rational")))]
+mod stern_brocot_tree;
 #[cfg_attr(nightly, codesnip::entry)]
 mod syakutori;
 #[cfg_attr(nightly, codesnip::entry)]
