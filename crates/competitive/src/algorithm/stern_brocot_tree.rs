@@ -1,14 +1,16 @@
-use super::{Rational, Signed};
+use super::{URational, Unsigned};
 use std::mem::swap;
 
-pub trait SternBrocotTree: From<Rational<Self::T>> + FromIterator<Self::T> {
-    type T: Signed;
+// TODO: Use Unsigned URational
+
+pub trait SternBrocotTree: From<URational<Self::T>> + FromIterator<Self::T> {
+    type T: Unsigned;
 
     fn root() -> Self;
 
     fn is_root(&self) -> bool;
 
-    fn eval(&self) -> Rational<Self::T>;
+    fn eval(&self) -> URational<Self::T>;
 
     fn down_left(&mut self, count: Self::T);
 
@@ -21,32 +23,32 @@ pub trait SternBrocotTree: From<Rational<Self::T>> + FromIterator<Self::T> {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct SbtNode<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
-    pub l: Rational<T>,
-    pub r: Rational<T>,
+    pub l: URational<T>,
+    pub r: URational<T>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Default)]
 pub struct SbtPath<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     pub path: Vec<T>,
 }
 
-impl<T> From<Rational<T>> for SbtNode<T>
+impl<T> From<URational<T>> for SbtNode<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
-    fn from(r: Rational<T>) -> Self {
+    fn from(r: URational<T>) -> Self {
         SbtPath::from(r).to_node()
     }
 }
 
 impl<T> FromIterator<T> for SbtNode<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     fn from_iter<I>(iter: I) -> Self
     where
@@ -64,13 +66,13 @@ where
     }
 }
 
-impl<T> From<Rational<T>> for SbtPath<T>
+impl<T> From<URational<T>> for SbtPath<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
-    fn from(r: Rational<T>) -> Self {
-        assert!(r.num.is_positive(), "rational must be positive");
-        assert!(r.den.is_positive(), "rational must be positive");
+    fn from(r: URational<T>) -> Self {
+        assert!(!r.num.is_zero(), "rational must be positive");
+        assert!(!r.den.is_zero(), "rational must be positive");
 
         let (mut a, mut b) = (r.num, r.den);
         let mut path = vec![];
@@ -92,7 +94,7 @@ where
 
 impl<T> FromIterator<T> for SbtPath<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     fn from_iter<I>(iter: I) -> Self
     where
@@ -112,7 +114,7 @@ where
 
 impl<T> IntoIterator for SbtPath<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     type Item = T;
     type IntoIter = std::vec::IntoIter<T>;
@@ -124,7 +126,7 @@ where
 
 impl<'a, T> IntoIterator for &'a SbtPath<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     type Item = T;
     type IntoIter = std::iter::Cloned<std::slice::Iter<'a, T>>;
@@ -136,14 +138,14 @@ where
 
 impl<T> SternBrocotTree for SbtNode<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     type T = T;
 
     fn root() -> Self {
         Self {
-            l: Rational::new(T::zero(), T::one()),
-            r: Rational::new(T::one(), T::zero()),
+            l: URational::new(T::zero(), T::one()),
+            r: URational::new(T::one(), T::zero()),
         }
     }
 
@@ -151,24 +153,21 @@ where
         self.l.num.is_zero() && self.r.den.is_zero()
     }
 
-    fn eval(&self) -> Rational<Self::T> {
-        Rational::new_unchecked(self.l.num + self.r.num, self.l.den + self.r.den)
+    fn eval(&self) -> URational<Self::T> {
+        URational::new_unchecked(self.l.num + self.r.num, self.l.den + self.r.den)
     }
 
     fn down_left(&mut self, count: Self::T) {
-        assert!(!count.is_negative(), "count must be non-negative");
         self.r.num += self.l.num * count;
         self.r.den += self.l.den * count;
     }
 
     fn down_right(&mut self, count: Self::T) {
-        assert!(!count.is_negative(), "count must be non-negative");
         self.l.num += self.r.num * count;
         self.l.den += self.r.den * count;
     }
 
     fn up(&mut self, mut count: Self::T) -> Self::T {
-        assert!(!count.is_negative(), "count must be non-negative");
         while count > T::zero() && !self.is_root() {
             if self.l.den > self.r.den {
                 let x = count.min(self.l.num / self.r.num);
@@ -188,7 +187,7 @@ where
 
 impl<T> SternBrocotTree for SbtPath<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     type T = T;
 
@@ -200,12 +199,11 @@ where
         self.path.is_empty() || (self.path.len() == 1 && self.path[0].is_zero())
     }
 
-    fn eval(&self) -> Rational<Self::T> {
+    fn eval(&self) -> URational<Self::T> {
         self.to_node().eval()
     }
 
     fn down_left(&mut self, count: Self::T) {
-        assert!(!count.is_negative(), "count must be non-negative");
         if count.is_zero() {
             return;
         }
@@ -222,7 +220,6 @@ where
     }
 
     fn down_right(&mut self, count: Self::T) {
-        assert!(!count.is_negative(), "count must be non-negative");
         if count.is_zero() {
             return;
         }
@@ -234,7 +231,6 @@ where
     }
 
     fn up(&mut self, mut count: Self::T) -> Self::T {
-        assert!(!count.is_negative(), "count must be non-negative");
         while let Some(last) = self.path.last_mut() {
             let x = count.min(*last);
             *last -= x;
@@ -250,7 +246,7 @@ where
 
 impl<T> SbtNode<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     pub fn to_path(&self) -> SbtPath<T> {
         self.eval().into()
@@ -278,7 +274,7 @@ where
 
 impl<T> SbtPath<T>
 where
-    T: Signed,
+    T: Unsigned,
 {
     pub fn to_node(&self) -> SbtNode<T> {
         self.path.iter().cloned().collect()
@@ -295,9 +291,9 @@ mod tests {
 
     #[test]
     fn test_sbt_path_encode_decode() {
-        for a in 1..50 {
-            for b in 1..50 {
-                let r = Rational::new(a, b);
+        for a in 1u32..50 {
+            for b in 1u32..50 {
+                let r = URational::new(a, b);
                 let path = SbtPath::from(r);
                 let node = path.to_node();
                 assert_eq!(node.eval(), r);
@@ -309,8 +305,8 @@ mod tests {
     fn test_sbt_explore() {
         let mut rng = Xorshift::default();
         for _ in 0..10000 {
-            let mut node = SbtNode::<i128>::root();
-            let mut path = SbtPath::<i128>::root();
+            let mut node = SbtNode::<u128>::root();
+            let mut path = SbtPath::<u128>::root();
             for _ in 0..30 {
                 match rng.random(0..3) {
                     0 => {

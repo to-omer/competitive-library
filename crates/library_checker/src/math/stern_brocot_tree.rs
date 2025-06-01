@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     algorithm::{SbtNode, SbtPath, SternBrocotTree},
-    num::Rational,
+    num::URational,
 };
 
 #[verify::library_checker("stern_brocot_tree")]
@@ -14,8 +14,8 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
         scan!(scanner, type_: String);
         match type_.as_str() {
             "ENCODE_PATH" => {
-                scan!(scanner, a: i32, b: i32);
-                let path = SbtPath::from(Rational::new(a, b));
+                scan!(scanner, a: u32, b: u32);
+                let path = SbtPath::from(URational::new(a, b));
                 let len = if path.path.first() == Some(&0) {
                     path.path.len() - 1
                 } else {
@@ -35,8 +35,8 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
                 writeln!(writer).ok();
             }
             "DECODE_PATH" => {
-                scan!(scanner, k, path: [(char, i32); k]);
-                let node: SbtNode<i32> = if path.first().is_some_and(|t| t.0 == 'L') {
+                scan!(scanner, k, path: [(char, u32); k]);
+                let node: SbtNode<u32> = if path.first().is_some_and(|t| t.0 == 'L') {
                     [0].into_iter()
                         .chain(path.into_iter().map(|(_, c)| c))
                         .collect()
@@ -47,15 +47,15 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
                 writeln!(writer, "{} {}", val.num, val.den).ok();
             }
             "LCA" => {
-                scan!(scanner, [a, b, c, d]: [i32; const 4]);
-                let path1 = SbtPath::from(Rational::new(a, b));
-                let path2 = SbtPath::from(Rational::new(c, d));
+                scan!(scanner, [a, b, c, d]: [u32; const 4]);
+                let path1 = SbtPath::from(URational::new(a, b));
+                let path2 = SbtPath::from(URational::new(c, d));
                 let val = SbtNode::lca(path1, path2).eval();
                 writeln!(writer, "{} {}", val.num, val.den).ok();
             }
             "ANCESTOR" => {
-                scan!(scanner, [k, a, b]: [i32; const 3]);
-                let mut path = SbtPath::from(Rational::new(a, b));
+                scan!(scanner, [k, a, b]: [u32; const 3]);
+                let mut path = SbtPath::from(URational::new(a, b));
                 let depth = path.depth();
                 if k <= depth {
                     path.up(depth - k);
@@ -66,8 +66,8 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
                 }
             }
             "RANGE" => {
-                scan!(scanner, [a, b]: [i32; const 2]);
-                let node = SbtPath::from(Rational::new(a, b)).to_node();
+                scan!(scanner, [a, b]: [u32; const 2]);
+                let node = SbtPath::from(URational::new(a, b)).to_node();
                 writeln!(
                     writer,
                     "{} {} {} {}",

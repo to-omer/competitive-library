@@ -26,6 +26,8 @@ pub use self::mint::*;
 pub use self::quad_double::QuadDouble;
 #[codesnip::entry("Rational")]
 pub use self::rational::Rational;
+#[codesnip::entry("URational")]
+pub use self::urational::URational;
 #[codesnip::entry("zero_one")]
 pub use self::zero_one::{One, Zero};
 
@@ -61,5 +63,7 @@ mod mint;
 mod quad_double;
 #[cfg_attr(nightly, codesnip::entry("Rational", include("integer")))]
 mod rational;
+#[cfg_attr(nightly, codesnip::entry("URational", include("integer")))]
+mod urational;
 #[cfg_attr(nightly, codesnip::entry)]
 mod zero_one;

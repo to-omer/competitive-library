@@ -3,7 +3,7 @@
 use crate::algebra::{Magma, Monoid, Unital};
 use crate::data_structure::{UnionFindBase, union_find};
 use crate::math::Matrix;
-use crate::num::{MInt, MIntBase, One, RangeBoundsExt, Rational, Signed, Zero};
+use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero};
 
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
 pub use self::baby_step_giant_step::baby_step_giant_step;
@@ -76,7 +76,7 @@ mod sort;
     codesnip::entry("SqrtDecomposition", include("algebra", "discrete_steps"))
 )]
 mod sqrt_decomposition;
-#[cfg_attr(nightly, codesnip::entry("stern_brocot_tree", include("Rational")))]
+#[cfg_attr(nightly, codesnip::entry("stern_brocot_tree", include("URational")))]
 mod stern_brocot_tree;
 #[cfg_attr(nightly, codesnip::entry)]
 mod syakutori;
