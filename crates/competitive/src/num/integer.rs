@@ -2,6 +2,7 @@ use super::{Bounded, IterScan, One, Zero};
 use std::{
     convert::TryFrom,
     fmt::{self, Display},
+    iter::{Product, Sum},
     ops::{
         Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Div,
         DivAssign, Mul, MulAssign, Neg, Not, Rem, RemAssign, Shl, ShlAssign, Shr, ShrAssign, Sub,
@@ -34,6 +35,8 @@ pub trait IntBase:
     + MulAssign
     + DivAssign
     + RemAssign
+    + Sum
+    + Product
 {
     type Error;
     fn div_euclid(self, rhs: Self) -> Self;
@@ -469,6 +472,16 @@ macro_rules! impl_int_base_for_saturating {
                     Self(self.0.saturating_mul(rhs))
                 }
             }
+            impl Sum for Saturating<$t> {
+                fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+                    iter.fold(Self::zero(), |acc, x| acc + x)
+                }
+            }
+            impl Product for Saturating<$t> {
+                fn product<I: Iterator<Item = Self>>(iter: I) -> Self {
+                    iter.fold(Self::one(), |acc, x| acc * x)
+                }
+            }
             impl IntBase for Saturating<$t> {
                 type Error = <$t as IntBase>::Error;
                 fn div_euclid(self, rhs: Self) -> Self { Self(self.0.div_euclid(rhs.0)) }
@@ -766,6 +779,16 @@ macro_rules! impl_int_base_for_wrapping {
                 type Output = Self;
                 fn rem(self, rhs: $t) -> Self::Output {
                     Self(self.0.wrapping_rem(rhs))
+                }
+            }
+            impl Sum for Wrapping<$t> {
+                fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+                    iter.fold(Self::zero(), |acc, x| acc + x)
+                }
+            }
+            impl Product for Wrapping<$t> {
+                fn product<I: Iterator<Item = Self>>(iter: I) -> Self {
+                    iter.fold(Self::one(), |acc, x| acc * x)
                 }
             }
             impl IntBase for Wrapping<$t> {

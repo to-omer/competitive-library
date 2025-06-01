@@ -1,7 +1,7 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
-    algorithm::{SbtNode, SbtPath},
+    algorithm::{SbtNode, SbtPath, SternBrocotTree},
     num::Rational,
 };
 
@@ -15,7 +15,7 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
         match type_.as_str() {
             "ENCODE_PATH" => {
                 scan!(scanner, a: i32, b: i32);
-                let path = SbtPath::encode(Rational::new(a, b));
+                let path = SbtPath::from(Rational::new(a, b));
                 let len = if path.path.first() == Some(&0) {
                     path.path.len() - 1
                 } else {
@@ -48,18 +48,18 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
             }
             "LCA" => {
                 scan!(scanner, [a, b, c, d]: [i32; const 4]);
-                let path1 = SbtPath::encode(Rational::new(a, b));
-                let path2 = SbtPath::encode(Rational::new(c, d));
+                let path1 = SbtPath::from(Rational::new(a, b));
+                let path2 = SbtPath::from(Rational::new(c, d));
                 let val = SbtNode::lca(path1, path2).eval();
                 writeln!(writer, "{} {}", val.num, val.den).ok();
             }
             "ANCESTOR" => {
                 scan!(scanner, [k, a, b]: [i32; const 3]);
-                let mut path = SbtPath::encode(Rational::new(a, b));
-                let s: i32 = path.path.iter().sum();
-                if k <= s {
-                    path.up(s - k);
-                    let val = path.decode().eval();
+                let mut path = SbtPath::from(Rational::new(a, b));
+                let depth = path.depth();
+                if k <= depth {
+                    path.up(depth - k);
+                    let val = path.eval();
                     writeln!(writer, "{} {}", val.num, val.den).ok();
                 } else {
                     writeln!(writer, "-1").ok();
@@ -67,7 +67,7 @@ pub fn stern_brocot_tree(reader: impl Read, mut writer: impl Write) {
             }
             "RANGE" => {
                 scan!(scanner, [a, b]: [i32; const 2]);
-                let node = SbtPath::encode(Rational::new(a, b)).decode();
+                let node = SbtPath::from(Rational::new(a, b)).to_node();
                 writeln!(
                     writer,
                     "{} {} {} {}",

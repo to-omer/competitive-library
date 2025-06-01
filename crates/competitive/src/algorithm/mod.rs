@@ -33,7 +33,7 @@ pub use self::sort::SliceSortExt;
 #[codesnip::entry("SqrtDecomposition")]
 pub use self::sqrt_decomposition::{SqrtDecomposition, SqrtDecompositionBuckets};
 #[codesnip::entry("stern_brocot_tree")]
-pub use self::stern_brocot_tree::*;
+pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree};
 #[codesnip::entry("ternary_search")]
 pub use self::ternary_search::ternary_search;
 #[codesnip::entry("XorBasis")]
