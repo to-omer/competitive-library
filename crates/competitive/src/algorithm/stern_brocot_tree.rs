@@ -194,7 +194,7 @@ where
     }
 
     fn is_root(&self) -> bool {
-        self.path.is_empty() || (self.path.len() == 1 && self.path[0].is_zero())
+        self.path.is_empty()
     }
 
     fn eval(&self) -> URational<Self::T> {
