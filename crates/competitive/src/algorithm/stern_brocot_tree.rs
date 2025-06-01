@@ -1,8 +1,6 @@
 use super::{URational, Unsigned};
 use std::mem::swap;
 
-// TODO: Use Unsigned URational
-
 pub trait SternBrocotTree: From<URational<Self::T>> + FromIterator<Self::T> {
     type T: Unsigned;
 
