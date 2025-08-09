@@ -20,6 +20,7 @@ fn litstr2ident(litstr: &LitStr) -> Ident {
     Ident::new(&litstr.value(), litstr.span())
 }
 
+#[allow(clippy::large_enum_variant)]
 enum LitOrMeta {
     Lit(Lit),
     Meta(Meta),

@@ -3,6 +3,7 @@
 #![allow(clippy::missing_safety_doc)]
 #![allow(clippy::manual_div_ceil)] // FIXME: Remove this (supported since 1.73.0)
 #![allow(clippy::unnecessary_map_or)] // FIXME: Remove this (supported since 1.82.0)
+#![allow(clippy::manual_repeat_n)] // FIXME: Remove this (supported since 1.82.0)
 
 //! [github]
 //!
