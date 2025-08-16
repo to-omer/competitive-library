@@ -5,6 +5,8 @@ use crate::data_structure::{UnionFindBase, union_find};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero};
 
+#[cfg_attr(nightly, codesnip::entry("automata_learning"))]
+pub use self::automata_learning::*;
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
 pub use self::baby_step_giant_step::baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
@@ -41,6 +43,8 @@ pub use self::xorbasis::XorBasis;
 #[codesnip::entry("ZeroSumGame")]
 pub use self::zero_sum_game::{ZeroSumGame, ZeroSumGameAnalyzer, ZeroSumGamer};
 
+#[cfg_attr(nightly, codesnip::entry("automata_learning"))]
+mod automata_learning;
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step", include("algebra")))]
 mod baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry)]
