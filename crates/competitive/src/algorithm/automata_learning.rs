@@ -1,4 +1,4 @@
-use super::BitSet;
+use super::{BitSet, SerdeByteStr};
 use std::{cell::RefCell, collections::HashMap};
 
 pub trait BlackBoxAutomaton {
@@ -116,6 +116,41 @@ impl BlackBoxAutomaton for DeterministicFiniteAutomaton {
             state = self.states[state].delta[x];
         }
         self.states[state].accept
+    }
+}
+
+impl SerdeByteStr for DfaState {
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.delta.serialize(buf);
+        self.accept.serialize(buf);
+    }
+
+    fn deserialize<I>(iter: &mut I) -> Self
+    where
+        I: Iterator<Item = u8>,
+    {
+        let delta = Vec::deserialize(iter);
+        let accept = bool::deserialize(iter);
+        Self { delta, accept }
+    }
+}
+
+impl SerdeByteStr for DeterministicFiniteAutomaton {
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.states.serialize(buf);
+        self.initial_state.serialize(buf);
+    }
+
+    fn deserialize<I>(iter: &mut I) -> Self
+    where
+        I: Iterator<Item = u8>,
+    {
+        let states = Vec::deserialize(iter);
+        let initial_state = usize::deserialize(iter);
+        Self {
+            states,
+            initial_state,
+        }
     }
 }
 
