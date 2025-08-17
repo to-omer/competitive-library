@@ -17,6 +17,12 @@ impl BitSet {
             bits: vec![0; (size + 63) / 64],
         }
     }
+    pub fn len(&self) -> usize {
+        self.size
+    }
+    pub fn is_empty(&self) -> bool {
+        self.size == 0
+    }
     pub fn ones(size: usize) -> Self {
         let mut self_ = Self {
             size,
@@ -44,6 +50,15 @@ impl BitSet {
     #[inline]
     pub fn count_zeros(&self) -> u64 {
         self.size as u64 - self.count_ones()
+    }
+    pub fn push(&mut self, b: bool) {
+        let d = self.size & 63;
+        if d == 0 {
+            self.bits.push(b as u64);
+        } else {
+            *self.bits.last_mut().unwrap() |= (b as u64) << d;
+        }
+        self.size += 1;
     }
     #[inline]
     fn trim(&mut self) {
@@ -89,6 +104,38 @@ impl BitSet {
                 self.bits[n - k - 1] |= self.bits[n - 1] >> d;
             }
         }
+    }
+}
+impl Extend<bool> for BitSet {
+    fn extend<T: IntoIterator<Item = bool>>(&mut self, iter: T) {
+        let d = self.size & 63;
+        let mut iter = iter.into_iter();
+        let Some(first) = iter.next() else {
+            return;
+        };
+        if d == 0 {
+            self.bits.push(0);
+        }
+        let mut e = self.bits.last_mut().unwrap();
+        *e |= (first as u64) << d;
+        self.size += 1;
+        for b in iter {
+            let d = self.size & 63;
+            if d == 0 {
+                self.bits.push(b as u64);
+                e = self.bits.last_mut().unwrap();
+            } else {
+                *e |= (b as u64) << d;
+            }
+            self.size += 1;
+        }
+    }
+}
+impl FromIterator<bool> for BitSet {
+    fn from_iter<T: IntoIterator<Item = bool>>(iter: T) -> Self {
+        let mut set = BitSet::new(0);
+        set.extend(iter);
+        set
     }
 }
 impl ShlAssign<usize> for BitSet {
@@ -255,5 +302,25 @@ impl Not for &BitSet {
     #[inline]
     fn not(self) -> Self::Output {
         !self.clone()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{rand, tools::Xorshift};
+
+    #[test]
+    fn test_extend() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::new();
+            rand!(rng, arr: [0..=1u32; 200], n1: 0..=200);
+            let mut bitset: BitSet = arr[..n1].iter().map(|&x| x != 0).collect();
+            bitset.extend(arr[n1..].iter().map(|&x| x != 0));
+            assert_eq!(bitset.len(), 200);
+            for (i, &x) in arr.iter().enumerate() {
+                assert_eq!(bitset.get(i), x != 0);
+            }
+        }
     }
 }

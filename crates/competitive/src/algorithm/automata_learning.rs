@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use super::BitSet;
+use std::{cell::RefCell, collections::HashMap};
 
 pub trait BlackBoxAutomaton {
     type Output;
@@ -15,6 +16,7 @@ where
 {
     sigma: usize,
     behavior_fn: F,
+    memo: RefCell<HashMap<Vec<usize>, bool>>,
 }
 
 impl<F> BlackBoxAutomatonImpl<F>
@@ -22,7 +24,11 @@ where
     F: Fn(Vec<usize>) -> bool,
 {
     pub fn new(sigma: usize, behavior_fn: F) -> Self {
-        Self { sigma, behavior_fn }
+        Self {
+            sigma,
+            behavior_fn,
+            memo: RefCell::new(HashMap::new()),
+        }
     }
 }
 
@@ -40,7 +46,12 @@ where
     where
         I: IntoIterator<Item = usize>,
     {
-        (self.behavior_fn)(input.into_iter().collect())
+        let input: Vec<usize> = input.into_iter().collect();
+        *self
+            .memo
+            .borrow_mut()
+            .entry(input.clone())
+            .or_insert_with(|| (self.behavior_fn)(input))
     }
 }
 
@@ -142,8 +153,8 @@ impl InputTraversal {
 pub struct ObservationTable {
     pub prefixes: Vec<Vec<usize>>,
     pub suffixes: Vec<Vec<usize>>,
-    pub table: Vec<Vec<bool>>,
-    pub row_map: HashMap<Vec<bool>, usize>,
+    pub table: Vec<BitSet>,
+    pub row_map: HashMap<BitSet, usize>,
 }
 
 impl ObservationTable {
@@ -151,12 +162,12 @@ impl ObservationTable {
     where
         A: BlackBoxAutomaton<Output = bool>,
     {
-        let row: Vec<_> = self
+        let row: BitSet = self
             .suffixes
             .iter()
             .map(|s| automaton.behavior(prefix.iter().cloned().chain(s.iter().cloned())))
             .collect();
-        *self.row_map.entry(row.to_vec()).or_insert_with(|| {
+        *self.row_map.entry(row.clone()).or_insert_with(|| {
             let idx = self.table.len();
             self.table.push(row);
             self.prefixes.push(prefix);
@@ -176,7 +187,7 @@ impl ObservationTable {
         self.suffixes.push(suffix);
         self.row_map.clear();
         for (i_prefix, row) in self.table.iter().enumerate() {
-            self.row_map.insert(row.to_vec(), i_prefix);
+            self.row_map.insert(row.clone(), i_prefix);
         }
     }
 }
@@ -214,7 +225,7 @@ where
                 }
                 dfa.states.push(DfaState {
                     delta,
-                    accept: observation_table.table[i_prefix][0],
+                    accept: observation_table.table[i_prefix].get(0),
                 });
                 i_prefix += 1;
             }
