@@ -1,0 +1,1 @@
+rd_("Aaaizu_online_judgekcompetitiveolibrary_checker")
