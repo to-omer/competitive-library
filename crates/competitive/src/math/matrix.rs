@@ -76,7 +76,7 @@ where
             _marker: PhantomData,
         }
     }
-    pub fn from_fn(shape: (usize, usize), mut f: impl FnMut(usize, usize) -> R::T) -> Self {
+    pub fn new_with(shape: (usize, usize), mut f: impl FnMut(usize, usize) -> R::T) -> Self {
         let data = (0..shape.0)
             .map(|i| (0..shape.1).map(|j| f(i, j)).collect())
             .collect();
@@ -122,7 +122,18 @@ where
         S: SemiRing,
         F: FnMut(&R::T) -> S::T,
     {
-        Matrix::<S>::from_fn(self.shape, |i, j| f(&self[i][j]))
+        Matrix::<S>::new_with(self.shape, |i, j| f(&self[i][j]))
+    }
+    pub fn add_row_with(&mut self, mut f: impl FnMut(usize, usize) -> R::T) {
+        self.data
+            .push((0..self.shape.1).map(|j| f(self.shape.0, j)).collect());
+        self.shape.0 += 1;
+    }
+    pub fn add_col_with(&mut self, mut f: impl FnMut(usize, usize) -> R::T) {
+        for i in 0..self.shape.0 {
+            self.data[i].push(f(i, self.shape.1));
+        }
+        self.shape.1 += 1;
     }
 }
 impl<R> Index<usize> for Matrix<R>

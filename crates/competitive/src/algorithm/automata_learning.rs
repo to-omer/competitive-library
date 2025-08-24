@@ -436,6 +436,9 @@ where
     automaton: A,
     prefixes: Vec<Vec<usize>>,
     suffixes: Vec<Vec<usize>>,
+    inv_h: Matrix<F>,
+    nh: Vec<Matrix<F>>,
+    wfa: WeightedFiniteAutomaton<F>,
     _marker: PhantomData<fn() -> F>,
 }
 
@@ -452,6 +455,9 @@ where
             .field("automaton", &self.automaton)
             .field("prefixes", &self.prefixes)
             .field("suffixes", &self.suffixes)
+            .field("inv_h", &self.inv_h)
+            .field("nh", &self.nh)
+            .field("wfa", &self.wfa)
             .finish()
     }
 }
@@ -468,6 +474,9 @@ where
             automaton: self.automaton.clone(),
             prefixes: self.prefixes.clone(),
             suffixes: self.suffixes.clone(),
+            inv_h: self.inv_h.clone(),
+            nh: self.nh.clone(),
+            wfa: self.wfa.clone(),
             _marker: self._marker,
         }
     }
@@ -482,67 +491,37 @@ where
     A: BlackBoxAutomaton<Output = F::T>,
 {
     pub fn new(automaton: A) -> Self {
+        let sigma = automaton.sigma();
         Self {
             automaton,
             prefixes: vec![],
             suffixes: vec![],
+            inv_h: Matrix::zeros((0, 0)),
+            nh: vec![Matrix::zeros((0, 0)); sigma],
+            wfa: WeightedFiniteAutomaton {
+                initial_weights: Matrix::zeros((1, 0)),
+                transitions: vec![Matrix::zeros((0, 0)); sigma],
+                final_weights: Matrix::zeros((0, 1)),
+            },
             _marker: PhantomData,
         }
     }
-    pub fn construct_wfa(&self) -> WeightedFiniteAutomaton<F> {
-        let n = self.prefixes.len();
-        assert_eq!(self.suffixes.len(), n);
-        let table = Matrix::from_fn((n, n), |i, j| {
-            self.automaton.behavior(
-                self.prefixes[i]
-                    .iter()
-                    .cloned()
-                    .chain(self.suffixes[j].iter().cloned()),
-            )
-        });
-        let inv = table
-            .inverse()
-            .expect("Observation table is not invertible");
-        WeightedFiniteAutomaton::<F> {
-            initial_weights: Matrix::from_fn(
-                (1, n),
-                |_, j| {
-                    if j == 0 { F::one() } else { F::zero() }
-                },
-            ),
-            transitions: (0..self.automaton.sigma())
-                .map(|x| {
-                    &Matrix::from_fn((n, n), |i, j| {
-                        self.automaton.behavior(
-                            self.prefixes[i]
-                                .iter()
-                                .cloned()
-                                .chain([x])
-                                .chain(self.suffixes[j].iter().cloned()),
-                        )
-                    }) * &inv
-                })
-                .collect(),
-            final_weights: Matrix::from_fn((n, 1), |i, _| {
-                self.automaton.behavior(self.prefixes[i].iter().cloned())
-            }),
-        }
+    pub fn wfa(&self) -> &WeightedFiniteAutomaton<F> {
+        &self.wfa
     }
-    pub fn train_sample(&mut self, wfa: &WeightedFiniteAutomaton<F>, sample: &[usize]) -> bool {
+    fn split_sample(&mut self, sample: &[usize]) -> Option<(Vec<usize>, Vec<usize>)> {
         if self.prefixes.is_empty() && self.automaton.behavior(sample.iter().cloned()) != F::zero()
         {
-            self.prefixes.push(vec![]);
-            self.suffixes.push(sample.to_vec());
-            return true;
+            return Some((vec![], sample.to_vec()));
         }
         let expected = self.automaton.behavior(sample.iter().cloned());
-        let result = wfa.behavior(sample.iter().cloned());
+        let result = self.wfa.behavior(sample.iter().cloned());
         if expected == result {
-            return false;
+            return None;
         }
-        let mut state = wfa.final_weights.clone();
+        let mut state = self.wfa.final_weights.clone();
         for i in (0..sample.len()).rev() {
-            state = &wfa.transitions[sample[i]] * &state;
+            state = &self.wfa.transitions[sample[i]] * &state;
             if (0..state.shape.0).any(|j| {
                 let result = self.automaton.behavior(
                     self.prefixes[j]
@@ -552,24 +531,124 @@ where
                 );
                 state[j][0] != result
             }) {
-                self.prefixes.push(sample[..=i].to_vec());
-                self.suffixes.push(sample[i + 1..].to_vec());
-                break;
+                return Some((sample[..=i].to_vec(), sample[i + 1..].to_vec()));
+            }
+        }
+        unreachable!("Failed to split sample");
+    }
+    pub fn train_sample(&mut self, sample: &[usize]) -> bool {
+        let Some((prefix, suffix)) = self.split_sample(sample) else {
+            return false;
+        };
+        self.prefixes.push(prefix);
+        self.suffixes.push(suffix);
+        let n = self.inv_h.shape.0;
+        let prefix = &self.prefixes[n];
+        let suffix = &self.suffixes[n];
+        let u = Matrix::<F>::new_with((n, 1), |i, _| {
+            self.automaton.behavior(
+                self.prefixes[i]
+                    .iter()
+                    .cloned()
+                    .chain(suffix.iter().cloned()),
+            )
+        });
+        let v = Matrix::<F>::new_with((1, n), |_, j| {
+            self.automaton.behavior(
+                prefix
+                    .iter()
+                    .cloned()
+                    .chain(self.suffixes[j].iter().cloned()),
+            )
+        });
+        let w = Matrix::<F>::new_with((1, 1), |_, _| {
+            self.automaton
+                .behavior(prefix.iter().cloned().chain(suffix.iter().cloned()))
+        });
+        let t = &self.inv_h * &u;
+        let s = &v * &self.inv_h;
+        let d = F::inv(&(&w - &(&v * &t))[0][0]);
+        let dh = &t * &s;
+        for i in 0..n {
+            for j in 0..n {
+                F::add_assign(&mut self.inv_h[i][j], &F::mul(&dh[i][j], &d));
+            }
+        }
+        self.inv_h
+            .add_col_with(|i, _| F::neg(&F::mul(&t[i][0], &d)));
+        self.inv_h.add_row_with(|_, j| {
+            if j != n {
+                F::neg(&F::mul(&s[0][j], &d))
+            } else {
+                d.clone()
+            }
+        });
+
+        for (x, transition) in self.wfa.transitions.iter_mut().enumerate() {
+            let b = &(&self.nh[x] * &t) * &s;
+            for i in 0..n {
+                for j in 0..n {
+                    F::add_assign(&mut transition[i][j], &F::mul(&b[i][j], &d));
+                }
+            }
+        }
+        for (x, nh) in self.nh.iter_mut().enumerate() {
+            nh.add_col_with(|i, j| {
+                self.automaton.behavior(
+                    self.prefixes[i]
+                        .iter()
+                        .cloned()
+                        .chain([x])
+                        .chain(self.suffixes[j].iter().cloned()),
+                )
+            });
+            nh.add_row_with(|i, j| {
+                self.automaton.behavior(
+                    self.prefixes[i]
+                        .iter()
+                        .cloned()
+                        .chain([x])
+                        .chain(self.suffixes[j].iter().cloned()),
+                )
+            });
+        }
+        self.wfa
+            .initial_weights
+            .add_col_with(|_, _| if n == 0 { F::one() } else { F::zero() });
+        self.wfa
+            .final_weights
+            .add_row_with(|_, _| self.automaton.behavior(prefix.iter().cloned()));
+        for (x, transition) in self.wfa.transitions.iter_mut().enumerate() {
+            transition.add_col_with(|_, _| F::zero());
+            transition.add_row_with(|_, _| F::zero());
+            for i in 0..=n {
+                for j in 0..=n {
+                    if i == n || j == n {
+                        for k in 0..=n {
+                            if i != n && j != n && k != n {
+                                continue;
+                            }
+                            F::add_assign(
+                                &mut transition[i][k],
+                                &F::mul(&self.nh[x][i][j], &self.inv_h[j][k]),
+                            );
+                        }
+                    } else {
+                        let k = n;
+                        F::add_assign(
+                            &mut transition[i][k],
+                            &F::mul(&self.nh[x][i][j], &self.inv_h[j][k]),
+                        );
+                    }
+                }
             }
         }
         true
     }
-    pub fn train(
-        &mut self,
-        samples: impl IntoIterator<Item = Vec<usize>>,
-    ) -> WeightedFiniteAutomaton<F> {
-        let mut wfa = self.construct_wfa();
+    pub fn train(&mut self, samples: impl IntoIterator<Item = Vec<usize>>) {
         for sample in samples {
-            if self.train_sample(&wfa, &sample) {
-                wfa = self.construct_wfa();
-            }
+            self.train_sample(&sample);
         }
-        wfa
     }
 }
 
@@ -671,8 +750,9 @@ mod tests {
             let automaton = BlackBoxAutomatonImpl::new(2, |input| {
                 MInt998244353::from(input.iter().sum::<usize>())
             });
-            let wfa =
-                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(2, 3));
+            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
+            wl.train(dense_sampling(2, 3));
+            let wfa = wl.wfa();
             for sample in dense_sampling(automaton.sigma(), 12) {
                 let expected = automaton.behavior(sample.iter().cloned());
                 let result = wfa.behavior(sample.iter().cloned());
@@ -689,8 +769,9 @@ mod tests {
                 }
                 s
             });
-            let wfa =
-                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(3, 4));
+            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
+            wl.train(dense_sampling(3, 4));
+            let wfa = wl.wfa();
             for sample in dense_sampling(automaton.sigma(), 6).chain(random_sampling(
                 automaton.sigma(),
                 6..=12,
@@ -721,8 +802,9 @@ mod tests {
                 }
                 s
             });
-            let wfa =
-                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(2, 4));
+            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
+            wl.train(dense_sampling(2, 4));
+            let wfa = wl.wfa();
             for sample in dense_sampling(automaton.sigma(), 6).chain(random_sampling(
                 automaton.sigma(),
                 6..=12,
@@ -774,8 +856,9 @@ mod tests {
                 s
             };
             let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
-            let wfa =
-                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(2, 6));
+            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
+            wl.train(dense_sampling(2, 6));
+            let wfa = wl.wfa();
             for sample in dense_sampling(automaton.sigma(), 8).chain(random_sampling(
                 automaton.sigma(),
                 9..=12,
