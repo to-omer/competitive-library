@@ -254,7 +254,7 @@ where
                 if c >= m {
                     return;
                 }
-                if let Some(pivot) = (r..n).find(|&p| self[p][c] != R::zero()) {
+                if let Some(pivot) = (r..n).find(|&p| !R::is_zero(&self[p][c])) {
                     self.data.swap(r, pivot);
                     break;
                 };
@@ -283,7 +283,7 @@ where
         let n = self.shape.0;
         self.row_reduction(false);
         (0..n)
-            .filter(|&i| !self.data[i].iter().all(|x| x == &R::zero()))
+            .filter(|&i| !self.data[i].iter().all(|x| R::is_zero(x)))
             .count()
     }
     pub fn determinant(&mut self) -> R::T {
@@ -307,7 +307,7 @@ where
         let mut x = vec![R::zero(); m];
         for i in 0..n {
             let mut j = 0usize;
-            while j <= m && c[i][j] == R::zero() {
+            while j <= m && R::is_zero(&c[i][j]) {
                 j += 1;
             }
             if j == m {
@@ -328,7 +328,7 @@ where
             c[i][n + i] = R::one();
         }
         c.row_reduction(true);
-        if (0..n).any(|i| c[i][i] == R::zero()) {
+        if (0..n).any(|i| R::is_zero(&c[i][i])) {
             None
         } else {
             Some(Self::from_vec(

@@ -70,7 +70,7 @@ where
     type Item = T;
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(cur) = self.cur {
-            self.cur = if cur == T::zero() {
+            self.cur = if cur.is_zero() {
                 None
             } else {
                 Some((cur - T::one()) & self.mask)

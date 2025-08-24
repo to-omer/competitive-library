@@ -510,7 +510,7 @@ where
         &self.wfa
     }
     fn split_sample(&mut self, sample: &[usize]) -> Option<(Vec<usize>, Vec<usize>)> {
-        if self.prefixes.is_empty() && self.automaton.behavior(sample.iter().cloned()) != F::zero()
+        if self.prefixes.is_empty() && !F::is_zero(&self.automaton.behavior(sample.iter().cloned()))
         {
             return Some((vec![], sample.to_vec()));
         }

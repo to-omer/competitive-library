@@ -12,9 +12,23 @@ pub trait SemiRing {
     fn zero() -> Self::T {
         <Self::Additive as Unital>::unit()
     }
+    /// checks if the element is zero
+    fn is_zero(x: &Self::T) -> bool
+    where
+        Self::T: PartialEq,
+    {
+        *x == Self::zero()
+    }
     /// multiplicative identity: $1$
     fn one() -> Self::T {
         <Self::Multiplicative as Unital>::unit()
+    }
+    /// checks if the element is one
+    fn is_one(x: &Self::T) -> bool
+    where
+        Self::T: PartialEq,
+    {
+        *x == Self::one()
     }
     /// additive operaion: $+$
     fn add(x: &Self::T, y: &Self::T) -> Self::T {
