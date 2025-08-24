@@ -1,9 +1,11 @@
-use super::{BitSet, Field, Invertible, Matrix, SerdeByteStr};
+use super::{BitSet, Field, Invertible, Matrix, RandomSpec, SerdeByteStr, Xorshift};
 use std::{
     cell::RefCell,
     collections::HashMap,
     fmt::{self, Debug},
+    iter::{from_fn, once_with},
     marker::PhantomData,
+    time::Instant,
 };
 
 pub trait BlackBoxAutomaton {
@@ -202,27 +204,11 @@ where
     }
 }
 
-impl<F> WeightedFiniteAutomaton<F>
-where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
-{
-    fn new(sigma: usize) -> Self {
-        Self {
-            initial_weights: Matrix::from_vec(vec![]),
-            transitions: vec![Matrix::from_vec(vec![]); sigma],
-            final_weights: Matrix::from_vec(vec![]),
-        }
-    }
-}
-
 impl<F> BlackBoxAutomaton for WeightedFiniteAutomaton<F>
 where
     F: Field,
     F::Additive: Invertible,
     F::Multiplicative: Invertible,
-    F::T: Debug,
 {
     type Output = F::T;
 
@@ -275,53 +261,85 @@ where
     }
 }
 
-#[derive(Debug, Clone)]
-struct InputTraversal {
-    sigma: usize,
-    current: Vec<usize>,
-}
-
-impl InputTraversal {
-    fn new(sigma: usize) -> Self {
-        Self {
-            sigma,
-            current: Vec::new(),
-        }
-    }
-    fn next(&mut self) {
+pub fn dense_sampling(sigma: usize, max_len: usize) -> impl Iterator<Item = Vec<usize>> {
+    assert_ne!(sigma, 0, "Sigma must be greater than 0");
+    let mut current = vec![];
+    once_with(Vec::new).chain(from_fn(move || {
         let mut carry = true;
-        for i in (0..self.current.len()).rev() {
-            self.current[i] += 1;
-            if self.current[i] == self.sigma {
-                self.current[i] = 0;
+        for i in (0..current.len()).rev() {
+            current[i] += 1;
+            if current[i] == sigma {
+                current[i] = 0;
             } else {
                 carry = false;
                 break;
             }
         }
         if carry {
-            self.current.push(0);
+            current.push(0);
         }
+        if current.len() <= max_len {
+            Some(current.to_vec())
+        } else {
+            None
+        }
+    }))
+}
+
+pub fn random_sampling(
+    sigma: usize,
+    len_spec: impl RandomSpec<usize>,
+    seconds: f64,
+) -> impl Iterator<Item = Vec<usize>> {
+    assert_ne!(sigma, 0, "Sigma must be greater than 0");
+    let now = Instant::now();
+    let mut rng = Xorshift::new();
+    from_fn(move || {
+        if now.elapsed().as_secs_f64() > seconds {
+            None
+        } else {
+            let n = rng.random(&len_spec);
+            Some(rng.random_iter(0..sigma).take(n).collect())
+        }
+    })
+}
+
+#[derive(Debug, Clone)]
+pub struct DfaLearning<A>
+where
+    A: BlackBoxAutomaton<Output = bool>,
+{
+    automaton: A,
+    prefixes: Vec<Vec<usize>>,
+    suffixes: Vec<Vec<usize>>,
+    table: Vec<BitSet>,
+    row_map: HashMap<BitSet, usize>,
+}
+
+impl<A> DfaLearning<A>
+where
+    A: BlackBoxAutomaton<Output = bool>,
+{
+    pub fn new(automaton: A) -> Self {
+        let mut this = Self {
+            automaton,
+            prefixes: vec![],
+            suffixes: vec![],
+            table: vec![],
+            row_map: HashMap::new(),
+        };
+        this.add_suffix(vec![]);
+        this.add_prefix(vec![]);
+        this
     }
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct ObservationTable {
-    pub prefixes: Vec<Vec<usize>>,
-    pub suffixes: Vec<Vec<usize>>,
-    pub table: Vec<BitSet>,
-    pub row_map: HashMap<BitSet, usize>,
-}
-
-impl ObservationTable {
-    pub fn add_prefix<A>(&mut self, automaton: A, prefix: Vec<usize>) -> usize
-    where
-        A: BlackBoxAutomaton<Output = bool>,
-    {
+    fn add_prefix(&mut self, prefix: Vec<usize>) -> usize {
         let row: BitSet = self
             .suffixes
             .iter()
-            .map(|s| automaton.behavior(prefix.iter().cloned().chain(s.iter().cloned())))
+            .map(|s| {
+                self.automaton
+                    .behavior(prefix.iter().cloned().chain(s.iter().cloned()))
+            })
             .collect();
         *self.row_map.entry(row.clone()).or_insert_with(|| {
             let idx = self.table.len();
@@ -330,15 +348,15 @@ impl ObservationTable {
             idx
         })
     }
-    pub fn add_suffix<A>(&mut self, automaton: A, suffix: Vec<usize>)
-    where
-        A: BlackBoxAutomaton<Output = bool>,
-    {
+    fn add_suffix(&mut self, suffix: Vec<usize>) {
         if self.suffixes.contains(&suffix) {
             return;
         }
         for (prefix, table) in self.prefixes.iter_mut().zip(&mut self.table) {
-            table.push(automaton.behavior(prefix.iter().cloned().chain(suffix.iter().cloned())));
+            table.push(
+                self.automaton
+                    .behavior(prefix.iter().cloned().chain(suffix.iter().cloned())),
+            );
         }
         self.suffixes.push(suffix);
         self.row_map.clear();
@@ -346,117 +364,108 @@ impl ObservationTable {
             self.row_map.insert(row.clone(), i_prefix);
         }
     }
-}
-
-pub fn angluin_lstar<A, F>(automaton: A, terminate: F) -> DeterministicFiniteAutomaton
-where
-    A: BlackBoxAutomaton<Output = bool>,
-    F: Fn(&ObservationTable, &[usize]) -> bool,
-{
-    let sigma = automaton.sigma();
-    assert_ne!(sigma, 0, "Sigma must be greater than 0");
-    let mut observation_table = ObservationTable::default();
-    observation_table.add_suffix(&automaton, vec![]);
-    observation_table.add_prefix(&automaton, vec![]);
-    let mut traversal = InputTraversal::new(sigma);
-
-    loop {
+    pub fn construct_dfa(&mut self) -> DeterministicFiniteAutomaton {
+        let sigma = self.automaton.sigma();
         let mut dfa = DeterministicFiniteAutomaton {
             states: vec![],
             initial_state: 0,
         };
-        // close
-        {
-            let mut i_prefix = 0;
-            while i_prefix < observation_table.prefixes.len() {
-                let mut delta = vec![];
-                for x in 0..sigma {
-                    let prefix: Vec<usize> = observation_table.prefixes[i_prefix]
-                        .iter()
-                        .cloned()
-                        .chain([x])
-                        .collect();
-                    let index = observation_table.add_prefix(&automaton, prefix);
-                    delta.push(index);
-                }
-                dfa.states.push(DfaState {
-                    delta,
-                    accept: observation_table.table[i_prefix].get(0),
-                });
-                i_prefix += 1;
+        let mut i_prefix = 0;
+        while i_prefix < self.prefixes.len() {
+            let mut delta = vec![];
+            for x in 0..sigma {
+                let prefix: Vec<usize> =
+                    self.prefixes[i_prefix].iter().cloned().chain([x]).collect();
+                let index = self.add_prefix(prefix);
+                delta.push(index);
+            }
+            dfa.states.push(DfaState {
+                delta,
+                accept: self.table[i_prefix].get(0),
+            });
+            i_prefix += 1;
+        }
+        dfa
+    }
+    pub fn train_sample(&mut self, dfa: &DeterministicFiniteAutomaton, sample: &[usize]) -> bool {
+        let expected = self.automaton.behavior(sample.iter().cloned());
+        let result = dfa.behavior(sample.iter().cloned());
+        if expected == result {
+            return false;
+        }
+        let mut state = 0;
+        for i in 0..sample.len() {
+            state = dfa.states[state].delta[sample[i]];
+            let result = self.automaton.behavior(
+                self.prefixes[state]
+                    .iter()
+                    .cloned()
+                    .chain(sample[i + 1..].iter().cloned()),
+            );
+            if expected != result {
+                let new_prefix = sample[..=i].to_vec();
+                let new_suffix = sample[i + 1..].to_vec();
+                self.add_suffix(new_suffix);
+                self.add_prefix(new_prefix);
+                break;
             }
         }
-        // equiv
-        let (counterexample, accepted) = {
-            loop {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
-                if expected != result {
-                    break (traversal.current.to_vec(), expected);
-                }
-                traversal.next();
-                if terminate(&observation_table, &traversal.current) {
-                    return dfa;
-                }
-            }
-        };
-        // split
-        {
-            let mut state = 0;
-            for i in 0..counterexample.len() {
-                state = dfa.states[state].delta[counterexample[i]];
-                let result = automaton.behavior(
-                    observation_table.prefixes[state]
-                        .iter()
-                        .cloned()
-                        .chain(counterexample[i + 1..].iter().cloned()),
-                );
-                if accepted != result {
-                    let new_prefix = counterexample[..=i].to_vec();
-                    let new_suffix = counterexample[i + 1..].to_vec();
-                    observation_table.add_suffix(&automaton, new_suffix);
-                    observation_table.add_prefix(&automaton, new_prefix);
-                    break;
-                }
+        true
+    }
+    pub fn train(
+        &mut self,
+        samples: impl IntoIterator<Item = Vec<usize>>,
+    ) -> DeterministicFiniteAutomaton {
+        let mut dfa = self.construct_dfa();
+        for sample in samples {
+            if self.train_sample(&dfa, &sample) {
+                dfa = self.construct_dfa();
             }
         }
+        dfa
     }
 }
 
-pub struct WeightedObservationTable<F>
+pub struct WfaLearning<F, A>
 where
     F: Field,
     F::Additive: Invertible,
     F::Multiplicative: Invertible,
+    A: BlackBoxAutomaton<Output = F::T>,
 {
-    pub prefixes: Vec<Vec<usize>>,
-    pub suffixes: Vec<Vec<usize>>,
+    automaton: A,
+    prefixes: Vec<Vec<usize>>,
+    suffixes: Vec<Vec<usize>>,
     _marker: PhantomData<fn() -> F>,
 }
 
-impl<F: Debug> Debug for WeightedObservationTable<F>
+impl<F, A> Debug for WfaLearning<F, A>
 where
     F: Field,
     F::Additive: Invertible,
     F::Multiplicative: Invertible,
     F::T: Debug,
+    A: BlackBoxAutomaton<Output = F::T> + Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("WeightedObservationTable")
+        f.debug_struct("WfaLearning")
+            .field("automaton", &self.automaton)
             .field("prefixes", &self.prefixes)
             .field("suffixes", &self.suffixes)
             .finish()
     }
 }
 
-impl<F> Clone for WeightedObservationTable<F>
+impl<F, A> Clone for WfaLearning<F, A>
 where
     F: Field,
     F::Additive: Invertible,
     F::Multiplicative: Invertible,
+    A: BlackBoxAutomaton<Output = F::T> + Clone,
 {
     fn clone(&self) -> Self {
         Self {
+            automaton: self.automaton.clone(),
             prefixes: self.prefixes.clone(),
             suffixes: self.suffixes.clone(),
             _marker: self._marker,
@@ -464,37 +473,27 @@ where
     }
 }
 
-impl<F> Default for WeightedObservationTable<F>
-where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
-{
-    fn default() -> Self {
-        Self {
-            prefixes: Default::default(),
-            suffixes: Default::default(),
-            _marker: Default::default(),
-        }
-    }
-}
-
-impl<F> WeightedObservationTable<F>
+impl<F, A> WfaLearning<F, A>
 where
     F: Field,
     F::Additive: Invertible,
     F::Multiplicative: Invertible,
     F::T: PartialEq,
+    A: BlackBoxAutomaton<Output = F::T>,
 {
-    fn construct_wfa<A>(&self, automaton: A) -> WeightedFiniteAutomaton<F>
-    where
-        A: BlackBoxAutomaton<Output = F::T>,
-        F::T: Debug,
-    {
+    pub fn new(automaton: A) -> Self {
+        Self {
+            automaton,
+            prefixes: vec![],
+            suffixes: vec![],
+            _marker: PhantomData,
+        }
+    }
+    pub fn construct_wfa(&self) -> WeightedFiniteAutomaton<F> {
         let n = self.prefixes.len();
         assert_eq!(self.suffixes.len(), n);
         let table = Matrix::from_fn((n, n), |i, j| {
-            automaton.behavior(
+            self.automaton.behavior(
                 self.prefixes[i]
                     .iter()
                     .cloned()
@@ -511,10 +510,10 @@ where
                     if j == 0 { F::one() } else { F::zero() }
                 },
             ),
-            transitions: (0..automaton.sigma())
+            transitions: (0..self.automaton.sigma())
                 .map(|x| {
                     &Matrix::from_fn((n, n), |i, j| {
-                        automaton.behavior(
+                        self.automaton.behavior(
                             self.prefixes[i]
                                 .iter()
                                 .cloned()
@@ -525,81 +524,52 @@ where
                 })
                 .collect(),
             final_weights: Matrix::from_fn((n, 1), |i, _| {
-                automaton.behavior(self.prefixes[i].iter().cloned())
+                self.automaton.behavior(self.prefixes[i].iter().cloned())
             }),
         }
     }
-}
-
-pub fn wfa_learning<F, A, T>(automaton: A, terminate: T) -> WeightedFiniteAutomaton<F>
-where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
-    F::T: PartialEq,
-    A: BlackBoxAutomaton<Output = F::T>,
-    T: Fn(&WeightedObservationTable<F>, &[usize]) -> bool,
-    F::T: Debug,
-{
-    let sigma = automaton.sigma();
-    assert_ne!(sigma, 0, "Sigma must be greater than 0");
-    let mut observation_table = WeightedObservationTable::<F>::default();
-    {
-        let mut traversal = InputTraversal::new(sigma);
-        loop {
-            if automaton.behavior(traversal.current.iter().cloned()) != F::zero() {
-                observation_table.prefixes.push(vec![]);
-                observation_table.suffixes.push(traversal.current.clone());
+    pub fn train_sample(&mut self, wfa: &WeightedFiniteAutomaton<F>, sample: &[usize]) -> bool {
+        if self.prefixes.is_empty() && self.automaton.behavior(sample.iter().cloned()) != F::zero()
+        {
+            self.prefixes.push(vec![]);
+            self.suffixes.push(sample.to_vec());
+            return true;
+        }
+        let expected = self.automaton.behavior(sample.iter().cloned());
+        let result = wfa.behavior(sample.iter().cloned());
+        if expected == result {
+            return false;
+        }
+        let mut state = wfa.final_weights.clone();
+        for i in (0..sample.len()).rev() {
+            state = &wfa.transitions[sample[i]] * &state;
+            if (0..state.shape.0).any(|j| {
+                let result = self.automaton.behavior(
+                    self.prefixes[j]
+                        .iter()
+                        .cloned()
+                        .chain(sample[i..].iter().cloned()),
+                );
+                state[j][0] != result
+            }) {
+                self.prefixes.push(sample[..=i].to_vec());
+                self.suffixes.push(sample[i + 1..].to_vec());
                 break;
             }
-            traversal.next();
-            if terminate(&observation_table, &traversal.current) {
-                return WeightedFiniteAutomaton::new(sigma);
-            }
         }
+        true
     }
-    let mut traversal = InputTraversal::new(sigma);
-
-    loop {
-        let wfa = observation_table.construct_wfa(&automaton);
-        // equiv
-        let counterexample = {
-            loop {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = wfa.behavior(traversal.current.iter().cloned());
-                if expected != result {
-                    break traversal.current.clone();
-                }
-                traversal.next();
-                if terminate(&observation_table, &traversal.current) {
-                    return wfa;
-                }
-            }
-        };
-        // split
-        {
-            let mut state = wfa.final_weights.clone();
-            for i in (0..counterexample.len()).rev() {
-                state = &wfa.transitions[counterexample[i]] * &state;
-                if (0..state.shape.0).any(|j| {
-                    let result = automaton.behavior(
-                        observation_table.prefixes[j]
-                            .iter()
-                            .cloned()
-                            .chain(counterexample[i..].iter().cloned()),
-                    );
-                    state[j][0] != result
-                }) {
-                    observation_table
-                        .prefixes
-                        .push(counterexample[..=i].to_vec());
-                    observation_table
-                        .suffixes
-                        .push(counterexample[i + 1..].to_vec());
-                    break;
-                }
+    pub fn train(
+        &mut self,
+        samples: impl IntoIterator<Item = Vec<usize>>,
+    ) -> WeightedFiniteAutomaton<F> {
+        let mut wfa = self.construct_wfa();
+        for sample in samples {
+            if self.train_sample(&wfa, &sample) {
+                wfa = self.construct_wfa();
             }
         }
+        wfa
     }
 }
 
@@ -613,7 +583,7 @@ mod tests {
     use std::collections::{HashSet, VecDeque};
 
     #[test]
-    fn test_input_traversal() {
+    fn test_dense_sampling() {
         for base in 1usize..=10 {
             let mut expected = vec![];
             for len in 0..=3 {
@@ -629,10 +599,8 @@ mod tests {
                 }
             }
 
-            let mut traversal = InputTraversal::new(base);
-            for e in expected {
-                assert_eq!(traversal.current, e);
-                traversal.next();
+            for (expected, result) in expected.into_iter().zip(dense_sampling(base, 3)) {
+                assert_eq!(expected, result);
             }
         }
     }
@@ -641,25 +609,21 @@ mod tests {
     fn test_lstar() {
         {
             let automaton = BlackBoxAutomatonImpl::new(2, |input| input.len() % 6 == 0);
-            let dfa = angluin_lstar(&automaton, |_, input| input.len() > 6);
-            let mut traversal = InputTraversal::new(automaton.sigma());
-            while traversal.current.len() <= 12 {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
+            let dfa = DfaLearning::new(&automaton).train(dense_sampling(2, 6));
+            for sample in dense_sampling(automaton.sigma(), 12) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = dfa.behavior(sample.iter().cloned());
                 assert_eq!(expected, result);
-                traversal.next();
             }
         }
         {
             let automaton =
                 BlackBoxAutomatonImpl::new(3, |input| input.iter().sum::<usize>() % 4 == 0);
-            let dfa = angluin_lstar(&automaton, |_, input| input.len() > 3);
-            let mut traversal = InputTraversal::new(automaton.sigma());
-            while traversal.current.len() <= 8 {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
+            let dfa = DfaLearning::new(&automaton).train(dense_sampling(3, 4));
+            for sample in dense_sampling(automaton.sigma(), 8) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = dfa.behavior(sample.iter().cloned());
                 assert_eq!(expected, result);
-                traversal.next();
             }
         }
         for i in 0usize..16 {
@@ -692,13 +656,11 @@ mod tests {
                 set.contains(&vec![1])
             };
             let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
-            let dfa = angluin_lstar(&automaton, |_, t| t.len() > 4);
-            let mut traversal = InputTraversal::new(automaton.sigma());
-            while traversal.current.len() <= 8 {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
+            let dfa = DfaLearning::new(&automaton).train(dense_sampling(2, 4));
+            for sample in dense_sampling(automaton.sigma(), 8) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = dfa.behavior(sample.iter().cloned());
                 assert_eq!(expected, result);
-                traversal.next();
             }
         }
     }
@@ -709,18 +671,16 @@ mod tests {
             let automaton = BlackBoxAutomatonImpl::new(2, |input| {
                 MInt998244353::from(input.iter().sum::<usize>())
             });
-            let dfa =
-                wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, input| input.len() > 3);
-            let mut traversal = InputTraversal::new(automaton.sigma());
-            while traversal.current.len() <= 12 {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
+            let wfa =
+                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(2, 3));
+            for sample in dense_sampling(automaton.sigma(), 12) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = wfa.behavior(sample.iter().cloned());
                 assert_eq!(expected, result);
-                traversal.next();
             }
         }
         {
-            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
+            let automaton = BlackBoxAutomatonImpl::new(3, |input| {
                 let mut s = MInt998244353::zero();
                 let mut c = MInt998244353::one();
                 for &x in &input {
@@ -729,14 +689,16 @@ mod tests {
                 }
                 s
             });
-            let dfa =
-                wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, input| input.len() > 4);
-            let mut traversal = InputTraversal::new(automaton.sigma());
-            while traversal.current.len() <= 12 {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
+            let wfa =
+                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(3, 4));
+            for sample in dense_sampling(automaton.sigma(), 6).chain(random_sampling(
+                automaton.sigma(),
+                6..=12,
+                0.1,
+            )) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = wfa.behavior(sample.iter().cloned());
                 assert_eq!(expected, result);
-                traversal.next();
             }
         }
         {
@@ -759,14 +721,16 @@ mod tests {
                 }
                 s
             });
-            let dfa =
-                wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, input| input.len() > 4);
-            let mut traversal = InputTraversal::new(automaton.sigma());
-            while traversal.current.len() <= 6 {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
+            let wfa =
+                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(2, 4));
+            for sample in dense_sampling(automaton.sigma(), 6).chain(random_sampling(
+                automaton.sigma(),
+                6..=12,
+                0.1,
+            )) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = wfa.behavior(sample.iter().cloned());
                 assert_eq!(expected, result);
-                traversal.next();
             }
         }
         for i in 0usize..16 {
@@ -810,13 +774,16 @@ mod tests {
                 s
             };
             let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
-            let dfa = wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, t| t.len() > 6);
-            let mut traversal = InputTraversal::new(automaton.sigma());
-            while traversal.current.len() <= 8 {
-                let expected = automaton.behavior(traversal.current.iter().cloned());
-                let result = dfa.behavior(traversal.current.iter().cloned());
+            let wfa =
+                WfaLearning::<AddMulOperation<_>, _>::new(&automaton).train(dense_sampling(2, 6));
+            for sample in dense_sampling(automaton.sigma(), 8).chain(random_sampling(
+                automaton.sigma(),
+                9..=12,
+                0.1,
+            )) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = wfa.behavior(sample.iter().cloned());
                 assert_eq!(expected, result);
-                traversal.next();
             }
         }
     }

@@ -4,7 +4,7 @@ use crate::algebra::{Field, Invertible, Magma, Monoid, Unital};
 use crate::data_structure::{BitSet, UnionFindBase, union_find};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero};
-use crate::tools::SerdeByteStr;
+use crate::tools::{RandomSpec, SerdeByteStr, Xorshift};
 
 #[cfg_attr(nightly, codesnip::entry("automata_learning"))]
 pub use self::automata_learning::*;
@@ -46,7 +46,10 @@ pub use self::zero_sum_game::{ZeroSumGame, ZeroSumGameAnalyzer, ZeroSumGamer};
 
 #[cfg_attr(
     nightly,
-    codesnip::entry("automata_learning", include("BitSet", "coding", "Matrix"))
+    codesnip::entry(
+        "automata_learning",
+        include("BitSet", "coding", "Matrix", "random_generator")
+    )
 )]
 mod automata_learning;
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step", include("algebra")))]
