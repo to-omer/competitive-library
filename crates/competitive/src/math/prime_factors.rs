@@ -6,7 +6,7 @@ fn find_factor(n: u64) -> Option<u64> {
         return None;
     }
     let m = 1u64 << ((63 - n.leading_zeros()) / 5);
-    let sub = |x: u64, y: u64| if x > y { x - y } else { y - x };
+    let sub = |x: u64, y: u64| x.abs_diff(y);
     let mul = |x: u64, y: u64| br.rem(x as u128 * y as u128) as u64;
     for c in 12.. {
         let f = |x: u64| (br.rem(x as u128 * x as u128) + c) as u64;

@@ -11,7 +11,7 @@ use crate::tools::GetDistinctMut;
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};
 #[codesnip::entry("Allocator")]
-pub use self::allocator::{Allocator, MemoryPool};
+pub use self::allocator::{Allocator, BoxAllocator, MemoryPool};
 #[codesnip::entry("BinaryIndexedTree")]
 pub use self::binary_indexed_tree::BinaryIndexedTree;
 #[codesnip::entry("BinaryIndexedTree2D")]
@@ -44,7 +44,9 @@ pub use self::counter::{BTreeCounter, HashCounter};
 #[codesnip::entry("DisjointSparseTable")]
 pub use self::disjoint_sparse_table::DisjointSparseTable;
 #[codesnip::entry("FibonacciHash")]
-pub use self::fibonacci_hash::{FibHashMap, FibHashSet};
+pub use self::fibonacci_hash::{
+    FibHashMap, FibHashSet, FibonacciHasher, FibonacciHasheru32, FibonacciHasheru64,
+};
 #[codesnip::entry("Static2DTree")]
 pub use self::kdtree::Static2DTree;
 #[codesnip::entry("LazySegmentTree")]

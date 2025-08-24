@@ -15,7 +15,7 @@ impl GridGraph<Adj4> {
     pub fn new_adj4(height: usize, width: usize) -> Self {
         Self::new(height, width)
     }
-    pub fn adj4(&self, vid: (usize, usize)) -> GridAdjacency<Adj4> {
+    pub fn adj4(&self, vid: (usize, usize)) -> GridAdjacency<'_, Adj4> {
         GridAdjacency {
             g: self,
             xy: vid,
@@ -28,7 +28,7 @@ impl GridGraph<Adj8> {
     pub fn new_adj8(height: usize, width: usize) -> Self {
         Self::new(height, width)
     }
-    pub fn adj8(&self, vid: (usize, usize)) -> GridAdjacency<Adj8> {
+    pub fn adj8(&self, vid: (usize, usize)) -> GridAdjacency<'_, Adj8> {
         GridAdjacency {
             g: self,
             xy: vid,

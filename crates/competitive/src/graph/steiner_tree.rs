@@ -5,7 +5,11 @@ use super::{
 use std::{cmp::Reverse, collections::BinaryHeap, iter::repeat_with};
 
 pub trait SteinerTreeExt: Vertices {
-    fn steiner_tree<'a, S, M, I>(&self, terminals: I, weight: &'a M) -> SteinerTreeOutput<S, Self>
+    fn steiner_tree<'a, S, M, I>(
+        &self,
+        terminals: I,
+        weight: &'a M,
+    ) -> SteinerTreeOutput<'_, S, Self>
     where
         Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
