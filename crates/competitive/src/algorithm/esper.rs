@@ -1,45 +1,50 @@
-use super::{Matrix, One, Zero};
-use std::{
-    collections::HashMap,
-    fmt::Debug,
-    hash::Hash,
-    marker::PhantomData,
-    ops::{Add, Div, Mul, Sub},
-};
+#![allow(clippy::type_complexity)]
+
+use super::{Field, Invertible, Matrix};
+use std::{collections::HashMap, fmt::Debug, hash::Hash, marker::PhantomData};
 
 type Marker<T> = PhantomData<fn() -> T>;
 
 #[derive(Debug, Clone)]
-pub struct EsperEstimator<T, Input, Class, FC, FF>
+pub struct EsperEstimator<R, Input, Class, FC, FF>
 where
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
-    FF: Fn(&Input) -> Vec<T>,
+    FF: Fn(&Input) -> Vec<R::T>,
 {
     class: FC,
     feature: FF,
-    data: HashMap<Class, (Vec<Vec<T>>, Vec<T>)>,
-    _marker: Marker<(T, Input, Class)>,
+    data: HashMap<Class, (Vec<Vec<R::T>>, Vec<R::T>)>,
+    _marker: Marker<(R::T, Input, Class)>,
 }
 
 #[derive(Debug, Clone)]
-pub struct EsperSolver<T, Input, Class, FC, FF>
+pub struct EsperSolver<R, Input, Class, FC, FF>
 where
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
-    FF: Fn(&Input) -> Vec<T>,
+    FF: Fn(&Input) -> Vec<R::T>,
 {
     class: FC,
     feature: FF,
-    data: HashMap<Class, Option<Vec<T>>>,
-    _marker: Marker<(T, Input, Class)>,
+    data: HashMap<Class, Option<Vec<R::T>>>,
+    _marker: Marker<(R::T, Input, Class)>,
 }
 
-impl<T, Input, Class, FC, FF> EsperEstimator<T, Input, Class, FC, FF>
+impl<R, Input, Class, FC, FF> EsperEstimator<R, Input, Class, FC, FF>
 where
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
-    FF: Fn(&Input) -> Vec<T>,
+    FF: Fn(&Input) -> Vec<R::T>,
 {
     pub fn new(class: FC, feature: FF) -> Self {
         Self {
@@ -50,7 +55,7 @@ where
         }
     }
 
-    pub fn push(&mut self, input: Input, output: T) {
+    pub fn push(&mut self, input: Input, output: R::T) {
         let class = (self.class)(&input);
         let feature = (self.feature)(&input);
         let entry = self.data.entry(class).or_default();
@@ -59,21 +64,24 @@ where
     }
 }
 
-impl<T, Input, Class, FC, FF> EsperEstimator<T, Input, Class, FC, FF>
+impl<R, Input, Class, FC, FF> EsperEstimator<R, Input, Class, FC, FF>
 where
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: PartialEq,
     Class: Eq + Hash,
-    T: Copy + PartialEq + Zero + One + Sub<Output = T> + Mul<Output = T> + Div<Output = T>,
     FC: Fn(&Input) -> Class,
-    FF: Fn(&Input) -> Vec<T>,
+    FF: Fn(&Input) -> Vec<R::T>,
 {
-    pub fn solve(self) -> EsperSolver<T, Input, Class, FC, FF> {
+    pub fn solve(self) -> EsperSolver<R, Input, Class, FC, FF> {
         let data: HashMap<_, _> = self
             .data
             .into_iter()
             .map(|(key, (a, b))| {
                 (
                     key,
-                    Matrix::from_vec(a).solve_system_of_linear_equations(&b),
+                    Matrix::<R>::from_vec(a).solve_system_of_linear_equations(&b),
                 )
             })
             .collect();
@@ -85,16 +93,16 @@ where
         }
     }
 
-    pub fn solve_checked(self) -> EsperSolver<T, Input, Class, FC, FF>
+    pub fn solve_checked(self) -> EsperSolver<R, Input, Class, FC, FF>
     where
         Class: Debug,
-        T: Debug,
+        R::T: Debug,
     {
         let data: HashMap<_, _> = self
             .data
             .into_iter()
             .map(|(key, (a, b))| {
-                let mat = Matrix::from_vec(a);
+                let mat = Matrix::<R>::from_vec(a);
                 let coeff = mat.solve_system_of_linear_equations(&b);
                 if coeff.is_none() {
                     eprintln!(
@@ -114,14 +122,16 @@ where
     }
 }
 
-impl<T, Input, Class, FC, FF> EsperSolver<T, Input, Class, FC, FF>
+impl<R, Input, Class, FC, FF> EsperSolver<R, Input, Class, FC, FF>
 where
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
-    T: Copy + Zero + Add<Output = T> + Mul<Output = T>,
     FC: Fn(&Input) -> Class,
-    FF: Fn(&Input) -> Vec<T>,
+    FF: Fn(&Input) -> Vec<R::T>,
 {
-    pub fn solve(&self, input: Input) -> T {
+    pub fn solve(&self, input: Input) -> R::T {
         let coeff = self
             .data
             .get(&(self.class)(&input))
@@ -132,7 +142,7 @@ where
         feature
             .into_iter()
             .zip(coeff)
-            .map(|(x, &y)| x * y)
-            .fold(T::zero(), |x, y| x + y)
+            .map(|(x, y)| R::mul(&x, y))
+            .fold(R::zero(), |x, y| R::add(&x, &y))
     }
 }

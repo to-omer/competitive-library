@@ -1,5 +1,10 @@
-use super::{BitSet, SerdeByteStr};
-use std::{cell::RefCell, collections::HashMap};
+use super::{BitSet, Field, Invertible, Matrix, SerdeByteStr};
+use std::{
+    cell::RefCell,
+    collections::HashMap,
+    fmt::{self, Debug},
+    marker::PhantomData,
+};
 
 pub trait BlackBoxAutomaton {
     type Output;
@@ -10,18 +15,18 @@ pub trait BlackBoxAutomaton {
 }
 
 #[derive(Debug, Clone)]
-pub struct BlackBoxAutomatonImpl<F>
+pub struct BlackBoxAutomatonImpl<T, F>
 where
-    F: Fn(Vec<usize>) -> bool,
+    F: Fn(Vec<usize>) -> T,
 {
     sigma: usize,
     behavior_fn: F,
-    memo: RefCell<HashMap<Vec<usize>, bool>>,
+    memo: RefCell<HashMap<Vec<usize>, T>>,
 }
 
-impl<F> BlackBoxAutomatonImpl<F>
+impl<T, F> BlackBoxAutomatonImpl<T, F>
 where
-    F: Fn(Vec<usize>) -> bool,
+    F: Fn(Vec<usize>) -> T,
 {
     pub fn new(sigma: usize, behavior_fn: F) -> Self {
         Self {
@@ -32,11 +37,12 @@ where
     }
 }
 
-impl<F> BlackBoxAutomaton for BlackBoxAutomatonImpl<F>
+impl<T, F> BlackBoxAutomaton for BlackBoxAutomatonImpl<T, F>
 where
-    F: Fn(Vec<usize>) -> bool,
+    F: Fn(Vec<usize>) -> T,
+    T: Clone,
 {
-    type Output = bool;
+    type Output = T;
 
     fn sigma(&self) -> usize {
         self.sigma
@@ -47,11 +53,11 @@ where
         I: IntoIterator<Item = usize>,
     {
         let input: Vec<usize> = input.into_iter().collect();
-        *self
-            .memo
+        self.memo
             .borrow_mut()
             .entry(input.clone())
             .or_insert_with(|| (self.behavior_fn)(input))
+            .clone()
     }
 }
 
@@ -150,6 +156,121 @@ impl SerdeByteStr for DeterministicFiniteAutomaton {
         Self {
             states,
             initial_state,
+        }
+    }
+}
+
+pub struct WeightedFiniteAutomaton<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+{
+    pub initial_weights: Matrix<F>,
+    pub transitions: Vec<Matrix<F>>,
+    pub final_weights: Matrix<F>,
+}
+
+impl<F> Debug for WeightedFiniteAutomaton<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+    F::T: Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("WeightedFiniteAutomaton")
+            .field("initial_weights", &self.initial_weights)
+            .field("transitions", &self.transitions)
+            .field("final_weights", &self.final_weights)
+            .finish()
+    }
+}
+
+impl<F> Clone for WeightedFiniteAutomaton<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+{
+    fn clone(&self) -> Self {
+        Self {
+            initial_weights: self.initial_weights.clone(),
+            transitions: self.transitions.clone(),
+            final_weights: self.final_weights.clone(),
+        }
+    }
+}
+
+impl<F> WeightedFiniteAutomaton<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+{
+    fn new(sigma: usize) -> Self {
+        Self {
+            initial_weights: Matrix::from_vec(vec![]),
+            transitions: vec![Matrix::from_vec(vec![]); sigma],
+            final_weights: Matrix::from_vec(vec![]),
+        }
+    }
+}
+
+impl<F> BlackBoxAutomaton for WeightedFiniteAutomaton<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+    F::T: Debug,
+{
+    type Output = F::T;
+
+    fn sigma(&self) -> usize {
+        self.transitions.len()
+    }
+
+    fn behavior<I>(&self, input: I) -> Self::Output
+    where
+        I: IntoIterator<Item = usize>,
+    {
+        let mut weights = self.initial_weights.clone();
+        for x in input {
+            weights = &weights * &self.transitions[x];
+        }
+        let result = &weights * &self.final_weights;
+        if result.shape != (0, 0) {
+            result[0][0].clone()
+        } else {
+            F::zero()
+        }
+    }
+}
+
+impl<F> SerdeByteStr for WeightedFiniteAutomaton<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+    F::T: SerdeByteStr,
+{
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.initial_weights.serialize(buf);
+        self.transitions.serialize(buf);
+        self.final_weights.serialize(buf);
+    }
+
+    fn deserialize<I>(iter: &mut I) -> Self
+    where
+        I: Iterator<Item = u8>,
+    {
+        let initial_weights = Matrix::deserialize(iter);
+        let transitions = Vec::deserialize(iter);
+        let final_weights = Matrix::deserialize(iter);
+        Self {
+            initial_weights,
+            transitions,
+            final_weights,
         }
     }
 }
@@ -302,9 +423,193 @@ where
     }
 }
 
+pub struct WeightedObservationTable<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+{
+    pub prefixes: Vec<Vec<usize>>,
+    pub suffixes: Vec<Vec<usize>>,
+    _marker: PhantomData<fn() -> F>,
+}
+
+impl<F: Debug> Debug for WeightedObservationTable<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+    F::T: Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("WeightedObservationTable")
+            .field("prefixes", &self.prefixes)
+            .field("suffixes", &self.suffixes)
+            .finish()
+    }
+}
+
+impl<F> Clone for WeightedObservationTable<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+{
+    fn clone(&self) -> Self {
+        Self {
+            prefixes: self.prefixes.clone(),
+            suffixes: self.suffixes.clone(),
+            _marker: self._marker,
+        }
+    }
+}
+
+impl<F> Default for WeightedObservationTable<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+{
+    fn default() -> Self {
+        Self {
+            prefixes: Default::default(),
+            suffixes: Default::default(),
+            _marker: Default::default(),
+        }
+    }
+}
+
+impl<F> WeightedObservationTable<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+    F::T: PartialEq,
+{
+    fn construct_wfa<A>(&self, automaton: A) -> WeightedFiniteAutomaton<F>
+    where
+        A: BlackBoxAutomaton<Output = F::T>,
+        F::T: Debug,
+    {
+        let n = self.prefixes.len();
+        assert_eq!(self.suffixes.len(), n);
+        let table = Matrix::from_fn((n, n), |i, j| {
+            automaton.behavior(
+                self.prefixes[i]
+                    .iter()
+                    .cloned()
+                    .chain(self.suffixes[j].iter().cloned()),
+            )
+        });
+        let inv = table
+            .inverse()
+            .expect("Observation table is not invertible");
+        WeightedFiniteAutomaton::<F> {
+            initial_weights: Matrix::from_fn(
+                (1, n),
+                |_, j| {
+                    if j == 0 { F::one() } else { F::zero() }
+                },
+            ),
+            transitions: (0..automaton.sigma())
+                .map(|x| {
+                    &Matrix::from_fn((n, n), |i, j| {
+                        automaton.behavior(
+                            self.prefixes[i]
+                                .iter()
+                                .cloned()
+                                .chain([x])
+                                .chain(self.suffixes[j].iter().cloned()),
+                        )
+                    }) * &inv
+                })
+                .collect(),
+            final_weights: Matrix::from_fn((n, 1), |i, _| {
+                automaton.behavior(self.prefixes[i].iter().cloned())
+            }),
+        }
+    }
+}
+
+pub fn wfa_learning<F, A, T>(automaton: A, terminate: T) -> WeightedFiniteAutomaton<F>
+where
+    F: Field,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+    F::T: PartialEq,
+    A: BlackBoxAutomaton<Output = F::T>,
+    T: Fn(&WeightedObservationTable<F>, &[usize]) -> bool,
+    F::T: Debug,
+{
+    let sigma = automaton.sigma();
+    assert_ne!(sigma, 0, "Sigma must be greater than 0");
+    let mut observation_table = WeightedObservationTable::<F>::default();
+    {
+        let mut traversal = InputTraversal::new(sigma);
+        loop {
+            if automaton.behavior(traversal.current.iter().cloned()) != F::zero() {
+                observation_table.prefixes.push(vec![]);
+                observation_table.suffixes.push(traversal.current.clone());
+                break;
+            }
+            traversal.next();
+            if terminate(&observation_table, &traversal.current) {
+                return WeightedFiniteAutomaton::new(sigma);
+            }
+        }
+    }
+    let mut traversal = InputTraversal::new(sigma);
+
+    loop {
+        let wfa = observation_table.construct_wfa(&automaton);
+        // equiv
+        let counterexample = {
+            loop {
+                let expected = automaton.behavior(traversal.current.iter().cloned());
+                let result = wfa.behavior(traversal.current.iter().cloned());
+                if expected != result {
+                    break traversal.current.clone();
+                }
+                traversal.next();
+                if terminate(&observation_table, &traversal.current) {
+                    return wfa;
+                }
+            }
+        };
+        // split
+        {
+            let mut state = wfa.final_weights.clone();
+            for i in (0..counterexample.len()).rev() {
+                state = &wfa.transitions[counterexample[i]] * &state;
+                if (0..state.shape.0).any(|j| {
+                    let result = automaton.behavior(
+                        observation_table.prefixes[j]
+                            .iter()
+                            .cloned()
+                            .chain(counterexample[i..].iter().cloned()),
+                    );
+                    state[j][0] != result
+                }) {
+                    observation_table
+                        .prefixes
+                        .push(counterexample[..=i].to_vec());
+                    observation_table
+                        .suffixes
+                        .push(counterexample[i + 1..].to_vec());
+                    break;
+                }
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{
+        algebra::AddMulOperation,
+        num::{One as _, Zero as _, mint_basic::MInt998244353},
+    };
     use std::collections::{HashSet, VecDeque};
 
     #[test]
@@ -388,6 +693,124 @@ mod tests {
             };
             let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
             let dfa = angluin_lstar(&automaton, |_, t| t.len() > 4);
+            let mut traversal = InputTraversal::new(automaton.sigma());
+            while traversal.current.len() <= 8 {
+                let expected = automaton.behavior(traversal.current.iter().cloned());
+                let result = dfa.behavior(traversal.current.iter().cloned());
+                assert_eq!(expected, result);
+                traversal.next();
+            }
+        }
+    }
+
+    #[test]
+    fn test_wfa_learning() {
+        {
+            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
+                MInt998244353::from(input.iter().sum::<usize>())
+            });
+            let dfa =
+                wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, input| input.len() > 3);
+            let mut traversal = InputTraversal::new(automaton.sigma());
+            while traversal.current.len() <= 12 {
+                let expected = automaton.behavior(traversal.current.iter().cloned());
+                let result = dfa.behavior(traversal.current.iter().cloned());
+                assert_eq!(expected, result);
+                traversal.next();
+            }
+        }
+        {
+            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
+                let mut s = MInt998244353::zero();
+                let mut c = MInt998244353::one();
+                for &x in &input {
+                    s += MInt998244353::from(x) * c;
+                    c = -c;
+                }
+                s
+            });
+            let dfa =
+                wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, input| input.len() > 4);
+            let mut traversal = InputTraversal::new(automaton.sigma());
+            while traversal.current.len() <= 12 {
+                let expected = automaton.behavior(traversal.current.iter().cloned());
+                let result = dfa.behavior(traversal.current.iter().cloned());
+                assert_eq!(expected, result);
+                traversal.next();
+            }
+        }
+        {
+            // Xor Sum
+            let automaton = BlackBoxAutomatonImpl::new(2, |input| {
+                let mut n = 1; // prevent leading zero
+                for x in input {
+                    n = n * 2 + x;
+                }
+                let mut s = MInt998244353::zero();
+                for u in 0..=n {
+                    for v in 0..=n {
+                        let mut ok = false;
+                        for a in 0..=n {
+                            let b = u ^ a;
+                            ok |= a + b == v;
+                        }
+                        s += MInt998244353::new(ok as _);
+                    }
+                }
+                s
+            });
+            let dfa =
+                wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, input| input.len() > 4);
+            let mut traversal = InputTraversal::new(automaton.sigma());
+            while traversal.current.len() <= 6 {
+                let expected = automaton.behavior(traversal.current.iter().cloned());
+                let result = dfa.behavior(traversal.current.iter().cloned());
+                assert_eq!(expected, result);
+                traversal.next();
+            }
+        }
+        for i in 0usize..16 {
+            let a = i >> 3 & 1;
+            let b = i >> 2 & 1;
+            let c = i >> 1 & 1;
+            let d = i & 1;
+            let naive = |t: &[usize]| {
+                let mut set = HashSet::new();
+                let mut deq = VecDeque::new();
+                deq.push_back(t.to_vec());
+                set.insert(t.to_vec());
+                while let Some(t) = deq.pop_front() {
+                    for i in 0..t.len().saturating_sub(1) {
+                        let x = match (t[i], t[i + 1]) {
+                            (0, 0) => a,
+                            (0, 1) => b,
+                            (1, 0) => c,
+                            (1, 1) => d,
+                            _ => unreachable!(),
+                        };
+                        let mut t = t.to_vec();
+                        t.remove(i);
+                        t[i] = x;
+                        if set.insert(t.to_vec()) {
+                            deq.push_back(t);
+                        }
+                    }
+                }
+                set.contains(&vec![1])
+            };
+            let naive = |t: &[usize]| {
+                let mut s = MInt998244353::zero();
+                for l in 0..t.len() {
+                    for r in l + 1..=t.len() {
+                        if naive(&t[l..r]) {
+                            s += MInt998244353::one();
+                        }
+                    }
+                }
+                s
+            };
+            let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
+            let dfa = wfa_learning::<AddMulOperation<_>, _, _>(&automaton, |_, t| t.len() > 6);
             let mut traversal = InputTraversal::new(automaton.sigma());
             while traversal.current.len() <= 8 {
                 let expected = automaton.behavior(traversal.current.iter().cloned());

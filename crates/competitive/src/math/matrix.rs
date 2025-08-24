@@ -1,126 +1,218 @@
-use super::{One, Zero};
-use std::ops::{Add, Div, Index, IndexMut, Mul, Sub};
+use super::{Field, Invertible, Ring, SemiRing, SerdeByteStr};
+use std::{
+    fmt::{self, Debug},
+    marker::PhantomData,
+    ops::{Add, Index, IndexMut, Mul, Sub},
+};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Matrix<T> {
+pub struct Matrix<R>
+where
+    R: SemiRing,
+{
     pub shape: (usize, usize),
-    pub data: Vec<Vec<T>>,
+    pub data: Vec<Vec<R::T>>,
+    _marker: PhantomData<fn() -> R>,
 }
 
-impl<T: Clone> Matrix<T> {
-    pub fn new(shape: (usize, usize), z: T) -> Self {
+impl<R> Debug for Matrix<R>
+where
+    R: SemiRing,
+    R::T: Debug,
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Matrix")
+            .field("shape", &self.shape)
+            .field("data", &self.data)
+            .field("_marker", &self._marker)
+            .finish()
+    }
+}
+
+impl<R> Clone for Matrix<R>
+where
+    R: SemiRing,
+{
+    fn clone(&self) -> Self {
+        Self {
+            shape: self.shape,
+            data: self.data.clone(),
+            _marker: self._marker,
+        }
+    }
+}
+
+impl<R> PartialEq for Matrix<R>
+where
+    R: SemiRing,
+    R::T: PartialEq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.shape == other.shape && self.data == other.data
+    }
+}
+
+impl<R> Eq for Matrix<R>
+where
+    R: SemiRing,
+    R::T: Eq,
+{
+}
+
+impl<R> Matrix<R>
+where
+    R: SemiRing,
+{
+    pub fn new(shape: (usize, usize), z: R::T) -> Self {
         Self {
             shape,
             data: vec![vec![z; shape.1]; shape.0],
+            _marker: PhantomData,
         }
     }
-}
-impl<T> Matrix<T> {
-    pub fn from_vec(data: Vec<Vec<T>>) -> Self {
+    pub fn from_vec(data: Vec<Vec<R::T>>) -> Self {
         Self {
             shape: (data.len(), data.first().map(Vec::len).unwrap_or_default()),
             data,
+            _marker: PhantomData,
         }
     }
-}
-impl<T> Matrix<T>
-where
-    T: Clone + Zero,
-{
+    pub fn from_fn(shape: (usize, usize), mut f: impl FnMut(usize, usize) -> R::T) -> Self {
+        let data = (0..shape.0)
+            .map(|i| (0..shape.1).map(|j| f(i, j)).collect())
+            .collect();
+        Self {
+            shape,
+            data,
+            _marker: PhantomData,
+        }
+    }
     pub fn zeros(shape: (usize, usize)) -> Self {
         Self {
             shape,
-            data: vec![vec![Zero::zero(); shape.1]; shape.0],
+            data: vec![vec![R::zero(); shape.1]; shape.0],
+            _marker: PhantomData,
         }
     }
-}
-impl<T> Matrix<T>
-where
-    T: Clone + Zero + One,
-{
     pub fn eye(shape: (usize, usize)) -> Self {
-        let mut data = vec![vec![Zero::zero(); shape.1]; shape.0];
+        let mut data = vec![vec![R::zero(); shape.1]; shape.0];
         for (i, d) in data.iter_mut().enumerate() {
-            d[i] = One::one();
+            d[i] = R::one();
         }
-        Self { shape, data }
+        Self {
+            shape,
+            data,
+            _marker: PhantomData,
+        }
+    }
+    // A^T B
+    pub fn dot(&self, other: &Self) -> Self {
+        assert_eq!(self.shape.0, other.shape.0);
+        let mut res = Matrix::zeros((self.shape.1, other.shape.1));
+        for k in 0..self.shape.0 {
+            for i in 0..self.shape.1 {
+                for j in 0..other.shape.1 {
+                    R::add_assign(&mut res[i][j], &R::mul(&self[k][i], &other[k][j]));
+                }
+            }
+        }
+        res
+    }
+    pub fn map<S, F>(&self, mut f: F) -> Matrix<S>
+    where
+        S: SemiRing,
+        F: FnMut(&R::T) -> S::T,
+    {
+        Matrix::<S>::from_fn(self.shape, |i, j| f(&self[i][j]))
     }
 }
-impl<T> Index<usize> for Matrix<T> {
-    type Output = Vec<T>;
+impl<R> Index<usize> for Matrix<R>
+where
+    R: SemiRing,
+{
+    type Output = Vec<R::T>;
     fn index(&self, index: usize) -> &Self::Output {
         &self.data[index]
     }
 }
-impl<T> IndexMut<usize> for Matrix<T> {
+impl<R> IndexMut<usize> for Matrix<R>
+where
+    R: SemiRing,
+{
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.data[index]
     }
 }
-impl<T> Index<(usize, usize)> for Matrix<T> {
-    type Output = T;
+impl<R> Index<(usize, usize)> for Matrix<R>
+where
+    R: SemiRing,
+{
+    type Output = R::T;
     fn index(&self, index: (usize, usize)) -> &Self::Output {
         &self.data[index.0][index.1]
     }
 }
-impl<T> IndexMut<(usize, usize)> for Matrix<T> {
+impl<R> IndexMut<(usize, usize)> for Matrix<R>
+where
+    R: SemiRing,
+{
     fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
         &mut self.data[index.0][index.1]
     }
 }
-impl<T> Add for &Matrix<T>
+impl<R> Add for &Matrix<R>
 where
-    T: Copy + Zero + Add<Output = T>,
+    R: SemiRing,
 {
-    type Output = Matrix<T>;
+    type Output = Matrix<R>;
     fn add(self, rhs: Self) -> Self::Output {
         assert_eq!(self.shape, rhs.shape);
-        let mut res = Matrix::zeros(self.shape);
+        let mut res = self.clone();
         for i in 0..self.shape.0 {
             for j in 0..self.shape.1 {
-                res[i][j] = self[i][j] + rhs[i][j];
+                R::add_assign(&mut res[i][j], &rhs[i][j]);
             }
         }
         res
     }
 }
-impl<T> Sub for &Matrix<T>
+impl<R> Sub for &Matrix<R>
 where
-    T: Copy + Zero + Sub<Output = T>,
+    R: Ring,
+    R::Additive: Invertible,
 {
-    type Output = Matrix<T>;
+    type Output = Matrix<R>;
     fn sub(self, rhs: Self) -> Self::Output {
         assert_eq!(self.shape, rhs.shape);
-        let mut res = Matrix::zeros(self.shape);
+        let mut res = self.clone();
         for i in 0..self.shape.0 {
             for j in 0..self.shape.1 {
-                res[i][j] = self[i][j] - rhs[i][j];
+                R::sub_assign(&mut res[i][j], &rhs[i][j]);
             }
         }
         res
     }
 }
-impl<T> Mul for &Matrix<T>
+impl<R> Mul for &Matrix<R>
 where
-    T: Copy + Zero + Add<Output = T> + Mul<Output = T>,
+    R: SemiRing,
 {
-    type Output = Matrix<T>;
+    type Output = Matrix<R>;
     fn mul(self, rhs: Self) -> Self::Output {
         assert_eq!(self.shape.1, rhs.shape.0);
         let mut res = Matrix::zeros((self.shape.0, rhs.shape.1));
         for i in 0..self.shape.0 {
-            for j in 0..rhs.shape.1 {
-                for k in 0..self.shape.1 {
-                    res[i][j] = res[i][j] + self[i][k] * rhs[k][j];
+            for k in 0..self.shape.1 {
+                for j in 0..rhs.shape.1 {
+                    R::add_assign(&mut res[i][j], &R::mul(&self[i][k], &rhs[k][j]));
                 }
             }
         }
         res
     }
 }
-impl<T> Matrix<T>
+impl<R> Matrix<R>
 where
-    T: Copy + Zero + One + Add<Output = T> + Mul<Output = T>,
+    R: SemiRing,
 {
     pub fn pow(&self, mut n: usize) -> Self {
         assert_eq!(self.shape.0, self.shape.1);
@@ -136,9 +228,12 @@ where
         res
     }
 }
-impl<T> Matrix<T>
+impl<R> Matrix<R>
 where
-    T: Copy + PartialEq + Zero + One + Sub<Output = T> + Mul<Output = T> + Div<Output = T>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: PartialEq,
 {
     pub fn row_reduction(&mut self, normalize: bool) {
         let (n, m) = self.shape;
@@ -148,25 +243,26 @@ where
                 if c >= m {
                     return;
                 }
-                if let Some(pivot) = (r..n).find(|&p| !self[p][c].is_zero()) {
+                if let Some(pivot) = (r..n).find(|&p| self[p][c] != R::zero()) {
                     self.data.swap(r, pivot);
                     break;
                 };
                 c += 1;
             }
-            let d = T::one() / self[r][c];
+            let d = R::Multiplicative::inverse(&self[r][c]);
             if normalize {
                 for j in c..m {
-                    self[r][j] = self[r][j] * d;
+                    R::mul_assign(&mut self[r][j], &d);
                 }
             }
             for i in (0..n).filter(|&i| i != r) {
-                let mut e = self[i][c];
+                let mut e = self[i][c].clone();
                 if !normalize {
-                    e = e * d;
+                    R::mul_assign(&mut e, &d);
                 }
                 for j in c..m {
-                    self[i][j] = self[i][j] - e * self[r][j];
+                    let e = R::mul(&e, &self[r][j]);
+                    R::sub_assign(&mut self[i][j], &e);
                 }
             }
             c += 1;
@@ -176,52 +272,52 @@ where
         let n = self.shape.0;
         self.row_reduction(false);
         (0..n)
-            .filter(|&i| !self.data[i].iter().all(|x| x.is_zero()))
+            .filter(|&i| !self.data[i].iter().all(|x| x == &R::zero()))
             .count()
     }
-    pub fn determinant(&mut self) -> T {
+    pub fn determinant(&mut self) -> R::T {
         assert_eq!(self.shape.0, self.shape.1);
         self.row_reduction(false);
-        let mut d = T::one();
+        let mut d = R::one();
         for i in 0..self.shape.0 {
-            d = d * self[i][i];
+            R::mul_assign(&mut d, &self[i][i]);
         }
         d
     }
-    pub fn solve_system_of_linear_equations(&self, b: &[T]) -> Option<Vec<T>> {
+    pub fn solve_system_of_linear_equations(&self, b: &[R::T]) -> Option<Vec<R::T>> {
         assert_eq!(self.shape.0, b.len());
         let (n, m) = self.shape;
-        let mut c = Matrix::<T>::zeros((n, m + 1));
+        let mut c = Matrix::<R>::zeros((n, m + 1));
         for i in 0..n {
             c[i][..m].clone_from_slice(&self[i]);
-            c[i][m] = b[i];
+            c[i][m] = b[i].clone();
         }
         c.row_reduction(true);
-        let mut x = vec![T::zero(); m];
+        let mut x = vec![R::zero(); m];
         for i in 0..n {
             let mut j = 0usize;
-            while j <= m && c[i][j].is_zero() {
+            while j <= m && c[i][j] == R::zero() {
                 j += 1;
             }
             if j == m {
                 return None;
             }
             if j < m {
-                x[j] = c[i][m];
+                x[j] = c[i][m].clone();
             }
         }
         Some(x)
     }
-    pub fn inverse(&self) -> Option<Matrix<T>> {
+    pub fn inverse(&self) -> Option<Matrix<R>> {
         assert_eq!(self.shape.0, self.shape.1);
         let n = self.shape.0;
-        let mut c = Matrix::<T>::zeros((n, n * 2));
+        let mut c = Matrix::<R>::zeros((n, n * 2));
         for i in 0..n {
             c[i][..n].clone_from_slice(&self[i]);
-            c[i][n + i] = T::one();
+            c[i][n + i] = R::one();
         }
         c.row_reduction(true);
-        if (0..n).any(|i| c[i][i].is_zero()) {
+        if (0..n).any(|i| c[i][i] == R::zero()) {
             None
         } else {
             Some(Self::from_vec(
@@ -231,10 +327,28 @@ where
     }
 }
 
+impl<R> SerdeByteStr for Matrix<R>
+where
+    R: SemiRing,
+    R::T: SerdeByteStr,
+{
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.data.serialize(buf);
+    }
+
+    fn deserialize<I>(iter: &mut I) -> Self
+    where
+        I: Iterator<Item = u8>,
+    {
+        Self::from_vec(Vec::deserialize(iter))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
+        algebra::AddMulOperation,
         num::mint_basic::DynMIntU32,
         rand_value,
         tools::{RandomSpec, Xorshift},
@@ -255,12 +369,12 @@ mod tests {
             let m = ps[rng.random(..ps.len())];
             DynMIntU32::set_mod(m);
             let n = rng.random(2..=30);
-            let mat = Matrix::from_vec(rand_value!(rng, [[D; n]; n]));
+            let mat = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; n]; n]));
             let rank = mat.clone().rank();
             let inv = mat.inverse();
             assert_eq!(rank == n, inv.is_some());
             if let Some(inv) = inv {
-                assert_eq!(&mat * &inv, Matrix::eye((n, n)));
+                assert_eq!(&mat * &inv, Matrix::<AddMulOperation<_>>::eye((n, n)));
             }
         }
     }

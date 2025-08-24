@@ -8,7 +8,7 @@ use crate::num::{
     BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Unsigned, Wrapping, Zero,
     montgomery,
 };
-use crate::tools::{AssociatedValue, PartialIgnoredOrd, Xorshift};
+use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift};
 
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
@@ -149,7 +149,10 @@ mod lagrange_interpolation;
 mod lcm_convolve;
 #[cfg_attr(nightly, codesnip::entry(include("integer")))]
 mod linear_congruence;
-#[cfg_attr(nightly, codesnip::entry("Matrix", include("zero_one")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Matrix", include("zero_one", "ring", "coding"))
+)]
 mod matrix;
 #[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
 mod miller_rabin;
