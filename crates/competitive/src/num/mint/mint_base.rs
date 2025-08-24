@@ -296,6 +296,22 @@ where
         iter.next()?.parse::<MInt<M>>().ok()
     }
 }
+impl<M> SerdeByteStr for MInt<M>
+where
+    M: MIntBase,
+    M::Inner: SerdeByteStr,
+{
+    fn serialize(&self, buf: &mut Vec<u8>) {
+        self.inner().serialize(buf)
+    }
+
+    fn deserialize<I>(iter: &mut I) -> Self
+    where
+        I: Iterator<Item = u8>,
+    {
+        Self::new_unchecked(M::Inner::deserialize(iter))
+    }
+}
 macro_rules! impl_mint_ref_binop {
     ($imp:ident, $method:ident, $t:ty) => {
         impl<M> $imp<$t> for &$t

@@ -2,10 +2,10 @@
 
 use crate::{
     num::{BarrettReduction, One, Zero},
-    tools::IterScan,
+    tools::{IterScan, SerdeByteStr},
 };
 
-#[codesnip::entry("MIntBase", include("scanner", "zero_one"))]
+#[codesnip::entry("MIntBase", include("scanner", "zero_one", "coding"))]
 pub use mint_base::{MInt, MIntBase, MIntConvert};
 
 #[cfg_attr(nightly, codesnip::entry("MIntBase"))]
