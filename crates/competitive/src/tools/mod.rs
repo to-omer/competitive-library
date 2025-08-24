@@ -4,6 +4,8 @@ pub use self::associated_value::AssociatedValue;
 pub use self::char_convert::{CharConvertTryFrom, CharConvertTryInto};
 #[codesnip::entry("coding")]
 pub use self::coding::{SerdeByteStr, unescape};
+#[codesnip::entry("digit_sequence")]
+pub use self::digit_sequence::ToDigitSequence;
 #[codesnip::entry("_iter_print")]
 pub use self::iter_print::IterPrint;
 #[codesnip::entry("ord_tools")]
@@ -34,6 +36,8 @@ mod capture;
 mod char_convert;
 #[cfg_attr(nightly, codesnip::entry("coding"))]
 mod coding;
+#[cfg_attr(nightly, codesnip::entry("digit_sequence"))]
+mod digit_sequence;
 #[cfg_attr(nightly, codesnip::entry)]
 mod invariant;
 #[cfg_attr(nightly, codesnip::entry("_iter_print"))]

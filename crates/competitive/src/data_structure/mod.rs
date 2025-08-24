@@ -181,7 +181,10 @@ mod sparse_set;
 pub mod splay_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("transducer", include("algebra", "container", "VecMap"))
+    codesnip::entry(
+        "transducer",
+        include("algebra", "container", "VecMap", "digit_sequence")
+    )
 )]
 mod transducer;
 #[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
