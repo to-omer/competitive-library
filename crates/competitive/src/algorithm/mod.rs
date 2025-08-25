@@ -14,6 +14,8 @@ pub use self::baby_step_giant_step::baby_step_giant_step;
 pub use self::binary_search::{Bisect, SliceBisectExt, binary_search, parallel_binary_search};
 #[codesnip::entry("BitDp")]
 pub use self::bitdp::{BitDpExt, Combinations, Subsets};
+#[codesnip::entry("CartesianTree")]
+pub use self::cartesian_tree::CartesianTree;
 #[codesnip::entry("chromatic_number")]
 pub use self::chromatic_number::IndependentSubSet;
 #[codesnip::entry("combinations")]
@@ -58,6 +60,8 @@ mod baby_step_giant_step;
 mod binary_search;
 #[cfg_attr(nightly, codesnip::entry("BitDp", include("zero_one")))]
 mod bitdp;
+#[cfg_attr(nightly, codesnip::entry("CartesianTree"))]
+mod cartesian_tree;
 #[cfg_attr(
     nightly,
     codesnip::entry("chromatic_number", include("MIntBase", "binary_search"))

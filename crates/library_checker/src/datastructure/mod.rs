@@ -1,3 +1,4 @@
+pub mod cartesian_tree;
 pub mod deque_operate_all_composite;
 pub mod dynamic_sequence_range_affine_range_sum;
 pub mod line_add_get_min;
