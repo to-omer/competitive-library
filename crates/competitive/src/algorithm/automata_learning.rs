@@ -1,7 +1,7 @@
 use super::{BitSet, Field, Invertible, Matrix, RandomSpec, SerdeByteStr, Xorshift};
 use std::{
     cell::RefCell,
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fmt::{self, Debug},
     iter::{from_fn, once_with},
     marker::PhantomData,
@@ -650,6 +650,82 @@ where
             self.train_sample(&sample);
         }
     }
+    pub fn batch_train(&mut self, samples: impl IntoIterator<Item = Vec<usize>>) {
+        let mut prefix_set: HashSet<_> = self.prefixes.iter().cloned().collect();
+        let mut suffix_set: HashSet<_> = self.suffixes.iter().cloned().collect();
+        for sample in samples {
+            if prefix_set.insert(sample.to_vec()) {
+                self.prefixes.push(sample.to_vec());
+            }
+            if suffix_set.insert(sample.to_vec()) {
+                self.suffixes.push(sample);
+            }
+        }
+        let mut h = Matrix::<F>::new_with((self.prefixes.len(), self.suffixes.len()), |i, j| {
+            self.automaton.behavior(
+                self.prefixes[i]
+                    .iter()
+                    .cloned()
+                    .chain(self.suffixes[j].iter().cloned()),
+            )
+        });
+        if !self.prefixes.is_empty() && !self.suffixes.is_empty() && F::is_zero(&h[0][0]) {
+            for j in 1..self.suffixes.len() {
+                if !F::is_zero(&h[0][j]) {
+                    self.suffixes.swap(0, j);
+                    for i in 0..self.prefixes.len() {
+                        h.data[i].swap(0, j);
+                    }
+                    break;
+                }
+            }
+        }
+        let pivots = h.row_reduction(false);
+        let mut new_prefixes = vec![];
+        let mut new_suffixes = vec![];
+        for (i, j) in pivots {
+            new_prefixes.push(self.prefixes[i].clone());
+            new_suffixes.push(self.suffixes[j].clone());
+        }
+        self.prefixes = new_prefixes;
+        self.suffixes = new_suffixes;
+        assert_eq!(self.prefixes.len(), self.suffixes.len());
+        let n = self.prefixes.len();
+        let h = Matrix::<F>::new_with((n, n), |i, j| {
+            self.automaton.behavior(
+                self.prefixes[i]
+                    .iter()
+                    .cloned()
+                    .chain(self.suffixes[j].iter().cloned()),
+            )
+        });
+        self.inv_h = h.inverse().expect("Hankel matrix must be invertible");
+        self.wfa = WeightedFiniteAutomaton::<F> {
+            initial_weights: Matrix::new_with((1, n), |_, j| {
+                if self.prefixes[j].is_empty() {
+                    F::one()
+                } else {
+                    F::zero()
+                }
+            }),
+            transitions: (0..self.automaton.sigma())
+                .map(|x| {
+                    &Matrix::new_with((n, n), |i, j| {
+                        self.automaton.behavior(
+                            self.prefixes[i]
+                                .iter()
+                                .cloned()
+                                .chain([x])
+                                .chain(self.suffixes[j].iter().cloned()),
+                        )
+                    }) * &self.inv_h
+                })
+                .collect(),
+            final_weights: Matrix::new_with((n, 1), |i, _| {
+                self.automaton.behavior(self.prefixes[i].iter().cloned())
+            }),
+        };
+    }
 }
 
 #[cfg(test)]
@@ -858,6 +934,18 @@ mod tests {
             let automaton = BlackBoxAutomatonImpl::new(2, |t| naive(&t));
             let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
             wl.train(dense_sampling(2, 6));
+            let wfa = wl.wfa();
+            for sample in dense_sampling(automaton.sigma(), 8).chain(random_sampling(
+                automaton.sigma(),
+                9..=12,
+                0.1,
+            )) {
+                let expected = automaton.behavior(sample.iter().cloned());
+                let result = wfa.behavior(sample.iter().cloned());
+                assert_eq!(expected, result);
+            }
+            let mut wl = WfaLearning::<AddMulOperation<_>, _>::new(&automaton);
+            wl.batch_train(dense_sampling(2, 3));
             let wfa = wl.wfa();
             for sample in dense_sampling(automaton.sigma(), 8).chain(random_sampling(
                 automaton.sigma(),

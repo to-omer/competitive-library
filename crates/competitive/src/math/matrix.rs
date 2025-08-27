@@ -246,16 +246,20 @@ where
     R::Multiplicative: Invertible,
     R::T: PartialEq,
 {
-    pub fn row_reduction(&mut self, normalize: bool) {
+    pub fn row_reduction(&mut self, normalize: bool) -> Vec<(usize, usize)> {
         let (n, m) = self.shape;
         let mut c = 0;
+        let mut pivots = vec![];
+        let mut row_id: Vec<usize> = (0..n).collect();
         for r in 0..n {
             loop {
                 if c >= m {
-                    return;
+                    return pivots;
                 }
                 if let Some(pivot) = (r..n).find(|&p| !R::is_zero(&self[p][c])) {
                     self.data.swap(r, pivot);
+                    row_id.swap(r, pivot);
+                    pivots.push((row_id[r], c));
                     break;
                 };
                 c += 1;
@@ -278,6 +282,7 @@ where
             }
             c += 1;
         }
+        pivots
     }
     pub fn rank(&mut self) -> usize {
         let n = self.shape.0;
