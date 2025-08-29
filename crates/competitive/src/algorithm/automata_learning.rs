@@ -389,27 +389,29 @@ where
     }
     pub fn train_sample(&mut self, dfa: &DeterministicFiniteAutomaton, sample: &[usize]) -> bool {
         let expected = self.automaton.behavior(sample.iter().cloned());
-        let result = dfa.behavior(sample.iter().cloned());
-        if expected == result {
+        if expected == dfa.behavior(sample.iter().cloned()) {
             return false;
         }
-        let mut state = 0;
-        for i in 0..sample.len() {
-            state = dfa.states[state].delta[sample[i]];
-            let result = self.automaton.behavior(
+        let n = sample.len();
+        let mut states: Vec<(usize, usize)> = Vec::with_capacity(n + 1);
+        let mut s = 0usize;
+        states.push((s, 0));
+        for (k, &x) in sample.iter().enumerate() {
+            s = dfa.states[s].delta[x];
+            states.push((s, k + 1));
+        }
+        let split = states.partition_point(|&(state, k)| {
+            self.automaton.behavior(
                 self.prefixes[state]
                     .iter()
                     .cloned()
-                    .chain(sample[i + 1..].iter().cloned()),
-            );
-            if expected != result {
-                let new_prefix = sample[..=i].to_vec();
-                let new_suffix = sample[i + 1..].to_vec();
-                self.add_suffix(new_suffix);
-                self.add_prefix(new_prefix);
-                break;
-            }
-        }
+                    .chain(sample[k..].iter().cloned()),
+            ) == expected
+        });
+        let new_prefix = sample[..split].to_vec();
+        let new_suffix = sample[split..].to_vec();
+        self.add_suffix(new_suffix);
+        self.add_prefix(new_prefix);
         true
     }
     pub fn train(
@@ -515,26 +517,30 @@ where
             return Some((vec![], sample.to_vec()));
         }
         let expected = self.automaton.behavior(sample.iter().cloned());
-        let result = self.wfa.behavior(sample.iter().cloned());
-        if expected == result {
+        if expected == self.wfa.behavior(sample.iter().cloned()) {
             return None;
         }
-        let mut state = self.wfa.final_weights.clone();
-        for i in (0..sample.len()).rev() {
-            state = &self.wfa.transitions[sample[i]] * &state;
-            if (0..state.shape.0).any(|j| {
-                let result = self.automaton.behavior(
+        let n = sample.len();
+        let dim = self.wfa.final_weights.shape.0;
+        let mut states: Vec<(Matrix<F>, usize)> = Vec::with_capacity(n + 1);
+        let mut v = self.wfa.final_weights.clone();
+        states.push((v.clone(), n));
+        for k in (0..n).rev() {
+            v = &self.wfa.transitions[sample[k]] * &v;
+            states.push((v.clone(), k));
+        }
+        states.reverse();
+        let split = states.partition_point(|(state, k)| {
+            (0..dim).any(|j| {
+                self.automaton.behavior(
                     self.prefixes[j]
                         .iter()
                         .cloned()
-                        .chain(sample[i..].iter().cloned()),
-                );
-                state[j][0] != result
-            }) {
-                return Some((sample[..=i].to_vec(), sample[i + 1..].to_vec()));
-            }
-        }
-        unreachable!("Failed to split sample");
+                        .chain(sample[*k..].iter().cloned()),
+                ) != state[j][0]
+            })
+        });
+        Some((sample[..split].to_vec(), sample[split..].to_vec()))
     }
     pub fn train_sample(&mut self, sample: &[usize]) -> bool {
         let Some((prefix, suffix)) = self.split_sample(sample) else {
