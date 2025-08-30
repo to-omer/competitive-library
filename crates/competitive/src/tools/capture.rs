@@ -204,7 +204,7 @@ macro_rules! memorize {
         let mut $name = $crate::crecurse!(
             [$map: $Map],
             fn $name ($($args: $argsty),*) -> $ret {
-                if let Some(value) = $map.get(&($($args,)*)).cloned() {
+                if let Some(value) = $map.get(&($(Clone::clone(&$args),)*)).cloned() {
                     value
                 } else {
                     let value = (|| $body)();
