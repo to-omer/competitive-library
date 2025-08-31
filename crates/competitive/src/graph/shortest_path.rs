@@ -265,7 +265,10 @@ pub trait ShortestPathExt: GraphBase {
         }
         for u in self.vertices() {
             for a in self.aviews(weight, u) {
-                *self.vmap_get_mut(self.vmap_get_mut(&mut cost, u), a.vindex()) = a.avalue();
+                S::add_assign(
+                    self.vmap_get_mut(self.vmap_get_mut(&mut cost, u), a.vindex()),
+                    &a.avalue(),
+                );
             }
         }
         for k in self.vertices() {
@@ -282,3 +285,93 @@ pub trait ShortestPathExt: GraphBase {
     }
 }
 impl<G> ShortestPathExt for G where G: GraphBase {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        algebra::{AddMulOperation, AdditiveOperation},
+        num::{One as _, Saturating, mint_basic::MInt998244353},
+        rand,
+        tools::Xorshift,
+    };
+
+    #[test]
+    fn test_shortest_path() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 1..100, m: 1..200, edges: [(0..n, 0..n); m], w: [0..100_000i64; m]);
+            let g = DirectedSparseGraph::from_edges(n, edges);
+            let dijkstra: Vec<_> = (0..n)
+                .map(|src| {
+                    g.dijkstra_ss::<OptionSp<AdditiveOperation<_>>, _>(src, &|eid| Some(w[eid]))
+                })
+                .collect();
+            let bellman_ford: Vec<_> = (0..n)
+                .map(|src| {
+                    g.bellman_ford_ss::<OptionSp<AdditiveOperation<_>>, _>(
+                        src,
+                        &|eid| Some(w[eid]),
+                        false,
+                    )
+                    .unwrap()
+                })
+                .collect();
+            let warshall_floyd =
+                g.warshall_floyd_ap::<OptionSp<AdditiveOperation<_>>, _>(&|eid| Some(w[eid]));
+            assert_eq!(dijkstra, bellman_ford);
+            assert_eq!(dijkstra, warshall_floyd);
+        }
+    }
+
+    #[test]
+    fn test_spfa() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 1..100, m: 1..200, edges: [(0..n, 0..n); m], ub: 0..=1i64, w: [0..=ub * 100_000i64; m]);
+            let g = DirectedSparseGraph::from_edges(n, edges);
+            let bfs: Vec<_> = (0..n)
+                .map(|src| {
+                    g.bfs_distance_ss::<OptionSp<AdditiveOperation<_>>, _>(src, &|eid| Some(w[eid]))
+                })
+                .collect();
+            let warshall_floyd =
+                g.warshall_floyd_ap::<OptionSp<AdditiveOperation<_>>, _>(&|eid| Some(w[eid]));
+            assert_eq!(bfs, warshall_floyd);
+        }
+    }
+
+    #[test]
+    fn test_path_folding() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 1..100, m: 1..200, edges: [(0..n, 0..n); m], w: [0..100_000usize; m]);
+            let g = DirectedSparseGraph::from_edges(n, edges);
+            let dijkstra: Vec<_> = (0..n)
+                .map(|src| {
+                    g.dijkstra_ss::<PathFoldingSp<AdditiveOperation<_>, AddMulOperation<MInt998244353>>, _>(src, &|eid| {
+                        PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
+                    })
+                })
+                .collect();
+            let bellman_ford: Vec<_> = (0..n)
+                .map(|src| {
+                    g.bellman_ford_ss::<PathFoldingSp<AdditiveOperation<_>, AddMulOperation<MInt998244353>>, _>(
+                        src,
+                        &|eid| PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one()),
+                        false,
+                    )
+                    .unwrap()
+                })
+                .collect();
+            let warshall_floyd = g.warshall_floyd_ap::<PathFoldingSp<
+                AdditiveOperation<_>,
+                AddMulOperation<MInt998244353>,
+            >, _>(&|eid| {
+                PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
+            });
+            assert_eq!(dijkstra, bellman_ford);
+            assert_eq!(dijkstra, warshall_floyd);
+        }
+    }
+}
