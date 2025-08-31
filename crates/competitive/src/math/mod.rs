@@ -22,6 +22,8 @@ pub use self::bitwiseor_convolve::BitwiseorConvolve;
 pub use self::bitwisexor_convolve::BitwisexorConvolve;
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
+#[codesnip::entry("determinant_linear")]
+pub use self::determinant_linear::determinant_linear;
 #[codesnip::entry("discrete_logarithm")]
 pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
 pub use self::factorial::*;
@@ -87,6 +89,14 @@ mod bitwiseor_convolve;
 mod bitwisexor_convolve;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
 mod convolve_steps;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "determinant_linear",
+        include("Matrix", "FormalPowerSeries", "Xorshift")
+    )
+)]
+mod determinant_linear;
 #[cfg_attr(
     nightly,
     codesnip::entry(

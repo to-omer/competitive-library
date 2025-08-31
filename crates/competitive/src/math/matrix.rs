@@ -341,6 +341,55 @@ where
             ))
         }
     }
+    pub fn characteristic_polynomial(&mut self) -> Vec<R::T> {
+        let n = self.shape.0;
+        if n == 0 {
+            return vec![R::one()];
+        }
+        assert!(self.data.iter().all(|a| a.len() == n));
+        for j in 0..(n - 1) {
+            if let Some(x) = ((j + 1)..n).find(|&x| !R::is_zero(&self[x][j])) {
+                self.data.swap(j + 1, x);
+                self.data.iter_mut().for_each(|a| a.swap(j + 1, x));
+                let inv = R::inv(&self[j + 1][j]);
+                let mut v = vec![];
+                let src = std::mem::take(&mut self[j + 1]);
+                for a in self.data[(j + 2)..].iter_mut() {
+                    let mul = R::mul(&a[j], &inv);
+                    for (a, src) in a[j..].iter_mut().zip(src[j..].iter()) {
+                        R::sub_assign(a, &R::mul(&mul, src));
+                    }
+                    v.push(mul);
+                }
+                self[j + 1] = src;
+                for a in self.data.iter_mut() {
+                    let v = a[(j + 2)..]
+                        .iter()
+                        .zip(v.iter())
+                        .fold(R::zero(), |s, a| R::add(&s, &R::mul(a.0, a.1)));
+                    R::add_assign(&mut a[j + 1], &v);
+                }
+            }
+        }
+        let mut dp = vec![vec![R::one()]];
+        for i in 0..n {
+            let mut next = vec![R::zero(); i + 2];
+            for (j, dp) in dp[i].iter().enumerate() {
+                R::sub_assign(&mut next[j], &R::mul(dp, &self[i][i]));
+                R::add_assign(&mut next[j + 1], dp);
+            }
+            let mut mul = R::one();
+            for j in (0..i).rev() {
+                mul = R::mul(&mul, &self[j + 1][j]);
+                let c = R::mul(&mul, &self[j][i]);
+                for (next, dp) in next.iter_mut().zip(dp[j].iter()) {
+                    R::sub_assign(next, &R::mul(&c, dp));
+                }
+            }
+            dp.push(next);
+        }
+        dp.pop().unwrap()
+    }
 }
 
 impl<R> SerdeByteStr for Matrix<R>
