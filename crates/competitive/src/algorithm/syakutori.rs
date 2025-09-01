@@ -5,6 +5,21 @@
 /// - add: |index| expr: add element
 /// - remove: |index| expr: remove element
 /// - show: call n times for l in 0..n, with rightmost r
+///
+/// ```
+/// # use competitive::syakutori;
+/// let (a, w) = ([1, 2, 3, 4], 6);
+/// let (mut ans, mut acc) = (0, 0);
+/// syakutori!(
+///     a.len(),
+///     (l, r),
+///     |i| acc + a[i] <= w,
+///     |i| acc += a[i],
+///     |i| acc -= a[i],
+///     ans += r - l
+/// );
+/// assert_eq!(ans, 7);
+/// ```
 #[macro_export]
 macro_rules! syakutori {
     (
@@ -36,4 +51,36 @@ macro_rules! syakutori {
             }
         }
     }};
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{rand, tools::Xorshift};
+
+    #[test]
+    fn test_syakutori() {
+        let mut rng = Xorshift::default();
+        for _ in 0..50 {
+            rand!(rng, n: 1..50, a: [1i64..1000; n], w: 1i64..10000);
+            let mut ans = 0;
+            let mut acc = 0;
+            syakutori!(
+                a.len(),
+                (l, r),
+                |i| acc + a[i] <= w,
+                |i| acc += a[i],
+                |i| acc -= a[i],
+                ans += r - l
+            );
+            let mut exp = 0;
+            for l in 0..n {
+                for r in l..n {
+                    if a[l..=r].iter().sum::<i64>() <= w {
+                        exp += 1;
+                    }
+                }
+            }
+            assert_eq!(ans, exp);
+        }
+    }
 }

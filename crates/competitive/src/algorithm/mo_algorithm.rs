@@ -10,6 +10,22 @@
 /// - answer: |i| expr: answer i-th pair of lr
 ///
 /// incr and decr can be omitted, if simultaneous
+///
+/// ```
+/// # use competitive::mo_algorithm;
+/// let (a, lr) = ([1, 2, 3], [(0, 1), (0, 2), (1, 3)]);
+/// let (mut ans, mut acc) = (0, 0);
+/// mo_algorithm!(
+///     &lr,
+///     (l, r),
+///     |i| acc -= a[i],
+///     |i| acc += a[i],
+///     |i| acc += a[i],
+///     |i| acc -= a[i],
+///     |i| ans += acc
+/// );
+/// assert_eq!(ans, 9);
+/// ```
 #[macro_export]
 macro_rules! mo_algorithm {
     (
@@ -94,4 +110,33 @@ macro_rules! mo_algorithm {
             $answer;
         }
     }};
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{rand, tools::NotEmptySegment as Nes, tools::Xorshift};
+
+    #[test]
+    fn test_mo_algorithm() {
+        let mut rng = Xorshift::default();
+        for _ in 0..50 {
+            rand!(rng, n: 1..50, q: 1..100, a: [1i64..1000; n], lr: [Nes(n); q]);
+            let mut ans = 0;
+            let mut acc = 0;
+            mo_algorithm!(
+                &lr,
+                (l, r),
+                |i| acc -= a[i],
+                |i| acc += a[i],
+                |i| acc += a[i],
+                |i| acc -= a[i],
+                |i| ans += acc
+            );
+            let mut exp = 0;
+            for (l, r) in lr {
+                exp += a[l..r].iter().sum::<i64>();
+            }
+            assert_eq!(ans, exp);
+        }
+    }
 }
