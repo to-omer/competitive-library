@@ -8,6 +8,8 @@ pub use self::coding::{SerdeByteStr, unescape};
 pub use self::digit_sequence::ToDigitSequence;
 #[codesnip::entry("_iter_print")]
 pub use self::iter_print::IterPrint;
+#[codesnip::entry("IteratorExt")]
+pub use self::iterator_ext::IteratorExt;
 #[codesnip::entry("ord_tools")]
 pub use self::ord_tools::PartialOrdExt;
 #[codesnip::entry("PartialIgnoredOrd")]
@@ -44,6 +46,8 @@ mod invariant;
 mod iter_print;
 #[cfg_attr(nightly, codesnip::entry("comprehension"))]
 mod iterable;
+#[cfg_attr(nightly, codesnip::entry("iterator_ext"))]
+mod iterator_ext;
 #[cfg_attr(
     nightly,
     codesnip::entry("main", inline, include("scanner", "_iter_print"))
