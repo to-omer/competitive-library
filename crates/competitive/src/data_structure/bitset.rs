@@ -10,6 +10,7 @@ pub struct BitSet {
     size: usize,
     bits: Vec<u64>,
 }
+
 impl BitSet {
     pub fn new(size: usize) -> Self {
         Self {
@@ -17,12 +18,15 @@ impl BitSet {
             bits: vec![0; (size + 63) / 64],
         }
     }
+
     pub fn len(&self) -> usize {
         self.size
     }
+
     pub fn is_empty(&self) -> bool {
         self.size == 0
     }
+
     pub fn ones(size: usize) -> Self {
         let mut self_ = Self {
             size,
@@ -31,11 +35,11 @@ impl BitSet {
         self_.trim();
         self_
     }
-    #[inline]
+
     pub fn get(&self, i: usize) -> bool {
         self.bits[i >> 6] & (1 << (i & 63)) != 0
     }
-    #[inline]
+
     pub fn set(&mut self, i: usize, b: bool) {
         if b {
             self.bits[i >> 6] |= 1 << (i & 63);
@@ -43,14 +47,15 @@ impl BitSet {
             self.bits[i >> 6] &= !(1 << (i & 63));
         }
     }
-    #[inline]
+
     pub fn count_ones(&self) -> u64 {
         self.bits.iter().map(|x| x.count_ones() as u64).sum()
     }
-    #[inline]
+
     pub fn count_zeros(&self) -> u64 {
         self.size as u64 - self.count_ones()
     }
+
     pub fn push(&mut self, b: bool) {
         let d = self.size & 63;
         if d == 0 {
@@ -60,7 +65,7 @@ impl BitSet {
         }
         self.size += 1;
     }
-    #[inline]
+
     fn trim(&mut self) {
         if self.size & 63 != 0 {
             if let Some(x) = self.bits.last_mut() {
@@ -68,7 +73,7 @@ impl BitSet {
             }
         }
     }
-    #[inline]
+
     pub fn shl_bitor_assign(&mut self, rhs: usize) {
         let n = self.bits.len();
         let k = rhs >> 6;
@@ -87,7 +92,7 @@ impl BitSet {
             self.trim();
         }
     }
-    #[inline]
+
     pub fn shr_bitor_assign(&mut self, rhs: usize) {
         let n = self.bits.len();
         let k = rhs >> 6;
@@ -106,6 +111,7 @@ impl BitSet {
         }
     }
 }
+
 impl Extend<bool> for BitSet {
     fn extend<T: IntoIterator<Item = bool>>(&mut self, iter: T) {
         let d = self.size & 63;
@@ -131,6 +137,7 @@ impl Extend<bool> for BitSet {
         }
     }
 }
+
 impl FromIterator<bool> for BitSet {
     fn from_iter<T: IntoIterator<Item = bool>>(iter: T) -> Self {
         let mut set = BitSet::new(0);
@@ -138,8 +145,8 @@ impl FromIterator<bool> for BitSet {
         set
     }
 }
+
 impl ShlAssign<usize> for BitSet {
-    #[inline]
     fn shl_assign(&mut self, rhs: usize) {
         let n = self.bits.len();
         let k = rhs >> 6;
@@ -166,16 +173,16 @@ impl ShlAssign<usize> for BitSet {
         }
     }
 }
+
 impl Shl<usize> for BitSet {
     type Output = Self;
-    #[inline]
     fn shl(mut self, rhs: usize) -> Self::Output {
         self <<= rhs;
         self
     }
 }
+
 impl ShrAssign<usize> for BitSet {
-    #[inline]
     fn shr_assign(&mut self, rhs: usize) {
         let n = self.bits.len();
         let k = rhs >> 6;
@@ -201,16 +208,16 @@ impl ShrAssign<usize> for BitSet {
         }
     }
 }
+
 impl Shr<usize> for BitSet {
     type Output = Self;
-    #[inline]
     fn shr(mut self, rhs: usize) -> Self::Output {
         self >>= rhs;
         self
     }
 }
+
 impl<'a> BitOrAssign<&'a BitSet> for BitSet {
-    #[inline]
     fn bitor_assign(&mut self, rhs: &'a Self) {
         for (l, r) in self.bits.iter_mut().zip(rhs.bits.iter()) {
             *l |= *r;
@@ -218,50 +225,50 @@ impl<'a> BitOrAssign<&'a BitSet> for BitSet {
         self.trim();
     }
 }
+
 impl<'a> BitOr<&'a BitSet> for BitSet {
     type Output = Self;
-    #[inline]
     fn bitor(mut self, rhs: &'a Self) -> Self::Output {
         self |= rhs;
         self
     }
 }
+
 impl<'b> BitOr<&'b BitSet> for &BitSet {
     type Output = BitSet;
-    #[inline]
     fn bitor(self, rhs: &'b BitSet) -> Self::Output {
         let mut res = self.clone();
         res |= rhs;
         res
     }
 }
+
 impl<'a> BitAndAssign<&'a BitSet> for BitSet {
-    #[inline]
     fn bitand_assign(&mut self, rhs: &'a Self) {
         for (l, r) in self.bits.iter_mut().zip(rhs.bits.iter()) {
             *l &= *r;
         }
     }
 }
+
 impl<'a> BitAnd<&'a BitSet> for BitSet {
     type Output = Self;
-    #[inline]
     fn bitand(mut self, rhs: &'a Self) -> Self::Output {
         self &= rhs;
         self
     }
 }
+
 impl<'b> BitAnd<&'b BitSet> for &BitSet {
     type Output = BitSet;
-    #[inline]
     fn bitand(self, rhs: &'b BitSet) -> Self::Output {
         let mut res = self.clone();
         res &= rhs;
         res
     }
 }
+
 impl<'a> BitXorAssign<&'a BitSet> for BitSet {
-    #[inline]
     fn bitxor_assign(&mut self, rhs: &'a Self) {
         for (l, r) in self.bits.iter_mut().zip(rhs.bits.iter()) {
             *l ^= *r;
@@ -269,26 +276,26 @@ impl<'a> BitXorAssign<&'a BitSet> for BitSet {
         self.trim();
     }
 }
+
 impl<'a> BitXor<&'a BitSet> for BitSet {
     type Output = Self;
-    #[inline]
     fn bitxor(mut self, rhs: &'a Self) -> Self::Output {
         self ^= rhs;
         self
     }
 }
+
 impl<'b> BitXor<&'b BitSet> for &BitSet {
     type Output = BitSet;
-    #[inline]
     fn bitxor(self, rhs: &'b BitSet) -> Self::Output {
         let mut res = self.clone();
         res ^= rhs;
         res
     }
 }
+
 impl Not for BitSet {
     type Output = Self;
-    #[inline]
     fn not(mut self) -> Self::Output {
         for x in self.bits.iter_mut() {
             *x = !*x;
@@ -297,9 +304,9 @@ impl Not for BitSet {
         self
     }
 }
+
 impl Not for &BitSet {
     type Output = BitSet;
-    #[inline]
     fn not(self) -> Self::Output {
         !self.clone()
     }
@@ -309,6 +316,104 @@ impl Not for &BitSet {
 mod tests {
     use super::*;
     use crate::{rand, tools::Xorshift};
+
+    #[test]
+    fn test_access() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::new();
+            rand!(rng, n: 1..=200);
+            let mut bitset = BitSet::new(n);
+            let mut arr = vec![false; n];
+            for _ in 0..200 {
+                rand!(rng, i: 0..n, b: 0..=1u32);
+                bitset.set(i, b != 0);
+                arr[i] = b != 0;
+                assert_eq!(bitset.get(i), arr[i]);
+            }
+            assert_eq!(
+                bitset.count_ones(),
+                arr.iter().filter(|&&x| x).count() as u64
+            );
+            assert_eq!(
+                bitset.count_zeros(),
+                arr.iter().filter(|&&x| !x).count() as u64
+            );
+        }
+    }
+
+    #[test]
+    fn test_push() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::new();
+            rand!(rng, n: 0..=200, arr: [0..=1u32; n]);
+            let mut bitset = BitSet::new(0);
+            for &x in &arr {
+                bitset.push(x != 0);
+            }
+            assert_eq!(bitset.len(), n);
+            for (i, &x) in arr.iter().enumerate() {
+                assert_eq!(bitset.get(i), x != 0);
+            }
+        }
+    }
+
+    #[test]
+    fn test_shl_bitor_assign() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::new();
+            rand!(rng, n: 1..=200, k: 1..=n, mut arr: [0..=1u32; n]);
+            let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
+            bitset.shl_bitor_assign(k);
+            for i in (k..n).rev() {
+                arr[i] |= arr[i - k];
+            }
+            assert_eq!(bitset, BitSet::from_iter(arr.iter().map(|&x| x != 0)));
+        }
+    }
+
+    #[test]
+    fn test_shr_bitor_assign() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::new();
+            rand!(rng, n: 1..=200, k: 1..=n, mut arr: [0..=1u32; n]);
+            let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
+            bitset.shr_bitor_assign(k);
+            for i in k..n {
+                arr[i - k] |= arr[i];
+            }
+            assert_eq!(bitset, BitSet::from_iter(arr.iter().map(|&x| x != 0)));
+        }
+    }
+
+    #[test]
+    fn test_shl() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::new();
+            rand!(rng, n: 1..=200, k: 1..=n, arr: [0..=1u32; n]);
+            let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
+            bitset <<= k;
+            let mut arr2 = vec![0; n];
+            for i in (k..n).rev() {
+                arr2[i] = arr[i - k];
+            }
+            assert_eq!(bitset, BitSet::from_iter(arr2.iter().map(|&x| x != 0)));
+        }
+    }
+
+    #[test]
+    fn test_shr() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::new();
+            rand!(rng, n: 1..=200, k: 1..=n, arr: [0..=1u32; n]);
+            let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
+            bitset >>= k;
+            let mut arr2 = vec![0; n];
+            for (i, &a) in arr.iter().enumerate().skip(k) {
+                arr2[i - k] = a;
+            }
+            assert_eq!(bitset, BitSet::from_iter(arr2.iter().map(|&x| x != 0)));
+        }
+    }
 
     #[test]
     fn test_extend() {
