@@ -5,8 +5,8 @@ use crate::algebra::{
 };
 use crate::array;
 use crate::num::{
-    BarrettReduction, Complex, MInt, MIntBase, MIntConvert, One, Unsigned, Wrapping, Zero,
-    montgomery,
+    BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, One, RangeBoundsExt,
+    Signed, Unsigned, Wrapping, Zero, montgomery,
 };
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift};
 
@@ -47,6 +47,8 @@ pub use self::lagrange_interpolation::{lagrange_interpolation, lagrange_interpol
 pub use self::lcm_convolve::LcmConvolve;
 #[codesnip::entry("linear_congruence")]
 pub use self::linear_congruence::{solve_linear_congruence, solve_simultaneous_linear_congruence};
+#[codesnip::entry("linear_diophantine")]
+pub use self::linear_diophantine::solve_linear_diophantine;
 #[codesnip::entry("Matrix")]
 pub use self::matrix::Matrix;
 #[codesnip::entry("miller_rabin")]
@@ -159,6 +161,8 @@ mod lagrange_interpolation;
 mod lcm_convolve;
 #[cfg_attr(nightly, codesnip::entry(include("integer")))]
 mod linear_congruence;
+#[cfg_attr(nightly, codesnip::entry(include("integer", "discrete_steps")))]
+mod linear_diophantine;
 #[cfg_attr(
     nightly,
     codesnip::entry("Matrix", include("zero_one", "ring", "coding"))
