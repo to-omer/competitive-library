@@ -66,11 +66,11 @@ macro_rules! impl_int_base {
 impl_int_base!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
 
 /// extended_gcd(a,b): ax + by = g = gcd(a,b)
-pub struct ExtendedGcd<T: Unsigned> {
+pub struct ExtendedGcd<T: Signed> {
     /// gcd
-    pub g: T,
-    pub x: T::Signed,
-    pub y: T::Signed,
+    pub g: T::Unsigned,
+    pub x: T,
+    pub y: T,
 }
 
 /// Trait for unsigned integer operations.
@@ -87,36 +87,13 @@ pub trait Unsigned: IntBase {
             self / self.gcd(other) * other
         }
     }
-    fn extgcd(self, other: Self) -> ExtendedGcd<Self> {
-        let (mut a, mut b) = (self.signed(), other.signed());
-        let (mut u, mut v, mut x, mut y) = (
-            Self::Signed::one(),
-            Self::Signed::zero(),
-            Self::Signed::zero(),
-            Self::Signed::one(),
-        );
-        while !a.is_zero() {
-            let k = b / a;
-            x -= k * u;
-            y -= k * v;
-            b -= k * a;
-            std::mem::swap(&mut x, &mut u);
-            std::mem::swap(&mut y, &mut v);
-            std::mem::swap(&mut b, &mut a);
-        }
-        ExtendedGcd {
-            g: b.unsigned(),
-            x,
-            y,
-        }
-    }
     fn modinv(self, modulo: Self) -> Self {
         assert!(
             !self.is_zero(),
             "attempt to inverse zero with modulo {}",
             modulo
         );
-        let extgcd = self.extgcd(modulo);
+        let extgcd = self.signed().extgcd(modulo.signed());
         assert!(
             extgcd.g.is_one(),
             "there is no inverse {} modulo {}",
@@ -135,6 +112,29 @@ pub trait Signed: IntBase + Neg<Output = Self> {
     fn is_negative(self) -> bool;
     fn is_positive(self) -> bool;
     fn signum(self) -> Self;
+    fn extgcd(self, other: Self) -> ExtendedGcd<Self> {
+        let (mut a, mut b) = (self, other);
+        let (mut u, mut v, mut x, mut y) = (Self::one(), Self::zero(), Self::zero(), Self::one());
+        while !a.is_zero() {
+            let k = b / a;
+            x -= k * u;
+            y -= k * v;
+            b -= k * a;
+            std::mem::swap(&mut x, &mut u);
+            std::mem::swap(&mut y, &mut v);
+            std::mem::swap(&mut b, &mut a);
+        }
+        if b.is_negative() {
+            b = -b;
+            x = -x;
+            y = -y;
+        }
+        ExtendedGcd {
+            g: b.unsigned(),
+            x,
+            y,
+        }
+    }
 }
 
 macro_rules! impl_unsigned_signed {
@@ -911,15 +911,6 @@ mod tests {
                         assert_eq!($t::zero().gcd(100), 100);
                     }
                     #[test]
-                    fn test_extgcd() {
-                        let mut rng = Xorshift::default();
-                        for (a, b) in rng.random_iter((0..=A, 0..=A)).take(Q) {
-                            let ExtendedGcd { g, x, y } = a.extgcd(b);
-                            assert_eq!(g, a.gcd(b));
-                            assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g as i128);
-                        }
-                    }
-                    #[test]
                     fn test_modinv() {
                         let mut rng = Xorshift::default();
                         for _ in 0..Q {
@@ -938,4 +929,25 @@ mod tests {
         };
     }
     test_unsigned!(u8 u16 u32 u64 usize);
+
+    macro_rules! test_signed {
+        ($($t:ident)*) => {
+            $(
+                mod $t {
+                    use super::*;
+                    const A: $t = $t::MAX / 2;
+                    #[test]
+                    fn test_extgcd() {
+                        let mut rng = Xorshift::default();
+                        for (a, b) in rng.random_iter((-A..=A, -A..=A)).take(Q) {
+                            let ExtendedGcd { g, x, y } = a.extgcd(b);
+                            assert_eq!(g, a.abs().unsigned().gcd(b.abs().unsigned()));
+                            assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g.signed() as i128);
+                        }
+                    }
+                }
+            )*
+        };
+    }
+    test_signed!(i8 i16 i32 i64 isize);
 }
