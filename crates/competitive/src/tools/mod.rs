@@ -46,7 +46,7 @@ mod invariant;
 mod iter_print;
 #[cfg_attr(nightly, codesnip::entry("comprehension"))]
 mod iterable;
-#[cfg_attr(nightly, codesnip::entry("iterator_ext"))]
+#[cfg_attr(nightly, codesnip::entry("IteratorExt"))]
 mod iterator_ext;
 #[cfg_attr(
     nightly,
