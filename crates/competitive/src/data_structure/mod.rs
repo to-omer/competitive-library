@@ -4,9 +4,9 @@ use crate::algebra::{
     AbelianGroup, AbelianMonoid, Associative, Group, Magma, MaxOperation, MinOperation, Monoid,
     MonoidAction, SemiGroup, Unital,
 };
-use crate::algorithm::SliceBisectExt;
+use crate::algorithm::{BitDpExt, SliceBisectExt};
 use crate::num::{Bounded, RangeBoundsExt};
-use crate::tools::GetDistinctMut;
+use crate::tools::{GetDistinctMut, Xorshift};
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};
@@ -73,6 +73,8 @@ pub use self::slope_trick::SlopeTrick;
 pub use self::sparse_set::SparseSet;
 #[codesnip::entry("SplayTree")]
 pub use self::splay_tree::{SplayMap, SplaySequence};
+#[codesnip::entry("SubmaskRangeQuery")]
+pub use self::submask_range_query::SubmaskRangeQuery;
 #[codesnip::entry("transducer")]
 pub use self::transducer::*;
 #[codesnip::entry("Trie")]
@@ -179,6 +181,11 @@ mod sparse_set;
     codesnip::entry("SplayTree", include("Allocator", "MonoidAction"))
 )]
 pub mod splay_tree;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SubmaskRangeQuery", include("algebra", "BitDp", "Xorshift"))
+)]
+pub mod submask_range_query;
 #[cfg_attr(
     nightly,
     codesnip::entry(
