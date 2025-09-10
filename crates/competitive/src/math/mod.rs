@@ -22,8 +22,6 @@ pub use self::bitwiseor_convolve::BitwiseorConvolve;
 pub use self::bitwisexor_convolve::BitwisexorConvolve;
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
-#[codesnip::entry("determinant_linear")]
-pub use self::determinant_linear::determinant_linear;
 #[codesnip::entry("discrete_logarithm")]
 pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
 pub use self::factorial::*;
@@ -53,6 +51,8 @@ pub use self::linear_diophantine::solve_linear_diophantine;
 pub use self::matrix::Matrix;
 #[codesnip::entry("miller_rabin")]
 pub use self::miller_rabin::{miller_rabin, miller_rabin_with_br};
+#[codesnip::entry("MIntMatrix")]
+pub use self::mint_matrix::MIntMatrix;
 #[codesnip::entry("NumberTheoreticTransform")]
 pub use self::number_theoretic_transform::{Convolve, Convolve998244353, MIntConvolve};
 pub use self::polynomial::*;
@@ -91,14 +91,6 @@ mod bitwiseor_convolve;
 mod bitwisexor_convolve;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
 mod convolve_steps;
-#[cfg_attr(
-    nightly,
-    codesnip::entry(
-        "determinant_linear",
-        include("Matrix", "FormalPowerSeries", "Xorshift")
-    )
-)]
-mod determinant_linear;
 #[cfg_attr(
     nightly,
     codesnip::entry(
@@ -170,6 +162,11 @@ mod linear_diophantine;
 mod matrix;
 #[cfg_attr(nightly, codesnip::entry("miller_rabin", include("BarrettReduction")))]
 mod miller_rabin;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("MIntMatrix", include("Matrix", "factorial", "Xorshift"))
+)]
+mod mint_matrix;
 #[cfg_attr(nightly, codesnip::entry("mod_sqrt", include("MIntBase")))]
 mod mod_sqrt;
 #[cfg_attr(
