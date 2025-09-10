@@ -89,20 +89,6 @@ impl SubmaskRangeQuery {
         })
     }
 
-    pub fn get_query_nested(
-        &self,
-        m: u32,
-    ) -> impl Iterator<Item = (impl Iterator<Item = u32>, bool)> {
-        let fix = m & self.mask[0];
-        let sub = m & self.mask[1];
-        let sup = (!m) & self.mask[2];
-        sup.subsets().map(move |s| {
-            let inv = s.count_ones() & 1 == 1;
-            let it = sub.subsets().map(move |t| fix | s | t);
-            (it, inv)
-        })
-    }
-
     pub fn update_query(&self, m: u32) -> impl Iterator<Item = u32> {
         let fix = m & self.mask[0] | m & self.mask[1];
         let sup = (!m) & self.mask[0];
@@ -180,18 +166,15 @@ where
             match q {
                 Query::Get { m } => {
                     let mut f = G::unit();
-                    for (it, inv) in s.get_query_nested(m) {
-                        let mut g = G::unit();
-                        for k in it {
-                            G::operate_assign(&mut g, &data[k as usize]);
-                        }
+                    let mut g = G::unit();
+                    for (k, inv) in s.get_query(m) {
                         if inv {
-                            G::rinv_operate_assign(&mut f, &g);
+                            G::operate_assign(&mut g, &data[k as usize]);
                         } else {
-                            G::operate_assign(&mut f, &g);
+                            G::operate_assign(&mut f, &data[k as usize]);
                         }
                     }
-                    out.push(f);
+                    out.push(G::rinv_operate(&f, &g));
                 }
                 Query::Update { m, x } => {
                     for k in s.update_query(m) {
