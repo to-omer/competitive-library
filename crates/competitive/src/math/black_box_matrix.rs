@@ -209,7 +209,7 @@ where
     }
 }
 
-pub trait MIntBlackBoxMatrix<M>: BlackBoxMatrix<AddMulOperation<MInt<M>>>
+pub trait BlackBoxMIntMatrix<M>: BlackBoxMatrix<AddMulOperation<MInt<M>>>
 where
     M: MIntBase,
 {
@@ -302,7 +302,7 @@ where
     }
 }
 
-impl<M, B> MIntBlackBoxMatrix<M> for B
+impl<M, B> BlackBoxMIntMatrix<M> for B
 where
     M: MIntBase,
     B: BlackBoxMatrix<AddMulOperation<MInt<M>>>,

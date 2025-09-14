@@ -22,7 +22,7 @@ pub use self::bitwiseor_convolve::BitwiseorConvolve;
 pub use self::bitwisexor_convolve::BitwisexorConvolve;
 #[codesnip::entry("BlackBoxMatrix")]
 pub use self::black_box_matrix::{
-    BlackBoxMatrix, BlackBoxMatrixImpl, MIntBlackBoxMatrix, SparseMatrix,
+    BlackBoxMIntMatrix, BlackBoxMatrix, BlackBoxMatrixImpl, SparseMatrix,
 };
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
