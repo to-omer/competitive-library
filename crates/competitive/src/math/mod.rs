@@ -95,7 +95,7 @@ mod bitwiseor_convolve;
 mod bitwisexor_convolve;
 #[cfg_attr(
     nightly,
-    codesnip::entry("BlackBoxMatrix", include("Matrix", "Xorshift"))
+    codesnip::entry("BlackBoxMatrix", include("FormalPowerSeries", "Matrix", "Xorshift"))
 )]
 mod black_box_matrix;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
