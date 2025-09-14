@@ -18,6 +18,7 @@ pub mod multipoint_evaluation;
 pub mod polynomial_taylor_shift;
 pub mod pow_of_formal_power_series;
 pub mod sharp_p_subset_sum;
+pub mod sparse_matrix_det;
 pub mod sqrt_mod;
 pub mod sqrt_of_formal_power_series;
 pub mod stern_brocot_tree;

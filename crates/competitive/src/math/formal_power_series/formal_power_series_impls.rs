@@ -213,6 +213,13 @@ where
         }
         self
     }
+    pub fn parity_inversion(mut self) -> Self {
+        self.iter_mut()
+            .skip(1)
+            .step_by(2)
+            .for_each(|x| *x = -x.clone());
+        self
+    }
     pub fn eval(&self, x: T) -> T {
         let mut base = T::one();
         let mut res = T::zero();
@@ -375,21 +382,44 @@ where
         }
         f.exp(deg)
     }
+    /// [x^n] P(x) / Q(x)
     pub fn bostan_mori(self, rhs: Self, mut n: usize) -> T {
         let mut p = self;
         let mut q = rhs;
         while n > 0 {
-            let mut mq = q.clone();
-            mq.iter_mut()
-                .skip(1)
-                .step_by(2)
-                .for_each(|x| *x = -x.clone());
+            let mq = q.clone().parity_inversion();
             let u = p * mq.clone();
             p = if n % 2 == 0 { u.even() } else { u.odd() };
             q = (q * mq).even();
             n /= 2;
         }
         p[0].clone() / q[0].clone()
+    }
+    /// return F(x) where [x^n] P(x) / Q(x) = [x^d-1] P(x) F(x)
+    pub fn bostan_mori_msb(self, n: usize) -> Self {
+        let d = self.length() - 1;
+        if n == 0 {
+            return (Self::one() << (d - 1)) / self[0].clone();
+        }
+        let q = self;
+        let mq = q.clone().parity_inversion();
+        let w = (q * &mq).even().bostan_mori_msb(n / 2);
+        let mut s = Self::zeros(w.length() * 2 - (n % 2));
+        for (i, x) in w.iter().enumerate() {
+            s[i * 2 + (1 - n % 2)] = x.clone();
+        }
+        let len = 2 * d + 1;
+        let ts = C::transform(s.prefix(len).data, len);
+        mq.reversed().middle_product(&ts, len).prefix(d + 1)
+    }
+    /// x^n mod self
+    pub fn pow_mod(self, n: usize) -> Self {
+        let d = self.length() - 1;
+        let q = self.reversed();
+        let u = q.clone().bostan_mori_msb(n);
+        let mut f = (u * q).prefix(d).reversed();
+        f.trim_tail_zeros();
+        f
     }
     fn middle_product(self, other: &C::F, deg: usize) -> Self {
         let n = self.length();
@@ -529,5 +559,58 @@ where
             self.data[i] *= f.inv_fact[i];
         }
         self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        rand,
+        tools::{RandomSpec, Xorshift},
+    };
+
+    struct D;
+    impl RandomSpec<MInt998244353> for D {
+        fn rand(&self, rng: &mut Xorshift) -> MInt998244353 {
+            MInt998244353::new_unchecked(rng.random(..MInt998244353::get_mod()))
+        }
+    }
+
+    #[test]
+    fn test_bostan_mori_msb() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 2..20, t: 0usize..=1, k: 0..[10, 1_000_000_000][t]);
+            let f = Fps998244353::from_vec((0..n - 1).map(|_| rng.random(D)).collect());
+            let g = Fps998244353::from_vec((0..n).map(|_| rng.random(D)).collect());
+            let expected = f.clone().bostan_mori(g.clone(), k);
+            let result = (f * g.bostan_mori_msb(k))[n - 2];
+            assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn test_pow_mod() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 2..20, t: 0usize..=1, k: 0..[10, 1_000_000_000][t]);
+            let f = Fps998244353::from_vec((0..n).map(|_| rng.random(D)).collect());
+            let mut expected = Fps998244353::one();
+            {
+                let mut p = Fps998244353::one() << 1;
+                let mut k = k;
+                while k > 0 {
+                    if k & 1 == 1 {
+                        expected = (expected * &p) % &f;
+                    }
+                    p = (&p * &p) % &f;
+                    k >>= 1;
+                }
+            }
+
+            let result = f.pow_mod(k);
+            assert_eq!(result, expected);
+        }
     }
 }

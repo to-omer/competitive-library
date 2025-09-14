@@ -20,6 +20,10 @@ pub use self::bitwiseand_convolve::BitwiseandConvolve;
 pub use self::bitwiseor_convolve::BitwiseorConvolve;
 #[codesnip::entry("BitwisexorConvolve")]
 pub use self::bitwisexor_convolve::BitwisexorConvolve;
+#[codesnip::entry("BlackBoxMatrix")]
+pub use self::black_box_matrix::{
+    BlackBoxMatrix, BlackBoxMatrixImpl, MIntBlackBoxMatrix, SparseMatrix,
+};
 #[codesnip::entry("ConvolveSteps")]
 pub use self::convolve_steps::ConvolveSteps;
 #[codesnip::entry("discrete_logarithm")]
@@ -89,6 +93,11 @@ mod bitwiseor_convolve;
     codesnip::entry("BitwisexorConvolve", include("_zeta_transform", "bitwise_transform"))
 )]
 mod bitwisexor_convolve;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("BlackBoxMatrix", include("Matrix", "Xorshift"))
+)]
+mod black_box_matrix;
 #[cfg_attr(nightly, codesnip::entry("ConvolveSteps"))]
 mod convolve_steps;
 #[cfg_attr(
