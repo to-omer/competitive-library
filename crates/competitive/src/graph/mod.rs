@@ -3,7 +3,7 @@
 use crate::{
     algebra::{Monoid, SemiRing},
     algorithm::BitDpExt,
-    num::Bounded,
+    num::{Bounded, Zero},
     tools::{IterScan, MarkedIterScan, PartialIgnoredOrd},
 };
 
@@ -64,7 +64,10 @@ mod graphvis;
 mod grid;
 #[cfg_attr(nightly, codesnip::entry("LowLink", include("SparseGraph")))]
 mod low_link;
-#[cfg_attr(nightly, codesnip::entry("Dinic", include("SparseGraph")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Dinic", include("SparseGraph", "bounded", "zero_one"))
+)]
 mod maximum_flow;
 #[cfg_attr(nightly, codesnip::entry("PrimalDual", include("SparseGraph")))]
 mod minimum_cost_flow;

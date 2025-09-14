@@ -1,13 +1,16 @@
-use super::BidirectionalSparseGraph;
-use std::collections::VecDeque;
+use super::{BidirectionalSparseGraph, Bounded, Zero};
+use std::{
+    collections::VecDeque,
+    ops::{Add, AddAssign, Sub, SubAssign},
+};
 
 #[derive(Debug, Clone)]
-pub struct DinicBuilder {
+pub struct DinicBuilder<C> {
     vsize: usize,
     edges: Vec<(usize, usize)>,
-    capacities: Vec<u64>,
+    capacities: Vec<C>,
 }
-impl DinicBuilder {
+impl<C> DinicBuilder<C> {
     pub fn new(vsize: usize, esize_expect: usize) -> Self {
         Self {
             vsize,
@@ -15,16 +18,20 @@ impl DinicBuilder {
             capacities: Vec::with_capacity(esize_expect * 2),
         }
     }
-    pub fn add_edge(&mut self, from: usize, to: usize, cap: u64) {
+    pub fn add_edge(&mut self, from: usize, to: usize, cap: C)
+    where
+        C: Zero + PartialOrd,
+    {
         self.edges.push((from, to));
+        assert!(cap >= C::zero());
         self.capacities.push(cap);
-        self.capacities.push(0);
+        self.capacities.push(C::zero());
     }
     pub fn gen_graph(&mut self) -> BidirectionalSparseGraph {
         let edges = std::mem::take(&mut self.edges);
         BidirectionalSparseGraph::from_edges(self.vsize, edges)
     }
-    pub fn build(self, graph: &BidirectionalSparseGraph) -> Dinic<'_> {
+    pub fn build(self, graph: &BidirectionalSparseGraph) -> Dinic<'_, C> {
         let DinicBuilder {
             vsize, capacities, ..
         } = self;
@@ -37,8 +44,11 @@ impl DinicBuilder {
         }
     }
 }
-impl Extend<(usize, usize, u64)> for DinicBuilder {
-    fn extend<T: IntoIterator<Item = (usize, usize, u64)>>(&mut self, iter: T) {
+impl<C> Extend<(usize, usize, C)> for DinicBuilder<C>
+where
+    C: Zero + PartialOrd,
+{
+    fn extend<I: IntoIterator<Item = (usize, usize, C)>>(&mut self, iter: I) {
         for (from, to, cap) in iter {
             self.add_edge(from, to, cap)
         }
@@ -46,15 +56,18 @@ impl Extend<(usize, usize, u64)> for DinicBuilder {
 }
 
 #[derive(Debug, Clone)]
-pub struct Dinic<'a> {
+pub struct Dinic<'a, C> {
     graph: &'a BidirectionalSparseGraph,
-    capacities: Vec<u64>,
+    capacities: Vec<C>,
     iter: Vec<usize>,
     level: Vec<usize>,
     deq: VecDeque<usize>,
 }
-impl Dinic<'_> {
-    pub fn builder(vsize: usize, esize_expect: usize) -> DinicBuilder {
+impl<'a, C> Dinic<'a, C>
+where
+    C: Copy + Zero + Ord + Bounded + Add<Output = C> + Sub<Output = C> + AddAssign + SubAssign,
+{
+    pub fn builder(vsize: usize, esize_expect: usize) -> DinicBuilder<C> {
         DinicBuilder::new(vsize, esize_expect)
     }
     fn bfs(&mut self, s: usize, t: usize) -> bool {
@@ -65,7 +78,7 @@ impl Dinic<'_> {
         self.deq.push_back(s);
         while let Some(u) = self.deq.pop_front() {
             for a in self.graph.adjacencies(u) {
-                if self.capacities[a.id] > 0 && self.level[a.to] == usize::MAX {
+                if self.capacities[a.id] > C::zero() && self.level[a.to] == usize::MAX {
                     self.level[a.to] = self.level[u] + 1;
                     if a.to == t {
                         return false;
@@ -76,15 +89,15 @@ impl Dinic<'_> {
         }
         self.level[t] == usize::MAX
     }
-    fn dfs(&mut self, s: usize, u: usize, upper: u64) -> u64 {
+    fn dfs(&mut self, s: usize, u: usize, upper: C) -> C {
         if u == s {
             return upper;
         }
-        let mut res = 0;
+        let mut res = C::zero();
         for a in self.graph.adjacencies(u).skip(self.iter[u]) {
-            if self.level[u] > self.level[a.to] && self.capacities[a.id ^ 1] > 0 {
+            if self.level[u] > self.level[a.to] && self.capacities[a.id ^ 1] > C::zero() {
                 let d = self.dfs(s, a.to, (upper - res).min(self.capacities[a.id ^ 1]));
-                if d > 0 {
+                if d > C::zero() {
                     self.capacities[a.id ^ 1] -= d;
                     self.capacities[a.id] += d;
                     res += d;
@@ -97,8 +110,8 @@ impl Dinic<'_> {
         }
         res
     }
-    pub fn maximum_flow_limited(&mut self, s: usize, t: usize, limit: u64) -> u64 {
-        let mut flow = 0;
+    pub fn maximum_flow_limited(&mut self, s: usize, t: usize, limit: C) -> C {
+        let mut flow = C::zero();
         while flow < limit {
             if self.bfs(s, t) {
                 break;
@@ -107,7 +120,7 @@ impl Dinic<'_> {
             self.iter.resize(self.graph.vertices_size(), 0);
             while flow < limit {
                 let f = self.dfs(s, t, limit - flow);
-                if f == 0 {
+                if f == C::zero() {
                     break;
                 }
                 flow += f;
@@ -115,8 +128,8 @@ impl Dinic<'_> {
         }
         flow
     }
-    pub fn maximum_flow(&mut self, s: usize, t: usize) -> u64 {
-        self.maximum_flow_limited(s, t, u64::MAX)
+    pub fn maximum_flow(&mut self, s: usize, t: usize) -> C {
+        self.maximum_flow_limited(s, t, C::maximum())
     }
     pub fn minimum_cut(&mut self, s: usize) -> Vec<bool> {
         let mut visited = vec![false; self.graph.vertices_size()];
@@ -125,7 +138,7 @@ impl Dinic<'_> {
         self.deq.push_back(s);
         while let Some(u) = self.deq.pop_front() {
             for a in self.graph.adjacencies(u) {
-                if self.capacities[a.id] > 0 && !visited[a.to] {
+                if self.capacities[a.id] > C::zero() && !visited[a.to] {
                     visited[a.to] = true;
                     self.deq.push_back(a.to);
                 }
@@ -133,10 +146,10 @@ impl Dinic<'_> {
         }
         visited
     }
-    pub fn get_flow(&self, eid: usize) -> u64 {
+    pub fn get_flow(&self, eid: usize) -> C {
         self.capacities[eid * 2 + 1]
     }
-    pub fn change_edge(&mut self, eid: usize, cap: u64, flow: u64) {
+    pub fn change_edge(&mut self, eid: usize, cap: C, flow: C) {
         assert!(flow <= cap);
         self.capacities[eid * 2] = cap - flow;
         self.capacities[eid * 2 + 1] = flow;
