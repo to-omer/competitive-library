@@ -4,7 +4,7 @@ pub fn convex_hull<T>(mut ps: Vec<Complex<T>>) -> Vec<Complex<T>>
 where
     T: PartialOrd + Ccwable,
 {
-    ps.sort_by(|p1, p2| ((p1.re, p1.im).partial_cmp(&(p2.re, p2.im)).unwrap()));
+    ps.sort_by(|p1, p2| (p1.re, p1.im).partial_cmp(&(p2.re, p2.im)).unwrap());
     let mut qs = Vec::new();
     for &p in ps.iter().chain(ps.iter().rev().skip(1)) {
         while {

@@ -243,7 +243,7 @@ fn index_calculus_for_primitive_root(
         }
         mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
     }
-    (0..pc).map(|i| (mat[i][pc])).collect()
+    (0..pc).map(|i| mat[i][pc]).collect()
 }
 
 #[derive(Debug)]
