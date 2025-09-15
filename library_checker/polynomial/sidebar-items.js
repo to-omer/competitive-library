@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["exp_of_formal_power_series","inv_of_formal_power_series","log_of_formal_power_series","multipoint_evaluation","polynomial_taylor_shift","pow_of_formal_power_series","sqrt_of_formal_power_series"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["datastructure","graph","math","sample","string"]};
+window.SIDEBAR_ITEMS = {"mod":["convolution","data_structure","enumerative_combinatorics","graph","linear_algebra","number_theory","other","polynomial","sample","set_power_series","string","tree"]};

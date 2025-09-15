@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["characteristic_polynomial","sparse_matrix_det"]};

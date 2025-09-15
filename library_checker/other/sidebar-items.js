@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["find_linear_recurrence","kth_term_of_linearly_recurrent_sequence","two_sat"]};
