@@ -111,6 +111,10 @@ where
         }
     }
 
+    pub fn transpose(&self) -> Self {
+        Self::new_with((self.shape.1, self.shape.0), |i, j| self[j][i].clone())
+    }
+
     pub fn map<S, F>(&self, mut f: F) -> Matrix<S>
     where
         S: SemiRing,
@@ -145,6 +149,17 @@ where
     }
 }
 
+#[derive(Debug)]
+pub struct SystemOfLinearEquationsSolution<R>
+where
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+{
+    pub particular: Vec<R::T>,
+    pub basis: Vec<Vec<R::T>>,
+}
+
 impl<R> Matrix<R>
 where
     R: Field,
@@ -159,7 +174,6 @@ where
     {
         let (n, m) = self.shape;
         let mut c = 0;
-        let mut row_id: Vec<usize> = (0..n).collect();
         for r in 0..n {
             loop {
                 if c >= m {
@@ -168,7 +182,6 @@ where
                 if let Some(pivot) = (r..n).find(|&p| !R::is_zero(&self[p][c])) {
                     f(r, pivot, c);
                     self.data.swap(r, pivot);
-                    row_id.swap(r, pivot);
                     break;
                 };
                 c += 1;
@@ -219,7 +232,10 @@ where
         d
     }
 
-    pub fn solve_system_of_linear_equations(&self, b: &[R::T]) -> Option<Vec<R::T>> {
+    pub fn solve_system_of_linear_equations(
+        &self,
+        b: &[R::T],
+    ) -> Option<SystemOfLinearEquationsSolution<R>> {
         assert_eq!(self.shape.0, b.len());
         let (n, m) = self.shape;
         let mut c = Matrix::<R>::zeros((n, m + 1));
@@ -227,21 +243,28 @@ where
             c[i][..m].clone_from_slice(&self[i]);
             c[i][m] = b[i].clone();
         }
-        c.row_reduction(true);
-        let mut x = vec![R::zero(); m];
-        for i in 0..n {
-            let mut j = 0usize;
-            while j <= m && R::is_zero(&c[i][j]) {
-                j += 1;
-            }
-            if j == m {
-                return None;
-            }
-            if j < m {
-                x[j] = c[i][m].clone();
+        let mut reduced = vec![!0; m + 1];
+        c.row_reduction_with(true, |r, _, c| reduced[c] = r);
+        if reduced[m] != !0 {
+            return None;
+        }
+        let mut particular = vec![R::zero(); m];
+        let mut basis = vec![];
+        for j in 0..m {
+            if reduced[j] != !0 {
+                particular[j] = c[reduced[j]][m].clone();
+            } else {
+                let mut v = vec![R::zero(); m];
+                v[j] = R::one();
+                for i in 0..m {
+                    if reduced[i] != !0 {
+                        R::sub_assign(&mut v[i], &c[reduced[i]][j]);
+                    }
+                }
+                basis.push(v);
             }
         }
-        Some(x)
+        Some(SystemOfLinearEquationsSolution { particular, basis })
     }
 
     pub fn inverse(&self) -> Option<Matrix<R>> {
@@ -534,6 +557,33 @@ mod tests {
         }
     }
 
+    fn random_matrix(
+        rng: &mut Xorshift,
+        shape: (usize, usize),
+    ) -> Matrix<AddMulOperation<DynMIntU32>> {
+        if rng.gen_bool(0.5) {
+            Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D))
+        } else if rng.gen_bool(0.5) {
+            let r = rng.randf();
+            Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| {
+                if rng.gen_bool(r) {
+                    rng.random(D)
+                } else {
+                    DynMIntU32::zero()
+                }
+            })
+        } else {
+            let mut mat = Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D));
+            let i0 = rng.random(0..shape.0);
+            let i1 = rng.random(0..shape.0);
+            let x = rng.random(D);
+            for j in 0..shape.1 {
+                mat[(i0, j)] = mat[(i1, j)] * x;
+            }
+            mat
+        }
+    }
+
     #[test]
     fn test_eye() {
         for n in 0..10 {
@@ -613,6 +663,42 @@ mod tests {
             assert_eq!(rank == n, inv.is_some());
             if let Some(inv) = inv {
                 assert_eq!(&mat * &inv, Matrix::<AddMulOperation<_>>::eye((n, n)));
+            }
+        }
+    }
+
+    #[test]
+    fn test_system_of_linear_equations() {
+        const Q: usize = 1000;
+        let mut rng = Xorshift::new();
+        let ps = [2, 3, 1_000_000_007];
+        for _ in 0..Q {
+            let p = ps[rng.random(..ps.len())];
+            DynMIntU32::set_mod(p);
+            let n = rng.random(1..=30);
+            let m = rng.random(1..=30);
+            let a = random_matrix(&mut rng, (n, m));
+            let b = random_matrix(&mut rng, (1, n))
+                .data
+                .into_iter()
+                .next()
+                .unwrap();
+            if let Some(sol) = a.solve_system_of_linear_equations(&b) {
+                assert_eq!(
+                    &a * Matrix::from_vec(vec![sol.particular.clone()]).transpose(),
+                    Matrix::from_vec(vec![b.clone()]).transpose()
+                );
+                let c = rand_value!(rng, [D; sol.basis.len()]);
+                let mut x = sol.particular.clone();
+                for (c, v) in c.iter().zip(sol.basis.iter()) {
+                    for (x, v) in x.iter_mut().zip(v.iter()) {
+                        *x += *c * *v;
+                    }
+                }
+                assert_eq!(
+                    &a * Matrix::from_vec(vec![x]).transpose(),
+                    Matrix::from_vec(vec![b]).transpose()
+                );
             }
         }
     }

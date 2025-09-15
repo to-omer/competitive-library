@@ -416,7 +416,9 @@ mod tests {
             rand!(rng, n: 1..30);
             let a = random_matrix(&mut rng, (n, n));
             let b: Vec<_> = (0..n).map(|_| rng.random(D)).collect();
-            let expected = a.solve_system_of_linear_equations(&b);
+            let expected = a
+                .solve_system_of_linear_equations(&b)
+                .map(|sol| sol.particular);
             let result = a.black_box_linear_equation(b);
             assert_eq!(result, expected);
         }

@@ -81,7 +81,9 @@ where
             .map(|(key, (a, b))| {
                 (
                     key,
-                    Matrix::<R>::from_vec(a).solve_system_of_linear_equations(&b),
+                    Matrix::<R>::from_vec(a)
+                        .solve_system_of_linear_equations(&b)
+                        .map(|sol| sol.particular),
                 )
             })
             .collect();
@@ -103,7 +105,9 @@ where
             .into_iter()
             .map(|(key, (a, b))| {
                 let mat = Matrix::<R>::from_vec(a);
-                let coeff = mat.solve_system_of_linear_equations(&b);
+                let coeff = mat
+                    .solve_system_of_linear_equations(&b)
+                    .map(|sol| sol.particular);
                 if coeff.is_none() {
                     eprintln!(
                         "failed to solve linear equations: key={:?} A={:?} b={:?}",
