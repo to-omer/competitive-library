@@ -100,7 +100,7 @@ fn find_problem(rootdir: &PathBuf, problem: &str) -> BoxResult<LibraryCheckerPro
     Err(ProblemNotFound)?
 }
 
-pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, CheckerBinary)> {
+fn prepare_library_checker_problems() -> BoxResult<PathBuf> {
     let rootdir = app_cache_directory().join("library-checker-problems");
 
     if rootdir.exists() {
@@ -118,6 +118,12 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
             .arg(rootdir.as_os_str())
             .output()?;
     }
+
+    Ok(rootdir)
+}
+
+pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, CheckerBinary)> {
+    let rootdir = prepare_library_checker_problems()?;
 
     let problem = find_problem(&rootdir, problem_id)?;
     let mut cases = vec![];
@@ -164,6 +170,49 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
     }
 
     Ok((cases, CheckerBinary { checker }))
+}
+
+pub fn get_problem_list() -> BoxResult<Vec<(String, Vec<String>)>> {
+    let rootdir = prepare_library_checker_problems()?;
+    // find . -name "info.toml" -not -path "./test/*"
+    // ./category/problem/info.toml
+    let mut problems = vec![];
+    for entry in read_dir(&rootdir)?.flatten() {
+        let path = entry.path();
+        if !path.is_dir() {
+            continue;
+        }
+        let category = path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .unwrap_or("")
+            .to_string();
+        if category == "test" {
+            continue;
+        }
+        let mut category_problems = vec![];
+        for entry in read_dir(&path)?.flatten() {
+            let path = entry.path();
+            if !path.is_dir() {
+                continue;
+            }
+            let problem = path
+                .file_name()
+                .and_then(|s| s.to_str())
+                .unwrap_or("")
+                .to_string();
+            let info_path = path.join("info.toml");
+            if !info_path.is_file() {
+                continue;
+            }
+            category_problems.push(problem);
+        }
+        if category_problems.is_empty() {
+            continue;
+        }
+        problems.push((category, category_problems));
+    }
+    Ok(problems)
 }
 
 #[test]

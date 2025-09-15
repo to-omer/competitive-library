@@ -22,7 +22,7 @@ use tokio::{io::AsyncWriteExt, time::sleep};
 pub use verify_attr::{aizu_online_judge, library_checker};
 
 mod aizu_online_judge;
-mod library_checker;
+pub mod library_checker;
 
 const APP_NAME: &str = "competitive-library";
 
