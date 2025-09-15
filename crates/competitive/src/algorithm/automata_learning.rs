@@ -686,7 +686,12 @@ where
                 }
             }
         }
-        let pivots = h.row_reduction(false);
+        let mut row_id: Vec<usize> = (0..h.shape.0).collect();
+        let mut pivots = vec![];
+        h.row_reduction_with(false, |r, p, c| {
+            row_id.swap(r, p);
+            pivots.push((row_id[r], c));
+        });
         let mut new_prefixes = vec![];
         let mut new_suffixes = vec![];
         for (i, j) in pivots {

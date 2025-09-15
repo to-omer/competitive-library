@@ -327,6 +327,15 @@ mod tests {
     ) -> Matrix<AddMulOperation<MInt998244353>> {
         if rng.gen_bool(0.5) {
             Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D))
+        } else if rng.gen_bool(0.5) {
+            let r = rng.randf();
+            Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| {
+                if rng.gen_bool(r) {
+                    rng.random(D)
+                } else {
+                    MInt998244353::zero()
+                }
+            })
         } else {
             let mut mat = Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D));
             let i0 = rng.random(0..shape.0);
@@ -382,7 +391,7 @@ mod tests {
             rand!(rng, n: 1..30, k: 0..1_000_000_000);
             let a = random_matrix(&mut rng, (n, n));
             let b: Vec<_> = (0..n).map(|_| rng.random(D)).collect();
-            let expected = a.pow(k).apply(&b);
+            let expected = a.clone().pow(k).apply(&b);
             let result = a.apply_pow::<Convolve998244353>(b, k);
             assert_eq!(result, expected);
         }
