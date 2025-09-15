@@ -3,7 +3,7 @@
 use crate::{
     algebra::{Monoid, SemiRing},
     algorithm::BitDpExt,
-    num::{Bounded, Zero},
+    num::{Bounded, One, Zero},
     tools::{IterScan, MarkedIterScan, PartialIgnoredOrd},
 };
 
@@ -27,6 +27,8 @@ pub use self::low_link::LowLink;
 pub use self::maximum_flow::{Dinic, DinicBuilder};
 #[codesnip::entry("PrimalDual")]
 pub use self::minimum_cost_flow::{PrimalDual, PrimalDualBuilder};
+#[codesnip::entry("NetworkSimplex")]
+pub use self::network_simplex::NetworkSimplex;
 #[codesnip::entry("ProjectSelectionProblem")]
 pub use self::project_selection_problem::ProjectSelectionProblem;
 #[codesnip::entry("shortest_path")]
@@ -72,6 +74,8 @@ mod maximum_flow;
 #[cfg_attr(nightly, codesnip::entry("PrimalDual", include("SparseGraph")))]
 mod minimum_cost_flow;
 mod minimum_spanning_tree;
+#[cfg_attr(nightly, codesnip::entry("NetworkSimplex", include("zero_one")))]
+mod network_simplex;
 mod order;
 #[cfg_attr(nightly, codesnip::entry("ProjectSelectionProblem", include("Dinic")))]
 mod project_selection_problem;

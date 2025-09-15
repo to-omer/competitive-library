@@ -291,7 +291,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{AddMulOperation, AdditiveOperation},
-        num::{One as _, Saturating, mint_basic::MInt998244353},
+        num::{Saturating, mint_basic::MInt998244353},
         rand,
         tools::Xorshift,
     };
