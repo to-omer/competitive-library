@@ -6,6 +6,8 @@ pub use self::char_convert::{CharConvertTryFrom, CharConvertTryInto};
 pub use self::coding::{SerdeByteStr, unescape};
 #[codesnip::entry("digit_sequence")]
 pub use self::digit_sequence::ToDigitSequence;
+#[codesnip::entry("IdGenerator")]
+pub use self::id_generator::IdGenerator;
 #[codesnip::entry("_iter_print")]
 pub use self::iter_print::IterPrint;
 #[codesnip::entry("IteratorExt")]
@@ -40,6 +42,8 @@ mod char_convert;
 mod coding;
 #[cfg_attr(nightly, codesnip::entry("digit_sequence"))]
 mod digit_sequence;
+#[cfg_attr(nightly, codesnip::entry("IdGenerator"))]
+mod id_generator;
 #[cfg_attr(nightly, codesnip::entry)]
 mod invariant;
 #[cfg_attr(nightly, codesnip::entry("_iter_print"))]
