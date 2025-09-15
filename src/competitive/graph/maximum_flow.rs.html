@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/maximum_flow.rs`."><title>maximum_flow.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.0-nightly (02c7b1a7a 2025-09-13)" data-channel="nightly" data-search-js="search-cb266a1a.js" data-stringdex-js="stringdex-5af928a3.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6dc2a7f3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/graph/maximum_flow.rs`."><title>maximum_flow.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0-nightly (52618eb33 2025-09-14)" data-channel="nightly" data-search-js="search-cb266a1a.js" data-stringdex-js="stringdex-5af928a3.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6dc2a7f3.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -52,147 +52,160 @@
   });
 </script>
 
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">competitive/graph/</div>maximum_flow.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><a href="sparse_graph.rs.html#162"><span class="kw">super</span>::BidirectionalSparseGraph</a>;
-<a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">std::collections::VecDeque</a>;
-<a href=#3 id=3 data-nosnippet>3</a>
-<a href=#4 id=4 data-nosnippet>4</a><span class="attr">#[derive(Debug, Clone)]
-<a href=#5 id=5 data-nosnippet>5</a></span><span class="kw">pub struct </span><a href="../../../competitive/graph/struct.DinicBuilder.html">DinicBuilder</a> {
-<a href=#6 id=6 data-nosnippet>6</a>    vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
-<a href=#7 id=7 data-nosnippet>7</a>    edges: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
-<a href=#8 id=8 data-nosnippet>8</a>    capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
-<a href=#9 id=9 data-nosnippet>9</a>}
-<a href=#10 id=10 data-nosnippet>10</a><span class="kw">impl </span><a href="#5-9">DinicBuilder</a> {
-<a href=#11 id=11 data-nosnippet>11</a>    <span class="kw">pub fn </span>new(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
-<a href=#12 id=12 data-nosnippet>12</a>        <span class="self">Self </span>{
-<a href=#13 id=13 data-nosnippet>13</a>            <a href="#11">vsize</a>,
-<a href=#14 id=14 data-nosnippet>14</a>            edges: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#11">esize_expect</a>),
-<a href=#15 id=15 data-nosnippet>15</a>            capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#11">esize_expect</a> * <span class="number">2</span>),
-<a href=#16 id=16 data-nosnippet>16</a>        }
-<a href=#17 id=17 data-nosnippet>17</a>    }
-<a href=#18 id=18 data-nosnippet>18</a>    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, to: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
-<a href=#19 id=19 data-nosnippet>19</a>        <a class="self" href="#18">self</a>.edges.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<a href="#18">from</a>, <a href="#18">to</a>));
-<a href=#20 id=20 data-nosnippet>20</a>        <a class="self" href="#18">self</a>.capacities.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#18">cap</a>);
-<a href=#21 id=21 data-nosnippet>21</a>        <a class="self" href="#18">self</a>.capacities.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<span class="number">0</span>);
-<a href=#22 id=22 data-nosnippet>22</a>    }
-<a href=#23 id=23 data-nosnippet>23</a>    <span class="kw">pub fn </span>gen_graph(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a> {
-<a href=#24 id=24 data-nosnippet>24</a>        <span class="kw">let </span>edges = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#23">self</a>.edges);
-<a href=#25 id=25 data-nosnippet>25</a>        <a href="sparse_graph.rs.html#71-73">BidirectionalSparseGraph::from_edges</a>(<a class="self" href="#23">self</a>.vsize, <a href="#24">edges</a>)
-<a href=#26 id=26 data-nosnippet>26</a>    }
-<a href=#27 id=27 data-nosnippet>27</a>    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span><a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>) -&gt; <a href="#49-55">Dinic</a>&lt;<span class="lifetime">'_</span>&gt; {
-<a href=#28 id=28 data-nosnippet>28</a>        <span class="kw">let </span><a href="#5-9">DinicBuilder</a> {
-<a href=#29 id=29 data-nosnippet>29</a>            vsize, capacities, ..
-<a href=#30 id=30 data-nosnippet>30</a>        } = <a class="self" href="#27">self</a>;
-<a href=#31 id=31 data-nosnippet>31</a>        <a href="#49-55">Dinic</a> {
-<a href=#32 id=32 data-nosnippet>32</a>            <a href="#27">graph</a>,
-<a href=#33 id=33 data-nosnippet>33</a>            <a href="#29">capacities</a>,
-<a href=#34 id=34 data-nosnippet>34</a>            iter: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#29">vsize</a>),
-<a href=#35 id=35 data-nosnippet>35</a>            level: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#29">vsize</a>),
-<a href=#36 id=36 data-nosnippet>36</a>            deq: <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.with_capacity">VecDeque::with_capacity</a>(<a href="#29">vsize</a>),
-<a href=#37 id=37 data-nosnippet>37</a>        }
-<a href=#38 id=38 data-nosnippet>38</a>    }
-<a href=#39 id=39 data-nosnippet>39</a>}
-<a href=#40 id=40 data-nosnippet>40</a><span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">Extend</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt; <span class="kw">for </span><a href="#5-9">DinicBuilder</a> {
-<a href=#41 id=41 data-nosnippet>41</a>    <span class="kw">fn </span>extend&lt;T: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
-<a href=#42 id=42 data-nosnippet>42</a>        <span class="kw">for </span>(from, to, cap) <span class="kw">in </span>iter {
-<a href=#43 id=43 data-nosnippet>43</a>            <span class="self">self</span>.add_edge(from, to, cap)
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">competitive/graph/</div>maximum_flow.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use super</span>::{<a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>, <a href="../num/bounded.rs.html#2-17">Bounded</a>, <a href="../num/zero_one.rs.html#1-14">Zero</a>};
+<a href=#2 id=2 data-nosnippet>2</a><span class="kw">use </span>std::{
+<a href=#3 id=3 data-nosnippet>3</a>    <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">collections::VecDeque</a>,
+<a href=#4 id=4 data-nosnippet>4</a>    ops::{<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html">AddAssign</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">Sub</a>, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.SubAssign.html">SubAssign</a>},
+<a href=#5 id=5 data-nosnippet>5</a>};
+<a href=#6 id=6 data-nosnippet>6</a>
+<a href=#7 id=7 data-nosnippet>7</a><span class="attr">#[derive(Debug, Clone)]
+<a href=#8 id=8 data-nosnippet>8</a></span><span class="kw">pub struct </span><a href="../../../competitive/graph/struct.DinicBuilder.html">DinicBuilder</a>&lt;C&gt; {
+<a href=#9 id=9 data-nosnippet>9</a>    vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+<a href=#10 id=10 data-nosnippet>10</a>    edges: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)&gt;,
+<a href=#11 id=11 data-nosnippet>11</a>    capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;C&gt;,
+<a href=#12 id=12 data-nosnippet>12</a>}
+<a href=#13 id=13 data-nosnippet>13</a><span class="kw">impl</span>&lt;C&gt; <a href="#8-12">DinicBuilder</a>&lt;C&gt; {
+<a href=#14 id=14 data-nosnippet>14</a>    <span class="kw">pub fn </span>new(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
+<a href=#15 id=15 data-nosnippet>15</a>        <span class="self">Self </span>{
+<a href=#16 id=16 data-nosnippet>16</a>            <a href="#14">vsize</a>,
+<a href=#17 id=17 data-nosnippet>17</a>            edges: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#14">esize_expect</a>),
+<a href=#18 id=18 data-nosnippet>18</a>            capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#14">esize_expect</a> * <span class="number">2</span>),
+<a href=#19 id=19 data-nosnippet>19</a>        }
+<a href=#20 id=20 data-nosnippet>20</a>    }
+<a href=#21 id=21 data-nosnippet>21</a>    <span class="kw">pub fn </span>add_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, to: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: C)
+<a href=#22 id=22 data-nosnippet>22</a>    <span class="kw">where
+<a href=#23 id=23 data-nosnippet>23</a>        </span>C: <a href="../num/zero_one.rs.html#1-14">Zero</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html">PartialOrd</a>,
+<a href=#24 id=24 data-nosnippet>24</a>    {
+<a href=#25 id=25 data-nosnippet>25</a>        <a class="self" href="#21">self</a>.edges.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<a href="#21">from</a>, <a href="#21">to</a>));
+<a href=#26 id=26 data-nosnippet>26</a>        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(cap &gt;= C::zero());
+<a href=#27 id=27 data-nosnippet>27</a>        <a class="self" href="#21">self</a>.capacities.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#21">cap</a>);
+<a href=#28 id=28 data-nosnippet>28</a>        <a class="self" href="#21">self</a>.capacities.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="../num/zero_one.rs.html#2">C::zero</a>());
+<a href=#29 id=29 data-nosnippet>29</a>    }
+<a href=#30 id=30 data-nosnippet>30</a>    <span class="kw">pub fn </span>gen_graph(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a> {
+<a href=#31 id=31 data-nosnippet>31</a>        <span class="kw">let </span>edges = <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">std::mem::take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#30">self</a>.edges);
+<a href=#32 id=32 data-nosnippet>32</a>        <a href="sparse_graph.rs.html#71-73">BidirectionalSparseGraph::from_edges</a>(<a class="self" href="#30">self</a>.vsize, <a href="#31">edges</a>)
+<a href=#33 id=33 data-nosnippet>33</a>    }
+<a href=#34 id=34 data-nosnippet>34</a>    <span class="kw">pub fn </span>build(<span class="self">self</span>, graph: <span class="kw-2">&amp;</span><a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>) -&gt; <a href="#59-65">Dinic</a>&lt;<span class="lifetime">'_</span>, C&gt; {
+<a href=#35 id=35 data-nosnippet>35</a>        <span class="kw">let </span><a href="#8-12">DinicBuilder</a> {
+<a href=#36 id=36 data-nosnippet>36</a>            vsize, capacities, ..
+<a href=#37 id=37 data-nosnippet>37</a>        } = <a class="self" href="#34">self</a>;
+<a href=#38 id=38 data-nosnippet>38</a>        <a href="#59-65">Dinic</a> {
+<a href=#39 id=39 data-nosnippet>39</a>            <a href="#34">graph</a>,
+<a href=#40 id=40 data-nosnippet>40</a>            <a href="#36">capacities</a>,
+<a href=#41 id=41 data-nosnippet>41</a>            iter: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#36">vsize</a>),
+<a href=#42 id=42 data-nosnippet>42</a>            level: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#36">vsize</a>),
+<a href=#43 id=43 data-nosnippet>43</a>            deq: <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.with_capacity">VecDeque::with_capacity</a>(<a href="#36">vsize</a>),
 <a href=#44 id=44 data-nosnippet>44</a>        }
 <a href=#45 id=45 data-nosnippet>45</a>    }
 <a href=#46 id=46 data-nosnippet>46</a>}
-<a href=#47 id=47 data-nosnippet>47</a>
-<a href=#48 id=48 data-nosnippet>48</a><span class="attr">#[derive(Debug, Clone)]
-<a href=#49 id=49 data-nosnippet>49</a></span><span class="kw">pub struct </span><a href="../../../competitive/graph/struct.Dinic.html">Dinic</a>&lt;<span class="lifetime">'a</span>&gt; {
-<a href=#50 id=50 data-nosnippet>50</a>    graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>,
-<a href=#51 id=51 data-nosnippet>51</a>    capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;,
-<a href=#52 id=52 data-nosnippet>52</a>    iter: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-<a href=#53 id=53 data-nosnippet>53</a>    level: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-<a href=#54 id=54 data-nosnippet>54</a>    deq: <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">VecDeque</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-<a href=#55 id=55 data-nosnippet>55</a>}
-<a href=#56 id=56 data-nosnippet>56</a><span class="kw">impl </span><a href="#49-55">Dinic</a>&lt;<span class="lifetime">'_</span>&gt; {
-<a href=#57 id=57 data-nosnippet>57</a>    <span class="kw">pub fn </span>builder(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="#5-9">DinicBuilder</a> {
-<a href=#58 id=58 data-nosnippet>58</a>        <a href="#11-17">DinicBuilder::new</a>(<a href="#57">vsize</a>, <a href="#57">esize_expect</a>)
-<a href=#59 id=59 data-nosnippet>59</a>    }
-<a href=#60 id=60 data-nosnippet>60</a>    <span class="kw">fn </span>bfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-<a href=#61 id=61 data-nosnippet>61</a>        <a class="self" href="#60">self</a>.level.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.clear">clear</a>();
-<a href=#62 id=62 data-nosnippet>62</a>        <a class="self" href="#60">self</a>.level.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize">resize</a>(<a class="self" href="#60">self</a>.graph.<a href="sparse_graph.rs.html#39-41">vertices_size</a>(), usize::MAX);
-<a href=#63 id=63 data-nosnippet>63</a>        <a class="self" href="#60">self</a>.level[<a href="#60">s</a>] = <span class="number">0</span>;
-<a href=#64 id=64 data-nosnippet>64</a>        <a class="self" href="#60">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.clear">clear</a>();
-<a href=#65 id=65 data-nosnippet>65</a>        <a class="self" href="#60">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.push_back">push_back</a>(<a href="#60">s</a>);
-<a href=#66 id=66 data-nosnippet>66</a>        <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
-<a href=#67 id=67 data-nosnippet>67</a>            <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
-<a href=#68 id=68 data-nosnippet>68</a>                <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.level[a.to] == usize::MAX {
-<a href=#69 id=69 data-nosnippet>69</a>                    <span class="self">self</span>.level[a.to] = <span class="self">self</span>.level[u] + <span class="number">1</span>;
-<a href=#70 id=70 data-nosnippet>70</a>                    <span class="kw">if </span>a.to == t {
-<a href=#71 id=71 data-nosnippet>71</a>                        <span class="kw">return </span><span class="bool-val">false</span>;
-<a href=#72 id=72 data-nosnippet>72</a>                    }
-<a href=#73 id=73 data-nosnippet>73</a>                    <span class="self">self</span>.deq.push_back(a.to);
-<a href=#74 id=74 data-nosnippet>74</a>                }
-<a href=#75 id=75 data-nosnippet>75</a>            }
-<a href=#76 id=76 data-nosnippet>76</a>        }
-<a href=#77 id=77 data-nosnippet>77</a>        <a class="self" href="#60">self</a>.level[<a href="#60">t</a>] == usize::MAX
-<a href=#78 id=78 data-nosnippet>78</a>    }
-<a href=#79 id=79 data-nosnippet>79</a>    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, upper: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-<a href=#80 id=80 data-nosnippet>80</a>        <span class="kw">if </span><a href="#79">u</a> == <a href="#79">s</a> {
-<a href=#81 id=81 data-nosnippet>81</a>            <span class="kw">return </span><a href="#79">upper</a>;
-<a href=#82 id=82 data-nosnippet>82</a>        }
-<a href=#83 id=83 data-nosnippet>83</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="number">0</span>;
-<a href=#84 id=84 data-nosnippet>84</a>        <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).skip(<span class="self">self</span>.iter[u]) {
-<a href=#85 id=85 data-nosnippet>85</a>            <span class="kw">if </span><span class="self">self</span>.level[u] &gt; <span class="self">self</span>.level[a.to] &amp;&amp; <span class="self">self</span>.capacities[a.id ^ <span class="number">1</span>] &gt; <span class="number">0 </span>{
-<a href=#86 id=86 data-nosnippet>86</a>                <span class="kw">let </span>d = <span class="self">self</span>.dfs(s, a.to, (upper - res).min(<span class="self">self</span>.capacities[a.id ^ <span class="number">1</span>]));
-<a href=#87 id=87 data-nosnippet>87</a>                <span class="kw">if </span>d &gt; <span class="number">0 </span>{
-<a href=#88 id=88 data-nosnippet>88</a>                    <span class="self">self</span>.capacities[a.id ^ <span class="number">1</span>] -= d;
-<a href=#89 id=89 data-nosnippet>89</a>                    <span class="self">self</span>.capacities[a.id] += d;
-<a href=#90 id=90 data-nosnippet>90</a>                    res += d;
-<a href=#91 id=91 data-nosnippet>91</a>                    <span class="kw">if </span>upper == res {
-<a href=#92 id=92 data-nosnippet>92</a>                        <span class="kw">break</span>;
-<a href=#93 id=93 data-nosnippet>93</a>                    }
-<a href=#94 id=94 data-nosnippet>94</a>                }
-<a href=#95 id=95 data-nosnippet>95</a>            }
-<a href=#96 id=96 data-nosnippet>96</a>            <span class="self">self</span>.iter[u] += <span class="number">1</span>;
-<a href=#97 id=97 data-nosnippet>97</a>        }
-<a href=#98 id=98 data-nosnippet>98</a>        <a href="#83">res</a>
-<a href=#99 id=99 data-nosnippet>99</a>    }
-<a href=#100 id=100 data-nosnippet>100</a>    <span class="kw">pub fn </span>maximum_flow_limited(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, limit: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-<a href=#101 id=101 data-nosnippet>101</a>        <span class="kw">let </span><span class="kw-2">mut </span>flow = <span class="number">0</span>;
-<a href=#102 id=102 data-nosnippet>102</a>        <span class="kw">while </span>flow &lt; limit {
-<a href=#103 id=103 data-nosnippet>103</a>            <span class="kw">if </span><span class="self">self</span>.bfs(s, t) {
-<a href=#104 id=104 data-nosnippet>104</a>                <span class="kw">break</span>;
-<a href=#105 id=105 data-nosnippet>105</a>            }
-<a href=#106 id=106 data-nosnippet>106</a>            <span class="self">self</span>.iter.clear();
-<a href=#107 id=107 data-nosnippet>107</a>            <span class="self">self</span>.iter.resize(<span class="self">self</span>.graph.vertices_size(), <span class="number">0</span>);
-<a href=#108 id=108 data-nosnippet>108</a>            <span class="kw">while </span>flow &lt; limit {
-<a href=#109 id=109 data-nosnippet>109</a>                <span class="kw">let </span>f = <span class="self">self</span>.dfs(s, t, limit - flow);
-<a href=#110 id=110 data-nosnippet>110</a>                <span class="kw">if </span>f == <span class="number">0 </span>{
-<a href=#111 id=111 data-nosnippet>111</a>                    <span class="kw">break</span>;
-<a href=#112 id=112 data-nosnippet>112</a>                }
-<a href=#113 id=113 data-nosnippet>113</a>                flow += f;
-<a href=#114 id=114 data-nosnippet>114</a>            }
-<a href=#115 id=115 data-nosnippet>115</a>        }
-<a href=#116 id=116 data-nosnippet>116</a>        <a href="#101">flow</a>
-<a href=#117 id=117 data-nosnippet>117</a>    }
-<a href=#118 id=118 data-nosnippet>118</a>    <span class="kw">pub fn </span>maximum_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-<a href=#119 id=119 data-nosnippet>119</a>        <a class="self" href="#118">self</a>.<a href="#100-117">maximum_flow_limited</a>(<a href="#118">s</a>, <a href="#118">t</a>, u64::MAX)
-<a href=#120 id=120 data-nosnippet>120</a>    }
-<a href=#121 id=121 data-nosnippet>121</a>    <span class="kw">pub fn </span>minimum_cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt; {
-<a href=#122 id=122 data-nosnippet>122</a>        <span class="kw">let </span><span class="kw-2">mut </span>visited = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <a class="self" href="#121">self</a>.graph.<a href="sparse_graph.rs.html#39-41">vertices_size</a>()];
-<a href=#123 id=123 data-nosnippet>123</a>        <a href="#122">visited</a>[<a href="#121">s</a>] = <span class="bool-val">true</span>;
-<a href=#124 id=124 data-nosnippet>124</a>        <a class="self" href="#121">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.clear">clear</a>();
-<a href=#125 id=125 data-nosnippet>125</a>        <a class="self" href="#121">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.push_back">push_back</a>(<a href="#121">s</a>);
-<a href=#126 id=126 data-nosnippet>126</a>        <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
-<a href=#127 id=127 data-nosnippet>127</a>            <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
-<a href=#128 id=128 data-nosnippet>128</a>                <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; <span class="number">0 </span>&amp;&amp; !visited[a.to] {
-<a href=#129 id=129 data-nosnippet>129</a>                    visited[a.to] = <span class="bool-val">true</span>;
-<a href=#130 id=130 data-nosnippet>130</a>                    <span class="self">self</span>.deq.push_back(a.to);
-<a href=#131 id=131 data-nosnippet>131</a>                }
-<a href=#132 id=132 data-nosnippet>132</a>            }
-<a href=#133 id=133 data-nosnippet>133</a>        }
-<a href=#134 id=134 data-nosnippet>134</a>        <a href="#122">visited</a>
-<a href=#135 id=135 data-nosnippet>135</a>    }
-<a href=#136 id=136 data-nosnippet>136</a>    <span class="kw">pub fn </span>get_flow(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a> {
-<a href=#137 id=137 data-nosnippet>137</a>        <a class="self" href="#136">self</a>.capacities[<a href="#136">eid</a> * <span class="number">2 </span>+ <span class="number">1</span>]
-<a href=#138 id=138 data-nosnippet>138</a>    }
-<a href=#139 id=139 data-nosnippet>139</a>    <span class="kw">pub fn </span>change_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, flow: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) {
-<a href=#140 id=140 data-nosnippet>140</a>        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(flow &lt;= cap);
-<a href=#141 id=141 data-nosnippet>141</a>        <a class="self" href="#139">self</a>.capacities[<a href="#139">eid</a> * <span class="number">2</span>] = <a href="#139">cap</a> - <a href="#139">flow</a>;
-<a href=#142 id=142 data-nosnippet>142</a>        <a class="self" href="#139">self</a>.capacities[<a href="#139">eid</a> * <span class="number">2 </span>+ <span class="number">1</span>] = <a href="#139">flow</a>;
-<a href=#143 id=143 data-nosnippet>143</a>    }
-<a href=#144 id=144 data-nosnippet>144</a>}</code></pre></div></section></main></body></html>
+<a href=#47 id=47 data-nosnippet>47</a><span class="kw">impl</span>&lt;C&gt; <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.Extend.html">Extend</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, C)&gt; <span class="kw">for </span><a href="#8-12">DinicBuilder</a>&lt;C&gt;
+<a href=#48 id=48 data-nosnippet>48</a><span class="kw">where
+<a href=#49 id=49 data-nosnippet>49</a>    </span>C: <a href="../num/zero_one.rs.html#1-14">Zero</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html">PartialOrd</a>,
+<a href=#50 id=50 data-nosnippet>50</a>{
+<a href=#51 id=51 data-nosnippet>51</a>    <span class="kw">fn </span>extend&lt;I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = (<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, C)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: I) {
+<a href=#52 id=52 data-nosnippet>52</a>        <span class="kw">for </span>(from, to, cap) <span class="kw">in </span>iter {
+<a href=#53 id=53 data-nosnippet>53</a>            <span class="self">self</span>.add_edge(from, to, cap)
+<a href=#54 id=54 data-nosnippet>54</a>        }
+<a href=#55 id=55 data-nosnippet>55</a>    }
+<a href=#56 id=56 data-nosnippet>56</a>}
+<a href=#57 id=57 data-nosnippet>57</a>
+<a href=#58 id=58 data-nosnippet>58</a><span class="attr">#[derive(Debug, Clone)]
+<a href=#59 id=59 data-nosnippet>59</a></span><span class="kw">pub struct </span><a href="../../../competitive/graph/struct.Dinic.html">Dinic</a>&lt;<span class="lifetime">'a</span>, C&gt; {
+<a href=#60 id=60 data-nosnippet>60</a>    graph: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><a href="sparse_graph.rs.html#162">BidirectionalSparseGraph</a>,
+<a href=#61 id=61 data-nosnippet>61</a>    capacities: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;C&gt;,
+<a href=#62 id=62 data-nosnippet>62</a>    iter: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+<a href=#63 id=63 data-nosnippet>63</a>    level: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+<a href=#64 id=64 data-nosnippet>64</a>    deq: <a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html">VecDeque</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+<a href=#65 id=65 data-nosnippet>65</a>}
+<a href=#66 id=66 data-nosnippet>66</a><span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, C&gt; <a href="#59-65">Dinic</a>&lt;<span class="lifetime">'a</span>, C&gt;
+<a href=#67 id=67 data-nosnippet>67</a><span class="kw">where
+<a href=#68 id=68 data-nosnippet>68</a>    </span>C: <a href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">Copy</a> + <a href="../num/zero_one.rs.html#1-14">Zero</a> + <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html">Ord</a> + <a href="../num/bounded.rs.html#2-17">Bounded</a> + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">Add</a>&lt;Output = C&gt; + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html">Sub</a>&lt;Output = C&gt; + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html">AddAssign</a> + <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.SubAssign.html">SubAssign</a>,
+<a href=#69 id=69 data-nosnippet>69</a>{
+<a href=#70 id=70 data-nosnippet>70</a>    <span class="kw">pub fn </span>builder(vsize: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, esize_expect: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="#8-12">DinicBuilder</a>&lt;C&gt; {
+<a href=#71 id=71 data-nosnippet>71</a>        <a href="#14-20">DinicBuilder::new</a>(<a href="#70">vsize</a>, <a href="#70">esize_expect</a>)
+<a href=#72 id=72 data-nosnippet>72</a>    }
+<a href=#73 id=73 data-nosnippet>73</a>    <span class="kw">fn </span>bfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+<a href=#74 id=74 data-nosnippet>74</a>        <a class="self" href="#73">self</a>.level.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.clear">clear</a>();
+<a href=#75 id=75 data-nosnippet>75</a>        <a class="self" href="#73">self</a>.level.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize">resize</a>(<a class="self" href="#73">self</a>.graph.<a href="sparse_graph.rs.html#39-41">vertices_size</a>(), usize::MAX);
+<a href=#76 id=76 data-nosnippet>76</a>        <a class="self" href="#73">self</a>.level[<a href="#73">s</a>] = <span class="number">0</span>;
+<a href=#77 id=77 data-nosnippet>77</a>        <a class="self" href="#73">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.clear">clear</a>();
+<a href=#78 id=78 data-nosnippet>78</a>        <a class="self" href="#73">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.push_back">push_back</a>(<a href="#73">s</a>);
+<a href=#79 id=79 data-nosnippet>79</a>        <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
+<a href=#80 id=80 data-nosnippet>80</a>            <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
+<a href=#81 id=81 data-nosnippet>81</a>                <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; C::zero() &amp;&amp; <span class="self">self</span>.level[a.to] == usize::MAX {
+<a href=#82 id=82 data-nosnippet>82</a>                    <span class="self">self</span>.level[a.to] = <span class="self">self</span>.level[u] + <span class="number">1</span>;
+<a href=#83 id=83 data-nosnippet>83</a>                    <span class="kw">if </span>a.to == t {
+<a href=#84 id=84 data-nosnippet>84</a>                        <span class="kw">return </span><span class="bool-val">false</span>;
+<a href=#85 id=85 data-nosnippet>85</a>                    }
+<a href=#86 id=86 data-nosnippet>86</a>                    <span class="self">self</span>.deq.push_back(a.to);
+<a href=#87 id=87 data-nosnippet>87</a>                }
+<a href=#88 id=88 data-nosnippet>88</a>            }
+<a href=#89 id=89 data-nosnippet>89</a>        }
+<a href=#90 id=90 data-nosnippet>90</a>        <a class="self" href="#73">self</a>.level[<a href="#73">t</a>] == usize::MAX
+<a href=#91 id=91 data-nosnippet>91</a>    }
+<a href=#92 id=92 data-nosnippet>92</a>    <span class="kw">fn </span>dfs(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, u: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, upper: C) -&gt; C {
+<a href=#93 id=93 data-nosnippet>93</a>        <span class="kw">if </span><a href="#92">u</a> == <a href="#92">s</a> {
+<a href=#94 id=94 data-nosnippet>94</a>            <span class="kw">return </span><a href="#92">upper</a>;
+<a href=#95 id=95 data-nosnippet>95</a>        }
+<a href=#96 id=96 data-nosnippet>96</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = <a href="../num/zero_one.rs.html#2">C::zero</a>();
+<a href=#97 id=97 data-nosnippet>97</a>        <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u).skip(<span class="self">self</span>.iter[u]) {
+<a href=#98 id=98 data-nosnippet>98</a>            <span class="kw">if </span><span class="self">self</span>.level[u] &gt; <span class="self">self</span>.level[a.to] &amp;&amp; <span class="self">self</span>.capacities[a.id ^ <span class="number">1</span>] &gt; C::zero() {
+<a href=#99 id=99 data-nosnippet>99</a>                <span class="kw">let </span>d = <span class="self">self</span>.dfs(s, a.to, (upper - res).min(<span class="self">self</span>.capacities[a.id ^ <span class="number">1</span>]));
+<a href=#100 id=100 data-nosnippet>100</a>                <span class="kw">if </span>d &gt; C::zero() {
+<a href=#101 id=101 data-nosnippet>101</a>                    <span class="self">self</span>.capacities[a.id ^ <span class="number">1</span>] -= d;
+<a href=#102 id=102 data-nosnippet>102</a>                    <span class="self">self</span>.capacities[a.id] += d;
+<a href=#103 id=103 data-nosnippet>103</a>                    res += d;
+<a href=#104 id=104 data-nosnippet>104</a>                    <span class="kw">if </span>upper == res {
+<a href=#105 id=105 data-nosnippet>105</a>                        <span class="kw">break</span>;
+<a href=#106 id=106 data-nosnippet>106</a>                    }
+<a href=#107 id=107 data-nosnippet>107</a>                }
+<a href=#108 id=108 data-nosnippet>108</a>            }
+<a href=#109 id=109 data-nosnippet>109</a>            <span class="self">self</span>.iter[u] += <span class="number">1</span>;
+<a href=#110 id=110 data-nosnippet>110</a>        }
+<a href=#111 id=111 data-nosnippet>111</a>        <a href="#96">res</a>
+<a href=#112 id=112 data-nosnippet>112</a>    }
+<a href=#113 id=113 data-nosnippet>113</a>    <span class="kw">pub fn </span>maximum_flow_limited(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, limit: C) -&gt; C {
+<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">let </span><span class="kw-2">mut </span>flow = <a href="../num/zero_one.rs.html#2">C::zero</a>();
+<a href=#115 id=115 data-nosnippet>115</a>        <span class="kw">while </span>flow &lt; limit {
+<a href=#116 id=116 data-nosnippet>116</a>            <span class="kw">if </span><span class="self">self</span>.bfs(s, t) {
+<a href=#117 id=117 data-nosnippet>117</a>                <span class="kw">break</span>;
+<a href=#118 id=118 data-nosnippet>118</a>            }
+<a href=#119 id=119 data-nosnippet>119</a>            <span class="self">self</span>.iter.clear();
+<a href=#120 id=120 data-nosnippet>120</a>            <span class="self">self</span>.iter.resize(<span class="self">self</span>.graph.vertices_size(), <span class="number">0</span>);
+<a href=#121 id=121 data-nosnippet>121</a>            <span class="kw">while </span>flow &lt; limit {
+<a href=#122 id=122 data-nosnippet>122</a>                <span class="kw">let </span>f = <span class="self">self</span>.dfs(s, t, limit - flow);
+<a href=#123 id=123 data-nosnippet>123</a>                <span class="kw">if </span>f == C::zero() {
+<a href=#124 id=124 data-nosnippet>124</a>                    <span class="kw">break</span>;
+<a href=#125 id=125 data-nosnippet>125</a>                }
+<a href=#126 id=126 data-nosnippet>126</a>                flow += f;
+<a href=#127 id=127 data-nosnippet>127</a>            }
+<a href=#128 id=128 data-nosnippet>128</a>        }
+<a href=#129 id=129 data-nosnippet>129</a>        <a href="#114">flow</a>
+<a href=#130 id=130 data-nosnippet>130</a>    }
+<a href=#131 id=131 data-nosnippet>131</a>    <span class="kw">pub fn </span>maximum_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, t: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; C {
+<a href=#132 id=132 data-nosnippet>132</a>        <a class="self" href="#131">self</a>.<a href="#113-130">maximum_flow_limited</a>(<a href="#131">s</a>, <a href="#131">t</a>, <a href="../num/bounded.rs.html#3">C::maximum</a>())
+<a href=#133 id=133 data-nosnippet>133</a>    }
+<a href=#134 id=134 data-nosnippet>134</a>    <span class="kw">pub fn </span>minimum_cut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, s: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt; {
+<a href=#135 id=135 data-nosnippet>135</a>        <span class="kw">let </span><span class="kw-2">mut </span>visited = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="bool-val">false</span>; <a class="self" href="#134">self</a>.graph.<a href="sparse_graph.rs.html#39-41">vertices_size</a>()];
+<a href=#136 id=136 data-nosnippet>136</a>        <a href="#135">visited</a>[<a href="#134">s</a>] = <span class="bool-val">true</span>;
+<a href=#137 id=137 data-nosnippet>137</a>        <a class="self" href="#134">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.clear">clear</a>();
+<a href=#138 id=138 data-nosnippet>138</a>        <a class="self" href="#134">self</a>.deq.<a href="https://doc.rust-lang.org/nightly/alloc/collections/vec_deque/struct.VecDeque.html#method.push_back">push_back</a>(<a href="#134">s</a>);
+<a href=#139 id=139 data-nosnippet>139</a>        <span class="kw">while let </span><span class="prelude-val">Some</span>(u) = <span class="self">self</span>.deq.pop_front() {
+<a href=#140 id=140 data-nosnippet>140</a>            <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.graph.adjacencies(u) {
+<a href=#141 id=141 data-nosnippet>141</a>                <span class="kw">if </span><span class="self">self</span>.capacities[a.id] &gt; C::zero() &amp;&amp; !visited[a.to] {
+<a href=#142 id=142 data-nosnippet>142</a>                    visited[a.to] = <span class="bool-val">true</span>;
+<a href=#143 id=143 data-nosnippet>143</a>                    <span class="self">self</span>.deq.push_back(a.to);
+<a href=#144 id=144 data-nosnippet>144</a>                }
+<a href=#145 id=145 data-nosnippet>145</a>            }
+<a href=#146 id=146 data-nosnippet>146</a>        }
+<a href=#147 id=147 data-nosnippet>147</a>        <a href="#135">visited</a>
+<a href=#148 id=148 data-nosnippet>148</a>    }
+<a href=#149 id=149 data-nosnippet>149</a>    <span class="kw">pub fn </span>get_flow(<span class="kw-2">&amp;</span><span class="self">self</span>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; C {
+<a href=#150 id=150 data-nosnippet>150</a>        <a class="self" href="#149">self</a>.capacities[<a href="#149">eid</a> * <span class="number">2 </span>+ <span class="number">1</span>]
+<a href=#151 id=151 data-nosnippet>151</a>    }
+<a href=#152 id=152 data-nosnippet>152</a>    <span class="kw">pub fn </span>change_edge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eid: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, cap: C, flow: C) {
+<a href=#153 id=153 data-nosnippet>153</a>        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.assert.html">assert!</a>(flow &lt;= cap);
+<a href=#154 id=154 data-nosnippet>154</a>        <a class="self" href="#152">self</a>.capacities[<a href="#152">eid</a> * <span class="number">2</span>] = <a href="#152">cap</a> - <a href="#152">flow</a>;
+<a href=#155 id=155 data-nosnippet>155</a>        <a class="self" href="#152">self</a>.capacities[<a href="#152">eid</a> * <span class="number">2 </span>+ <span class="number">1</span>] = <a href="#152">flow</a>;
+<a href=#156 id=156 data-nosnippet>156</a>    }
+<a href=#157 id=157 data-nosnippet>157</a>}</code></pre></div></section></main></body></html>
