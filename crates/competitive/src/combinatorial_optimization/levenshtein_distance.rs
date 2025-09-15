@@ -5,8 +5,8 @@ pub fn levenshtein_distance<T: PartialEq>(x: &[T], y: &[T]) -> usize {
     for (i, dp) in dp.iter_mut().enumerate() {
         dp[0] = i;
     }
-    for j in 1..=m {
-        dp[0][j] = j;
+    for (j, dp) in dp[0].iter_mut().enumerate() {
+        *dp = j;
     }
     for (i, x) in x.iter().enumerate() {
         for (j, y) in y.iter().enumerate() {

@@ -135,8 +135,9 @@ mod tests {
             }
         }
         for i in 0..H - 1 {
-            for j in 0..W {
-                arr[i + 1][j] += arr[i][j];
+            let [a, b] = arr.get_disjoint_mut([i + 1, i]).unwrap();
+            for (a, b) in a.iter_mut().zip(b) {
+                *a += *b;
             }
         }
         for (i, arr) in arr.iter().enumerate() {
@@ -157,8 +158,9 @@ mod tests {
             }
         }
         for i in 0..H - 1 {
-            for j in 0..W {
-                arr[i + 1][j] = std::cmp::max(arr[i + 1][j], arr[i][j]);
+            let [a, b] = arr.get_disjoint_mut([i + 1, i]).unwrap();
+            for (a, b) in a.iter_mut().zip(b) {
+                *a = std::cmp::max(*a, *b);
             }
         }
         for (i, arr) in arr.iter().enumerate() {
@@ -185,8 +187,9 @@ mod tests {
             }
         }
         for i in 0..H {
-            for j in 0..W + 1 {
-                arr[i + 1][j] += arr[i][j];
+            let [a, b] = arr.get_disjoint_mut([i + 1, i]).unwrap();
+            for (a, b) in a.iter_mut().zip(b) {
+                *a += *b;
             }
         }
         for i1 in 0..H {

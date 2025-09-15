@@ -18,8 +18,9 @@ pub fn dsl_5_b(reader: impl Read, mut writer: impl Write) {
         }
     }
     for i in 0..1000 {
-        for j in 0..=1000 {
-            acc[i + 1][j] += acc[i][j];
+        let [a, b] = acc.get_disjoint_mut([i + 1, i]).unwrap();
+        for (a, b) in a.iter_mut().zip(b) {
+            *a += *b;
         }
     }
     writeln!(

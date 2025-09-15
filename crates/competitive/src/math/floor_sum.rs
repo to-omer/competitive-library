@@ -314,9 +314,9 @@ where
 
     if a < 0 {
         let mut ans = floor_sum_polynomial_i64::<T, X, Y>(-r + 1, -l + 1, -a, b, m);
-        for i in (1..X).step_by(2) {
-            for j in 0..Y {
-                ans[i][j] = AddMulOperation::<T>::neg(&ans[i][j]);
+        for ans in ans.iter_mut().skip(1).step_by(2) {
+            for ans in ans.iter_mut() {
+                *ans = AddMulOperation::<T>::neg(ans);
             }
         }
         return ans;
