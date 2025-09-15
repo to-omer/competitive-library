@@ -157,7 +157,7 @@
 <span data-nosnippet>119</span>}
 <span data-nosnippet>120</span>
 <span data-nosnippet>121</span><span class="kw">impl </span>QdrtPowPrec {
-<span data-nosnippet>122</span>    <span class="kw">fn </span>new(a: <a href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>, ord: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>122</span>    <span class="kw">fn </span>new(a: u64, ord: u64, br: <span class="kw-2">&amp;</span>BarrettReduction&lt;u128&gt;) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>123</span>        <span class="kw">let </span>qdrt = (ord <span class="kw">as </span>f64).powf(<span class="number">0.25</span>).ceil() <span class="kw">as </span>u64;
 <span data-nosnippet>124</span>        <span class="kw">let </span>br_qdrt = BarrettReduction::&lt;u64&gt;::new(qdrt);
 <span data-nosnippet>125</span>        <span class="kw">let </span><span class="kw-2">mut </span>p0 = Vec::with_capacity(qdrt <span class="kw">as </span>usize);
@@ -167,7 +167,7 @@
 <span data-nosnippet>129</span>        <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1u64</span>;
 <span data-nosnippet>130</span>        <span class="kw">for _ in </span><span class="number">0</span>..qdrt {
 <span data-nosnippet>131</span>            p0.push(acc);
-<span data-nosnippet>132</span>            acc = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>132</span>            <a href="https://doc.rust-lang.org/nightly/std/primitive.i16.html">acc</a> = br.rem(acc <span class="kw">as </span>u128 * a <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>133</span>        }
 <span data-nosnippet>134</span>        <span class="kw">let </span>a = acc;
 <span data-nosnippet>135</span>        acc = <span class="number">1</span>;
@@ -209,9 +209,9 @@
 <span data-nosnippet>171</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p2[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>172</span>            k = a;
 <span data-nosnippet>173</span>        }
-<span data-nosnippet>174</span>        <span class="kw">if </span>k &gt; <span class="number">0 </span>{
+<span data-nosnippet>174</span>        <span class="kw">if </span><a href="algebra/magma.rs.html#142">k</a> &gt; <span class="number">0 </span>{
 <span data-nosnippet>175</span>            <span class="kw">let </span>(<span class="kw">_</span>, b) = <span class="self">self</span>.br_qdrt.div_rem(k);
-<span data-nosnippet>176</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p3[b <span class="kw">as </span><a href="../../../algebra/trait.Group.html">usize</a>] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>176</span>            x = br.rem(x <span class="kw">as </span>u128 * <span class="self">self</span>.p3[b <span class="kw">as </span>usize] <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>177</span>        }
 <span data-nosnippet>178</span>        x
 <span data-nosnippet>179</span>    }
@@ -224,7 +224,7 @@
 <span data-nosnippet>186</span>    prec: <span class="kw-2">&amp;</span>QdrtPowPrec,
 <span data-nosnippet>187</span>) -&gt; Vec&lt;u64&gt; {
 <span data-nosnippet>188</span>    <span class="kw">let </span>br_ord = BarrettReduction::&lt;u128&gt;::new(ord <span class="kw">as </span>u128);
-<span data-nosnippet>189</span>    <span class="kw">let </span>mul = |x: u64, y: u64| br_ord.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
+<span data-nosnippet>189</span>    <span class="kw">let </span>mul = |x: <a href="algebra/magma.rs.html#153">u64</a>, y: u64| br_ord.rem(x <span class="kw">as </span>u128 * y <span class="kw">as </span>u128) <span class="kw">as </span>u64;
 <span data-nosnippet>190</span>    <span class="kw">let </span>sub = |x: u64, y: u64| <span class="kw">if </span>x &lt; y { x + ord - y } <span class="kw">else </span>{ x - y };
 <span data-nosnippet>191</span>
 <span data-nosnippet>192</span>    <span class="kw">let </span>pc = br_primes.len();
@@ -281,7 +281,7 @@
 <span data-nosnippet>243</span>        }
 <span data-nosnippet>244</span>        mat[i][pc] = mul(mat[i][pc], modinv(mat[i][i], ord));
 <span data-nosnippet>245</span>    }
-<span data-nosnippet>246</span>    (<span class="number">0</span>..pc).map(|i| (mat[i][pc])).collect()
+<span data-nosnippet>246</span>    (<span class="number">0</span>..pc).map(|i| mat[i][pc]).collect()
 <span data-nosnippet>247</span>}
 <span data-nosnippet>248</span>
 <span data-nosnippet>249</span><span class="attr">#[derive(Debug)]
@@ -398,7 +398,7 @@
 <span data-nosnippet>360</span>    <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..e {
 <span data-nosnippet>361</span>        <span class="kw">let </span><span class="kw-2">mut </span>h = pow(mul(modinv(pow(a, t, <span class="kw-2">&amp;</span>br), n), b), p.pow(e - <span class="number">1 </span>- k), <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>362</span>        <span class="kw">let </span><span class="kw-2">mut </span>ok = <span class="bool-val">false</span>;
-<span data-nosnippet>363</span>        <span class="kw">for </span><a href="algebra/monoid_action.rs.html#128">i</a> <span class="kw">in </span>(<span class="number">0</span>..block_size * block_size).step_by(block_size <span class="kw">as </span>usize) {
+<span data-nosnippet>363</span>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..block_size * block_size).step_by(block_size <span class="kw">as </span>usize) {
 <span data-nosnippet>364</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(j) = baby.get(<span class="kw-2">&amp;</span>h) {
 <span data-nosnippet>365</span>                t += (i + j) * p.pow(k);
 <span data-nosnippet>366</span>                ok = <span class="bool-val">true</span>;
@@ -482,7 +482,7 @@
 <span data-nosnippet>444</span>            <span class="kw">let </span>bb = pow(b, d, <span class="kw-2">&amp;</span>br);
 <span data-nosnippet>445</span>            <span class="kw">let </span>x = pohlig_hellman_prime_power_order(gg, aa, n, q, c)<span class="question-mark">?</span>;
 <span data-nosnippet>446</span>            <span class="kw">let </span>y = pohlig_hellman_prime_power_order(gg, bb, n, q, c)<span class="question-mark">?</span>;
-<span data-nosnippet>447</span>            abm.push((x, y, <a href="algebra/monoid_action.rs.html#213">m</a>));
+<span data-nosnippet>447</span>            abm.push((x, y, m));
 <span data-nosnippet>448</span>        }
 <span data-nosnippet>449</span>        solve_linear_congruences(abm)
 <span data-nosnippet>450</span>    }

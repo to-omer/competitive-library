@@ -141,7 +141,7 @@
 <span data-nosnippet>120</span>    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>T;
 <span data-nosnippet>121</span>    <span class="kw">type </span>IntoIter = IterMut&lt;<span class="lifetime">'a</span>, T&gt;;
 <span data-nosnippet>122</span>    <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
-<span data-nosnippet>123</span>        <a class="self" href="../../../algebra/struct.Bits.html">self</a>.data.iter_mut()
+<span data-nosnippet>123</span>        <span class="self">self</span>.data.iter_mut()
 <span data-nosnippet>124</span>    }
 <span data-nosnippet>125</span>}
 <span data-nosnippet>126</span>
@@ -201,7 +201,7 @@
 <span data-nosnippet>180</span>        <span class="kw">let </span><span class="kw-2">mut </span>keep = <span class="bool-val">true</span>;
 <span data-nosnippet>181</span>        <span class="self">self</span>.data.retain(|<span class="kw">_</span>| {
 <span data-nosnippet>182</span>            keep = !keep;
-<span data-nosnippet>183</span>            keep
+<span data-nosnippet>183</span>            <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">keep</a>
 <span data-nosnippet>184</span>        });
 <span data-nosnippet>185</span>        <span class="self">self
 <span data-nosnippet>186</span>    </span>}
@@ -355,7 +355,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="algebra/monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -430,12 +430,12 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="algebra/monoid_action.rs.html#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }
 <span data-nosnippet>415</span>    <span class="doccomment">/// x^n mod self
 <span data-nosnippet>416</span>    </span><span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.length() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.length() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.reversed();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().bostan_mori_msb(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).prefix(d).reversed();
@@ -446,7 +446,7 @@
 <span data-nosnippet>425</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
 <span data-nosnippet>426</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.reversed().data, deg);
 <span data-nosnippet>427</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
-<span data-nosnippet>428</span>        <span class="highlight"><span class="self">Self</span>::from_vec</span>((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
+<span data-nosnippet>428</span>        <span class="highlight"><span class="self">Self</span>::from_vec</span>((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].<a href="num/zero_one.rs.html#16">to_vec</a>())
 <span data-nosnippet>429</span>    }
 <span data-nosnippet>430</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>431</span>        <span class="kw">let </span>n = points.len();
@@ -475,10 +475,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.length(), subr.length());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].length();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="algebra/monoid_action.rs.html#186">s</a>, len).prefix(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="algebra/monoid_action.rs.html#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -531,13 +531,13 @@
 <span data-nosnippet>510</span>        p.bostan_mori(<span class="self">self</span>, k)
 <span data-nosnippet>511</span>    }
 <span data-nosnippet>512</span>    <span class="kw">pub fn </span>kth_term(a: Vec&lt;T&gt;, k: usize) -&gt; T {
-<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="algebra/monoid_action.rs.html#256">x</a>) = a.get(k) {
+<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = a.get(k) {
 <span data-nosnippet>514</span>            <span class="kw">return </span>x.clone();
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="highlight"><span class="self">Self</span>::from_vec</span>(berlekamp_massey(<span class="kw-2">&amp;</span>a)).kth_term_of_linearly_recurrence(a, k)
 <span data-nosnippet>517</span>    }
 <span data-nosnippet>518</span>    <span class="doccomment">/// sum_i a_i exp(b_i x)
-<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
+<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: <a href="algebra/monoid_action.rs.html#259">F</a>) -&gt; <span class="self">Self
 <span data-nosnippet>520</span>    </span><span class="kw">where
 <span data-nosnippet>521</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
 <span data-nosnippet>522</span>        F: FnMut(usize) -&gt; T,
@@ -567,7 +567,7 @@
 <span data-nosnippet>546</span>            <span class="self">self</span>.data[i] <span class="kw-2">*</span>= f.fact[i];
 <span data-nosnippet>547</span>        }
 <span data-nosnippet>548</span>        <span class="self">self</span>.data.reverse();
-<span data-nosnippet>549</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="algebra/monoid_action.rs.html#286">a</a>;
+<span data-nosnippet>549</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = a;
 <span data-nosnippet>550</span>        <span class="kw">let </span><span class="kw-2">mut </span>g = <span class="highlight"><span class="self">Self</span>::from_vec</span>(f.inv_fact[..n].to_vec());
 <span data-nosnippet>551</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
 <span data-nosnippet>552</span>            g[i] <span class="kw-2">*</span>= b;
@@ -757,7 +757,7 @@
 <span data-nosnippet>160</span>        <span class="kw">where
 <span data-nosnippet>161</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>162</span>        {
-<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <span class="self">Self</span>;
+<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <a class="self" href="algebra/magma.rs.html#126">Self</a>;
 <span data-nosnippet>164</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>165</span>                <span class="macro-nonterminal">$imp_assign</span>::<span class="macro-nonterminal">$method_assign</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs);
 <span data-nosnippet>166</span>                <span class="self">self
@@ -886,7 +886,7 @@
 <span data-nosnippet>289</span>                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone(), rhs)
 <span data-nosnippet>290</span>            }
 <span data-nosnippet>291</span>        }
-<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;<a href="algebra/monoid_action.rs.html#35">T</a>, C&gt;
 <span data-nosnippet>293</span>        <span class="kw">where
 <span data-nosnippet>294</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>295</span>            C: ConvolveSteps&lt;T = Vec&lt;T&gt;&gt;,
@@ -924,12 +924,12 @@
 <span data-nosnippet>327</span>    }
 <span data-nosnippet>328</span>}
 <span data-nosnippet>329</span>
-<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;<a href="algebra/monoid_action.rs.html#83">T</a>, C&gt;
+<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;T, C&gt;
 <span data-nosnippet>331</span><span class="kw">where
 <span data-nosnippet>332</span>    </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>333</span>{
 <span data-nosnippet>334</span>    <span class="kw">fn </span>shr_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
-<span data-nosnippet>335</span>        <span class="kw">if </span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.<span class="highlight">length</span>() &lt;= rhs {
+<span data-nosnippet>335</span>        <span class="kw">if </span><span class="self">self</span>.<span class="highlight">length</span>() &lt;= rhs {
 <span data-nosnippet>336</span>            <span class="kw-2">*</span><span class="self">self </span>= <span class="self">Self</span>::zero();
 <span data-nosnippet>337</span>        } <span class="kw">else </span>{
 <span data-nosnippet>338</span>            <span class="kw">for </span>i <span class="kw">in </span>rhs..<span class="self">self</span>.<span class="highlight">length</span>() {
@@ -1051,7 +1051,7 @@
 <span data-nosnippet>120</span>    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>T;
 <span data-nosnippet>121</span>    <span class="kw">type </span>IntoIter = IterMut&lt;<span class="lifetime">'a</span>, T&gt;;
 <span data-nosnippet>122</span>    <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
-<span data-nosnippet>123</span>        <a class="self" href="../../../algebra/struct.Bits.html">self</a>.data.iter_mut()
+<span data-nosnippet>123</span>        <span class="self">self</span>.data.iter_mut()
 <span data-nosnippet>124</span>    }
 <span data-nosnippet>125</span>}
 <span data-nosnippet>126</span>
@@ -1111,7 +1111,7 @@
 <span data-nosnippet>180</span>        <span class="kw">let </span><span class="kw-2">mut </span>keep = <span class="bool-val">true</span>;
 <span data-nosnippet>181</span>        <span class="self">self</span>.data.retain(|<span class="kw">_</span>| {
 <span data-nosnippet>182</span>            keep = !keep;
-<span data-nosnippet>183</span>            keep
+<span data-nosnippet>183</span>            <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">keep</a>
 <span data-nosnippet>184</span>        });
 <span data-nosnippet>185</span>        <span class="self">self
 <span data-nosnippet>186</span>    </span>}
@@ -1265,7 +1265,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -1340,12 +1340,12 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="monoid_action.rs.html#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }
 <span data-nosnippet>415</span>    <span class="doccomment">/// x^n mod self
 <span data-nosnippet>416</span>    </span><span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.<span class="highlight">length</span>() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.<span class="highlight">length</span>() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.reversed();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().bostan_mori_msb(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).prefix(d).reversed();
@@ -1356,7 +1356,7 @@
 <span data-nosnippet>425</span>        <span class="kw">let </span>n = <span class="self">self</span>.<span class="highlight">length</span>();
 <span data-nosnippet>426</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.reversed().data, deg);
 <span data-nosnippet>427</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
-<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
+<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].<a href="../num/zero_one.rs.html#16">to_vec</a>())
 <span data-nosnippet>429</span>    }
 <span data-nosnippet>430</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>431</span>        <span class="kw">let </span>n = points.len();
@@ -1385,10 +1385,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.<span class="highlight">length</span>(), subr.<span class="highlight">length</span>());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].<span class="highlight">length</span>();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="monoid_action.rs.html#186">s</a>, len).prefix(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="monoid_action.rs.html#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -1441,13 +1441,13 @@
 <span data-nosnippet>510</span>        p.bostan_mori(<span class="self">self</span>, k)
 <span data-nosnippet>511</span>    }
 <span data-nosnippet>512</span>    <span class="kw">pub fn </span>kth_term(a: Vec&lt;T&gt;, k: usize) -&gt; T {
-<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="monoid_action.rs.html#256">x</a>) = a.get(k) {
+<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = a.get(k) {
 <span data-nosnippet>514</span>            <span class="kw">return </span>x.clone();
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="self">Self</span>::from_vec(berlekamp_massey(<span class="kw-2">&amp;</span>a)).kth_term_of_linearly_recurrence(a, k)
 <span data-nosnippet>517</span>    }
 <span data-nosnippet>518</span>    <span class="doccomment">/// sum_i a_i exp(b_i x)
-<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
+<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: <a href="monoid_action.rs.html#259">F</a>) -&gt; <span class="self">Self
 <span data-nosnippet>520</span>    </span><span class="kw">where
 <span data-nosnippet>521</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
 <span data-nosnippet>522</span>        F: FnMut(usize) -&gt; T,
@@ -1477,7 +1477,7 @@
 <span data-nosnippet>546</span>            <span class="self">self</span>.data[i] <span class="kw-2">*</span>= f.fact[i];
 <span data-nosnippet>547</span>        }
 <span data-nosnippet>548</span>        <span class="self">self</span>.data.reverse();
-<span data-nosnippet>549</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="monoid_action.rs.html#286">a</a>;
+<span data-nosnippet>549</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = a;
 <span data-nosnippet>550</span>        <span class="kw">let </span><span class="kw-2">mut </span>g = <span class="self">Self</span>::from_vec(f.inv_fact[..n].to_vec());
 <span data-nosnippet>551</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
 <span data-nosnippet>552</span>            g[i] <span class="kw-2">*</span>= b;
@@ -1538,7 +1538,7 @@
 <span data-nosnippet>120</span>    <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>T;
 <span data-nosnippet>121</span>    <span class="kw">type </span>IntoIter = IterMut&lt;<span class="lifetime">'a</span>, T&gt;;
 <span data-nosnippet>122</span>    <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
-<span data-nosnippet>123</span>        <a class="self" href="../../../algebra/struct.Bits.html">self</a>.data.iter_mut()
+<span data-nosnippet>123</span>        <span class="self">self</span>.data.iter_mut()
 <span data-nosnippet>124</span>    }
 <span data-nosnippet>125</span>}
 <span data-nosnippet>126</span>
@@ -1598,7 +1598,7 @@
 <span data-nosnippet>180</span>        <span class="kw">let </span><span class="kw-2">mut </span>keep = <span class="bool-val">true</span>;
 <span data-nosnippet>181</span>        <span class="self">self</span>.data.retain(|<span class="kw">_</span>| {
 <span data-nosnippet>182</span>            keep = !keep;
-<span data-nosnippet>183</span>            keep
+<span data-nosnippet>183</span>            <a href="https://doc.rust-lang.org/nightly/std/primitive.u128.html">keep</a>
 <span data-nosnippet>184</span>        });
 <span data-nosnippet>185</span>        <span class="self">self
 <span data-nosnippet>186</span>    </span>}
@@ -1752,7 +1752,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.<span class="highlight">truncate</span>(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -1827,12 +1827,12 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="monoid_action.rs.html#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }
 <span data-nosnippet>415</span>    <span class="doccomment">/// x^n mod self
 <span data-nosnippet>416</span>    </span><span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.length() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.length() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.reversed();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().bostan_mori_msb(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).prefix(d).reversed();
@@ -1843,7 +1843,7 @@
 <span data-nosnippet>425</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
 <span data-nosnippet>426</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.reversed().data, deg);
 <span data-nosnippet>427</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
-<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
+<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].<a href="../num/zero_one.rs.html#16">to_vec</a>())
 <span data-nosnippet>429</span>    }
 <span data-nosnippet>430</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>431</span>        <span class="kw">let </span>n = points.len();
@@ -1872,10 +1872,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.length(), subr.length());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].length();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="monoid_action.rs.html#186">s</a>, len).prefix(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="monoid_action.rs.html#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -1928,13 +1928,13 @@
 <span data-nosnippet>510</span>        p.bostan_mori(<span class="self">self</span>, k)
 <span data-nosnippet>511</span>    }
 <span data-nosnippet>512</span>    <span class="kw">pub fn </span>kth_term(a: Vec&lt;T&gt;, k: usize) -&gt; T {
-<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="monoid_action.rs.html#256">x</a>) = a.get(k) {
+<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = a.get(k) {
 <span data-nosnippet>514</span>            <span class="kw">return </span>x.clone();
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="self">Self</span>::from_vec(berlekamp_massey(<span class="kw-2">&amp;</span>a)).kth_term_of_linearly_recurrence(a, k)
 <span data-nosnippet>517</span>    }
 <span data-nosnippet>518</span>    <span class="doccomment">/// sum_i a_i exp(b_i x)
-<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
+<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: <a href="monoid_action.rs.html#259">F</a>) -&gt; <span class="self">Self
 <span data-nosnippet>520</span>    </span><span class="kw">where
 <span data-nosnippet>521</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
 <span data-nosnippet>522</span>        F: FnMut(usize) -&gt; T,
@@ -1964,7 +1964,7 @@
 <span data-nosnippet>546</span>            <span class="self">self</span>.data[i] <span class="kw-2">*</span>= f.fact[i];
 <span data-nosnippet>547</span>        }
 <span data-nosnippet>548</span>        <span class="self">self</span>.data.reverse();
-<span data-nosnippet>549</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = <a href="monoid_action.rs.html#286">a</a>;
+<span data-nosnippet>549</span>        <span class="kw">let </span><span class="kw-2">mut </span>b = a;
 <span data-nosnippet>550</span>        <span class="kw">let </span><span class="kw-2">mut </span>g = <span class="self">Self</span>::from_vec(f.inv_fact[..n].to_vec());
 <span data-nosnippet>551</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..n {
 <span data-nosnippet>552</span>            g[i] <span class="kw-2">*</span>= b;
@@ -2058,7 +2058,7 @@
 <span data-nosnippet>289</span>                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone(), rhs)
 <span data-nosnippet>290</span>            }
 <span data-nosnippet>291</span>        }
-<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;<a href="monoid_action.rs.html#35">T</a>, C&gt;
 <span data-nosnippet>293</span>        <span class="kw">where
 <span data-nosnippet>294</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>295</span>            C: ConvolveSteps&lt;T = Vec&lt;T&gt;&gt;,
@@ -2096,12 +2096,12 @@
 <span data-nosnippet>327</span>    }
 <span data-nosnippet>328</span>}
 <span data-nosnippet>329</span>
-<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;<a href="monoid_action.rs.html#83">T</a>, C&gt;
+<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;T, C&gt;
 <span data-nosnippet>331</span><span class="kw">where
 <span data-nosnippet>332</span>    </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>333</span>{
 <span data-nosnippet>334</span>    <span class="kw">fn </span>shr_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
-<span data-nosnippet>335</span>        <span class="kw">if </span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.length() &lt;= rhs {
+<span data-nosnippet>335</span>        <span class="kw">if </span><span class="self">self</span>.length() &lt;= rhs {
 <span data-nosnippet>336</span>            <span class="kw-2">*</span><span class="self">self </span>= <span class="self">Self</span>::zero();
 <span data-nosnippet>337</span>        } <span class="kw">else </span>{
 <span data-nosnippet>338</span>            <span class="kw">for </span>i <span class="kw">in </span>rhs..<span class="self">self</span>.length() {
@@ -2157,7 +2157,7 @@
 <span data-nosnippet>160</span>        <span class="kw">where
 <span data-nosnippet>161</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>162</span>        {
-<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <span class="self">Self</span>;
+<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <a class="self" href="#126">Self</a>;
 <span data-nosnippet>164</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>165</span>                <span class="macro-nonterminal">$imp_assign</span>::<span class="macro-nonterminal">$method_assign</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs);
 <span data-nosnippet>166</span>                <span class="self">self
@@ -2286,7 +2286,7 @@
 <span data-nosnippet>289</span>                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone(), rhs)
 <span data-nosnippet>290</span>            }
 <span data-nosnippet>291</span>        }
-<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;<a href="monoid_action.rs.html#35">T</a>, C&gt;
 <span data-nosnippet>293</span>        <span class="kw">where
 <span data-nosnippet>294</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>295</span>            C: ConvolveSteps&lt;T = Vec&lt;T&gt;&gt;,
@@ -2324,12 +2324,12 @@
 <span data-nosnippet>327</span>    }
 <span data-nosnippet>328</span>}
 <span data-nosnippet>329</span>
-<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;<a href="monoid_action.rs.html#83">T</a>, C&gt;
+<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;T, C&gt;
 <span data-nosnippet>331</span><span class="kw">where
 <span data-nosnippet>332</span>    </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>333</span>{
 <span data-nosnippet>334</span>    <span class="kw">fn </span>shr_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
-<span data-nosnippet>335</span>        <span class="kw">if </span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.length() &lt;= rhs {
+<span data-nosnippet>335</span>        <span class="kw">if </span><span class="self">self</span>.length() &lt;= rhs {
 <span data-nosnippet>336</span>            <span class="kw-2">*</span><span class="self">self </span>= <span class="self">Self</span>::zero();
 <span data-nosnippet>337</span>        } <span class="kw">else </span>{
 <span data-nosnippet>338</span>            <span class="kw">for </span>i <span class="kw">in </span>rhs..<span class="self">self</span>.length() {
@@ -2517,7 +2517,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -2592,7 +2592,7 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="monoid_action.rs.html#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.iter_mut" class="method"><a class="src rightside" href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#28-30">Source</a><h4 class="code-header">pub fn <a href="#method.iter_mut" class="fn">iter_mut</a>(&amp;mut self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/slice/iter/struct.IterMut.html" title="struct core::slice::iter::IterMut">IterMut</a>&lt;'_, T&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[1,1],&#34;../../src/competitive/math/formal_power_series/formal_power_series_nums.rs.html#40&#34;,&#34;line 40&#34;],[[12,12],&#34;../../src/competitive/math/formal_power_series/formal_power_series_nums.rs.html#51&#34;,&#34;line 51&#34;],[[80,80],&#34;../../src/competitive/math/formal_power_series/formal_power_series_nums.rs.html#119&#34;,&#34;line 119&#34;],[[93,93],&#34;../../src/competitive/math/formal_power_series/formal_power_series_nums.rs.html#132&#34;,&#34;line 132&#34;],[[275,275],&#34;../../src/competitive/math/formal_power_series/formal_power_series_nums.rs.html#314&#34;,&#34;line 314&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_nums.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_nums.rs.html#40">line 40</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>39</span>    <span class="kw">fn </span>mul_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: T) {
 <span data-nosnippet>40</span>        <span class="kw">for </span>x <span class="kw">in </span><span class="self">self</span>.<span class="highlight focus">iter_mut</span>() {
@@ -2718,7 +2718,7 @@
 <span data-nosnippet>160</span>        <span class="kw">where
 <span data-nosnippet>161</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>162</span>        {
-<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <span class="self">Self</span>;
+<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <a class="self" href="algebra/magma.rs.html#126">Self</a>;
 <span data-nosnippet>164</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>165</span>                <span class="macro-nonterminal">$imp_assign</span>::<span class="macro-nonterminal">$method_assign</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs);
 <span data-nosnippet>166</span>                <span class="self">self
@@ -2847,7 +2847,7 @@
 <span data-nosnippet>289</span>                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone(), rhs)
 <span data-nosnippet>290</span>            }
 <span data-nosnippet>291</span>        }
-<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;<a href="algebra/monoid_action.rs.html#35">T</a>, C&gt;
 <span data-nosnippet>293</span>        <span class="kw">where
 <span data-nosnippet>294</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>295</span>            C: ConvolveSteps&lt;T = Vec&lt;T&gt;&gt;,
@@ -3043,7 +3043,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -3118,7 +3118,7 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="monoid_action.rs.html#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.resize" class="method"><a class="src rightside" href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#58-60">Source</a><h4 class="code-header">pub fn <a href="#method.resize" class="fn">resize</a>(&amp;mut self, deg: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#62&#34;,&#34;line 62&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_impls.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#62">line 62</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>61</span>    <span class="kw">pub fn </span>resized(<span class="kw-2">mut </span><span class="self">self</span>, deg: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>62</span>        <span class="self">self</span>.<span class="highlight focus">resize</span>(deg);
@@ -3171,7 +3171,7 @@
 <span data-nosnippet>160</span>        <span class="kw">where
 <span data-nosnippet>161</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>162</span>        {
-<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <span class="self">Self</span>;
+<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <a class="self" href="#126">Self</a>;
 <span data-nosnippet>164</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>165</span>                <span class="macro-nonterminal">$imp_assign</span>::<span class="macro-nonterminal">$method_assign</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs);
 <span data-nosnippet>166</span>                <span class="self">self
@@ -3300,7 +3300,7 @@
 <span data-nosnippet>289</span>                <span class="macro-nonterminal">$imp</span>::<span class="macro-nonterminal">$method</span>(<span class="self">self</span>.clone(), rhs)
 <span data-nosnippet>290</span>            }
 <span data-nosnippet>291</span>        }
-<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;
+<span data-nosnippet>292</span>        <span class="kw">impl</span>&lt;T, C&gt; <span class="macro-nonterminal">$imp</span>&lt;<span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span>FormalPowerSeries&lt;<a href="monoid_action.rs.html#35">T</a>, C&gt;
 <span data-nosnippet>293</span>        <span class="kw">where
 <span data-nosnippet>294</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>295</span>            C: ConvolveSteps&lt;T = Vec&lt;T&gt;&gt;,
@@ -3338,12 +3338,12 @@
 <span data-nosnippet>327</span>    }
 <span data-nosnippet>328</span>}
 <span data-nosnippet>329</span>
-<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;<a href="monoid_action.rs.html#83">T</a>, C&gt;
+<span data-nosnippet>330</span><span class="kw">impl</span>&lt;T, C&gt; ShrAssign&lt;usize&gt; <span class="kw">for </span>FormalPowerSeries&lt;T, C&gt;
 <span data-nosnippet>331</span><span class="kw">where
 <span data-nosnippet>332</span>    </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>333</span>{
 <span data-nosnippet>334</span>    <span class="kw">fn </span>shr_assign(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs: usize) {
-<span data-nosnippet>335</span>        <span class="kw">if </span><a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.length() &lt;= rhs {
+<span data-nosnippet>335</span>        <span class="kw">if </span><span class="self">self</span>.length() &lt;= rhs {
 <span data-nosnippet>336</span>            <span class="kw-2">*</span><span class="self">self </span>= <span class="self">Self</span>::zero();
 <span data-nosnippet>337</span>        } <span class="kw">else </span>{
 <span data-nosnippet>338</span>            <span class="kw">for </span>i <span class="kw">in </span>rhs..<span class="self">self</span>.length() {
@@ -3393,10 +3393,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.length(), subr.length());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].length();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="#186">s</a>, len).prefix(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -3413,12 +3413,12 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.<span class="highlight focus">reversed</span>().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }
 <span data-nosnippet>415</span>    <span class="doccomment">/// x^n mod self
 <span data-nosnippet>416</span>    </span><span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.length() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.length() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.<span class="highlight">reversed</span>();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().bostan_mori_msb(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).prefix(d).<span class="highlight">reversed</span>();
@@ -3429,7 +3429,7 @@
 <span data-nosnippet>425</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
 <span data-nosnippet>426</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.<span class="highlight">reversed</span>().data, deg);
 <span data-nosnippet>427</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
-<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
+<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].<a href="../num/zero_one.rs.html#16">to_vec</a>())
 <span data-nosnippet>429</span>    }
 <span data-nosnippet>430</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>431</span>        <span class="kw">let </span>n = points.len();
@@ -3458,10 +3458,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.length(), subr.length());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].length();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="#186">s</a>, len).prefix(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -3602,7 +3602,7 @@
 <span data-nosnippet>160</span>        <span class="kw">where
 <span data-nosnippet>161</span>            </span>T: FormalPowerSeriesCoefficient,
 <span data-nosnippet>162</span>        {
-<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <span class="self">Self</span>;
+<span data-nosnippet>163</span>            <span class="kw">type </span>Output = <a class="self" href="algebra/magma.rs.html#126">Self</a>;
 <span data-nosnippet>164</span>            <span class="kw">fn </span><span class="macro-nonterminal">$method</span>(<span class="kw-2">mut </span><span class="self">self</span>, rhs: <span class="kw-2">&amp;</span>FormalPowerSeries&lt;T, C&gt;) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>165</span>                <span class="macro-nonterminal">$imp_assign</span>::<span class="macro-nonterminal">$method_assign</span>(<span class="kw-2">&amp;mut </span><span class="self">self</span>, rhs);
 <span data-nosnippet>166</span>                <span class="self">self
@@ -3689,7 +3689,7 @@
 <span data-nosnippet>247</span>        rem.<span class="highlight">trim_tail_zeros</span>();
 <span data-nosnippet>248</span>        (div, rem)
 <span data-nosnippet>249</span>    }</code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example expanded" data-locs="[[[5,5],&#34;../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#421&#34;,&#34;line 421&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_impls.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#421">line 421</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>416</span>    <span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.length() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.length() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.reversed();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().bostan_mori_msb(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).prefix(d).reversed();
@@ -3794,7 +3794,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.<span class="highlight">prefix_ref</span>(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -3877,7 +3877,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).<span class="highlight">prefix</span>(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -3952,12 +3952,12 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="monoid_action.rs.html#128">s</a>.<span class="highlight">prefix</span>(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.<span class="highlight">prefix</span>(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).<span class="highlight">prefix</span>(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }
 <span data-nosnippet>415</span>    <span class="doccomment">/// x^n mod self
 <span data-nosnippet>416</span>    </span><span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.length() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.length() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.reversed();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().bostan_mori_msb(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).<span class="highlight">prefix</span>(d).reversed();
@@ -3968,7 +3968,7 @@
 <span data-nosnippet>425</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
 <span data-nosnippet>426</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.reversed().data, deg);
 <span data-nosnippet>427</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
-<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
+<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].<a href="../num/zero_one.rs.html#16">to_vec</a>())
 <span data-nosnippet>429</span>    }
 <span data-nosnippet>430</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>431</span>        <span class="kw">let </span>n = points.len();
@@ -3997,10 +3997,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.length(), subr.length());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].length();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="monoid_action.rs.html#186">s</a>, len).<span class="highlight">prefix</span>(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).<span class="highlight">prefix</span>(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).<span class="highlight">prefix</span>(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="monoid_action.rs.html#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -4053,13 +4053,13 @@
 <span data-nosnippet>510</span>        p.bostan_mori(<span class="self">self</span>, k)
 <span data-nosnippet>511</span>    }
 <span data-nosnippet>512</span>    <span class="kw">pub fn </span>kth_term(a: Vec&lt;T&gt;, k: usize) -&gt; T {
-<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="monoid_action.rs.html#256">x</a>) = a.get(k) {
+<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = a.get(k) {
 <span data-nosnippet>514</span>            <span class="kw">return </span>x.clone();
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="self">Self</span>::from_vec(berlekamp_massey(<span class="kw-2">&amp;</span>a)).kth_term_of_linearly_recurrence(a, k)
 <span data-nosnippet>517</span>    }
 <span data-nosnippet>518</span>    <span class="doccomment">/// sum_i a_i exp(b_i x)
-<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
+<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: <a href="monoid_action.rs.html#259">F</a>) -&gt; <span class="self">Self
 <span data-nosnippet>520</span>    </span><span class="kw">where
 <span data-nosnippet>521</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
 <span data-nosnippet>522</span>        F: FnMut(usize) -&gt; T,
@@ -4100,7 +4100,7 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.odd" class="method"><a class="src rightside" href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#179-186">Source</a><h4 class="code-header">pub fn <a href="#method.odd" class="fn">odd</a>(self) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-13"><a href="#scraped-examples-13">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#392&#34;,&#34;line 392&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_impls.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#392">line 392</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>386</span>    <span class="kw">pub fn </span>bostan_mori(<span class="self">self</span>, rhs: <span class="self">Self</span>, <span class="kw-2">mut </span>n: usize) -&gt; T {
 <span data-nosnippet>387</span>        <span class="kw">let </span><span class="kw-2">mut </span>p = <span class="self">self</span>;
@@ -4143,7 +4143,7 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.eval" class="method"><a class="src rightside" href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#223-231">Source</a><h4 class="code-header">pub fn <a href="#method.eval" class="fn">eval</a>(&amp;self, x: T) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-17"><a href="#scraped-examples-17">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#433&#34;,&#34;line 433&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_impls.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#433">line 433</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>430</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>431</span>        <span class="kw">let </span>n = points.len();
@@ -4172,10 +4172,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.length(), subr.length());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].length();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="#186">s</a>, len).prefix(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -4243,7 +4243,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.<span class="highlight">inv</span>(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -4318,12 +4318,12 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="monoid_action.rs.html#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }
 <span data-nosnippet>415</span>    <span class="doccomment">/// x^n mod self
 <span data-nosnippet>416</span>    </span><span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.length() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.length() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.reversed();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().bostan_mori_msb(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).prefix(d).reversed();
@@ -4334,7 +4334,7 @@
 <span data-nosnippet>425</span>        <span class="kw">let </span>n = <span class="self">self</span>.length();
 <span data-nosnippet>426</span>        <span class="kw">let </span><span class="kw-2">mut </span>s = C::transform(<span class="self">self</span>.reversed().data, deg);
 <span data-nosnippet>427</span>        C::multiply(<span class="kw-2">&amp;mut </span>s, other);
-<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].to_vec())
+<span data-nosnippet>428</span>        <span class="self">Self</span>::from_vec((C::inverse_transform(s, deg))[n - <span class="number">1</span>..].<a href="../num/zero_one.rs.html#16">to_vec</a>())
 <span data-nosnippet>429</span>    }
 <span data-nosnippet>430</span>    <span class="kw">pub fn </span>multipoint_evaluation(<span class="self">self</span>, points: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt; {
 <span data-nosnippet>431</span>        <span class="kw">let </span>n = points.len();
@@ -4363,10 +4363,10 @@
 <span data-nosnippet>454</span>            <span class="kw">let </span>(dl, dr) = (subl.length(), subr.length());
 <span data-nosnippet>455</span>            <span class="kw">let </span>len = dl.max(dr) + uptree_t[i].length();
 <span data-nosnippet>456</span>            <span class="kw">let </span>s = C::transform(uptree_t[i].data.to_vec(), len);
-<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span><a href="monoid_action.rs.html#186">s</a>, len).prefix(dl));
+<span data-nosnippet>457</span>            uptree_t.push(subr.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dl));
 <span data-nosnippet>458</span>            uptree_t.push(subl.middle_product(<span class="kw-2">&amp;</span>s, len).prefix(dr));
 <span data-nosnippet>459</span>        }
-<span data-nosnippet>460</span>        uptree_t[n..]
+<span data-nosnippet>460</span>        uptree_t[<a href="monoid_action.rs.html#186">n</a>..]
 <span data-nosnippet>461</span>            .iter()
 <span data-nosnippet>462</span>            .map(|u| u.data.first().cloned().unwrap_or_else(Zero::zero))
 <span data-nosnippet>463</span>            .collect()
@@ -4419,13 +4419,13 @@
 <span data-nosnippet>510</span>        p.bostan_mori(<span class="self">self</span>, k)
 <span data-nosnippet>511</span>    }
 <span data-nosnippet>512</span>    <span class="kw">pub fn </span>kth_term(a: Vec&lt;T&gt;, k: usize) -&gt; T {
-<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="monoid_action.rs.html#256">x</a>) = a.get(k) {
+<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = a.get(k) {
 <span data-nosnippet>514</span>            <span class="kw">return </span>x.clone();
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="self">Self</span>::from_vec(berlekamp_massey(<span class="kw-2">&amp;</span>a)).kth_term_of_linearly_recurrence(a, k)
 <span data-nosnippet>517</span>    }
 <span data-nosnippet>518</span>    <span class="doccomment">/// sum_i a_i exp(b_i x)
-<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
+<span data-nosnippet>519</span>    </span><span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: <a href="monoid_action.rs.html#259">F</a>) -&gt; <span class="self">Self
 <span data-nosnippet>520</span>    </span><span class="kw">where
 <span data-nosnippet>521</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
 <span data-nosnippet>522</span>        F: FnMut(usize) -&gt; T,
@@ -4526,7 +4526,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="monoid_action.rs.html#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -4668,7 +4668,7 @@
 <span data-nosnippet>334</span>            <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">1</span>;
 <span data-nosnippet>335</span>            <span class="kw">while </span>i &lt; deg {
 <span data-nosnippet>336</span>                f = (<span class="kw-2">&amp;</span>f + <span class="kw-2">&amp;</span>(<span class="self">self</span>.prefix_ref(i * <span class="number">2</span>) * f.inv(i * <span class="number">2</span>))).prefix(i * <span class="number">2</span>) * <span class="kw-2">&amp;</span>inv2;
-<span data-nosnippet>337</span>                <a href="#39">i</a> <span class="kw-2">*</span>= <span class="number">2</span>;
+<span data-nosnippet>337</span>                i <span class="kw-2">*</span>= <span class="number">2</span>;
 <span data-nosnippet>338</span>            }
 <span data-nosnippet>339</span>            f.truncate(deg);
 <span data-nosnippet>340</span>            <span class="kw">return </span><span class="prelude-val">Some</span>(f);
@@ -4710,12 +4710,12 @@
 <span data-nosnippet>409</span>            s[i * <span class="number">2 </span>+ (<span class="number">1 </span>- n % <span class="number">2</span>)] = x.clone();
 <span data-nosnippet>410</span>        }
 <span data-nosnippet>411</span>        <span class="kw">let </span>len = <span class="number">2 </span>* d + <span class="number">1</span>;
-<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(<a href="#128">s</a>.prefix(len).data, len);
+<span data-nosnippet>412</span>        <span class="kw">let </span>ts = C::transform(s.prefix(len).data, len);
 <span data-nosnippet>413</span>        mq.reversed().middle_product(<span class="kw-2">&amp;</span>ts, len).prefix(d + <span class="number">1</span>)
 <span data-nosnippet>414</span>    }
 <span data-nosnippet>415</span>    <span class="doccomment">/// x^n mod self
 <span data-nosnippet>416</span>    </span><span class="kw">pub fn </span>pow_mod(<span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>417</span>        <span class="kw">let </span>d = <a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.length() - <span class="number">1</span>;
+<span data-nosnippet>417</span>        <span class="kw">let </span>d = <span class="self">self</span>.length() - <span class="number">1</span>;
 <span data-nosnippet>418</span>        <span class="kw">let </span>q = <span class="self">self</span>.reversed();
 <span data-nosnippet>419</span>        <span class="kw">let </span>u = q.clone().<span class="highlight">bostan_mori_msb</span>(n);
 <span data-nosnippet>420</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (u * q).prefix(d).reversed();
@@ -4749,7 +4749,7 @@
 <span data-nosnippet>12</span>    <span class="macro">iter_print!</span>(writer, @it res);
 <span data-nosnippet>13</span>}</code></pre></div></div></div></details><section id="method.product_all" class="method"><a class="src rightside" href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#465-482">Source</a><h4 class="code-header">pub fn <a href="#method.product_all" class="fn">product_all</a>&lt;I&gt;(iter: I, deg: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self<div class="where">where
     I: <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html" title="trait core::iter::traits::collect::IntoIterator">IntoIterator</a>&lt;Item = Self&gt;,</div></h4></section><details class="toggle method-toggle" open><summary><section id="method.sum_all_rational" class="method"><a class="src rightside" href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#483-504">Source</a><h4 class="code-header">pub fn <a href="#method.sum_all_rational" class="fn">sum_all_rational</a>&lt;I&gt;(iter: I, deg: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (Self, Self)<div class="where">where
-    I: <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html" title="trait core::iter::traits::collect::IntoIterator">IntoIterator</a>&lt;Item = (Self, Self)&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-28"><a href="#scraped-examples-28">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,9],&#34;../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#524-528&#34;,&#34;lines 524-528&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_impls.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#524-528">lines 524-528</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>519</span>    <span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: F) -&gt; <span class="self">Self
+    I: <a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html" title="trait core::iter::traits::collect::IntoIterator">IntoIterator</a>&lt;Item = (Self, Self)&gt;,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-28"><a href="#scraped-examples-28">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,9],&#34;../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#524-528&#34;,&#34;lines 524-528&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_impls.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#524-528">lines 524-528</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>519</span>    <span class="kw">pub fn </span>linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: usize, <span class="kw-2">mut </span>inv_fact: <a href="#259">F</a>) -&gt; <span class="self">Self
 <span data-nosnippet>520</span>    </span><span class="kw">where
 <span data-nosnippet>521</span>        </span>I: IntoIterator&lt;Item = (T, T)&gt;,
 <span data-nosnippet>522</span>        F: FnMut(usize) -&gt; T,
@@ -4765,7 +4765,7 @@
 <span data-nosnippet>532</span>        }
 <span data-nosnippet>533</span>        f
 <span data-nosnippet>534</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.kth_term_of_linearly_recurrence" class="method"><a class="src rightside" href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#505-511">Source</a><h4 class="code-header">pub fn <a href="#method.kth_term_of_linearly_recurrence" class="fn">kth_term_of_linearly_recurrence</a>(self, a: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;, k: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-29"><a href="#scraped-examples-29">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#516&#34;,&#34;line 516&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/formal_power_series/formal_power_series_impls.rs (<a href="../../src/competitive/math/formal_power_series/formal_power_series_impls.rs.html#516">line 516</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>512</span>    <span class="kw">pub fn </span>kth_term(a: Vec&lt;T&gt;, k: usize) -&gt; T {
-<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(<a href="#256">x</a>) = a.get(k) {
+<span data-nosnippet>513</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(x) = a.get(k) {
 <span data-nosnippet>514</span>            <span class="kw">return </span>x.clone();
 <span data-nosnippet>515</span>        }
 <span data-nosnippet>516</span>        <span class="self">Self</span>::from_vec(berlekamp_massey(<span class="kw-2">&amp;</span>a)).<span class="highlight focus">kth_term_of_linearly_recurrence</span>(a, k)

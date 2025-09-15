@@ -89,7 +89,7 @@
 <span data-nosnippet>99</span>            d[i] = R::one();
 <span data-nosnippet>100</span>        }
 <span data-nosnippet>101</span>        <span class="self">Self </span>{
-<span data-nosnippet>102</span>            shape,
+<span data-nosnippet>102</span>            <a href="#4-17">shape</a>,
 <span data-nosnippet>103</span>            data,
 <span data-nosnippet>104</span>            _marker: PhantomData,
 <span data-nosnippet>105</span>        }
@@ -164,7 +164,7 @@
 <span data-nosnippet>174</span><span class="kw">where
 <span data-nosnippet>175</span>    </span>R: SemiRing,
 <span data-nosnippet>176</span>{
-<span data-nosnippet>177</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
+<span data-nosnippet>177</span>    <span class="kw">type </span><a href="../../trait.Monoid.html">Output</a> = Matrix&lt;R&gt;;
 <span data-nosnippet>178</span>    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>179</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, rhs.shape);
 <span data-nosnippet>180</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
@@ -182,9 +182,9 @@
 <span data-nosnippet>192</span>    R::Additive: Invertible,
 <span data-nosnippet>193</span>{
 <span data-nosnippet>194</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
-<span data-nosnippet>195</span>    <span class="kw">fn </span>sub(<a class="self" href="#126">self</a>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-<span data-nosnippet>196</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, <a href="#128">rhs</a>.shape);
-<span data-nosnippet>197</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
+<span data-nosnippet>195</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>196</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, rhs.shape);
+<span data-nosnippet>197</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.clone();
 <span data-nosnippet>198</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">0 </span>{
 <span data-nosnippet>199</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1 </span>{
 <span data-nosnippet>200</span>                R::sub_assign(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>rhs[i][j]);
@@ -204,7 +204,7 @@
 <span data-nosnippet>214</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">0 </span>{
 <span data-nosnippet>215</span>            <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1 </span>{
 <span data-nosnippet>216</span>                <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..rhs.shape.<span class="number">1 </span>{
-<span data-nosnippet>217</span>                    R::add_assign(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span><span class="self">self</span>[i][k], <span class="kw-2">&amp;</span>rhs[k][j]));
+<span data-nosnippet>217</span>                    R::add_assign(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span><span class="self">self</span>[i][k], <span class="kw-2">&amp;</span>rhs[<a href="#146">k</a>][j]));
 <span data-nosnippet>218</span>                }
 <span data-nosnippet>219</span>            }
 <span data-nosnippet>220</span>        }
@@ -323,7 +323,7 @@
 <span data-nosnippet>333</span>            c[i][n + i] = R::one();
 <span data-nosnippet>334</span>        }
 <span data-nosnippet>335</span>        c.row_reduction(<span class="bool-val">true</span>);
-<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| R::is_zero(<span class="kw-2">&amp;</span>c[i][i])) {
+<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| R::is_zero(<span class="kw-2">&amp;</span>c[i][<a href="monoid_action.rs.html#31">i</a>])) {
 <span data-nosnippet>337</span>            <span class="prelude-val">None
 <span data-nosnippet>338</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>339</span>            <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_vec(
@@ -558,7 +558,7 @@
 <span data-nosnippet>86</span>    {
 <span data-nosnippet>87</span>        <span class="kw">let </span><span class="kw-2">mut </span>nonzero = <span class="macro">vec!</span>[];
 <span data-nosnippet>88</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">0 </span>{
-<span data-nosnippet>89</span>            <span class="kw">for </span><a href="algebra/magma.rs.html#14">j</a> <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">1 </span>{
+<span data-nosnippet>89</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">1 </span>{
 <span data-nosnippet>90</span>                <span class="kw">let </span>v = f(i, j);
 <span data-nosnippet>91</span>                <span class="kw">if </span>!R::is_zero(<span class="kw-2">&amp;</span>v) {
 <span data-nosnippet>92</span>                    nonzero.push((i, j, v));
@@ -649,7 +649,7 @@
 <span data-nosnippet>86</span>    {
 <span data-nosnippet>87</span>        <span class="kw">let </span><span class="kw-2">mut </span>nonzero = <span class="macro">vec!</span>[];
 <span data-nosnippet>88</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">0 </span>{
-<span data-nosnippet>89</span>            <span class="kw">for </span><a href="#14">j</a> <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">1 </span>{
+<span data-nosnippet>89</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">1 </span>{
 <span data-nosnippet>90</span>                <span class="kw">let </span>v = f(i, j);
 <span data-nosnippet>91</span>                <span class="kw">if </span>!<span class="highlight focus">R::is_zero</span>(<span class="kw-2">&amp;</span>v) {
 <span data-nosnippet>92</span>                    nonzero.push((i, j, v));
@@ -693,7 +693,7 @@
 <span data-nosnippet>522</span>        }
 <span data-nosnippet>523</span>        <span class="kw">let </span>n = sample.len();
 <span data-nosnippet>524</span>        <span class="kw">let </span>dim = <span class="self">self</span>.wfa.final_weights.shape.<span class="number">0</span>;
-<span data-nosnippet>525</span>        <span class="kw">let </span><span class="kw-2">mut </span>states: Vec&lt;(Matrix&lt;<a href="#213">F</a>&gt;, usize)&gt; = Vec::with_capacity(n + <span class="number">1</span>);
+<span data-nosnippet>525</span>        <span class="kw">let </span><span class="kw-2">mut </span>states: Vec&lt;(Matrix&lt;F&gt;, usize)&gt; = Vec::with_capacity(n + <span class="number">1</span>);
 <span data-nosnippet>526</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="self">self</span>.wfa.final_weights.clone();
 <span data-nosnippet>527</span>        states.push((v.clone(), n));
 <span data-nosnippet>528</span>        <span class="kw">for </span>k <span class="kw">in </span>(<span class="number">0</span>..n).rev() {
@@ -814,7 +814,7 @@
 <span data-nosnippet>643</span>                        <span class="kw">let </span>k = n;
 <span data-nosnippet>644</span>                        F::add_assign(
 <span data-nosnippet>645</span>                            <span class="kw-2">&amp;mut </span>transition[i][k],
-<span data-nosnippet>646</span>                            <span class="kw-2">&amp;</span>F::mul(<span class="kw-2">&amp;</span><span class="self">self</span>.nh[x][i][<a href="#371">j</a>], <span class="kw-2">&amp;</span><span class="self">self</span>.inv_h[j][k]),
+<span data-nosnippet>646</span>                            <span class="kw-2">&amp;</span>F::mul(<span class="kw-2">&amp;</span><span class="self">self</span>.nh[x][i][j], <span class="kw-2">&amp;</span><span class="self">self</span>.inv_h[j][k]),
 <span data-nosnippet>647</span>                        );
 <span data-nosnippet>648</span>                    }
 <span data-nosnippet>649</span>                }
@@ -879,7 +879,7 @@
 <span data-nosnippet>708</span>        <span class="self">self</span>.inv_h = h.inverse().expect(<span class="string">"Hankel matrix must be invertible"</span>);
 <span data-nosnippet>709</span>        <span class="self">self</span>.wfa = WeightedFiniteAutomaton::&lt;F&gt; {
 <span data-nosnippet>710</span>            initial_weights: Matrix::new_with((<span class="number">1</span>, n), |<span class="kw">_</span>, j| {
-<span data-nosnippet>711</span>                <span class="kw">if </span><span class="self">self</span>.prefixes[j].is_empty() {
+<span data-nosnippet>711</span>                <span class="kw">if </span><span class="self">self</span>.prefixes[<a href="#462">j</a>].is_empty() {
 <span data-nosnippet>712</span>                    F::one()
 <span data-nosnippet>713</span>                } <span class="kw">else </span>{
 <span data-nosnippet>714</span>                    F::zero()
@@ -887,7 +887,7 @@
 <span data-nosnippet>716</span>            }),
 <span data-nosnippet>717</span>            transitions: (<span class="number">0</span>..<span class="self">self</span>.automaton.sigma())
 <span data-nosnippet>718</span>                .map(|x| {
-<span data-nosnippet>719</span>                    <span class="kw-2">&amp;</span>Matrix::new_with((n, <a href="#462">n</a>), |i, j| {
+<span data-nosnippet>719</span>                    <span class="kw-2">&amp;</span>Matrix::new_with((n, n), |i, j| {
 <span data-nosnippet>720</span>                        <span class="self">self</span>.automaton.behavior(
 <span data-nosnippet>721</span>                            <span class="self">self</span>.prefixes[i]
 <span data-nosnippet>722</span>                                .iter()
@@ -989,7 +989,7 @@
 <span data-nosnippet>333</span>            c[i][n + i] = R::one();
 <span data-nosnippet>334</span>        }
 <span data-nosnippet>335</span>        c.row_reduction(<span class="bool-val">true</span>);
-<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| <span class="highlight">R::is_zero</span>(<span class="kw-2">&amp;</span>c[i][i])) {
+<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| <span class="highlight">R::is_zero</span>(<span class="kw-2">&amp;</span>c[i][<a href="monoid_action.rs.html#31">i</a>])) {
 <span data-nosnippet>337</span>            <span class="prelude-val">None
 <span data-nosnippet>338</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>339</span>            <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_vec(
@@ -1174,7 +1174,7 @@
 <span data-nosnippet>99</span>            d[i] = <span class="highlight focus">R::one</span>();
 <span data-nosnippet>100</span>        }
 <span data-nosnippet>101</span>        <span class="self">Self </span>{
-<span data-nosnippet>102</span>            shape,
+<span data-nosnippet>102</span>            <a href="#4-17">shape</a>,
 <span data-nosnippet>103</span>            data,
 <span data-nosnippet>104</span>            _marker: PhantomData,
 <span data-nosnippet>105</span>        }
@@ -1249,7 +1249,7 @@
 <span data-nosnippet>174</span><span class="kw">where
 <span data-nosnippet>175</span>    </span>R: SemiRing,
 <span data-nosnippet>176</span>{
-<span data-nosnippet>177</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
+<span data-nosnippet>177</span>    <span class="kw">type </span><a href="../../trait.Monoid.html">Output</a> = Matrix&lt;R&gt;;
 <span data-nosnippet>178</span>    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>179</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, rhs.shape);
 <span data-nosnippet>180</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
@@ -1267,9 +1267,9 @@
 <span data-nosnippet>192</span>    R::Additive: Invertible,
 <span data-nosnippet>193</span>{
 <span data-nosnippet>194</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
-<span data-nosnippet>195</span>    <span class="kw">fn </span>sub(<a class="self" href="#126">self</a>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-<span data-nosnippet>196</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, <a href="#128">rhs</a>.shape);
-<span data-nosnippet>197</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
+<span data-nosnippet>195</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>196</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, rhs.shape);
+<span data-nosnippet>197</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.clone();
 <span data-nosnippet>198</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">0 </span>{
 <span data-nosnippet>199</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1 </span>{
 <span data-nosnippet>200</span>                R::sub_assign(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>rhs[i][j]);
@@ -1289,7 +1289,7 @@
 <span data-nosnippet>214</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">0 </span>{
 <span data-nosnippet>215</span>            <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1 </span>{
 <span data-nosnippet>216</span>                <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..rhs.shape.<span class="number">1 </span>{
-<span data-nosnippet>217</span>                    R::add_assign(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span><span class="self">self</span>[i][k], <span class="kw-2">&amp;</span>rhs[k][j]));
+<span data-nosnippet>217</span>                    R::add_assign(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span><span class="self">self</span>[i][k], <span class="kw-2">&amp;</span>rhs[<a href="#146">k</a>][j]));
 <span data-nosnippet>218</span>                }
 <span data-nosnippet>219</span>            }
 <span data-nosnippet>220</span>        }
@@ -1408,7 +1408,7 @@
 <span data-nosnippet>333</span>            c[i][n + i] = <span class="highlight">R::one</span>();
 <span data-nosnippet>334</span>        }
 <span data-nosnippet>335</span>        c.row_reduction(<span class="bool-val">true</span>);
-<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| R::is_zero(<span class="kw-2">&amp;</span>c[i][i])) {
+<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| R::is_zero(<span class="kw-2">&amp;</span>c[i][<a href="monoid_action.rs.html#31">i</a>])) {
 <span data-nosnippet>337</span>            <span class="prelude-val">None
 <span data-nosnippet>338</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>339</span>            <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_vec(
@@ -1565,7 +1565,7 @@
 <span data-nosnippet>643</span>                        <span class="kw">let </span>k = n;
 <span data-nosnippet>644</span>                        F::add_assign(
 <span data-nosnippet>645</span>                            <span class="kw-2">&amp;mut </span>transition[i][k],
-<span data-nosnippet>646</span>                            <span class="kw-2">&amp;</span>F::mul(<span class="kw-2">&amp;</span><span class="self">self</span>.nh[x][i][<a href="#371">j</a>], <span class="kw-2">&amp;</span><span class="self">self</span>.inv_h[j][k]),
+<span data-nosnippet>646</span>                            <span class="kw-2">&amp;</span>F::mul(<span class="kw-2">&amp;</span><span class="self">self</span>.nh[x][i][j], <span class="kw-2">&amp;</span><span class="self">self</span>.inv_h[j][k]),
 <span data-nosnippet>647</span>                        );
 <span data-nosnippet>648</span>                    }
 <span data-nosnippet>649</span>                }
@@ -1630,7 +1630,7 @@
 <span data-nosnippet>708</span>        <span class="self">self</span>.inv_h = h.inverse().expect(<span class="string">"Hankel matrix must be invertible"</span>);
 <span data-nosnippet>709</span>        <span class="self">self</span>.wfa = WeightedFiniteAutomaton::&lt;F&gt; {
 <span data-nosnippet>710</span>            initial_weights: Matrix::new_with((<span class="number">1</span>, n), |<span class="kw">_</span>, j| {
-<span data-nosnippet>711</span>                <span class="kw">if </span><span class="self">self</span>.prefixes[j].is_empty() {
+<span data-nosnippet>711</span>                <span class="kw">if </span><span class="self">self</span>.prefixes[<a href="#462">j</a>].is_empty() {
 <span data-nosnippet>712</span>                    <span class="highlight">F::one</span>()
 <span data-nosnippet>713</span>                } <span class="kw">else </span>{
 <span data-nosnippet>714</span>                    F::zero()
@@ -1638,7 +1638,7 @@
 <span data-nosnippet>716</span>            }),
 <span data-nosnippet>717</span>            transitions: (<span class="number">0</span>..<span class="self">self</span>.automaton.sigma())
 <span data-nosnippet>718</span>                .map(|x| {
-<span data-nosnippet>719</span>                    <span class="kw-2">&amp;</span>Matrix::new_with((n, <a href="#462">n</a>), |i, j| {
+<span data-nosnippet>719</span>                    <span class="kw-2">&amp;</span>Matrix::new_with((n, n), |i, j| {
 <span data-nosnippet>720</span>                        <span class="self">self</span>.automaton.behavior(
 <span data-nosnippet>721</span>                            <span class="self">self</span>.prefixes[i]
 <span data-nosnippet>722</span>                                .iter()
@@ -1657,7 +1657,7 @@
     Self::<a class="associatedtype" href="trait.SemiRing.html#associatedtype.T" title="type competitive::algebra::SemiRing::T">T</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>,</div></h4></section></summary><div class="docblock"><p>checks if the element is one</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.add" class="method"><a class="src rightside" href="../../src/competitive/algebra/ring.rs.html#34-36">Source</a><h4 class="code-header">fn <a href="#method.add" class="fn">add</a>(x: &amp;Self::<a class="associatedtype" href="trait.SemiRing.html#associatedtype.T" title="type competitive::algebra::SemiRing::T">T</a>, y: &amp;Self::<a class="associatedtype" href="trait.SemiRing.html#associatedtype.T" title="type competitive::algebra::SemiRing::T">T</a>) -&gt; Self::<a class="associatedtype" href="trait.SemiRing.html#associatedtype.T" title="type competitive::algebra::SemiRing::T">T</a></h4></section></summary><div class="docblock"><p>additive operaion: $+$</p>
 </div><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/string/rolling_hash.rs.html#523&#34;,&#34;line 523&#34;],[[5,5],&#34;../../src/competitive/string/rolling_hash.rs.html#527&#34;,&#34;line 527&#34;],[[8,8],&#34;../../src/competitive/string/rolling_hash.rs.html#530&#34;,&#34;line 530&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/rolling_hash.rs (<a href="../../src/competitive/string/rolling_hash.rs.html#523">line 523</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>522</span>    <span class="kw">fn </span>mul1_add(<span class="kw-2">&amp;</span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>R::T, y: <span class="kw-2">&amp;</span>R::T) -&gt; R::T {
-<span data-nosnippet>523</span>        <span class="highlight focus">R::add</span>(<span class="kw-2">&amp;</span>R::mul(x, <span class="kw-2">&amp;</span><span class="self">self</span>.base), y)
+<span data-nosnippet>523</span>        <span class="highlight focus">R::add</span>(<span class="kw-2">&amp;</span>R::mul(x, <span class="kw-2">&amp;</span><a class="self" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html">self</a>.base), y)
 <span data-nosnippet>524</span>    }
 <span data-nosnippet>525</span>    <span class="kw">fn </span>muln_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, x: <span class="kw-2">&amp;</span>R::T, y: <span class="kw-2">&amp;</span>R::T, n: usize) -&gt; R::T {
 <span data-nosnippet>526</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(pow) = <span class="self">self</span>.pow.get(n) {
@@ -1717,7 +1717,7 @@
 <span data-nosnippet>57</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[12,12],&#34;../../src/competitive/algorithm/esper.rs.html#146&#34;,&#34;line 146&#34;]]"><div class="scraped-example-title">crates/competitive/src/algorithm/esper.rs (<a href="../../src/competitive/algorithm/esper.rs.html#146">line 146</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>134</span>    <span class="kw">pub fn </span>solve(<span class="kw-2">&amp;</span><span class="self">self</span>, input: Input) -&gt; R::T {
 <span data-nosnippet>135</span>        <span class="kw">let </span>coeff = <span class="self">self
 <span data-nosnippet>136</span>            </span>.data
-<span data-nosnippet>137</span>            .<a href="https://doc.rust-lang.org/nightly/std/primitive.u16.html">get</a>(<span class="kw-2">&amp;</span>(<span class="self">self</span>.class)(<span class="kw-2">&amp;</span>input))
+<span data-nosnippet>137</span>            .get(<span class="kw-2">&amp;</span>(<span class="self">self</span>.class)(<span class="kw-2">&amp;</span>input))
 <span data-nosnippet>138</span>            .expect(<span class="string">"unrecognized class"</span>)
 <span data-nosnippet>139</span>            .as_ref()
 <span data-nosnippet>140</span>            .expect(<span class="string">"failed to solve"</span>);
@@ -1995,7 +1995,7 @@
 <span data-nosnippet>86</span>    {
 <span data-nosnippet>87</span>        <span class="kw">let </span><span class="kw-2">mut </span>nonzero = <span class="macro">vec!</span>[];
 <span data-nosnippet>88</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">0 </span>{
-<span data-nosnippet>89</span>            <span class="kw">for </span><a href="algebra/magma.rs.html#14">j</a> <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">1 </span>{
+<span data-nosnippet>89</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..shape.<span class="number">1 </span>{
 <span data-nosnippet>90</span>                <span class="kw">let </span>v = f(i, j);
 <span data-nosnippet>91</span>                <span class="kw">if </span>!R::is_zero(<span class="kw-2">&amp;</span>v) {
 <span data-nosnippet>92</span>                    nonzero.push((i, j, v));
@@ -2124,7 +2124,7 @@
 <span data-nosnippet>174</span><span class="kw">where
 <span data-nosnippet>175</span>    </span>R: SemiRing,
 <span data-nosnippet>176</span>{
-<span data-nosnippet>177</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
+<span data-nosnippet>177</span>    <span class="kw">type </span><a href="../../trait.Monoid.html">Output</a> = Matrix&lt;R&gt;;
 <span data-nosnippet>178</span>    <span class="kw">fn </span>add(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
 <span data-nosnippet>179</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, rhs.shape);
 <span data-nosnippet>180</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
@@ -2142,9 +2142,9 @@
 <span data-nosnippet>192</span>    R::Additive: Invertible,
 <span data-nosnippet>193</span>{
 <span data-nosnippet>194</span>    <span class="kw">type </span>Output = Matrix&lt;R&gt;;
-<span data-nosnippet>195</span>    <span class="kw">fn </span>sub(<a class="self" href="#126">self</a>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
-<span data-nosnippet>196</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, <a href="#128">rhs</a>.shape);
-<span data-nosnippet>197</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="self">self</span>.clone();
+<span data-nosnippet>195</span>    <span class="kw">fn </span>sub(<span class="self">self</span>, rhs: <span class="self">Self</span>) -&gt; <span class="self">Self</span>::Output {
+<span data-nosnippet>196</span>        <span class="macro">assert_eq!</span>(<span class="self">self</span>.shape, rhs.shape);
+<span data-nosnippet>197</span>        <span class="kw">let </span><span class="kw-2">mut </span>res = <a class="self" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">self</a>.clone();
 <span data-nosnippet>198</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">0 </span>{
 <span data-nosnippet>199</span>            <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1 </span>{
 <span data-nosnippet>200</span>                R::sub_assign(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>rhs[i][j]);
@@ -2164,7 +2164,7 @@
 <span data-nosnippet>214</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">0 </span>{
 <span data-nosnippet>215</span>            <span class="kw">for </span>k <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.shape.<span class="number">1 </span>{
 <span data-nosnippet>216</span>                <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..rhs.shape.<span class="number">1 </span>{
-<span data-nosnippet>217</span>                    <span class="highlight">R::add_assign</span>(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span><span class="self">self</span>[i][k], <span class="kw-2">&amp;</span>rhs[k][j]));
+<span data-nosnippet>217</span>                    <span class="highlight">R::add_assign</span>(<span class="kw-2">&amp;mut </span>res[i][j], <span class="kw-2">&amp;</span>R::mul(<span class="kw-2">&amp;</span><span class="self">self</span>[i][k], <span class="kw-2">&amp;</span>rhs[<a href="#146">k</a>][j]));
 <span data-nosnippet>218</span>                }
 <span data-nosnippet>219</span>            }
 <span data-nosnippet>220</span>        }
@@ -2283,7 +2283,7 @@
 <span data-nosnippet>333</span>            c[i][n + i] = R::one();
 <span data-nosnippet>334</span>        }
 <span data-nosnippet>335</span>        c.row_reduction(<span class="bool-val">true</span>);
-<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| R::is_zero(<span class="kw-2">&amp;</span>c[i][i])) {
+<span data-nosnippet>336</span>        <span class="kw">if </span>(<span class="number">0</span>..n).any(|i| R::is_zero(<span class="kw-2">&amp;</span>c[i][<a href="monoid_action.rs.html#31">i</a>])) {
 <span data-nosnippet>337</span>            <span class="prelude-val">None
 <span data-nosnippet>338</span>        </span>} <span class="kw">else </span>{
 <span data-nosnippet>339</span>            <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_vec(
@@ -2498,7 +2498,7 @@
 <span data-nosnippet>643</span>                        <span class="kw">let </span>k = n;
 <span data-nosnippet>644</span>                        <span class="highlight">F::add_assign</span>(
 <span data-nosnippet>645</span>                            <span class="kw-2">&amp;mut </span>transition[i][k],
-<span data-nosnippet>646</span>                            <span class="kw-2">&amp;</span>F::mul(<span class="kw-2">&amp;</span><span class="self">self</span>.nh[x][i][<a href="#371">j</a>], <span class="kw-2">&amp;</span><span class="self">self</span>.inv_h[j][k]),
+<span data-nosnippet>646</span>                            <span class="kw-2">&amp;</span>F::mul(<span class="kw-2">&amp;</span><span class="self">self</span>.nh[x][i][j], <span class="kw-2">&amp;</span><span class="self">self</span>.inv_h[j][k]),
 <span data-nosnippet>647</span>                        );
 <span data-nosnippet>648</span>                    }
 <span data-nosnippet>649</span>                }
