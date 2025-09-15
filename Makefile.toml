@@ -1,0 +1,28 @@
+[config]
+default_to_workspace = false
+
+[tasks.fmt]
+command = "cargo"
+args = ["fmt", "--all", "--", "--check"]
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--", "-D", "warnings"]
+
+[tasks.test]
+command = "cargo"
+args = ["test", "--workspace"]
+
+[tasks.snippet]
+command = "cargo"
+args = [
+    "codesnip",
+    "--source-config=.github/workflows/codesnip.toml",
+    "verify",
+    "--verbose",
+    "--toolchain=1.70.0",
+    "--edition=2021",
+]
+
+[tasks.all]
+dependencies = ["fmt", "clippy", "test", "snippet"]

@@ -5,6 +5,11 @@
 
 competitive programming library
 
+## Lint
+```sh
+$ makers all
+```
+
 ## Verify
 [here](crates/tools/verify/README.md)
 
