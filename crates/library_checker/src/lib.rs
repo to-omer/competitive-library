@@ -27,7 +27,15 @@ mod tests {
 
     fn list_verified_problems() -> Vec<(String, String)> {
         let output = Command::new("cargo")
-            .args(["test", "-p", "library_checker", "--quiet", "--", "--list"])
+            .args([
+                "test",
+                "-p",
+                "library_checker",
+                "--quiet",
+                "--",
+                "--list",
+                "--ignored",
+            ])
             .output()
             .expect("Failed to list verified problems")
             .stdout;
@@ -87,7 +95,7 @@ mod tests {
                     failed.push((problem, category, correct_category.clone()));
                 }
             } else {
-                panic!("Problem not found: {}", problem);
+                panic!("Problem not found: {} in {:?}", problem, problems);
             }
         }
         assert!(failed.is_empty(), "Some problems are in wrong category");
