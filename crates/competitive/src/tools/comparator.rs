@@ -1,4 +1,4 @@
-use core::cmp::Ordering;
+use std::cmp::Ordering;
 
 pub trait Comparator<T> {
     fn compare(&mut self, a: &T, b: &T) -> Ordering;

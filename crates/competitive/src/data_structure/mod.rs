@@ -6,7 +6,7 @@ use crate::algebra::{
 };
 use crate::algorithm::{BitDpExt, SliceBisectExt};
 use crate::num::{Bounded, RangeBoundsExt};
-use crate::tools::{GetDistinctMut, Xorshift};
+use crate::tools::{Comparator, GetDistinctMut, Xorshift, comparator};
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};
@@ -55,6 +55,8 @@ pub use self::lazy_segment_tree::LazySegmentTree;
 pub use self::lazy_segment_tree_map::LazySegmentTreeMap;
 #[codesnip::entry("LineSet")]
 pub use self::line_set::LineSet;
+#[codesnip::entry("PairingHeap")]
+pub use self::pairing_heap::PairingHeap;
 #[codesnip::entry("PartiallyRetroactivePriorityQueue")]
 pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriorityQueue;
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
@@ -145,6 +147,8 @@ mod lazy_segment_tree;
 mod lazy_segment_tree_map;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
 mod line_set;
+#[cfg_attr(nightly, codesnip::entry("PairingHeap", include("Comparator")))]
+mod pairing_heap;
 #[cfg_attr(
     nightly,
     codesnip::entry(
