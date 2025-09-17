@@ -2,7 +2,7 @@ use super::{Field, Invertible, Ring, SemiRing, SerdeByteStr};
 use std::{
     fmt::{self, Debug},
     marker::PhantomData,
-    ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Sub, SubAssign},
+    ops::{Add, AddAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
 pub struct Matrix<R>
@@ -501,6 +501,30 @@ where
                 R::mul_assign(&mut self[(i, j)], rhs);
             }
         }
+    }
+}
+
+impl<R> Neg for Matrix<R>
+where
+    R: SemiRing,
+    R::Additive: Invertible,
+{
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        self.map(|x| R::neg(x))
+    }
+}
+
+impl<R> Neg for &Matrix<R>
+where
+    R: SemiRing,
+    R::Additive: Invertible,
+{
+    type Output = Matrix<R>;
+
+    fn neg(self) -> Self::Output {
+        self.map(|x| R::neg(x))
     }
 }
 
