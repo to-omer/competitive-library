@@ -4,6 +4,8 @@ pub use self::associated_value::AssociatedValue;
 pub use self::char_convert::{CharConvertTryFrom, CharConvertTryInto};
 #[codesnip::entry("coding")]
 pub use self::coding::{SerdeByteStr, unescape};
+#[codesnip::entry("Comparator")]
+pub use self::comparator::Comparator;
 #[codesnip::entry("digit_sequence")]
 pub use self::digit_sequence::ToDigitSequence;
 #[codesnip::entry("IdGenerator")]
@@ -40,6 +42,8 @@ mod capture;
 mod char_convert;
 #[cfg_attr(nightly, codesnip::entry("coding"))]
 mod coding;
+#[cfg_attr(nightly, codesnip::entry("Comparator"))]
+pub mod comparator;
 #[cfg_attr(nightly, codesnip::entry("digit_sequence"))]
 mod digit_sequence;
 #[cfg_attr(nightly, codesnip::entry("IdGenerator"))]
