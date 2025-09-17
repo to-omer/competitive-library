@@ -12,7 +12,7 @@ where
         return None;
     }
     let (a, b, m) = (a / g, b / g, m / g);
-    Some((b * a.mod_inv(m) % m, m))
+    Some((b.mod_mul(a.mod_inv(m), m), m))
 }
 
 /// return: (y,z)
@@ -26,10 +26,7 @@ where
     let mut x = T::zero();
     let mut m0 = T::one();
     for (a, b, m) in abm {
-        let mut b = b + m - a * x % m;
-        if b >= m {
-            b -= m;
-        }
+        let b = b.mod_sub(a.mod_mul(x, m), m);
         let a = a * m0;
         let (y, z) = solve_linear_congruence(a, b, m)?;
         x += y * m0;
