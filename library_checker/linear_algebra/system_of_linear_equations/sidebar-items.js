@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["system_of_linear_equations"]};
