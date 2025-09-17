@@ -40,6 +40,8 @@ pub use self::formal_power_series::{
     FormalPowerSeries, FormalPowerSeriesCoefficient, FormalPowerSeriesCoefficientSqrt, Fps,
     Fps998244353,
 };
+#[codesnip::entry("garner")]
+pub use self::garner::Garner;
 pub use self::gcd::*;
 #[codesnip::entry("GcdConvolve")]
 pub use self::gcd_convolve::GcdConvolve;
@@ -144,6 +146,8 @@ mod floor_sum;
     )
 )]
 mod formal_power_series;
+#[cfg_attr(nightly, codesnip::entry(include("integer")))]
+mod garner;
 mod gcd;
 #[cfg_attr(
     nightly,

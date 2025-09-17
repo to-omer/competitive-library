@@ -87,7 +87,7 @@ pub trait Unsigned: IntBase {
             self / self.gcd(other) * other
         }
     }
-    fn modinv(self, modulo: Self) -> Self {
+    fn mod_inv(self, modulo: Self) -> Self {
         assert!(
             !self.is_zero(),
             "attempt to inverse zero with modulo {}",
@@ -102,7 +102,20 @@ pub trait Unsigned: IntBase {
         );
         extgcd.x.rem_euclid(modulo.signed()).unsigned()
     }
+    fn mod_add(self, rhs: Self, modulo: Self) -> Self;
+    fn mod_sub(self, rhs: Self, modulo: Self) -> Self;
+    fn mod_mul(self, rhs: Self, modulo: Self) -> Self;
+    fn mod_neg(self, modulo: Self) -> Self {
+        debug_assert!(!modulo.is_zero(), "modulo must be non-zero");
+        debug_assert!(self < modulo, "self must be less than modulo");
+        if self.is_zero() {
+            Self::zero()
+        } else {
+            modulo - self
+        }
+    }
 }
+
 /// Trait for signed integer operations.
 pub trait Signed: IntBase + Neg<Output = Self> {
     type Unsigned: Unsigned<Signed = Self>;
@@ -138,46 +151,204 @@ pub trait Signed: IntBase + Neg<Output = Self> {
 }
 
 macro_rules! impl_unsigned_signed {
-    ($($unsigned:ident $signed:ident)*) => {
-        $(
-            impl Unsigned for $unsigned {
-                type Signed = $signed;
-                fn signed(self) -> Self::Signed { self as Self::Signed }
-                fn abs_diff(self, other: Self) -> Self { self.abs_diff(other) }
-                fn next_power_of_two(self) -> Self { self.next_power_of_two() }
-                fn gcd(self, other: Self) -> Self {
-                    let (mut a, mut b) = (self, other);
-                    if a.is_zero() || b.is_zero() {
-                        return a | b;
-                    }
-                    let u = a.trailing_zeros();
-                    let v = b.trailing_zeros();
-                    a >>= u;
-                    b >>= v;
-                    let k = u.min(v);
-                    while a != b {
-                        if a < b {
-                            std::mem::swap(&mut a, &mut b);
-                        }
-                        a -= b;
-                        a >>= a.trailing_zeros();
-                    }
-                    a << k
+    ($([$($tt:tt)*])*) => {
+        $(impl_unsigned_signed!($($tt)*);)*
+    };
+    ($unsigned:ident $signed:ident $upperty:ident) => {
+        impl_unsigned_signed!(
+            @inner $unsigned $signed
+            fn mod_mul(self, rhs: Self, modulo: Self) -> Self {
+                debug_assert!(!modulo.is_zero(), "modulo must be non-zero");
+                (self as $upperty * rhs as $upperty % modulo as $upperty) as $unsigned
+            }
+        );
+    };
+    (u128 i128) => {
+        impl_unsigned_signed!(
+            @inner u128 i128
+            fn mod_mul(self, rhs: Self, modulo: Self) -> Self {
+                debug_assert!(!modulo.is_zero(), "modulo must be non-zero");
+                const MASK64: u128 = 0xffff_ffff_ffff_ffff;
+                let (au, ad) = (self >> 64, self & MASK64);
+                let (bu, bd) = (rhs >> 64, rhs & MASK64);
+                let p0 = ad * bd % modulo;
+                let p2 = au * bu % modulo;
+                let mut x = [
+                    p0 as u64,
+                    (p0 >> 64) as u64,
+                    p2 as u64,
+                    (p2 >> 64) as u64,
+                ];
+                let p1 = (au * bd % modulo).mod_add(ad * bu % modulo, modulo);
+                let (p1_lo, p1_hi) = ((p1 & MASK64) as u64, (p1 >> 64) as u64);
+                let (s1, c1) = x[1].overflowing_add(p1_lo);
+                x[1] = s1 as u64;
+                let (s2, c2) = x[2].overflowing_add(p1_hi + c1 as u64);
+                x[2] = s2 as u64;
+                let (s3, _) = x[3].overflowing_add(c2 as u64);
+                x[3] = s3 as u64;
+                rem_u256_by_u128(x, modulo)
+            }
+        );
+    };
+    (@inner $unsigned:ident $signed:ident $mod_mul:item) => {
+        impl Unsigned for $unsigned {
+            type Signed = $signed;
+            fn signed(self) -> Self::Signed { self as Self::Signed }
+            fn abs_diff(self, other: Self) -> Self { self.abs_diff(other) }
+            fn next_power_of_two(self) -> Self { self.next_power_of_two() }
+            fn gcd(self, other: Self) -> Self {
+                let (mut a, mut b) = (self, other);
+                if a.is_zero() || b.is_zero() {
+                    return a | b;
                 }
+                let u = a.trailing_zeros();
+                let v = b.trailing_zeros();
+                a >>= u;
+                b >>= v;
+                let k = u.min(v);
+                while a != b {
+                    if a < b {
+                        std::mem::swap(&mut a, &mut b);
+                    }
+                    a -= b;
+                    a >>= a.trailing_zeros();
+                }
+                a << k
             }
-            impl Signed for $signed {
-                type Unsigned = $unsigned;
-                fn unsigned(self) -> Self::Unsigned { self as Self::Unsigned }
-                fn abs_diff(self, other: Self) -> Self::Unsigned { self.abs_diff(other) }
-                fn abs(self) -> Self { self.abs() }
-                fn is_negative(self) -> bool { self.is_negative() }
-                fn is_positive(self) -> bool { self.is_positive() }
-                fn signum(self) -> Self { self.signum() }
+            fn mod_add(self, rhs: Self, modulo: Self) -> Self {
+                debug_assert!(!modulo.is_zero(), "modulo must be non-zero");
+                debug_assert!(self < modulo, "self must be less than modulo");
+                debug_assert!(rhs < modulo, "rhs must be less than modulo");
+                let s = self.wrapping_add(rhs);
+                if (s < self) || (s >= modulo) { s.wrapping_sub(modulo) } else { s }
             }
-        )*
+            fn mod_sub(self, rhs: Self, modulo: Self) -> Self {
+                debug_assert!(!modulo.is_zero(), "modulo must be non-zero");
+                debug_assert!(self < modulo, "self must be less than modulo");
+                debug_assert!(rhs < modulo, "rhs must be less than modulo");
+                let d = self.wrapping_sub(rhs);
+                if self < rhs { d.wrapping_add(modulo) } else { d }
+            }
+            $mod_mul
+        }
+        impl Signed for $signed {
+            type Unsigned = $unsigned;
+            fn unsigned(self) -> Self::Unsigned { self as Self::Unsigned }
+            fn abs_diff(self, other: Self) -> Self::Unsigned { self.abs_diff(other) }
+            fn abs(self) -> Self { self.abs() }
+            fn is_negative(self) -> bool { self.is_negative() }
+            fn is_positive(self) -> bool { self.is_positive() }
+            fn signum(self) -> Self { self.signum() }
+        }
     };
 }
-impl_unsigned_signed!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
+impl_unsigned_signed!([u8 i8 u16] [u16 i16 u32] [u32 i32 u64] [u64 i64 u128] [u128 i128] [usize isize u128]);
+
+fn rem_u256_by_u128(u: [u64; 4], v: u128) -> u128 {
+    // FIXME: use carrying_add and carrying_sub when stabilized
+    #[inline(always)]
+    fn sub_with_borrow_u64(lhs: u64, rhs: u64, borrow: bool) -> (u64, bool) {
+        let (res, overflow) = lhs.overflowing_sub(rhs);
+        if borrow {
+            let (res, overflow_borrow) = res.overflowing_sub(1);
+            (res, overflow | overflow_borrow)
+        } else {
+            (res, overflow)
+        }
+    }
+
+    #[inline(always)]
+    fn add_with_carry_u64(lhs: u64, rhs: u64, carry: bool) -> (u64, bool) {
+        let (res, overflow) = lhs.overflowing_add(rhs);
+        if carry {
+            let (res, overflow_carry) = res.overflowing_add(1);
+            (res, overflow | overflow_carry)
+        } else {
+            (res, overflow)
+        }
+    }
+
+    debug_assert!(v != 0);
+    let v_hi = (v >> 64) as u64;
+    if v_hi == 0 {
+        let d = v as u64 as u128;
+        let mut rem: u128 = 0;
+        for &w in u.iter().rev() {
+            rem = (rem << 64 | w as u128) % d;
+        }
+        return rem;
+    }
+
+    let v_lo = v as u64;
+    let v_shift = v_hi.leading_zeros();
+    let (vn1, vn0) = if v_shift == 0 {
+        (v_hi, v_lo)
+    } else {
+        let hi = v_hi << v_shift | v_lo >> (64 - v_shift);
+        let lo = v_lo << v_shift;
+        (hi, lo)
+    };
+
+    let mut un = [0u64; 5];
+    if v_shift == 0 {
+        un[0] = u[0];
+        un[1] = u[1];
+        un[2] = u[2];
+        un[3] = u[3];
+    } else {
+        un[0] = u[0] << v_shift;
+        un[1] = u[1] << v_shift | u[0] >> (64 - v_shift);
+        un[2] = u[2] << v_shift | u[1] >> (64 - v_shift);
+        un[3] = u[3] << v_shift | u[2] >> (64 - v_shift);
+        un[4] = u[3] >> (64 - v_shift);
+    }
+
+    for j in (0..=2).rev() {
+        let num = (un[j + 2] as u128) << 64 | un[j + 1] as u128;
+        let (mut qhat, mut rhat) = if un[j + 2] == vn1 {
+            (u64::MAX, un[j + 1])
+        } else {
+            let d = vn1 as u128;
+            ((num / d) as u64, (num % d) as u64)
+        };
+        while qhat as u128 * vn0 as u128 > (rhat as u128) << 64 | un[j] as u128 {
+            qhat -= 1;
+            let t = rhat as u128 + vn1 as u128;
+            if t >= 1u128 << 64 {
+                break;
+            }
+            rhat = t as u64;
+        }
+
+        let p0 = qhat as u128 * vn0 as u128;
+        let p1 = qhat as u128 * vn1 as u128;
+        let (p0_hi, p0_lo) = ((p0 >> 64) as u64, p0 as u64);
+        let (p1_hi, p1_lo) = ((p1 >> 64) as u64, p1 as u64);
+
+        let (r0, borrow) = sub_with_borrow_u64(un[j], p0_lo, false);
+        un[j] = r0;
+
+        let (r1, borrow1) = sub_with_borrow_u64(un[j + 1], p0_hi, borrow);
+        let (r1, borrow2) = sub_with_borrow_u64(r1, p1_lo, false);
+        let borrow = borrow1 || borrow2;
+        un[j + 1] = r1;
+
+        let (r2, borrow) = sub_with_borrow_u64(un[j + 2], p1_hi, borrow);
+        un[j + 2] = r2;
+
+        if borrow {
+            let (s0, carry) = add_with_carry_u64(un[j], vn0, false);
+            un[j] = s0;
+            let (s1, carry) = add_with_carry_u64(un[j + 1], vn1, carry);
+            un[j + 1] = s1;
+            let (s2, _) = un[j + 2].overflowing_add(carry as u64);
+            un[j + 2] = s2;
+        }
+    }
+
+    ((un[1] as u128) << 64 | un[0] as u128) >> v_hi.leading_zeros()
+}
 
 /// Trait for operations of integer in binary representation.
 pub trait BinaryRepr<Size = u32>:
@@ -511,6 +682,9 @@ macro_rules! impl_unsigned_signed_for_saturating {
                 fn abs_diff(self, other: Self) -> Self { Self(self.0.abs_diff(other.0)) }
                 fn next_power_of_two(self) -> Self { Self(self.0.next_power_of_two()) }
                 fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
+                fn mod_add(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_add(rhs.0, modulo.0)) }
+                fn mod_sub(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_sub(rhs.0, modulo.0)) }
+                fn mod_mul(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_mul(rhs.0, modulo.0)) }
             }
             impl Signed for Saturating<$signed> {
                 type Unsigned = Saturating<$unsigned>;
@@ -820,6 +994,9 @@ macro_rules! impl_unsigned_signed_for_wrapping {
                 fn abs_diff(self, other: Self) -> Self { Self(self.0.abs_diff(other.0)) }
                 fn next_power_of_two(self) -> Self { Self(self.0.next_power_of_two()) }
                 fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
+                fn mod_add(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_add(rhs.0, modulo.0)) }
+                fn mod_sub(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_sub(rhs.0, modulo.0)) }
+                fn mod_mul(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_mul(rhs.0, modulo.0)) }
             }
             impl Signed for Wrapping<$signed> {
                 type Unsigned = Wrapping<$unsigned>;
@@ -911,7 +1088,7 @@ mod tests {
                         assert_eq!($t::zero().gcd(100), 100);
                     }
                     #[test]
-                    fn test_modinv() {
+                    fn test_mod_inv() {
                         let mut rng = Xorshift::default();
                         for _ in 0..Q {
                             let m = rng.random(2..=A);
@@ -919,9 +1096,25 @@ mod tests {
                             let g = a.gcd(m);
                             let m = m / g;
                             let a = a / g;
-                            let x = a.modinv(m);
+                            let x = a.mod_inv(m);
                             assert!(x < m);
                             assert_eq!(a as u128 * x as u128 % m as u128, 1);
+                        }
+                    }
+                    #[test]
+                    fn test_mod_operate() {
+                        let mut rng = Xorshift::default();
+                        for _ in 0..Q {
+                            for ub in [10, A] {
+                                let m = rng.random(2..=ub);
+                                let a = rng.random(0..m);
+                                let b = rng.random(0..m);
+                                assert_eq!(a.mod_add(b, m), ((a as u128 + b as u128) % m as u128) as $t);
+                                assert_eq!(a.mod_sub(b, m), ((a as u128 + m as u128 - b as u128) % m as u128) as $t);
+                                assert_eq!(a.mod_mul(b, m), (a as u128 * b as u128 % m as u128) as $t);
+                                assert_eq!(a.mod_mul(b, m), (a as u128).mod_mul(b as u128, m as u128) as $t);
+                                assert_eq!(a.mod_neg(m), ((m as u128 - a as u128) % m as u128) as $t);
+                            }
                         }
                     }
                 }
@@ -950,4 +1143,80 @@ mod tests {
         };
     }
     test_signed!(i8 i16 i32 i64 isize);
+
+    #[test]
+    fn test_mod_mul_u128() {
+        fn naive_mod_mul(a: u128, b: u128, m: u128) -> u128 {
+            assert!(m != 0);
+            let a = [a as u64, (a >> 64) as u64];
+            let b = [b as u64, (b >> 64) as u64];
+            let mut res = 0u128;
+            for (i, &a) in a.iter().enumerate() {
+                for (j, &b) in b.iter().enumerate() {
+                    let mut x = (a as u128) * (b as u128) % m;
+                    for _ in 0..(i + j) * 64 {
+                        x = x.mod_add(x, m);
+                    }
+                    res = res.mod_add(x, m);
+                }
+            }
+            res
+        }
+
+        let mut rng = Xorshift::default();
+        for _ in 0..Q {
+            for a in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
+                for b in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
+                    for c in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
+                        let m = rng.random(1..=c);
+                        let x = rng.random(0..a.min(m));
+                        let y = rng.random(0..b.min(m));
+                        assert_eq!(x.mod_mul(y, m), naive_mod_mul(x, y, m));
+                        let x = rng.random(0..a);
+                        let y = rng.random(0..b);
+                        assert_eq!(x.mod_mul(y, m), naive_mod_mul(x, y, m));
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_rem() {
+        fn naive_rem(u: [u64; 4], v: u128) -> u128 {
+            assert!(v != 0);
+            let mut u = [
+                ((u[1] as u128) << 64) | (u[0] as u128),
+                ((u[3] as u128) << 64) | (u[2] as u128),
+            ];
+            let mut v_mul_2 = vec![[v, 0]];
+            while v_mul_2.last().unwrap()[1].leading_zeros() != 0 {
+                let [v_lo, v_hi] = *v_mul_2.last().unwrap();
+                v_mul_2.push([v_lo << 1, v_hi << 1 | (v_lo >> 127)]);
+            }
+            v_mul_2.reverse();
+            for [v_lo, v_hi] in v_mul_2 {
+                let [u_lo, u_hi] = u;
+                if (u_hi > v_hi) || (u_hi == v_hi && u_lo >= v_lo) {
+                    let (new_lo, carry) = u_lo.overflowing_sub(v_lo);
+                    let new_hi = u_hi - v_hi - (carry as u128);
+                    u = [new_lo, new_hi];
+                }
+            }
+            u[0]
+        }
+        let mut rng = Xorshift::default();
+        for _ in 0..Q {
+            let mut u = [0u64; 4];
+            for k in 0..4 {
+                for a in [1, 10, u32::MAX as _, u64::MAX] {
+                    u[k] = rng.random(..a);
+                    for b in [1, 10, u128::MAX] {
+                        let v = rng.random(1..=b);
+                        assert_eq!(rem_u256_by_u128(u, v), naive_rem(u, v));
+                    }
+                }
+            }
+        }
+    }
 }

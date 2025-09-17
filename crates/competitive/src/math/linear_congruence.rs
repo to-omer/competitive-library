@@ -12,7 +12,7 @@ where
         return None;
     }
     let (a, b, m) = (a / g, b / g, m / g);
-    Some((b * a.modinv(m) % m, m))
+    Some((b * a.mod_inv(m) % m, m))
 }
 
 /// return: (y,z)
