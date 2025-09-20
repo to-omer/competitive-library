@@ -6,11 +6,11 @@ use std::{
 };
 
 #[derive(Debug, Clone)]
-pub struct KnapsackPloblemSmallWeight {
+pub struct KnapsackProblemSmallWeight {
     pub dp: Vec<i64>,
 }
 
-impl KnapsackPloblemSmallWeight {
+impl KnapsackProblemSmallWeight {
     pub fn new(max_weight: usize) -> Self {
         let mut dp = vec![i64::MIN; max_weight + 1];
         dp[0] = 0;
@@ -113,11 +113,11 @@ impl KnapsackPloblemSmallWeight {
 }
 
 #[derive(Debug, Clone)]
-pub struct KnapsackPloblemSmallValue {
+pub struct KnapsackProblemSmallValue {
     pub dp: Vec<i64>,
 }
 
-impl KnapsackPloblemSmallValue {
+impl KnapsackProblemSmallValue {
     pub fn new(max_value: usize) -> Self {
         let mut dp = vec![i64::MAX; max_value + 1];
         dp[0] = 0;
@@ -271,7 +271,7 @@ impl ZeroOneKnapsackProblemSmallItems {
 }
 
 #[derive(Debug, Clone)]
-pub struct ZeroOneKnapsackPloblemBranchAndBound {
+pub struct ZeroOneKnapsackProblemBranchAndBound {
     items: Vec<Item>,
     gap: Item,
 }
@@ -307,7 +307,7 @@ impl Neg for Item {
         }
     }
 }
-impl ZeroOneKnapsackPloblemBranchAndBound {
+impl ZeroOneKnapsackProblemBranchAndBound {
     pub fn new<I>(iter: I) -> Self
     where
         I: IntoIterator<Item = (i64, i64)>,

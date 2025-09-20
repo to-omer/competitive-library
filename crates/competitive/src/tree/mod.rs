@@ -1,4 +1,4 @@
-//! tree algorithems
+//! tree algorithms
 
 use crate::{
     algebra::Monoid,

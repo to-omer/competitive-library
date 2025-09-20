@@ -67,8 +67,8 @@ pub use self::range_map::{RangeMap, RangeSet};
 pub use self::segment_tree::SegmentTree;
 #[codesnip::entry("SegmentTreeMap")]
 pub use self::segment_tree_map::SegmentTreeMap;
-#[codesnip::entry("sliding_winsow_aggregation")]
-pub use self::sliding_winsow_aggregation::{DequeAggregation, QueueAggregation};
+#[codesnip::entry("sliding_window_aggregation")]
+pub use self::sliding_window_aggregation::{DequeAggregation, QueueAggregation};
 #[codesnip::entry("slope_trick")]
 pub use self::slope_trick::SlopeTrick;
 #[codesnip::entry("SparseSet")]
@@ -176,9 +176,9 @@ mod segment_tree;
 mod segment_tree_map;
 #[cfg_attr(
     nightly,
-    codesnip::entry("sliding_winsow_aggregation", include("algebra"))
+    codesnip::entry("sliding_window_aggregation", include("algebra"))
 )]
-mod sliding_winsow_aggregation;
+mod sliding_window_aggregation;
 #[cfg_attr(nightly, codesnip::entry("slope_trick"))]
 mod slope_trick;
 #[cfg_attr(nightly, codesnip::entry("SparseSet"))]

@@ -1,5 +1,5 @@
 #[doc(no_inline)]
-pub use competitive::combinatorial_optimization::ZeroOneKnapsackPloblemBranchAndBound;
+pub use competitive::combinatorial_optimization::ZeroOneKnapsackProblemBranchAndBound;
 use competitive::prelude::*;
 
 #[verify::aizu_online_judge("DPL_1_I")]
@@ -17,6 +17,6 @@ pub fn dpl_1_i(reader: impl Read, mut writer: impl Write) {
             b *= 2;
         }
     }
-    let knapsack = ZeroOneKnapsackPloblemBranchAndBound::new(item);
+    let knapsack = ZeroOneKnapsackProblemBranchAndBound::new(item);
     writeln!(writer, "{}", knapsack.solve(w)).ok();
 }

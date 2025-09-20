@@ -1,4 +1,4 @@
-//! string algorithems
+//! string algorithms
 
 use crate::algebra::{Gf2_63, Invertible, Mersenne61, Monoid, Ring, SemiRing};
 use crate::algorithm::binary_search;
