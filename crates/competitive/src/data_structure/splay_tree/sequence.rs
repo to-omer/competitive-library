@@ -1,5 +1,5 @@
 use super::{
-    Allocator, MemoryPool, MonoidAction,
+    Allocator, LazyMapMonoid, MemoryPool,
     node::{Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec, marker},
 };
 use std::{
@@ -12,7 +12,7 @@ use std::{
 
 pub struct LazyAggElement<T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     key: T::Key,
     agg: T::Agg,
@@ -23,7 +23,7 @@ where
 
 impl<T> Debug for LazyAggElement<T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
     T::Key: Debug,
     T::Agg: Debug,
     T::Act: Debug,
@@ -44,7 +44,7 @@ pub struct LazyAggSplay<T> {
 
 impl<T> LazyAggSplay<T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     pub fn update_lazy(mut node: NodeRef<marker::DataMut<'_>, Self>, lazy: &T::Act) {
         T::act_operate_assign(&mut node.data_mut().lazy, lazy);
@@ -101,7 +101,7 @@ where
 }
 impl<T> SplaySpec for LazyAggSplay<T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     type T = LazyAggElement<T>;
     fn has_bottom_up() -> bool {
@@ -129,7 +129,7 @@ impl<T> SeekBySize<T> {
 }
 impl<T> SplaySeeker for SeekBySize<T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     type S = LazyAggSplay<T>;
     fn splay_seek(&mut self, node: NodeRef<marker::Immut<'_>, Self::S>) -> Ordering {
@@ -144,7 +144,7 @@ where
 
 struct SeekByAccCond<F, T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     acc: T::Agg,
     f: F,
@@ -152,7 +152,7 @@ where
 }
 impl<F, T> SeekByAccCond<F, T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     fn new(f: F) -> Self {
         Self {
@@ -165,7 +165,7 @@ where
 impl<F, T> SplaySeeker for SeekByAccCond<F, T>
 where
     F: FnMut(&T::Agg) -> bool,
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     type S = LazyAggSplay<T>;
     fn splay_seek(&mut self, node: NodeRef<marker::Immut<'_>, Self::S>) -> Ordering {
@@ -187,7 +187,7 @@ where
 
 struct SeekByRaccCond<F, T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     acc: T::Agg,
     f: F,
@@ -195,7 +195,7 @@ where
 }
 impl<F, T> SeekByRaccCond<F, T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     fn new(f: F) -> Self {
         Self {
@@ -208,7 +208,7 @@ where
 impl<F, T> SplaySeeker for SeekByRaccCond<F, T>
 where
     F: FnMut(&T::Agg) -> bool,
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     type S = LazyAggSplay<T>;
     fn splay_seek(&mut self, node: NodeRef<marker::Immut<'_>, Self::S>) -> Ordering {
@@ -230,7 +230,7 @@ where
 
 pub struct SplaySequence<T, A = MemoryPool<Node<LazyAggElement<T>>>>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
     A: Allocator<Node<LazyAggElement<T>>>,
 {
     root: Root<LazyAggSplay<T>>,
@@ -240,7 +240,7 @@ where
 
 impl<T, A> Debug for SplaySequence<T, A>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
     T::Key: Debug,
     T::Agg: Debug,
     T::Act: Debug,
@@ -256,7 +256,7 @@ where
 
 impl<T, A> Drop for SplaySequence<T, A>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
     A: Allocator<Node<LazyAggElement<T>>>,
 {
     fn drop(&mut self) {
@@ -271,7 +271,7 @@ where
 
 impl<T, A> Default for SplaySequence<T, A>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
     A: Allocator<Node<LazyAggElement<T>>> + Default,
 {
     fn default() -> Self {
@@ -285,7 +285,7 @@ where
 
 impl<T> SplaySequence<T>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     pub fn new() -> Self {
         Default::default()
@@ -306,7 +306,7 @@ where
 }
 impl<T, A> SplaySequence<T, A>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
     A: Allocator<Node<LazyAggElement<T>>>,
 {
     fn range<R>(&mut self, range: R) -> NodeRange<'_, LazyAggSplay<T>>
@@ -438,7 +438,7 @@ where
 
 impl<T, A> Extend<T::Key> for SplaySequence<T, A>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
     A: Allocator<Node<LazyAggElement<T>>>,
 {
     fn extend<I>(&mut self, iter: I)
@@ -470,7 +470,7 @@ where
 
 impl<T> Root<LazyAggSplay<T>>
 where
-    T: MonoidAction,
+    T: LazyMapMonoid,
 {
     fn size(&self) -> usize {
         self.root().map(|root| root.data().size).unwrap_or_default()

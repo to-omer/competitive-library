@@ -1,4 +1,4 @@
-use super::{Allocator, MemoryPool, MonoidAction};
+use super::{Allocator, LazyMapMonoid, MemoryPool};
 pub use sequence::SplaySequence;
 pub use sized_map::SplayMap;
 

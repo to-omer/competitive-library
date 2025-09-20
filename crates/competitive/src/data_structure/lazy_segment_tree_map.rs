@@ -1,4 +1,4 @@
-use super::{MonoidAction, RangeBoundsExt};
+use super::{LazyMapMonoid, RangeBoundsExt};
 use std::{
     collections::HashMap,
     fmt::{self, Debug, Formatter},
@@ -8,7 +8,7 @@ use std::{
 
 pub struct LazySegmentTreeMap<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
     M::Act: PartialEq,
 {
     n: usize,
@@ -17,7 +17,7 @@ where
 
 impl<M> Clone for LazySegmentTreeMap<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
     M::Act: PartialEq,
 {
     fn clone(&self) -> Self {
@@ -30,7 +30,7 @@ where
 
 impl<M> Debug for LazySegmentTreeMap<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
     M::Agg: Debug,
     M::Act: PartialEq + Debug,
 {
@@ -44,7 +44,7 @@ where
 
 impl<M> LazySegmentTreeMap<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
     M::Act: PartialEq,
 {
     pub fn new(n: usize) -> Self {

@@ -1,4 +1,4 @@
-use super::{MonoidAction, RangeBoundsExt};
+use super::{LazyMapMonoid, RangeBoundsExt};
 use std::{
     fmt::{self, Debug, Formatter},
     mem::replace,
@@ -7,7 +7,7 @@ use std::{
 
 pub struct LazySegmentTree<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
 {
     n: usize,
     seg: Vec<(M::Agg, M::Act)>,
@@ -15,7 +15,7 @@ where
 
 impl<M> Clone for LazySegmentTree<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
 {
     fn clone(&self) -> Self {
         Self {
@@ -27,7 +27,7 @@ where
 
 impl<M> Debug for LazySegmentTree<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
     M::Agg: Debug,
     M::Act: Debug,
 {
@@ -41,7 +41,7 @@ where
 
 impl<M> LazySegmentTree<M>
 where
-    M: MonoidAction,
+    M: LazyMapMonoid,
 {
     pub fn new(n: usize) -> Self {
         let seg = vec![(M::agg_unit(), M::act_unit()); 2 * n];

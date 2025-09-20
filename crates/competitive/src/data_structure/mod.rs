@@ -1,8 +1,8 @@
 //! data structures
 
 use crate::algebra::{
-    AbelianGroup, AbelianMonoid, Associative, Group, Magma, MaxOperation, MinOperation, Monoid,
-    MonoidAction, SemiGroup, Unital,
+    AbelianGroup, AbelianMonoid, Associative, Group, LazyMapMonoid, Magma, MaxOperation,
+    MinOperation, Monoid, SemiGroup, Unital,
 };
 use crate::algorithm::{BitDpExt, SliceBisectExt};
 use crate::num::{Bounded, RangeBoundsExt};
@@ -137,12 +137,12 @@ mod fibonacci_hash;
 mod kdtree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("LazySegmentTree", include("MonoidAction", "discrete_steps"))
+    codesnip::entry("LazySegmentTree", include("LazyMapMonoid", "discrete_steps"))
 )]
 mod lazy_segment_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("LazySegmentTreeMap", include("MonoidAction", "discrete_steps"))
+    codesnip::entry("LazySegmentTreeMap", include("LazyMapMonoid", "discrete_steps"))
 )]
 mod lazy_segment_tree_map;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
@@ -182,7 +182,7 @@ mod slope_trick;
 mod sparse_set;
 #[cfg_attr(
     nightly,
-    codesnip::entry("SplayTree", include("Allocator", "MonoidAction"))
+    codesnip::entry("SplayTree", include("Allocator", "LazyMapMonoid"))
 )]
 pub mod splay_tree;
 #[cfg_attr(
