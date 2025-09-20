@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["rooted_tree_topological_order_with_minimum_inversions"]};

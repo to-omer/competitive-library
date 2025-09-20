@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["cartesian_tree","lca","vertex_add_path_sum","vertex_add_subtree_sum","vertex_set_path_composite"]};
+window.SIDEBAR_ITEMS = {"mod":["cartesian_tree","lca","rooted_tree_topological_order_with_minimum_inversions","vertex_add_path_sum","vertex_add_subtree_sum","vertex_set_path_composite"]};
