@@ -1,10 +1,11 @@
 //! graph structures and algorithms
 
 use crate::{
-    algebra::{Monoid, SemiRing},
+    algebra::{Group, Monoid, MonoidAct, SemiRing},
     algorithm::BitDpExt,
+    data_structure::{MergingUnionFind, PairingHeap, UnionFind},
     num::{Bounded, One, Zero},
-    tools::{IterScan, MarkedIterScan, PartialIgnoredOrd},
+    tools::{IterScan, MarkedIterScan, PartialIgnoredOrd, comparator},
 };
 
 #[codesnip::entry("AdjacencyListGraph")]
@@ -73,6 +74,18 @@ mod low_link;
 mod maximum_flow;
 #[cfg_attr(nightly, codesnip::entry("PrimalDual", include("SparseGraph")))]
 mod minimum_cost_flow;
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "minimum_spanning_arborescence",
+        include("EdgeListGraph", "PairingHeap", "UnionFind")
+    )
+)]
+mod minimum_spanning_arborescence;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("minimum_spanning_tree", include("EdgeListGraph", "UnionFind"))
+)]
 mod minimum_spanning_tree;
 #[cfg_attr(nightly, codesnip::entry("NetworkSimplex", include("zero_one")))]
 mod network_simplex;
