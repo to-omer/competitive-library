@@ -11,6 +11,9 @@ pub trait MonoidAct {
 
     fn act(x: &Self::Key, a: &Self::Act) -> Self::Key;
 
+    fn act_assign(x: &mut Self::Key, a: &Self::Act) {
+        *x = Self::act(x, a);
+    }
     fn unit() -> Self::Act {
         <Self::ActMonoid as Unital>::unit()
     }

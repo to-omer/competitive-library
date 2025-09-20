@@ -1,8 +1,8 @@
 //! data structures
 
 use crate::algebra::{
-    AbelianGroup, AbelianMonoid, Associative, Group, LazyMapMonoid, Magma, MaxOperation,
-    MinOperation, Monoid, SemiGroup, Unital,
+    AbelianGroup, AbelianMonoid, Associative, EmptyAct, Group, LazyMapMonoid, Magma, MaxOperation,
+    MinOperation, Monoid, MonoidAct, SemiGroup, Unital,
 };
 use crate::algorithm::{BitDpExt, SliceBisectExt};
 use crate::num::{Bounded, RangeBoundsExt};
@@ -147,7 +147,10 @@ mod lazy_segment_tree;
 mod lazy_segment_tree_map;
 #[cfg_attr(nightly, codesnip::entry("LineSet", include("bounded")))]
 mod line_set;
-#[cfg_attr(nightly, codesnip::entry("PairingHeap", include("Comparator")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("PairingHeap", include("Comparator", "MonoidAct"))
+)]
 mod pairing_heap;
 #[cfg_attr(
     nightly,
