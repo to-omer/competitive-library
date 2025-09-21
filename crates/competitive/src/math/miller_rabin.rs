@@ -1,4 +1,3 @@
-#![allow(clippy::unreadable_literal)]
 use super::BarrettReduction;
 
 macro_rules! impl_test_mr {

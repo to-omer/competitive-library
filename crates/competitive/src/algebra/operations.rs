@@ -582,19 +582,31 @@ mod logical_linear_operation_impl {
 
 #[codesnip::entry("TupleOperation", include("algebra"))]
 mod tuple_operation_impl {
-    #![allow(unused_variables, clippy::unused_unit)]
     use super::*;
     macro_rules! impl_tuple_operation {
-        (@impl $($T:ident)*, $($i:tt)*) => {
+        (@impl) => {
+            impl Magma for () {
+                type T = ();
+                fn operate(_x: &Self::T, _y: &Self::T) -> Self::T {}
+            }
+            impl Unital for () {
+                fn unit() -> Self::T {}
+            }
+            impl Associative for () {}
+            impl Commutative for () {}
+            impl Idempotent for () {}
+            impl Invertible for () {
+                fn inverse(_x: &Self::T) -> Self::T {}
+            }
+        };
+        (@impl $($T:ident $i:tt)*) => {
             impl<$($T: Magma),*> Magma for ($($T,)*) {
                 type T = ($(<$T as Magma>::T,)*);
-                #[inline]
                 fn operate(x: &Self::T, y: &Self::T) -> Self::T {
                     ($(<$T as Magma>::operate(&x.$i, &y.$i),)*)
                 }
             }
             impl<$($T: Unital),*> Unital for ($($T,)*) {
-                #[inline]
                 fn unit() -> Self::T {
                     ($(<$T as Unital>::unit(),)*)
                 }
@@ -603,31 +615,29 @@ mod tuple_operation_impl {
             impl<$($T: Commutative),*> Commutative for ($($T,)*) {}
             impl<$($T: Idempotent),*> Idempotent for ($($T,)*) {}
             impl<$($T: Invertible),*> Invertible for ($($T,)*) {
-                #[inline]
                 fn inverse(x: &Self::T) -> Self::T {
                     ($(<$T as Invertible>::inverse(&x.$i),)*)
                 }
             }
         };
-        (@inner [$($T:ident)*][] [$($i:tt)*][]) => {
-            impl_tuple_operation!(@impl $($T)*, $($i)*);
+        (@inner $($T:ident $i:tt)*; $U:ident $j:tt $($t:tt)*) => {
+            impl_tuple_operation!(@impl $($T $i)*);
+            impl_tuple_operation!(@inner $($T $i)* $U $j; $($t)*);
         };
-        (@inner [$($T:ident)*][$U:ident $($Rest:ident)*] [$($i:tt)*][$j:tt $($rest:tt)*]) => {
-            impl_tuple_operation!(@impl $($T)*, $($i)*);
-            impl_tuple_operation!(@inner [$($T)* $U][$($Rest)*] [$($i)* $j][$($rest)*]);
+        (@inner $($T:ident $i:tt)*;) => {
+            impl_tuple_operation!(@impl $($T $i)*);
         };
-        ($($T:ident)*, $($i:tt)*) => {
-            impl_tuple_operation!(@inner [][$($T)*] [][$($i)*]);
+        ($($t:tt)*) => {
+            impl_tuple_operation!(@inner ; $($t)*);
         };
     }
-    impl_tuple_operation!(A B C D E F G H I J, 0 1 2 3 4 5 6 7 8 9);
+    impl_tuple_operation!(A 0 B 1 C 2 D 3 E 4 F 5 G 6 H 7 I 8 J 9);
 }
 
 #[codesnip::entry("ArrayOperation")]
 pub use self::array_operation_impl::ArrayOperation;
 #[codesnip::entry("ArrayOperation", include("algebra", "array"))]
 mod array_operation_impl {
-    #![allow(unused_variables, clippy::unused_unit)]
     use super::*;
     use crate::array;
     use std::marker::PhantomData;

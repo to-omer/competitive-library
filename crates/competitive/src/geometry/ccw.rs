@@ -32,7 +32,7 @@ pub enum Ccw {
     OnlineBack = 2,
 }
 impl Ccw {
-    pub fn ccw<T>(a: Complex<T>, b: Complex<T>, c: Complex<T>) -> Self
+    pub fn new<T>(a: Complex<T>, b: Complex<T>, c: Complex<T>) -> Self
     where
         T: Ccwable,
     {
@@ -53,7 +53,7 @@ impl Ccw {
             }
         }
     }
-    pub fn ccw_open<T>(a: Complex<T>, b: Complex<T>, c: Complex<T>) -> Self
+    pub fn new_open<T>(a: Complex<T>, b: Complex<T>, c: Complex<T>) -> Self
     where
         T: Ccwable,
     {

@@ -1,5 +1,3 @@
-#![allow(clippy::suspicious_arithmetic_impl)]
-
 use super::{Bounded, Decimal, IterScan, One, Zero};
 use std::{
     cmp::Ordering,

@@ -81,7 +81,6 @@ where
     }
 }
 
-#[allow(unused_macros)]
 macro_rules! impl_compressed_segment_tree {
     (@tuple ($($l:tt)*) ($($r:tt)*) $T:ident) => {
         ($($l)* $T $($r)*,)

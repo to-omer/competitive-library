@@ -1,5 +1,3 @@
-#![allow(clippy::many_single_char_names)]
-
 //! Verification of [`competitive` crate] by [Aizu Online Judge]
 //!
 //! [verification summary]

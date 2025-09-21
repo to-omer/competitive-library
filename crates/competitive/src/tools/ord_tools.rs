@@ -72,7 +72,6 @@ macro_rules! minmax {
 
 #[cfg(test)]
 mod tests {
-    #![allow(clippy::eq_op)]
     use super::*;
     use crate::{chmax, chmin, max, min, minmax};
 

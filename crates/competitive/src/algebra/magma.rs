@@ -227,7 +227,6 @@ mod tests {
     }
 
     #[test]
-    #[allow(clippy::eq_op)]
     fn test_monoid_fold() {
         assert_eq!(monoid_fold!(MaxOperation<u32>,), 0);
         assert_eq!(monoid_fold!(MaxOperation<u32>, 1), 1);

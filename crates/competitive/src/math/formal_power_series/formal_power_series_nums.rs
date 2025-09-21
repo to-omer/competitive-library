@@ -1,5 +1,3 @@
-#![allow(clippy::suspicious_arithmetic_impl, clippy::suspicious_op_assign_impl)]
-
 use super::*;
 use std::{
     mem::take,

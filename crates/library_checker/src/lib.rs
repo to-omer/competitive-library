@@ -1,5 +1,3 @@
-#![allow(clippy::many_single_char_names)]
-
 //! Verification of [`competitive` crate] by [Library-Checker]
 //!
 //! [verification summary]

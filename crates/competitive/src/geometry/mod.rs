@@ -1,5 +1,3 @@
-#![allow(clippy::self_named_constructors)]
-
 use crate::{
     num::{Complex, Float, Zero},
     tools::TotalOrd,

@@ -18,7 +18,7 @@ where
         self.p2 - self.p1
     }
     pub fn ccw(&self, p: Complex<T>) -> Ccw {
-        Ccw::ccw(self.p1, self.p2, p)
+        Ccw::new(self.p1, self.p2, p)
     }
     pub fn is_parallel(&self, other: &Self) -> bool {
         Approx(self.dir().cross(other.dir())) == Approx(T::zero())
@@ -62,7 +62,7 @@ where
         self.p2 - self.p1
     }
     pub fn ccw(&self, p: Complex<T>) -> Ccw {
-        Ccw::ccw(self.p1, self.p2, p)
+        Ccw::new(self.p1, self.p2, p)
     }
     pub fn is_parallel(&self, other: &Self) -> bool {
         Approx(self.dir().cross(other.dir())) == Approx(T::zero())

@@ -85,7 +85,6 @@ mod tests {
         collections::{BTreeMap, HashMap},
     };
 
-    #[allow(clippy::ptr_arg)]
     fn vec_len_cmp<T: Ord>(left: &Vec<T>, right: &Vec<T>) -> Ordering {
         match left.len().cmp(&right.len()) {
             Ordering::Equal => left.cmp(right),

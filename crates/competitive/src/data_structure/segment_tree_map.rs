@@ -1,5 +1,3 @@
-#![allow(clippy::or_fun_call)]
-
 use super::{AbelianMonoid, Monoid, RangeBoundsExt};
 use std::{
     collections::HashMap,

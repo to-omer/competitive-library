@@ -1,5 +1,3 @@
-#![allow(clippy::suspicious_op_assign_impl)]
-
 use std::ops::{
     BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
     ShrAssign,

@@ -1,5 +1,3 @@
-#![allow(clippy::suspicious_arithmetic_impl)]
-
 use crate::num::{One, Zero};
 
 #[codesnip::entry("Polynomial", include("zero_one"))]

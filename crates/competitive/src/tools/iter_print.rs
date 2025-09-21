@@ -10,12 +10,22 @@ pub trait IterPrint {
         S: Display;
 }
 macro_rules! impl_iter_print_tuple {
+    (@impl ,) => {
+        impl IterPrint for () {
+            fn iter_print<W, S>(self, _writer: &mut W, _sep: S, _is_head: bool) -> Result<(), Error>
+            where
+                W: Write,
+                S: Display
+            {
+                Ok(())
+            }
+        }
+    };
     (@impl $($A:ident $a:ident)?, $($B:ident $b:ident)*) => {
         impl<$($A,)? $($B),*> IterPrint for ($($A,)? $($B),*)
         where
             $($A: Display,)? $($B: Display),*
         {
-            #[allow(unused_variables)]
             fn iter_print<W, S>(self, writer: &mut W, sep: S, is_head: bool) -> Result<(), Error>
             where
                 W: Write,

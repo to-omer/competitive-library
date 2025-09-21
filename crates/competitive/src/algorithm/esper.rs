@@ -1,9 +1,22 @@
-#![allow(clippy::type_complexity)]
-
 use super::{Field, Invertible, Matrix};
 use std::{collections::HashMap, fmt::Debug, hash::Hash, marker::PhantomData};
 
 type Marker<T> = PhantomData<fn() -> T>;
+
+#[derive(Debug, Clone)]
+struct SystemOfLinearEquation<T> {
+    a: Vec<Vec<T>>,
+    b: Vec<T>,
+}
+
+impl<T> Default for SystemOfLinearEquation<T> {
+    fn default() -> Self {
+        Self {
+            a: Default::default(),
+            b: Default::default(),
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct EsperEstimator<R, Input, Class, FC, FF>
@@ -17,7 +30,7 @@ where
 {
     class: FC,
     feature: FF,
-    data: HashMap<Class, (Vec<Vec<R::T>>, Vec<R::T>)>,
+    data: HashMap<Class, SystemOfLinearEquation<R::T>>,
     _marker: Marker<(R::T, Input, Class)>,
 }
 
@@ -59,8 +72,8 @@ where
         let class = (self.class)(&input);
         let feature = (self.feature)(&input);
         let entry = self.data.entry(class).or_default();
-        entry.0.push(feature);
-        entry.1.push(output);
+        entry.a.push(feature);
+        entry.b.push(output);
     }
 }
 
@@ -78,7 +91,7 @@ where
         let data: HashMap<_, _> = self
             .data
             .into_iter()
-            .map(|(key, (a, b))| {
+            .map(|(key, SystemOfLinearEquation { a, b })| {
                 (
                     key,
                     Matrix::<R>::from_vec(a)
@@ -103,7 +116,7 @@ where
         let data: HashMap<_, _> = self
             .data
             .into_iter()
-            .map(|(key, (a, b))| {
+            .map(|(key, SystemOfLinearEquation { a, b })| {
                 let mat = Matrix::<R>::from_vec(a);
                 let coeff = mat
                     .solve_system_of_linear_equations(&b)

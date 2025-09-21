@@ -73,7 +73,7 @@ where
         Self(self.0.clone())
     }
 }
-#[allow(unused_macros)]
+
 macro_rules! impl_compressed_binary_indexed_tree {
     (@tuple ($($l:tt)*) ($($r:tt)*) $T:ident) => {
         ($($l)* $T $($r)*,)

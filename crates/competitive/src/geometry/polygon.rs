@@ -9,7 +9,7 @@ where
     for &p in ps.iter().chain(ps.iter().rev().skip(1)) {
         while {
             let k = qs.len();
-            k > 1 && matches!(Ccw::ccw(qs[k - 2], qs[k - 1], p), Ccw::Clockwise)
+            k > 1 && matches!(Ccw::new(qs[k - 2], qs[k - 1], p), Ccw::Clockwise)
         } {
             qs.pop();
         }

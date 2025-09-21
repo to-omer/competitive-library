@@ -204,7 +204,6 @@ impl TestCaseRef {
     ) -> VerifyStatus {
         judger(&self.input, &self.output, result).into()
     }
-    #[allow(dead_code)]
     pub fn judge_with_eps(&self, result: &[u8], eps: f64) -> VerifyStatus {
         let out = String::from_utf8_lossy(&self.output);
         let res = String::from_utf8_lossy(result);

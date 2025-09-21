@@ -1,4 +1,3 @@
-#![allow(clippy::redundant_clone)]
 use super::Monoid;
 use std::{collections::HashSet, hash::Hash};
 
