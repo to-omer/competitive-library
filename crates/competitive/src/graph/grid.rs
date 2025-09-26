@@ -317,12 +317,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::GridGraph;
-    use crate::{
-        algebra::AdditiveOperation,
-        graph::{ShortestPathExt, StandardSp},
-        num::Saturating,
-        tools::Xorshift,
-    };
+    use crate::{graph::ShortestPathExt, num::Saturating, tools::Xorshift};
 
     #[test]
     fn grid_graph_apsp() {
@@ -334,28 +329,37 @@ mod tests {
         let weight: Vec<_> = std::iter::repeat_with(|| Saturating(rng.rand(A - 1) + 1))
             .take(8)
             .collect();
-        type Sp = StandardSp<AdditiveOperation<Saturating<u64>>>;
 
         let g = GridGraph::new_adj4(h, w);
         let cost: Vec<Vec<Vec<Vec<_>>>> = (0..h)
             .map(|i| {
                 (0..w)
-                    .map(|j| g.dijkstra_ss::<Sp, _>((i, j), &|dir| weight[dir as usize]))
+                    .map(|j| {
+                        g.standard_sp_additive()
+                            .dijkstra_ss((i, j), &|dir| weight[dir as usize])
+                    })
                     .collect()
             })
             .collect();
-        let cost2: Vec<Vec<_>> = g.warshall_floyd_ap::<Sp, _>(&|dir| weight[dir as usize]);
+        let cost2: Vec<Vec<_>> = g
+            .standard_sp_additive()
+            .warshall_floyd_ap(&|dir| weight[dir as usize]);
         assert_eq!(cost, cost2);
 
         let g = GridGraph::new_adj8(h, w);
         let cost: Vec<Vec<Vec<Vec<_>>>> = (0..h)
             .map(|i| {
                 (0..w)
-                    .map(|j| g.dijkstra_ss::<Sp, _>((i, j), &|dir| weight[dir as usize]))
+                    .map(|j| {
+                        g.standard_sp_additive()
+                            .dijkstra_ss((i, j), &|dir| weight[dir as usize])
+                    })
                     .collect()
             })
             .collect();
-        let cost2: Vec<Vec<_>> = g.warshall_floyd_ap::<Sp, _>(&|dir| weight[dir as usize]);
+        let cost2: Vec<Vec<_>> = g
+            .standard_sp_additive()
+            .warshall_floyd_ap(&|dir| weight[dir as usize]);
         assert_eq!(cost, cost2);
     }
 }

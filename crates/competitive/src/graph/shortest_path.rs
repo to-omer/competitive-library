@@ -4,6 +4,7 @@ use std::{
     collections::{BinaryHeap, VecDeque},
     iter::once,
     marker::PhantomData,
+    ops::{Add, Mul},
 };
 
 pub trait ShortestPathSemiRing {
@@ -111,40 +112,131 @@ where
 }
 
 pub trait ShortestPathExt: GraphBase {
-    fn bfs_distance_ss<'a, S, M>(
-        &self,
-        source: Self::VIndex,
-        weight: &'a M,
-    ) -> <Self as VertexMap<S::T>>::Vmap
+    fn standard_sp<'a, M>(&'a self) -> ShortestPathBuilder<'a, Self, StandardSp<M>>
     where
-        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-        S: ShortestPathSemiRing,
+        Self: Sized + GraphBase,
+        M: Monoid,
+        M::T: Bounded + Ord,
     {
-        self.bfs_distance_ms::<S, M, _>(once(source), weight)
+        ShortestPathBuilder {
+            graph: self,
+            _marker: PhantomData,
+        }
     }
-    fn bfs_distance_ms<'a, S, M, I>(
-        &self,
-        sources: I,
-        weight: &'a M,
-    ) -> <Self as VertexMap<S::T>>::Vmap
+
+    fn standard_sp_additive<'a, T>(
+        &'a self,
+    ) -> ShortestPathBuilder<'a, Self, StandardSp<AdditiveOperation<T>>>
     where
-        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-        S: ShortestPathSemiRing,
-        I: IntoIterator<Item = Self::VIndex>,
+        Self: Sized + GraphBase,
+        T: Clone + Zero + Add<Output = T> + Bounded + Ord,
     {
-        let mut cost = self.construct_vmap(S::inf);
+        ShortestPathBuilder {
+            graph: self,
+            _marker: PhantomData,
+        }
+    }
+
+    fn option_sp<'a, M>(&'a self) -> ShortestPathBuilder<'a, Self, OptionSp<M>>
+    where
+        Self: Sized + GraphBase,
+        M: Monoid,
+        M::T: Ord,
+    {
+        ShortestPathBuilder {
+            graph: self,
+            _marker: PhantomData,
+        }
+    }
+
+    fn option_sp_additive<'a, T>(
+        &'a self,
+    ) -> ShortestPathBuilder<'a, Self, OptionSp<AdditiveOperation<T>>>
+    where
+        Self: Sized + GraphBase,
+        T: Clone + Zero + Add<Output = T> + Ord,
+    {
+        ShortestPathBuilder {
+            graph: self,
+            _marker: PhantomData,
+        }
+    }
+
+    fn path_folding_sp<'a, M, S>(&'a self) -> ShortestPathBuilder<'a, Self, PathFoldingSp<M, S>>
+    where
+        Self: Sized + GraphBase,
+        M: Monoid,
+        M::T: Bounded + Ord,
+        S: SemiRing,
+    {
+        ShortestPathBuilder {
+            graph: self,
+            _marker: PhantomData,
+        }
+    }
+
+    fn path_folding_sp_additive_addmul<'a, T, U>(
+        &'a self,
+    ) -> ShortestPathBuilder<'a, Self, PathFoldingSp<AdditiveOperation<T>, AddMulOperation<U>>>
+    where
+        Self: Sized + GraphBase,
+        T: Clone + Zero + Add<Output = T> + Bounded + Ord,
+        U: Clone + Zero + One + Add<Output = U> + Mul<Output = U>,
+    {
+        ShortestPathBuilder {
+            graph: self,
+            _marker: PhantomData,
+        }
+    }
+}
+impl<G> ShortestPathExt for G where G: GraphBase {}
+
+pub struct ShortestPathBuilder<'a, G, S>
+where
+    G: GraphBase,
+    S: ShortestPathSemiRing,
+{
+    graph: &'a G,
+    _marker: PhantomData<fn() -> S>,
+}
+
+impl<'a, G, S> ShortestPathBuilder<'a, G, S>
+where
+    G: GraphBase,
+    S: ShortestPathSemiRing,
+{
+    pub fn bfs_distance_ss<M>(
+        &self,
+        source: G::VIndex,
+        weight: &'a M,
+    ) -> <G as VertexMap<S::T>>::Vmap
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        S: ShortestPathSemiRing,
+    {
+        self.bfs_distance_ms::<M, _>(once(source), weight)
+    }
+
+    pub fn bfs_distance_ms<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        S: ShortestPathSemiRing,
+        I: IntoIterator<Item = G::VIndex>,
+    {
+        let graph = self.graph;
+        let mut cost = graph.construct_vmap(S::inf);
         let mut deq = VecDeque::new();
         for source in sources.into_iter() {
-            *self.vmap_get_mut(&mut cost, source) = S::source();
+            *graph.vmap_get_mut(&mut cost, source) = S::source();
             deq.push_back(source);
         }
         let zero = S::source();
         while let Some(u) = deq.pop_front() {
-            for a in self.aviews(weight, u) {
+            for a in graph.aviews(weight, u) {
                 let v = a.vindex();
                 let w = a.avalue();
-                let nd = S::mul(self.vmap_get(&cost, u), &w);
-                if S::add_assign(self.vmap_get_mut(&mut cost, v), &nd) {
+                let nd = S::mul(graph.vmap_get(&cost, u), &w);
+                if S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd) {
                     if w == zero {
                         deq.push_front(v);
                     } else {
@@ -155,79 +247,81 @@ pub trait ShortestPathExt: GraphBase {
         }
         cost
     }
-    fn dijkstra_ss<'a, S, M>(
-        &self,
-        source: Self::VIndex,
-        weight: &'a M,
-    ) -> <Self as VertexMap<S::T>>::Vmap
+
+    pub fn dijkstra_ss<M>(&self, source: G::VIndex, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
     where
-        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
     {
-        self.dijkstra_ms::<S, M, _>(once(source), weight)
+        self.dijkstra_ms::<M, _>(once(source), weight)
     }
-    fn dijkstra_ms<'a, S, M, I>(&self, sources: I, weight: &'a M) -> <Self as VertexMap<S::T>>::Vmap
+
+    pub fn dijkstra_ms<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
     where
-        Self: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         S: ShortestPathSemiRing,
-        I: IntoIterator<Item = Self::VIndex>,
+        I: IntoIterator<Item = G::VIndex>,
     {
-        let mut cost = self.construct_vmap(S::inf);
+        let graph = self.graph;
+        let mut cost = graph.construct_vmap(S::inf);
         let mut heap = BinaryHeap::new();
         for source in sources.into_iter() {
-            *self.vmap_get_mut(&mut cost, source) = S::source();
+            *graph.vmap_get_mut(&mut cost, source) = S::source();
             heap.push(PartialIgnoredOrd(Reverse(S::source()), source));
         }
         while let Some(PartialIgnoredOrd(Reverse(d), u)) = heap.pop() {
-            if self.vmap_get(&cost, u) != &d {
+            if graph.vmap_get(&cost, u) != &d {
                 continue;
             }
-            let d = self.vmap_get(&cost, u).clone();
-            for a in self.aviews(weight, u) {
+            let d = graph.vmap_get(&cost, u).clone();
+            for a in graph.aviews(weight, u) {
                 let v = a.vindex();
                 let nd = S::mul(&d, &a.avalue());
-                if S::add_assign(self.vmap_get_mut(&mut cost, v), &nd) {
+                if S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd) {
                     heap.push(PartialIgnoredOrd(Reverse(nd), v));
                 }
             }
         }
         cost
     }
-    fn bellman_ford_ss<'a, S, M>(
+
+    pub fn bellman_ford_ss<M>(
         &self,
-        source: Self::VIndex,
+        source: G::VIndex,
         weight: &'a M,
         check: bool,
-    ) -> Option<<Self as VertexMap<S::T>>::Vmap>
+    ) -> Option<<G as VertexMap<S::T>>::Vmap>
     where
-        Self: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
+        G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
         S: ShortestPathSemiRing,
     {
-        self.bellman_ford_ms::<S, M, _>(once(source), weight, check)
+        self.bellman_ford_ms::<M, _>(once(source), weight, check)
     }
-    fn bellman_ford_ms<'a, S, M, I>(
+
+    pub fn bellman_ford_ms<M, I>(
         &self,
         sources: I,
         weight: &'a M,
         check: bool,
-    ) -> Option<<Self as VertexMap<S::T>>::Vmap>
+    ) -> Option<<G as VertexMap<S::T>>::Vmap>
     where
-        Self: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
+        G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
         S: ShortestPathSemiRing,
-        I: IntoIterator<Item = Self::VIndex>,
+        I: IntoIterator<Item = G::VIndex>,
     {
-        let mut cost = self.construct_vmap(S::inf);
+        let graph = self.graph;
+        let mut cost = graph.construct_vmap(S::inf);
         for source in sources.into_iter() {
-            *self.vmap_get_mut(&mut cost, source) = S::source();
+            *graph.vmap_get_mut(&mut cost, source) = S::source();
         }
-        let vsize = self.vsize();
+        let vsize = graph.vsize();
         for _ in 1..vsize {
             let mut updated = false;
-            for u in self.vertices() {
-                for a in self.aviews(weight, u) {
+            for u in graph.vertices() {
+                for a in graph.aviews(weight, u) {
                     let v = a.vindex();
-                    let nd = S::mul(self.vmap_get(&cost, u), &a.avalue());
-                    updated |= S::add_assign(self.vmap_get_mut(&mut cost, v), &nd);
+                    let nd = S::mul(graph.vmap_get(&cost, u), &a.avalue());
+                    updated |= S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd);
                 }
             }
             if !updated {
@@ -235,11 +329,11 @@ pub trait ShortestPathExt: GraphBase {
             }
         }
         if check {
-            for u in self.vertices() {
-                for a in self.aviews(weight, u) {
+            for u in graph.vertices() {
+                for a in graph.aviews(weight, u) {
                     let v = a.vindex();
-                    let nd = S::mul(self.vmap_get(&cost, u), &a.avalue());
-                    if S::add_assign(self.vmap_get_mut(&mut cost, v), &nd) {
+                    let nd = S::mul(graph.vmap_get(&cost, u), &a.avalue());
+                    if S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd) {
                         return None;
                     }
                 }
@@ -247,50 +341,50 @@ pub trait ShortestPathExt: GraphBase {
         }
         Some(cost)
     }
-    fn warshall_floyd_ap<'a, S, M>(
+
+    pub fn warshall_floyd_ap<M>(
         &self,
         weight: &'a M,
-    ) -> <Self as VertexMap<<Self as VertexMap<S::T>>::Vmap>>::Vmap
+    ) -> <G as VertexMap<<G as VertexMap<S::T>>::Vmap>>::Vmap
     where
-        Self: Vertices
+        G: Vertices
             + VertexMap<S::T>
-            + VertexMap<<Self as VertexMap<S::T>>::Vmap>
+            + VertexMap<<G as VertexMap<S::T>>::Vmap>
             + AdjacencyView<'a, M, S::T>,
-        <Self as VertexMap<S::T>>::Vmap: Clone,
+        <G as VertexMap<S::T>>::Vmap: Clone,
         S: ShortestPathSemiRing,
     {
-        let mut cost = self.construct_vmap(|| self.construct_vmap(S::inf));
-        for u in self.vertices() {
-            *self.vmap_get_mut(self.vmap_get_mut(&mut cost, u), u) = S::source();
+        let graph = self.graph;
+        let mut cost = graph.construct_vmap(|| graph.construct_vmap(S::inf));
+        for u in graph.vertices() {
+            *graph.vmap_get_mut(graph.vmap_get_mut(&mut cost, u), u) = S::source();
         }
-        for u in self.vertices() {
-            for a in self.aviews(weight, u) {
+        for u in graph.vertices() {
+            for a in graph.aviews(weight, u) {
                 S::add_assign(
-                    self.vmap_get_mut(self.vmap_get_mut(&mut cost, u), a.vindex()),
+                    graph.vmap_get_mut(graph.vmap_get_mut(&mut cost, u), a.vindex()),
                     &a.avalue(),
                 );
             }
         }
-        for k in self.vertices() {
-            for i in self.vertices() {
-                for j in self.vertices() {
-                    let d1 = self.vmap_get(self.vmap_get(&cost, i), k);
-                    let d2 = self.vmap_get(self.vmap_get(&cost, k), j);
+        for k in graph.vertices() {
+            for i in graph.vertices() {
+                for j in graph.vertices() {
+                    let d1 = graph.vmap_get(graph.vmap_get(&cost, i), k);
+                    let d2 = graph.vmap_get(graph.vmap_get(&cost, k), j);
                     let nd = S::mul(d1, d2);
-                    S::add_assign(self.vmap_get_mut(self.vmap_get_mut(&mut cost, i), j), &nd);
+                    S::add_assign(graph.vmap_get_mut(graph.vmap_get_mut(&mut cost, i), j), &nd);
                 }
             }
         }
         cost
     }
 }
-impl<G> ShortestPathExt for G where G: GraphBase {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
-        algebra::{AddMulOperation, AdditiveOperation},
         num::{Saturating, mint_basic::MInt998244353},
         rand,
         tools::Xorshift,
@@ -303,22 +397,18 @@ mod tests {
             rand!(rng, n: 1..100, m: 1..200, edges: [(0..n, 0..n); m], w: [0..100_000i64; m]);
             let g = DirectedSparseGraph::from_edges(n, edges);
             let dijkstra: Vec<_> = (0..n)
-                .map(|src| {
-                    g.dijkstra_ss::<OptionSp<AdditiveOperation<_>>, _>(src, &|eid| Some(w[eid]))
-                })
+                .map(|src| g.option_sp_additive().dijkstra_ss(src, &|eid| Some(w[eid])))
                 .collect();
             let bellman_ford: Vec<_> = (0..n)
                 .map(|src| {
-                    g.bellman_ford_ss::<OptionSp<AdditiveOperation<_>>, _>(
-                        src,
-                        &|eid| Some(w[eid]),
-                        false,
-                    )
-                    .unwrap()
+                    g.option_sp_additive()
+                        .bellman_ford_ss(src, &|eid| Some(w[eid]), false)
+                        .unwrap()
                 })
                 .collect();
-            let warshall_floyd =
-                g.warshall_floyd_ap::<OptionSp<AdditiveOperation<_>>, _>(&|eid| Some(w[eid]));
+            let warshall_floyd = g
+                .option_sp_additive()
+                .warshall_floyd_ap(&|eid| Some(w[eid]));
             assert_eq!(dijkstra, bellman_ford);
             assert_eq!(dijkstra, warshall_floyd);
         }
@@ -332,11 +422,13 @@ mod tests {
             let g = DirectedSparseGraph::from_edges(n, edges);
             let bfs: Vec<_> = (0..n)
                 .map(|src| {
-                    g.bfs_distance_ss::<OptionSp<AdditiveOperation<_>>, _>(src, &|eid| Some(w[eid]))
+                    g.option_sp_additive()
+                        .bfs_distance_ss(src, &|eid| Some(w[eid]))
                 })
                 .collect();
-            let warshall_floyd =
-                g.warshall_floyd_ap::<OptionSp<AdditiveOperation<_>>, _>(&|eid| Some(w[eid]));
+            let warshall_floyd = g
+                .option_sp_additive()
+                .warshall_floyd_ap(&|eid| Some(w[eid]));
             assert_eq!(bfs, warshall_floyd);
         }
     }
@@ -349,27 +441,28 @@ mod tests {
             let g = DirectedSparseGraph::from_edges(n, edges);
             let dijkstra: Vec<_> = (0..n)
                 .map(|src| {
-                    g.dijkstra_ss::<PathFoldingSp<AdditiveOperation<_>, AddMulOperation<MInt998244353>>, _>(src, &|eid| {
-                        PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
-                    })
+                    g.path_folding_sp_additive_addmul()
+                        .dijkstra_ss(src, &|eid| {
+                            PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
+                        })
                 })
                 .collect();
             let bellman_ford: Vec<_> = (0..n)
                 .map(|src| {
-                    g.bellman_ford_ss::<PathFoldingSp<AdditiveOperation<_>, AddMulOperation<MInt998244353>>, _>(
-                        src,
-                        &|eid| PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one()),
-                        false,
-                    )
-                    .unwrap()
+                    g.path_folding_sp_additive_addmul()
+                        .bellman_ford_ss(
+                            src,
+                            &|eid| PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one()),
+                            false,
+                        )
+                        .unwrap()
                 })
                 .collect();
-            let warshall_floyd = g.warshall_floyd_ap::<PathFoldingSp<
-                AdditiveOperation<_>,
-                AddMulOperation<MInt998244353>,
-            >, _>(&|eid| {
-                PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
-            });
+            let warshall_floyd = g
+                .path_folding_sp_additive_addmul()
+                .warshall_floyd_ap(&|eid| {
+                    PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
+                });
             assert_eq!(dijkstra, bellman_ford);
             assert_eq!(dijkstra, warshall_floyd);
         }

@@ -242,8 +242,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::{
-        algebra::AdditiveOperation,
-        graph::{ClosureGraph, GridGraph, ShortestPathExt, StandardSp, UsizeGraph, VertexMap},
+        graph::{ClosureGraph, GridGraph, ShortestPathExt, UsizeGraph, VertexMap},
         num::Saturating,
         tools::Xorshift,
     };
@@ -263,7 +262,6 @@ mod tests {
             repeat_with(|| repeat_with(|| rng.gen_bool(0.8)).take(w).collect())
                 .take(h)
                 .collect();
-        type Sp = StandardSp<AdditiveOperation<Saturating<u64>>>;
 
         let g = GridGraph::new_adj8(h, w);
         let g1 = UsizeGraph::new(h * w, |u| {
@@ -289,8 +287,12 @@ mod tests {
                 if !visitable {
                     continue;
                 }
-                let cost1 = g1.dijkstra_ss::<Sp, _>(g.flat((i, j)), &|dir| weight[dir as usize]);
-                let cost2 = g2.dijkstra_ss::<Sp, _>((i, j), &|dir| weight[dir as usize]);
+                let cost1 = g1
+                    .standard_sp_additive()
+                    .dijkstra_ss(g.flat((i, j)), &|dir| weight[dir as usize]);
+                let cost2 = g2
+                    .standard_sp_additive()
+                    .dijkstra_ss((i, j), &|dir| weight[dir as usize]);
                 for ni in 0..h {
                     for nj in 0..w {
                         assert_eq!(
@@ -313,13 +315,15 @@ mod tests {
         let weight: Vec<_> = repeat_with(|| Saturating(rng.rand(A - 1) + 1))
             .take(8)
             .collect();
-        type Sp = StandardSp<AdditiveOperation<Saturating<u64>>>;
 
         let g = GridGraph::new_adj4(h, w);
         let cost: Vec<Vec<Vec<Vec<_>>>> = (0..h)
             .map(|i| {
                 (0..w)
-                    .map(|j| g.dijkstra_ss::<Sp, _>((i, j), &|dir| weight[dir as usize]))
+                    .map(|j| {
+                        g.standard_sp_additive()
+                            .dijkstra_ss((i, j), &|dir| weight[dir as usize])
+                    })
                     .collect()
             })
             .collect();
@@ -327,7 +331,9 @@ mod tests {
             || (0..h).flat_map(|i| (0..w).map(move |j| (i, j))),
             |u| g.adj4(u),
         );
-        let cost2 = g2.warshall_floyd_ap::<Sp, _>(&|dir| weight[dir as usize]);
+        let cost2 = g2
+            .standard_sp_additive()
+            .warshall_floyd_ap(&|dir| weight[dir as usize]);
         for i in 0..h {
             for j in 0..w {
                 for ni in 0..h {
