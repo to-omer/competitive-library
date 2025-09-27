@@ -28,7 +28,8 @@ pub use self::black_box_matrix::{
 pub use self::convolve_steps::ConvolveSteps;
 #[codesnip::entry("discrete_logarithm")]
 pub use self::discrete_logarithm::{discrete_logarithm, discrete_logarithm_prime_mod};
-pub use self::factorial::*;
+#[codesnip::entry("factorial")]
+pub use self::factorial::MemorizedFactorial;
 #[codesnip::entry("fast_fourier_transform")]
 pub use self::fast_fourier_transform::ConvolveRealFft;
 #[codesnip::entry("floor_sum")]
@@ -62,6 +63,8 @@ pub use self::mint_matrix::MIntMatrix;
 #[codesnip::entry("NumberTheoreticTransform")]
 pub use self::number_theoretic_transform::{Convolve, Convolve998244353, MIntConvolve};
 pub use self::polynomial::*;
+#[codesnip::entry("PowPrec")]
+pub use self::pow_prec::PowPrec;
 pub use self::prime::*;
 #[codesnip::entry("prime_factors")]
 pub use self::prime_factors::{divisors, prime_factors, prime_factors_flatten};
@@ -73,6 +76,8 @@ pub use self::prime_table::PrimeTable;
 pub use self::primitive_root::{check_primitive_root, primitive_root};
 #[codesnip::entry("QuotientArray")]
 pub use self::quotient_array::QuotientArray;
+#[codesnip::entry("SmallModMemorizedFactorial")]
+pub use self::small_factorial::SmallModMemorizedFactorial;
 #[codesnip::entry("SubsetConvolve")]
 pub use self::subset_convolve::SubsetConvolve;
 
@@ -117,6 +122,7 @@ mod convolve_steps;
     )
 )]
 mod discrete_logarithm;
+#[cfg_attr(nightly, codesnip::entry("factorial", include("MIntBase")))]
 mod factorial;
 #[cfg_attr(
     nightly,
@@ -191,6 +197,11 @@ mod mod_sqrt;
 )]
 mod number_theoretic_transform;
 mod polynomial;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("PowPrec", include("MIntBase", "prime_factors"))
+)]
+mod pow_prec;
 mod prime;
 #[cfg_attr(
     nightly,
@@ -208,6 +219,11 @@ mod primitive_root;
     codesnip::entry("QuotientArray", include("algebra", "ring", "PrimeList"))
 )]
 mod quotient_array;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("SmallModMemorizedFactorial", include("MIntBase", "prime_factors"))
+)]
+mod small_factorial;
 #[cfg_attr(
     nightly,
     codesnip::entry("SubsetConvolve", include("BitwiseorConvolve"))
