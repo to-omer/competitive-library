@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/prime_table.rs`."><title>prime_table.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0-nightly (975e6c8fe 2025-09-23)" data-channel="nightly" data-search-js="search-e256b49e.js" data-stringdex-js="stringdex-061df703.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/math/prime_table.rs`."><title>prime_table.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0-nightly (54a8a1db6 2025-09-26)" data-channel="nightly" data-search-js="search-e256b49e.js" data-stringdex-js="stringdex-061df703.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -52,89 +52,89 @@
   });
 </script>
 
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">competitive/math/</div>prime_table.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">std::iter::once</a>;
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">competitive/math/</div>prime_table.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">std::iter::once</a>;
 <a href=#2 id=2 data-nosnippet>2</a>
-<a href=#3 id=3 data-nosnippet>3</a><span class="attr">#[derive(Clone, Debug)]
-<a href=#4 id=4 data-nosnippet>4</a></span><span class="kw">pub struct </span><a href="../../../competitive/math/struct.PrimeTable.html">PrimeTable</a> {
+<a href=#3 id=3 data-nosnippet>3</a></a><span class="attr">#[derive(<a href="#4-6">Clone</a>, <a href="#4-6">Debug</a>)]
+<a href=#4 id=4 data-nosnippet>4</a></span><span class="kw">pub struct </span><a href="../tools/scanner.rs.html#391"><a href="../../../competitive/math/struct.PrimeTable.html">PrimeTable</a> {
 <a href=#5 id=5 data-nosnippet>5</a>    table: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;,
 <a href=#6 id=6 data-nosnippet>6</a>}
 <a href=#7 id=7 data-nosnippet>7</a>
-<a href=#8 id=8 data-nosnippet>8</a><span class="kw">impl </span><a href="#4-6">PrimeTable</a> {
-<a href=#9 id=9 data-nosnippet>9</a>    <span class="kw">pub fn </span>new(max_n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <span class="self">Self </span>{
-<a href=#10 id=10 data-nosnippet>10</a>        <span class="kw">let </span><span class="kw-2">mut </span>table = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">1</span>; (<a href="#9">max_n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + <span class="number">1</span>) / <span class="number">2</span>];
-<a href=#11 id=11 data-nosnippet>11</a>        <a href="#10">table</a>[<span class="number">0</span>] = <span class="number">0</span>;
-<a href=#12 id=12 data-nosnippet>12</a>        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">3</span>..).step_by(<span class="number">2</span>) {
-<a href=#13 id=13 data-nosnippet>13</a>            <span class="kw">let </span>i2 = i * i;
-<a href=#14 id=14 data-nosnippet>14</a>            <span class="kw">if </span>i2 &gt; max_n {
-<a href=#15 id=15 data-nosnippet>15</a>                <span class="kw">break</span>;
+<a href=#8 id=8 data-nosnippet>8</a></a><span class="kw">impl </span><a href="../tools/scanner.rs.html#391"><a href="#4-6">PrimeTable</a> {
+<a href=#9 id=9 data-nosnippet>9</a>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">new(max_n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; </a><a class="self" href="../tools/scanner.rs.html#391">Self </a>{
+<a href=#10 id=10 data-nosnippet>10</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">table = </a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">1</span><a href="../tools/scanner.rs.html#391">; (<a href="#9">max_n</a> </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> + </a><span class="number">1</span>) / <span class="number">2</span><a href="../tools/scanner.rs.html#391">];
+<a href=#11 id=11 data-nosnippet>11</a>        <a href="#10">table</a>[</a><span class="number">0</span>] = <span class="number">0</span>;
+<a href=#12 id=12 data-nosnippet>12</a>        <span class="kw">for </span><a href="../tools/scanner.rs.html#391">i </a><span class="kw">in </span>(<span class="number">3</span><a href="../tools/scanner.rs.html#391">..).step_by(</a><span class="number">2</span>) {
+<a href=#13 id=13 data-nosnippet>13</a>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">i2 = i * i;
+<a href=#14 id=14 data-nosnippet>14</a>            </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">i2 &gt; max_n {
+<a href=#15 id=15 data-nosnippet>15</a>                </a><span class="kw">break</span>;
 <a href=#16 id=16 data-nosnippet>16</a>            }
-<a href=#17 id=17 data-nosnippet>17</a>            <span class="kw">if </span>table[i <span class="kw">as </span>usize &gt;&gt; <span class="number">1</span>] == <span class="number">1 </span>{
-<a href=#18 id=18 data-nosnippet>18</a>                <span class="kw">for </span>j <span class="kw">in </span>(i2..=max_n).step_by(i <span class="kw">as </span>usize * <span class="number">2</span>) {
-<a href=#19 id=19 data-nosnippet>19</a>                    <span class="kw">if </span>table[j <span class="kw">as </span>usize &gt;&gt; <span class="number">1</span>] == <span class="number">1 </span>{
-<a href=#20 id=20 data-nosnippet>20</a>                        table[j <span class="kw">as </span>usize &gt;&gt; <span class="number">1</span>] = i;
+<a href=#17 id=17 data-nosnippet>17</a>            <span class="kw">if </span><a href="../tools/scanner.rs.html#391">table[i </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize &gt;&gt; </a><span class="number">1</span>] == <span class="number">1 </span>{
+<a href=#18 id=18 data-nosnippet>18</a>                <span class="kw">for </span><a href="../tools/scanner.rs.html#391">j </a><span class="kw">in </span><a href="../tools/scanner.rs.html#391">(i2..=max_n).step_by(i </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize * </a><span class="number">2</span>) {
+<a href=#19 id=19 data-nosnippet>19</a>                    <span class="kw">if </span><a href="../tools/scanner.rs.html#391">table[j </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize &gt;&gt; </a><span class="number">1</span>] == <span class="number">1 </span><a href="../tools/scanner.rs.html#391">{
+<a href=#20 id=20 data-nosnippet>20</a>                        table[j </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize &gt;&gt; </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">] = i;
 <a href=#21 id=21 data-nosnippet>21</a>                    }
 <a href=#22 id=22 data-nosnippet>22</a>                }
 <a href=#23 id=23 data-nosnippet>23</a>            }
 <a href=#24 id=24 data-nosnippet>24</a>        }
 <a href=#25 id=25 data-nosnippet>25</a>        <a href="#4-6">PrimeTable</a> { <a href="#10">table</a> }
 <a href=#26 id=26 data-nosnippet>26</a>    }
-<a href=#27 id=27 data-nosnippet>27</a>    <span class="kw">pub fn </span>is_prime(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
-<a href=#28 id=28 data-nosnippet>28</a>        <a href="#27">n</a> == <span class="number">2 </span>|| <a href="#27">n</a> % <span class="number">2 </span>== <span class="number">1 </span>&amp;&amp; <a class="self" href="#27">self</a>.table[<a href="#27">n</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> &gt;&gt; <span class="number">1</span>] == <span class="number">1
+<a href=#27 id=27 data-nosnippet>27</a>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">is_prime(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a> {
+<a href=#28 id=28 data-nosnippet>28</a>        <a href="#27">n</a> == </a><span class="number">2 </span><a href="../tools/scanner.rs.html#391">|| <a href="#27">n</a> % </a><span class="number">2 </span>== <span class="number">1 </span>&amp;&amp; <a class="self" href="#27">self</a><a href="../tools/scanner.rs.html#391">.table[<a href="#27">n</a> </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> &gt;&gt; </a><span class="number">1</span>] == <span class="number">1
 <a href=#29 id=29 data-nosnippet>29</a>    </span>}
-<a href=#30 id=30 data-nosnippet>30</a>    <span class="kw">pub fn </span>primes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span><a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a>&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; + <span class="lifetime">'_ </span>{
-<a href=#31 id=31 data-nosnippet>31</a>        <a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(<span class="number">2</span>).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.chain">chain</a>(<a class="self" href="#30">self</a>.table.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(i, b)| {
-<a href=#32 id=32 data-nosnippet>32</a>            <span class="kw">if </span><span class="kw-2">*</span><a href="#31">b</a> == <span class="number">1 </span>{
-<a href=#33 id=33 data-nosnippet>33</a>                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<a href="#31">i</a> <span class="kw">as </span><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> * <span class="number">2 </span>+ <span class="number">1</span>)
+<a href=#30 id=30 data-nosnippet>30</a>    <span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">primes(</a><span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html">Iterator</a>&lt;Item = <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; + </a><span class="lifetime">'_ </span><a href="../tools/scanner.rs.html#391">{
+<a href=#31 id=31 data-nosnippet>31</a>        <a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(</a><span class="number">2</span><a href="../tools/scanner.rs.html#391">).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.chain">chain</a>(</a><a class="self" href="#30">self</a><a href="../tools/scanner.rs.html#391">.table.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(i, b)| {
+<a href=#32 id=32 data-nosnippet>32</a>            </a><span class="kw">if </span><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391"><a href="#31">b</a> == </a><span class="number">1 </span>{
+<a href=#33 id=33 data-nosnippet>33</a>                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../tools/scanner.rs.html#391">(<a href="#31">i</a> </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> * </a><span class="number">2 </span>+ <span class="number">1</span>)
 <a href=#34 id=34 data-nosnippet>34</a>            } <span class="kw">else </span>{
 <a href=#35 id=35 data-nosnippet>35</a>                <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>
 <a href=#36 id=36 data-nosnippet>36</a>            </a>}
 <a href=#37 id=37 data-nosnippet>37</a>        }))
 <a href=#38 id=38 data-nosnippet>38</a>    }
-<a href=#39 id=39 data-nosnippet>39</a>    <span class="kw">pub fn </span>trial_division&lt;F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <span class="kw-2">mut </span>f: F)
-<a href=#40 id=40 data-nosnippet>40</a>    <span class="kw">where
-<a href=#41 id=41 data-nosnippet>41</a>        </span>F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>),
+<a href=#39 id=39 data-nosnippet>39</a>    <span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">trial_division&lt;F&gt;(</a><span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, </a><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">f: F)
+<a href=#40 id=40 data-nosnippet>40</a>    </a><span class="kw">where
+<a href=#41 id=41 data-nosnippet>41</a>        </span><a href="../tools/scanner.rs.html#391">F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>),
 <a href=#42 id=42 data-nosnippet>42</a>    {
-<a href=#43 id=43 data-nosnippet>43</a>        <span class="kw">let </span>k = <a href="#39">n</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.trailing_zeros">trailing_zeros</a>();
-<a href=#44 id=44 data-nosnippet>44</a>        <span class="kw">if </span><a href="#43">k</a> &gt; <span class="number">0 </span>{
-<a href=#45 id=45 data-nosnippet>45</a>            <a href="#39">f</a>(<span class="number">2</span>, <a href="#43">k</a>);
+<a href=#43 id=43 data-nosnippet>43</a>        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">k = <a href="#39">n</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.trailing_zeros">trailing_zeros</a>();
+<a href=#44 id=44 data-nosnippet>44</a>        </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391"><a href="#43">k</a> &gt; </a><span class="number">0 </span><a href="../tools/scanner.rs.html#391">{
+<a href=#45 id=45 data-nosnippet>45</a>            <a href="#39">f</a>(</a><span class="number">2</span><a href="../tools/scanner.rs.html#391">, <a href="#43">k</a>);
 <a href=#46 id=46 data-nosnippet>46</a>        }
 <a href=#47 id=47 data-nosnippet>47</a>        <a href="#39">n</a> &gt;&gt;= <a href="#43">k</a>;
-<a href=#48 id=48 data-nosnippet>48</a>        <span class="kw">while </span><span class="self">self</span>.table[n <span class="kw">as </span>usize &gt;&gt; <span class="number">1</span>] &gt; <span class="number">1 </span>{
-<a href=#49 id=49 data-nosnippet>49</a>            <span class="kw">let </span>p = <span class="self">self</span>.table[n <span class="kw">as </span>usize &gt;&gt; <span class="number">1</span>];
-<a href=#50 id=50 data-nosnippet>50</a>            <span class="kw">let </span><span class="kw-2">mut </span>cnt = <span class="number">1</span>;
+<a href=#48 id=48 data-nosnippet>48</a>        </a><span class="kw">while </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">.table[n </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize &gt;&gt; </a><span class="number">1</span>] &gt; <span class="number">1 </span>{
+<a href=#49 id=49 data-nosnippet>49</a>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.table[n </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize &gt;&gt; </a><span class="number">1</span>];
+<a href=#50 id=50 data-nosnippet>50</a>            <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">cnt = </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">;
 <a href=#51 id=51 data-nosnippet>51</a>            n /= p;
-<a href=#52 id=52 data-nosnippet>52</a>            <span class="kw">while </span><span class="self">self</span>.table[n <span class="kw">as </span>usize &gt;&gt; <span class="number">1</span>] == p {
+<a href=#52 id=52 data-nosnippet>52</a>            </a><span class="kw">while </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">.table[n </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize &gt;&gt; </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">] == p {
 <a href=#53 id=53 data-nosnippet>53</a>                n /= p;
-<a href=#54 id=54 data-nosnippet>54</a>                cnt += <span class="number">1</span>;
+<a href=#54 id=54 data-nosnippet>54</a>                cnt += </a><span class="number">1</span>;
 <a href=#55 id=55 data-nosnippet>55</a>            }
-<a href=#56 id=56 data-nosnippet>56</a>            <span class="kw">if </span>n == p {
-<a href=#57 id=57 data-nosnippet>57</a>                cnt += <span class="number">1</span>;
+<a href=#56 id=56 data-nosnippet>56</a>            <span class="kw">if </span><a href="../tools/scanner.rs.html#391">n == p {
+<a href=#57 id=57 data-nosnippet>57</a>                cnt += </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">;
 <a href=#58 id=58 data-nosnippet>58</a>                n /= p;
 <a href=#59 id=59 data-nosnippet>59</a>            }
 <a href=#60 id=60 data-nosnippet>60</a>            f(p, cnt);
 <a href=#61 id=61 data-nosnippet>61</a>        }
-<a href=#62 id=62 data-nosnippet>62</a>        <span class="kw">if </span><a href="#39">n</a> &gt; <span class="number">1 </span>{
-<a href=#63 id=63 data-nosnippet>63</a>            <a href="#39">f</a>(<a href="#39">n</a>, <span class="number">1</span>);
+<a href=#62 id=62 data-nosnippet>62</a>        </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391"><a href="#39">n</a> &gt; </a><span class="number">1 </span><a href="../tools/scanner.rs.html#391">{
+<a href=#63 id=63 data-nosnippet>63</a>            <a href="#39">f</a>(<a href="#39">n</a>, </a><span class="number">1</span>);
 <a href=#64 id=64 data-nosnippet>64</a>        }
 <a href=#65 id=65 data-nosnippet>65</a>    }
-<a href=#66 id=66 data-nosnippet>66</a>    <span class="kw">pub fn </span>prime_factors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)&gt; {
-<a href=#67 id=67 data-nosnippet>67</a>        <span class="kw">let </span><span class="kw-2">mut </span>factors = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
-<a href=#68 id=68 data-nosnippet>68</a>        <a class="self" href="#66">self</a>.<a href="#39-65">trial_division</a>(<a href="#66">n</a>, |p, c| <a href="#67">factors</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<a href="#68">p</a>, <a href="#68">c</a>)));
+<a href=#66 id=66 data-nosnippet>66</a>    <span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">prime_factors(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;(<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>, <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>)&gt; {
+<a href=#67 id=67 data-nosnippet>67</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">factors = </a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[];
+<a href=#68 id=68 data-nosnippet>68</a>        <a class="self" href="#66">self</a><a href="../tools/scanner.rs.html#391">.<a href="#39-65">trial_division</a>(<a href="#66">n</a>, |p, c| <a href="#67">factors</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>((<a href="#68">p</a>, <a href="#68">c</a>)));
 <a href=#69 id=69 data-nosnippet>69</a>        <a href="#67">factors</a>
 <a href=#70 id=70 data-nosnippet>70</a>    }
-<a href=#71 id=71 data-nosnippet>71</a>    <span class="kw">pub fn </span>count_divisors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
-<a href=#72 id=72 data-nosnippet>72</a>        <span class="kw">let </span><span class="kw-2">mut </span>divisor_cnt = <span class="number">1</span>;
-<a href=#73 id=73 data-nosnippet>73</a>        <a class="self" href="#71">self</a>.<a href="#39-65">trial_division</a>(<a href="#71">n</a>, |<span class="kw">_</span>, cnt| <a href="#72">divisor_cnt</a> <span class="kw-2">*</span>= <a href="#73">cnt</a> + <span class="number">1</span>);
+<a href=#71 id=71 data-nosnippet>71</a>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">count_divisors(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a> {
+<a href=#72 id=72 data-nosnippet>72</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">divisor_cnt = </a><span class="number">1</span>;
+<a href=#73 id=73 data-nosnippet>73</a>        <a class="self" href="#71">self</a><a href="../tools/scanner.rs.html#391">.<a href="#39-65">trial_division</a>(<a href="#71">n</a>, |</a><span class="kw">_</span><a href="../tools/scanner.rs.html#391">, cnt| <a href="#72">divisor_cnt</a> </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">= <a href="#73">cnt</a> + </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">);
 <a href=#74 id=74 data-nosnippet>74</a>        <a href="#72">divisor_cnt</a>
 <a href=#75 id=75 data-nosnippet>75</a>    }
-<a href=#76 id=76 data-nosnippet>76</a>    <span class="kw">pub fn </span>divisors(<span class="kw-2">&amp;</span><span class="self">self</span>, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; {
-<a href=#77 id=77 data-nosnippet>77</a>        <span class="kw">let </span><span class="kw-2">mut </span>d = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">1u32</span>];
-<a href=#78 id=78 data-nosnippet>78</a>        <a class="self" href="#76">self</a>.<a href="#39-65">trial_division</a>(<a href="#76">n</a>, |p, c| {
-<a href=#79 id=79 data-nosnippet>79</a>            <span class="kw">let </span>k = <a href="#77">d</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
-<a href=#80 id=80 data-nosnippet>80</a>            <span class="kw">let </span><span class="kw-2">mut </span>acc = <span class="number">1</span>;
-<a href=#81 id=81 data-nosnippet>81</a>            <span class="kw">for _ in </span><span class="number">0</span>..c {
-<a href=#82 id=82 data-nosnippet>82</a>                acc <span class="kw-2">*</span>= p;
-<a href=#83 id=83 data-nosnippet>83</a>                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..k {
+<a href=#76 id=76 data-nosnippet>76</a>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">divisors(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt; {
+<a href=#77 id=77 data-nosnippet>77</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">d = </a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<span class="number">1u32</span>];
+<a href=#78 id=78 data-nosnippet>78</a>        <a class="self" href="#76">self</a><a href="../tools/scanner.rs.html#391">.<a href="#39-65">trial_division</a>(<a href="#76">n</a>, |p, c| {
+<a href=#79 id=79 data-nosnippet>79</a>            </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">k = <a href="#77">d</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
+<a href=#80 id=80 data-nosnippet>80</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">acc = </a><span class="number">1</span>;
+<a href=#81 id=81 data-nosnippet>81</a>            <span class="kw">for _ in </span><span class="number">0</span><a href="../tools/scanner.rs.html#391">..c {
+<a href=#82 id=82 data-nosnippet>82</a>                acc </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">= p;
+<a href=#83 id=83 data-nosnippet>83</a>                </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span><a href="../tools/scanner.rs.html#391">..k {
 <a href=#84 id=84 data-nosnippet>84</a>                    d.push(d[i] * acc);
 <a href=#85 id=85 data-nosnippet>85</a>                }
 <a href=#86 id=86 data-nosnippet>86</a>            }
@@ -144,17 +144,17 @@
 <a href=#90 id=90 data-nosnippet>90</a>    }
 <a href=#91 id=91 data-nosnippet>91</a>}
 <a href=#92 id=92 data-nosnippet>92</a>
-<a href=#93 id=93 data-nosnippet>93</a><span class="attr">#[cfg(test)]
-<a href=#94 id=94 data-nosnippet>94</a></span><span class="kw">mod </span>tests {
-<a href=#95 id=95 data-nosnippet>95</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#96 id=96 data-nosnippet>96</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
+<a href=#93 id=93 data-nosnippet>93</a></a><span class="attr">#[cfg(test)]
+<a href=#94 id=94 data-nosnippet>94</a></span><span class="kw">mod </span><a href="../tools/scanner.rs.html#391">tests {
+<a href=#95 id=95 data-nosnippet>95</a>    </a><span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#96 id=96 data-nosnippet>96</a>    <span class="kw">use </span><a href="../tools/scanner.rs.html#391"><span class="kw">crate</span>::tools::Xorshift;
 <a href=#97 id=97 data-nosnippet>97</a>
-<a href=#98 id=98 data-nosnippet>98</a>    <span class="kw">pub fn </span>divisors(n: u32) -&gt; Vec&lt;u32&gt; {
-<a href=#99 id=99 data-nosnippet>99</a>        <span class="kw">let </span><span class="kw-2">mut </span>res = <span class="macro">vec!</span>[];
-<a href=#100 id=100 data-nosnippet>100</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..(n <span class="kw">as </span>f32).sqrt() <span class="kw">as </span>u32 + <span class="number">1 </span>{
-<a href=#101 id=101 data-nosnippet>101</a>            <span class="kw">if </span>n % i == <span class="number">0 </span>{
+<a href=#98 id=98 data-nosnippet>98</a>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">divisors(n: u32) -&gt; Vec&lt;u32&gt; {
+<a href=#99 id=99 data-nosnippet>99</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">res = </a><span class="macro">vec!</span>[];
+<a href=#100 id=100 data-nosnippet>100</a>        <span class="kw">for </span><a href="../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../tools/scanner.rs.html#391">..(n </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">f32).sqrt() </a><span class="kw">as </span><a href="../tools/scanner.rs.html#391">u32 + </a><span class="number">1 </span>{
+<a href=#101 id=101 data-nosnippet>101</a>            <span class="kw">if </span><a href="../tools/scanner.rs.html#391">n % i == </a><span class="number">0 </span><a href="../tools/scanner.rs.html#391">{
 <a href=#102 id=102 data-nosnippet>102</a>                res.push(i);
-<a href=#103 id=103 data-nosnippet>103</a>                <span class="kw">if </span>i * i != n {
+<a href=#103 id=103 data-nosnippet>103</a>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">i * i != n {
 <a href=#104 id=104 data-nosnippet>104</a>                    res.push(n / i);
 <a href=#105 id=105 data-nosnippet>105</a>                }
 <a href=#106 id=106 data-nosnippet>106</a>            }
@@ -163,19 +163,19 @@
 <a href=#109 id=109 data-nosnippet>109</a>        res
 <a href=#110 id=110 data-nosnippet>110</a>    }
 <a href=#111 id=111 data-nosnippet>111</a>
-<a href=#112 id=112 data-nosnippet>112</a>    <span class="attr">#[test]
-<a href=#113 id=113 data-nosnippet>113</a>    </span><span class="kw">fn </span>test_prime_table() {
-<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">const </span>N: u32 = <span class="number">100_000</span>;
-<a href=#115 id=115 data-nosnippet>115</a>        <span class="kw">let </span>primes = PrimeTable::new(N);
-<a href=#116 id=116 data-nosnippet>116</a>        <span class="macro">assert!</span>(!primes.is_prime(N));
-<a href=#117 id=117 data-nosnippet>117</a>        <span class="macro">assert!</span>(primes.is_prime(<span class="number">99991</span>));
+<a href=#112 id=112 data-nosnippet>112</a>    </a><span class="attr">#[test]
+<a href=#113 id=113 data-nosnippet>113</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_prime_table() {
+<a href=#114 id=114 data-nosnippet>114</a>        </a><span class="kw">const </span><a href="../tools/scanner.rs.html#391">N: u32 = </a><span class="number">100_000</span>;
+<a href=#115 id=115 data-nosnippet>115</a>        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">primes = PrimeTable::new(N);
+<a href=#116 id=116 data-nosnippet>116</a>        </a><span class="macro">assert!</span><a href="../tools/scanner.rs.html#391">(!primes.is_prime(N));
+<a href=#117 id=117 data-nosnippet>117</a>        </a><span class="macro">assert!</span><a href="../tools/scanner.rs.html#391">(primes.is_prime(</a><span class="number">99991</span>));
 <a href=#118 id=118 data-nosnippet>118</a>
-<a href=#119 id=119 data-nosnippet>119</a>        <span class="kw">let </span>factors = primes.prime_factors(<span class="number">99991</span>);
-<a href=#120 id=120 data-nosnippet>120</a>        <span class="macro">assert_eq!</span>(factors, <span class="macro">vec!</span>[(<span class="number">99991</span>, <span class="number">1</span>)]);
-<a href=#121 id=121 data-nosnippet>121</a>        <span class="kw">let </span>factors = primes.prime_factors(<span class="number">2016</span>);
-<a href=#122 id=122 data-nosnippet>122</a>        <span class="macro">assert_eq!</span>(factors, <span class="macro">vec!</span>[(<span class="number">2</span>, <span class="number">5</span>), (<span class="number">3</span>, <span class="number">2</span>), (<span class="number">7</span>, <span class="number">1</span>)]);
-<a href=#123 id=123 data-nosnippet>123</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=N {
-<a href=#124 id=124 data-nosnippet>124</a>            <span class="macro">assert_eq!</span>(
+<a href=#119 id=119 data-nosnippet>119</a>        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">factors = primes.prime_factors(</a><span class="number">99991</span>);
+<a href=#120 id=120 data-nosnippet>120</a>        <span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(factors, </a><span class="macro">vec!</span>[(<span class="number">99991</span>, <span class="number">1</span>)]);
+<a href=#121 id=121 data-nosnippet>121</a>        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">factors = primes.prime_factors(</a><span class="number">2016</span>);
+<a href=#122 id=122 data-nosnippet>122</a>        <span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(factors, </a><span class="macro">vec!</span>[(<span class="number">2</span>, <span class="number">5</span>), (<span class="number">3</span>, <span class="number">2</span>), (<span class="number">7</span>, <span class="number">1</span>)]);
+<a href=#123 id=123 data-nosnippet>123</a>        <span class="kw">for </span><a href="../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../tools/scanner.rs.html#391">..=N {
+<a href=#124 id=124 data-nosnippet>124</a>            </a><span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(
 <a href=#125 id=125 data-nosnippet>125</a>                i,
 <a href=#126 id=126 data-nosnippet>126</a>                primes
 <a href=#127 id=127 data-nosnippet>127</a>                    .prime_factors(i)
@@ -183,23 +183,23 @@
 <a href=#129 id=129 data-nosnippet>129</a>                    .map(|(p, c)| p.pow(c))
 <a href=#130 id=130 data-nosnippet>130</a>                    .product::&lt;u32&gt;()
 <a href=#131 id=131 data-nosnippet>131</a>            );
-<a href=#132 id=132 data-nosnippet>132</a>            <span class="macro">assert_eq!</span>(
+<a href=#132 id=132 data-nosnippet>132</a>            </a><span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(
 <a href=#133 id=133 data-nosnippet>133</a>                primes
 <a href=#134 id=134 data-nosnippet>134</a>                    .prime_factors(i)
 <a href=#135 id=135 data-nosnippet>135</a>                    .into_iter()
-<a href=#136 id=136 data-nosnippet>136</a>                    .map(|(<span class="kw">_</span>, c)| c + <span class="number">1</span>)
+<a href=#136 id=136 data-nosnippet>136</a>                    .map(|(</a><span class="kw">_</span><a href="../tools/scanner.rs.html#391">, c)| c + </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">)
 <a href=#137 id=137 data-nosnippet>137</a>                    .product::&lt;u32&gt;(),
 <a href=#138 id=138 data-nosnippet>138</a>                primes.count_divisors(i)
 <a href=#139 id=139 data-nosnippet>139</a>            );
 <a href=#140 id=140 data-nosnippet>140</a>        }
 <a href=#141 id=141 data-nosnippet>141</a>    }
 <a href=#142 id=142 data-nosnippet>142</a>
-<a href=#143 id=143 data-nosnippet>143</a>    <span class="attr">#[test]
-<a href=#144 id=144 data-nosnippet>144</a>    </span><span class="kw">fn </span>test_divisors() {
-<a href=#145 id=145 data-nosnippet>145</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#146 id=146 data-nosnippet>146</a>        <span class="kw">let </span>pt = PrimeTable::new(<span class="number">200001</span>);
-<a href=#147 id=147 data-nosnippet>147</a>        <span class="kw">for </span>n <span class="kw">in </span>(<span class="number">1</span>..<span class="number">1000</span>).chain(rng.random_iter(<span class="number">1</span>..=<span class="number">200000</span>).take(<span class="number">100</span>)) {
-<a href=#148 id=148 data-nosnippet>148</a>            <span class="macro">assert_eq!</span>(pt.divisors(n), divisors(n));
+<a href=#143 id=143 data-nosnippet>143</a>    </a><span class="attr">#[test]
+<a href=#144 id=144 data-nosnippet>144</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_divisors() {
+<a href=#145 id=145 data-nosnippet>145</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">rng = Xorshift::default();
+<a href=#146 id=146 data-nosnippet>146</a>        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">pt = PrimeTable::new(</a><span class="number">200001</span>);
+<a href=#147 id=147 data-nosnippet>147</a>        <span class="kw">for </span><a href="../tools/scanner.rs.html#391">n </a><span class="kw">in </span>(<span class="number">1</span>..<span class="number">1000</span><a href="../tools/scanner.rs.html#391">).chain(rng.random_iter(</a><span class="number">1</span>..=<span class="number">200000</span><a href="../tools/scanner.rs.html#391">).take(</a><span class="number">100</span>)) {
+<a href=#148 id=148 data-nosnippet>148</a>            <span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(pt.divisors(n), divisors(n));
 <a href=#149 id=149 data-nosnippet>149</a>        }
 <a href=#150 id=150 data-nosnippet>150</a>    }
-<a href=#151 id=151 data-nosnippet>151</a>}</code></pre></div></section></main></body></html>
+<a href=#151 id=151 data-nosnippet>151</a>}</a></code></pre></div></section></main></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/allocator.rs`."><title>allocator.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0-nightly (975e6c8fe 2025-09-23)" data-channel="nightly" data-search-js="search-e256b49e.js" data-stringdex-js="stringdex-061df703.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/allocator.rs`."><title>allocator.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0-nightly (54a8a1db6 2025-09-26)" data-channel="nightly" data-search-js="search-e256b49e.js" data-stringdex-js="stringdex-061df703.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -52,161 +52,161 @@
   });
 </script>
 
-</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">competitive/data_structure/</div>allocator.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::{
+</head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">competitive/data_structure/</div>allocator.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span><a href="../tools/scanner.rs.html#391">std::{
 <a href=#2 id=2 data-nosnippet>2</a>    <a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">marker::PhantomData</a>,
 <a href=#3 id=3 data-nosnippet>3</a>    mem::{<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.size_of.html">size_of</a>, <a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">take</a>},
-<a href=#4 id=4 data-nosnippet>4</a>    ptr::{<a class="self" href="https://doc.rust-lang.org/nightly/core/ptr/index.html">self</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.read.html">read</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.write.html">write</a>},
+<a href=#4 id=4 data-nosnippet>4</a>    ptr::{</a><a class="self" href="https://doc.rust-lang.org/nightly/core/ptr/index.html">self</a><a href="../tools/scanner.rs.html#391">, <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.read.html">read</a>, <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.write.html">write</a>},
 <a href=#5 id=5 data-nosnippet>5</a>};
 <a href=#6 id=6 data-nosnippet>6</a>
-<a href=#7 id=7 data-nosnippet>7</a><span class="kw">pub trait </span><a href="../../../competitive/data_structure/trait.Allocator.html">Allocator</a>&lt;T&gt; {
-<a href=#8 id=8 data-nosnippet>8</a>    <span class="kw">fn </span>allocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;;
-<a href=#9 id=9 data-nosnippet>9</a>    <span class="kw">fn </span>deallocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T;
+<a href=#7 id=7 data-nosnippet>7</a></a><span class="kw">pub trait </span><a href="../tools/scanner.rs.html#391"><a href="../../../competitive/data_structure/trait.Allocator.html">Allocator</a>&lt;T&gt; {
+<a href=#8 id=8 data-nosnippet>8</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">allocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;;
+<a href=#9 id=9 data-nosnippet>9</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">deallocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T;
 <a href=#10 id=10 data-nosnippet>10</a>}
 <a href=#11 id=11 data-nosnippet>11</a>
-<a href=#12 id=12 data-nosnippet>12</a><span class="attr">#[derive(Debug)]
-<a href=#13 id=13 data-nosnippet>13</a></span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.MemoryPool.html">MemoryPool</a>&lt;T&gt; {
+<a href=#12 id=12 data-nosnippet>12</a></a><span class="attr">#[derive(<a href="#13-17">Debug</a>)]
+<a href=#13 id=13 data-nosnippet>13</a></span><span class="kw">pub struct </span><a href="../tools/scanner.rs.html#391"><a href="../../../competitive/data_structure/struct.MemoryPool.html">MemoryPool</a>&lt;T&gt; {
 <a href=#14 id=14 data-nosnippet>14</a>    pool: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;,
 <a href=#15 id=15 data-nosnippet>15</a>    chunks: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
 <a href=#16 id=16 data-nosnippet>16</a>    unused: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;&gt;,
 <a href=#17 id=17 data-nosnippet>17</a>}
 <a href=#18 id=18 data-nosnippet>18</a>
-<a href=#19 id=19 data-nosnippet>19</a><span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> <span class="kw">for </span><a href="#13-17">MemoryPool</a>&lt;T&gt; {
-<a href=#20 id=20 data-nosnippet>20</a>    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-<a href=#21 id=21 data-nosnippet>21</a>        <a href="#31-38"><span class="self">Self</span>::with_capacity</a>(<a href="#25">CAP</a> / <span class="number">1usize</span>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.size_of.html">size_of</a>::&lt;T&gt;()))
+<a href=#19 id=19 data-nosnippet>19</a></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391"><a href="#13-17">MemoryPool</a>&lt;T&gt; {
+<a href=#20 id=20 data-nosnippet>20</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">default() -&gt; </a><a class="self" href="../tools/scanner.rs.html#391">Self </a><a href="../tools/scanner.rs.html#391">{
+<a href=#21 id=21 data-nosnippet>21</a>        <span class="self">Self</span>::<a href="#31-38">with_capacity</a>(<a href="#25">CAP</a> / </a><span class="number">1usize</span><a href="../tools/scanner.rs.html#391">.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.size_of.html">size_of</a>::&lt;T&gt;()))
 <a href=#22 id=22 data-nosnippet>22</a>    }
 <a href=#23 id=23 data-nosnippet>23</a>}
 <a href=#24 id=24 data-nosnippet>24</a>
-<a href=#25 id=25 data-nosnippet>25</a><span class="kw">const </span>CAP: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = <span class="number">1024</span>;
+<a href=#25 id=25 data-nosnippet>25</a></a><span class="kw">const </span><a href="../tools/scanner.rs.html#391">CAP: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> = </a><span class="number">1024</span>;
 <a href=#26 id=26 data-nosnippet>26</a>
-<a href=#27 id=27 data-nosnippet>27</a><span class="kw">impl</span>&lt;T&gt; <a href="#13-17">MemoryPool</a>&lt;T&gt; {
-<a href=#28 id=28 data-nosnippet>28</a>    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-<a href=#29 id=29 data-nosnippet>29</a>        <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Default::default</a>()
+<a href=#27 id=27 data-nosnippet>27</a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="#13-17">MemoryPool</a>&lt;T&gt; {
+<a href=#28 id=28 data-nosnippet>28</a>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">new() -&gt; </a><a class="self" href="../tools/scanner.rs.html#391">Self </a><a href="../tools/scanner.rs.html#391">{
+<a href=#29 id=29 data-nosnippet>29</a>        Default::<a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">default</a>()
 <a href=#30 id=30 data-nosnippet>30</a>    }
-<a href=#31 id=31 data-nosnippet>31</a>    <span class="kw">pub fn </span>with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <span class="self">Self </span>{
-<a href=#32 id=32 data-nosnippet>32</a>        <span class="kw">let </span>pool = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#31">capacity</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(<span class="number">1</span>));
-<a href=#33 id=33 data-nosnippet>33</a>        <span class="self">Self </span>{
+<a href=#31 id=31 data-nosnippet>31</a>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">with_capacity(capacity: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../tools/scanner.rs.html#391">Self </a>{
+<a href=#32 id=32 data-nosnippet>32</a>        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">pool = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#31">capacity</a>.<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(</a><span class="number">1</span>));
+<a href=#33 id=33 data-nosnippet>33</a>        <a class="self" href="../tools/scanner.rs.html#391">Self </a><a href="../tools/scanner.rs.html#391">{
 <a href=#34 id=34 data-nosnippet>34</a>            <a href="#32">pool</a>,
-<a href=#35 id=35 data-nosnippet>35</a>            chunks: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">Vec::new</a>(),
-<a href=#36 id=36 data-nosnippet>36</a>            unused: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">Vec::new</a>(),
+<a href=#35 id=35 data-nosnippet>35</a>            chunks: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">new</a>(),
+<a href=#36 id=36 data-nosnippet>36</a>            unused: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.new">new</a>(),
 <a href=#37 id=37 data-nosnippet>37</a>        }
 <a href=#38 id=38 data-nosnippet>38</a>    }
 <a href=#39 id=39 data-nosnippet>39</a>}
 <a href=#40 id=40 data-nosnippet>40</a>
-<a href=#41 id=41 data-nosnippet>41</a><span class="kw">impl</span>&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html">Drop</a> <span class="kw">for </span><a href="#13-17">MemoryPool</a>&lt;T&gt; {
-<a href=#42 id=42 data-nosnippet>42</a>    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-<a href=#43 id=43 data-nosnippet>43</a>        <a class="self" href="#42">self</a>.chunks.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">take</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#42">self</a>.pool));
-<a href=#44 id=44 data-nosnippet>44</a>        <span class="kw">let </span><span class="kw-2">mut </span>removed = <a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[]; <a class="self" href="#42">self</a>.chunks.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>()];
-<a href=#45 id=45 data-nosnippet>45</a>        <span class="kw">for </span>p <span class="kw">in </span><span class="self">self</span>.unused.iter() {
-<a href=#46 id=46 data-nosnippet>46</a>            <span class="kw">let </span>p = p.as_ptr();
-<a href=#47 id=47 data-nosnippet>47</a>            <span class="kw">for </span>(chunk, removed) <span class="kw">in </span><span class="self">self</span>.chunks.iter().zip(<span class="kw-2">&amp;mut </span>removed).rev() {
-<a href=#48 id=48 data-nosnippet>48</a>                <span class="kw">let </span>ptr = chunk.as_ptr() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>;
-<a href=#49 id=49 data-nosnippet>49</a>                <span class="kw">let </span>len = chunk.len();
-<a href=#50 id=50 data-nosnippet>50</a>                <span class="kw">if </span>ptr &lt;= p &amp;&amp; p &lt; ptr.wrapping_add(len) {
+<a href=#41 id=41 data-nosnippet>41</a></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html">Drop</a> </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391"><a href="#13-17">MemoryPool</a>&lt;T&gt; {
+<a href=#42 id=42 data-nosnippet>42</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">drop(</a><span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+<a href=#43 id=43 data-nosnippet>43</a>        <a class="self" href="#42">self</a><a href="../tools/scanner.rs.html#391">.chunks.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.take.html">take</a>(</a><span class="kw-2">&amp;mut </span><a class="self" href="#42">self</a><a href="../tools/scanner.rs.html#391">.pool));
+<a href=#44 id=44 data-nosnippet>44</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">removed = </a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[<a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a>[]; <a class="self" href="#42">self</a><a href="../tools/scanner.rs.html#391">.chunks.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>()];
+<a href=#45 id=45 data-nosnippet>45</a>        </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">p </a><span class="kw">in </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">.unused.iter() {
+<a href=#46 id=46 data-nosnippet>46</a>            </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = p.as_ptr();
+<a href=#47 id=47 data-nosnippet>47</a>            </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">(chunk, removed) </a><span class="kw">in </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">.chunks.iter().zip(</a><span class="kw-2">&amp;mut </span><a href="../tools/scanner.rs.html#391">removed).rev() {
+<a href=#48 id=48 data-nosnippet>48</a>                </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">ptr = chunk.as_ptr() </a><span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>;
+<a href=#49 id=49 data-nosnippet>49</a>                <span class="kw">let </span><a href="../tools/scanner.rs.html#391">len = chunk.len();
+<a href=#50 id=50 data-nosnippet>50</a>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">ptr &lt;= p &amp;&amp; p &lt; ptr.wrapping_add(len) {
 <a href=#51 id=51 data-nosnippet>51</a>                    removed.push(p);
 <a href=#52 id=52 data-nosnippet>52</a>                }
 <a href=#53 id=53 data-nosnippet>53</a>            }
 <a href=#54 id=54 data-nosnippet>54</a>        }
-<a href=#55 id=55 data-nosnippet>55</a>        <span class="kw">for </span>(chunk, removed) <span class="kw">in </span><span class="self">self</span>.chunks.iter_mut().zip(<span class="kw-2">&amp;mut </span>removed) {
+<a href=#55 id=55 data-nosnippet>55</a>        </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">(chunk, removed) </a><span class="kw">in </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">.chunks.iter_mut().zip(</a><span class="kw-2">&amp;mut </span><a href="../tools/scanner.rs.html#391">removed) {
 <a href=#56 id=56 data-nosnippet>56</a>            removed.sort_unstable();
-<a href=#57 id=57 data-nosnippet>57</a>            <span class="kw">for </span><span class="kw-2">&amp;</span>p <span class="kw">in </span>removed.iter() {
-<a href=#58 id=58 data-nosnippet>58</a>                <span class="kw">unsafe </span>{
-<a href=#59 id=59 data-nosnippet>59</a>                    <span class="kw">let </span>len = chunk.len();
-<a href=#60 id=60 data-nosnippet>60</a>                    <span class="kw">let </span>base_ptr = chunk.as_mut_ptr();
-<a href=#61 id=61 data-nosnippet>61</a>                    ptr::copy(base_ptr.add(len - <span class="number">1</span>), p, <span class="number">1</span>);
-<a href=#62 id=62 data-nosnippet>62</a>                    chunk.set_len(len - <span class="number">1</span>);
+<a href=#57 id=57 data-nosnippet>57</a>            </a><span class="kw">for </span><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">p </a><span class="kw">in </span><a href="../tools/scanner.rs.html#391">removed.iter() {
+<a href=#58 id=58 data-nosnippet>58</a>                </a><span class="kw">unsafe </span>{
+<a href=#59 id=59 data-nosnippet>59</a>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">len = chunk.len();
+<a href=#60 id=60 data-nosnippet>60</a>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">base_ptr = chunk.as_mut_ptr();
+<a href=#61 id=61 data-nosnippet>61</a>                    ptr::copy(base_ptr.add(len - </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">), p, </a><span class="number">1</span><a href="../tools/scanner.rs.html#391">);
+<a href=#62 id=62 data-nosnippet>62</a>                    chunk.set_len(len - </a><span class="number">1</span>);
 <a href=#63 id=63 data-nosnippet>63</a>                }
 <a href=#64 id=64 data-nosnippet>64</a>            }
 <a href=#65 id=65 data-nosnippet>65</a>        }
 <a href=#66 id=66 data-nosnippet>66</a>    }
 <a href=#67 id=67 data-nosnippet>67</a>}
 <a href=#68 id=68 data-nosnippet>68</a>
-<a href=#69 id=69 data-nosnippet>69</a><span class="kw">impl</span>&lt;T&gt; <a href="#7-10">Allocator</a>&lt;T&gt; <span class="kw">for </span><a href="#13-17">MemoryPool</a>&lt;T&gt; {
-<a href=#70 id=70 data-nosnippet>70</a>    <span class="kw">fn </span>allocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt; {
-<a href=#71 id=71 data-nosnippet>71</a>        <span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<span class="kw-2">mut </span>ptr) = <a class="self" href="#70">self</a>.unused.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>() {
-<a href=#72 id=72 data-nosnippet>72</a>            <span class="kw">unsafe </span>{ <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.write.html">write</a>(<a href="#71">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_mut">as_mut</a>(), <a href="#70">value</a>) };
+<a href=#69 id=69 data-nosnippet>69</a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="#7-10">Allocator</a>&lt;T&gt; </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391"><a href="#13-17">MemoryPool</a>&lt;T&gt; {
+<a href=#70 id=70 data-nosnippet>70</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">allocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt; {
+<a href=#71 id=71 data-nosnippet>71</a>        </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">ptr) = </a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.unused.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>() {
+<a href=#72 id=72 data-nosnippet>72</a>            </a><span class="kw">unsafe </span><a href="../tools/scanner.rs.html#391">{ <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.write.html">write</a>(<a href="#71">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_mut">as_mut</a>(), <a href="#70">value</a>) };
 <a href=#73 id=73 data-nosnippet>73</a>            <a href="#71">ptr</a>
-<a href=#74 id=74 data-nosnippet>74</a>        } <span class="kw">else </span>{
-<a href=#75 id=75 data-nosnippet>75</a>            <span class="kw">let </span>len = <a class="self" href="#70">self</a>.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
-<a href=#76 id=76 data-nosnippet>76</a>            <span class="kw">if </span><a href="#75">len</a> &gt;= <a class="self" href="#70">self</a>.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.capacity">capacity</a>() {
-<a href=#77 id=77 data-nosnippet>77</a>                <span class="kw">let </span>new_capacity = <a class="self" href="#70">self</a>.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.capacity">capacity</a>() * <span class="number">2</span>;
-<a href=#78 id=78 data-nosnippet>78</a>                <span class="kw">let </span>new_pool = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">Vec::with_capacity</a>(<a href="#77">new_capacity</a>);
-<a href=#79 id=79 data-nosnippet>79</a>                <a class="self" href="#70">self</a>.chunks.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(<span class="kw-2">&amp;mut </span><a class="self" href="#70">self</a>.pool, <a href="#78">new_pool</a>));
+<a href=#74 id=74 data-nosnippet>74</a>        } </a><span class="kw">else </span>{
+<a href=#75 id=75 data-nosnippet>75</a>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">len = </a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
+<a href=#76 id=76 data-nosnippet>76</a>            </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391"><a href="#75">len</a> &gt;= </a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.capacity">capacity</a>() {
+<a href=#77 id=77 data-nosnippet>77</a>                </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">new_capacity = </a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.capacity">capacity</a>() * </a><span class="number">2</span>;
+<a href=#78 id=78 data-nosnippet>78</a>                <span class="kw">let </span><a href="../tools/scanner.rs.html#391">new_pool = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#77">new_capacity</a>);
+<a href=#79 id=79 data-nosnippet>79</a>                </a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.chunks.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="https://doc.rust-lang.org/nightly/core/mem/fn.replace.html">replace</a>(</a><span class="kw-2">&amp;mut </span><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.pool, <a href="#78">new_pool</a>));
 <a href=#80 id=80 data-nosnippet>80</a>            }
-<a href=#81 id=81 data-nosnippet>81</a>            <span class="kw">let </span>len = <a class="self" href="#70">self</a>.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
-<a href=#82 id=82 data-nosnippet>82</a>            <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(len &lt; <span class="self">self</span>.pool.capacity());
-<a href=#83 id=83 data-nosnippet>83</a>            <a class="self" href="#70">self</a>.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#70">value</a>);
-<a href=#84 id=84 data-nosnippet>84</a>            <span class="kw">unsafe </span>{ <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.new_unchecked">NonNull::new_unchecked</a>(<a class="self" href="#70">self</a>.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.as_mut_ptr">as_mut_ptr</a>().<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#81">len</a>)) }
+<a href=#81 id=81 data-nosnippet>81</a>            </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">len = </a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.len">len</a>();
+<a href=#82 id=82 data-nosnippet>82</a>            </a><a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a><a href="../tools/scanner.rs.html#391">(len &lt; </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.pool.capacity());
+<a href=#83 id=83 data-nosnippet>83</a>            </a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#70">value</a>);
+<a href=#84 id=84 data-nosnippet>84</a>            </a><span class="kw">unsafe </span><a href="../tools/scanner.rs.html#391">{ <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>::<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.new_unchecked">new_unchecked</a>(</a><a class="self" href="#70">self</a><a href="../tools/scanner.rs.html#391">.pool.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.as_mut_ptr">as_mut_ptr</a>().<a href="https://doc.rust-lang.org/nightly/core/ptr/foreigntype.mut_ptr.html#method.add">add</a>(<a href="#81">len</a>)) }
 <a href=#85 id=85 data-nosnippet>85</a>        }
 <a href=#86 id=86 data-nosnippet>86</a>    }
 <a href=#87 id=87 data-nosnippet>87</a>
-<a href=#88 id=88 data-nosnippet>88</a>    <span class="kw">fn </span>deallocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T {
-<a href=#89 id=89 data-nosnippet>89</a>        <a class="self" href="#88">self</a>.unused.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#88">ptr</a>);
-<a href=#90 id=90 data-nosnippet>90</a>        <span class="kw">unsafe </span>{ <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.read.html">read</a>(<a href="#88">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ptr">as_ptr</a>()) }
+<a href=#88 id=88 data-nosnippet>88</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">deallocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T {
+<a href=#89 id=89 data-nosnippet>89</a>        </a><a class="self" href="#88">self</a><a href="../tools/scanner.rs.html#391">.unused.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#88">ptr</a>);
+<a href=#90 id=90 data-nosnippet>90</a>        </a><span class="kw">unsafe </span><a href="../tools/scanner.rs.html#391">{ <a href="https://doc.rust-lang.org/nightly/core/ptr/fn.read.html">read</a>(<a href="#88">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ptr">as_ptr</a>()) }
 <a href=#91 id=91 data-nosnippet>91</a>    }
 <a href=#92 id=92 data-nosnippet>92</a>}
 <a href=#93 id=93 data-nosnippet>93</a>
-<a href=#94 id=94 data-nosnippet>94</a><span class="attr">#[derive(Debug, Default)]
-<a href=#95 id=95 data-nosnippet>95</a></span><span class="kw">pub struct </span><a href="../../../competitive/data_structure/struct.BoxAllocator.html">BoxAllocator</a>&lt;T&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;<span class="kw">fn</span>() -&gt; T&gt;);
-<a href=#96 id=96 data-nosnippet>96</a><span class="kw">impl</span>&lt;T&gt; <a href="#7-10">Allocator</a>&lt;T&gt; <span class="kw">for </span><a href="#95">BoxAllocator</a>&lt;T&gt; {
-<a href=#97 id=97 data-nosnippet>97</a>    <span class="kw">fn </span>allocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt; {
-<a href=#98 id=98 data-nosnippet>98</a>        <span class="kw">unsafe </span>{ <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.new_unchecked">NonNull::new_unchecked</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.leak">Box::leak</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.new">Box::new</a>(<a href="#97">value</a>))) }
+<a href=#94 id=94 data-nosnippet>94</a></a><span class="attr">#[derive(<a href="#95">Debug</a>, <a href="#95">Default</a>)]
+<a href=#95 id=95 data-nosnippet>95</a></span><span class="kw">pub struct </span><a href="../tools/scanner.rs.html#391"><a href="../../../competitive/data_structure/struct.BoxAllocator.html">BoxAllocator</a>&lt;T&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;</a><span class="kw">fn</span><a href="../tools/scanner.rs.html#391">() -&gt; T&gt;);
+<a href=#96 id=96 data-nosnippet>96</a></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="#7-10">Allocator</a>&lt;T&gt; </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391"><a href="#95">BoxAllocator</a>&lt;T&gt; {
+<a href=#97 id=97 data-nosnippet>97</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">allocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt; {
+<a href=#98 id=98 data-nosnippet>98</a>        </a><span class="kw">unsafe </span><a href="../tools/scanner.rs.html#391">{ <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>::<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.new_unchecked">new_unchecked</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.leak">leak</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.new">new</a>(<a href="#97">value</a>))) }
 <a href=#99 id=99 data-nosnippet>99</a>    }
-<a href=#100 id=100 data-nosnippet>100</a>    <span class="kw">fn </span>deallocate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T {
-<a href=#101 id=101 data-nosnippet>101</a>        <span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.from_raw">Box::from_raw</a>(<a href="#100">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ptr">as_ptr</a>()) }
+<a href=#100 id=100 data-nosnippet>100</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">deallocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T {
+<a href=#101 id=101 data-nosnippet>101</a>        </a><span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.from_raw">from_raw</a>(<a href="#100">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ptr">as_ptr</a>()) }
 <a href=#102 id=102 data-nosnippet>102</a>    }
 <a href=#103 id=103 data-nosnippet>103</a>}
 <a href=#104 id=104 data-nosnippet>104</a>
-<a href=#105 id=105 data-nosnippet>105</a><span class="attr">#[cfg(test)]
-<a href=#106 id=106 data-nosnippet>106</a></span><span class="kw">mod </span>tests {
-<a href=#107 id=107 data-nosnippet>107</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#108 id=108 data-nosnippet>108</a>    <span class="kw">use </span><span class="kw">crate</span>::tools::Xorshift;
-<a href=#109 id=109 data-nosnippet>109</a>    <span class="kw">use </span>std::cell::RefCell;
+<a href=#105 id=105 data-nosnippet>105</a></a><span class="attr">#[cfg(test)]
+<a href=#106 id=106 data-nosnippet>106</a></span><span class="kw">mod </span><a href="../tools/scanner.rs.html#391">tests {
+<a href=#107 id=107 data-nosnippet>107</a>    </a><span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#108 id=108 data-nosnippet>108</a>    <span class="kw">use </span><a href="../tools/scanner.rs.html#391"><span class="kw">crate</span>::tools::Xorshift;
+<a href=#109 id=109 data-nosnippet>109</a>    </a><span class="kw">use </span><a href="../tools/scanner.rs.html#391">std::cell::RefCell;
 <a href=#110 id=110 data-nosnippet>110</a>
-<a href=#111 id=111 data-nosnippet>111</a>    <span class="attr">#[test]
-<a href=#112 id=112 data-nosnippet>112</a>    </span><span class="kw">fn </span>test_alloc() {
-<a href=#113 id=113 data-nosnippet>113</a>        <span class="kw">let </span><span class="kw-2">mut </span>pool = MemoryPool::&lt;usize&gt;::with_capacity(<span class="number">2</span>);
-<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="macro">vec!</span>[];
-<a href=#115 id=115 data-nosnippet>115</a>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#116 id=116 data-nosnippet>116</a>            <span class="kw">let </span>p = pool.allocate(i);
+<a href=#111 id=111 data-nosnippet>111</a>    </a><span class="attr">#[test]
+<a href=#112 id=112 data-nosnippet>112</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_alloc() {
+<a href=#113 id=113 data-nosnippet>113</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">pool = MemoryPool::&lt;usize&gt;::with_capacity(</a><span class="number">2</span>);
+<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">a = </a><span class="macro">vec!</span>[];
+<a href=#115 id=115 data-nosnippet>115</a>        <span class="kw">for </span><a href="../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#116 id=116 data-nosnippet>116</a>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = pool.allocate(i);
 <a href=#117 id=117 data-nosnippet>117</a>            a.push(p);
-<a href=#118 id=118 data-nosnippet>118</a>            <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>p) <span class="kw">in </span>a.iter().enumerate() {
-<a href=#119 id=119 data-nosnippet>119</a>                <span class="macro">assert_eq!</span>(<span class="kw">unsafe </span>{ <span class="kw-2">*</span>p.as_ref() }, i);
+<a href=#118 id=118 data-nosnippet>118</a>            </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">(i, </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">p) </a><span class="kw">in </span><a href="../tools/scanner.rs.html#391">a.iter().enumerate() {
+<a href=#119 id=119 data-nosnippet>119</a>                </a><span class="macro">assert_eq!</span>(<span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">p.as_ref() }, i);
 <a href=#120 id=120 data-nosnippet>120</a>            }
 <a href=#121 id=121 data-nosnippet>121</a>        }
 <a href=#122 id=122 data-nosnippet>122</a>    }
 <a href=#123 id=123 data-nosnippet>123</a>
-<a href=#124 id=124 data-nosnippet>124</a>    <span class="attr">#[test]
-<a href=#125 id=125 data-nosnippet>125</a>    </span><span class="kw">fn </span>test_drop() {
-<a href=#126 id=126 data-nosnippet>126</a>        <span class="attr">#[derive(Debug)]
-<a href=#127 id=127 data-nosnippet>127</a>        </span><span class="kw">struct </span>CheckDrop&lt;T&gt;(T);
-<a href=#128 id=128 data-nosnippet>128</a>        <span class="macro">thread_local!</span> {
-<a href=#129 id=129 data-nosnippet>129</a>            <span class="kw">static </span>CNT: RefCell&lt;usize&gt; = <span class="kw">const </span>{ RefCell::new(<span class="number">0</span>) };
+<a href=#124 id=124 data-nosnippet>124</a>    </a><span class="attr">#[test]
+<a href=#125 id=125 data-nosnippet>125</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_drop() {
+<a href=#126 id=126 data-nosnippet>126</a>        </a><span class="attr">#[derive(Debug)]
+<a href=#127 id=127 data-nosnippet>127</a>        </span><span class="kw">struct </span><a href="../tools/scanner.rs.html#391">CheckDrop&lt;T&gt;(T);
+<a href=#128 id=128 data-nosnippet>128</a>        </a><span class="macro">thread_local!</span> {
+<a href=#129 id=129 data-nosnippet>129</a>            <span class="kw">static </span><a href="../tools/scanner.rs.html#391">CNT: RefCell&lt;usize&gt; = </a><span class="kw">const </span><a href="../tools/scanner.rs.html#391">{ RefCell::new(</a><span class="number">0</span>) };
 <a href=#130 id=130 data-nosnippet>130</a>        }
-<a href=#131 id=131 data-nosnippet>131</a>        <span class="kw">impl</span>&lt;T&gt; Drop <span class="kw">for </span>CheckDrop&lt;T&gt; {
-<a href=#132 id=132 data-nosnippet>132</a>            <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-<a href=#133 id=133 data-nosnippet>133</a>                CNT.with(|cnt| <span class="kw-2">*</span>cnt.borrow_mut() += <span class="number">1</span>);
+<a href=#131 id=131 data-nosnippet>131</a>        <span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; Drop </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">CheckDrop&lt;T&gt; {
+<a href=#132 id=132 data-nosnippet>132</a>            </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">drop(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">) {
+<a href=#133 id=133 data-nosnippet>133</a>                CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow_mut() += </a><span class="number">1</span>);
 <a href=#134 id=134 data-nosnippet>134</a>            }
 <a href=#135 id=135 data-nosnippet>135</a>        }
-<a href=#136 id=136 data-nosnippet>136</a>        <span class="kw">const </span>Q: usize = <span class="number">100</span>;
-<a href=#137 id=137 data-nosnippet>137</a>        <span class="kw">let </span><span class="kw-2">mut </span>cnt = <span class="number">0usize</span>;
-<a href=#138 id=138 data-nosnippet>138</a>        <span class="kw">let </span><span class="kw-2">mut </span>rng = Xorshift::default();
-<a href=#139 id=139 data-nosnippet>139</a>        <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">10 </span>{
-<a href=#140 id=140 data-nosnippet>140</a>            <span class="kw">let </span><span class="kw-2">mut </span>pool = MemoryPool::new();
-<a href=#141 id=141 data-nosnippet>141</a>            <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="macro">vec!</span>[];
-<a href=#142 id=142 data-nosnippet>142</a>            <span class="kw">for _ in </span><span class="number">0</span>..Q {
-<a href=#143 id=143 data-nosnippet>143</a>                <span class="kw">if </span>a.is_empty() || rng.gen_bool(<span class="number">0.8</span>) {
-<a href=#144 id=144 data-nosnippet>144</a>                    <span class="kw">let </span>k = rng.rand(!<span class="number">0</span>);
+<a href=#136 id=136 data-nosnippet>136</a>        <span class="kw">const </span><a href="../tools/scanner.rs.html#391">Q: usize = </a><span class="number">100</span>;
+<a href=#137 id=137 data-nosnippet>137</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">cnt = </a><span class="number">0usize</span>;
+<a href=#138 id=138 data-nosnippet>138</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">rng = Xorshift::default();
+<a href=#139 id=139 data-nosnippet>139</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">10 </span>{
+<a href=#140 id=140 data-nosnippet>140</a>            <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">pool = MemoryPool::new();
+<a href=#141 id=141 data-nosnippet>141</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">a = </a><span class="macro">vec!</span>[];
+<a href=#142 id=142 data-nosnippet>142</a>            <span class="kw">for _ in </span><span class="number">0</span><a href="../tools/scanner.rs.html#391">..Q {
+<a href=#143 id=143 data-nosnippet>143</a>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">a.is_empty() || rng.gen_bool(</a><span class="number">0.8</span>) {
+<a href=#144 id=144 data-nosnippet>144</a>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">k = rng.rand(!</a><span class="number">0</span><a href="../tools/scanner.rs.html#391">);
 <a href=#145 id=145 data-nosnippet>145</a>                    a.push(pool.allocate(CheckDrop(k)));
-<a href=#146 id=146 data-nosnippet>146</a>                } <span class="kw">else </span>{
-<a href=#147 id=147 data-nosnippet>147</a>                    <span class="kw">let </span>i = rng.rand(a.len() <span class="kw">as _</span>) <span class="kw">as </span>usize;
-<a href=#148 id=148 data-nosnippet>148</a>                    <span class="kw">let </span>p = a.swap_remove(i);
+<a href=#146 id=146 data-nosnippet>146</a>                } </a><span class="kw">else </span>{
+<a href=#147 id=147 data-nosnippet>147</a>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">i = rng.rand(a.len() </a><span class="kw">as _</span>) <span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize;
+<a href=#148 id=148 data-nosnippet>148</a>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = a.swap_remove(i);
 <a href=#149 id=149 data-nosnippet>149</a>                    pool.deallocate(p);
-<a href=#150 id=150 data-nosnippet>150</a>                    cnt += <span class="number">1</span>;
+<a href=#150 id=150 data-nosnippet>150</a>                    cnt += </a><span class="number">1</span>;
 <a href=#151 id=151 data-nosnippet>151</a>                }
-<a href=#152 id=152 data-nosnippet>152</a>                <span class="macro">assert_eq!</span>(cnt, CNT.with(|cnt| <span class="kw-2">*</span>cnt.borrow()));
+<a href=#152 id=152 data-nosnippet>152</a>                <span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(cnt, CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow()));
 <a href=#153 id=153 data-nosnippet>153</a>            }
 <a href=#154 id=154 data-nosnippet>154</a>            cnt += a.len();
 <a href=#155 id=155 data-nosnippet>155</a>        }
-<a href=#156 id=156 data-nosnippet>156</a>        <span class="macro">assert_eq!</span>(cnt, CNT.with(|cnt| <span class="kw-2">*</span>cnt.borrow()));
+<a href=#156 id=156 data-nosnippet>156</a>        </a><span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(cnt, CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow()));
 <a href=#157 id=157 data-nosnippet>157</a>    }
-<a href=#158 id=158 data-nosnippet>158</a>}</code></pre></div></section></main></body></html>
+<a href=#158 id=158 data-nosnippet>158</a>}</a></code></pre></div></section></main></body></html>
