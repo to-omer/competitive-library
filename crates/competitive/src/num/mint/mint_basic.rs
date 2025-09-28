@@ -125,7 +125,7 @@ macro_rules! define_basic_mint32 {
     };
 }
 
-thread_local!(static DYN_MODULUS_U32: UnsafeCell<BarrettReduction<u64>> = const { UnsafeCell::new(BarrettReduction::<u64>::new(1_000_000_007)) });
+thread_local!(static DYN_MODULUS_U32: UnsafeCell<BarrettReduction<u64>> = const { UnsafeCell::new(BarrettReduction::<u64>::new_with_im(1_000_000_007, !0 / 1_000_000_007)) });
 impl DynModuloU32 {
     pub fn set_mod(m: u32) {
         DYN_MODULUS_U32
@@ -141,7 +141,7 @@ impl DynMIntU32 {
     }
 }
 
-thread_local!(static DYN_MODULUS_U64: UnsafeCell<BarrettReduction<u128>> = const { UnsafeCell::new(BarrettReduction::<u128>::new(1_000_000_007)) });
+thread_local!(static DYN_MODULUS_U64: UnsafeCell<BarrettReduction<u128>> = const { UnsafeCell::new(BarrettReduction::<u128>::new_with_im(1_000_000_007, !0 / 1_000_000_007)) });
 impl DynModuloU64 {
     pub fn set_mod(m: u64) {
         DYN_MODULUS_U64

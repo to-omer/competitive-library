@@ -1,7 +1,7 @@
 use crate::tools::IterScan;
 
 #[codesnip::entry("BarrettReduction")]
-pub use self::barrett_reduction::BarrettReduction;
+pub use self::barrett_reduction::{BarrettReduction, Barrettable};
 #[codesnip::entry("bounded")]
 pub use self::bounded::Bounded;
 #[codesnip::entry("Complex")]
@@ -31,7 +31,7 @@ pub use self::urational::URational;
 #[codesnip::entry("zero_one")]
 pub use self::zero_one::{One, Zero};
 
-#[cfg_attr(nightly, codesnip::entry("BarrettReduction"))]
+#[cfg_attr(nightly, codesnip::entry("BarrettReduction", include("zero_one")))]
 mod barrett_reduction;
 #[cfg_attr(nightly, codesnip::entry)]
 mod bounded;
