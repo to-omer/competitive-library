@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["sharp_p_subset_sum"]};
+window.SIDEBAR_ITEMS = {"mod":["binomial_coefficient","sharp_p_subset_sum"]};
