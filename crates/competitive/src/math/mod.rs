@@ -78,8 +78,6 @@ pub use self::prime_table::PrimeTable;
 pub use self::primitive_root::{check_primitive_root, primitive_root};
 #[codesnip::entry("QuotientArray")]
 pub use self::quotient_array::QuotientArray;
-#[codesnip::entry("SmallModMemorizedFactorial")]
-pub use self::small_factorial::SmallModMemorizedFactorial;
 #[codesnip::entry("SubsetConvolve")]
 pub use self::subset_convolve::SubsetConvolve;
 
@@ -229,11 +227,6 @@ mod primitive_root;
     codesnip::entry("QuotientArray", include("algebra", "ring", "PrimeList"))
 )]
 mod quotient_array;
-#[cfg_attr(
-    nightly,
-    codesnip::entry("SmallModMemorizedFactorial", include("MIntBase", "prime_factors"))
-)]
-mod small_factorial;
 #[cfg_attr(
     nightly,
     codesnip::entry("SubsetConvolve", include("BitwiseorConvolve"))
