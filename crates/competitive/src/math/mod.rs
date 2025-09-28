@@ -10,6 +10,8 @@ use crate::num::{
 };
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift};
 
+#[codesnip::entry("ArbitraryModBinomial")]
+pub use self::arbitrary_mod_binomial::ArbitraryModBinomial;
 #[codesnip::entry("berlekamp_massey")]
 pub use self::berlekamp_massey::berlekamp_massey;
 #[codesnip::entry("bitwise_transform")]
@@ -81,6 +83,14 @@ pub use self::small_factorial::SmallModMemorizedFactorial;
 #[codesnip::entry("SubsetConvolve")]
 pub use self::subset_convolve::SubsetConvolve;
 
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "ArbitraryModBinomial",
+        include("BarrettReduction", "integer", "linear_congruence", "prime_factors")
+    )
+)]
+mod arbitrary_mod_binomial;
 #[cfg_attr(nightly, codesnip::entry("berlekamp_massey", include("zero_one")))]
 mod berlekamp_massey;
 #[cfg_attr(nightly, codesnip::entry("bitwise_transform"))]
