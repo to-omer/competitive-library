@@ -169,65 +169,72 @@ impl WaveletMatrix {
     }
 }
 
-#[test]
-fn test_wavelet_matrix() {
-    use crate::rand_value;
-    use crate::tools::{NotEmptySegment as Nes, Xorshift};
-    const N: usize = 1_000;
-    const Q: usize = 1_000;
-    const A: usize = 1 << 8;
-    let mut rng = Xorshift::new();
-    crate::rand!(rng, v: [..A; N]);
-    let wm = WaveletMatrix::new(v.clone(), 8);
-    for (i, v) in v.iter().cloned().enumerate() {
-        assert_eq!(wm.access(i), v);
-    }
-    for ((l, r), a) in rand_value!(rng, [(Nes(N), ..A); Q]) {
-        assert_eq!(
-            wm.rank(a, l..r),
-            v[l..r].iter().filter(|&&x| x == a).count()
-        );
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        rand_value,
+        tools::{NotEmptySegment as Nes, Xorshift},
+    };
 
-        if wm.rank(a, 0..N) > 0 {
-            let k = rng.random(..wm.rank(a, 0..N));
+    #[test]
+    fn test_wavelet_matrix() {
+        const N: usize = 1_000;
+        const Q: usize = 1_000;
+        const A: usize = 1 << 8;
+        let mut rng = Xorshift::new();
+        crate::rand!(rng, v: [..A; N]);
+        let wm = WaveletMatrix::new(v.clone(), 8);
+        for (i, v) in v.iter().cloned().enumerate() {
+            assert_eq!(wm.access(i), v);
+        }
+        for ((l, r), a) in rand_value!(rng, [(Nes(N), ..A); Q]) {
             assert_eq!(
-                wm.select(a, k).unwrap().min(N),
-                (0..N)
-                    .position(|i| wm.rank(a, 0..i + 1) == k + 1)
-                    .unwrap_or(N)
+                wm.rank(a, l..r),
+                v[l..r].iter().filter(|&&x| x == a).count()
+            );
+
+            if wm.rank(a, 0..N) > 0 {
+                let k = rng.random(..wm.rank(a, 0..N));
+                assert_eq!(
+                    wm.select(a, k).unwrap().min(N),
+                    (0..N)
+                        .position(|i| wm.rank(a, 0..i + 1) == k + 1)
+                        .unwrap_or(N)
+                );
+            }
+
+            assert_eq!(
+                (0..r - l).map(|k| wm.quantile(l..r, k)).collect::<Vec<_>>(),
+                {
+                    let mut v: Vec<_> = v[l..r].to_vec();
+                    v.sort_unstable();
+                    v
+                }
+            );
+
+            assert_eq!(
+                (0..N + l - r)
+                    .map(|k| wm.quantile_outer(l..r, k))
+                    .collect::<Vec<_>>(),
+                {
+                    let mut v: Vec<_> = v.to_vec();
+                    v.drain(l..r);
+                    v.sort_unstable();
+                    v
+                }
+            );
+
+            assert_eq!(
+                wm.rank_lessthan(a, l..r),
+                v[l..r].iter().filter(|&&x| x < a).count()
+            );
+
+            let (p, q) = rng.random(Nes(A - 1));
+            assert_eq!(
+                wm.rank_range(p..q, l..r),
+                v[l..r].iter().filter(|&&x| p <= x && x < q).count()
             );
         }
-
-        assert_eq!(
-            (0..r - l).map(|k| wm.quantile(l..r, k)).collect::<Vec<_>>(),
-            {
-                let mut v: Vec<_> = v[l..r].to_vec();
-                v.sort_unstable();
-                v
-            }
-        );
-
-        assert_eq!(
-            (0..N + l - r)
-                .map(|k| wm.quantile_outer(l..r, k))
-                .collect::<Vec<_>>(),
-            {
-                let mut v: Vec<_> = v.to_vec();
-                v.drain(l..r);
-                v.sort_unstable();
-                v
-            }
-        );
-
-        assert_eq!(
-            wm.rank_lessthan(a, l..r),
-            v[l..r].iter().filter(|&&x| x < a).count()
-        );
-
-        let (p, q) = rng.random(Nes(A - 1));
-        assert_eq!(
-            wm.rank_range(p..q, l..r),
-            v[l..r].iter().filter(|&&x| p <= x && x < q).count()
-        );
     }
 }

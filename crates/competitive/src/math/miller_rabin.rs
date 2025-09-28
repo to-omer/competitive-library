@@ -121,13 +121,19 @@ pub fn miller_rabin(n: u64) -> bool {
     miller_rabin_with_br(n, &BarrettReduction::<u128>::new(n as u128))
 }
 
-#[test]
-fn test_miller_rabin() {
-    const N: u32 = 1_000_000;
-    let primes = super::PrimeTable::new(N);
-    for i in 1..=N {
-        assert_eq!(primes.is_prime(i), miller_rabin(i as _), "{}", i);
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::math::PrimeTable;
+
+    #[test]
+    fn test_miller_rabin() {
+        const N: u32 = 1_000_000;
+        let primes = PrimeTable::new(N);
+        for i in 1..=N {
+            assert_eq!(primes.is_prime(i), miller_rabin(i as _), "{}", i);
+        }
+        assert!(miller_rabin(1_000_000_007));
+        assert!(!miller_rabin(1_000_000_011));
     }
-    assert!(miller_rabin(1_000_000_007));
-    assert!(!miller_rabin(1_000_000_011));
 }

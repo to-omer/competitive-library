@@ -392,20 +392,25 @@ where
     }
 }
 
-#[test]
-fn test_scan() {
-    let mut s = Scanner::new("1 2 3 a 1 2 1 1 1.1 2 3");
-    scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'), e: [usize; const 2]);
-    assert_eq!(x, 1);
-    assert_eq!(y, '2');
-    assert_eq!(z, 2);
-    assert_eq!(a, 0);
-    assert_eq!(b, vec![1, 2]);
-    assert_eq!(c, (1, 1));
-    assert_eq!(d, vec![1, 1]);
-    assert_eq!(e, [2, 3]);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    scan!(src = "1", x);
-    assert_eq!(x, 1);
-    assert_eq!(scan_value!(src = "1", usize), 1);
+    #[test]
+    fn test_scan() {
+        let mut s = Scanner::new("1 2 3 a 1 2 1 1 1.1 2 3");
+        scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'), e: [usize; const 2]);
+        assert_eq!(x, 1);
+        assert_eq!(y, '2');
+        assert_eq!(z, 2);
+        assert_eq!(a, 0);
+        assert_eq!(b, vec![1, 2]);
+        assert_eq!(c, (1, 1));
+        assert_eq!(d, vec![1, 1]);
+        assert_eq!(e, [2, 3]);
+
+        scan!(src = "1", x);
+        assert_eq!(x, 1);
+        assert_eq!(scan_value!(src = "1", usize), 1);
+    }
 }
