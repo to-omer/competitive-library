@@ -1096,7 +1096,6 @@ mod tests {
     use crate::{
         algebra::AdditiveOperation,
         tools::{NotEmptySegment, ToDigitSequence, Xorshift},
-        transducer,
     };
 
     #[test]

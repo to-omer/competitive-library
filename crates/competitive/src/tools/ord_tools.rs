@@ -73,7 +73,6 @@ macro_rules! minmax {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{chmax, chmin, max, min, minmax};
 
     macro_rules! assert_eq_f64 {
         ($l:expr, $r:expr) => { assert_eq_f64!($l, $r,) };

@@ -394,7 +394,6 @@ where
 
 #[test]
 fn test_scan() {
-    use crate::scan;
     let mut s = Scanner::new("1 2 3 a 1 2 1 1 1.1 2 3");
     scan!(s, x, y: char, z: Usize1, a: @CharWithBase('a'), b: [usize; 2], c: (usize, @CharWithBase('0')), d: @Splitted::<usize, _>::new('.'), e: [usize; const 2]);
     assert_eq!(x, 1);

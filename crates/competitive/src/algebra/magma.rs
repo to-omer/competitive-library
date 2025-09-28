@@ -213,10 +213,7 @@ macro_rules! define_monoid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        algebra::operations::{AdditiveOperation, MaxOperation},
-        monoid_fold,
-    };
+    use crate::algebra::operations::{AdditiveOperation, MaxOperation};
 
     #[test]
     fn test_monoid_pow() {

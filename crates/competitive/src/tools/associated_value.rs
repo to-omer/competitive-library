@@ -74,7 +74,6 @@ macro_rules! impl_assoc_value {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::impl_assoc_value;
 
     #[test]
     fn test_associated_value() {

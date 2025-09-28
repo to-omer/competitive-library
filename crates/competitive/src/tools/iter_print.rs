@@ -240,7 +240,6 @@ macro_rules! iter_print {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::iter_print;
 
     #[test]
     fn test_iter_print() {
