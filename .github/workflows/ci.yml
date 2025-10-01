@@ -186,8 +186,60 @@ jobs:
         path: target/doc/benchmarks/**/*
 
 
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: full
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install Python dependencies
+      run: |
+        curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
+        pip install -r requirements.txt
+
+    - name: Setup `nightly`
+      uses: dtolnay/rust-toolchain@nightly
+      with:
+        components: llvm-tools-preview
+
+    - name: Cache
+      uses: Swatinem/rust-cache@v2
+
+    - name: Install cargo-llvm-cov
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-llvm-cov
+
+    - name: cargo llvm-cov html
+      run: cargo +nightly llvm-cov --workspace --all-targets --branch --html
+
+    - name: Coverage report summary
+      run: cargo +nightly llvm-cov report | tee -a "$GITHUB_STEP_SUMMARY"
+
+    - name: Prepare coverage artifact
+      run: |
+        mkdir -p coverage
+        cp -r target/llvm-cov/html coverage/html
+
+    - name: upload artifacts
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact-coverage
+        path: coverage/**/*
+
+
   generate-doc:
-    needs: [verify, benchmark]
+    needs: [verify, benchmark, coverage]
     if: github.ref_name == 'master'
 
     name: Generate Doc
@@ -230,6 +282,11 @@ jobs:
       run: |
         mkdir -p target/doc/benchmarks
         cp -r benchmarks/* target/doc/benchmarks
+
+    - name: Arrange coverage report
+      run: |
+        mkdir -p target/doc/coverage
+        cp -r coverage/html/* target/doc/coverage
 
     - name: Arrange doc resources
       run: cp -r util/gh-pages/* target/doc

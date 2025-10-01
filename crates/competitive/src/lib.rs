@@ -13,9 +13,12 @@
 //!
 //! [benchmarks]
 //!
+//! [coverage]
+//!
 //! [github]: https://github.com/to-omer/competitive-library
 //! [verification summary]: ?search=verify
 //! [benchmarks]: ../benchmarks/report/index.html
+//! [coverage]: ../coverage/index.html
 
 pub mod algebra;
 pub mod algorithm;
