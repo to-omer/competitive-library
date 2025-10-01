@@ -121,7 +121,7 @@ fn parse_attribute(attr: TokenStream) -> syn::Result<VerifyAttribute> {
     if eps.is_some() && special_judge.is_some() {
         return Err(syn::Error::new(
             punc.span(),
-            "only speciy one of `eps` or `judge`",
+            "only specify one of `eps` or `judge`",
         ));
     }
     Ok(VerifyAttribute {
