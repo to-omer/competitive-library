@@ -223,7 +223,12 @@ jobs:
       run: cargo +nightly llvm-cov --workspace --all-targets --branch --html
 
     - name: Coverage report summary
-      run: cargo +nightly llvm-cov report | tee -a "$GITHUB_STEP_SUMMARY"
+      run: |
+        {
+          echo '```text'
+          cargo +nightly llvm-cov report
+          echo '```'
+        } | tee -a "$GITHUB_STEP_SUMMARY"
 
     - name: Prepare coverage artifact
       run: |
@@ -234,7 +239,7 @@ jobs:
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
-        name: artifact-coverage
+        name: coverage
         path: coverage/**/*
 
 
