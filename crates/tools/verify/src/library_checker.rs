@@ -124,13 +124,13 @@ fn prepare_library_checker_problems() -> BoxResult<PathBuf> {
 }
 
 pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, CheckerBinary)> {
+    let lock_file = File::create(app_cache_directory().join("library-checker-problems-file-lock"))?;
+    let mut lock = RwLock::new(lock_file);
+    let _lock_guard = lock.write()?;
+
     let rootdir = prepare_library_checker_problems()?;
 
     let problem = find_problem(&rootdir, problem_id)?;
-
-    let lock_file = File::create(problem.problemdir.join("generate-testcases-file-lock"))?;
-    let mut lock = RwLock::new(lock_file);
-    let _lock_guard = lock.write()?;
 
     let mut cases = vec![];
     let indir = problem.problemdir.join("in");
@@ -175,6 +175,7 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         Err(CheckerBinaryNotFound)?;
     }
 
+    let _ = _lock_guard;
     Ok((cases, CheckerBinary { checker }))
 }
 

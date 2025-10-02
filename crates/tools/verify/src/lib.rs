@@ -86,11 +86,14 @@ async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
     }
     let seed = RandomState::new().hash_one(&url);
     let mut rng = StdRng::seed_from_u64(seed);
-    for _ in 0..2 {
+    for i in 0..2 {
         if let Ok(()) = gen_case_inner(&url, &file).await {
             return Ok(());
         };
-        sleep(Duration::from_secs_f64(rng.random_range(1f64..5f64))).await;
+        sleep(Duration::from_secs_f64(
+            rng.random_range(1f64..5f64) + i as f64 * 10.,
+        ))
+        .await;
     }
     gen_case_inner(&url, &file).await
 }
