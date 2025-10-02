@@ -284,9 +284,18 @@ impl<'t> VerifyConfig<'t> {
         self.get_testcases_and_checker().map(|(cases, checker)| {
             let cases = cases
                 .into_iter()
-                .filter(|case| {
+                .enumerate()
+                .filter_map(|(i, case)| {
                     let name = case.name.to_lowercase();
-                    name.contains("sample") || name.contains("small")
+                    if i == 0
+                        || name.contains("sample")
+                        || name.contains("example")
+                        || name.contains("small")
+                    {
+                        Some(case)
+                    } else {
+                        None
+                    }
                 })
                 .collect();
             (cases, checker)
