@@ -2,10 +2,9 @@ name: CI
 
 on:
   schedule:
-    - cron: '0 0 */6 * *'
+    - cron: "0 0 */6 * *"
   push:
   pull_request:
-
 
 jobs:
   build:
@@ -22,47 +21,46 @@ jobs:
       RUST_BACKTRACE: full
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-    - name: Install Python dependencies
-      run: |
-        curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
-        pip install -r requirements.txt
+      - name: Install Python dependencies
+        run: |
+          curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
+          pip install -r requirements.txt
 
-    - name: Setup `${{ matrix.toolchain }}`
-      uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: ${{ matrix.toolchain }}
-        components: rustfmt, clippy
+      - name: Setup `${{ matrix.toolchain }}`
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          components: rustfmt, clippy
 
-    - name: Cache
-      uses: Swatinem/rust-cache@v2
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
-    - name: Cache checker
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache
-        key: cache-checker-${{ github.run_id }}-${{ github.run_attempt }}
-        restore-keys: cache-checker-
+      - name: Cache checker
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache
+          key: cache-checker-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: cache-checker-
 
-    - name: cargo-fmt
-      run: cargo fmt --all -- --check
+      - name: cargo-fmt
+        run: cargo fmt --all -- --check
 
-    - name: cargo-clippy
-      run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: cargo-clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
 
-    - name: cargo-build
-      run: cargo build --workspace --all-targets
+      - name: cargo-build
+        run: cargo build --workspace --all-targets
 
-    - name: cargo-test
-      run: cargo test --workspace --all-targets --no-fail-fast
-
+      - name: cargo-test
+        run: cargo test --workspace --all-targets --no-fail-fast
 
   snippet:
     name: Snippet
@@ -71,26 +69,25 @@ jobs:
       RUST_BACKTRACE: full
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup `1.70.0`
-      uses: dtolnay/rust-toolchain@1.70.0
+      - name: Setup `1.70.0`
+        uses: dtolnay/rust-toolchain@1.70.0
 
-    - name: Setup `stable`
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        components: rustfmt
+      - name: Setup `stable`
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
 
-    - name: Cache
-      uses: Swatinem/rust-cache@v2
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
-    - name: cargo-install codesnip
-      run: cargo install codesnip
+      - name: cargo-install codesnip
+        run: cargo install codesnip
 
-    - name: Snippet Verification
-      run: cargo codesnip --source-config=.github/workflows/codesnip.toml verify --verbose --toolchain=1.70.0 --edition=2021
-
+      - name: Snippet Verification
+        run: cargo codesnip --source-config=.github/workflows/codesnip.toml verify --verbose --toolchain=1.70.0 --edition=2021
 
   verify:
     strategy:
@@ -104,52 +101,51 @@ jobs:
       RUST_BACKTRACE: full
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-    - name: Install Python dependencies
-      run: |
-        curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
-        pip install -r requirements.txt
+      - name: Install Python dependencies
+        run: |
+          curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
+          pip install -r requirements.txt
 
-    - name: Setup `stable`
-      uses: dtolnay/rust-toolchain@stable
+      - name: Setup `stable`
+        uses: dtolnay/rust-toolchain@stable
 
-    - name: Cache
-      uses: Swatinem/rust-cache@v2
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
-    - name: cargo-build
-      run: cargo build --release --workspace --lib --tests
+      - name: cargo-build
+        run: cargo build --release --workspace --lib --tests
 
-    - id: testcases-hash
-      run: python ./.github/workflows/matrix.py ${{ matrix.job-id }} --hash >> $GITHUB_OUTPUT
+      - id: testcases-hash
+        run: python ./.github/workflows/matrix.py ${{ matrix.job-id }} --hash >> $GITHUB_OUTPUT
 
-    - name: Cache Testcases
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache
-        key: testcases-${{ steps.testcases-hash.outputs.hash }}
+      - name: Cache Testcases
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache
+          key: testcases-${{ steps.testcases-hash.outputs.hash }}
 
-    - name: Verify
-      env:
-        RUST_MIN_STACK: 268435456
-        RUST_LOG: verify=info
-      run: |
-        ulimit -s unlimited
-        python ./.github/workflows/matrix.py ${{ matrix.job-id }}
+      - name: Verify
+        env:
+          RUST_MIN_STACK: 268435456
+          RUST_LOG: verify=info
+        run: |
+          ulimit -s unlimited
+          python ./.github/workflows/matrix.py ${{ matrix.job-id }}
 
-    - name: upload artifacts
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: artifact-${{ matrix.job-id }}
-        path: artifact/**/*
-
+      - name: upload artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.job-id }}
+          path: artifact/**/*
 
   benchmark:
     name: Benchmark
@@ -158,34 +154,33 @@ jobs:
       RUST_BACKTRACE: full
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup `stable`
-      uses: dtolnay/rust-toolchain@stable
+      - name: Setup `stable`
+        uses: dtolnay/rust-toolchain@stable
 
-    - name: Cache
-      uses: Swatinem/rust-cache@v2
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
-    - name: Install Gnuplot
-      continue-on-error: true
-      run: |
-        sudo apt-get install gnuplot
+      - name: Install Gnuplot
+        continue-on-error: true
+        run: |
+          sudo apt-get install gnuplot
 
-    - name: Benchmark
-      env:
-        CRITERION_HOME: ./../../target/doc/benchmarks
-      run: |
-        ulimit -s unlimited
-        cargo bench -p competitive_bench --bench criterion
+      - name: Benchmark
+        env:
+          CRITERION_HOME: ./../../target/doc/benchmarks
+        run: |
+          ulimit -s unlimited
+          cargo bench -p competitive_bench --bench criterion
 
-    - name: upload artifacts
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: benchmarks
-        path: target/doc/benchmarks/**/*
-
+      - name: upload artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmarks
+          path: target/doc/benchmarks/**/*
 
   coverage:
     name: Coverage
@@ -194,62 +189,61 @@ jobs:
       RUST_BACKTRACE: full
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-    - name: Install Python dependencies
-      run: |
-        curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
-        pip install -r requirements.txt
+      - name: Install Python dependencies
+        run: |
+          curl -LJO https://raw.githubusercontent.com/yosupo06/library-checker-problems/master/requirements.txt
+          pip install -r requirements.txt
 
-    - name: Setup `nightly`
-      uses: dtolnay/rust-toolchain@nightly
-      with:
-        components: llvm-tools-preview
+      - name: Setup `nightly`
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: llvm-tools-preview
 
-    - name: Cache
-      uses: Swatinem/rust-cache@v2
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
-    - name: Cache checker
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache
-        key: cache-checker-${{ github.run_id }}-${{ github.run_attempt }}
-        restore-keys: cache-checker-
+      - name: Cache checker
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache
+          key: cache-checker-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: cache-checker-
 
-    - name: Install cargo-llvm-cov
-      uses: taiki-e/install-action@v2
-      with:
-        tool: cargo-llvm-cov
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
 
-    - name: cargo llvm-cov html
-      run: cargo +nightly llvm-cov --workspace --all-targets --branch --html
+      - name: cargo llvm-cov html
+        run: cargo +nightly llvm-cov --workspace --all-targets --branch --html
 
-    - name: Coverage report summary
-      run: |
-        {
-          echo '```text'
-          cargo +nightly llvm-cov report
-          echo '```'
-        } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Coverage report summary
+        run: |
+          {
+            echo '```text'
+            cargo +nightly llvm-cov report
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
-    - name: Prepare coverage artifact
-      run: |
-        mkdir -p coverage
-        cp -r target/llvm-cov/html coverage/html
+      - name: Prepare coverage artifact
+        run: |
+          mkdir -p coverage
+          cp -r target/llvm-cov/html coverage/html
 
-    - name: upload artifacts
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage
-        path: coverage/**/*
-
+      - name: upload artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/**/*
 
   generate-doc:
     needs: [verify, benchmark, coverage]
@@ -261,51 +255,51 @@ jobs:
       RUST_BACKTRACE: full
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup `nightly`
-      uses: dtolnay/rust-toolchain@nightly
+      - name: Setup `nightly`
+        uses: dtolnay/rust-toolchain@nightly
 
-    - name: Cache
-      uses: Swatinem/rust-cache@v2
-    
-    - name: Merge Artifacts
-      uses: actions/upload-artifact/merge@v4
-      with:
-        name: artifact
-        pattern: artifact-*
-        delete-merged: true
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: artifact
+          pattern: artifact-*
+          delete-merged: true
 
-    - name: Arrange artifacts
-      run: cp -r artifact/* .
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
 
-    - name: cargo-build
-      run: cargo build --workspace --lib --features verify_doc
+      - name: Arrange artifacts
+        run: cp -r artifact/* .
 
-    - name: cargo-doc
-      run: cargo doc --workspace --no-deps -Zunstable-options -Zrustdoc-scrape-examples --features verify_doc
-      env:
-        RUSTDOCFLAGS: --html-in-header util/header.html -Z unstable-options --generate-link-to-definition
+      - name: cargo-build
+        run: cargo build --workspace --lib --features verify_doc
 
-    - name: Arrange benchmarks
-      run: |
-        mkdir -p target/doc/benchmarks
-        cp -r benchmarks/* target/doc/benchmarks
+      - name: cargo-doc
+        run: cargo doc --workspace --no-deps -Zunstable-options -Zrustdoc-scrape-examples --features verify_doc
+        env:
+          RUSTDOCFLAGS: --html-in-header util/header.html -Z unstable-options --generate-link-to-definition
 
-    - name: Arrange coverage report
-      run: |
-        mkdir -p target/doc/coverage
-        cp -r coverage/html/* target/doc/coverage
+      - name: Arrange benchmarks
+        run: |
+          mkdir -p target/doc/benchmarks
+          cp -r benchmarks/* target/doc/benchmarks
 
-    - name: Arrange doc resources
-      run: cp -r util/gh-pages/* target/doc
+      - name: Arrange coverage report
+        run: |
+          mkdir -p target/doc/coverage
+          cp -r coverage/html/* target/doc/coverage
 
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        personal_token: ${{ secrets.GITHUB_TOKEN  }}
-        publish_dir: ./target/doc
+      - name: Arrange doc resources
+        run: cp -r util/gh-pages/* target/doc
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.GITHUB_TOKEN  }}
+          publish_dir: ./target/doc
