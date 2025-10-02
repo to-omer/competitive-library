@@ -147,6 +147,7 @@ macro_rules! define_verify {
                     let md = LitStr::new(&format!("{}.md", fn_name), Span::call_site());
                     let verify_name = Ident::new(&format!("verify_{}", fn_name), Span::call_site());
                     let test_name = Ident::new(&format!("test_{}", fn_name), Span::call_site());
+                    let test_sample_name = Ident::new(&format!("test_sample_{}", fn_name), Span::call_site());
                     let inner = if let Some(special_judge) = special_judge {
                         quote! { case.judge_with_judger(buf.as_ref(), #special_judge) }
                     } else if let Some(eps) = eps {
@@ -201,6 +202,27 @@ macro_rules! define_verify {
                             };
                             let res = config.finalize(res);
                             ::std::assert!(res.is_ok(), "{}", res.unwrap_err());
+                        }
+                        #[test]
+                        fn #test_sample_name() {
+                            let target = ::std::module_path!().to_string() + "::" + &::std::stringify!(#verify_name);
+                            let _ = ::verify::init_logger(target.to_string());
+                            let config = ::verify::VerifyConfig::new($service, #problem_id, ::std::file!(), ::std::stringify!(#fn_name), &target);
+                            let (cases, checker) = config.get_sample_testcases_and_checker().unwrap();
+                            for case in cases {
+                                let name = case.name.to_string();
+                                let case = case.load_testcase().unwrap();
+                                let result = ::std::panic::catch_unwind(|| {
+                                    let mut buf = ::std::vec::Vec::new();
+                                    #fn_name(case.input.as_slice(), &mut buf);
+                                    buf
+                                });
+                                let status = match result {
+                                    ::std::result::Result::Ok(buf) => #inner,
+                                    ::std::result::Result::Err(err) => ::verify::VerifyStatus::RuntimeError,
+                                };
+                                assert_eq!(status, ::verify::VerifyStatus::Accepted);
+                            }
                         }
                         #[cfg_attr(feature = "verify_test", test)]
                         fn #test_name() {

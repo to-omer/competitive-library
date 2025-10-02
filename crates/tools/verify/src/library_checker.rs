@@ -156,7 +156,7 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         }
     }
 
-    Command::new(option_env!("PYTHON").unwrap_or("python"))
+    Command::new(option_env!("PYTHON").unwrap_or("python3"))
         .arg(rootdir.join("generate.py"))
         .arg(problem.problemdir.join("info.toml"))
         .output()?;

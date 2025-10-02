@@ -81,6 +81,9 @@ async fn gen_case(url: String, file: PathBuf) -> BoxResult<()> {
         File::create(file).await?.write_all(bytes.borrow()).await?;
         Ok(())
     }
+    if file.exists() {
+        return Ok(());
+    }
     let seed = RandomState::new().hash_one(&url);
     let mut rng = StdRng::seed_from_u64(seed);
     for _ in 0..2 {
@@ -273,6 +276,15 @@ impl<'t> VerifyConfig<'t> {
             Err(_) => log::info!("failed to download testcases"),
         }
         res
+    }
+    pub fn get_sample_testcases_and_checker(&self) -> BoxResult<(Vec<TestCase>, Checker)> {
+        self.get_testcases_and_checker().map(|(cases, checker)| {
+            let cases = cases
+                .into_iter()
+                .filter(|case| case.name.contains("sample"))
+                .collect();
+            (cases, checker)
+        })
     }
     pub fn emit_md(&self, buf: &[u8]) -> io::Result<()> {
         let path = Path::new(self.cur_file)

@@ -65,22 +65,20 @@ pub fn get_testcases(
                     input: input.clone(),
                     output: output.clone(),
                 });
-                if !is_testcases_already_generated {
-                    let url = format!(
-                        "https://judgedat.u-aizu.ac.jp/testcases/{}/{}/in",
-                        problem_id, header.serial
-                    );
-                    tasks.push(tokio::spawn(async move {
-                        gen_case(url, input).await.ok();
-                    }));
-                    let url = format!(
-                        "https://judgedat.u-aizu.ac.jp/testcases/{}/{}/out",
-                        problem_id, header.serial
-                    );
-                    tasks.push(tokio::spawn(async move {
-                        gen_case(url, output).await.ok();
-                    }));
-                }
+                let url = format!(
+                    "https://judgedat.u-aizu.ac.jp/testcases/{}/{}/in",
+                    problem_id, header.serial
+                );
+                tasks.push(tokio::spawn(async move {
+                    gen_case(url, input).await.ok();
+                }));
+                let url = format!(
+                    "https://judgedat.u-aizu.ac.jp/testcases/{}/{}/out",
+                    problem_id, header.serial
+                );
+                tasks.push(tokio::spawn(async move {
+                    gen_case(url, output).await.ok();
+                }));
             }
             for task in tasks {
                 task.await.ok();
