@@ -1,10 +1,11 @@
 use crate::{BoxResult, ProblemNotFound, TestCase, VerifyStatus, app_cache_directory};
+use fd_lock::RwLock;
 use serde::{Deserialize, Serialize};
 use std::{
     env::consts::OS,
     error::Error,
     fmt::{self, Display},
-    fs::{create_dir, read_dir, read_to_string, remove_dir_all},
+    fs::{File, create_dir, read_dir, read_to_string, remove_dir_all},
     path::{Path, PathBuf},
     process::Command,
 };
@@ -126,6 +127,11 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
     let rootdir = prepare_library_checker_problems()?;
 
     let problem = find_problem(&rootdir, problem_id)?;
+
+    let lock_file = File::create(problem.problemdir.join(".verify.lock"))?;
+    let mut lock = RwLock::new(lock_file);
+    let _lock_guard = lock.write()?;
+
     let mut cases = vec![];
     let indir = problem.problemdir.join("in");
     let outdir = problem.problemdir.join("out");
