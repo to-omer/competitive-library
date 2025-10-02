@@ -128,7 +128,7 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
 
     let problem = find_problem(&rootdir, problem_id)?;
 
-    let lock_file = File::create(problem.problemdir.join(".verify.lock"))?;
+    let lock_file = File::create(problem.problemdir.join("generate-testcases-file-lock"))?;
     let mut lock = RwLock::new(lock_file);
     let _lock_guard = lock.write()?;
 
@@ -154,9 +154,9 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
                 let input = indir.join(&name).with_extension("in");
                 let output = outdir.join(&name).with_extension("out");
                 cases.push(TestCase {
-                    name: name.clone(),
-                    input: input.clone(),
-                    output: output.clone(),
+                    name,
+                    input,
+                    output,
                 });
             }
         }
