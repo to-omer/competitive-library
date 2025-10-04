@@ -249,17 +249,6 @@ fn rem_u256_by_u128(u: [u64; 4], v: u128) -> u128 {
         }
     }
 
-    #[inline(always)]
-    fn add_with_carry_u64(lhs: u64, rhs: u64, carry: bool) -> (u64, bool) {
-        let (res, overflow) = lhs.overflowing_add(rhs);
-        if carry {
-            let (res, overflow_carry) = res.overflowing_add(1);
-            (res, overflow | overflow_carry)
-        } else {
-            (res, overflow)
-        }
-    }
-
     debug_assert!(v != 0);
     let v_hi = (v >> 64) as u64;
     if v_hi == 0 {
@@ -297,11 +286,10 @@ fn rem_u256_by_u128(u: [u64; 4], v: u128) -> u128 {
 
     for j in (0..=2).rev() {
         let num = (un[j + 2] as u128) << 64 | un[j + 1] as u128;
-        let (mut qhat, mut rhat) = if un[j + 2] == vn1 {
-            (u64::MAX, un[j + 1])
-        } else {
+        let (mut qhat, mut rhat) = {
             let d = vn1 as u128;
-            ((num / d) as u64, (num % d) as u64)
+            let q = (num / d).min(u64::MAX as u128);
+            (q as u64, (num - q * d).min(u64::MAX as u128) as u64)
         };
         while qhat as u128 * vn0 as u128 > (rhat as u128) << 64 | un[j] as u128 {
             qhat -= 1;
@@ -327,15 +315,7 @@ fn rem_u256_by_u128(u: [u64; 4], v: u128) -> u128 {
 
         let (r2, borrow) = sub_with_borrow_u64(un[j + 2], p1_hi, borrow);
         un[j + 2] = r2;
-
-        if borrow {
-            let (s0, carry) = add_with_carry_u64(un[j], vn0, false);
-            un[j] = s0;
-            let (s1, carry) = add_with_carry_u64(un[j + 1], vn1, carry);
-            un[j + 1] = s1;
-            let (s2, _) = un[j + 2].overflowing_add(carry as u64);
-            un[j + 2] = s2;
-        }
+        assert!(!borrow);
     }
 
     ((un[1] as u128) << 64 | un[0] as u128) >> v_hi.leading_zeros()
@@ -1226,6 +1206,9 @@ mod tests {
                     }
                 }
             }
+            let u = [0, 0, 0, 1 << 63];
+            let v = (1 << 127) + 1;
+            assert_eq!(rem_u256_by_u128(u, v), naive_rem(u, v));
         }
     }
 
