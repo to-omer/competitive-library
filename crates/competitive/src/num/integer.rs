@@ -88,18 +88,9 @@ pub trait Unsigned: IntBase {
         }
     }
     fn mod_inv(self, modulo: Self) -> Self {
-        assert!(
-            !self.is_zero(),
-            "attempt to inverse zero with modulo {}",
-            modulo
-        );
+        debug_assert!(!modulo.is_zero(), "modulo must be non-zero");
         let extgcd = self.signed().extgcd(modulo.signed());
-        assert!(
-            extgcd.g.is_one(),
-            "there is no inverse {} modulo {}",
-            self,
-            modulo
-        );
+        debug_assert!(extgcd.g.is_one(), "not coprime");
         extgcd.x.rem_euclid(modulo.signed()).unsigned()
     }
     fn mod_add(self, rhs: Self, modulo: Self) -> Self;
@@ -1065,158 +1056,500 @@ mod tests {
     use super::*;
     use crate::tools::Xorshift;
     const Q: usize = 10_000;
-    macro_rules! test_unsigned {
-        ($($t:ident)*) => {
-            $(
-                mod $t {
-                    use super::*;
-                    const A: $t = $t::MAX / 2;
-                    fn gcd(mut a: $t, mut b: $t) -> $t {
-                        while b != 0 {
-                            a %= b;
-                            std::mem::swap(&mut a, &mut b);
-                        }
-                        a
-                    }
-                    #[test]
-                    fn test_gcd() {
-                        let mut rng = Xorshift::default();
-                            for (a, b) in rng.random_iter((0..=A, 0..=A)).take(Q) {
-                            assert_eq!(a.gcd(b), gcd(a, b));
-                        }
-                        assert_eq!($t::zero().gcd(0), 0);
-                        assert_eq!($t::zero().gcd(100), 100);
-                    }
-                    #[test]
-                    fn test_mod_inv() {
-                        let mut rng = Xorshift::default();
-                        for _ in 0..Q {
-                            let m = rng.random(2..=A);
-                            let a = rng.random(1..m);
-                            let g = a.gcd(m);
-                            let m = m / g;
-                            let a = a / g;
-                            let x = a.mod_inv(m);
-                            assert!(x < m);
-                            assert_eq!(a as u128 * x as u128 % m as u128, 1);
+
+    mod int_base {
+        macro_rules! test_intbase {
+            ($($t:ident)*) => {
+                $(
+                    mod $t {
+                        use super::super::*;
+
+                        #[test]
+                        fn test_intbase() {
+                            assert_eq!(<$t as IntBase>::div_euclid(10, 3), 3);
+                            assert_eq!(<$t as IntBase>::rem_euclid(10, 3), 1);
+                            assert_eq!(<$t as IntBase>::pow(10, 2), 100);
+                            assert_eq!(<$t as IntBase>::from_str_radix("1a", 16).unwrap(), 26 as $t);
+                            assert_eq!(<$t as IntBase>::ilog(100 as $t, 10 as $t), 2);
+                            assert_eq!(<$t as IntBase>::ilog2(16 as $t), 4);
+                            assert_eq!(<$t as IntBase>::ilog10(100 as $t), 2);
                         }
                     }
-                    #[test]
-                    fn test_mod_operate() {
-                        let mut rng = Xorshift::default();
-                        for _ in 0..Q {
-                            for ub in [10, A] {
-                                let m = rng.random(2..=ub);
-                                let a = rng.random(0..m);
-                                let b = rng.random(0..m);
-                                assert_eq!(a.mod_add(b, m), ((a as u128 + b as u128) % m as u128) as $t);
-                                assert_eq!(a.mod_sub(b, m), ((a as u128 + m as u128 - b as u128) % m as u128) as $t);
-                                assert_eq!(a.mod_mul(b, m), (a as u128 * b as u128 % m as u128) as $t);
-                                assert_eq!(a.mod_mul(b, m), (a as u128).mod_mul(b as u128, m as u128) as $t);
-                                assert_eq!(a.mod_neg(m), ((m as u128 - a as u128) % m as u128) as $t);
+                )*
+            };
+        }
+        test_intbase!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
+    }
+
+    mod unsigned {
+        use super::*;
+
+        macro_rules! test_unsigned {
+            ($($t:ident)*) => {
+                $(
+                    mod $t {
+                        use super::super::*;
+                        const A: $t = $t::MAX / 2;
+                        fn gcd(mut a: $t, mut b: $t) -> $t {
+                            while b != 0 {
+                                a %= b;
+                                std::mem::swap(&mut a, &mut b);
+                            }
+                            a
+                        }
+                        #[test]
+                        fn test_gcd() {
+                            let mut rng = Xorshift::default();
+                                for (a, b) in rng.random_iter((0..=A, 0..=A)).take(Q) {
+                                assert_eq!(a.gcd(b), gcd(a, b));
+                            }
+                            assert_eq!($t::zero().gcd(0), 0);
+                            assert_eq!($t::zero().gcd(100), 100);
+                        }
+                        #[test]
+                        fn test_mod_inv() {
+                            let mut rng = Xorshift::default();
+                            for _ in 0..Q {
+                                let m = rng.random(2..=A);
+                                let a = rng.random(1..m);
+                                let g = a.gcd(m);
+                                let m = m / g;
+                                let a = a / g;
+                                let x = a.mod_inv(m);
+                                assert!(x < m);
+                                assert_eq!(a as u128 * x as u128 % m as u128, 1);
                             }
                         }
+                        #[test]
+                        fn test_mod_operate() {
+                            let mut rng = Xorshift::default();
+                            for _ in 0..Q {
+                                for ub in [10, A] {
+                                    let m = rng.random(2..=ub);
+                                    let a = rng.random(0..m);
+                                    let b = rng.random(0..m);
+                                    assert_eq!(a.mod_add(b, m), ((a as u128 + b as u128) % m as u128) as $t);
+                                    assert_eq!(a.mod_sub(b, m), ((a as u128 + m as u128 - b as u128) % m as u128) as $t);
+                                    assert_eq!(a.mod_mul(b, m), (a as u128 * b as u128 % m as u128) as $t);
+                                    assert_eq!(a.mod_mul(b, m), (a as u128).mod_mul(b as u128, m as u128) as $t);
+                                    assert_eq!(a.mod_neg(m), ((m as u128 - a as u128) % m as u128) as $t);
+                                }
+                            }
+                        }
+                        #[test]
+                        fn test_unsigned() {
+                            assert_eq!(<$t as Unsigned>::signed(0), 0);
+                            assert_eq!(<$t as Unsigned>::abs_diff(10, 20), 10);
+                            assert_eq!(<$t as Unsigned>::next_power_of_two(10), 16);
+                            assert_eq!(<$t as Unsigned>::gcd(100, 80), 20);
+                            assert_eq!(<$t as Unsigned>::lcm(12, 15), 60);
+                            assert_eq!(<$t as Unsigned>::lcm(0, 1), 0);
+                            assert_eq!(<$t as Unsigned>::lcm(0, 0), 0);
+                        }
+                    }
+                )*
+            };
+        }
+        test_unsigned!(u8 u16 u32 u64 usize);
+
+        #[test]
+        fn test_mod_mul_u128() {
+            fn naive_mod_mul(a: u128, b: u128, m: u128) -> u128 {
+                assert!(m != 0);
+                let a = [a as u64, (a >> 64) as u64];
+                let b = [b as u64, (b >> 64) as u64];
+                let mut res = 0u128;
+                for (i, &a) in a.iter().enumerate() {
+                    for (j, &b) in b.iter().enumerate() {
+                        let mut x = (a as u128) * (b as u128) % m;
+                        for _ in 0..(i + j) * 64 {
+                            x = x.mod_add(x, m);
+                        }
+                        res = res.mod_add(x, m);
                     }
                 }
-            )*
-        };
-    }
-    test_unsigned!(u8 u16 u32 u64 usize);
+                res
+            }
 
-    macro_rules! test_signed {
-        ($($t:ident)*) => {
-            $(
-                mod $t {
-                    use super::*;
-                    const A: $t = $t::MAX / 2;
-                    #[test]
-                    fn test_extgcd() {
-                        let mut rng = Xorshift::default();
-                        for (a, b) in rng.random_iter((-A..=A, -A..=A)).take(Q) {
-                            let ExtendedGcd { g, x, y } = a.extgcd(b);
-                            assert_eq!(g, a.abs().unsigned().gcd(b.abs().unsigned()));
-                            assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g.signed() as i128);
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                for a in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
+                    for b in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
+                        for c in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
+                            let m = rng.random(1..=c);
+                            let x = rng.random(0..a.min(m));
+                            let y = rng.random(0..b.min(m));
+                            assert_eq!(x.mod_mul(y, m), naive_mod_mul(x, y, m));
+                            let x = rng.random(0..a);
+                            let y = rng.random(0..b);
+                            assert_eq!(x.mod_mul(y, m), naive_mod_mul(x, y, m));
                         }
                     }
                 }
+            }
+        }
+
+        #[test]
+        fn test_rem() {
+            fn naive_rem(u: [u64; 4], v: u128) -> u128 {
+                assert!(v != 0);
+                let mut u = [
+                    ((u[1] as u128) << 64) | (u[0] as u128),
+                    ((u[3] as u128) << 64) | (u[2] as u128),
+                ];
+                let mut v_mul_2 = vec![[v, 0]];
+                while v_mul_2.last().unwrap()[1].leading_zeros() != 0 {
+                    let [v_lo, v_hi] = *v_mul_2.last().unwrap();
+                    v_mul_2.push([v_lo << 1, v_hi << 1 | (v_lo >> 127)]);
+                }
+                v_mul_2.reverse();
+                for [v_lo, v_hi] in v_mul_2 {
+                    let [u_lo, u_hi] = u;
+                    if (u_hi > v_hi) || (u_hi == v_hi && u_lo >= v_lo) {
+                        let (new_lo, carry) = u_lo.overflowing_sub(v_lo);
+                        let new_hi = u_hi - v_hi - (carry as u128);
+                        u = [new_lo, new_hi];
+                    }
+                }
+                u[0]
+            }
+            let mut rng = Xorshift::default();
+            for _ in 0..1000 {
+                let mut u = [0u64; 4];
+                for k in 0..4 {
+                    for a in [1, 10, u32::MAX as _, u64::MAX] {
+                        u[k] = rng.random(..a);
+                        for b in [1, 10, u128::MAX] {
+                            let v = rng.random(1..=b);
+                            assert_eq!(rem_u256_by_u128(u, v), naive_rem(u, v));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    mod signed {
+        macro_rules! test_signed {
+            ($($t:ident)*) => {
+                $(
+                    mod $t {
+                        use super::super::*;
+                        const A: $t = $t::MAX / 2;
+                        #[test]
+                        fn test_extgcd() {
+                            let mut rng = Xorshift::default();
+                            for (a, b) in rng.random_iter((-A..=A, -A..=A)).take(Q) {
+                                let ExtendedGcd { g, x, y } = a.extgcd(b);
+                                assert_eq!(g, a.abs().unsigned().gcd(b.abs().unsigned()));
+                                assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g.signed() as i128);
+                            }
+                        }
+                        #[test]
+                        fn test_signed() {
+                            assert_eq!(<$t as Signed>::unsigned(0), 0);
+                            assert_eq!(<$t as Signed>::abs(-10), 10);
+                            assert_eq!(<$t as Signed>::abs_diff(10, -20), 30);
+                            assert!(!<$t as Signed>::is_negative(10));
+                            assert!(<$t as Signed>::is_negative(-10));
+                            assert!(<$t as Signed>::is_positive(10));
+                            assert!(!<$t as Signed>::is_positive(-10));
+                            assert_eq!(<$t as Signed>::signum(10), 1);
+                            assert_eq!(<$t as Signed>::signum(-10), -1);
+                            assert_eq!(<$t as Signed>::signum(0), 0);
+                        }
+                    }
+                )*
+            };
+        }
+        test_signed!(i8 i16 i32 i64 isize);
+    }
+
+    macro_rules! test_binary_repr {
+        ($($t:ident)*) => {
+            $(
+                mod $t {
+                    use super::super::*;
+                    #[test]
+                    fn test_binary_repr() {
+                        assert_eq!(<$t as BinaryRepr>::count_ones(0b1010), 2);
+                        assert_eq!(<$t as BinaryRepr>::count_zeros(0b1010), <$t>::BITS - 2);
+                        assert_eq!(<$t as BinaryRepr>::leading_ones(!0b0010), <$t>::BITS - 2);
+                        assert_eq!(<$t as BinaryRepr>::leading_zeros(0b0010), <$t>::BITS - 2);
+                        assert_eq!(<$t as BinaryRepr>::reverse_bits(0b101), 0b101 << (<$t>::BITS - 3));
+                        assert_eq!(<$t as BinaryRepr>::rotate_left(0b0001_0010, 2), 0b0100_1000);
+                        assert_eq!(<$t as BinaryRepr>::rotate_right(0b0001_0010, <$t>::BITS - 2), 0b0100_1000);
+                        assert_eq!(<$t as BinaryRepr>::swap_bytes(0b0001_0010), 0b0001_0010 << (<$t>::BITS - 8));
+                        assert_eq!(<$t as BinaryRepr>::trailing_ones(!0b0100), 2);
+                        assert_eq!(<$t as BinaryRepr>::trailing_zeros(0b0100), 2);
+                    }
+                }
             )*
-        };
-    }
-    test_signed!(i8 i16 i32 i64 isize);
-
-    #[test]
-    fn test_mod_mul_u128() {
-        fn naive_mod_mul(a: u128, b: u128, m: u128) -> u128 {
-            assert!(m != 0);
-            let a = [a as u64, (a >> 64) as u64];
-            let b = [b as u64, (b >> 64) as u64];
-            let mut res = 0u128;
-            for (i, &a) in a.iter().enumerate() {
-                for (j, &b) in b.iter().enumerate() {
-                    let mut x = (a as u128) * (b as u128) % m;
-                    for _ in 0..(i + j) * 64 {
-                        x = x.mod_add(x, m);
-                    }
-                    res = res.mod_add(x, m);
-                }
-            }
-            res
-        }
-
-        let mut rng = Xorshift::default();
-        for _ in 0..Q {
-            for a in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
-                for b in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
-                    for c in [1, 10, u32::MAX as _, u64::MAX as _, u128::MAX] {
-                        let m = rng.random(1..=c);
-                        let x = rng.random(0..a.min(m));
-                        let y = rng.random(0..b.min(m));
-                        assert_eq!(x.mod_mul(y, m), naive_mod_mul(x, y, m));
-                        let x = rng.random(0..a);
-                        let y = rng.random(0..b);
-                        assert_eq!(x.mod_mul(y, m), naive_mod_mul(x, y, m));
-                    }
-                }
-            }
         }
     }
+    mod binary_repr {
+        test_binary_repr!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
+    }
 
-    #[test]
-    fn test_rem() {
-        fn naive_rem(u: [u64; 4], v: u128) -> u128 {
-            assert!(v != 0);
-            let mut u = [
-                ((u[1] as u128) << 64) | (u[0] as u128),
-                ((u[3] as u128) << 64) | (u[2] as u128),
-            ];
-            let mut v_mul_2 = vec![[v, 0]];
-            while v_mul_2.last().unwrap()[1].leading_zeros() != 0 {
-                let [v_lo, v_hi] = *v_mul_2.last().unwrap();
-                v_mul_2.push([v_lo << 1, v_hi << 1 | (v_lo >> 127)]);
-            }
-            v_mul_2.reverse();
-            for [v_lo, v_hi] in v_mul_2 {
-                let [u_lo, u_hi] = u;
-                if (u_hi > v_hi) || (u_hi == v_hi && u_lo >= v_lo) {
-                    let (new_lo, carry) = u_lo.overflowing_sub(v_lo);
-                    let new_hi = u_hi - v_hi - (carry as u128);
-                    u = [new_lo, new_hi];
-                }
-            }
-            u[0]
-        }
-        let mut rng = Xorshift::default();
-        for _ in 0..Q {
-            let mut u = [0u64; 4];
-            for k in 0..4 {
-                for a in [1, 10, u32::MAX as _, u64::MAX] {
-                    u[k] = rng.random(..a);
-                    for b in [1, 10, u128::MAX] {
-                        let v = rng.random(1..=b);
-                        assert_eq!(rem_u256_by_u128(u, v), naive_rem(u, v));
+    mod saturating {
+        macro_rules! test_saturating {
+            ($($unsigned:ident $signed:ident)*) => {
+                $(
+                    mod $unsigned {
+                        use super::super::*;
+                        type S = Saturating<$unsigned>;
+
+                        test_saturating!(@common $unsigned);
+                        test_saturating!(@unsigned $unsigned);
                     }
+                    mod $signed {
+                        use super::super::*;
+                        type S = Saturating<$signed>;
+
+                        test_saturating!(@common $signed);
+                        test_saturating!(@signed $signed);
+                    }
+                )*
+            };
+            (@common $t:ident) => {
+                macro_rules! assign {
+                    ($op:tt, $left:expr, $right:expr) => {{
+                        let mut a = $left;
+                        a $op $right;
+                        a
+                    }};
                 }
-            }
+
+                #[test]
+                fn test_saturating() {
+                    assert_eq!((1 as $t).to_saturating(), S::from(1));
+                    assert_eq!($t::from_saturating((1 as $t).to_saturating()), 1 as $t);
+                    assert_eq!(S::maximum(), S::from($t::MAX));
+                    assert_eq!(S::minimum(), S::from($t::MIN));
+                    assert_eq!(S::zero(), S::from(0));
+                    assert_eq!(S::one(), S::from(1));
+                    assert_eq!(S::from(1 as $t).to_string(), "1");
+                    assert_eq!(S::from_str("123").unwrap(), S::from(123));
+                    assert_eq!(format!("{:?}", S::from(123)), "123");
+                    assert_eq!(S::scan(&mut ["123"].iter().map(|s| *s)).unwrap(), S::from(123));
+                    assert_eq!(S::from(1) + S::from(2), S::from(3));
+                    assert_eq!(S::from(1) + 2, S::from(3));
+                    assert_eq!(S::from(3) - S::from(1), S::from(2));
+                    assert_eq!(S::from(3) - 1, S::from(2));
+                    assert_eq!(S::from(2) * S::from(3), S::from(6));
+                    assert_eq!(S::from(2) * 3, S::from(6));
+                    assert_eq!(S::from(6) / S::from(3), S::from(2));
+                    assert_eq!(S::from(6) / 3, S::from(2));
+                    assert_eq!(S::from(7) % S::from(4), S::from(3));
+                    assert_eq!(S::from(7) % 4, S::from(3));
+                    assert_eq!(S::from(1) & S::from(3), S::from(1));
+                    assert_eq!(S::from(1) & 3, S::from(1));
+                    assert_eq!(S::from(1) | S::from(2), S::from(3));
+                    assert_eq!(S::from(1) | 2, S::from(3));
+                    assert_eq!(S::from(3) ^ S::from(1), S::from(2));
+                    assert_eq!(S::from(3) ^ 1, S::from(2));
+                    assert_eq!(S::from(1) << 2, S::from(4));
+                    assert_eq!(S::from(4) >> 2, S::from(1));
+                    assert_eq!(assign!(+=, S::from(1), S::from(2)), S::from(3));
+                    assert_eq!(assign!(+=, S::from(1), 2), S::from(3));
+                    assert_eq!(assign!(-=, S::from(3), S::from(1)), S::from(2));
+                    assert_eq!(assign!(-=, S::from(3), 1), S::from(2));
+                    assert_eq!(assign!(*=, S::from(2), S::from(3)), S::from(6));
+                    assert_eq!(assign!(*=, S::from(2), 3), S::from(6));
+                    assert_eq!(assign!(/=, S::from(6), S::from(3)), S::from(2));
+                    assert_eq!(assign!(/=, S::from(6), 3), S::from(2));
+                    assert_eq!(assign!(%=, S::from(7), S::from(4)), S::from(3));
+                    assert_eq!(assign!(%=, S::from(7), 4), S::from(3));
+                    assert_eq!(assign!(&=, S::from(1), S::from(3)), S::from(1));
+                    assert_eq!(assign!(&=, S::from(1), 3), S::from(1));
+                    assert_eq!(assign!(|=, S::from(1), S::from(2)), S::from(3));
+                    assert_eq!(assign!(|=, S::from(1), 2), S::from(3));
+                    assert_eq!(assign!(^=, S::from(3), S::from(1)), S::from(2));
+                    assert_eq!(assign!(^=, S::from(3), 1), S::from(2));
+                    assert_eq!(assign!(<<=, S::from(1), 2), S::from(4));
+                    assert_eq!(assign!(>>=, S::from(4), 2), S::from(1));
+                    assert_eq!(!S::from(1), S::from(!(1 as $t)));
+                    assert_eq!([S::from(1), S::from(2)].into_iter().sum::<S>(), S::from(3));
+                    assert_eq!([S::from(2), S::from(3)].into_iter().product::<S>(), S::from(6));
+                    assert_eq!(S::from(10).div_euclid(S::from(3)), S::from(3));
+                    assert_eq!(S::from(10).rem_euclid(S::from(3)), S::from(1));
+                    assert_eq!(S::from(10).pow(2), S::from(100));
+                    assert_eq!(S::from_str_radix("1a", 16).unwrap(), S::from(26));
+                    assert_eq!(S::from(100).ilog(S::from(10)), 2);
+                    assert_eq!(S::from(16).ilog2(), 4);
+                    assert_eq!(S::from(100).ilog10(), 2);
+                    assert_eq!(S::from(0b1010).count_ones(), 2);
+                    assert_eq!(S::from(0b1010).count_zeros(), <$t>::BITS - 2);
+                    assert_eq!(S::from(!0b0010).leading_ones(), <$t>::BITS - 2);
+                    assert_eq!(S::from(0b0010).leading_zeros(), <$t>::BITS - 2);
+                    assert_eq!(S::from(0b101).reverse_bits(), S::from(0b101 << (<$t>::BITS - 3)));
+                    assert_eq!(S::from(0b0001_0010).rotate_left(2), S::from(0b0100_1000));
+                    assert_eq!(S::from(0b0001_0010).rotate_right(<$t>::BITS - 2), S::from(0b0100_1000));
+                    assert_eq!(S::from(0b0001_0010).swap_bytes(), S::from(0b0001_0010 << (<$t>::BITS - 8)));
+                    assert_eq!(S::from(!0b0100).trailing_ones(), 2);
+                    assert_eq!(S::from(0b0100).trailing_zeros(), 2);
+                }
+            };
+            (@unsigned $t:ident) => {
+                #[test]
+                fn test_saturating_unsigned() {
+                    assert_eq!(S::from(0).signed(), Saturating::from(0));
+                    assert_eq!(S::from(10).abs_diff(S::from(20)), S::from(10));
+                    assert_eq!(S::from(10).next_power_of_two(), S::from(16));
+                    assert_eq!(S::from(100).gcd(S::from(80)), S::from(20));
+                    assert_eq!(S::from(100).mod_add(S::from(80), S::from(150)), S::from(30));
+                    assert_eq!(S::from(100).mod_sub(S::from(80), S::from(150)), S::from(20));
+                    assert_eq!(S::from(100).mod_mul(S::from(80), S::from(150)), S::from(50));
+                }
+            };
+            (@signed $t:ident) => {
+                #[test]
+                fn test_saturating_signed() {
+                    assert_eq!(S::from(0).unsigned(), Saturating::from(0));
+                    assert_eq!(S::from(-10).abs(), S::from(10));
+                    assert_eq!(S::from(10).abs_diff(S::from(-20)), Saturating::from(30));
+                    assert!(!S::from(10).is_negative());
+                    assert!(S::from(-10).is_negative());
+                    assert!(S::from(10).is_positive());
+                    assert!(!S::from(-10).is_positive());
+                    assert_eq!(S::from(10).signum(), S::from(1));
+                    assert_eq!(S::from(-10).signum(), S::from(-1));
+                    assert_eq!(S::from(0).signum(), S::from(0));
+                    assert_eq!(-S::from(1), S::from(-1));
+                }
+            };
         }
+        test_saturating!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
+    }
+
+    mod wrapping {
+        macro_rules! test_wrapping {
+            ($($unsigned:ident $signed:ident)*) => {
+                $(
+                    mod $unsigned {
+                        use super::super::*;
+                        type W = Wrapping<$unsigned>;
+
+                        test_wrapping!(@common $unsigned);
+                        test_wrapping!(@unsigned $unsigned);
+                    }
+                    mod $signed {
+                        use super::super::*;
+                        type W = Wrapping<$signed>;
+
+                        test_wrapping!(@common $signed);
+                        test_wrapping!(@signed $signed);
+                    }
+                )*
+            };
+            (@common $t:ident) => {
+                macro_rules! assign {
+                    ($op:tt, $left:expr, $right:expr) => {{
+                        let mut a = $left;
+                        a $op $right;
+                        a
+                    }};
+                }
+
+                #[test]
+                fn test_wrapping() {
+                    assert_eq!((1 as $t).to_wrapping(), W::from(1));
+                    assert_eq!($t::from_wrapping((1 as $t).to_wrapping()), 1 as $t);
+                    assert_eq!(W::maximum(), W::from($t::MAX));
+                    assert_eq!(W::minimum(), W::from($t::MIN));
+                    assert_eq!(W::zero(), W::from(0));
+                    assert_eq!(W::one(), W::from(1));
+                    assert_eq!(W::from(1 as $t).to_string(), "1");
+                    assert_eq!(W::from_str("123").unwrap(), W::from(123));
+                    assert_eq!(format!("{:?}", W::from(123)), "123");
+                    assert_eq!(W::scan(&mut ["123"].iter().map(|s| *s)).unwrap(), W::from(123));
+                    assert_eq!(W::from(1) + W::from(2), W::from(3));
+                    assert_eq!(W::from(1) + 2, W::from(3));
+                    assert_eq!(W::from(3) - W::from(1), W::from(2));
+                    assert_eq!(W::from(3) - 1, W::from(2));
+                    assert_eq!(W::from(2) * W::from(3), W::from(6));
+                    assert_eq!(W::from(2) * 3, W::from(6));
+                    assert_eq!(W::from(6) / W::from(3), W::from(2));
+                    assert_eq!(W::from(6) / 3, W::from(2));
+                    assert_eq!(W::from(7) % W::from(4), W::from(3));
+                    assert_eq!(W::from(7) % 4, W::from(3));
+                    assert_eq!(W::from(1) & W::from(3), W::from(1));
+                    assert_eq!(W::from(1) & 3, W::from(1));
+                    assert_eq!(W::from(1) | W::from(2), W::from(3));
+                    assert_eq!(W::from(1) | 2, W::from(3));
+                    assert_eq!(W::from(3) ^ W::from(1), W::from(2));
+                    assert_eq!(W::from(3) ^ 1, W::from(2));
+                    assert_eq!(W::from(1) << 2, W::from(4));
+                    assert_eq!(W::from(4) >> 2, W::from(1));
+                    assert_eq!(assign!(+=, W::from(1), W::from(2)), W::from(3));
+                    assert_eq!(assign!(+=, W::from(1), 2), W::from(3));
+                    assert_eq!(assign!(-=, W::from(3), W::from(1)), W::from(2));
+                    assert_eq!(assign!(-=, W::from(3), 1), W::from(2));
+                    assert_eq!(assign!(*=, W::from(2), W::from(3)), W::from(6));
+                    assert_eq!(assign!(*=, W::from(2), 3), W::from(6));
+                    assert_eq!(assign!(/=, W::from(6), W::from(3)), W::from(2));
+                    assert_eq!(assign!(/=, W::from(6), 3), W::from(2));
+                    assert_eq!(assign!(%=, W::from(7), W::from(4)), W::from(3));
+                    assert_eq!(assign!(%=, W::from(7), 4), W::from(3));
+                    assert_eq!(assign!(&=, W::from(1), W::from(3)), W::from(1));
+                    assert_eq!(assign!(&=, W::from(1), 3), W::from(1));
+                    assert_eq!(assign!(|=, W::from(1), W::from(2)), W::from(3));
+                    assert_eq!(assign!(|=, W::from(1), 2), W::from(3));
+                    assert_eq!(assign!(^=, W::from(3), W::from(1)), W::from(2));
+                    assert_eq!(assign!(^=, W::from(3), 1), W::from(2));
+                    assert_eq!(assign!(<<=, W::from(1), 2), W::from(4));
+                    assert_eq!(assign!(>>=, W::from(4), 2), W::from(1));
+                    assert_eq!(!W::from(1), W::from(!(1 as $t)));
+                    assert_eq!([W::from(1), W::from(2)].into_iter().sum::<W>(), W::from(3));
+                    assert_eq!([W::from(2), W::from(3)].into_iter().product::<W>(), W::from(6));
+                    assert_eq!(W::from(10).div_euclid(W::from(3)), W::from(3));
+                    assert_eq!(W::from(10).rem_euclid(W::from(3)), W::from(1));
+                    assert_eq!(W::from(10).pow(2), W::from(100));
+                    assert_eq!(W::from_str_radix("1a", 16).unwrap(), W::from(26));
+                    assert_eq!(W::from(100).ilog(W::from(10)), 2);
+                    assert_eq!(W::from(16).ilog2(), 4);
+                    assert_eq!(W::from(100).ilog10(), 2);
+                    assert_eq!(W::from(0b1010).count_ones(), 2);
+                    assert_eq!(W::from(0b1010).count_zeros(), <$t>::BITS - 2);
+                    assert_eq!(W::from(!0b0010).leading_ones(), <$t>::BITS - 2);
+                    assert_eq!(W::from(0b0010).leading_zeros(), <$t>::BITS - 2);
+                    assert_eq!(W::from(0b101).reverse_bits(), W::from(0b101 << (<$t>::BITS - 3)));
+                    assert_eq!(W::from(0b0001_0010).rotate_left(2), W::from(0b0100_1000));
+                    assert_eq!(W::from(0b0001_0010).rotate_right(<$t>::BITS - 2), W::from(0b0100_1000));
+                    assert_eq!(W::from(0b0001_0010).swap_bytes(), W::from(0b0001_0010 << (<$t>::BITS - 8)));
+                    assert_eq!(W::from(!0b0100).trailing_ones(), 2);
+                    assert_eq!(W::from(0b0100).trailing_zeros(), 2);
+                }
+            };
+            (@unsigned $t:ident) => {
+                #[test]
+                fn test_wrapping_unsigned() {
+                    assert_eq!(W::from(0).signed(), Wrapping::from(0));
+                    assert_eq!(W::from(10).abs_diff(W::from(20)), W::from(10));
+                    assert_eq!(W::from(10).next_power_of_two(), W::from(16));
+                    assert_eq!(W::from(100).gcd(W::from(80)), W::from(20));
+                    assert_eq!(W::from(100).mod_add(W::from(80), W::from(150)), W::from(30));
+                    assert_eq!(W::from(100).mod_sub(W::from(80), W::from(150)), W::from(20));
+                    assert_eq!(W::from(100).mod_mul(W::from(80), W::from(150)), W::from(50));
+                }
+            };
+            (@signed $t:ident) => {
+                #[test]
+                fn test_wrapping_signed() {
+                    assert_eq!(W::from(0).unsigned(), Wrapping::from(0));
+                    assert_eq!(W::from(-10).abs(), W::from(10));
+                    assert_eq!(W::from(10).abs_diff(W::from(-20)), Wrapping::from(30));
+                    assert!(!W::from(10).is_negative());
+                    assert!(W::from(-10).is_negative());
+                    assert!(W::from(10).is_positive());
+                    assert!(!W::from(-10).is_positive());
+                    assert_eq!(W::from(10).signum(), W::from(1));
+                    assert_eq!(W::from(-10).signum(), W::from(-1));
+                    assert_eq!(W::from(0).signum(), W::from(0));
+                    assert_eq!(-W::from(1), W::from(-1));
+                }
+            };
+        }
+        test_wrapping!(u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize);
     }
 }
