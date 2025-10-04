@@ -42,7 +42,7 @@ pub use self::sqrt_decomposition::{
 #[codesnip::entry("stern_brocot_tree")]
 pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree};
 #[codesnip::entry("ternary_search")]
-pub use self::ternary_search::ternary_search;
+pub use self::ternary_search::{piecewise_ternary_search, ternary_search};
 #[codesnip::entry("XorBasis")]
 pub use self::xorbasis::XorBasis;
 #[codesnip::entry("ZeroSumGame")]
@@ -98,7 +98,7 @@ mod stern_brocot_tree;
 #[cfg_attr(nightly, codesnip::entry)]
 mod syakutori;
 #[cfg_attr(nightly, codesnip::entry)]
-mod ternary_search;
+pub mod ternary_search;
 #[cfg_attr(nightly, codesnip::entry("XorBasis"))]
 mod xorbasis;
 #[cfg_attr(nightly, codesnip::entry("ZeroSumGame"))]

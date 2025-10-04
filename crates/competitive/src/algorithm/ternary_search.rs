@@ -136,10 +136,57 @@ where
     (K::trisect_unkey(k), v)
 }
 
+pub fn piecewise_ternary_search<const N: usize, K, V, F>(piece: [K; N], mut f: F) -> (K, V)
+where
+    K: Trisect,
+    V: PartialOrd,
+    F: FnMut(K) -> V,
+{
+    piece
+        .windows(2)
+        .map(|w| ternary_search(w[0].clone()..=w[1].clone(), &mut f))
+        .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+        .unwrap_or_else(|| (piece[0].clone(), f(piece[0].clone())))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::num::DoubleDouble;
+    use crate::{num::DoubleDouble, tools::Xorshift};
+
+    #[test]
+    fn test_trisect_unsigned() {
+        for p in 0u8..=u8::MAX {
+            assert_eq!(p, u8::trisect_unkey(p.trisect_key()));
+            for q in 0u8..=u8::MAX {
+                assert_eq!(p.cmp(&q), p.trisect_key().cmp(&q.trisect_key()));
+            }
+        }
+    }
+
+    #[test]
+    fn test_trisect_signed() {
+        for p in i8::MIN..=i8::MAX {
+            assert_eq!(p, i8::trisect_unkey(p.trisect_key()));
+            for q in i8::MIN..=i8::MAX {
+                assert_eq!(p.cmp(&q), p.trisect_key().cmp(&q.trisect_key()));
+            }
+        }
+    }
+
+    #[test]
+    fn test_trisect_float() {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let p = (rng.randf() - 0.5) * 200.;
+            assert_eq!(p, f64::trisect_unkey(p.trisect_key()));
+            let q = (rng.randf() - 0.5) * 200.;
+            assert_eq!(
+                p.partial_cmp(&q),
+                p.trisect_key().partial_cmp(&q.trisect_key())
+            );
+        }
+    }
 
     #[test]
     fn test_ternary_search_unsigned() {
@@ -175,5 +222,12 @@ mod tests {
             .abs())
             .0,
         );
+
+        for a in 0..1000 {
+            assert_eq!(
+                0.0f64,
+                piecewise_ternary_search([0.0, 1e-9, 1.0], |x| (x - (a as f64) / 1000.0).powi(2)).1,
+            )
+        }
     }
 }
