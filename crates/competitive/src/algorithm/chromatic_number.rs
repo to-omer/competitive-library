@@ -1,11 +1,27 @@
 use super::{MInt, MIntBase, One, Zero, binary_search};
 
 #[derive(Debug, Clone)]
-pub struct IndependentSubSet<M: MIntBase> {
+pub struct IndependentSubSet<M>
+where
+    M: MIntBase,
+{
     pub n: usize,
     pub ind: Vec<MInt<M>>,
 }
-impl<M: MIntBase> IndependentSubSet<M> {
+
+impl<M> IndependentSubSet<M>
+where
+    M: MIntBase,
+{
+    pub fn from_edges(n: usize, edges: &[(usize, usize)]) -> Self {
+        let mut g = vec![0; n];
+        for &(u, v) in edges {
+            g[u] |= 1 << v;
+            g[v] |= 1 << u;
+        }
+        Self::from_adj_graph(&g)
+    }
+
     pub fn from_adj_graph(g: &[usize]) -> Self {
         let n = g.len();
         let mut ind = Vec::with_capacity(1 << n);
@@ -16,6 +32,7 @@ impl<M: MIntBase> IndependentSubSet<M> {
         }
         Self { n, ind }
     }
+
     pub fn k_colorable(&self, k: usize) -> bool {
         !self
             .ind
@@ -26,6 +43,7 @@ impl<M: MIntBase> IndependentSubSet<M> {
             .sum::<MInt<M>>()
             .is_zero()
     }
+
     /// The smallest number of colors needed to color a graph.
     pub fn chromatic_number(&self) -> usize {
         binary_search(|&k| self.k_colorable(k), self.n, 0)
