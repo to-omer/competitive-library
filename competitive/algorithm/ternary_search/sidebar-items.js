@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["piecewise_ternary_search","ternary_search"],"trait":["FibonacciSearch","Trisect"]};

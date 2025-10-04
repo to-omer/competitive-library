@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["assignment","bipartitematching","directedmst","min_cost_b_flow","scc"]};
+window.SIDEBAR_ITEMS = {"mod":["assignment","bipartitematching","chromatic_number","directedmst","min_cost_b_flow","scc"]};
