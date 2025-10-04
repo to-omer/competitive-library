@@ -26,7 +26,7 @@ pub fn queue_operate_all_composite(reader: impl Read, mut writer: impl Write) {
                 let (a, b) = que.fold_all();
                 writeln!(writer, "{}", a * x + b).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

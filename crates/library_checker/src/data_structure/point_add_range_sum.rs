@@ -24,7 +24,7 @@ pub fn point_add_range_sum_binary_indexed_tree(reader: impl Read, mut writer: im
                 scan!(scanner, l, r);
                 writeln!(writer, "{}", bit.fold(l, r)).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }
@@ -45,7 +45,7 @@ pub fn point_add_range_sum_segment_tree(reader: impl Read, mut writer: impl Writ
                 scan!(scanner, l, r);
                 writeln!(writer, "{}", seg.fold(l..r)).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

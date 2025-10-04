@@ -34,7 +34,7 @@ pub fn dynamic_sequence_range_affine_range_sum(reader: impl Read, mut writer: im
                 scan!(scanner, l, r);
                 writeln!(writer, "{}", seq.fold(l..r).0).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

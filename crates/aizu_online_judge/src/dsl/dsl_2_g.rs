@@ -18,7 +18,7 @@ pub fn dsl_2_g(reader: impl Read, mut writer: impl Write) {
                 scan!(scanner, s, t);
                 writeln!(writer, "{}", seg.fold(s - 1..t).0).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

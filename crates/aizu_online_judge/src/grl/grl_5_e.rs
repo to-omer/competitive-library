@@ -35,7 +35,7 @@ pub fn grl_5_e(reader: impl Read, mut writer: impl Write) {
                 let ans = hld.query::<M, _>(0, u, true, |l, r| seg.fold(l..r)).0;
                 writeln!(writer, "{}", ans).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

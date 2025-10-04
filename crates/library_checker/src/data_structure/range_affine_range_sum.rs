@@ -24,7 +24,7 @@ pub fn range_affine_range_sum(reader: impl Read, mut writer: impl Write) {
                 scan!(scanner, l, r);
                 writeln!(writer, "{}", seg.fold(l..r).0).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

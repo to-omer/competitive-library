@@ -38,7 +38,7 @@ pub fn vertex_set_path_composite(reader: impl Read, mut writer: impl Write) {
                 );
                 writeln!(writer, "{}", a * x + b).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

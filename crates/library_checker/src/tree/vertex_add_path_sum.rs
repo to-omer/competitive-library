@@ -30,7 +30,7 @@ pub fn vertex_add_path_sum(reader: impl Read, mut writer: impl Write) {
                 )
                 .ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

@@ -34,7 +34,7 @@ pub fn range_chmin_chmax_add_range_sum(reader: impl Read, mut writer: impl Write
                 scan!(scanner, l, r);
                 writeln!(writer, "{}", seg.fold(l..r).sum).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }

@@ -37,7 +37,7 @@ pub fn grl_5_d(reader: impl Read, mut writer: impl Write) {
                 };
                 writeln!(writer, "{}", ans).ok();
             }
-            _ => panic!("unknown query"),
+            _ => unreachable!("unknown query"),
         }
     }
 }
