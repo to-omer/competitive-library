@@ -4,20 +4,45 @@
 pub trait Magma {
     /// type of operands: $T$
     type T: Clone;
+
     /// binary operaion: $\circ$
     fn operate(x: &Self::T, y: &Self::T) -> Self::T;
-    #[inline]
+
     fn reverse_operate(x: &Self::T, y: &Self::T) -> Self::T {
         Self::operate(y, x)
     }
-    #[inline]
+
     fn operate_assign(x: &mut Self::T, y: &Self::T) {
         *x = Self::operate(x, y);
     }
 }
 
 /// $\forall a,\forall b,\forall c \in T, (a \circ b) \circ c = a \circ (b \circ c)$
-pub trait Associative {}
+pub trait Associative: Magma {
+    fn check_associativity(a: &Self::T, b: &Self::T, c: &Self::T) -> bool
+    where
+        Self::T: PartialEq,
+    {
+        ({
+            let ab_c = Self::operate(&Self::operate(a, b), c);
+            let a_bc = Self::operate(a, &Self::operate(b, c));
+            ab_c == a_bc
+        }) && ({
+            let ab_c = Self::reverse_operate(c, &Self::reverse_operate(b, a));
+            let a_bc = Self::reverse_operate(&Self::reverse_operate(c, b), a);
+            ab_c == a_bc
+        }) && ({
+            let mut ab_c = a.clone();
+            Self::operate_assign(&mut ab_c, b);
+            Self::operate_assign(&mut ab_c, c);
+            let mut bc = b.clone();
+            Self::operate_assign(&mut bc, c);
+            let mut a_bc = a.clone();
+            Self::operate_assign(&mut a_bc, &bc);
+            ab_c == a_bc
+        })
+    }
+}
 
 /// associative binary operation
 pub trait SemiGroup: Magma + Associative {}
@@ -28,16 +53,28 @@ impl<S> SemiGroup for S where S: Magma + Associative {}
 pub trait Unital: Magma {
     /// identity element: $e$
     fn unit() -> Self::T;
-    #[inline]
+
     fn is_unit(x: &Self::T) -> bool
     where
-        <Self as Magma>::T: PartialEq,
+        Self::T: PartialEq,
     {
         x == &Self::unit()
     }
-    #[inline]
+
     fn set_unit(x: &mut Self::T) {
         *x = Self::unit();
+    }
+
+    fn check_unital(x: &Self::T) -> bool
+    where
+        Self::T: PartialEq,
+    {
+        let u = Self::unit();
+        let xu = Self::operate(x, &u);
+        let ux = Self::operate(&u, x);
+        let mut any = x.clone();
+        Self::set_unit(&mut any);
+        xu == *x && ux == *x && Self::is_unit(&u) && Self::is_unit(&any)
     }
 }
 
@@ -135,16 +172,43 @@ pub trait Monoid: SemiGroup + Unital {
 impl<M> Monoid for M where M: SemiGroup + Unital {}
 
 /// $\exists e \in T, \forall a \in T, \exists b,c \in T, b \circ a = a \circ c = e$
-pub trait Invertible: Magma {
+pub trait Invertible: Magma + Unital {
     /// $a$ where $a \circ x = e$
     fn inverse(x: &Self::T) -> Self::T;
-    #[inline]
+
     fn rinv_operate(x: &Self::T, y: &Self::T) -> Self::T {
         Self::operate(x, &Self::inverse(y))
     }
-    #[inline]
+
     fn rinv_operate_assign(x: &mut Self::T, y: &Self::T) {
         *x = Self::rinv_operate(x, y);
+    }
+
+    fn check_invertible(x: &Self::T) -> bool
+    where
+        Self::T: PartialEq,
+    {
+        let i = Self::inverse(x);
+        ({
+            let xi = Self::operate(x, &i);
+            let ix = Self::operate(&i, x);
+            Self::is_unit(&xi) && Self::is_unit(&ix)
+        }) && ({
+            let ii = Self::inverse(&i);
+            ii == *x
+        }) && ({
+            let mut xi = x.clone();
+            Self::operate_assign(&mut xi, &i);
+            let mut ix = i.clone();
+            Self::operate_assign(&mut ix, x);
+            Self::is_unit(&xi) && Self::is_unit(&ix)
+        }) && ({
+            let mut xi = x.clone();
+            Self::rinv_operate_assign(&mut xi, x);
+            let mut ix = i.clone();
+            Self::rinv_operate_assign(&mut ix, &i);
+            Self::is_unit(&xi) && Self::is_unit(&ix)
+        })
     }
 }
 
@@ -163,7 +227,14 @@ pub trait Group: Monoid + Invertible {
 impl<G> Group for G where G: Monoid + Invertible {}
 
 /// $\forall a,\forall b \in T, a \circ b = b \circ a$
-pub trait Commutative {}
+pub trait Commutative: Magma {
+    fn check_commutativity(a: &Self::T, b: &Self::T) -> bool
+    where
+        Self::T: PartialEq,
+    {
+        Self::operate(a, b) == Self::operate(b, a)
+    }
+}
 
 /// commutative monoid
 pub trait AbelianMonoid: Monoid + Commutative {}
@@ -176,7 +247,14 @@ pub trait AbelianGroup: Group + Commutative {}
 impl<G> AbelianGroup for G where G: Group + Commutative {}
 
 /// $\forall a \in T, a \circ a = a$
-pub trait Idempotent {}
+pub trait Idempotent: Magma {
+    fn check_idempotency(a: &Self::T) -> bool
+    where
+        Self::T: PartialEq,
+    {
+        Self::operate(a, a) == *a
+    }
+}
 
 /// idempotent monoid
 pub trait IdempotentMonoid: Monoid + Idempotent {}

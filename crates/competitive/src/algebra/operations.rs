@@ -37,6 +37,29 @@ mod max_operation_impl {
     impl<T> Associative for MaxOperation<T> where T: Clone + Ord + Bounded {}
     impl<T> Commutative for MaxOperation<T> where T: Clone + Ord + Bounded {}
     impl<T> Idempotent for MaxOperation<T> where T: Clone + Ord + Bounded {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_max_operation() {
+            type M = MaxOperation<i32>;
+            assert_eq!(M::operate(&1, &2), 2);
+            assert_eq!(M::operate(&2, &1), 2);
+            assert_eq!(M::operate(&2, &2), 2);
+            for a in -10..=10 {
+                assert!(M::check_unital(&a));
+                assert!(M::check_idempotency(&a));
+                for b in -10..=10 {
+                    assert!(M::check_commutativity(&a, &b));
+                    for c in -10..=10 {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("MinOperation")]
@@ -74,6 +97,29 @@ mod min_operation_impl {
     impl<T> Associative for MinOperation<T> where T: Clone + Ord + Bounded {}
     impl<T> Commutative for MinOperation<T> where T: Clone + Ord + Bounded {}
     impl<T> Idempotent for MinOperation<T> where T: Clone + Ord + Bounded {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_min_operation() {
+            type M = MinOperation<i32>;
+            assert_eq!(M::operate(&1, &2), 1);
+            assert_eq!(M::operate(&2, &1), 1);
+            assert_eq!(M::operate(&2, &2), 2);
+            for a in -10..=10 {
+                assert!(M::check_unital(&a));
+                assert!(M::check_idempotency(&a));
+                for b in -10..=10 {
+                    assert!(M::check_commutativity(&a, &b));
+                    for c in -10..=10 {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("FirstOperation")]
@@ -110,6 +156,31 @@ mod first_operation_impl {
     }
     impl<T> Associative for FirstOperation<T> where T: Clone {}
     impl<T> Idempotent for FirstOperation<T> where T: Clone {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_first_operation() {
+            type M = FirstOperation<i32>;
+            assert_eq!(M::operate(&Some(1), &Some(2)), Some(1));
+            assert_eq!(M::operate(&Some(2), &Some(1)), Some(2));
+            assert_eq!(M::operate(&Some(1), &None), Some(1));
+            assert_eq!(M::operate(&None, &Some(1)), Some(1));
+            assert_eq!(M::operate(&None, &None), None);
+            let iter = [Some(1), Some(2), Some(3), None];
+            for a in iter {
+                assert!(M::check_unital(&a));
+                assert!(M::check_idempotency(&a));
+                for b in iter {
+                    for c in iter {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("LastOperation")]
@@ -146,6 +217,31 @@ mod last_operation_impl {
     }
     impl<T> Associative for LastOperation<T> where T: Clone {}
     impl<T> Idempotent for LastOperation<T> where T: Clone {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_last_operation() {
+            type M = LastOperation<i32>;
+            assert_eq!(M::operate(&Some(1), &Some(2)), Some(2));
+            assert_eq!(M::operate(&Some(2), &Some(1)), Some(1));
+            assert_eq!(M::operate(&Some(1), &None), Some(1));
+            assert_eq!(M::operate(&None, &Some(1)), Some(1));
+            assert_eq!(M::operate(&None, &None), None);
+            let iter = [Some(1), Some(2), Some(3), None];
+            for a in iter {
+                assert!(M::check_unital(&a));
+                assert!(M::check_idempotency(&a));
+                for b in iter {
+                    for c in iter {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("AdditiveOperation")]
@@ -196,6 +292,31 @@ mod additive_operation_impl {
         #[inline]
         fn rinv_operate(x: &Self::T, y: &Self::T) -> Self::T {
             x.clone() - y.clone()
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_additive_operation() {
+            type M = AdditiveOperation<i32>;
+            assert_eq!(M::operate(&1, &2), 3);
+            assert_eq!(M::operate(&2, &1), 3);
+            assert_eq!(M::operate(&1, &0), 1);
+            assert_eq!(M::operate(&0, &1), 1);
+            assert_eq!(M::operate(&0, &0), 0);
+            for a in -10..=10 {
+                assert!(M::check_unital(&a));
+                assert!(M::check_invertible(&a));
+                for b in -10..=10 {
+                    assert!(M::check_commutativity(&a, &b));
+                    for c in -10..=10 {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
         }
     }
 }
@@ -250,6 +371,37 @@ mod multiplicative_operation_impl {
             (x.clone()).div(y.clone())
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::num::mint_basic::MInt998244353;
+
+        #[test]
+        fn test_multiplicative_operation() {
+            type MInt = MInt998244353;
+            type M = MultiplicativeOperation<MInt>;
+            assert_eq!(M::operate(&MInt::new(1), &MInt::new(2)), MInt::new(2));
+            assert_eq!(M::operate(&MInt::new(2), &MInt::new(1)), MInt::new(2));
+            assert_eq!(M::operate(&MInt::new(1), &MInt::new(1)), MInt::new(1));
+            assert_eq!(M::operate(&MInt::new(1), &MInt::new(0)), MInt::new(0));
+            assert_eq!(M::operate(&MInt::new(0), &MInt::new(1)), MInt::new(0));
+            assert_eq!(M::operate(&MInt::new(0), &MInt::new(0)), MInt::new(0));
+            let iter = (-10..=10).map(MInt::from);
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                if !a.is_zero() {
+                    assert!(M::check_invertible(&a));
+                }
+                for b in iter.clone() {
+                    assert!(M::check_commutativity(&a, &b));
+                    for c in iter.clone() {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("LinearOperation")]
@@ -267,6 +419,14 @@ mod linear_operation_impl {
         T: Clone + Zero + Add<Output = T> + One + Mul<Output = T>,
     {
         _marker: PhantomData<fn() -> T>,
+    }
+    impl<T> LinearOperation<T>
+    where
+        T: Clone + Zero + Add<Output = T> + One + Mul<Output = T>,
+    {
+        pub fn apply(f: &(T, T), x: &T) -> T {
+            f.0.clone() * x.clone() + f.1.clone()
+        }
     }
     impl<T> Magma for LinearOperation<T>
     where
@@ -308,6 +468,36 @@ mod linear_operation_impl {
         fn inverse(x: &Self::T) -> Self::T {
             let y = <T as One>::one().div(x.0.clone());
             (y.clone(), -y.mul(x.1.clone()))
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::num::mint_basic::MInt998244353;
+
+        #[test]
+        fn test_linear_operation() {
+            type MInt = MInt998244353;
+            type M = LinearOperation<MInt>;
+            let iter = (-5..=5).flat_map(|x| (-5..=5).map(move |y| (MInt::from(x), MInt::from(y))));
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                if !a.0.is_zero() {
+                    assert!(M::check_invertible(&a));
+                }
+                for b in iter.clone() {
+                    for c in iter.clone() {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                    for x in (-5..=5).map(MInt::from) {
+                        assert_eq!(
+                            M::apply(&M::operate(&a, &b), &x),
+                            M::apply(&b, &M::apply(&a, &x))
+                        );
+                    }
+                }
+            }
         }
     }
 }
@@ -353,11 +543,13 @@ mod bitand_operation_impl {
     impl_bitand_identity!(u16, u16::MAX);
     impl_bitand_identity!(u32, u32::MAX);
     impl_bitand_identity!(u64, u64::MAX);
-    impl_bitand_identity!(isize, isize::MIN);
-    impl_bitand_identity!(i8, i8::MIN);
-    impl_bitand_identity!(i16, i16::MIN);
-    impl_bitand_identity!(i32, i32::MIN);
-    impl_bitand_identity!(i64, i64::MIN);
+    impl_bitand_identity!(u128, u128::MAX);
+    impl_bitand_identity!(isize, -1);
+    impl_bitand_identity!(i8, -1);
+    impl_bitand_identity!(i16, -1);
+    impl_bitand_identity!(i32, -1);
+    impl_bitand_identity!(i64, -1);
+    impl_bitand_identity!(i128, -1);
     impl<T> Magma for BitAndOperation<T>
     where
         T: Clone + BitAndIdentity,
@@ -380,6 +572,43 @@ mod bitand_operation_impl {
     impl<T> Associative for BitAndOperation<T> where T: Clone + BitAndIdentity {}
     impl<T> Commutative for BitAndOperation<T> where T: Clone + BitAndIdentity {}
     impl<T> Idempotent for BitAndOperation<T> where T: Clone + BitAndIdentity {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_bitand_operation() {
+            macro_rules! impl_test_bitand_operation {
+                ($ty:ty, $array:expr) => {{
+                    type M = BitAndOperation<$ty>;
+                    for a in $array {
+                        assert!(M::check_unital(&a));
+                        assert!(M::check_idempotency(&a));
+                        for b in $array {
+                            assert!(M::check_commutativity(&a, &b));
+                            for c in $array {
+                                assert!(M::check_associativity(&a, &b, &c));
+                            }
+                        }
+                    }
+                }};
+            }
+            impl_test_bitand_operation!(bool, [true, false]);
+            impl_test_bitand_operation!(usize, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitand_operation!(u8, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitand_operation!(u16, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitand_operation!(u32, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitand_operation!(u64, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitand_operation!(u128, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitand_operation!(isize, [0, 1, 2, 3, 4, 5, -1, -2, isize::MIN, isize::MAX]);
+            impl_test_bitand_operation!(i8, [0, 1, 2, 3, 4, 5, -1, -2, i8::MIN, i8::MAX]);
+            impl_test_bitand_operation!(i16, [0, 1, 2, 3, 4, 5, -1, -2, i16::MIN, i16::MAX]);
+            impl_test_bitand_operation!(i32, [0, 1, 2, 3, 4, 5, -1, -2, i32::MIN, i32::MAX]);
+            impl_test_bitand_operation!(i64, [0, 1, 2, 3, 4, 5, -1, -2, i64::MIN, i64::MAX]);
+            impl_test_bitand_operation!(i128, [0, 1, 2, 3, 4, 5, -1, -2, i128::MIN, i128::MAX]);
+        }
+    }
 }
 
 #[codesnip::entry("BitOrOperation")]
@@ -423,11 +652,13 @@ mod bitor_operation_impl {
     impl_bitor_identity!(u16, 0);
     impl_bitor_identity!(u32, 0);
     impl_bitor_identity!(u64, 0);
+    impl_bitor_identity!(u128, 0);
     impl_bitor_identity!(isize, 0);
     impl_bitor_identity!(i8, 0);
     impl_bitor_identity!(i16, 0);
     impl_bitor_identity!(i32, 0);
     impl_bitor_identity!(i64, 0);
+    impl_bitor_identity!(i128, 0);
     impl<T> Magma for BitOrOperation<T>
     where
         T: Clone + BitOrIdentity,
@@ -450,6 +681,43 @@ mod bitor_operation_impl {
     impl<T> Associative for BitOrOperation<T> where T: Clone + BitOrIdentity {}
     impl<T> Commutative for BitOrOperation<T> where T: Clone + BitOrIdentity {}
     impl<T> Idempotent for BitOrOperation<T> where T: Clone + BitOrIdentity {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_bitor_operation() {
+            macro_rules! impl_test_bitor_operation {
+                ($ty:ty, $array:expr) => {{
+                    type M = BitOrOperation<$ty>;
+                    for a in $array {
+                        assert!(M::check_unital(&a));
+                        assert!(M::check_idempotency(&a));
+                        for b in $array {
+                            assert!(M::check_commutativity(&a, &b));
+                            for c in $array {
+                                assert!(M::check_associativity(&a, &b, &c));
+                            }
+                        }
+                    }
+                }};
+            }
+            impl_test_bitor_operation!(bool, [true, false]);
+            impl_test_bitor_operation!(usize, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitor_operation!(u8, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitor_operation!(u16, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitor_operation!(u32, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitor_operation!(u64, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitor_operation!(u128, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitor_operation!(isize, [0, 1, 2, 3, 4, 5, -1, -2, isize::MIN, isize::MAX]);
+            impl_test_bitor_operation!(i8, [0, 1, 2, 3, 4, 5, -1, -2, i8::MIN, i8::MAX]);
+            impl_test_bitor_operation!(i16, [0, 1, 2, 3, 4, 5, -1, -2, i16::MIN, i16::MAX]);
+            impl_test_bitor_operation!(i32, [0, 1, 2, 3, 4, 5, -1, -2, i32::MIN, i32::MAX]);
+            impl_test_bitor_operation!(i64, [0, 1, 2, 3, 4, 5, -1, -2, i64::MIN, i64::MAX]);
+            impl_test_bitor_operation!(i128, [0, 1, 2, 3, 4, 5, -1, -2, i128::MIN, i128::MAX]);
+        }
+    }
 }
 
 #[codesnip::entry("BitXorOperation")]
@@ -489,11 +757,13 @@ mod bitxor_operation_impl {
     impl_bitxor_identity!(u16, 0);
     impl_bitxor_identity!(u32, 0);
     impl_bitxor_identity!(u64, 0);
+    impl_bitxor_identity!(u128, 0);
     impl_bitxor_identity!(isize, 0);
     impl_bitxor_identity!(i8, 0);
     impl_bitxor_identity!(i16, 0);
     impl_bitxor_identity!(i32, 0);
     impl_bitxor_identity!(i64, 0);
+    impl_bitxor_identity!(i128, 0);
     impl<T> Magma for BitXorOperation<T>
     where
         T: Clone + BitXorIdentity,
@@ -521,6 +791,43 @@ mod bitxor_operation_impl {
     {
         fn inverse(x: &Self::T) -> Self::T {
             x.clone()
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_bitxor_operation() {
+            macro_rules! impl_test_bitxor_operation {
+                ($ty:ty, $array:expr) => {{
+                    type M = BitXorOperation<$ty>;
+                    for a in $array {
+                        assert!(M::check_unital(&a));
+                        assert!(M::check_invertible(&a));
+                        for b in $array {
+                            assert!(M::check_commutativity(&a, &b));
+                            for c in $array {
+                                assert!(M::check_associativity(&a, &b, &c));
+                            }
+                        }
+                    }
+                }};
+            }
+            impl_test_bitxor_operation!(bool, [true, false]);
+            impl_test_bitxor_operation!(usize, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitxor_operation!(u8, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitxor_operation!(u16, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitxor_operation!(u32, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitxor_operation!(u64, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitxor_operation!(u128, [0, 1, 2, 3, 4, 5, !0 - 1, !0]);
+            impl_test_bitxor_operation!(isize, [0, 1, 2, 3, 4, 5, -1, -2, isize::MIN, isize::MAX]);
+            impl_test_bitxor_operation!(i8, [0, 1, 2, 3, 4, 5, -1, -2, i8::MIN, i8::MAX]);
+            impl_test_bitxor_operation!(i16, [0, 1, 2, 3, 4, 5, -1, -2, i16::MIN, i16::MAX]);
+            impl_test_bitxor_operation!(i32, [0, 1, 2, 3, 4, 5, -1, -2, i32::MIN, i32::MAX]);
+            impl_test_bitxor_operation!(i64, [0, 1, 2, 3, 4, 5, -1, -2, i64::MIN, i64::MAX]);
+            impl_test_bitxor_operation!(i128, [0, 1, 2, 3, 4, 5, -1, -2, i128::MIN, i128::MAX]);
         }
     }
 }
@@ -578,6 +885,31 @@ mod logical_linear_operation_impl {
         T: Clone + BitXorIdentity + BitAndIdentity + BitXor<Output = T> + BitAnd<Output = T>
     {
     }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_logical_linear_operation() {
+            type M = LogicalLinearOperation<i32>;
+            let iter = (-3..=3).flat_map(|x| (-3..=3).map(move |y| (x, y)));
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                for b in iter.clone() {
+                    for c in iter.clone() {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                    for x in -3..=3 {
+                        assert_eq!(
+                            M::eval(&M::operate(&a, &b), &x),
+                            M::eval(&b, &M::eval(&a, &x))
+                        );
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("TupleOperation", include("algebra"))]
@@ -632,6 +964,31 @@ mod tuple_operation_impl {
         };
     }
     impl_tuple_operation!(A 0 B 1 C 2 D 3 E 4 F 5 G 6 H 7 I 8 J 9);
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::num::mint_basic::MInt998244353;
+
+        #[test]
+        fn test_tuple_operation() {
+            type MInt = MInt998244353;
+            type M = (AdditiveOperation<MInt>, MultiplicativeOperation<MInt>);
+            let iter = (-5..=5).flat_map(|x| (-5..=5).map(move |y| (MInt::from(x), MInt::from(y))));
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                if !a.1.is_zero() {
+                    assert!(M::check_invertible(&a));
+                }
+                for b in iter.clone() {
+                    assert!(M::check_commutativity(&a, &b));
+                    for c in iter.clone() {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("ArrayOperation")]
@@ -675,6 +1032,28 @@ mod array_operation_impl {
             array!(|i| M::inverse(&x[i]); N)
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_array_operation() {
+            type M = ArrayOperation<AdditiveOperation<i32>, 2>;
+
+            let iter = (-5..=5).flat_map(|x| (-5..=5).map(move |y| [x, y]));
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                assert!(M::check_invertible(&a));
+                for b in iter.clone() {
+                    assert!(M::check_commutativity(&a, &b));
+                    for c in iter.clone() {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("CountingOperation")]
@@ -688,29 +1067,24 @@ mod counting_operation_impl {
     }
     impl<M> Magma for CountingOperation<M>
     where
-        M: Magma,
+        M: Magma + Idempotent,
         M::T: PartialEq,
     {
         type T = (M::T, usize);
         #[inline]
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            if x.0 == y.0 {
-                (x.0.clone(), x.1 + y.1)
-            } else {
-                let z = M::operate(&x.0, &y.0);
-                if z == x.0 {
-                    (z, x.1)
-                } else if z == y.0 {
-                    (z, y.1)
-                } else {
-                    (z, 1)
-                }
+            let z = M::operate(&x.0, &y.0);
+            match (z == x.0, z == y.0) {
+                (true, true) => (z, x.1 + y.1),
+                (true, false) => (z, x.1),
+                (false, true) => (z, y.1),
+                (false, false) => (z, 1),
             }
         }
     }
     impl<M> Unital for CountingOperation<M>
     where
-        M: Unital,
+        M: Unital + Idempotent,
         M::T: PartialEq,
     {
         #[inline]
@@ -718,9 +1092,38 @@ mod counting_operation_impl {
             (M::unit(), 0)
         }
     }
-    impl<M> Associative for CountingOperation<M> where M: Associative {}
-    impl<M> Commutative for CountingOperation<M> where M: Commutative {}
-    impl<M> Idempotent for CountingOperation<M> where M: Idempotent {}
+    impl<M> Associative for CountingOperation<M>
+    where
+        M: Associative + Idempotent,
+        M::T: PartialEq,
+    {
+    }
+    impl<M> Commutative for CountingOperation<M>
+    where
+        M: Commutative + Idempotent,
+        M::T: PartialEq,
+    {
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn test_counting_operation() {
+            type M = CountingOperation<MaxOperation<i32>>;
+            let iter = (-5..=5).flat_map(|x| (1..=5).map(move |y| (x, y)));
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                for b in iter.clone() {
+                    assert!(M::check_commutativity(&a, &b));
+                    for c in iter.clone() {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("ReverseOperation")]
@@ -763,6 +1166,30 @@ mod reverse_operation_impl {
         }
     }
     impl<M> Idempotent for ReverseOperation<M> where M: Idempotent {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::num::mint_basic::MInt998244353;
+
+        #[test]
+        fn test_reverse_operation() {
+            type MInt = MInt998244353;
+            type M = ReverseOperation<LinearOperation<MInt>>;
+            let iter = (-3..=3).flat_map(|x| (-3..=3).map(move |y| (MInt::from(x), MInt::from(y))));
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                if !a.0.is_zero() {
+                    assert!(M::check_invertible(&a));
+                }
+                for b in iter.clone() {
+                    for c in iter.clone() {
+                        assert!(M::check_associativity(&a, &b, &c));
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[codesnip::entry("TopkOperation")]
@@ -810,10 +1237,11 @@ mod topk_operation_impl {
     #[cfg(test)]
     mod tests {
         use super::*;
-        use crate::tools::Xorshift;
+        use crate::{array, tools::Xorshift};
 
         #[test]
-        fn test_topk() {
+        fn test_topk_operation() {
+            type M = TopkOperation<4, i64>;
             let mut rng = Xorshift::new();
             for _ in 0..100 {
                 let mut x = [i64::MIN; 4];
@@ -832,12 +1260,32 @@ mod topk_operation_impl {
                         x.truncate(4);
                         x
                     };
-                    let zz = TopkOperation::<4, i64>::operate(&x, &y);
+                    let zz = M::operate(&x, &y);
                     for (z, zz) in z.iter().zip(&zz) {
                         assert_eq!(z, zz);
                     }
                     x = zz;
                 }
+
+                let mut g = || {
+                    if rng.random(0..3) == 0 {
+                        i64::MIN
+                    } else {
+                        rng.random(0..10)
+                    }
+                };
+                let mut a = array![|| g(); 4];
+                a.sort_unstable();
+                a.reverse();
+                assert!(M::check_unital(&a));
+                let mut b = array![|| g(); 4];
+                b.sort_unstable();
+                b.reverse();
+                assert!(M::check_commutativity(&a, &b));
+                let mut c = array![|| g(); 4];
+                c.sort_unstable();
+                c.reverse();
+                assert!(M::check_associativity(&a, &b, &c));
             }
         }
     }
@@ -888,10 +1336,11 @@ mod bottomk_operation_impl {
     #[cfg(test)]
     mod tests {
         use super::*;
-        use crate::tools::Xorshift;
+        use crate::{array, tools::Xorshift};
 
         #[test]
-        fn test_bottomk() {
+        fn test_bottomk_operation() {
+            type M = BottomkOperation<4, i64>;
             let mut rng = Xorshift::new();
             for _ in 0..100 {
                 let mut x = [i64::MAX; 4];
@@ -908,12 +1357,29 @@ mod bottomk_operation_impl {
                         x.truncate(4);
                         x
                     };
-                    let zz = BottomkOperation::<4, i64>::operate(&x, &y);
+                    let zz = M::operate(&x, &y);
                     for (z, zz) in z.iter().zip(&zz) {
                         assert_eq!(z, zz);
                     }
                     x = zz;
                 }
+
+                let mut g = || {
+                    if rng.random(0..3) == 0 {
+                        i64::MAX
+                    } else {
+                        rng.random(0..10)
+                    }
+                };
+                let mut a = array![|| g(); 4];
+                a.sort_unstable();
+                assert!(M::check_unital(&a));
+                let mut b = array![|| g(); 4];
+                b.sort_unstable();
+                assert!(M::check_commutativity(&a, &b));
+                let mut c = array![|| g(); 4];
+                c.sort_unstable();
+                assert!(M::check_associativity(&a, &b, &c));
             }
         }
     }
@@ -928,15 +1394,27 @@ mod permutation_operation_impl {
     impl Magma for PermutationOperation {
         type T = Vec<usize>;
         fn operate(x: &Self::T, y: &Self::T) -> Self::T {
-            y.iter()
-                .map(|&y| if y < x.len() { x[y] } else { y })
-                .collect()
+            let n = x.len().max(y.len());
+            let z: Vec<_> = (0..n)
+                .map(|i| {
+                    let j = y.get(i).cloned().unwrap_or(i);
+                    x.get(j).cloned().unwrap_or(j)
+                })
+                .collect();
+            z
         }
     }
     impl Associative for PermutationOperation {}
     impl Unital for PermutationOperation {
         fn unit() -> Self::T {
             Vec::new()
+        }
+
+        fn is_unit(x: &Self::T) -> bool
+        where
+            Self::T: PartialEq,
+        {
+            x.iter().enumerate().all(|(i, &x)| i == x)
         }
     }
     impl Invertible for PermutationOperation {
@@ -946,6 +1424,29 @@ mod permutation_operation_impl {
                 y[*x] = i;
             }
             y
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::tools::Xorshift;
+
+        #[test]
+        fn test_permutation_operation() {
+            type M = PermutationOperation;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut a: Vec<usize> = (0..rng.random(0..20)).collect();
+                let mut b: Vec<usize> = (0..rng.random(0..20)).collect();
+                let mut c: Vec<usize> = (0..rng.random(0..20)).collect();
+                rng.shuffle(&mut a);
+                rng.shuffle(&mut b);
+                rng.shuffle(&mut c);
+                assert!(M::check_unital(&a));
+                assert!(M::check_invertible(&a));
+                assert!(M::check_associativity(&a, &b, &c));
+            }
         }
     }
 }
@@ -994,7 +1495,44 @@ mod find_majority_operation_impl {
             (None, 0)
         }
     }
-    impl<T> Associative for FindMajorityOperation<T> {}
+    impl<T> Associative for FindMajorityOperation<T> where T: Clone + Eq {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use std::{collections::HashMap, iter::once};
+
+        #[test]
+        fn test_find_majority_operation() {
+            type M = FindMajorityOperation<i32>;
+            let iter = (-5..=5)
+                .flat_map(|x| (1..=5).map(move |y| (Some(x), y)))
+                .chain(once((None, 0)));
+            for a in iter.clone() {
+                assert!(M::check_unital(&a));
+                for b in iter.clone() {
+                    for c in iter.clone() {
+                        // no associativity
+                        // assert!(M::check_associativity(&a, &b, &c));
+                        let mut count = HashMap::<_, usize>::new();
+                        for (key, cnt) in [a, b, c] {
+                            if let Some(key) = key {
+                                *count.entry(key).or_default() += cnt;
+                            }
+                        }
+                        let max = count.values().max().cloned().unwrap_or_default();
+                        let sum: usize = count.values().sum();
+                        if max * 2 > sum {
+                            assert_eq!(
+                                M::operate(&M::operate(&a, &b), &c).0,
+                                count.into_iter().find(|&(_, v)| v == max).map(|(k, _)| k)
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 pub use self::concatenate_operation::{ConcatenateOperation, SortedConcatenateOperation};
@@ -1021,7 +1559,7 @@ mod concatenate_operation {
             Vec::new()
         }
     }
-    impl<T> Associative for ConcatenateOperation<T> {}
+    impl<T> Associative for ConcatenateOperation<T> where T: Clone {}
 
     pub struct SortedConcatenateOperation<T> {
         _marker: PhantomData<fn() -> T>,
@@ -1054,8 +1592,47 @@ mod concatenate_operation {
             Vec::new()
         }
     }
-    impl<T> Associative for SortedConcatenateOperation<T> {}
-    impl<T> Commutative for SortedConcatenateOperation<T> {}
+    impl<T> Associative for SortedConcatenateOperation<T> where T: Clone + Ord {}
+    impl<T> Commutative for SortedConcatenateOperation<T> where T: Clone + Ord {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::{rand, tools::Xorshift};
+
+        #[test]
+        fn test_concatenate_operation() {
+            type M = ConcatenateOperation<i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                rand!(rng, n: 0..4, a: [0..10; n], m: 0..4, b: [0..10; m], l: 0..4, c: [0..10; l]);
+                assert!(M::check_unital(&a));
+                assert!(M::check_associativity(&a, &b, &c));
+
+                let ab: Vec<_> = a.iter().chain(b.iter()).cloned().collect();
+                assert_eq!(M::operate(&a, &b), ab);
+            }
+        }
+
+        #[test]
+        fn test_sorted_concatenate_operation() {
+            type M = SortedConcatenateOperation<i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                rand!(rng, n: 0..4, mut a: [0..10; n], m: 0..4, mut b: [0..10; m], l: 0..4, mut c: [0..10; l]);
+                a.sort_unstable();
+                b.sort_unstable();
+                c.sort_unstable();
+                assert!(M::check_unital(&a));
+                assert!(M::check_commutativity(&a, &b));
+                assert!(M::check_associativity(&a, &b, &c));
+
+                let mut ab: Vec<_> = a.iter().chain(b.iter()).cloned().collect();
+                ab.sort_unstable();
+                assert_eq!(M::operate(&a, &b), ab);
+            }
+        }
+    }
 }
 
 #[codesnip::entry("MinimumIntervalMovementOperation")]
@@ -1141,13 +1718,52 @@ mod minimum_interval_movement_impl {
             }
         }
     }
-    impl<T> Associative for MinimumIntervalMovementOperation<T> {}
+    impl<T> Associative for MinimumIntervalMovementOperation<T> where
+        T: Clone + Ord + Add<Output = T> + Sub<Output = T> + Zero
+    {
+    }
     impl<T> Unital for MinimumIntervalMovementOperation<T>
     where
         T: Clone + Ord + Add<Output = T> + Sub<Output = T> + Zero + Bounded,
     {
         fn unit() -> Self::T {
             MinimumIntervalMovement::new(T::minimum(), T::maximum())
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        use crate::{chmin, tools::Xorshift};
+        use std::collections::HashMap;
+
+        #[test]
+        fn test_minimum_interval_movement_operation() {
+            type M = MinimumIntervalMovementOperation<i32>;
+            let mut rng = Xorshift::default();
+            for _ in 0..100 {
+                let mut min = M::unit();
+                let mut cost = HashMap::new();
+                let s: i32 = rng.random(-100..100);
+                cost.insert(s, 0i32);
+                for _ in 0..10 {
+                    let l = rng.random(-100..100);
+                    let r = rng.random(l..=100);
+                    let m = MinimumIntervalMovement::new(l, r);
+                    min = M::operate(&min, &m);
+                    let mut ncost = HashMap::new();
+                    for (x, c) in cost {
+                        for nx in l..=r {
+                            let nc = c + (x - nx).abs();
+                            chmin!(*ncost.entry(nx).or_insert(nc), nc);
+                        }
+                    }
+                    cost = ncost;
+                    let x = min.position(&s);
+                    let c = min.move_cost(&s);
+                    assert_eq!(Some(&c), cost.get(&x));
+                }
+            }
         }
     }
 }
