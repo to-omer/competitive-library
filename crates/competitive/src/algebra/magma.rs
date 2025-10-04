@@ -19,7 +19,8 @@ pub trait Magma {
 
 /// $\forall a,\forall b,\forall c \in T, (a \circ b) \circ c = a \circ (b \circ c)$
 pub trait Associative: Magma {
-    fn check_associativity(a: &Self::T, b: &Self::T, c: &Self::T) -> bool
+    #[cfg(test)]
+    fn check_associative(a: &Self::T, b: &Self::T, c: &Self::T) -> bool
     where
         Self::T: PartialEq,
     {
@@ -65,6 +66,7 @@ pub trait Unital: Magma {
         *x = Self::unit();
     }
 
+    #[cfg(test)]
     fn check_unital(x: &Self::T) -> bool
     where
         Self::T: PartialEq,
@@ -184,6 +186,7 @@ pub trait Invertible: Magma + Unital {
         *x = Self::rinv_operate(x, y);
     }
 
+    #[cfg(test)]
     fn check_invertible(x: &Self::T) -> bool
     where
         Self::T: PartialEq,
@@ -228,7 +231,8 @@ impl<G> Group for G where G: Monoid + Invertible {}
 
 /// $\forall a,\forall b \in T, a \circ b = b \circ a$
 pub trait Commutative: Magma {
-    fn check_commutativity(a: &Self::T, b: &Self::T) -> bool
+    #[cfg(test)]
+    fn check_commutative(a: &Self::T, b: &Self::T) -> bool
     where
         Self::T: PartialEq,
     {
@@ -248,7 +252,8 @@ impl<G> AbelianGroup for G where G: Group + Commutative {}
 
 /// $\forall a \in T, a \circ a = a$
 pub trait Idempotent: Magma {
-    fn check_idempotency(a: &Self::T) -> bool
+    #[cfg(test)]
+    fn check_idempotent(a: &Self::T) -> bool
     where
         Self::T: PartialEq,
     {

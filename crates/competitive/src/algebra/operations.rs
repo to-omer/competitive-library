@@ -50,11 +50,11 @@ mod max_operation_impl {
             assert_eq!(M::operate(&2, &2), 2);
             for a in -10..=10 {
                 assert!(M::check_unital(&a));
-                assert!(M::check_idempotency(&a));
+                assert!(M::check_idempotent(&a));
                 for b in -10..=10 {
-                    assert!(M::check_commutativity(&a, &b));
+                    assert!(M::check_commutative(&a, &b));
                     for c in -10..=10 {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -110,11 +110,11 @@ mod min_operation_impl {
             assert_eq!(M::operate(&2, &2), 2);
             for a in -10..=10 {
                 assert!(M::check_unital(&a));
-                assert!(M::check_idempotency(&a));
+                assert!(M::check_idempotent(&a));
                 for b in -10..=10 {
-                    assert!(M::check_commutativity(&a, &b));
+                    assert!(M::check_commutative(&a, &b));
                     for c in -10..=10 {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -172,10 +172,10 @@ mod first_operation_impl {
             let iter = [Some(1), Some(2), Some(3), None];
             for a in iter {
                 assert!(M::check_unital(&a));
-                assert!(M::check_idempotency(&a));
+                assert!(M::check_idempotent(&a));
                 for b in iter {
                     for c in iter {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -233,10 +233,10 @@ mod last_operation_impl {
             let iter = [Some(1), Some(2), Some(3), None];
             for a in iter {
                 assert!(M::check_unital(&a));
-                assert!(M::check_idempotency(&a));
+                assert!(M::check_idempotent(&a));
                 for b in iter {
                     for c in iter {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -311,9 +311,9 @@ mod additive_operation_impl {
                 assert!(M::check_unital(&a));
                 assert!(M::check_invertible(&a));
                 for b in -10..=10 {
-                    assert!(M::check_commutativity(&a, &b));
+                    assert!(M::check_commutative(&a, &b));
                     for c in -10..=10 {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -394,9 +394,9 @@ mod multiplicative_operation_impl {
                     assert!(M::check_invertible(&a));
                 }
                 for b in iter.clone() {
-                    assert!(M::check_commutativity(&a, &b));
+                    assert!(M::check_commutative(&a, &b));
                     for c in iter.clone() {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -488,7 +488,7 @@ mod linear_operation_impl {
                 }
                 for b in iter.clone() {
                     for c in iter.clone() {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                     for x in (-5..=5).map(MInt::from) {
                         assert_eq!(
@@ -584,11 +584,11 @@ mod bitand_operation_impl {
                     type M = BitAndOperation<$ty>;
                     for a in $array {
                         assert!(M::check_unital(&a));
-                        assert!(M::check_idempotency(&a));
+                        assert!(M::check_idempotent(&a));
                         for b in $array {
-                            assert!(M::check_commutativity(&a, &b));
+                            assert!(M::check_commutative(&a, &b));
                             for c in $array {
-                                assert!(M::check_associativity(&a, &b, &c));
+                                assert!(M::check_associative(&a, &b, &c));
                             }
                         }
                     }
@@ -693,11 +693,11 @@ mod bitor_operation_impl {
                     type M = BitOrOperation<$ty>;
                     for a in $array {
                         assert!(M::check_unital(&a));
-                        assert!(M::check_idempotency(&a));
+                        assert!(M::check_idempotent(&a));
                         for b in $array {
-                            assert!(M::check_commutativity(&a, &b));
+                            assert!(M::check_commutative(&a, &b));
                             for c in $array {
-                                assert!(M::check_associativity(&a, &b, &c));
+                                assert!(M::check_associative(&a, &b, &c));
                             }
                         }
                     }
@@ -807,9 +807,9 @@ mod bitxor_operation_impl {
                         assert!(M::check_unital(&a));
                         assert!(M::check_invertible(&a));
                         for b in $array {
-                            assert!(M::check_commutativity(&a, &b));
+                            assert!(M::check_commutative(&a, &b));
                             for c in $array {
-                                assert!(M::check_associativity(&a, &b, &c));
+                                assert!(M::check_associative(&a, &b, &c));
                             }
                         }
                     }
@@ -898,7 +898,7 @@ mod logical_linear_operation_impl {
                 assert!(M::check_unital(&a));
                 for b in iter.clone() {
                     for c in iter.clone() {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                     for x in -3..=3 {
                         assert_eq!(
@@ -981,9 +981,9 @@ mod tuple_operation_impl {
                     assert!(M::check_invertible(&a));
                 }
                 for b in iter.clone() {
-                    assert!(M::check_commutativity(&a, &b));
+                    assert!(M::check_commutative(&a, &b));
                     for c in iter.clone() {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -1046,9 +1046,9 @@ mod array_operation_impl {
                 assert!(M::check_unital(&a));
                 assert!(M::check_invertible(&a));
                 for b in iter.clone() {
-                    assert!(M::check_commutativity(&a, &b));
+                    assert!(M::check_commutative(&a, &b));
                     for c in iter.clone() {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -1116,9 +1116,9 @@ mod counting_operation_impl {
             for a in iter.clone() {
                 assert!(M::check_unital(&a));
                 for b in iter.clone() {
-                    assert!(M::check_commutativity(&a, &b));
+                    assert!(M::check_commutative(&a, &b));
                     for c in iter.clone() {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -1184,7 +1184,7 @@ mod reverse_operation_impl {
                 }
                 for b in iter.clone() {
                     for c in iter.clone() {
-                        assert!(M::check_associativity(&a, &b, &c));
+                        assert!(M::check_associative(&a, &b, &c));
                     }
                 }
             }
@@ -1281,11 +1281,11 @@ mod topk_operation_impl {
                 let mut b = array![|| g(); 4];
                 b.sort_unstable();
                 b.reverse();
-                assert!(M::check_commutativity(&a, &b));
+                assert!(M::check_commutative(&a, &b));
                 let mut c = array![|| g(); 4];
                 c.sort_unstable();
                 c.reverse();
-                assert!(M::check_associativity(&a, &b, &c));
+                assert!(M::check_associative(&a, &b, &c));
             }
         }
     }
@@ -1376,10 +1376,10 @@ mod bottomk_operation_impl {
                 assert!(M::check_unital(&a));
                 let mut b = array![|| g(); 4];
                 b.sort_unstable();
-                assert!(M::check_commutativity(&a, &b));
+                assert!(M::check_commutative(&a, &b));
                 let mut c = array![|| g(); 4];
                 c.sort_unstable();
-                assert!(M::check_associativity(&a, &b, &c));
+                assert!(M::check_associative(&a, &b, &c));
             }
         }
     }
@@ -1445,7 +1445,7 @@ mod permutation_operation_impl {
                 rng.shuffle(&mut c);
                 assert!(M::check_unital(&a));
                 assert!(M::check_invertible(&a));
-                assert!(M::check_associativity(&a, &b, &c));
+                assert!(M::check_associative(&a, &b, &c));
             }
         }
     }
@@ -1513,7 +1513,7 @@ mod find_majority_operation_impl {
                 for b in iter.clone() {
                     for c in iter.clone() {
                         // no associativity
-                        // assert!(M::check_associativity(&a, &b, &c));
+                        // assert!(M::check_associative(&a, &b, &c));
                         let mut count = HashMap::<_, usize>::new();
                         for (key, cnt) in [a, b, c] {
                             if let Some(key) = key {
@@ -1607,7 +1607,7 @@ mod concatenate_operation {
             for _ in 0..100 {
                 rand!(rng, n: 0..4, a: [0..10; n], m: 0..4, b: [0..10; m], l: 0..4, c: [0..10; l]);
                 assert!(M::check_unital(&a));
-                assert!(M::check_associativity(&a, &b, &c));
+                assert!(M::check_associative(&a, &b, &c));
 
                 let ab: Vec<_> = a.iter().chain(b.iter()).cloned().collect();
                 assert_eq!(M::operate(&a, &b), ab);
@@ -1624,8 +1624,8 @@ mod concatenate_operation {
                 b.sort_unstable();
                 c.sort_unstable();
                 assert!(M::check_unital(&a));
-                assert!(M::check_commutativity(&a, &b));
-                assert!(M::check_associativity(&a, &b, &c));
+                assert!(M::check_commutative(&a, &b));
+                assert!(M::check_associative(&a, &b, &c));
 
                 let mut ab: Vec<_> = a.iter().chain(b.iter()).cloned().collect();
                 ab.sort_unstable();
