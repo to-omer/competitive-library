@@ -166,7 +166,7 @@ macro_rules! define_verify {
                             let _ = ::verify::init_logger(target.to_string());
                             let config = ::verify::VerifyConfig::new($service, #problem_id, ::std::file!(), ::std::stringify!(#fn_name), &target);
                             let res = match config.get_testcases_and_checker() {
-                                (::std::result::Result::Ok((cases, checker))) => {
+                                ::std::result::Result::Ok((cases, checker)) => {
                                     let mut res = ::verify::VerifyResults::new();
                                     for case in cases {
                                         let name = case.name.to_string();

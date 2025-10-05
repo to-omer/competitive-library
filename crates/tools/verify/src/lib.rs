@@ -524,3 +524,96 @@ pub fn init_logger(target: String) -> Result<(), log::SetLoggerError> {
         .is_test(true)
         .try_init()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::read_to_string;
+
+    fn test_with_result(
+        problem: &'static str,
+        fn_name: &'static str,
+        get_result: impl FnOnce(Vec<TestCase>) -> BoxResult<VerifyResults>,
+    ) -> (BoxResult<()>, String) {
+        std::fs::create_dir_all(
+            get_workspace_root()
+                .unwrap()
+                .join("target/tmp/verify/test_with_result"),
+        )
+        .unwrap();
+        let config = VerifyConfig::new(
+            Service::AizuOnlineJudge,
+            problem,
+            "target/tmp/verify/test_with_result/sample.rs",
+            fn_name,
+            "test-service::sample",
+        );
+        let res = match config.get_testcases_and_checker() {
+            Ok((cases, _)) => get_result(cases),
+            Err(err) => Err(err),
+        };
+        let res = config.finalize(res);
+        let path = Path::new(config.cur_file)
+            .with_file_name(config.fn_name)
+            .with_extension("md");
+        let path = get_workspace_root().unwrap().join(path);
+        (res, read_to_string(path).unwrap())
+    }
+
+    #[test]
+    fn test_accepted() {
+        let (res, content) = test_with_result("sample", "sample_1", |cases| {
+            let mut res = VerifyResults::new();
+            for case in cases {
+                let name = case.name.to_string();
+                let mut elapseds = vec![];
+                loop {
+                    let start = Instant::now();
+                    elapseds.push(start.elapsed());
+                    if elapseds.len() >= 10 {
+                        let status = VerifyStatus::Accepted;
+                        res.push(name, status, elapseds);
+                        break;
+                    }
+                }
+            }
+            Ok(res)
+        });
+        assert!(res.is_ok(), "{}", res.unwrap_err());
+        assert!(content.contains("AC"));
+        assert!(content.contains("VERIFY_TARGET: sample"));
+    }
+
+    #[test]
+    fn test_wrong_answer() {
+        let (res, content) = test_with_result("sample", "sample_2", |cases| {
+            let mut res = VerifyResults::new();
+            for case in cases {
+                let name = case.name.to_string();
+                let mut elapseds = vec![];
+                loop {
+                    let start = Instant::now();
+                    elapseds.push(start.elapsed());
+                    if elapseds.len() >= 10 {
+                        let status = VerifyStatus::WrongAnswer;
+                        res.push(name, status, elapseds);
+                        break;
+                    }
+                }
+            }
+            Ok(res)
+        });
+        assert!(res.is_err(), "{}", res.unwrap_err());
+        assert!(content.contains("WA"));
+        assert!(content.contains("VERIFY_TARGET: sample"));
+    }
+
+    #[test]
+    fn test_internal_error() {
+        let (res, content) =
+            test_with_result("sample", "sample_3", |_| Err(Box::new(VerifyFailed)));
+        assert!(res.is_err(), "{}", res.unwrap_err());
+        assert!(content.contains("❌"));
+        assert!(content.contains("VERIFY_TARGET: sample"));
+    }
+}
