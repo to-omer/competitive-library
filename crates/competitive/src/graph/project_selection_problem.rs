@@ -128,3 +128,205 @@ impl ProjectSelectionProblem {
         (res, values)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
+
+    fn brute_force<F>(n_values: &[usize], mut evaluate: F) -> (i64, Vec<Vec<usize>>)
+    where
+        F: FnMut(&[usize]) -> i64,
+    {
+        let mut best_cost = None;
+        let mut best_assignments = Vec::new();
+        let mut current = vec![0; n_values.len()];
+
+        fn dfs<F>(
+            n_values: &[usize],
+            idx: usize,
+            current: &mut [usize],
+            best_cost: &mut Option<i64>,
+            best_assignments: &mut Vec<Vec<usize>>,
+            evaluate: &mut F,
+        ) where
+            F: FnMut(&[usize]) -> i64,
+        {
+            if idx == current.len() {
+                let cost = evaluate(current);
+                match best_cost {
+                    None => {
+                        *best_cost = Some(cost);
+                        best_assignments.push(current.to_vec());
+                    }
+                    Some(bc) if cost < *bc => {
+                        *best_cost = Some(cost);
+                        best_assignments.clear();
+                        best_assignments.push(current.to_vec());
+                    }
+                    Some(bc) if cost == *bc => {
+                        best_assignments.push(current.to_vec());
+                    }
+                    _ => {}
+                }
+                return;
+            }
+            for value in 0..n_values[idx] {
+                current[idx] = value;
+                dfs(
+                    n_values,
+                    idx + 1,
+                    current,
+                    best_cost,
+                    best_assignments,
+                    evaluate,
+                );
+            }
+        }
+
+        dfs(
+            n_values,
+            0,
+            &mut current,
+            &mut best_cost,
+            &mut best_assignments,
+            &mut evaluate,
+        );
+        (best_cost.unwrap(), best_assignments)
+    }
+
+    #[test]
+    fn test_project_selection_problem() {
+        #[derive(Clone)]
+        struct Penalty {
+            p1: usize,
+            p2: usize,
+            v1: usize,
+            v2: usize,
+            dir_01: bool,
+            cost: u64,
+        }
+
+        #[derive(Clone)]
+        struct MongePair {
+            p1: usize,
+            p2: usize,
+            costs: Vec<Vec<i64>>,
+        }
+
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let n_projects = rng.random(1..=5);
+            let mut n_values = Vec::with_capacity(n_projects);
+            for _ in 0..n_projects {
+                n_values.push(rng.random(2..=5));
+            }
+
+            let mut unary_costs = Vec::with_capacity(n_projects);
+            for &nv in &n_values {
+                let mut costs = Vec::with_capacity(nv);
+                for _ in 0..nv {
+                    costs.push(rng.random(-50..=50));
+                }
+                unary_costs.push(costs);
+            }
+
+            let mut penalties = Vec::new();
+            let mut monge_pairs = Vec::new();
+            for p1 in 0..n_projects {
+                for p2 in 0..n_projects {
+                    if p1 == p2 {
+                        continue;
+                    }
+                    if rng.random(0..=2) == 0 {
+                        let v1 = rng.random(1..n_values[p1]);
+                        let v2 = rng.random(1..n_values[p2]);
+                        let cost = rng.random(0..=50);
+                        if cost == 0 {
+                            continue;
+                        }
+                        penalties.push(Penalty {
+                            p1,
+                            p2,
+                            v1,
+                            v2,
+                            dir_01: rng.random(0..=1) == 0,
+                            cost,
+                        });
+                    }
+                    if p1 < p2 && rng.random(0..=3) == 0 {
+                        let nv1 = n_values[p1];
+                        let nv2 = n_values[p2];
+                        let mut costs = vec![vec![0i64; nv2]; nv1];
+                        costs[0][0] = rng.random(-30..=30);
+                        for y in 1..nv2 {
+                            let delta = rng.random(-20i64..=20);
+                            costs[0][y] = costs[0][y - 1] + delta;
+                        }
+                        for x in 1..nv1 {
+                            let delta = rng.random(-20i64..=20);
+                            costs[x][0] = costs[x - 1][0] + delta;
+                        }
+                        for x in 1..nv1 {
+                            for y in 1..nv2 {
+                                let upper = costs[x - 1][y] + costs[x][y - 1] - costs[x - 1][y - 1];
+                                let reduction = rng.random(0i64..=40);
+                                costs[x][y] = upper - reduction;
+                            }
+                        }
+                        monge_pairs.push(MongePair { p1, p2, costs });
+                    }
+                }
+            }
+
+            let (expected_cost, expected_assignments) = brute_force(&n_values, |assignment| {
+                let mut total = 0i64;
+                for (p, &value) in assignment.iter().enumerate() {
+                    total += unary_costs[p][value];
+                }
+                for penalty in &penalties {
+                    let applies = if penalty.dir_01 {
+                        assignment[penalty.p1] >= penalty.v1 && assignment[penalty.p2] < penalty.v2
+                    } else {
+                        assignment[penalty.p1] < penalty.v1 && assignment[penalty.p2] >= penalty.v2
+                    };
+                    if applies {
+                        total += penalty.cost as i64;
+                    }
+                }
+                for monge in &monge_pairs {
+                    let x = assignment[monge.p1];
+                    let y = assignment[monge.p2];
+                    total += monge.costs[x][y];
+                }
+                total
+            });
+
+            let mut psp = if n_values.iter().all(|&nv| nv == n_values[0]) {
+                ProjectSelectionProblem::new(n_values.len(), n_values[0])
+            } else {
+                ProjectSelectionProblem::with_n_values(n_values.clone())
+            };
+            for (p, costs) in unary_costs.iter().enumerate() {
+                for (value, &cost) in costs.iter().enumerate() {
+                    psp.add_cost1(p, value, cost);
+                }
+            }
+            for penalty in &penalties {
+                if penalty.dir_01 {
+                    psp.add_cost2_01(penalty.p1, penalty.p2, penalty.v1, penalty.v2, penalty.cost);
+                } else {
+                    psp.add_cost2_10(penalty.p1, penalty.p2, penalty.v1, penalty.v2, penalty.cost);
+                }
+            }
+            for monge in &monge_pairs {
+                let costs = monge.costs.clone();
+                psp.add_cost2(monge.p1, monge.p2, move |x, y| costs[x][y]);
+            }
+
+            let (cost, values) = psp.solve();
+            assert_eq!(cost, expected_cost);
+            assert!(expected_assignments.contains(&values));
+        }
+    }
+}
