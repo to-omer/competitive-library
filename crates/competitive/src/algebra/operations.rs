@@ -1242,7 +1242,7 @@ mod topk_operation_impl {
         #[test]
         fn test_topk_operation() {
             type M = TopkOperation<4, i64>;
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             for _ in 0..100 {
                 let mut x = [i64::MIN; 4];
                 for _ in 0..100 {
@@ -1341,7 +1341,7 @@ mod bottomk_operation_impl {
         #[test]
         fn test_bottomk_operation() {
             type M = BottomkOperation<4, i64>;
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             for _ in 0..100 {
                 let mut x = [i64::MAX; 4];
                 for _ in 0..100 {

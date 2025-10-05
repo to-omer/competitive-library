@@ -137,7 +137,7 @@ mod tests {
 
     #[test]
     fn test_binary_indexed_tree() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         let mut arr: Vec<_> = rng.random_iter(..A).take(N).collect();
         let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
         for (k, v) in rng.random_iter((..N, ..A)).take(Q) {
@@ -168,7 +168,7 @@ mod tests {
     #[test]
     fn test_group_binary_indexed_tree() {
         const N: usize = 2_000;
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         let mut arr: Vec<_> = rng.random_iter(-B..B).take(N).collect();
         let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
         for (k, v) in rng.random_iter((..N, -B..B)).take(Q) {
@@ -190,7 +190,7 @@ mod tests {
 
     #[test]
     fn test_binary_indexed_tree_lower_bound() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         let mut arr: Vec<_> = rng.random_iter(1..B).take(N).collect();
         let mut bit = BinaryIndexedTree::<AdditiveOperation<_>>::from_slice(&arr);
         for (k, v) in rng.random_iter((..N, 1..B)).take(Q) {

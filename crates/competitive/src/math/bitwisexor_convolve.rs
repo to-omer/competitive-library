@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn test_bitwisexor_convolve() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
 
         for k in 0..12 {
             let n = 1 << k;

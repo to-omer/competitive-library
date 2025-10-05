@@ -675,7 +675,7 @@ mod tests {
     #[test]
     fn test_row_reduction() {
         const Q: usize = 1000;
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         let ps = [2, 3, 1_000_000_007];
         for _ in 0..Q {
             let m = ps[rng.random(..ps.len())];
@@ -694,7 +694,7 @@ mod tests {
     #[test]
     fn test_system_of_linear_equations() {
         const Q: usize = 1000;
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         let ps = [2, 3, 1_000_000_007];
         for _ in 0..Q {
             let p = ps[rng.random(..ps.len())];

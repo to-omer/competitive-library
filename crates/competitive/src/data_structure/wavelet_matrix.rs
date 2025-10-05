@@ -182,7 +182,7 @@ mod tests {
         const N: usize = 1_000;
         const Q: usize = 1_000;
         const A: usize = 1 << 8;
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         crate::rand!(rng, v: [..A; N]);
         let wm = WaveletMatrix::new(v.clone(), 8);
         for (i, v) in v.iter().cloned().enumerate() {

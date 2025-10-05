@@ -353,7 +353,7 @@ mod tests {
         const A: u64 = 1_000;
         const B: i64 = 1_000;
         const Q: usize = 1_000;
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for _ in 0..Q {
             let (n, a, b, m) = rng.random((..A, ..A, ..A, 1..A));
             let expected: u64 = (0..n).map(|i| (a * i + b) / m).sum();
@@ -387,7 +387,7 @@ mod tests {
         const A: u64 = 100;
         const B: i64 = 100;
         const Q: usize = 1_000;
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for _ in 0..Q {
             let (n, a, b, m) = rng.random((..A, ..A, ..A, 1..A));
             let mut expected: [[u64; P]; P] = [[0; P]; P];

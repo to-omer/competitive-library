@@ -243,7 +243,7 @@ mod tests {
 
     #[test]
     fn test_segment_tree_map() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         let mut arr = vec![0; N + 1];
         let mut seg = SegmentTreeMap::<AdditiveOperation<_>>::new(N);
         for (k, v) in rng.random_iter((..N, 1..=A)).take(Q) {

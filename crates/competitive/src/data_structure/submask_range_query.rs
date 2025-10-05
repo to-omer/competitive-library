@@ -15,7 +15,7 @@ pub enum QueryKind {
 
 impl SubmaskRangeQuery {
     pub fn new(bit_width: u32) -> Self {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         let mut mask = [0; 3];
         let mut rem: Vec<_> = (0..bit_width).map(|w| w % 3).collect();
         rng.shuffle(&mut rem);

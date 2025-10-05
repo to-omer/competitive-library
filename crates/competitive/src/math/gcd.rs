@@ -163,7 +163,7 @@ mod tests {
 
     #[test]
     fn test_gcd() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for (a, b) in rng.random_iter((0.., 0..)).take(Q) {
             assert_eq!(gcd_loop(a, b), gcd(a, b));
         }
@@ -173,7 +173,7 @@ mod tests {
 
     #[test]
     fn test_extgcd() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for (a, b) in rng.random_iter((-A..=A, -A..=A)).take(Q) {
             let (g, x, y) = extgcd(a, b);
             assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g as i128);
@@ -182,7 +182,7 @@ mod tests {
 
     #[test]
     fn test_extgcd_binary() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for (a, b) in rng.random_iter((0..=A, 0..=A)).take(Q) {
             let (g, x, y) = extgcd_binary(a, b);
             assert_eq!(a as i128 * x as i128 + b as i128 * y as i128, g as i128);
@@ -191,7 +191,7 @@ mod tests {
 
     #[test]
     fn test_modinv() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for _ in 0..Q {
             let m = rng.random(1..=A as u64);
             let a = rng.random(1..m);
@@ -206,7 +206,7 @@ mod tests {
 
     #[test]
     fn test_modinv_extgcd_binary() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for _ in 0..Q {
             let m = rng.random(1..=A as u64);
             let m = m >> m.trailing_zeros();

@@ -45,7 +45,7 @@ mod tests {
     fn test_linear_congruence() {
         const N: usize = 5;
         const Q: usize = 1_000;
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for _ in 0..Q {
             let abm: Vec<_> = (0..N)
                 .map(|_| {

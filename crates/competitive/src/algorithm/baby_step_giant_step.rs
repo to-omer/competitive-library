@@ -63,7 +63,7 @@ mod tests {
 
     #[test]
     fn test_bsgs_midium() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for _ in 0..10 {
             let n = rng.random(2..100_000u32);
             DynMIntU32::set_mod(n);
@@ -77,7 +77,7 @@ mod tests {
 
     #[test]
     fn test_bsgs_large() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
         for _ in 0..20 {
             let n = rng.random(2..1_000_000_000u32);
             DynMIntU32::set_mod(n);

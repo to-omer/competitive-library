@@ -82,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_lcm_convolve() {
-        let mut rng = Xorshift::new();
+        let mut rng = Xorshift::default();
 
         for m in 1..=300 {
             rand!(rng, mut f: [-A..A; m]);

@@ -266,7 +266,7 @@ mod tests {
         ($test_name:ident $mint:ident $($m:expr)?) => {
             #[test]
             fn $test_name() {
-                let mut rng = Xorshift::new();
+                let mut rng = Xorshift::default();
                 const Q: usize = 10_000;
                 for _ in 0..Q {
                     $($mint::set_mod(rng.gen(..$m));)?

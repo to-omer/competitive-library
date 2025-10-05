@@ -318,7 +318,7 @@ mod tests {
     #[test]
     fn test_access() {
         for _ in 0..100 {
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             rand!(rng, n: 1..=200);
             let mut bitset = BitSet::new(n);
             let mut arr = vec![false; n];
@@ -342,7 +342,7 @@ mod tests {
     #[test]
     fn test_push() {
         for _ in 0..100 {
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             rand!(rng, n: 0..=200, arr: [0..=1u32; n]);
             let mut bitset = BitSet::new(0);
             for &x in &arr {
@@ -358,7 +358,7 @@ mod tests {
     #[test]
     fn test_shl_bitor_assign() {
         for _ in 0..100 {
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             rand!(rng, n: 1..=200, k: 1..=n, mut arr: [0..=1u32; n]);
             let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
             bitset.shl_bitor_assign(k);
@@ -372,7 +372,7 @@ mod tests {
     #[test]
     fn test_shr_bitor_assign() {
         for _ in 0..100 {
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             rand!(rng, n: 1..=200, k: 1..=n, mut arr: [0..=1u32; n]);
             let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
             bitset.shr_bitor_assign(k);
@@ -386,7 +386,7 @@ mod tests {
     #[test]
     fn test_shl() {
         for _ in 0..100 {
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             rand!(rng, n: 1..=200, k: 1..=n, arr: [0..=1u32; n]);
             let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
             bitset <<= k;
@@ -401,7 +401,7 @@ mod tests {
     #[test]
     fn test_shr() {
         for _ in 0..100 {
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             rand!(rng, n: 1..=200, k: 1..=n, arr: [0..=1u32; n]);
             let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
             bitset >>= k;
@@ -416,7 +416,7 @@ mod tests {
     #[test]
     fn test_extend() {
         for _ in 0..100 {
-            let mut rng = Xorshift::new();
+            let mut rng = Xorshift::default();
             rand!(rng, arr: [0..=1u32; 200], n1: 0..=200);
             let mut bitset: BitSet = arr[..n1].iter().map(|&x| x != 0).collect();
             bitset.extend(arr[n1..].iter().map(|&x| x != 0));
