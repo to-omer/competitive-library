@@ -219,10 +219,8 @@ where
             }
         }
 
-        if r <= self.len() {
-            let mut v = Vec::with_capacity(r);
-            combinations_with_replacement_inner(self, r, 0, &mut v, &mut f);
-        }
+        let mut v = Vec::with_capacity(r);
+        combinations_with_replacement_inner(self, r, 0, &mut v, &mut f);
     }
 
     /// Permute the elements into next permutation in lexicographical order.
@@ -341,6 +339,143 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_for_each_product() {
+        for n in 1..=6 {
+            let values: Vec<i32> = (0..n).collect();
+            for r in 0..=6 {
+                let mut result = vec![];
+                values
+                    .as_slice()
+                    .for_each_product(r, |cur| result.push(cur.to_vec()));
+                let mut expected = vec![];
+                let mut current = vec![0; r];
+                'outer: loop {
+                    expected.push(current.clone());
+                    for i in (0..r).rev() {
+                        if current[i] + 1 < n {
+                            current[i] += 1;
+                            for c in &mut current[i + 1..] {
+                                *c = 0;
+                            }
+                            continue 'outer;
+                        }
+                    }
+                    break;
+                }
+                assert_eq!(result, expected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_for_each_permutations_small_cases() {
+        for n in 1..=6 {
+            let values: Vec<i32> = (0..n).collect();
+            for r in 0..=6 {
+                let mut result = vec![];
+                values
+                    .as_slice()
+                    .for_each_permutations(r, |cur| result.push(cur.to_vec()));
+                let mut expected = vec![];
+                let mut current = vec![0; r];
+                'outer: loop {
+                    let ok = {
+                        let mut current = current.clone();
+                        current.sort_unstable();
+                        current.dedup();
+                        current.len() == r
+                    };
+                    if ok {
+                        expected.push(current.clone());
+                    }
+                    for i in (0..r).rev() {
+                        if current[i] + 1 < n {
+                            current[i] += 1;
+                            for c in &mut current[i + 1..] {
+                                *c = 0;
+                            }
+                            continue 'outer;
+                        }
+                    }
+                    break;
+                }
+                assert_eq!(result, expected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_for_each_combinations_small_cases() {
+        for n in 1..=6 {
+            let values: Vec<i32> = (0..n).collect();
+            for r in 0..=6 {
+                let mut result = vec![];
+                values
+                    .as_slice()
+                    .for_each_combinations(r, |cur| result.push(cur.to_vec()));
+                let mut expected = vec![];
+                let mut current = vec![0; r];
+                'outer: loop {
+                    let ok = {
+                        let mut current = current.clone();
+                        current.dedup();
+                        current.len() == r && current.is_sorted()
+                    };
+                    if ok {
+                        expected.push(current.clone());
+                    }
+                    for i in (0..r).rev() {
+                        if current[i] + 1 < n {
+                            current[i] += 1;
+                            for c in &mut current[i + 1..] {
+                                *c = 0;
+                            }
+                            continue 'outer;
+                        }
+                    }
+                    break;
+                }
+                assert_eq!(result, expected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_for_each_combinations_with_replacement_small_cases() {
+        for n in 1..=6 {
+            let values: Vec<i32> = (0..n).collect();
+            for r in 0..=6 {
+                let mut result = vec![];
+                values
+                    .as_slice()
+                    .for_each_combinations_with_replacement(r, |cur| result.push(cur.to_vec()));
+                let mut expected = vec![];
+                let mut current = vec![0; r];
+                'outer: loop {
+                    let ok = {
+                        let current = current.clone();
+                        current.is_sorted()
+                    };
+                    if ok {
+                        expected.push(current.clone());
+                    }
+                    for i in (0..r).rev() {
+                        if current[i] + 1 < n {
+                            current[i] += 1;
+                            for c in &mut current[i + 1..] {
+                                *c = 0;
+                            }
+                            continue 'outer;
+                        }
+                    }
+                    break;
+                }
+                assert_eq!(result, expected);
+            }
+        }
+    }
 
     #[test]
     fn test_next_prev_permutation() {
