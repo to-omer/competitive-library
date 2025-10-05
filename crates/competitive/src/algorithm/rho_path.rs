@@ -50,3 +50,31 @@ impl<T> RhoPath<T> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
+
+    #[test]
+    fn test_rho_path() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(1..100);
+            let a: Vec<usize> = rng.random_iter(0..n).take(n).collect();
+            let rp = RhoPath::build(0, |&x| a[x]);
+            let mut x = 0;
+            for i in 0..n * 2 {
+                assert_eq!(rp.get(i), &x);
+                x = a[x];
+            }
+
+            let rp2 = rp.build_rho(0, |&x| x + a[*rp.get(x)]);
+            let mut x = 0;
+            for i in 0..n * 2 {
+                assert_eq!(rp.get(*rp2.get(i)), rp.get(x));
+                x += a[*rp.get(x)];
+            }
+        }
+    }
+}
