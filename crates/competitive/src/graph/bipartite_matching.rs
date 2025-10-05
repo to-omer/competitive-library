@@ -317,6 +317,22 @@ mod tests {
             }
             assert!(left_used.iter().all(|&b| b));
             assert!(right_used.iter().all(|&b| b));
+
+            let mut bm = BipartiteMatching::new(n, m);
+            for &(l, r) in &lr {
+                bm.add_edge(l, r);
+            }
+            bm.hopcroft_karp();
+            let cover = bm.minimum_edge_cover();
+            assert_eq!(*dp.last().unwrap().last().unwrap(), cover.len());
+            let mut left_used = vec![false; n];
+            let mut right_used = vec![false; m];
+            for (l, r) in cover {
+                left_used[l] = true;
+                right_used[r] = true;
+            }
+            assert!(left_used.iter().all(|&b| b));
+            assert!(right_used.iter().all(|&b| b));
         }
     }
 
@@ -339,7 +355,18 @@ mod tests {
             }
             let set = BipartiteMatching::from_edges(n, m, &lr).minimum_vertex_cover();
             assert_eq!(ans, set.0.len() + set.1.len());
-            for (l, r) in lr {
+            for &(l, r) in &lr {
+                assert!(set.0.contains(&l) || set.1.contains(&r));
+            }
+
+            let mut bm = BipartiteMatching::new(n, m);
+            for &(l, r) in &lr {
+                bm.add_edge(l, r);
+            }
+            bm.hopcroft_karp();
+            let set = bm.minimum_vertex_cover();
+            assert_eq!(ans, set.0.len() + set.1.len());
+            for &(l, r) in &lr {
                 assert!(set.0.contains(&l) || set.1.contains(&r));
             }
         }
@@ -364,7 +391,18 @@ mod tests {
             }
             let set = BipartiteMatching::from_edges(n, m, &lr).maximum_independent_set();
             assert_eq!(ans, set.0.len() + set.1.len());
-            for (l, r) in lr {
+            for &(l, r) in &lr {
+                assert!(!set.0.contains(&l) || !set.1.contains(&r));
+            }
+
+            let mut bm = BipartiteMatching::new(n, m);
+            for &(l, r) in &lr {
+                bm.add_edge(l, r);
+            }
+            bm.hopcroft_karp();
+            let set = bm.maximum_independent_set();
+            assert_eq!(ans, set.0.len() + set.1.len());
+            for &(l, r) in &lr {
                 assert!(!set.0.contains(&l) || !set.1.contains(&r));
             }
         }
