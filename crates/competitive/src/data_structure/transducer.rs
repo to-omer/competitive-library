@@ -110,7 +110,7 @@ where
     where
         A::State: Eq + Hash,
     {
-        Transducerdp::new(self.fst, self.init, HashMapFactory::default())
+        self.with_factory(HashMapFactory::default())
     }
     pub fn with_vecmap<F>(
         self,
@@ -119,7 +119,7 @@ where
     where
         F: Fn(&A::State) -> usize + Clone,
     {
-        Transducerdp::new(self.fst, self.init, VecMapFactory::new(key_to_index))
+        self.with_factory(VecMapFactory::new(key_to_index))
     }
     pub fn with_fixed_vecmap<F>(
         self,
@@ -129,11 +129,7 @@ where
     where
         F: Fn(&A::State) -> usize + Clone,
     {
-        Transducerdp::new(
-            self.fst,
-            self.init,
-            FixedVecMapFactory::new(key_to_index, len),
-        )
+        self.with_factory(FixedVecMapFactory::new(key_to_index, len))
     }
 }
 
@@ -1097,6 +1093,7 @@ mod tests {
         algebra::AdditiveOperation,
         tools::{NotEmptySegment, ToDigitSequence, Xorshift},
     };
+    use std::collections::HashMap;
 
     #[test]
     fn test_equal_transducer() {
@@ -1369,5 +1366,179 @@ mod tests {
                 .sum();
             assert_eq!(expected, result);
         }
+    }
+
+    fn trace<T>(
+        fst: &mut T,
+        inputs: impl IntoIterator<Item = T::Input>,
+    ) -> Vec<(T::State, T::Output)>
+    where
+        T: Transducer,
+        T::State: Clone,
+    {
+        let mut state = fst.start();
+        let mut results = vec![];
+        for input in inputs {
+            if let Some((next_state, output)) = fst.relation(&state, &input) {
+                results.push((next_state.clone(), output));
+                state = next_state;
+                fst.stepout();
+            } else {
+                break;
+            }
+        }
+        results
+    }
+
+    #[test]
+    fn test_transducer_with_input() {
+        let mut with_input = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .with_input();
+        let start = with_input.start();
+        assert_eq!(start, (0usize, ()));
+        let log = trace(&mut with_input, [1usize]);
+        assert_eq!(log, vec![((1usize, ()), (1usize, 1usize))]);
+    }
+
+    #[test]
+    fn test_transducer_intersection() {
+        let mut intersection = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .intersection(IdentityTransducer::<usize>::new());
+        let start = intersection.start();
+        assert_eq!(start, (0usize, ()));
+        let log = trace(&mut intersection, [2usize]);
+        assert_eq!(log, vec![((2usize, ()), (2usize, 2usize))]);
+    }
+
+    #[test]
+    fn test_transducer_product() {
+        let mut product = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .product(AlwaysAcceptingTransducer::<usize>::new());
+        let start = product.start();
+        assert_eq!(start, (0usize, ()));
+        let log = trace(&mut product, [(2usize, 7usize)]);
+        assert_eq!(log, vec![((2usize, ()), (2usize, ()))]);
+    }
+
+    #[test]
+    fn test_transducer_chain() {
+        let mut chain = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .chain(MapTransducer::new(|x: &usize| x + 1usize));
+        let start = chain.start();
+        assert_eq!(start, (0usize, ()));
+        let log = trace(&mut chain, [2usize]);
+        assert_eq!(log, vec![((2usize, ()), 3usize)]);
+    }
+
+    #[test]
+    fn test_transducer_map() {
+        let mut mapped = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .map(|output| output * 2usize);
+        let start = mapped.start();
+        assert_eq!(start, (0usize, ()));
+        let log = trace(&mut mapped, [3usize]);
+        assert_eq!(log, vec![((3usize, ()), 6usize)]);
+    }
+
+    #[test]
+    fn test_transducer_filter_map() {
+        let mut filtered = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .filter_map(|output| {
+            if *output % 2 == 0 {
+                Some(output / 2)
+            } else {
+                None
+            }
+        });
+        assert!(trace(&mut filtered, [1usize]).is_empty());
+        assert_eq!(trace(&mut filtered, [2usize]), vec![((2usize, ()), 1usize)]);
+    }
+
+    #[test]
+    fn test_transducer_map_fold_accept() {
+        type M = AdditiveOperation<usize>;
+        let mut dp = transducer!(=> || 0usize,
+            |state: &usize, input: &usize| Some((state + *input, state + *input)),
+            |_: &usize| true)
+        .with_input()
+        .dp::<M>(1usize)
+        .with_hashmap();
+        dp.step(|| vec![1usize, 3usize].into_iter());
+        let mut histogram = dp.map_fold_accept(|&(state, _)| state % 2, HashMap::new());
+        assert_eq!(histogram.remove(&1usize), Some(2usize));
+        assert!(histogram.is_empty());
+    }
+
+    #[test]
+    fn test_transducer_step_effect() {
+        type M = AdditiveOperation<usize>;
+        let mut dp = transducer!(=> || 0usize,
+            |_: &usize, input: &usize| Some((0usize, *input)),
+            |_: &usize| true)
+        .dp::<M>(1usize)
+        .with_hashmap();
+        dp.step_effect(
+            || vec![1usize, 2usize].into_iter(),
+            |value, output| value + output,
+        );
+        assert_eq!(dp.fold_accept(), 5usize);
+    }
+
+    #[test]
+    fn test_transducer_run_effect() {
+        type M = AdditiveOperation<usize>;
+        let mut dp = transducer!(=> || 0usize,
+            |_: &usize, input: &usize| Some((0usize, *input)),
+            |_: &usize| true)
+        .dp::<M>(1usize)
+        .with_fixed_vecmap(|state: &usize| *state, 1);
+        let total = dp.run_effect(
+            || std::iter::once(1usize),
+            3,
+            |value, output| value + output,
+        );
+        assert_eq!(total, 4usize);
+    }
+
+    #[test]
+    fn test_iterator_transducer() {
+        let mut iter = IteratorTransducer::<_, ()>::new(vec![10usize, 20usize].into_iter());
+        assert_eq!(
+            trace(&mut iter, [(), ()]),
+            vec![((), 10usize), ((), 20usize)]
+        );
+        assert!(trace(&mut iter, [()]).is_empty());
+    }
+
+    #[test]
+    fn test_monoidal_transducer() {
+        type M = AdditiveOperation<usize>;
+
+        let mut monoidal = MonoidalTransducer::<M>::new();
+        assert_eq!(
+            trace(&mut monoidal, [1usize, 2usize, 3usize]),
+            vec![(1usize, ()), (3usize, ()), (6usize, ())]
+        );
+        assert!(monoidal.accept(&0usize));
+    }
+
+    #[test]
+    fn test_always_accepting_transducer() {
+        let mut always_generic = transducer!(@<usize>);
+        let mut always_inferred = transducer!(@);
+        assert_eq!(trace(&mut always_generic, [5usize]), vec![((), ())]);
+        assert_eq!(trace(&mut always_inferred, ["anything"]), vec![((), ())]);
     }
 }
