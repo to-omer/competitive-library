@@ -1,8 +1,8 @@
 //! data structures
 
 use crate::algebra::{
-    AbelianGroup, AbelianMonoid, Associative, EmptyAct, Group, LazyMapMonoid, Magma, MaxOperation,
-    MinOperation, Monoid, MonoidAct, SemiGroup, Unital,
+    AbelianGroup, AbelianMonoid, AdditiveOperation, Associative, EmptyAct, Group, LazyMapMonoid,
+    Magma, MaxOperation, MinOperation, Monoid, MonoidAct, SemiGroup, Unital,
 };
 use crate::algorithm::{BitDpExt, SliceBisectExt};
 use crate::num::{Bounded, RangeBoundsExt};
@@ -59,6 +59,8 @@ pub use self::pairing_heap::PairingHeap;
 pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriorityQueue;
 #[codesnip::entry("RangeArithmeticProgressionAdd")]
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
+#[codesnip::entry("RangeFrequency")]
+pub use self::range_frequency::RangeFrequency;
 #[codesnip::entry("RangeMap")]
 pub use self::range_map::{RangeMap, RangeSet};
 #[codesnip::entry("SegmentTree")]
@@ -158,6 +160,11 @@ mod pairing_heap;
 pub mod partially_retroactive_priority_queue;
 #[cfg_attr(nightly, codesnip::entry("RangeArithmeticProgressionAdd"))]
 mod range_ap_add;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("RangeFrequency", include("BinaryIndexedTree", "AdditiveOperation"))
+)]
+mod range_frequency;
 #[cfg_attr(nightly, codesnip::entry("RangeMap"))]
 mod range_map;
 #[cfg_attr(
