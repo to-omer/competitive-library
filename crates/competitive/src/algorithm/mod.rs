@@ -40,7 +40,7 @@ pub use self::sqrt_decomposition::{
     RangeUpdateRangeFoldSqrtDecomposition, SqrtDecomposition, SqrtDecompositionBuckets,
 };
 #[codesnip::entry("stern_brocot_tree")]
-pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree};
+pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree, rational_binary_search};
 #[codesnip::entry("ternary_search")]
 pub use self::ternary_search::{piecewise_ternary_search, ternary_search};
 #[codesnip::entry("XorBasis")]

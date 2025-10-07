@@ -282,6 +282,60 @@ where
     }
 }
 
+pub fn rational_binary_search<T>(mut f: impl FnMut(&URational<T>) -> bool, n: T) -> SbtNode<T>
+where
+    T: Unsigned,
+{
+    let mut node = SbtNode::root();
+    let lb = f(&node.l);
+    let rb = f(&node.r);
+    assert_ne!(lb, rb, "f(0/1) and f(1/0) must be different");
+    let two = T::one() + T::one();
+    while node.l.num + node.r.num <= n && node.l.den + node.r.den <= n {
+        {
+            let mut k = T::one();
+            loop {
+                let old = node.l;
+                node.down_right(k);
+                if node.l.num > n || node.l.den > n || f(&node.l) != lb {
+                    node.l = old;
+                    break;
+                }
+                k *= two;
+            }
+            while k > T::zero() {
+                let old = node.l;
+                node.down_right(k);
+                if node.l.num > n || node.l.den > n || f(&node.l) != lb {
+                    node.l = old;
+                }
+                k /= two;
+            }
+        }
+        {
+            let mut k = T::one();
+            loop {
+                let old = node.r;
+                node.down_left(k);
+                if node.r.num > n || node.r.den > n || f(&node.r) != rb {
+                    node.r = old;
+                    break;
+                }
+                k *= two;
+            }
+            while k > T::zero() {
+                let old = node.r;
+                node.down_left(k);
+                if node.r.num > n || node.r.den > n || f(&node.r) != rb {
+                    node.r = old;
+                }
+                k /= two;
+            }
+        }
+    }
+    node
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -330,6 +384,41 @@ mod tests {
                 assert_eq!(node.to_path(), path);
                 assert_eq!(node, path.to_node());
             }
+        }
+    }
+
+    #[test]
+    fn test_rational_binary_search() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let n = rng.rand(100) + 1;
+            let target = URational::new(rng.rand(1_000_000_000), rng.rand(1_000_000_000) + 1);
+            let node = rational_binary_search(|candidate| &target < candidate, n);
+
+            assert!(target >= node.l);
+            assert!(target < node.r);
+            assert!(node.l.num <= n && node.l.den <= n);
+            assert!(node.r.num <= n && node.r.den <= n);
+
+            let candidates: Vec<_> = (0..=n)
+                .flat_map(|a| (1..=n).map(move |b| URational::new(a, b)))
+                .collect();
+
+            let expected_left = candidates
+                .iter()
+                .copied()
+                .filter(|q| q <= &target)
+                .max()
+                .unwrap_or_else(|| URational::new_unchecked(0, 1));
+            assert_eq!(node.l, expected_left);
+
+            let expected_right = candidates
+                .iter()
+                .copied()
+                .filter(|q| &target < q)
+                .min()
+                .unwrap_or_else(|| URational::new_unchecked(1, 0));
+            assert_eq!(node.r, expected_right);
         }
     }
 }

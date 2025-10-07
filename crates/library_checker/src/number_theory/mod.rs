@@ -3,6 +3,7 @@ pub mod discrete_logarithm_mod;
 pub mod enumerate_primes;
 pub mod factorize;
 pub mod min_of_mod_of_linear;
+pub mod rational_approximation;
 pub mod sqrt_mod;
 pub mod stern_brocot_tree;
 pub mod sum_of_floor_of_linear;
