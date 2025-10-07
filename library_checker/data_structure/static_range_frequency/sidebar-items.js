@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["static_range_frequency"]};
