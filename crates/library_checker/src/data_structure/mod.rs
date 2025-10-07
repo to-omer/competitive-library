@@ -9,5 +9,6 @@ pub mod queue_operate_all_composite;
 pub mod range_affine_range_sum;
 pub mod range_chmin_chmax_add_range_sum;
 pub mod range_kth_smallest;
+pub mod static_range_frequency;
 pub mod staticrmq;
 pub mod unionfind;
