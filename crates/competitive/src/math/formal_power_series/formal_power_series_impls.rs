@@ -247,6 +247,30 @@ where
 {
     pub fn inv(&self, deg: usize) -> Self {
         debug_assert!(!self[0].is_zero());
+        if self.data.iter().filter(|x| !x.is_zero()).count()
+            <= deg.next_power_of_two().trailing_zeros() as usize * 6
+        {
+            let pos: Vec<_> = self
+                .data
+                .iter()
+                .enumerate()
+                .skip(1)
+                .filter_map(|(i, x)| if x.is_zero() { None } else { Some(i) })
+                .collect();
+            let mut f = Self::zeros(deg);
+            f[0] = T::one() / self[0].clone();
+            for i in 1..deg {
+                let mut tot = T::zero();
+                for &j in &pos {
+                    if j > i {
+                        break;
+                    }
+                    tot += self[j].clone() * &f[i - j];
+                }
+                f[i] = -tot * &f[0];
+            }
+            return f;
+        }
         let mut f = Self::from(T::one() / self[0].clone());
         let mut i = 1;
         while i < deg {
