@@ -13,4 +13,5 @@ pub mod pow_of_formal_power_series;
 pub mod exp_of_formal_power_series_sparse;
 pub mod inv_of_formal_power_series_sparse;
 pub mod log_of_formal_power_series_sparse;
+pub mod pow_of_formal_power_series_sparse;
 pub mod sqrt_of_formal_power_series;

@@ -346,23 +346,37 @@ where
             if k >= (deg + rhs - 1) / rhs {
                 Self::zeros(deg)
             } else {
-                let mut x0 = self[k].clone();
-                let rev = T::one() / x0.clone();
-                let x = {
-                    let mut x = T::one();
-                    let mut y = rhs;
-                    while y > 0 {
-                        if y & 1 == 1 {
-                            x *= x0.clone();
+                let deg = deg - k * rhs;
+                let x0 = self[k].clone();
+                let mut f = (self >> k) / &x0;
+                if f.data.iter().filter(|x| !x.is_zero()).count()
+                    <= deg.next_power_of_two().trailing_zeros() as usize * 12
+                {
+                    let pos: Vec<_> = f
+                        .data
+                        .iter()
+                        .enumerate()
+                        .skip(1)
+                        .filter_map(|(i, x)| if x.is_zero() { None } else { Some(i) })
+                        .collect();
+                    let mf = T::memorized_factorial(deg);
+                    let mut g = Self::zeros(deg);
+                    g[0] = T::one();
+                    for i in 1..deg {
+                        let mut tot = T::zero();
+                        for &j in &pos {
+                            if j > i {
+                                break;
+                            }
+                            tot += (T::from(j) * T::from(rhs) - T::from(i - j)) * &f[j] * &g[i - j];
                         }
-                        x0 *= x0.clone();
-                        y >>= 1;
+                        g[i] = tot * T::memorized_inv(&mf, i);
                     }
-                    x
-                };
-                let mut f = (self.clone() * &rev) >> k;
-                f = (f.log(deg) * &T::from(rhs)).exp(deg) * &x;
-                f.truncate(deg - k * rhs);
+                    f = g;
+                } else {
+                    f = (f.log(deg) * &T::from(rhs)).exp(deg);
+                }
+                f *= x0.pow(rhs);
                 f <<= k * rhs;
                 f
             }
