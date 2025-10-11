@@ -609,16 +609,8 @@ mod tests {
                 let w = rng.random(6..=8);
                 ((1usize << w) + 1usize, (1usize << w) + 1usize)
             };
-            let a: Vec<_> = rng
-                .random_iter(..MInt998244353::get_mod())
-                .map(MInt998244353::new_unchecked)
-                .take(n)
-                .collect();
-            let mut b: Vec<_> = rng
-                .random_iter(..MInt998244353::get_mod())
-                .map(MInt998244353::new_unchecked)
-                .take(m)
-                .collect();
+            let a: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
+            let mut b: Vec<MInt998244353> = rng.random_iter(..).take(m).collect();
             if n == m && rng.random(0..2) == 0 {
                 b = a.clone();
             }
@@ -644,16 +636,8 @@ mod tests {
             let n = if n == 5 { rng.random(70..=100) } else { n };
             let m = rng.random(0..=5);
             let m = if m == 5 { rng.random(70..=100) } else { m };
-            let a: Vec<_> = rng
-                .random_iter(..M::get_mod())
-                .map(M::new_unchecked)
-                .take(n)
-                .collect();
-            let b: Vec<_> = rng
-                .random_iter(..M::get_mod())
-                .map(M::new_unchecked)
-                .take(m)
-                .collect();
+            let a: Vec<M> = rng.random_iter(..).take(n).collect();
+            let b: Vec<M> = rng.random_iter(..).take(m).collect();
             let mut c = vec![M::zero(); (n + m).saturating_sub(1)];
             for i in 0..n {
                 for j in 0..m {
@@ -674,11 +658,7 @@ mod tests {
             } else {
                 rng.random(1..=1000)
             };
-            let a: Vec<_> = rng
-                .random_iter(..MInt998244353::get_mod())
-                .map(MInt998244353::new)
-                .take(n)
-                .collect();
+            let a: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
             let f = Convolve998244353::transform(a.clone(), n);
 
             // doubling
@@ -691,11 +671,7 @@ mod tests {
             }
 
             let f = Convolve998244353::transform(a.clone(), n * 2);
-            let b: Vec<_> = rng
-                .random_iter(..MInt998244353::get_mod())
-                .map(MInt998244353::new)
-                .take(n)
-                .collect();
+            let b: Vec<MInt998244353> = rng.random_iter(..).take(n).collect();
             let g = Convolve998244353::transform(b.clone(), n * 2);
             let mut b_neg = b.clone();
             for b in b_neg.iter_mut().skip(1).step_by(2) {
@@ -737,11 +713,7 @@ mod tests {
             } else {
                 rng.random(1..=1000)
             };
-            let a: Vec<_> = rng
-                .random_iter(..M::get_mod())
-                .map(M::new)
-                .take(n)
-                .collect();
+            let a: Vec<M> = rng.random_iter(..).take(n).collect();
             let f = MIntConvolve::<Modulo1000000009>::transform(a.clone(), n);
 
             // doubling
@@ -754,11 +726,7 @@ mod tests {
             }
 
             let f = MIntConvolve::<Modulo1000000009>::transform(a.clone(), n * 2);
-            let b: Vec<_> = rng
-                .random_iter(..M::get_mod())
-                .map(M::new)
-                .take(n)
-                .collect();
+            let b: Vec<M> = rng.random_iter(..).take(n).collect();
             let g = MIntConvolve::<Modulo1000000009>::transform(b.clone(), n * 2);
             let mut b_neg = b.clone();
             for b in b_neg.iter_mut().skip(1).step_by(2) {

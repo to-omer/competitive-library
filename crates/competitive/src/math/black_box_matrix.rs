@@ -312,35 +312,27 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{math::Convolve998244353, num::montgomery::MInt998244353, rand, tools::RandomSpec};
+    use crate::{math::Convolve998244353, num::montgomery::MInt998244353, rand};
 
-    struct D;
-    impl RandomSpec<MInt998244353> for D {
-        fn rand(&self, rng: &mut Xorshift) -> MInt998244353 {
-            MInt998244353::new_unchecked(rng.random(..MInt998244353::get_mod()))
-        }
-    }
+    type R = AddMulOperation<MInt998244353>;
 
-    fn random_matrix(
-        rng: &mut Xorshift,
-        shape: (usize, usize),
-    ) -> Matrix<AddMulOperation<MInt998244353>> {
+    fn random_matrix(rng: &mut Xorshift, shape: (usize, usize)) -> Matrix<R> {
         if rng.gen_bool(0.5) {
-            Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D))
+            Matrix::<R>::new_with(shape, |_, _| rng.random(..))
         } else if rng.gen_bool(0.5) {
             let r = rng.randf();
-            Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| {
+            Matrix::<R>::new_with(shape, |_, _| {
                 if rng.gen_bool(r) {
-                    rng.random(D)
+                    rng.random(..)
                 } else {
                     MInt998244353::zero()
                 }
             })
         } else {
-            let mut mat = Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D));
+            let mut mat = Matrix::<R>::new_with(shape, |_, _| rng.random(..));
             let i0 = rng.random(0..shape.0);
             let i1 = rng.random(0..shape.0);
-            let x = rng.random(D);
+            let x: MInt998244353 = rng.random(..);
             for j in 0..shape.1 {
                 mat[(i0, j)] = mat[(i1, j)] * x;
             }
@@ -355,7 +347,7 @@ mod tests {
             rand!(rng, n: 1..30, m: 1..30);
             let mat = random_matrix(&mut rng, (n, m));
             let smat = SparseMatrix::from(mat.clone());
-            let v: Vec<_> = (0..m).map(|_| rng.random(D)).collect();
+            let v: Vec<_> = (0..m).map(|_| rng.random(..)).collect();
             let av = mat.apply(&v);
             let asv = smat.apply(&v);
             assert_eq!(av, asv);
@@ -370,8 +362,8 @@ mod tests {
             let a = random_matrix(&mut rng, (n, n));
             let p = a.minimal_polynomial();
             assert!(p.len() <= n + 1);
-            let mut res = Matrix::<AddMulOperation<MInt998244353>>::zeros((n, n));
-            let mut pow = Matrix::<AddMulOperation<MInt998244353>>::eye((n, n));
+            let mut res = Matrix::<R>::zeros((n, n));
+            let mut pow = Matrix::<R>::eye((n, n));
             for p in p {
                 for i in 0..n {
                     for j in 0..n {
@@ -380,7 +372,7 @@ mod tests {
                 }
                 pow = &pow * &a;
             }
-            assert_eq!(res, Matrix::<AddMulOperation<MInt998244353>>::zeros((n, n)));
+            assert_eq!(res, Matrix::<R>::zeros((n, n)));
         }
     }
 
@@ -390,7 +382,7 @@ mod tests {
         for _ in 0..100 {
             rand!(rng, n: 1..30, k: 0..1_000_000_000);
             let a = random_matrix(&mut rng, (n, n));
-            let b: Vec<_> = (0..n).map(|_| rng.random(D)).collect();
+            let b: Vec<_> = (0..n).map(|_| rng.random(..)).collect();
             let expected = a.clone().pow(k).apply(&b);
             let result = a.apply_pow::<Convolve998244353>(b, k);
             assert_eq!(result, expected);
@@ -415,7 +407,7 @@ mod tests {
         for _ in 0..100 {
             rand!(rng, n: 1..30);
             let a = random_matrix(&mut rng, (n, n));
-            let b: Vec<_> = (0..n).map(|_| rng.random(D)).collect();
+            let b: Vec<_> = (0..n).map(|_| rng.random(..)).collect();
             let expected = a
                 .solve_system_of_linear_equations(&b)
                 .map(|sol| sol.particular);

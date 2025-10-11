@@ -571,36 +571,28 @@ mod tests {
         algebra::AddMulOperation,
         num::{One, Zero, mint_basic::DynMIntU32},
         rand, rand_value,
-        tools::{RandomSpec, Xorshift},
+        tools::Xorshift,
     };
 
-    struct D;
-    impl RandomSpec<DynMIntU32> for D {
-        fn rand(&self, rng: &mut Xorshift) -> DynMIntU32 {
-            DynMIntU32::new_unchecked(rng.random(..DynMIntU32::get_mod()))
-        }
-    }
+    type R = AddMulOperation<DynMIntU32>;
 
-    fn random_matrix(
-        rng: &mut Xorshift,
-        shape: (usize, usize),
-    ) -> Matrix<AddMulOperation<DynMIntU32>> {
+    fn random_matrix(rng: &mut Xorshift, shape: (usize, usize)) -> Matrix<R> {
         if rng.gen_bool(0.5) {
-            Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D))
+            Matrix::new_with(shape, |_, _| rng.random(..))
         } else if rng.gen_bool(0.5) {
             let r = rng.randf();
-            Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| {
+            Matrix::new_with(shape, |_, _| {
                 if rng.gen_bool(r) {
-                    rng.random(D)
+                    rng.random(..)
                 } else {
                     DynMIntU32::zero()
                 }
             })
         } else {
-            let mut mat = Matrix::<AddMulOperation<_>>::new_with(shape, |_, _| rng.random(D));
+            let mut mat = Matrix::new_with(shape, |_, _| rng.random(..));
             let i0 = rng.random(0..shape.0);
             let i1 = rng.random(0..shape.0);
-            let x = rng.random(D);
+            let x: DynMIntU32 = rng.random(..);
             for j in 0..shape.1 {
                 mat[(i0, j)] = mat[(i1, j)] * x;
             }
@@ -612,8 +604,8 @@ mod tests {
     fn test_eye() {
         for n in 0..10 {
             for m in 0..10 {
-                let result = Matrix::<AddMulOperation<DynMIntU32>>::eye((n, m));
-                let expected = Matrix::new_with((n, m), |i, j| {
+                let result = Matrix::<R>::eye((n, m));
+                let expected = Matrix::<R>::new_with((n, m), |i, j| {
                     if i == j {
                         DynMIntU32::one()
                     } else {
@@ -630,8 +622,8 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 1..30, m: 1..30);
-            let a = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; m]; n]));
-            let b = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; m]; n]));
+            let a = Matrix::<R>::new_with((n, m), |_, _| rng.random(..));
+            let b = Matrix::<R>::new_with((n, m), |_, _| rng.random(..));
             assert_eq!(&a + &b, a.clone() + b.clone());
             assert_eq!(a.clone() + &b, a.clone() + b.clone());
             assert_eq!(&a + b.clone(), a.clone() + b.clone());
@@ -643,8 +635,8 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 1..30, m: 1..30);
-            let a = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; m]; n]));
-            let b = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; m]; n]));
+            let a = Matrix::<R>::new_with((n, m), |_, _| rng.random(..));
+            let b = Matrix::<R>::new_with((n, m), |_, _| rng.random(..));
             assert_eq!(&a - &b, a.clone() - b.clone());
             assert_eq!(a.clone() - &b, a.clone() - b.clone());
             assert_eq!(&a - b.clone(), a.clone() - b.clone());
@@ -656,8 +648,8 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 1..30, m: 1..30, l: 1..30);
-            let a = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; m]; n]));
-            let b = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; l]; m]));
+            let a = Matrix::<R>::new_with((n, m), |_, _| rng.random(..));
+            let b = Matrix::<R>::new_with((m, l), |_, _| rng.random(..));
             assert_eq!(&a * &b, a.clone() * b.clone());
             assert_eq!(a.clone() * &b, a.clone() * b.clone());
             assert_eq!(&a * b.clone(), a.clone() * b.clone());
@@ -665,7 +657,7 @@ mod tests {
                 &a * &b,
                 Matrix::new_with((n, l), |i, j| (0..m).map(|k| a[i][k] * b[k][j]).sum())
             );
-            let c = rand_value!(rng, D);
+            let c = rng.random(..);
             let mut ac = a.clone();
             ac *= &c;
             assert_eq!(ac, Matrix::new_with(a.shape, |i, j| a[i][j] * c));
@@ -681,12 +673,12 @@ mod tests {
             let m = ps[rng.random(..ps.len())];
             DynMIntU32::set_mod(m);
             let n = rng.random(2..=30);
-            let mat = Matrix::<AddMulOperation<_>>::from_vec(rand_value!(rng, [[D; n]; n]));
+            let mat = Matrix::<R>::new_with((n, n), |_, _| rng.random(..));
             let rank = mat.clone().rank();
             let inv = mat.inverse();
             assert_eq!(rank == n, inv.is_some());
             if let Some(inv) = inv {
-                assert_eq!(&mat * &inv, Matrix::<AddMulOperation<_>>::eye((n, n)));
+                assert_eq!(&mat * &inv, Matrix::eye((n, n)));
             }
         }
     }
@@ -712,7 +704,7 @@ mod tests {
                     &a * Matrix::from_vec(vec![sol.particular.clone()]).transpose(),
                     Matrix::from_vec(vec![b.clone()]).transpose()
                 );
-                let c = rand_value!(rng, [D; sol.basis.len()]);
+                let c: Vec<DynMIntU32> = rand_value!(rng, [..; sol.basis.len()]);
                 let mut x = sol.particular.clone();
                 for (c, v) in c.iter().zip(sol.basis.iter()) {
                     for (x, v) in x.iter_mut().zip(v.iter()) {

@@ -622,14 +622,14 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 0..20, m: 1..20, t: 0usize..=1, k: 0..[10, 1_000][t]);
-            let f = Fps998244353::from_vec((0..n).map(|_| rng.random(..)).collect());
-            let g = Fps998244353::from_vec((0..m).map(|_| rng.random(..)).collect());
+            let f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+            let g = Fps998244353::from_vec(rng.random_iter(..).take(m).collect());
             let expected = f.clone().bostan_mori(g.clone(), k);
             let result = (f * g.inv(k + 1)).data.get(k).cloned().unwrap_or_default();
             assert_eq!(result, expected);
 
-            let f = Fps::<Modulo1000000009>::from_vec((0..n).map(|_| rng.random(..)).collect());
-            let g = Fps::<Modulo1000000009>::from_vec((0..m).map(|_| rng.random(..)).collect());
+            let f = Fps::<Modulo1000000009>::from_vec(rng.random_iter(..).take(n).collect());
+            let g = Fps::<Modulo1000000009>::from_vec(rng.random_iter(..).take(m).collect());
             let expected = f.clone().bostan_mori(g.clone(), k);
             let result = (f * g.inv(k + 1)).data.get(k).cloned().unwrap_or_default();
             assert_eq!(result, expected);
@@ -641,8 +641,8 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 2..20, t: 0usize..=1, k: 0..[10, 1_000_000_000][t]);
-            let f = Fps998244353::from_vec((0..n - 1).map(|_| rng.random(..)).collect());
-            let g = Fps998244353::from_vec((0..n).map(|_| rng.random(..)).collect());
+            let f = Fps998244353::from_vec(rng.random_iter(..).take(n - 1).collect());
+            let g = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
             let expected = f.clone().bostan_mori(g.clone(), k);
             let result = (f * g.bostan_mori_msb(k))[n - 2];
             assert_eq!(result, expected);
@@ -654,7 +654,7 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 2..20, t: 0usize..=1, k: 0..[10, 1_000_000_000][t]);
-            let f = Fps998244353::from_vec((0..n).map(|_| rng.random(..)).collect());
+            let f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
             let mut expected = Fps998244353::one();
             {
                 let mut p = Fps998244353::one() << 1;

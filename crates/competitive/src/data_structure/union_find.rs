@@ -514,7 +514,7 @@ mod tests {
         graph::UndirectedSparseGraph,
         num::mint_basic::MInt998244353 as M,
         rand,
-        tools::{RandomSpec, Xorshift},
+        tools::Xorshift,
         tree::MixedTree,
     };
     use std::collections::HashSet;
@@ -545,13 +545,6 @@ mod tests {
                 f2(u, a.to, a.id);
                 dfs(g, a.to, vis, f, f2);
             }
-        }
-    }
-
-    struct Mspec;
-    impl RandomSpec<M> for Mspec {
-        fn rand(&self, rng: &mut Xorshift) -> M {
-            M::new_unchecked(rng.random(0..M::get_mod()))
         }
     }
 
@@ -618,7 +611,7 @@ mod tests {
         let mut rng = Xorshift::default();
         type G = LinearOperation<M>;
         for _ in 0..1000 {
-            rand!(rng, n: 1..=N, g: MixedTree(n), p: [(Mspec, Mspec); n - 1], k: 0..n);
+            rand!(rng, n: 1..=N, g: MixedTree(n), p: [(.., ..); n - 1], k: 0..n);
 
             macro_rules! test_uf {
                 ($union:ty, $find:ty) => {{

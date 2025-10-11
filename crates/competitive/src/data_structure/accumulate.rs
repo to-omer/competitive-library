@@ -318,16 +318,10 @@ mod tests {
         algebra::{AdditiveOperation, LinearOperation, Magma, Unital},
         num::mint_basic::MInt1000000007,
         rand,
-        tools::{RandomSpec, Xorshift},
+        tools::Xorshift,
     };
     type M = LinearOperation<MInt1000000007>;
     type A = AdditiveOperation<MInt1000000007>;
-    struct D;
-    impl RandomSpec<MInt1000000007> for D {
-        fn rand(&self, rng: &mut Xorshift) -> MInt1000000007 {
-            MInt1000000007::new_unchecked(rng.random(..MInt1000000007::get_mod()))
-        }
-    }
 
     #[test]
     fn test_accumlate() {
@@ -336,7 +330,7 @@ mod tests {
         const N: usize = 50;
         for n in 0..Q {
             let n = n % N;
-            rand!(rng, v: [(D, D); n]);
+            rand!(rng, v: [(.., ..); n]);
             let acc: Accumulate<M> = v.iter().cloned().collect();
             for r in 0..=n {
                 assert_eq!(
@@ -361,7 +355,7 @@ mod tests {
         for i in 0..Q {
             let h = i % N + 1;
             let w = i / N % N + 1;
-            rand!(rng, v: [[D; w]; h]);
+            rand!(rng, v: [[..; w]; h]);
             let acc2d = Accumulate2d::<A>::new(&v);
             for xr in 0..=h {
                 for yr in 0..=w {
@@ -396,7 +390,7 @@ mod tests {
         for i in 0..Q {
             let h = i % N;
             let w = i / N % N;
-            rand!(rng, v: [[D; w]; h]);
+            rand!(rng, v: [[..; w]; h]);
             let acc2d = Accumulate2d::<A>::from_fn(h, w, |i, j| v[i][j]);
             for xr in 0..=h {
                 for yr in 0..=w {
@@ -429,7 +423,7 @@ mod tests {
         const N: usize = 5;
         for i in 0..N * N * N {
             let dim = [i % N, i / N % N, i / N / N % N];
-            rand!(rng, v: [[[D; dim[2]]; dim[1]]; dim[0]]);
+            rand!(rng, v: [[[..; dim[2]]; dim[1]]; dim[0]]);
             let acc = AccumulateKd::<3, A>::from_fn(dim, |[i, j, k]| v[i][j][k]);
             for xr in 0..=dim[0] {
                 for yr in 0..=dim[1] {
@@ -468,7 +462,7 @@ mod tests {
         const N: usize = 4;
         for i in 0..N * N * N * N {
             let dim = [i % N, i / N % N, i / N / N % N, i / N / N / N % N];
-            rand!(rng, v: [[[[D; dim[3]]; dim[2]]; dim[1]]; dim[0]]);
+            rand!(rng, v: [[[[..; dim[3]]; dim[2]]; dim[1]]; dim[0]]);
             let acc = AccumulateKd::<4, A>::from_fn(dim, |[i, j, k, l]| v[i][j][k][l]);
             for xr in 0..=dim[0] {
                 for yr in 0..=dim[1] {
