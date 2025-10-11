@@ -70,6 +70,15 @@ where
 
 impl<T, C> FormalPowerSeries<T, C>
 where
+    T: Zero + Clone,
+{
+    pub fn coeff(&self, deg: usize) -> T {
+        self.data.get(deg).cloned().unwrap_or_else(T::zero)
+    }
+}
+
+impl<T, C> FormalPowerSeries<T, C>
+where
     T: Zero + PartialEq,
 {
     pub fn trim_tail_zeros(&mut self) {
@@ -383,17 +392,52 @@ where
         f.exp(deg)
     }
     /// [x^n] P(x) / Q(x)
-    pub fn bostan_mori(self, rhs: Self, mut n: usize) -> T {
-        let mut p = self;
-        let mut q = rhs;
-        while n > 0 {
-            let mq = q.clone().parity_inversion();
-            let u = p * mq.clone();
-            p = if n % 2 == 0 { u.even() } else { u.odd() };
-            q = (q * mq).even();
-            n /= 2;
+    pub fn bostan_mori(mut self, mut rhs: Self, mut n: usize) -> T
+    where
+        C: NttReuse<T = Vec<T>>,
+    {
+        let mut res = T::zero();
+        rhs.trim_tail_zeros();
+        if self.length() >= rhs.length() {
+            let r = &self / &rhs;
+            if n < r.length() {
+                res = r[n].clone();
+            }
+            self -= r * &rhs;
+            self.trim_tail_zeros();
         }
-        p[0].clone() / q[0].clone()
+        if C::MULTIPLE {
+            let mut p = self;
+            let mut q = rhs;
+            while n > 0 {
+                let mq = q.clone().parity_inversion();
+                let u = p * mq.clone();
+                p = if n % 2 == 0 { u.even() } else { u.odd() };
+                q = (q * mq).even();
+                n /= 2;
+            }
+            return res + p.coeff(0) / q.coeff(0);
+        }
+        let k = rhs.length().next_power_of_two();
+        let mut p = C::transform(self.data, k * 2);
+        let mut q = C::transform(rhs.data, k * 2);
+        while n > 0 {
+            let t = C::even_mul_normal_neg(&q, &q);
+            p = if n % 2 == 0 {
+                C::even_mul_normal_neg(&p, &q)
+            } else {
+                C::odd_mul_normal_neg(&p, &q)
+            };
+            q = t;
+            n /= 2;
+            if n != 0 {
+                p = C::ntt_doubling(p);
+                q = C::ntt_doubling(q);
+            }
+        }
+        let p = C::inverse_transform(p, k);
+        let q = C::inverse_transform(q, k);
+        res + p[0].clone() / q[0].clone()
     }
     /// return F(x) where [x^n] P(x) / Q(x) = [x^d-1] P(x) F(x)
     pub fn bostan_mori_msb(self, n: usize) -> Self {
@@ -502,14 +546,20 @@ where
         }
         (Self::zero(), Self::one())
     }
-    pub fn kth_term_of_linearly_recurrence(self, a: Vec<T>, k: usize) -> T {
+    pub fn kth_term_of_linearly_recurrence(self, a: Vec<T>, k: usize) -> T
+    where
+        C: NttReuse<T = Vec<T>>,
+    {
         if let Some(x) = a.get(k) {
             return x.clone();
         }
         let p = (Self::from_vec(a).prefix(self.length() - 1) * &self).prefix(self.length() - 1);
         p.bostan_mori(self, k)
     }
-    pub fn kth_term(a: Vec<T>, k: usize) -> T {
+    pub fn kth_term(a: Vec<T>, k: usize) -> T
+    where
+        C: NttReuse<T = Vec<T>>,
+    {
         if let Some(x) = a.get(k) {
             return x.clone();
         }
@@ -565,15 +615,24 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        rand,
-        tools::{RandomSpec, Xorshift},
-    };
+    use crate::{num::mint_basic::Modulo1000000009, rand, tools::Xorshift};
 
-    struct D;
-    impl RandomSpec<MInt998244353> for D {
-        fn rand(&self, rng: &mut Xorshift) -> MInt998244353 {
-            MInt998244353::new_unchecked(rng.random(..MInt998244353::get_mod()))
+    #[test]
+    fn test_bostan_mori() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 0..20, m: 1..20, t: 0usize..=1, k: 0..[10, 1_000][t]);
+            let f = Fps998244353::from_vec((0..n).map(|_| rng.random(..)).collect());
+            let g = Fps998244353::from_vec((0..m).map(|_| rng.random(..)).collect());
+            let expected = f.clone().bostan_mori(g.clone(), k);
+            let result = (f * g.inv(k + 1)).data.get(k).cloned().unwrap_or_default();
+            assert_eq!(result, expected);
+
+            let f = Fps::<Modulo1000000009>::from_vec((0..n).map(|_| rng.random(..)).collect());
+            let g = Fps::<Modulo1000000009>::from_vec((0..m).map(|_| rng.random(..)).collect());
+            let expected = f.clone().bostan_mori(g.clone(), k);
+            let result = (f * g.inv(k + 1)).data.get(k).cloned().unwrap_or_default();
+            assert_eq!(result, expected);
         }
     }
 
@@ -582,8 +641,8 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 2..20, t: 0usize..=1, k: 0..[10, 1_000_000_000][t]);
-            let f = Fps998244353::from_vec((0..n - 1).map(|_| rng.random(D)).collect());
-            let g = Fps998244353::from_vec((0..n).map(|_| rng.random(D)).collect());
+            let f = Fps998244353::from_vec((0..n - 1).map(|_| rng.random(..)).collect());
+            let g = Fps998244353::from_vec((0..n).map(|_| rng.random(..)).collect());
             let expected = f.clone().bostan_mori(g.clone(), k);
             let result = (f * g.bostan_mori_msb(k))[n - 2];
             assert_eq!(result, expected);
@@ -595,7 +654,7 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
             rand!(rng, n: 2..20, t: 0usize..=1, k: 0..[10, 1_000_000_000][t]);
-            let f = Fps998244353::from_vec((0..n).map(|_| rng.random(D)).collect());
+            let f = Fps998244353::from_vec((0..n).map(|_| rng.random(..)).collect());
             let mut expected = Fps998244353::one();
             {
                 let mut p = Fps998244353::one() << 1;

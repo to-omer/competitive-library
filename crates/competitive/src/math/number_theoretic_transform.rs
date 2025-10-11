@@ -1,5 +1,5 @@
 use super::{ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, montgomery::*};
-use std::marker::PhantomData;
+use std::{cell::UnsafeCell, marker::PhantomData};
 
 pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<Modulo998244353>;
@@ -277,14 +277,14 @@ where
         t.len()
     }
     fn transform(mut t: Self::T, len: usize) -> Self::F {
-        t.resize_with(len.max(2).next_power_of_two(), Zero::zero);
+        t.resize_with(len.max(1).next_power_of_two(), Zero::zero);
         ntt(&mut t);
         t
     }
     fn inverse_transform(mut f: Self::F, len: usize) -> Self::T {
         intt(&mut f);
         f.truncate(len);
-        let inv = MInt::from(len.max(2).next_power_of_two() as u32).inv();
+        let inv = MInt::from(len.max(1).next_power_of_two() as u32).inv();
         for f in f.iter_mut() {
             *f *= inv;
         }
@@ -301,7 +301,7 @@ where
             return convolve_naive(&a, &b);
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
-        let size = len.max(2).next_power_of_two();
+        let size = len.max(1).next_power_of_two();
         if len <= size / 2 + 2 {
             let xa = a.pop().unwrap();
             let xb = b.pop().unwrap();
@@ -346,7 +346,7 @@ where
         t.len()
     }
     fn transform(t: Self::T, len: usize) -> Self::F {
-        let npot = len.max(2).next_power_of_two();
+        let npot = len.max(1).next_power_of_two();
         let mut f = (
             MVec::<N1>::with_capacity(npot),
             MVec::<N2>::with_capacity(npot),
@@ -407,6 +407,185 @@ where
         let b = Self::transform(b, len);
         Self::multiply(&mut a, &b);
         Self::inverse_transform(a, len)
+    }
+}
+
+pub trait NttReuse: ConvolveSteps {
+    const MULTIPLE: bool = true;
+
+    /// F(a) → F(a + [0] * a.len())
+    fn ntt_doubling(f: Self::F) -> Self::F;
+
+    /// F(a(x)), F(b(x)) → even(F(a(x) * b(-x)))
+    fn even_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F;
+
+    /// F(a(x)), F(b(x)) → odd(F(a(x) * b(-x)))
+    fn odd_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F;
+}
+
+thread_local!(
+    static BIT_REVERSE: UnsafeCell<Vec<Vec<usize>>> = const { UnsafeCell::new(vec![]) };
+);
+
+impl<M> NttReuse for Convolve<M>
+where
+    M: Montgomery32NttModulus,
+{
+    const MULTIPLE: bool = false;
+
+    fn ntt_doubling(mut f: Self::F) -> Self::F {
+        let n = f.len();
+        let k = n.trailing_zeros() as usize;
+        let mut a = Self::inverse_transform(f.clone(), n);
+        let mut rot = MInt::<M>::one();
+        let zeta = MInt::<M>::new_unchecked(M::INFO.root[k + 1]);
+        for a in a.iter_mut() {
+            *a *= rot;
+            rot *= zeta;
+        }
+        f.extend(Self::transform(a, n));
+        f
+    }
+
+    fn even_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F {
+        assert_eq!(f.len(), g.len());
+        assert!(f.len().is_power_of_two());
+        assert!(f.len() >= 2);
+        let inv2 = MInt::<M>::from(2).inv();
+        let n = f.len() / 2;
+        (0..n)
+            .map(|i| (f[i << 1] * g[i << 1 | 1] + f[i << 1 | 1] * g[i << 1]) * inv2)
+            .collect()
+    }
+
+    fn odd_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F {
+        assert_eq!(f.len(), g.len());
+        assert!(f.len().is_power_of_two());
+        assert!(f.len() >= 2);
+        let mut inv2 = MInt::<M>::from(2).inv();
+        let n = f.len() / 2;
+        let k = f.len().trailing_zeros() as usize;
+        let mut h = vec![MInt::<M>::zero(); n];
+        let w = MInt::<M>::new_unchecked(M::INFO.inv_root[k]);
+        BIT_REVERSE.with(|br| {
+            let br = unsafe { &mut *br.get() };
+            if br.len() < k {
+                br.resize_with(k, Default::default);
+            }
+            let k = k - 1;
+            if br[k].is_empty() {
+                let mut v = vec![0; 1 << k];
+                for i in 0..1 << k {
+                    v[i] = (v[i >> 1] >> 1) | ((i & 1) << (k.saturating_sub(1)));
+                }
+                br[k] = v;
+            }
+            for &i in &br[k] {
+                h[i] = (f[i << 1] * g[i << 1 | 1] - f[i << 1 | 1] * g[i << 1]) * inv2;
+                inv2 *= w;
+            }
+        });
+        h
+    }
+}
+
+impl<M, N1, N2, N3> NttReuse for Convolve<(M, (N1, N2, N3))>
+where
+    M: MIntConvert + MIntConvert<u32>,
+    N1: Montgomery32NttModulus,
+    N2: Montgomery32NttModulus,
+    N3: Montgomery32NttModulus,
+{
+    fn ntt_doubling(f: Self::F) -> Self::F {
+        (
+            Convolve::<N1>::ntt_doubling(f.0),
+            Convolve::<N2>::ntt_doubling(f.1),
+            Convolve::<N3>::ntt_doubling(f.2),
+        )
+    }
+
+    fn even_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F {
+        fn even_mul_normal_neg_corrected<M>(f: &[MInt<M>], g: &[MInt<M>], m: u32) -> Vec<MInt<M>>
+        where
+            M: Montgomery32NttModulus,
+        {
+            let n = f.len();
+            assert_eq!(f.len(), g.len());
+            assert!(f.len().is_power_of_two());
+            assert!(f.len() >= 2);
+            let inv2 = MInt::<M>::from(2).inv();
+            let u = MInt::<M>::new(m) * MInt::<M>::from(n as u32);
+            let n = f.len() / 2;
+            (0..n)
+                .map(|i| {
+                    (f[i << 1]
+                        * if i == 0 {
+                            g[i << 1 | 1] + u
+                        } else {
+                            g[i << 1 | 1]
+                        }
+                        + f[i << 1 | 1] * g[i << 1])
+                        * inv2
+                })
+                .collect()
+        }
+
+        let m = M::mod_into();
+        (
+            even_mul_normal_neg_corrected(&f.0, &g.0, m),
+            even_mul_normal_neg_corrected(&f.1, &g.1, m),
+            even_mul_normal_neg_corrected(&f.2, &g.2, m),
+        )
+    }
+
+    fn odd_mul_normal_neg(f: &Self::F, g: &Self::F) -> Self::F {
+        fn odd_mul_normal_neg_corrected<M>(f: &[MInt<M>], g: &[MInt<M>], m: u32) -> Vec<MInt<M>>
+        where
+            M: Montgomery32NttModulus,
+        {
+            assert_eq!(f.len(), g.len());
+            assert!(f.len().is_power_of_two());
+            assert!(f.len() >= 2);
+            let mut inv2 = MInt::<M>::from(2).inv();
+            let u = MInt::<M>::new(m) * MInt::<M>::from(f.len() as u32);
+            let n = f.len() / 2;
+            let k = f.len().trailing_zeros() as usize;
+            let mut h = vec![MInt::<M>::zero(); n];
+            let w = MInt::<M>::new_unchecked(M::INFO.inv_root[k]);
+            BIT_REVERSE.with(|br| {
+                let br = unsafe { &mut *br.get() };
+                if br.len() < k {
+                    br.resize_with(k, Default::default);
+                }
+                let k = k - 1;
+                if br[k].is_empty() {
+                    let mut v = vec![0; 1 << k];
+                    for i in 0..1 << k {
+                        v[i] = (v[i >> 1] >> 1) | ((i & 1) << (k.saturating_sub(1)));
+                    }
+                    br[k] = v;
+                }
+                for &i in &br[k] {
+                    h[i] = (f[i << 1]
+                        * if i == 0 {
+                            g[i << 1 | 1] + u
+                        } else {
+                            g[i << 1 | 1]
+                        }
+                        - f[i << 1 | 1] * g[i << 1])
+                        * inv2;
+                    inv2 *= w;
+                }
+            });
+            h
+        }
+
+        let m = M::mod_into();
+        (
+            odd_mul_normal_neg_corrected(&f.0, &g.0, m),
+            odd_mul_normal_neg_corrected(&f.1, &g.1, m),
+            odd_mul_normal_neg_corrected(&f.2, &g.2, m),
+        )
     }
 }
 
@@ -483,6 +662,138 @@ mod tests {
             }
             let d = MIntConvolve::<Modulo1000000009>::convolve(a, b);
             assert_eq!(c, d);
+        }
+    }
+
+    #[test]
+    fn test_ntt_reuse_998244353() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n: usize = if rng.gen_bool(0.5) {
+                rng.random(1..=20)
+            } else {
+                rng.random(1..=1000)
+            };
+            let a: Vec<_> = rng
+                .random_iter(..MInt998244353::get_mod())
+                .map(MInt998244353::new)
+                .take(n)
+                .collect();
+            let f = Convolve998244353::transform(a.clone(), n);
+
+            // doubling
+            {
+                let f_double = Convolve998244353::ntt_doubling(f.clone());
+                let mut a = a.clone();
+                a.resize_with(n * 2, Zero::zero);
+                let f2 = Convolve998244353::transform(a, n * 2);
+                assert_eq!(f_double, f2);
+            }
+
+            let f = Convolve998244353::transform(a.clone(), n * 2);
+            let b: Vec<_> = rng
+                .random_iter(..MInt998244353::get_mod())
+                .map(MInt998244353::new)
+                .take(n)
+                .collect();
+            let g = Convolve998244353::transform(b.clone(), n * 2);
+            let mut b_neg = b.clone();
+            for b in b_neg.iter_mut().skip(1).step_by(2) {
+                *b = -*b;
+            }
+
+            // even_mul_normal_neg
+            {
+                let fg_neg = Convolve998244353::even_mul_normal_neg(&f, &g);
+                let ab_neg_even: Vec<_> = Convolve998244353::convolve(a.clone(), b_neg.clone())
+                    .into_iter()
+                    .step_by(2)
+                    .collect();
+                let fg = Convolve998244353::transform(ab_neg_even, n);
+                assert_eq!(fg_neg, fg);
+            }
+
+            // odd_mul_normal_neg
+            {
+                let fg_neg = Convolve998244353::odd_mul_normal_neg(&f, &g);
+                let ab_neg_odd: Vec<_> = Convolve998244353::convolve(a.clone(), b_neg.clone())
+                    .into_iter()
+                    .skip(1)
+                    .step_by(2)
+                    .collect();
+                let fg = Convolve998244353::transform(ab_neg_odd, n);
+                assert_eq!(fg_neg, fg);
+            }
+        }
+    }
+
+    #[test]
+    fn test_ntt_reuse_triple() {
+        type M = MInt<Modulo1000000009>;
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n: usize = if rng.gen_bool(0.5) {
+                rng.random(1..=20)
+            } else {
+                rng.random(1..=1000)
+            };
+            let a: Vec<_> = rng
+                .random_iter(..M::get_mod())
+                .map(M::new)
+                .take(n)
+                .collect();
+            let f = MIntConvolve::<Modulo1000000009>::transform(a.clone(), n);
+
+            // doubling
+            {
+                let f_double = MIntConvolve::<Modulo1000000009>::ntt_doubling(f.clone());
+                let mut a = a.clone();
+                a.resize_with(n * 2, Zero::zero);
+                let f2 = MIntConvolve::<Modulo1000000009>::transform(a, n * 2);
+                assert_eq!(f_double, f2);
+            }
+
+            let f = MIntConvolve::<Modulo1000000009>::transform(a.clone(), n * 2);
+            let b: Vec<_> = rng
+                .random_iter(..M::get_mod())
+                .map(M::new)
+                .take(n)
+                .collect();
+            let g = MIntConvolve::<Modulo1000000009>::transform(b.clone(), n * 2);
+            let mut b_neg = b.clone();
+            for b in b_neg.iter_mut().skip(1).step_by(2) {
+                *b = -*b;
+            }
+
+            // even_mul_normal_neg
+            {
+                let fg_neg = MIntConvolve::<Modulo1000000009>::even_mul_normal_neg(&f, &g);
+                let ab_neg_even: Vec<_> =
+                    MIntConvolve::<Modulo1000000009>::convolve(a.clone(), b_neg.clone())
+                        .into_iter()
+                        .step_by(2)
+                        .collect();
+                assert_eq!(
+                    MIntConvolve::<Modulo1000000009>::inverse_transform(fg_neg.clone(), n),
+                    ab_neg_even
+                );
+            }
+
+            // odd_mul_normal_neg
+            {
+                let fg_neg = MIntConvolve::<Modulo1000000009>::odd_mul_normal_neg(&f, &g);
+                let ab_neg_odd: Vec<_> =
+                    MIntConvolve::<Modulo1000000009>::convolve(a.clone(), b_neg.clone())
+                        .into_iter()
+                        .skip(1)
+                        .step_by(2)
+                        .chain([M::zero()])
+                        .collect();
+                assert_eq!(
+                    MIntConvolve::<Modulo1000000009>::inverse_transform(fg_neg.clone(), n),
+                    ab_neg_odd
+                );
+            }
         }
     }
 }
