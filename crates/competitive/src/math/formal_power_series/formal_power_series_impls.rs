@@ -406,18 +406,6 @@ where
             self -= r * &rhs;
             self.trim_tail_zeros();
         }
-        if C::MULTIPLE {
-            let mut p = self;
-            let mut q = rhs;
-            while n > 0 {
-                let mq = q.clone().parity_inversion();
-                let u = p * mq.clone();
-                p = if n % 2 == 0 { u.even() } else { u.odd() };
-                q = (q * mq).even();
-                n /= 2;
-            }
-            return res + p.coeff(0) / q.coeff(0);
-        }
         let k = rhs.length().next_power_of_two();
         let mut p = C::transform(self.data, k * 2);
         let mut q = C::transform(rhs.data, k * 2);
@@ -431,8 +419,13 @@ where
             q = t;
             n /= 2;
             if n != 0 {
-                p = C::ntt_doubling(p);
-                q = C::ntt_doubling(q);
+                if C::MULTIPLE {
+                    p = C::transform(C::inverse_transform(p, k), k * 2);
+                    q = C::transform(C::inverse_transform(q, k), k * 2);
+                } else {
+                    p = C::ntt_doubling(p);
+                    q = C::ntt_doubling(q);
+                }
             }
         }
         let p = C::inverse_transform(p, k);
@@ -621,7 +614,7 @@ mod tests {
     fn test_bostan_mori() {
         let mut rng = Xorshift::default();
         for _ in 0..100 {
-            rand!(rng, n: 0..20, m: 1..20, t: 0usize..=1, k: 0..[10, 1_000][t]);
+            rand!(rng, n: 0..200, m: 1..200, t: 0usize..=1, k: 0..[10, 1_000][t]);
             let f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
             let g = Fps998244353::from_vec(rng.random_iter(..).take(m).collect());
             let expected = f.clone().bostan_mori(g.clone(), k);
