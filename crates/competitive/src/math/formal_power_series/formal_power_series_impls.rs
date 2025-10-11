@@ -352,27 +352,7 @@ where
                 if f.data.iter().filter(|x| !x.is_zero()).count()
                     <= deg.next_power_of_two().trailing_zeros() as usize * 12
                 {
-                    let pos: Vec<_> = f
-                        .data
-                        .iter()
-                        .enumerate()
-                        .skip(1)
-                        .filter_map(|(i, x)| if x.is_zero() { None } else { Some(i) })
-                        .collect();
-                    let mf = T::memorized_factorial(deg);
-                    let mut g = Self::zeros(deg);
-                    g[0] = T::one();
-                    for i in 1..deg {
-                        let mut tot = T::zero();
-                        for &j in &pos {
-                            if j > i {
-                                break;
-                            }
-                            tot += (T::from(j) * T::from(rhs) - T::from(i - j)) * &f[j] * &g[i - j];
-                        }
-                        g[i] = tot * T::memorized_inv(&mf, i);
-                    }
-                    f = g;
+                    f = f.pow_sparse1(T::from(rhs), deg);
                 } else {
                     f = (f.log(deg) * &T::from(rhs)).exp(deg);
                 }
@@ -383,6 +363,30 @@ where
         } else {
             Self::zeros(deg)
         }
+    }
+    fn pow_sparse1(&self, rhs: T, deg: usize) -> Self {
+        debug_assert!(!self[0].is_zero());
+        let pos: Vec<_> = self
+            .data
+            .iter()
+            .enumerate()
+            .skip(1)
+            .filter_map(|(i, x)| if x.is_zero() { None } else { Some(i) })
+            .collect();
+        let mf = T::memorized_factorial(deg);
+        let mut f = Self::zeros(deg);
+        f[0] = T::one();
+        for i in 1..deg {
+            let mut tot = T::zero();
+            for &j in &pos {
+                if j > i {
+                    break;
+                }
+                tot += (T::from(j) * &rhs - T::from(i - j)) * &self[j] * &f[i - j];
+            }
+            f[i] = tot * T::memorized_inv(&mf, i);
+        }
+        f
     }
 }
 
@@ -401,8 +405,19 @@ where
                 }
             }
         } else {
+            let s = self[0].sqrt_coefficient()?;
+            if self.data.iter().filter(|x| !x.is_zero()).count()
+                <= deg.next_power_of_two().trailing_zeros() as usize * 4
+            {
+                let t = self[0].clone();
+                let mut f = self / t;
+                f = f.pow_sparse1(T::from(1) / T::from(2), deg);
+                f *= s;
+                return Some(f);
+            }
+
+            let mut f = Self::from(s);
             let inv2 = T::one() / (T::one() + T::one());
-            let mut f = Self::from(self[0].sqrt_coefficient()?);
             let mut i = 1;
             while i < deg {
                 f = (&f + &(self.prefix_ref(i * 2) * f.inv(i * 2))).prefix(i * 2) * &inv2;
