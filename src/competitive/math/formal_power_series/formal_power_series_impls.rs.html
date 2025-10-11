@@ -218,7 +218,7 @@
 <a href=#164 id=164 data-nosnippet>164</a>
 <a href=#165 id=165 data-nosnippet>165</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;T, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;T, C&gt;
 <a href=#166 id=166 data-nosnippet>166</a></a><span class="kw">where
-<a href=#167 id=167 data-nosnippet>167</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#29-54">FormalPowerSeriesCoefficient</a>,
+<a href=#167 id=167 data-nosnippet>167</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#29-60">FormalPowerSeriesCoefficient</a>,
 <a href=#168 id=168 data-nosnippet>168</a>{
 <a href=#169 id=169 data-nosnippet>169</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">prefix_ref(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
 <a href=#170 id=170 data-nosnippet>170</a>        <span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#169">deg</a> &lt; </a><a class="self" href="#169">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() {
@@ -296,434 +296,505 @@
 <a href=#242 id=242 data-nosnippet>242</a>
 <a href=#243 id=243 data-nosnippet>243</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;T, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;T, C&gt;
 <a href=#244 id=244 data-nosnippet>244</a></a><span class="kw">where
-<a href=#245 id=245 data-nosnippet>245</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#29-54">FormalPowerSeriesCoefficient</a>,
+<a href=#245 id=245 data-nosnippet>245</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#29-60">FormalPowerSeriesCoefficient</a>,
 <a href=#246 id=246 data-nosnippet>246</a>    C: <a href="../convolve_steps.rs.html#1-15">ConvolveSteps</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
 <a href=#247 id=247 data-nosnippet>247</a>{
 <a href=#248 id=248 data-nosnippet>248</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">inv(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
 <a href=#249 id=249 data-nosnippet>249</a>        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(!<span class="self">self</span>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].is_zero());
-<a href=#250 id=250 data-nosnippet>250</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(T::<a href="../../num/zero_one.rs.html#16">one</a>() / </a><a class="self" href="#248">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>());
-<a href=#251 id=251 data-nosnippet>251</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">i = </a><span class="number">1</span>;
-<a href=#252 id=252 data-nosnippet>252</a>        <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">i &lt; deg {
-<a href=#253 id=253 data-nosnippet>253</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.prefix_ref((i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">).min(deg));
-<a href=#254 id=254 data-nosnippet>254</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">h = f.clone();
-<a href=#255 id=255 data-nosnippet>255</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = C::transform(g.data, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i);
-<a href=#256 id=256 data-nosnippet>256</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">h = C::transform(h.data, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i);
-<a href=#257 id=257 data-nosnippet>257</a>            C::multiply(</a><span class="kw-2">&amp;mut </span><a href="../../tools/scanner.rs.html#391">g, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">h);
-<a href=#258 id=258 data-nosnippet>258</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = <span class="self">Self</span>::from_vec(C::inverse_transform(g, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i));
-<a href=#259 id=259 data-nosnippet>259</a>            g &gt;&gt;= i;
-<a href=#260 id=260 data-nosnippet>260</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = C::transform(g.data, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i);
-<a href=#261 id=261 data-nosnippet>261</a>            C::multiply(</a><span class="kw-2">&amp;mut </span><a href="../../tools/scanner.rs.html#391">g, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">h);
-<a href=#262 id=262 data-nosnippet>262</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = <span class="self">Self</span>::from_vec(C::inverse_transform(g, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i));
-<a href=#263 id=263 data-nosnippet>263</a>            f.data.extend((-g).into_iter().take(i));
-<a href=#264 id=264 data-nosnippet>264</a>            i </a><span class="kw-2">*</span>= <span class="number">2</span><a href="../../tools/scanner.rs.html#391">;
-<a href=#265 id=265 data-nosnippet>265</a>        }
-<a href=#266 id=266 data-nosnippet>266</a>        <a href="#250">f</a>.<a href="#22-24">truncate</a>(<a href="#248">deg</a>);
-<a href=#267 id=267 data-nosnippet>267</a>        <a href="#250">f</a>
-<a href=#268 id=268 data-nosnippet>268</a>    }
-<a href=#269 id=269 data-nosnippet>269</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">exp(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
-<a href=#270 id=270 data-nosnippet>270</a>        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(<span class="self">self</span>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].is_zero());
-<a href=#271 id=271 data-nosnippet>271</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>();
-<a href=#272 id=272 data-nosnippet>272</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">i = </a><span class="number">1</span>;
-<a href=#273 id=273 data-nosnippet>273</a>        <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">i &lt; deg {
-<a href=#274 id=274 data-nosnippet>274</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = -f.log(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
-<a href=#275 id=275 data-nosnippet>275</a>            g[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">] += T::one();
-<a href=#276 id=276 data-nosnippet>276</a>            </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(g, x) </a><span class="kw">in </span><a href="../../tools/scanner.rs.html#391">g.iter_mut().zip(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.iter().take(i * </a><span class="number">2</span>)) {
-<a href=#277 id=277 data-nosnippet>277</a>                <span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">g += x.clone();
-<a href=#278 id=278 data-nosnippet>278</a>            }
-<a href=#279 id=279 data-nosnippet>279</a>            f = (f * g).prefix(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
-<a href=#280 id=280 data-nosnippet>280</a>            i </a><span class="kw-2">*</span>= <span class="number">2</span><a href="../../tools/scanner.rs.html#391">;
-<a href=#281 id=281 data-nosnippet>281</a>        }
-<a href=#282 id=282 data-nosnippet>282</a>        <a href="#271">f</a>.<a href="#176-179">prefix</a>(<a href="#269">deg</a>)
-<a href=#283 id=283 data-nosnippet>283</a>    }
-<a href=#284 id=284 data-nosnippet>284</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">log(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
-<a href=#285 id=285 data-nosnippet>285</a>        (<a class="self" href="#284">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#248-268">inv</a>(<a href="#284">deg</a>) * </a><a class="self" href="#284">self</a><a href="../../tools/scanner.rs.html#391">.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>().<a href="#196-206">diff</a>()).<a href="#207-224">integral</a>().<a href="#176-179">prefix</a>(<a href="#284">deg</a>)
-<a href=#286 id=286 data-nosnippet>286</a>    }
-<a href=#287 id=287 data-nosnippet>287</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">pow(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
-<a href=#288 id=288 data-nosnippet>288</a>        <span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#287">rhs</a> == </a><span class="number">0 </span>{
-<a href=#289 id=289 data-nosnippet>289</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><span class="self">Self</span>::<a href="#13-18">from_vec</a>(
-<a href=#290 id=290 data-nosnippet>290</a>                <a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(T::<a href="../../num/zero_one.rs.html#16">one</a>())
-<a href=#291 id=291 data-nosnippet>291</a>                    .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.chain">chain</a>(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">repeat_with</a>(T::<a href="../../num/zero_one.rs.html#2">zero</a>))
-<a href=#292 id=292 data-nosnippet>292</a>                    .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.take">take</a>(<a href="#287">deg</a>)
-<a href=#293 id=293 data-nosnippet>293</a>                    .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>(),
-<a href=#294 id=294 data-nosnippet>294</a>            );
-<a href=#295 id=295 data-nosnippet>295</a>        }
-<a href=#296 id=296 data-nosnippet>296</a>        </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(k) = </a><a class="self" href="#287">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#25-27">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.position">position</a>(|x| !<a href="#296">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()) {
-<a href=#297 id=297 data-nosnippet>297</a>            </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#296">k</a> &gt;= (<a href="#287">deg</a> + <a href="#287">rhs</a> - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">) / <a href="#287">rhs</a> {
-<a href=#298 id=298 data-nosnippet>298</a>                <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#287">deg</a>)
-<a href=#299 id=299 data-nosnippet>299</a>            } </a><span class="kw">else </span>{
-<a href=#300 id=300 data-nosnippet>300</a>                <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">x0 = </a><a class="self" href="#287">self</a><a href="../../tools/scanner.rs.html#391">[<a href="#296">k</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
-<a href=#301 id=301 data-nosnippet>301</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">rev = T::<a href="../../num/zero_one.rs.html#16">one</a>() / <a href="#300">x0</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
-<a href=#302 id=302 data-nosnippet>302</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">x = {
-<a href=#303 id=303 data-nosnippet>303</a>                    </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">x = T::<a href="../../num/zero_one.rs.html#16">one</a>();
-<a href=#304 id=304 data-nosnippet>304</a>                    </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">y = <a href="#287">rhs</a>;
-<a href=#305 id=305 data-nosnippet>305</a>                    </a><span class="kw">while </span><a href="../../tools/scanner.rs.html#391">y &gt; </a><span class="number">0 </span>{
-<a href=#306 id=306 data-nosnippet>306</a>                        <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">y &amp; </a><span class="number">1 </span>== <span class="number">1 </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#307 id=307 data-nosnippet>307</a>                            x </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= x0.clone();
-<a href=#308 id=308 data-nosnippet>308</a>                        }
-<a href=#309 id=309 data-nosnippet>309</a>                        x0 </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= x0.clone();
-<a href=#310 id=310 data-nosnippet>310</a>                        y &gt;&gt;= </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">;
-<a href=#311 id=311 data-nosnippet>311</a>                    }
-<a href=#312 id=312 data-nosnippet>312</a>                    <a href="#303">x</a>
-<a href=#313 id=313 data-nosnippet>313</a>                };
-<a href=#314 id=314 data-nosnippet>314</a>                </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = (</a><a class="self" href="#287">self</a><a href="../../tools/scanner.rs.html#391">.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#301">rev</a>) &gt;&gt; <a href="#296">k</a>;
-<a href=#315 id=315 data-nosnippet>315</a>                <a href="#314">f</a> = (<a href="#314">f</a>.<a href="#284-286">log</a>(<a href="#287">deg</a>) * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">T::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="#287">rhs</a>)).<a href="#269-283">exp</a>(<a href="#287">deg</a>) * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#302">x</a>;
-<a href=#316 id=316 data-nosnippet>316</a>                <a href="#314">f</a>.<a href="#22-24">truncate</a>(<a href="#287">deg</a> - <a href="#296">k</a> * <a href="#287">rhs</a>);
-<a href=#317 id=317 data-nosnippet>317</a>                <a href="#314">f</a> &lt;&lt;= <a href="#296">k</a> * <a href="#287">rhs</a>;
-<a href=#318 id=318 data-nosnippet>318</a>                <a href="#314">f</a>
-<a href=#319 id=319 data-nosnippet>319</a>            }
-<a href=#320 id=320 data-nosnippet>320</a>        } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#321 id=321 data-nosnippet>321</a>            <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#287">deg</a>)
-<a href=#322 id=322 data-nosnippet>322</a>        }
-<a href=#323 id=323 data-nosnippet>323</a>    }
-<a href=#324 id=324 data-nosnippet>324</a>}
-<a href=#325 id=325 data-nosnippet>325</a>
-<a href=#326 id=326 data-nosnippet>326</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;T, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;T, C&gt;
-<a href=#327 id=327 data-nosnippet>327</a></a><span class="kw">where
-<a href=#328 id=328 data-nosnippet>328</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#58-60">FormalPowerSeriesCoefficientSqrt</a>,
-<a href=#329 id=329 data-nosnippet>329</a>    C: <a href="../convolve_steps.rs.html#1-15">ConvolveSteps</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
-<a href=#330 id=330 data-nosnippet>330</a>{
-<a href=#331 id=331 data-nosnippet>331</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">sqrt(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<span class="self">Self</span>&gt; {
-<a href=#332 id=332 data-nosnippet>332</a>        <span class="kw">if </span><a class="self" href="#331">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="../../num/zero_one.rs.html#4-9">is_zero</a>() {
-<a href=#333 id=333 data-nosnippet>333</a>            </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(k) = </a><a class="self" href="#331">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#25-27">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.position">position</a>(|x| !<a href="#333">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()) {
-<a href=#334 id=334 data-nosnippet>334</a>                </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#333">k</a> % </a><span class="number">2 </span>!= <span class="number">0 </span>{
-<a href=#335 id=335 data-nosnippet>335</a>                    <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
-<a href=#336 id=336 data-nosnippet>336</a>                } <span class="kw">else if </span><a href="../../tools/scanner.rs.html#391"><a href="#331">deg</a> &gt; <a href="#333">k</a> / </a><span class="number">2 </span>{
-<a href=#337 id=337 data-nosnippet>337</a>                    <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<a class="self" href="../../tools/scanner.rs.html#391"><a href="#331">self</a> </a><a href="../../tools/scanner.rs.html#391">&gt;&gt; <a href="#333">k</a>).<a href="#331-352">sqrt</a>(<a href="#331">deg</a> - <a href="#333">k</a> / </a><span class="number">2</span>)<span class="question-mark">? </span><a href="../../tools/scanner.rs.html#391">&lt;&lt; (<a href="#333">k</a> / </a><span class="number">2</span>));
-<a href=#338 id=338 data-nosnippet>338</a>                }
-<a href=#339 id=339 data-nosnippet>339</a>            }
-<a href=#340 id=340 data-nosnippet>340</a>        } <span class="kw">else </span>{
-<a href=#341 id=341 data-nosnippet>341</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">inv2 = T::<a href="../../num/zero_one.rs.html#16">one</a>() / (T::<a href="../../num/zero_one.rs.html#16">one</a>() + T::<a href="../../num/zero_one.rs.html#16">one</a>());
-<a href=#342 id=342 data-nosnippet>342</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(</a><a class="self" href="#331">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="mod.rs.html#59">sqrt_coefficient</a>()</a><span class="question-mark">?</span>);
-<a href=#343 id=343 data-nosnippet>343</a>            <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">i = </a><span class="number">1</span>;
-<a href=#344 id=344 data-nosnippet>344</a>            <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">i &lt; deg {
-<a href=#345 id=345 data-nosnippet>345</a>                f = (</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f + </a><span class="kw-2">&amp;</span>(<span class="self">self</span><a href="../../tools/scanner.rs.html#391">.prefix_ref(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">) * f.inv(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">))).prefix(i * </a><span class="number">2</span>) * <span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inv2;
-<a href=#346 id=346 data-nosnippet>346</a>                i </a><span class="kw-2">*</span>= <span class="number">2</span><a href="../../tools/scanner.rs.html#391">;
-<a href=#347 id=347 data-nosnippet>347</a>            }
-<a href=#348 id=348 data-nosnippet>348</a>            <a href="#342">f</a>.<a href="#22-24">truncate</a>(<a href="#331">deg</a>);
-<a href=#349 id=349 data-nosnippet>349</a>            </a><span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<a href="#342">f</a>);
-<a href=#350 id=350 data-nosnippet>350</a>        }
-<a href=#351 id=351 data-nosnippet>351</a>        </a><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#331">deg</a>))
-<a href=#352 id=352 data-nosnippet>352</a>    }
-<a href=#353 id=353 data-nosnippet>353</a>}
-<a href=#354 id=354 data-nosnippet>354</a>
-<a href=#355 id=355 data-nosnippet>355</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;T, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;T, C&gt;
-<a href=#356 id=356 data-nosnippet>356</a></a><span class="kw">where
-<a href=#357 id=357 data-nosnippet>357</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#29-54">FormalPowerSeriesCoefficient</a>,
-<a href=#358 id=358 data-nosnippet>358</a>    C: <a href="../convolve_steps.rs.html#1-15">ConvolveSteps</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
-<a href=#359 id=359 data-nosnippet>359</a>{
-<a href=#360 id=360 data-nosnippet>360</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">count_subset_sum&lt;F&gt;(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, </a><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">inverse: F) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
-<a href=#361 id=361 data-nosnippet>361</a>    </a><span class="kw">where
-<a href=#362 id=362 data-nosnippet>362</a>        </span><a href="../../tools/scanner.rs.html#391">F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T,
-<a href=#363 id=363 data-nosnippet>363</a>    {
-<a href=#364 id=364 data-nosnippet>364</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#360">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
-<a href=#365 id=365 data-nosnippet>365</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#364">n</a>);
-<a href=#366 id=366 data-nosnippet>366</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
-<a href=#367 id=367 data-nosnippet>367</a>            </a><span class="kw">if </span>!<span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].is_zero() {
-<a href=#368 id=368 data-nosnippet>368</a>                </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(j, d) </a><span class="kw">in </span>(<span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n).step_by(i).enumerate().skip(</a><span class="number">1</span>) {
-<a href=#369 id=369 data-nosnippet>369</a>                    <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">j &amp; </a><span class="number">1 </span>!= <span class="number">0 </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#370 id=370 data-nosnippet>370</a>                        f[d] += </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inverse(j);
-<a href=#371 id=371 data-nosnippet>371</a>                    } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#372 id=372 data-nosnippet>372</a>                        f[d] -= </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inverse(j);
-<a href=#373 id=373 data-nosnippet>373</a>                    }
-<a href=#374 id=374 data-nosnippet>374</a>                }
-<a href=#375 id=375 data-nosnippet>375</a>            }
-<a href=#376 id=376 data-nosnippet>376</a>        }
-<a href=#377 id=377 data-nosnippet>377</a>        <a href="#365">f</a>.<a href="#269-283">exp</a>(<a href="#360">deg</a>)
-<a href=#378 id=378 data-nosnippet>378</a>    }
-<a href=#379 id=379 data-nosnippet>379</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">count_multiset_sum&lt;F&gt;(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, </a><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">inverse: F) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
-<a href=#380 id=380 data-nosnippet>380</a>    </a><span class="kw">where
-<a href=#381 id=381 data-nosnippet>381</a>        </span><a href="../../tools/scanner.rs.html#391">F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T,
-<a href=#382 id=382 data-nosnippet>382</a>    {
-<a href=#383 id=383 data-nosnippet>383</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#379">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
-<a href=#384 id=384 data-nosnippet>384</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#383">n</a>);
-<a href=#385 id=385 data-nosnippet>385</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
-<a href=#386 id=386 data-nosnippet>386</a>            </a><span class="kw">if </span>!<span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].is_zero() {
-<a href=#387 id=387 data-nosnippet>387</a>                </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(j, d) </a><span class="kw">in </span>(<span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n).step_by(i).enumerate().skip(</a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">) {
-<a href=#388 id=388 data-nosnippet>388</a>                    f[d] += </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inverse(j);
-<a href=#389 id=389 data-nosnippet>389</a>                }
-<a href=#390 id=390 data-nosnippet>390</a>            }
-<a href=#391 id=391 data-nosnippet>391</a>        }
-<a href=#392 id=392 data-nosnippet>392</a>        <a href="#384">f</a>.<a href="#269-283">exp</a>(<a href="#379">deg</a>)
-<a href=#393 id=393 data-nosnippet>393</a>    }
-<a href=#394 id=394 data-nosnippet>394</a>    </a><span class="doccomment">/// [x^n] P(x) / Q(x)
-<a href=#395 id=395 data-nosnippet>395</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">bostan_mori(</a><span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rhs: </a><span class="self">Self</span>, <span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T
-<a href=#396 id=396 data-nosnippet>396</a>    </a><span class="kw">where
-<a href=#397 id=397 data-nosnippet>397</a>        </span><a href="../../tools/scanner.rs.html#391">C: <a href="../number_theoretic_transform.rs.html#413-424">NttReuse</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
-<a href=#398 id=398 data-nosnippet>398</a>    {
-<a href=#399 id=399 data-nosnippet>399</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">res = T::<a href="../../num/zero_one.rs.html#2">zero</a>();
-<a href=#400 id=400 data-nosnippet>400</a>        <a href="#395">rhs</a>.<a href="#84-94">trim_tail_zeros</a>();
-<a href=#401 id=401 data-nosnippet>401</a>        </a><span class="kw">if </span><a class="self" href="#395">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() &gt;= <a href="#395">rhs</a>.<a href="#19-21">length</a>() {
-<a href=#402 id=402 data-nosnippet>402</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">r = </a><span class="kw-2">&amp;</span><a class="self" href="../../tools/scanner.rs.html#391"><a href="#395">self</a> </a>/ <span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#395">rhs</a>;
-<a href=#403 id=403 data-nosnippet>403</a>            </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#395">n</a> &lt; <a href="#402">r</a>.<a href="#19-21">length</a>() {
-<a href=#404 id=404 data-nosnippet>404</a>                <a href="#399">res</a> = <a href="#402">r</a>[<a href="#395">n</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
-<a href=#405 id=405 data-nosnippet>405</a>            }
-<a href=#406 id=406 data-nosnippet>406</a>            </a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#395">self</a> </a><a href="../../tools/scanner.rs.html#391">-= <a href="#402">r</a> * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#395">rhs</a>;
-<a href=#407 id=407 data-nosnippet>407</a>            </a><a class="self" href="#395">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#84-94">trim_tail_zeros</a>();
-<a href=#408 id=408 data-nosnippet>408</a>        }
-<a href=#409 id=409 data-nosnippet>409</a>        </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391">C::<a href="../number_theoretic_transform.rs.html#414">MULTIPLE</a> {
-<a href=#410 id=410 data-nosnippet>410</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">p = </a><a class="self" href="#395">self</a>;
-<a href=#411 id=411 data-nosnippet>411</a>            <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">q = <a href="#395">rhs</a>;
-<a href=#412 id=412 data-nosnippet>412</a>            </a><span class="kw">while </span><a href="../../tools/scanner.rs.html#391">n &gt; </a><span class="number">0 </span>{
-<a href=#413 id=413 data-nosnippet>413</a>                <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">mq = q.clone().parity_inversion();
-<a href=#414 id=414 data-nosnippet>414</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">u = p * mq.clone();
-<a href=#415 id=415 data-nosnippet>415</a>                p = </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391">n % </a><span class="number">2 </span>== <span class="number">0 </span><a href="../../tools/scanner.rs.html#391">{ u.even() } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{ u.odd() };
-<a href=#416 id=416 data-nosnippet>416</a>                q = (q * mq).even();
-<a href=#417 id=417 data-nosnippet>417</a>                n /= </a><span class="number">2</span>;
-<a href=#418 id=418 data-nosnippet>418</a>            }
-<a href=#419 id=419 data-nosnippet>419</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#399">res</a> + <a href="#410">p</a>.<a href="#75-77">coeff</a>(</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">) / <a href="#411">q</a>.<a href="#75-77">coeff</a>(</a><span class="number">0</span>);
-<a href=#420 id=420 data-nosnippet>420</a>        }
-<a href=#421 id=421 data-nosnippet>421</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">k = <a href="#395">rhs</a>.<a href="#19-21">length</a>().<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.next_power_of_two">next_power_of_two</a>();
-<a href=#422 id=422 data-nosnippet>422</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">p = C::<a href="../convolve_steps.rs.html#5">transform</a>(</a><a class="self" href="#395">self</a><a href="../../tools/scanner.rs.html#391">.data, <a href="#421">k</a> * </a><span class="number">2</span>);
-<a href=#423 id=423 data-nosnippet>423</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">q = C::<a href="../convolve_steps.rs.html#5">transform</a>(<a href="#395">rhs</a>.data, <a href="#421">k</a> * </a><span class="number">2</span>);
-<a href=#424 id=424 data-nosnippet>424</a>        <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">n &gt; </a><span class="number">0 </span>{
-<a href=#425 id=425 data-nosnippet>425</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">t = C::even_mul_normal_neg(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q);
-<a href=#426 id=426 data-nosnippet>426</a>            p = </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391">n % </a><span class="number">2 </span>== <span class="number">0 </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#427 id=427 data-nosnippet>427</a>                C::even_mul_normal_neg(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q)
-<a href=#428 id=428 data-nosnippet>428</a>            } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#429 id=429 data-nosnippet>429</a>                C::odd_mul_normal_neg(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q)
-<a href=#430 id=430 data-nosnippet>430</a>            };
-<a href=#431 id=431 data-nosnippet>431</a>            q = t;
-<a href=#432 id=432 data-nosnippet>432</a>            n /= </a><span class="number">2</span>;
-<a href=#433 id=433 data-nosnippet>433</a>            <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">n != </a><span class="number">0 </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#434 id=434 data-nosnippet>434</a>                p = C::ntt_doubling(p);
-<a href=#435 id=435 data-nosnippet>435</a>                q = C::ntt_doubling(q);
-<a href=#436 id=436 data-nosnippet>436</a>            }
-<a href=#437 id=437 data-nosnippet>437</a>        }
-<a href=#438 id=438 data-nosnippet>438</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">p = C::<a href="../convolve_steps.rs.html#6">inverse_transform</a>(<a href="#422">p</a>, <a href="#421">k</a>);
-<a href=#439 id=439 data-nosnippet>439</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">q = C::<a href="../convolve_steps.rs.html#6">inverse_transform</a>(<a href="#423">q</a>, <a href="#421">k</a>);
-<a href=#440 id=440 data-nosnippet>440</a>        <a href="#399">res</a> + <a href="#438">p</a>[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>() / <a href="#439">q</a>[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()
-<a href=#441 id=441 data-nosnippet>441</a>    }
-<a href=#442 id=442 data-nosnippet>442</a>    </a><span class="doccomment">/// return F(x) where [x^n] P(x) / Q(x) = [x^d-1] P(x) F(x)
-<a href=#443 id=443 data-nosnippet>443</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">bostan_mori_msb(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
-<a href=#444 id=444 data-nosnippet>444</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">d = </a><a class="self" href="#443">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span>;
-<a href=#445 id=445 data-nosnippet>445</a>        <span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#443">n</a> == </a><span class="number">0 </span>{
-<a href=#446 id=446 data-nosnippet>446</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391">(<span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>() &lt;&lt; (<a href="#444">d</a> - </a><span class="number">1</span>)) / <a class="self" href="#443">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
-<a href=#447 id=447 data-nosnippet>447</a>        }
-<a href=#448 id=448 data-nosnippet>448</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">q = </a><a class="self" href="#443">self</a>;
-<a href=#449 id=449 data-nosnippet>449</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">mq = <a href="#448">q</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>().<a href="#225-231">parity_inversion</a>();
-<a href=#450 id=450 data-nosnippet>450</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">w = (<a href="#448">q</a> * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#449">mq</a>).<a href="#180-187">even</a>().<a href="#443-458">bostan_mori_msb</a>(<a href="#443">n</a> / </a><span class="number">2</span>);
-<a href=#451 id=451 data-nosnippet>451</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">s = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#450">w</a>.<a href="#19-21">length</a>() * </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">- (<a href="#443">n</a> % </a><span class="number">2</span>));
-<a href=#452 id=452 data-nosnippet>452</a>        <span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(i, x) </a><span class="kw">in </span><a href="../../tools/scanner.rs.html#391">w.iter().enumerate() {
-<a href=#453 id=453 data-nosnippet>453</a>            s[i * </a><span class="number">2 </span>+ (<span class="number">1 </span><a href="../../tools/scanner.rs.html#391">- n % </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">)] = x.clone();
+<a href=#250 id=250 data-nosnippet>250</a>        </a><span class="kw">if </span><a class="self" href="#248">self</a><a href="../../tools/scanner.rs.html#391">.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|x| !<a href="#250">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.count">count</a>()
+<a href=#251 id=251 data-nosnippet>251</a>            &lt;= <a href="#248">deg</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.next_power_of_two">next_power_of_two</a>().<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.trailing_zeros">trailing_zeros</a>() </a><span class="kw">as </span><a href="../../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> * </a><span class="number">6
+<a href=#252 id=252 data-nosnippet>252</a>        </span>{
+<a href=#253 id=253 data-nosnippet>253</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">pos: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;</a><span class="kw">_</span>&gt; = <a class="self" href="../../tools/scanner.rs.html#391"><a href="#248">self</a>
+<a href=#254 id=254 data-nosnippet>254</a>                </a><a href="../../tools/scanner.rs.html#391">.data
+<a href=#255 id=255 data-nosnippet>255</a>                .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
+<a href=#256 id=256 data-nosnippet>256</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+<a href=#257 id=257 data-nosnippet>257</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.skip">skip</a>(</a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">)
+<a href=#258 id=258 data-nosnippet>258</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(i, x)| </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#258">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>() { </a><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a> </a>} <span class="kw">else </span>{ <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<a href="#258">i</a>) })
+<a href=#259 id=259 data-nosnippet>259</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+<a href=#260 id=260 data-nosnippet>260</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#248">deg</a>);
+<a href=#261 id=261 data-nosnippet>261</a>            <a href="#260">f</a>[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">] = T::<a href="../../num/zero_one.rs.html#16">one</a>() / </a><a class="self" href="#248">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<a href=#262 id=262 data-nosnippet>262</a>            </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..deg {
+<a href=#263 id=263 data-nosnippet>263</a>                </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">tot = T::zero();
+<a href=#264 id=264 data-nosnippet>264</a>                </a><span class="kw">for </span><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">j </a><span class="kw">in </span><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">pos {
+<a href=#265 id=265 data-nosnippet>265</a>                    </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391">j &gt; i {
+<a href=#266 id=266 data-nosnippet>266</a>                        </a><span class="kw">break</span><a href="../../tools/scanner.rs.html#391">;
+<a href=#267 id=267 data-nosnippet>267</a>                    }
+<a href=#268 id=268 data-nosnippet>268</a>                    tot += </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[j].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f[i - j];
+<a href=#269 id=269 data-nosnippet>269</a>                }
+<a href=#270 id=270 data-nosnippet>270</a>                f[i] = -tot * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f[</a><span class="number">0</span>];
+<a href=#271 id=271 data-nosnippet>271</a>            }
+<a href=#272 id=272 data-nosnippet>272</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#260">f</a>;
+<a href=#273 id=273 data-nosnippet>273</a>        }
+<a href=#274 id=274 data-nosnippet>274</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(T::<a href="../../num/zero_one.rs.html#16">one</a>() / </a><a class="self" href="#248">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>());
+<a href=#275 id=275 data-nosnippet>275</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">i = </a><span class="number">1</span>;
+<a href=#276 id=276 data-nosnippet>276</a>        <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">i &lt; deg {
+<a href=#277 id=277 data-nosnippet>277</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.prefix_ref((i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">).min(deg));
+<a href=#278 id=278 data-nosnippet>278</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">h = f.clone();
+<a href=#279 id=279 data-nosnippet>279</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = C::transform(g.data, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i);
+<a href=#280 id=280 data-nosnippet>280</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">h = C::transform(h.data, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i);
+<a href=#281 id=281 data-nosnippet>281</a>            C::multiply(</a><span class="kw-2">&amp;mut </span><a href="../../tools/scanner.rs.html#391">g, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">h);
+<a href=#282 id=282 data-nosnippet>282</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = <span class="self">Self</span>::from_vec(C::inverse_transform(g, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i));
+<a href=#283 id=283 data-nosnippet>283</a>            g &gt;&gt;= i;
+<a href=#284 id=284 data-nosnippet>284</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = C::transform(g.data, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i);
+<a href=#285 id=285 data-nosnippet>285</a>            C::multiply(</a><span class="kw-2">&amp;mut </span><a href="../../tools/scanner.rs.html#391">g, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">h);
+<a href=#286 id=286 data-nosnippet>286</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = <span class="self">Self</span>::from_vec(C::inverse_transform(g, </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* i));
+<a href=#287 id=287 data-nosnippet>287</a>            f.data.extend((-g).into_iter().take(i));
+<a href=#288 id=288 data-nosnippet>288</a>            i </a><span class="kw-2">*</span>= <span class="number">2</span><a href="../../tools/scanner.rs.html#391">;
+<a href=#289 id=289 data-nosnippet>289</a>        }
+<a href=#290 id=290 data-nosnippet>290</a>        <a href="#274">f</a>.<a href="#22-24">truncate</a>(<a href="#248">deg</a>);
+<a href=#291 id=291 data-nosnippet>291</a>        <a href="#274">f</a>
+<a href=#292 id=292 data-nosnippet>292</a>    }
+<a href=#293 id=293 data-nosnippet>293</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">exp(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#294 id=294 data-nosnippet>294</a>        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(<span class="self">self</span>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].is_zero());
+<a href=#295 id=295 data-nosnippet>295</a>        </a><span class="kw">if </span><a class="self" href="#293">self</a><a href="../../tools/scanner.rs.html#391">.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|x| !<a href="#295">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.count">count</a>()
+<a href=#296 id=296 data-nosnippet>296</a>            &lt;= <a href="#293">deg</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.next_power_of_two">next_power_of_two</a>().<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.trailing_zeros">trailing_zeros</a>() </a><span class="kw">as </span><a href="../../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> * </a><span class="number">16
+<a href=#297 id=297 data-nosnippet>297</a>        </span>{
+<a href=#298 id=298 data-nosnippet>298</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">diff = </a><a class="self" href="#293">self</a><a href="../../tools/scanner.rs.html#391">.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>().<a href="#196-206">diff</a>();
+<a href=#299 id=299 data-nosnippet>299</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">pos: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">&gt; = <a href="#298">diff</a>
+<a href=#300 id=300 data-nosnippet>300</a>                .data
+<a href=#301 id=301 data-nosnippet>301</a>                .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
+<a href=#302 id=302 data-nosnippet>302</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+<a href=#303 id=303 data-nosnippet>303</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(i, x)| </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#303">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>() { </a><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a> </a>} <span class="kw">else </span>{ <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<a href="#303">i</a>) })
+<a href=#304 id=304 data-nosnippet>304</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+<a href=#305 id=305 data-nosnippet>305</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">mf = T::<a href="mod.rs.html#56-58">memorized_factorial</a>(<a href="#293">deg</a>);
+<a href=#306 id=306 data-nosnippet>306</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#293">deg</a>);
+<a href=#307 id=307 data-nosnippet>307</a>            <a href="#306">f</a>[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">] = T::<a href="../../num/zero_one.rs.html#16">one</a>();
+<a href=#308 id=308 data-nosnippet>308</a>            </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..deg {
+<a href=#309 id=309 data-nosnippet>309</a>                </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">tot = T::zero();
+<a href=#310 id=310 data-nosnippet>310</a>                </a><span class="kw">for </span><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">j </a><span class="kw">in </span><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">pos {
+<a href=#311 id=311 data-nosnippet>311</a>                    </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391">j &gt; i - </a><span class="number">1 </span>{
+<a href=#312 id=312 data-nosnippet>312</a>                        <span class="kw">break</span><a href="../../tools/scanner.rs.html#391">;
+<a href=#313 id=313 data-nosnippet>313</a>                    }
+<a href=#314 id=314 data-nosnippet>314</a>                    tot += f[i - </a><span class="number">1 </span><a href="../../tools/scanner.rs.html#391">- j].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">diff[j];
+<a href=#315 id=315 data-nosnippet>315</a>                }
+<a href=#316 id=316 data-nosnippet>316</a>                f[i] = tot * T::memorized_inv(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">mf, i);
+<a href=#317 id=317 data-nosnippet>317</a>            }
+<a href=#318 id=318 data-nosnippet>318</a>            </a><span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#306">f</a>;
+<a href=#319 id=319 data-nosnippet>319</a>        }
+<a href=#320 id=320 data-nosnippet>320</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>();
+<a href=#321 id=321 data-nosnippet>321</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">i = </a><span class="number">1</span>;
+<a href=#322 id=322 data-nosnippet>322</a>        <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">i &lt; deg {
+<a href=#323 id=323 data-nosnippet>323</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = -f.log(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
+<a href=#324 id=324 data-nosnippet>324</a>            g[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">] += T::one();
+<a href=#325 id=325 data-nosnippet>325</a>            </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(g, x) </a><span class="kw">in </span><a href="../../tools/scanner.rs.html#391">g.iter_mut().zip(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.iter().take(i * </a><span class="number">2</span>)) {
+<a href=#326 id=326 data-nosnippet>326</a>                <span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">g += x.clone();
+<a href=#327 id=327 data-nosnippet>327</a>            }
+<a href=#328 id=328 data-nosnippet>328</a>            f = (f * g).prefix(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
+<a href=#329 id=329 data-nosnippet>329</a>            i </a><span class="kw-2">*</span>= <span class="number">2</span><a href="../../tools/scanner.rs.html#391">;
+<a href=#330 id=330 data-nosnippet>330</a>        }
+<a href=#331 id=331 data-nosnippet>331</a>        <a href="#320">f</a>.<a href="#176-179">prefix</a>(<a href="#293">deg</a>)
+<a href=#332 id=332 data-nosnippet>332</a>    }
+<a href=#333 id=333 data-nosnippet>333</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">log(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#334 id=334 data-nosnippet>334</a>        (<a class="self" href="#333">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#248-292">inv</a>(<a href="#333">deg</a>) * </a><a class="self" href="#333">self</a><a href="../../tools/scanner.rs.html#391">.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>().<a href="#196-206">diff</a>()).<a href="#207-224">integral</a>().<a href="#176-179">prefix</a>(<a href="#333">deg</a>)
+<a href=#335 id=335 data-nosnippet>335</a>    }
+<a href=#336 id=336 data-nosnippet>336</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">pow(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, rhs: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#337 id=337 data-nosnippet>337</a>        <span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#336">rhs</a> == </a><span class="number">0 </span>{
+<a href=#338 id=338 data-nosnippet>338</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><span class="self">Self</span>::<a href="#13-18">from_vec</a>(
+<a href=#339 id=339 data-nosnippet>339</a>                <a href="https://doc.rust-lang.org/nightly/core/iter/sources/once/fn.once.html">once</a>(T::<a href="../../num/zero_one.rs.html#16">one</a>())
+<a href=#340 id=340 data-nosnippet>340</a>                    .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.chain">chain</a>(<a href="https://doc.rust-lang.org/nightly/core/iter/sources/repeat_with/fn.repeat_with.html">repeat_with</a>(T::<a href="../../num/zero_one.rs.html#2">zero</a>))
+<a href=#341 id=341 data-nosnippet>341</a>                    .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.take">take</a>(<a href="#336">deg</a>)
+<a href=#342 id=342 data-nosnippet>342</a>                    .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>(),
+<a href=#343 id=343 data-nosnippet>343</a>            );
+<a href=#344 id=344 data-nosnippet>344</a>        }
+<a href=#345 id=345 data-nosnippet>345</a>        </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(k) = </a><a class="self" href="#336">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#25-27">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.position">position</a>(|x| !<a href="#345">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()) {
+<a href=#346 id=346 data-nosnippet>346</a>            </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#345">k</a> &gt;= (<a href="#336">deg</a> + <a href="#336">rhs</a> - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">) / <a href="#336">rhs</a> {
+<a href=#347 id=347 data-nosnippet>347</a>                <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#336">deg</a>)
+<a href=#348 id=348 data-nosnippet>348</a>            } </a><span class="kw">else </span>{
+<a href=#349 id=349 data-nosnippet>349</a>                <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">deg = <a href="#336">deg</a> - <a href="#345">k</a> * <a href="#336">rhs</a>;
+<a href=#350 id=350 data-nosnippet>350</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">x0 = </a><a class="self" href="#336">self</a><a href="../../tools/scanner.rs.html#391">[<a href="#345">k</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<a href=#351 id=351 data-nosnippet>351</a>                </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = (</a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#336">self</a> </a><a href="../../tools/scanner.rs.html#391">&gt;&gt; <a href="#345">k</a>) / </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#350">x0</a>;
+<a href=#352 id=352 data-nosnippet>352</a>                </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#351">f</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|x| !<a href="#352">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.count">count</a>()
+<a href=#353 id=353 data-nosnippet>353</a>                    &lt;= <a href="#349">deg</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.next_power_of_two">next_power_of_two</a>().<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.trailing_zeros">trailing_zeros</a>() </a><span class="kw">as </span><a href="../../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> * </a><span class="number">12
+<a href=#354 id=354 data-nosnippet>354</a>                </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#355 id=355 data-nosnippet>355</a>                    <a href="#351">f</a> = <a href="#351">f</a>.<a href="#367-390">pow_sparse1</a>(T::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="#336">rhs</a>), <a href="#349">deg</a>);
+<a href=#356 id=356 data-nosnippet>356</a>                } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#357 id=357 data-nosnippet>357</a>                    <a href="#351">f</a> = (<a href="#351">f</a>.<a href="#333-335">log</a>(<a href="#349">deg</a>) * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">T::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="#336">rhs</a>)).<a href="#293-332">exp</a>(<a href="#349">deg</a>);
+<a href=#358 id=358 data-nosnippet>358</a>                }
+<a href=#359 id=359 data-nosnippet>359</a>                <a href="#351">f</a> </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= <a href="#350">x0</a>.<a href="mod.rs.html#55">pow</a>(<a href="#336">rhs</a>);
+<a href=#360 id=360 data-nosnippet>360</a>                <a href="#351">f</a> &lt;&lt;= <a href="#345">k</a> * <a href="#336">rhs</a>;
+<a href=#361 id=361 data-nosnippet>361</a>                <a href="#351">f</a>
+<a href=#362 id=362 data-nosnippet>362</a>            }
+<a href=#363 id=363 data-nosnippet>363</a>        } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#364 id=364 data-nosnippet>364</a>            <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#336">deg</a>)
+<a href=#365 id=365 data-nosnippet>365</a>        }
+<a href=#366 id=366 data-nosnippet>366</a>    }
+<a href=#367 id=367 data-nosnippet>367</a>    </a><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">pow_sparse1(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, rhs: T, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#368 id=368 data-nosnippet>368</a>        <a class="macro" href="https://doc.rust-lang.org/nightly/core/macro.debug_assert.html">debug_assert!</a>(!<span class="self">self</span>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].is_zero());
+<a href=#369 id=369 data-nosnippet>369</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">pos: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;</a><span class="kw">_</span>&gt; = <a class="self" href="../../tools/scanner.rs.html#391"><a href="#367">self</a>
+<a href=#370 id=370 data-nosnippet>370</a>            </a><a href="../../tools/scanner.rs.html#391">.data
+<a href=#371 id=371 data-nosnippet>371</a>            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
+<a href=#372 id=372 data-nosnippet>372</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.enumerate">enumerate</a>()
+<a href=#373 id=373 data-nosnippet>373</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.skip">skip</a>(</a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">)
+<a href=#374 id=374 data-nosnippet>374</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter_map">filter_map</a>(|(i, x)| </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#374">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>() { </a><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None"><a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a> </a>} <span class="kw">else </span>{ <a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<a href="#374">i</a>) })
+<a href=#375 id=375 data-nosnippet>375</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+<a href=#376 id=376 data-nosnippet>376</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">mf = T::<a href="mod.rs.html#56-58">memorized_factorial</a>(<a href="#367">deg</a>);
+<a href=#377 id=377 data-nosnippet>377</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#367">deg</a>);
+<a href=#378 id=378 data-nosnippet>378</a>        <a href="#377">f</a>[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">] = T::<a href="../../num/zero_one.rs.html#16">one</a>();
+<a href=#379 id=379 data-nosnippet>379</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..deg {
+<a href=#380 id=380 data-nosnippet>380</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">tot = T::zero();
+<a href=#381 id=381 data-nosnippet>381</a>            </a><span class="kw">for </span><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">j </a><span class="kw">in </span><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">pos {
+<a href=#382 id=382 data-nosnippet>382</a>                </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391">j &gt; i {
+<a href=#383 id=383 data-nosnippet>383</a>                    </a><span class="kw">break</span><a href="../../tools/scanner.rs.html#391">;
+<a href=#384 id=384 data-nosnippet>384</a>                }
+<a href=#385 id=385 data-nosnippet>385</a>                tot += (T::from(j) * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">rhs - T::from(i - j)) * </a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[j] * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f[i - j];
+<a href=#386 id=386 data-nosnippet>386</a>            }
+<a href=#387 id=387 data-nosnippet>387</a>            f[i] = tot * T::memorized_inv(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">mf, i);
+<a href=#388 id=388 data-nosnippet>388</a>        }
+<a href=#389 id=389 data-nosnippet>389</a>        <a href="#377">f</a>
+<a href=#390 id=390 data-nosnippet>390</a>    }
+<a href=#391 id=391 data-nosnippet>391</a>}
+<a href=#392 id=392 data-nosnippet>392</a>
+<a href=#393 id=393 data-nosnippet>393</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;T, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;T, C&gt;
+<a href=#394 id=394 data-nosnippet>394</a></a><span class="kw">where
+<a href=#395 id=395 data-nosnippet>395</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#75-77">FormalPowerSeriesCoefficientSqrt</a>,
+<a href=#396 id=396 data-nosnippet>396</a>    C: <a href="../convolve_steps.rs.html#1-15">ConvolveSteps</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
+<a href=#397 id=397 data-nosnippet>397</a>{
+<a href=#398 id=398 data-nosnippet>398</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">sqrt(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="prelude-ty" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Option</a>&lt;<span class="self">Self</span>&gt; {
+<a href=#399 id=399 data-nosnippet>399</a>        <span class="kw">if </span><a class="self" href="#398">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="../../num/zero_one.rs.html#4-9">is_zero</a>() {
+<a href=#400 id=400 data-nosnippet>400</a>            </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(k) = </a><a class="self" href="#398">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#25-27">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.position">position</a>(|x| !<a href="#400">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()) {
+<a href=#401 id=401 data-nosnippet>401</a>                </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#400">k</a> % </a><span class="number">2 </span>!= <span class="number">0 </span>{
+<a href=#402 id=402 data-nosnippet>402</a>                    <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.None">None</a>;
+<a href=#403 id=403 data-nosnippet>403</a>                } <span class="kw">else if </span><a href="../../tools/scanner.rs.html#391"><a href="#398">deg</a> &gt; <a href="#400">k</a> / </a><span class="number">2 </span>{
+<a href=#404 id=404 data-nosnippet>404</a>                    <span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a>((<a class="self" href="../../tools/scanner.rs.html#391"><a href="#398">self</a> </a><a href="../../tools/scanner.rs.html#391">&gt;&gt; <a href="#400">k</a>).<a href="#398-430">sqrt</a>(<a href="#398">deg</a> - <a href="#400">k</a> / </a><span class="number">2</span>)<span class="question-mark">? </span><a href="../../tools/scanner.rs.html#391">&lt;&lt; (<a href="#400">k</a> / </a><span class="number">2</span>));
+<a href=#405 id=405 data-nosnippet>405</a>                }
+<a href=#406 id=406 data-nosnippet>406</a>            }
+<a href=#407 id=407 data-nosnippet>407</a>        } <span class="kw">else </span>{
+<a href=#408 id=408 data-nosnippet>408</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">s = </a><a class="self" href="#398">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="mod.rs.html#76">sqrt_coefficient</a>()</a><span class="question-mark">?</span>;
+<a href=#409 id=409 data-nosnippet>409</a>            <span class="kw">if </span><a class="self" href="#398">self</a><a href="../../tools/scanner.rs.html#391">.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.filter">filter</a>(|x| !<a href="#409">x</a>.<a href="../../num/zero_one.rs.html#4-9">is_zero</a>()).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.count">count</a>()
+<a href=#410 id=410 data-nosnippet>410</a>                &lt;= <a href="#398">deg</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.next_power_of_two">next_power_of_two</a>().<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.trailing_zeros">trailing_zeros</a>() </a><span class="kw">as </span><a href="../../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a> * </a><span class="number">4
+<a href=#411 id=411 data-nosnippet>411</a>            </span>{
+<a href=#412 id=412 data-nosnippet>412</a>                <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">t = </a><a class="self" href="#398">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<a href=#413 id=413 data-nosnippet>413</a>                </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = </a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#398">self</a> </a><a href="../../tools/scanner.rs.html#391">/ <a href="#412">t</a>;
+<a href=#414 id=414 data-nosnippet>414</a>                <a href="#413">f</a> = <a href="#413">f</a>.<a href="#367-390">pow_sparse1</a>(T::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(</a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">) / T::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(</a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">), <a href="#398">deg</a>);
+<a href=#415 id=415 data-nosnippet>415</a>                <a href="#413">f</a> </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= <a href="#408">s</a>;
+<a href=#416 id=416 data-nosnippet>416</a>                </a><span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<a href="#413">f</a>);
+<a href=#417 id=417 data-nosnippet>417</a>            }
+<a href=#418 id=418 data-nosnippet>418</a>
+<a href=#419 id=419 data-nosnippet>419</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from">from</a>(<a href="#408">s</a>);
+<a href=#420 id=420 data-nosnippet>420</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">inv2 = T::<a href="../../num/zero_one.rs.html#16">one</a>() / (T::<a href="../../num/zero_one.rs.html#16">one</a>() + T::<a href="../../num/zero_one.rs.html#16">one</a>());
+<a href=#421 id=421 data-nosnippet>421</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">i = </a><span class="number">1</span>;
+<a href=#422 id=422 data-nosnippet>422</a>            <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">i &lt; deg {
+<a href=#423 id=423 data-nosnippet>423</a>                f = (</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f + </a><span class="kw-2">&amp;</span>(<span class="self">self</span><a href="../../tools/scanner.rs.html#391">.prefix_ref(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">) * f.inv(i * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">))).prefix(i * </a><span class="number">2</span>) * <span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inv2;
+<a href=#424 id=424 data-nosnippet>424</a>                i </a><span class="kw-2">*</span>= <span class="number">2</span><a href="../../tools/scanner.rs.html#391">;
+<a href=#425 id=425 data-nosnippet>425</a>            }
+<a href=#426 id=426 data-nosnippet>426</a>            <a href="#419">f</a>.<a href="#22-24">truncate</a>(<a href="#398">deg</a>);
+<a href=#427 id=427 data-nosnippet>427</a>            </a><span class="kw">return </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<a href="#419">f</a>);
+<a href=#428 id=428 data-nosnippet>428</a>        }
+<a href=#429 id=429 data-nosnippet>429</a>        </a><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(<span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#398">deg</a>))
+<a href=#430 id=430 data-nosnippet>430</a>    }
+<a href=#431 id=431 data-nosnippet>431</a>}
+<a href=#432 id=432 data-nosnippet>432</a>
+<a href=#433 id=433 data-nosnippet>433</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;T, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;T, C&gt;
+<a href=#434 id=434 data-nosnippet>434</a></a><span class="kw">where
+<a href=#435 id=435 data-nosnippet>435</a>    </span><a href="../../tools/scanner.rs.html#391">T: <a href="mod.rs.html#29-60">FormalPowerSeriesCoefficient</a>,
+<a href=#436 id=436 data-nosnippet>436</a>    C: <a href="../convolve_steps.rs.html#1-15">ConvolveSteps</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
+<a href=#437 id=437 data-nosnippet>437</a>{
+<a href=#438 id=438 data-nosnippet>438</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">count_subset_sum&lt;F&gt;(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, </a><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">inverse: F) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
+<a href=#439 id=439 data-nosnippet>439</a>    </a><span class="kw">where
+<a href=#440 id=440 data-nosnippet>440</a>        </span><a href="../../tools/scanner.rs.html#391">F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T,
+<a href=#441 id=441 data-nosnippet>441</a>    {
+<a href=#442 id=442 data-nosnippet>442</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#438">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
+<a href=#443 id=443 data-nosnippet>443</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#442">n</a>);
+<a href=#444 id=444 data-nosnippet>444</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
+<a href=#445 id=445 data-nosnippet>445</a>            </a><span class="kw">if </span>!<span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].is_zero() {
+<a href=#446 id=446 data-nosnippet>446</a>                </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(j, d) </a><span class="kw">in </span>(<span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n).step_by(i).enumerate().skip(</a><span class="number">1</span>) {
+<a href=#447 id=447 data-nosnippet>447</a>                    <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">j &amp; </a><span class="number">1 </span>!= <span class="number">0 </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#448 id=448 data-nosnippet>448</a>                        f[d] += </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inverse(j);
+<a href=#449 id=449 data-nosnippet>449</a>                    } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#450 id=450 data-nosnippet>450</a>                        f[d] -= </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inverse(j);
+<a href=#451 id=451 data-nosnippet>451</a>                    }
+<a href=#452 id=452 data-nosnippet>452</a>                }
+<a href=#453 id=453 data-nosnippet>453</a>            }
 <a href=#454 id=454 data-nosnippet>454</a>        }
-<a href=#455 id=455 data-nosnippet>455</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">len = </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* <a href="#444">d</a> + </a><span class="number">1</span>;
-<a href=#456 id=456 data-nosnippet>456</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">ts = C::<a href="../convolve_steps.rs.html#5">transform</a>(<a href="#451">s</a>.<a href="#176-179">prefix</a>(<a href="#455">len</a>).data, <a href="#455">len</a>);
-<a href=#457 id=457 data-nosnippet>457</a>        <a href="#449">mq</a>.<a href="#65-68">reversed</a>().<a href="#468-473">middle_product</a>(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#456">ts</a>, <a href="#455">len</a>).<a href="#176-179">prefix</a>(<a href="#444">d</a> + </a><span class="number">1</span>)
-<a href=#458 id=458 data-nosnippet>458</a>    }
-<a href=#459 id=459 data-nosnippet>459</a>    <span class="doccomment">/// x^n mod self
-<a href=#460 id=460 data-nosnippet>460</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">pow_mod(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
-<a href=#461 id=461 data-nosnippet>461</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">d = </a><a class="self" href="#460">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span>;
-<a href=#462 id=462 data-nosnippet>462</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">q = </a><a class="self" href="#460">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#65-68">reversed</a>();
-<a href=#463 id=463 data-nosnippet>463</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">u = <a href="#462">q</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>().<a href="#443-458">bostan_mori_msb</a>(<a href="#460">n</a>);
-<a href=#464 id=464 data-nosnippet>464</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = (<a href="#463">u</a> * <a href="#462">q</a>).<a href="#176-179">prefix</a>(<a href="#461">d</a>).<a href="#65-68">reversed</a>();
-<a href=#465 id=465 data-nosnippet>465</a>        <a href="#464">f</a>.<a href="#84-94">trim_tail_zeros</a>();
-<a href=#466 id=466 data-nosnippet>466</a>        <a href="#464">f</a>
-<a href=#467 id=467 data-nosnippet>467</a>    }
-<a href=#468 id=468 data-nosnippet>468</a>    </a><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">middle_product(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, other: </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">C::F, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
-<a href=#469 id=469 data-nosnippet>469</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#468">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
-<a href=#470 id=470 data-nosnippet>470</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">s = C::<a href="../convolve_steps.rs.html#5">transform</a>(</a><a class="self" href="#468">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#65-68">reversed</a>().data, <a href="#468">deg</a>);
-<a href=#471 id=471 data-nosnippet>471</a>        C::<a href="../convolve_steps.rs.html#7">multiply</a>(</a><span class="kw-2">&amp;mut </span><a href="../../tools/scanner.rs.html#391"><a href="#470">s</a>, <a href="#468">other</a>);
-<a href=#472 id=472 data-nosnippet>472</a>        <span class="self">Self</span>::<a href="#13-18">from_vec</a>((C::<a href="../convolve_steps.rs.html#6">inverse_transform</a>(<a href="#470">s</a>, <a href="#468">deg</a>))[<a href="#469">n</a> - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..].<a href="https://doc.rust-lang.org/nightly/alloc/foreigntype.slice.html#method.to_vec">to_vec</a>())
-<a href=#473 id=473 data-nosnippet>473</a>    }
-<a href=#474 id=474 data-nosnippet>474</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">multipoint_evaluation(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, points: </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">[T]) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt; {
-<a href=#475 id=475 data-nosnippet>475</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = <a href="#474">points</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>();
-<a href=#476 id=476 data-nosnippet>476</a>        </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#475">n</a> &lt;= </a><span class="number">32 </span>{
-<a href=#477 id=477 data-nosnippet>477</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#474">points</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|p| </a><a class="self" href="#474">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#232-240">eval</a>(<a href="#477">p</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>())).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
-<a href=#478 id=478 data-nosnippet>478</a>        }
-<a href=#479 id=479 data-nosnippet>479</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">subproduct_tree = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#475">n</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
-<a href=#480 id=480 data-nosnippet>480</a>        <a href="#479">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(<a href="#475">n</a>, Zero::<a href="../../num/zero_one.rs.html#2">zero</a>);
-<a href=#481 id=481 data-nosnippet>481</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">x </a><span class="kw">in </span><a href="../../tools/scanner.rs.html#391">points {
-<a href=#482 id=482 data-nosnippet>482</a>            subproduct_tree.push(<span class="self">Self</span>::from_vec(</a><span class="macro">vec!</span><a href="../../tools/scanner.rs.html#391">[-x.clone(), T::one()]));
-<a href=#483 id=483 data-nosnippet>483</a>        }
-<a href=#484 id=484 data-nosnippet>484</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span>(<span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n).rev() {
-<a href=#485 id=485 data-nosnippet>485</a>            subproduct_tree[i] = </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">subproduct_tree[i * </a><span class="number">2</span>] * <span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">subproduct_tree[i * </a><span class="number">2 </span>+ <span class="number">1</span>];
+<a href=#455 id=455 data-nosnippet>455</a>        <a href="#443">f</a>.<a href="#293-332">exp</a>(<a href="#438">deg</a>)
+<a href=#456 id=456 data-nosnippet>456</a>    }
+<a href=#457 id=457 data-nosnippet>457</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">count_multiset_sum&lt;F&gt;(</a><span class="kw-2">&amp;</span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, </a><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">inverse: F) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
+<a href=#458 id=458 data-nosnippet>458</a>    </a><span class="kw">where
+<a href=#459 id=459 data-nosnippet>459</a>        </span><a href="../../tools/scanner.rs.html#391">F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T,
+<a href=#460 id=460 data-nosnippet>460</a>    {
+<a href=#461 id=461 data-nosnippet>461</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#457">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
+<a href=#462 id=462 data-nosnippet>462</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#461">n</a>);
+<a href=#463 id=463 data-nosnippet>463</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
+<a href=#464 id=464 data-nosnippet>464</a>            </a><span class="kw">if </span>!<span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].is_zero() {
+<a href=#465 id=465 data-nosnippet>465</a>                </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(j, d) </a><span class="kw">in </span>(<span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n).step_by(i).enumerate().skip(</a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">) {
+<a href=#466 id=466 data-nosnippet>466</a>                    f[d] += </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">[i].clone() * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">inverse(j);
+<a href=#467 id=467 data-nosnippet>467</a>                }
+<a href=#468 id=468 data-nosnippet>468</a>            }
+<a href=#469 id=469 data-nosnippet>469</a>        }
+<a href=#470 id=470 data-nosnippet>470</a>        <a href="#462">f</a>.<a href="#293-332">exp</a>(<a href="#457">deg</a>)
+<a href=#471 id=471 data-nosnippet>471</a>    }
+<a href=#472 id=472 data-nosnippet>472</a>    </a><span class="doccomment">/// [x^n] P(x) / Q(x)
+<a href=#473 id=473 data-nosnippet>473</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">bostan_mori(</a><span class="kw-2">mut </span><span class="self">self</span>, <span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rhs: </a><span class="self">Self</span>, <span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T
+<a href=#474 id=474 data-nosnippet>474</a>    </a><span class="kw">where
+<a href=#475 id=475 data-nosnippet>475</a>        </span><a href="../../tools/scanner.rs.html#391">C: <a href="../number_theoretic_transform.rs.html#413-424">NttReuse</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
+<a href=#476 id=476 data-nosnippet>476</a>    {
+<a href=#477 id=477 data-nosnippet>477</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">res = T::<a href="../../num/zero_one.rs.html#2">zero</a>();
+<a href=#478 id=478 data-nosnippet>478</a>        <a href="#473">rhs</a>.<a href="#84-94">trim_tail_zeros</a>();
+<a href=#479 id=479 data-nosnippet>479</a>        </a><span class="kw">if </span><a class="self" href="#473">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() &gt;= <a href="#473">rhs</a>.<a href="#19-21">length</a>() {
+<a href=#480 id=480 data-nosnippet>480</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">r = </a><span class="kw-2">&amp;</span><a class="self" href="../../tools/scanner.rs.html#391"><a href="#473">self</a> </a>/ <span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#473">rhs</a>;
+<a href=#481 id=481 data-nosnippet>481</a>            </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#473">n</a> &lt; <a href="#480">r</a>.<a href="#19-21">length</a>() {
+<a href=#482 id=482 data-nosnippet>482</a>                <a href="#477">res</a> = <a href="#480">r</a>[<a href="#473">n</a>].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<a href=#483 id=483 data-nosnippet>483</a>            }
+<a href=#484 id=484 data-nosnippet>484</a>            </a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#473">self</a> </a><a href="../../tools/scanner.rs.html#391">-= <a href="#480">r</a> * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#473">rhs</a>;
+<a href=#485 id=485 data-nosnippet>485</a>            </a><a class="self" href="#473">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#84-94">trim_tail_zeros</a>();
 <a href=#486 id=486 data-nosnippet>486</a>        }
-<a href=#487 id=487 data-nosnippet>487</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">uptree_t = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#475">n</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
-<a href=#488 id=488 data-nosnippet>488</a>        <a href="#487">uptree_t</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(</a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">, Zero::<a href="../../num/zero_one.rs.html#2">zero</a>);
-<a href=#489 id=489 data-nosnippet>489</a>        <a href="#479">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.reverse">reverse</a>();
-<a href=#490 id=490 data-nosnippet>490</a>        <a href="#479">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>();
-<a href=#491 id=491 data-nosnippet>491</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">m = </a><a class="self" href="#474">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
-<a href=#492 id=492 data-nosnippet>492</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">v = <a href="#479">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>().<a href="#65-68">reversed</a>().<a href="#61-64">resized</a>(<a href="#491">m</a>);
-<a href=#493 id=493 data-nosnippet>493</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">s = C::<a href="../convolve_steps.rs.html#5">transform</a>(</a><a class="self" href="#474">self</a><a href="../../tools/scanner.rs.html#391">.data, <a href="#491">m</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
-<a href=#494 id=494 data-nosnippet>494</a>        <a href="#487">uptree_t</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#492">v</a>.<a href="#248-268">inv</a>(<a href="#491">m</a>).<a href="#468-473">middle_product</a>(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#493">s</a>, <a href="#491">m</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">).<a href="#61-64">resized</a>(<a href="#475">n</a>).<a href="#65-68">reversed</a>());
-<a href=#495 id=495 data-nosnippet>495</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
-<a href=#496 id=496 data-nosnippet>496</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">subl = subproduct_tree.pop().unwrap();
-<a href=#497 id=497 data-nosnippet>497</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">subr = subproduct_tree.pop().unwrap();
-<a href=#498 id=498 data-nosnippet>498</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">(dl, dr) = (subl.length(), subr.length());
-<a href=#499 id=499 data-nosnippet>499</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">len = dl.max(dr) + uptree_t[i].length();
-<a href=#500 id=500 data-nosnippet>500</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">s = C::transform(uptree_t[i].data.to_vec(), len);
-<a href=#501 id=501 data-nosnippet>501</a>            uptree_t.push(subr.middle_product(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">s, len).prefix(dl));
-<a href=#502 id=502 data-nosnippet>502</a>            uptree_t.push(subl.middle_product(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">s, len).prefix(dr));
-<a href=#503 id=503 data-nosnippet>503</a>        }
-<a href=#504 id=504 data-nosnippet>504</a>        <a href="#487">uptree_t</a>[<a href="#475">n</a>..]
-<a href=#505 id=505 data-nosnippet>505</a>            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
-<a href=#506 id=506 data-nosnippet>506</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|u| <a href="#506">u</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.first">first</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.cloned">cloned</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_else">unwrap_or_else</a>(Zero::<a href="../../num/zero_one.rs.html#2">zero</a>))
-<a href=#507 id=507 data-nosnippet>507</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>()
-<a href=#508 id=508 data-nosnippet>508</a>    }
-<a href=#509 id=509 data-nosnippet>509</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">product_all&lt;I&gt;(iter: I, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
-<a href=#510 id=510 data-nosnippet>510</a>    </a><span class="kw">where
-<a href=#511 id=511 data-nosnippet>511</a>        </span><a href="../../tools/scanner.rs.html#391">I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = </a><span class="self">Self</span>&gt;,
-<a href=#512 id=512 data-nosnippet>512</a>    {
-<a href=#513 id=513 data-nosnippet>513</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">heap: <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">BinaryHeap</a>&lt;</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">&gt; = <a href="#509">iter</a>
-<a href=#514 id=514 data-nosnippet>514</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
-<a href=#515 id=515 data-nosnippet>515</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|f| <a href="../../tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>(<a href="https://doc.rust-lang.org/nightly/core/cmp/struct.Reverse.html">Reverse</a>(<a href="#515">f</a>.<a href="#19-21">length</a>()), <a href="#515">f</a>))
-<a href=#516 id=516 data-nosnippet>516</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
-<a href=#517 id=517 data-nosnippet>517</a>        </a><span class="kw">while let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, x)) = heap.pop() {
-<a href=#518 id=518 data-nosnippet>518</a>            </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, y)) = heap.pop() {
-<a href=#519 id=519 data-nosnippet>519</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">z = (x * y).prefix(deg);
-<a href=#520 id=520 data-nosnippet>520</a>                heap.push(PartialIgnoredOrd(Reverse(z.length()), z));
-<a href=#521 id=521 data-nosnippet>521</a>            } </a><span class="kw">else </span>{
-<a href=#522 id=522 data-nosnippet>522</a>                <span class="kw">return </span><a href="../../tools/scanner.rs.html#391">x;
-<a href=#523 id=523 data-nosnippet>523</a>            }
-<a href=#524 id=524 data-nosnippet>524</a>        }
-<a href=#525 id=525 data-nosnippet>525</a>        <span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>()
-<a href=#526 id=526 data-nosnippet>526</a>    }
-<a href=#527 id=527 data-nosnippet>527</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">sum_all_rational&lt;I&gt;(iter: I, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (</a><span class="self">Self</span>, <span class="self">Self</span>)
-<a href=#528 id=528 data-nosnippet>528</a>    <span class="kw">where
-<a href=#529 id=529 data-nosnippet>529</a>        </span><a href="../../tools/scanner.rs.html#391">I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = (</a><span class="self">Self</span>, <span class="self">Self</span>)&gt;,
-<a href=#530 id=530 data-nosnippet>530</a>    {
-<a href=#531 id=531 data-nosnippet>531</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">heap: <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">BinaryHeap</a>&lt;</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">&gt; = <a href="#527">iter</a>
-<a href=#532 id=532 data-nosnippet>532</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
-<a href=#533 id=533 data-nosnippet>533</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|(f, g)| <a href="../../tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>(<a href="https://doc.rust-lang.org/nightly/core/cmp/struct.Reverse.html">Reverse</a>(<a href="#533">f</a>.<a href="#19-21">length</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(<a href="#533">g</a>.<a href="#19-21">length</a>())), (<a href="#533">f</a>, <a href="#533">g</a>)))
-<a href=#534 id=534 data-nosnippet>534</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
-<a href=#535 id=535 data-nosnippet>535</a>        </a><span class="kw">while let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, (xa, xb))) = heap.pop() {
-<a href=#536 id=536 data-nosnippet>536</a>            </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, (ya, yb))) = heap.pop() {
-<a href=#537 id=537 data-nosnippet>537</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">zb = (</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">xb * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">yb).prefix(deg);
-<a href=#538 id=538 data-nosnippet>538</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">za = (xa * yb + ya * xb).prefix(deg);
-<a href=#539 id=539 data-nosnippet>539</a>                heap.push(PartialIgnoredOrd(
-<a href=#540 id=540 data-nosnippet>540</a>                    Reverse(za.length().max(zb.length())),
-<a href=#541 id=541 data-nosnippet>541</a>                    (za, zb),
-<a href=#542 id=542 data-nosnippet>542</a>                ));
-<a href=#543 id=543 data-nosnippet>543</a>            } </a><span class="kw">else </span>{
-<a href=#544 id=544 data-nosnippet>544</a>                <span class="kw">return </span><a href="../../tools/scanner.rs.html#391">(xa, xb);
-<a href=#545 id=545 data-nosnippet>545</a>            }
-<a href=#546 id=546 data-nosnippet>546</a>        }
-<a href=#547 id=547 data-nosnippet>547</a>        (<span class="self">Self</span>::<a href="../../num/zero_one.rs.html#2">zero</a>(), <span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>())
-<a href=#548 id=548 data-nosnippet>548</a>    }
-<a href=#549 id=549 data-nosnippet>549</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">kth_term_of_linearly_recurrence(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, a: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T
-<a href=#550 id=550 data-nosnippet>550</a>    </a><span class="kw">where
-<a href=#551 id=551 data-nosnippet>551</a>        </span><a href="../../tools/scanner.rs.html#391">C: <a href="../number_theoretic_transform.rs.html#413-424">NttReuse</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
-<a href=#552 id=552 data-nosnippet>552</a>    {
-<a href=#553 id=553 data-nosnippet>553</a>        </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(x) = <a href="#549">a</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get">get</a>(<a href="#549">k</a>) {
-<a href=#554 id=554 data-nosnippet>554</a>            </a><span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#553">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
-<a href=#555 id=555 data-nosnippet>555</a>        }
-<a href=#556 id=556 data-nosnippet>556</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">p = (<span class="self">Self</span>::<a href="#13-18">from_vec</a>(<a href="#549">a</a>).<a href="#176-179">prefix</a>(</a><a class="self" href="#549">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span>) * <span class="kw-2">&amp;</span><a class="self" href="#549">self</a><a href="../../tools/scanner.rs.html#391">).<a href="#176-179">prefix</a>(</a><a class="self" href="#549">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">);
-<a href=#557 id=557 data-nosnippet>557</a>        <a href="#556">p</a>.<a href="#395-441">bostan_mori</a>(</a><a class="self" href="#549">self</a><a href="../../tools/scanner.rs.html#391">, <a href="#549">k</a>)
-<a href=#558 id=558 data-nosnippet>558</a>    }
-<a href=#559 id=559 data-nosnippet>559</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">kth_term(a: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T
-<a href=#560 id=560 data-nosnippet>560</a>    </a><span class="kw">where
-<a href=#561 id=561 data-nosnippet>561</a>        </span><a href="../../tools/scanner.rs.html#391">C: <a href="../number_theoretic_transform.rs.html#413-424">NttReuse</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
-<a href=#562 id=562 data-nosnippet>562</a>    {
-<a href=#563 id=563 data-nosnippet>563</a>        </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(x) = <a href="#559">a</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get">get</a>(<a href="#559">k</a>) {
-<a href=#564 id=564 data-nosnippet>564</a>            </a><span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#563">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
-<a href=#565 id=565 data-nosnippet>565</a>        }
-<a href=#566 id=566 data-nosnippet>566</a>        <span class="self">Self</span>::<a href="#13-18">from_vec</a>(<a href="../berlekamp_massey.rs.html#7-55">berlekamp_massey</a>(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#559">a</a>)).<a href="#549-558">kth_term_of_linearly_recurrence</a>(<a href="#559">a</a>, <a href="#559">k</a>)
-<a href=#567 id=567 data-nosnippet>567</a>    }
-<a href=#568 id=568 data-nosnippet>568</a>    </a><span class="doccomment">/// sum_i a_i exp(b_i x)
-<a href=#569 id=569 data-nosnippet>569</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, </a><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">inv_fact: F) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
-<a href=#570 id=570 data-nosnippet>570</a>    </a><span class="kw">where
-<a href=#571 id=571 data-nosnippet>571</a>        </span><a href="../../tools/scanner.rs.html#391">I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = (T, T)&gt;,
-<a href=#572 id=572 data-nosnippet>572</a>        F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T,
-<a href=#573 id=573 data-nosnippet>573</a>    {
-<a href=#574 id=574 data-nosnippet>574</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">(p, q) = <span class="self">Self</span>::<a href="#527-548">sum_all_rational</a>(
-<a href=#575 id=575 data-nosnippet>575</a>            <a href="#569">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
-<a href=#576 id=576 data-nosnippet>576</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|(a, b)| (<span class="self">Self</span>::<a href="#13-18">from_vec</a>(</a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a><a href="../../tools/scanner.rs.html#391">[a]), <span class="self">Self</span>::<a href="#13-18">from_vec</a>(</a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a><a href="../../tools/scanner.rs.html#391">[T::one(), -b]))),
-<a href=#577 id=577 data-nosnippet>577</a>            <a href="#569">deg</a>,
-<a href=#578 id=578 data-nosnippet>578</a>        );
-<a href=#579 id=579 data-nosnippet>579</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = (<a href="#574">p</a> * <a href="#574">q</a>.<a href="#248-268">inv</a>(<a href="#569">deg</a>)).<a href="#176-179">prefix</a>(<a href="#569">deg</a>);
-<a href=#580 id=580 data-nosnippet>580</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span><a href="../../tools/scanner.rs.html#391">..f.length() {
-<a href=#581 id=581 data-nosnippet>581</a>            f[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= inv_fact(i);
-<a href=#582 id=582 data-nosnippet>582</a>        }
-<a href=#583 id=583 data-nosnippet>583</a>        <a href="#579">f</a>
-<a href=#584 id=584 data-nosnippet>584</a>    }
-<a href=#585 id=585 data-nosnippet>585</a>}
-<a href=#586 id=586 data-nosnippet>586</a>
-<a href=#587 id=587 data-nosnippet>587</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;M, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;<a href="../../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;, C&gt;
-<a href=#588 id=588 data-nosnippet>588</a></a><span class="kw">where
-<a href=#589 id=589 data-nosnippet>589</a>    </span><a href="../../tools/scanner.rs.html#391">M: <a href="../../num/mint/mint_base.rs.html#21-25">MIntConvert</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
-<a href=#590 id=590 data-nosnippet>590</a>    C: <a href="../convolve_steps.rs.html#1-15">ConvolveSteps</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;&gt;&gt;,
-<a href=#591 id=591 data-nosnippet>591</a>{
-<a href=#592 id=592 data-nosnippet>592</a>    </a><span class="doccomment">/// f(x) &lt;- f(x + a)
-<a href=#593 id=593 data-nosnippet>593</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">taylor_shift(</a><span class="kw-2">mut </span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, a: <a href="../../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;, f: </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="../factorial.rs.html#4-10">MemorizedFactorial</a>&lt;M&gt;) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
-<a href=#594 id=594 data-nosnippet>594</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#593">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
-<a href=#595 id=595 data-nosnippet>595</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n {
-<a href=#596 id=596 data-nosnippet>596</a>            </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.data[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= f.fact[i];
-<a href=#597 id=597 data-nosnippet>597</a>        }
-<a href=#598 id=598 data-nosnippet>598</a>        </a><a class="self" href="#593">self</a><a href="../../tools/scanner.rs.html#391">.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.reverse">reverse</a>();
-<a href=#599 id=599 data-nosnippet>599</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">b = <a href="#593">a</a>;
-<a href=#600 id=600 data-nosnippet>600</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = <span class="self">Self</span>::<a href="#13-18">from_vec</a>(<a href="#593">f</a>.inv_fact[..<a href="#594">n</a>].<a href="https://doc.rust-lang.org/nightly/alloc/foreigntype.slice.html#method.to_vec">to_vec</a>());
-<a href=#601 id=601 data-nosnippet>601</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
-<a href=#602 id=602 data-nosnippet>602</a>            g[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= b;
-<a href=#603 id=603 data-nosnippet>603</a>            b </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= a;
-<a href=#604 id=604 data-nosnippet>604</a>        }
-<a href=#605 id=605 data-nosnippet>605</a>        </a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#593">self</a> </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= <a href="#600">g</a>;
-<a href=#606 id=606 data-nosnippet>606</a>        </a><a class="self" href="#593">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#22-24">truncate</a>(<a href="#594">n</a>);
-<a href=#607 id=607 data-nosnippet>607</a>        </a><a class="self" href="#593">self</a><a href="../../tools/scanner.rs.html#391">.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.reverse">reverse</a>();
-<a href=#608 id=608 data-nosnippet>608</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n {
-<a href=#609 id=609 data-nosnippet>609</a>            </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.data[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= f.inv_fact[i];
-<a href=#610 id=610 data-nosnippet>610</a>        }
-<a href=#611 id=611 data-nosnippet>611</a>        </a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#593">self</a>
-<a href=#612 id=612 data-nosnippet>612</a>    </a>}
-<a href=#613 id=613 data-nosnippet>613</a>}
-<a href=#614 id=614 data-nosnippet>614</a>
-<a href=#615 id=615 data-nosnippet>615</a><span class="attr">#[cfg(test)]
-<a href=#616 id=616 data-nosnippet>616</a></span><span class="kw">mod </span><a href="../../tools/scanner.rs.html#391">tests {
-<a href=#617 id=617 data-nosnippet>617</a>    </a><span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#618 id=618 data-nosnippet>618</a>    <span class="kw">use crate</span><a href="../../tools/scanner.rs.html#391">::{num::mint_basic::Modulo1000000009, rand, tools::Xorshift};
-<a href=#619 id=619 data-nosnippet>619</a>
-<a href=#620 id=620 data-nosnippet>620</a>    </a><span class="attr">#[test]
-<a href=#621 id=621 data-nosnippet>621</a>    </span><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">test_bostan_mori() {
-<a href=#622 id=622 data-nosnippet>622</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rng = Xorshift::default();
-<a href=#623 id=623 data-nosnippet>623</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#624 id=624 data-nosnippet>624</a>            <span class="macro">rand!</span><a href="../../tools/scanner.rs.html#391">(rng, n: </a><span class="number">0</span>..<span class="number">20</span><a href="../../tools/scanner.rs.html#391">, m: </a><span class="number">1</span>..<span class="number">20</span><a href="../../tools/scanner.rs.html#391">, t: </a><span class="number">0usize</span>..=<span class="number">1</span><a href="../../tools/scanner.rs.html#391">, k: </a><span class="number">0</span>..[<span class="number">10</span>, <span class="number">1_000</span><a href="../../tools/scanner.rs.html#391">][t]);
-<a href=#625 id=625 data-nosnippet>625</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
-<a href=#626 id=626 data-nosnippet>626</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = Fps998244353::from_vec(rng.random_iter(..).take(m).collect());
-<a href=#627 id=627 data-nosnippet>627</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">expected = f.clone().bostan_mori(g.clone(), k);
-<a href=#628 id=628 data-nosnippet>628</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = (f * g.inv(k + </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">)).data.get(k).cloned().unwrap_or_default();
-<a href=#629 id=629 data-nosnippet>629</a>            </a><span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
-<a href=#630 id=630 data-nosnippet>630</a>
-<a href=#631 id=631 data-nosnippet>631</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps::&lt;Modulo1000000009&gt;::from_vec(rng.random_iter(..).take(n).collect());
-<a href=#632 id=632 data-nosnippet>632</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = Fps::&lt;Modulo1000000009&gt;::from_vec(rng.random_iter(..).take(m).collect());
-<a href=#633 id=633 data-nosnippet>633</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">expected = f.clone().bostan_mori(g.clone(), k);
-<a href=#634 id=634 data-nosnippet>634</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = (f * g.inv(k + </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">)).data.get(k).cloned().unwrap_or_default();
-<a href=#635 id=635 data-nosnippet>635</a>            </a><span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
+<a href=#487 id=487 data-nosnippet>487</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">k = <a href="#473">rhs</a>.<a href="#19-21">length</a>().<a href="https://doc.rust-lang.org/nightly/core/foreigntype.num.html#method.next_power_of_two">next_power_of_two</a>();
+<a href=#488 id=488 data-nosnippet>488</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">p = C::<a href="../convolve_steps.rs.html#5">transform</a>(</a><a class="self" href="#473">self</a><a href="../../tools/scanner.rs.html#391">.data, <a href="#487">k</a> * </a><span class="number">2</span>);
+<a href=#489 id=489 data-nosnippet>489</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">q = C::<a href="../convolve_steps.rs.html#5">transform</a>(<a href="#473">rhs</a>.data, <a href="#487">k</a> * </a><span class="number">2</span>);
+<a href=#490 id=490 data-nosnippet>490</a>        <span class="kw">while </span><a href="../../tools/scanner.rs.html#391">n &gt; </a><span class="number">0 </span>{
+<a href=#491 id=491 data-nosnippet>491</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">t = C::even_mul_normal_neg(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q);
+<a href=#492 id=492 data-nosnippet>492</a>            p = </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391">n % </a><span class="number">2 </span>== <span class="number">0 </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#493 id=493 data-nosnippet>493</a>                C::even_mul_normal_neg(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q)
+<a href=#494 id=494 data-nosnippet>494</a>            } </a><span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#495 id=495 data-nosnippet>495</a>                C::odd_mul_normal_neg(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p, </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">q)
+<a href=#496 id=496 data-nosnippet>496</a>            };
+<a href=#497 id=497 data-nosnippet>497</a>            q = t;
+<a href=#498 id=498 data-nosnippet>498</a>            n /= </a><span class="number">2</span>;
+<a href=#499 id=499 data-nosnippet>499</a>            <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">n != </a><span class="number">0 </span>{
+<a href=#500 id=500 data-nosnippet>500</a>                <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">C::MULTIPLE {
+<a href=#501 id=501 data-nosnippet>501</a>                    p = C::transform(C::inverse_transform(p, k), k * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
+<a href=#502 id=502 data-nosnippet>502</a>                    q = C::transform(C::inverse_transform(q, k), k * </a><span class="number">2</span>);
+<a href=#503 id=503 data-nosnippet>503</a>                } <span class="kw">else </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#504 id=504 data-nosnippet>504</a>                    p = C::ntt_doubling(p);
+<a href=#505 id=505 data-nosnippet>505</a>                    q = C::ntt_doubling(q);
+<a href=#506 id=506 data-nosnippet>506</a>                }
+<a href=#507 id=507 data-nosnippet>507</a>            }
+<a href=#508 id=508 data-nosnippet>508</a>        }
+<a href=#509 id=509 data-nosnippet>509</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">p = C::<a href="../convolve_steps.rs.html#6">inverse_transform</a>(<a href="#488">p</a>, <a href="#487">k</a>);
+<a href=#510 id=510 data-nosnippet>510</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">q = C::<a href="../convolve_steps.rs.html#6">inverse_transform</a>(<a href="#489">q</a>, <a href="#487">k</a>);
+<a href=#511 id=511 data-nosnippet>511</a>        <a href="#477">res</a> + <a href="#509">p</a>[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>() / <a href="#510">q</a>[</a><span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>()
+<a href=#512 id=512 data-nosnippet>512</a>    }
+<a href=#513 id=513 data-nosnippet>513</a>    </a><span class="doccomment">/// return F(x) where [x^n] P(x) / Q(x) = [x^d-1] P(x) F(x)
+<a href=#514 id=514 data-nosnippet>514</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">bostan_mori_msb(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#515 id=515 data-nosnippet>515</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">d = </a><a class="self" href="#514">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span>;
+<a href=#516 id=516 data-nosnippet>516</a>        <span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#514">n</a> == </a><span class="number">0 </span>{
+<a href=#517 id=517 data-nosnippet>517</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391">(<span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>() &lt;&lt; (<a href="#515">d</a> - </a><span class="number">1</span>)) / <a class="self" href="#514">self</a>[<span class="number">0</span><a href="../../tools/scanner.rs.html#391">].<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<a href=#518 id=518 data-nosnippet>518</a>        }
+<a href=#519 id=519 data-nosnippet>519</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">q = </a><a class="self" href="#514">self</a>;
+<a href=#520 id=520 data-nosnippet>520</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">mq = <a href="#519">q</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>().<a href="#225-231">parity_inversion</a>();
+<a href=#521 id=521 data-nosnippet>521</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">w = (<a href="#519">q</a> * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#520">mq</a>).<a href="#180-187">even</a>().<a href="#514-529">bostan_mori_msb</a>(<a href="#514">n</a> / </a><span class="number">2</span>);
+<a href=#522 id=522 data-nosnippet>522</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">s = <span class="self">Self</span>::<a href="#55-57">zeros</a>(<a href="#521">w</a>.<a href="#19-21">length</a>() * </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">- (<a href="#514">n</a> % </a><span class="number">2</span>));
+<a href=#523 id=523 data-nosnippet>523</a>        <span class="kw">for </span><a href="../../tools/scanner.rs.html#391">(i, x) </a><span class="kw">in </span><a href="../../tools/scanner.rs.html#391">w.iter().enumerate() {
+<a href=#524 id=524 data-nosnippet>524</a>            s[i * </a><span class="number">2 </span>+ (<span class="number">1 </span><a href="../../tools/scanner.rs.html#391">- n % </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">)] = x.clone();
+<a href=#525 id=525 data-nosnippet>525</a>        }
+<a href=#526 id=526 data-nosnippet>526</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">len = </a><span class="number">2 </span><a href="../../tools/scanner.rs.html#391">* <a href="#515">d</a> + </a><span class="number">1</span>;
+<a href=#527 id=527 data-nosnippet>527</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">ts = C::<a href="../convolve_steps.rs.html#5">transform</a>(<a href="#522">s</a>.<a href="#176-179">prefix</a>(<a href="#526">len</a>).data, <a href="#526">len</a>);
+<a href=#528 id=528 data-nosnippet>528</a>        <a href="#520">mq</a>.<a href="#65-68">reversed</a>().<a href="#539-544">middle_product</a>(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#527">ts</a>, <a href="#526">len</a>).<a href="#176-179">prefix</a>(<a href="#515">d</a> + </a><span class="number">1</span>)
+<a href=#529 id=529 data-nosnippet>529</a>    }
+<a href=#530 id=530 data-nosnippet>530</a>    <span class="doccomment">/// x^n mod self
+<a href=#531 id=531 data-nosnippet>531</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">pow_mod(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, n: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#532 id=532 data-nosnippet>532</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">d = </a><a class="self" href="#531">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span>;
+<a href=#533 id=533 data-nosnippet>533</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">q = </a><a class="self" href="#531">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#65-68">reversed</a>();
+<a href=#534 id=534 data-nosnippet>534</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">u = <a href="#533">q</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>().<a href="#514-529">bostan_mori_msb</a>(<a href="#531">n</a>);
+<a href=#535 id=535 data-nosnippet>535</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = (<a href="#534">u</a> * <a href="#533">q</a>).<a href="#176-179">prefix</a>(<a href="#532">d</a>).<a href="#65-68">reversed</a>();
+<a href=#536 id=536 data-nosnippet>536</a>        <a href="#535">f</a>.<a href="#84-94">trim_tail_zeros</a>();
+<a href=#537 id=537 data-nosnippet>537</a>        <a href="#535">f</a>
+<a href=#538 id=538 data-nosnippet>538</a>    }
+<a href=#539 id=539 data-nosnippet>539</a>    </a><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">middle_product(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, other: </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">C::F, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#540 id=540 data-nosnippet>540</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#539">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
+<a href=#541 id=541 data-nosnippet>541</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">s = C::<a href="../convolve_steps.rs.html#5">transform</a>(</a><a class="self" href="#539">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#65-68">reversed</a>().data, <a href="#539">deg</a>);
+<a href=#542 id=542 data-nosnippet>542</a>        C::<a href="../convolve_steps.rs.html#7">multiply</a>(</a><span class="kw-2">&amp;mut </span><a href="../../tools/scanner.rs.html#391"><a href="#541">s</a>, <a href="#539">other</a>);
+<a href=#543 id=543 data-nosnippet>543</a>        <span class="self">Self</span>::<a href="#13-18">from_vec</a>((C::<a href="../convolve_steps.rs.html#6">inverse_transform</a>(<a href="#541">s</a>, <a href="#539">deg</a>))[<a href="#540">n</a> - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..].<a href="https://doc.rust-lang.org/nightly/alloc/foreigntype.slice.html#method.to_vec">to_vec</a>())
+<a href=#544 id=544 data-nosnippet>544</a>    }
+<a href=#545 id=545 data-nosnippet>545</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">multipoint_evaluation(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, points: </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">[T]) -&gt; <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt; {
+<a href=#546 id=546 data-nosnippet>546</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = <a href="#545">points</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.len">len</a>();
+<a href=#547 id=547 data-nosnippet>547</a>        </a><span class="kw">if </span><a href="../../tools/scanner.rs.html#391"><a href="#546">n</a> &lt;= </a><span class="number">32 </span>{
+<a href=#548 id=548 data-nosnippet>548</a>            <span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#545">points</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>().<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|p| </a><a class="self" href="#545">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#232-240">eval</a>(<a href="#548">p</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>())).<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+<a href=#549 id=549 data-nosnippet>549</a>        }
+<a href=#550 id=550 data-nosnippet>550</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">subproduct_tree = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#546">n</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
+<a href=#551 id=551 data-nosnippet>551</a>        <a href="#550">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(<a href="#546">n</a>, Zero::<a href="../../num/zero_one.rs.html#2">zero</a>);
+<a href=#552 id=552 data-nosnippet>552</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">x </a><span class="kw">in </span><a href="../../tools/scanner.rs.html#391">points {
+<a href=#553 id=553 data-nosnippet>553</a>            subproduct_tree.push(<span class="self">Self</span>::from_vec(</a><span class="macro">vec!</span><a href="../../tools/scanner.rs.html#391">[-x.clone(), T::one()]));
+<a href=#554 id=554 data-nosnippet>554</a>        }
+<a href=#555 id=555 data-nosnippet>555</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span>(<span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n).rev() {
+<a href=#556 id=556 data-nosnippet>556</a>            subproduct_tree[i] = </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">subproduct_tree[i * </a><span class="number">2</span>] * <span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">subproduct_tree[i * </a><span class="number">2 </span>+ <span class="number">1</span>];
+<a href=#557 id=557 data-nosnippet>557</a>        }
+<a href=#558 id=558 data-nosnippet>558</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">uptree_t = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>::<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.with_capacity">with_capacity</a>(<a href="#546">n</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
+<a href=#559 id=559 data-nosnippet>559</a>        <a href="#558">uptree_t</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.resize_with">resize_with</a>(</a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">, Zero::<a href="../../num/zero_one.rs.html#2">zero</a>);
+<a href=#560 id=560 data-nosnippet>560</a>        <a href="#550">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.reverse">reverse</a>();
+<a href=#561 id=561 data-nosnippet>561</a>        <a href="#550">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>();
+<a href=#562 id=562 data-nosnippet>562</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">m = </a><a class="self" href="#545">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
+<a href=#563 id=563 data-nosnippet>563</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">v = <a href="#550">subproduct_tree</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.pop">pop</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap">unwrap</a>().<a href="#65-68">reversed</a>().<a href="#61-64">resized</a>(<a href="#562">m</a>);
+<a href=#564 id=564 data-nosnippet>564</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">s = C::<a href="../convolve_steps.rs.html#5">transform</a>(</a><a class="self" href="#545">self</a><a href="../../tools/scanner.rs.html#391">.data, <a href="#562">m</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">);
+<a href=#565 id=565 data-nosnippet>565</a>        <a href="#558">uptree_t</a>.<a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html#method.push">push</a>(<a href="#563">v</a>.<a href="#248-292">inv</a>(<a href="#562">m</a>).<a href="#539-544">middle_product</a>(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#564">s</a>, <a href="#562">m</a> * </a><span class="number">2</span><a href="../../tools/scanner.rs.html#391">).<a href="#61-64">resized</a>(<a href="#546">n</a>).<a href="#65-68">reversed</a>());
+<a href=#566 id=566 data-nosnippet>566</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
+<a href=#567 id=567 data-nosnippet>567</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">subl = subproduct_tree.pop().unwrap();
+<a href=#568 id=568 data-nosnippet>568</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">subr = subproduct_tree.pop().unwrap();
+<a href=#569 id=569 data-nosnippet>569</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">(dl, dr) = (subl.length(), subr.length());
+<a href=#570 id=570 data-nosnippet>570</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">len = dl.max(dr) + uptree_t[i].length();
+<a href=#571 id=571 data-nosnippet>571</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">s = C::transform(uptree_t[i].data.to_vec(), len);
+<a href=#572 id=572 data-nosnippet>572</a>            uptree_t.push(subr.middle_product(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">s, len).prefix(dl));
+<a href=#573 id=573 data-nosnippet>573</a>            uptree_t.push(subl.middle_product(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">s, len).prefix(dr));
+<a href=#574 id=574 data-nosnippet>574</a>        }
+<a href=#575 id=575 data-nosnippet>575</a>        <a href="#558">uptree_t</a>[<a href="#546">n</a>..]
+<a href=#576 id=576 data-nosnippet>576</a>            .<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.iter">iter</a>()
+<a href=#577 id=577 data-nosnippet>577</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|u| <a href="#577">u</a>.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.first">first</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.cloned">cloned</a>().<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#method.unwrap_or_else">unwrap_or_else</a>(Zero::<a href="../../num/zero_one.rs.html#2">zero</a>))
+<a href=#578 id=578 data-nosnippet>578</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>()
+<a href=#579 id=579 data-nosnippet>579</a>    }
+<a href=#580 id=580 data-nosnippet>580</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">product_all&lt;I&gt;(iter: I, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
+<a href=#581 id=581 data-nosnippet>581</a>    </a><span class="kw">where
+<a href=#582 id=582 data-nosnippet>582</a>        </span><a href="../../tools/scanner.rs.html#391">I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = </a><span class="self">Self</span>&gt;,
+<a href=#583 id=583 data-nosnippet>583</a>    {
+<a href=#584 id=584 data-nosnippet>584</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">heap: <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">BinaryHeap</a>&lt;</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">&gt; = <a href="#580">iter</a>
+<a href=#585 id=585 data-nosnippet>585</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+<a href=#586 id=586 data-nosnippet>586</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|f| <a href="../../tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>(<a href="https://doc.rust-lang.org/nightly/core/cmp/struct.Reverse.html">Reverse</a>(<a href="#586">f</a>.<a href="#19-21">length</a>()), <a href="#586">f</a>))
+<a href=#587 id=587 data-nosnippet>587</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+<a href=#588 id=588 data-nosnippet>588</a>        </a><span class="kw">while let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, x)) = heap.pop() {
+<a href=#589 id=589 data-nosnippet>589</a>            </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, y)) = heap.pop() {
+<a href=#590 id=590 data-nosnippet>590</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">z = (x * y).prefix(deg);
+<a href=#591 id=591 data-nosnippet>591</a>                heap.push(PartialIgnoredOrd(Reverse(z.length()), z));
+<a href=#592 id=592 data-nosnippet>592</a>            } </a><span class="kw">else </span>{
+<a href=#593 id=593 data-nosnippet>593</a>                <span class="kw">return </span><a href="../../tools/scanner.rs.html#391">x;
+<a href=#594 id=594 data-nosnippet>594</a>            }
+<a href=#595 id=595 data-nosnippet>595</a>        }
+<a href=#596 id=596 data-nosnippet>596</a>        <span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>()
+<a href=#597 id=597 data-nosnippet>597</a>    }
+<a href=#598 id=598 data-nosnippet>598</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">sum_all_rational&lt;I&gt;(iter: I, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; (</a><span class="self">Self</span>, <span class="self">Self</span>)
+<a href=#599 id=599 data-nosnippet>599</a>    <span class="kw">where
+<a href=#600 id=600 data-nosnippet>600</a>        </span><a href="../../tools/scanner.rs.html#391">I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = (</a><span class="self">Self</span>, <span class="self">Self</span>)&gt;,
+<a href=#601 id=601 data-nosnippet>601</a>    {
+<a href=#602 id=602 data-nosnippet>602</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">heap: <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html">BinaryHeap</a>&lt;</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">&gt; = <a href="#598">iter</a>
+<a href=#603 id=603 data-nosnippet>603</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+<a href=#604 id=604 data-nosnippet>604</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|(f, g)| <a href="../../tools/partial_ignored_ord.rs.html#2">PartialIgnoredOrd</a>(<a href="https://doc.rust-lang.org/nightly/core/cmp/struct.Reverse.html">Reverse</a>(<a href="#604">f</a>.<a href="#19-21">length</a>().<a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">max</a>(<a href="#604">g</a>.<a href="#19-21">length</a>())), (<a href="#604">f</a>, <a href="#604">g</a>)))
+<a href=#605 id=605 data-nosnippet>605</a>            .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.collect">collect</a>();
+<a href=#606 id=606 data-nosnippet>606</a>        </a><span class="kw">while let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, (xa, xb))) = heap.pop() {
+<a href=#607 id=607 data-nosnippet>607</a>            </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../../tools/scanner.rs.html#391">(PartialIgnoredOrd(</a><span class="kw">_</span><a href="../../tools/scanner.rs.html#391">, (ya, yb))) = heap.pop() {
+<a href=#608 id=608 data-nosnippet>608</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">zb = (</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">xb * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">yb).prefix(deg);
+<a href=#609 id=609 data-nosnippet>609</a>                </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">za = (xa * yb + ya * xb).prefix(deg);
+<a href=#610 id=610 data-nosnippet>610</a>                heap.push(PartialIgnoredOrd(
+<a href=#611 id=611 data-nosnippet>611</a>                    Reverse(za.length().max(zb.length())),
+<a href=#612 id=612 data-nosnippet>612</a>                    (za, zb),
+<a href=#613 id=613 data-nosnippet>613</a>                ));
+<a href=#614 id=614 data-nosnippet>614</a>            } </a><span class="kw">else </span>{
+<a href=#615 id=615 data-nosnippet>615</a>                <span class="kw">return </span><a href="../../tools/scanner.rs.html#391">(xa, xb);
+<a href=#616 id=616 data-nosnippet>616</a>            }
+<a href=#617 id=617 data-nosnippet>617</a>        }
+<a href=#618 id=618 data-nosnippet>618</a>        (<span class="self">Self</span>::<a href="../../num/zero_one.rs.html#2">zero</a>(), <span class="self">Self</span>::<a href="../../num/zero_one.rs.html#16">one</a>())
+<a href=#619 id=619 data-nosnippet>619</a>    }
+<a href=#620 id=620 data-nosnippet>620</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">kth_term_of_linearly_recurrence(</a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, a: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T
+<a href=#621 id=621 data-nosnippet>621</a>    </a><span class="kw">where
+<a href=#622 id=622 data-nosnippet>622</a>        </span><a href="../../tools/scanner.rs.html#391">C: <a href="../number_theoretic_transform.rs.html#413-424">NttReuse</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
+<a href=#623 id=623 data-nosnippet>623</a>    {
+<a href=#624 id=624 data-nosnippet>624</a>        </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(x) = <a href="#620">a</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get">get</a>(<a href="#620">k</a>) {
+<a href=#625 id=625 data-nosnippet>625</a>            </a><span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#624">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
+<a href=#626 id=626 data-nosnippet>626</a>        }
+<a href=#627 id=627 data-nosnippet>627</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">p = (<span class="self">Self</span>::<a href="#13-18">from_vec</a>(<a href="#620">a</a>).<a href="#176-179">prefix</a>(</a><a class="self" href="#620">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span>) * <span class="kw-2">&amp;</span><a class="self" href="#620">self</a><a href="../../tools/scanner.rs.html#391">).<a href="#176-179">prefix</a>(</a><a class="self" href="#620">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>() - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">);
+<a href=#628 id=628 data-nosnippet>628</a>        <a href="#627">p</a>.<a href="#473-512">bostan_mori</a>(</a><a class="self" href="#620">self</a><a href="../../tools/scanner.rs.html#391">, <a href="#620">k</a>)
+<a href=#629 id=629 data-nosnippet>629</a>    }
+<a href=#630 id=630 data-nosnippet>630</a>    </a><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">kth_term(a: <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;, k: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T
+<a href=#631 id=631 data-nosnippet>631</a>    </a><span class="kw">where
+<a href=#632 id=632 data-nosnippet>632</a>        </span><a href="../../tools/scanner.rs.html#391">C: <a href="../number_theoretic_transform.rs.html#413-424">NttReuse</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;T&gt;&gt;,
+<a href=#633 id=633 data-nosnippet>633</a>    {
+<a href=#634 id=634 data-nosnippet>634</a>        </a><span class="kw">if let </span><a class="prelude-val" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">Some</a><a href="../../tools/scanner.rs.html#391">(x) = <a href="#630">a</a>.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.get">get</a>(<a href="#630">k</a>) {
+<a href=#635 id=635 data-nosnippet>635</a>            </a><span class="kw">return </span><a href="../../tools/scanner.rs.html#391"><a href="#634">x</a>.<a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">clone</a>();
 <a href=#636 id=636 data-nosnippet>636</a>        }
-<a href=#637 id=637 data-nosnippet>637</a>    }
-<a href=#638 id=638 data-nosnippet>638</a>
-<a href=#639 id=639 data-nosnippet>639</a>    </a><span class="attr">#[test]
-<a href=#640 id=640 data-nosnippet>640</a>    </span><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">test_bostan_mori_msb() {
-<a href=#641 id=641 data-nosnippet>641</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rng = Xorshift::default();
-<a href=#642 id=642 data-nosnippet>642</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#643 id=643 data-nosnippet>643</a>            <span class="macro">rand!</span><a href="../../tools/scanner.rs.html#391">(rng, n: </a><span class="number">2</span>..<span class="number">20</span><a href="../../tools/scanner.rs.html#391">, t: </a><span class="number">0usize</span>..=<span class="number">1</span><a href="../../tools/scanner.rs.html#391">, k: </a><span class="number">0</span>..[<span class="number">10</span>, <span class="number">1_000_000_000</span><a href="../../tools/scanner.rs.html#391">][t]);
-<a href=#644 id=644 data-nosnippet>644</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps998244353::from_vec(rng.random_iter(..).take(n - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">).collect());
-<a href=#645 id=645 data-nosnippet>645</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
-<a href=#646 id=646 data-nosnippet>646</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">expected = f.clone().bostan_mori(g.clone(), k);
-<a href=#647 id=647 data-nosnippet>647</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = (f * g.bostan_mori_msb(k))[n - </a><span class="number">2</span>];
-<a href=#648 id=648 data-nosnippet>648</a>            <span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
-<a href=#649 id=649 data-nosnippet>649</a>        }
-<a href=#650 id=650 data-nosnippet>650</a>    }
-<a href=#651 id=651 data-nosnippet>651</a>
-<a href=#652 id=652 data-nosnippet>652</a>    </a><span class="attr">#[test]
-<a href=#653 id=653 data-nosnippet>653</a>    </span><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">test_pow_mod() {
-<a href=#654 id=654 data-nosnippet>654</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rng = Xorshift::default();
-<a href=#655 id=655 data-nosnippet>655</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#656 id=656 data-nosnippet>656</a>            <span class="macro">rand!</span><a href="../../tools/scanner.rs.html#391">(rng, n: </a><span class="number">2</span>..<span class="number">20</span><a href="../../tools/scanner.rs.html#391">, t: </a><span class="number">0usize</span>..=<span class="number">1</span><a href="../../tools/scanner.rs.html#391">, k: </a><span class="number">0</span>..[<span class="number">10</span>, <span class="number">1_000_000_000</span><a href="../../tools/scanner.rs.html#391">][t]);
-<a href=#657 id=657 data-nosnippet>657</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
-<a href=#658 id=658 data-nosnippet>658</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">expected = Fps998244353::one();
-<a href=#659 id=659 data-nosnippet>659</a>            {
-<a href=#660 id=660 data-nosnippet>660</a>                </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">p = Fps998244353::one() &lt;&lt; </a><span class="number">1</span>;
-<a href=#661 id=661 data-nosnippet>661</a>                <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">k = k;
-<a href=#662 id=662 data-nosnippet>662</a>                </a><span class="kw">while </span><a href="../../tools/scanner.rs.html#391">k &gt; </a><span class="number">0 </span>{
-<a href=#663 id=663 data-nosnippet>663</a>                    <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">k &amp; </a><span class="number">1 </span>== <span class="number">1 </span><a href="../../tools/scanner.rs.html#391">{
-<a href=#664 id=664 data-nosnippet>664</a>                        expected = (expected * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p) % </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f;
-<a href=#665 id=665 data-nosnippet>665</a>                    }
-<a href=#666 id=666 data-nosnippet>666</a>                    p = (</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p) % </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f;
-<a href=#667 id=667 data-nosnippet>667</a>                    k &gt;&gt;= </a><span class="number">1</span>;
-<a href=#668 id=668 data-nosnippet>668</a>                }
-<a href=#669 id=669 data-nosnippet>669</a>            }
-<a href=#670 id=670 data-nosnippet>670</a>
-<a href=#671 id=671 data-nosnippet>671</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = f.pow_mod(k);
-<a href=#672 id=672 data-nosnippet>672</a>            </a><span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
-<a href=#673 id=673 data-nosnippet>673</a>        }
-<a href=#674 id=674 data-nosnippet>674</a>    }
-<a href=#675 id=675 data-nosnippet>675</a>}</a></code></pre></div></section></main></body></html>
+<a href=#637 id=637 data-nosnippet>637</a>        <span class="self">Self</span>::<a href="#13-18">from_vec</a>(<a href="../berlekamp_massey.rs.html#7-55">berlekamp_massey</a>(</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="#630">a</a>)).<a href="#620-629">kth_term_of_linearly_recurrence</a>(<a href="#630">a</a>, <a href="#630">k</a>)
+<a href=#638 id=638 data-nosnippet>638</a>    }
+<a href=#639 id=639 data-nosnippet>639</a>    </a><span class="doccomment">/// sum_i a_i exp(b_i x)
+<a href=#640 id=640 data-nosnippet>640</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">linear_sum_of_exp&lt;I, F&gt;(iter: I, deg: <a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, </a><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">inv_fact: F) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self
+<a href=#641 id=641 data-nosnippet>641</a>    </a><span class="kw">where
+<a href=#642 id=642 data-nosnippet>642</a>        </span><a href="../../tools/scanner.rs.html#391">I: <a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html">IntoIterator</a>&lt;Item = (T, T)&gt;,
+<a href=#643 id=643 data-nosnippet>643</a>        F: <a href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html">FnMut</a>(<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T,
+<a href=#644 id=644 data-nosnippet>644</a>    {
+<a href=#645 id=645 data-nosnippet>645</a>        </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">(p, q) = <span class="self">Self</span>::<a href="#598-619">sum_all_rational</a>(
+<a href=#646 id=646 data-nosnippet>646</a>            <a href="#640">iter</a>.<a href="https://doc.rust-lang.org/nightly/core/iter/traits/collect/trait.IntoIterator.html#tymethod.into_iter">into_iter</a>()
+<a href=#647 id=647 data-nosnippet>647</a>                .<a href="https://doc.rust-lang.org/nightly/core/iter/traits/iterator/trait.Iterator.html#tymethod.map">map</a>(|(a, b)| (<span class="self">Self</span>::<a href="#13-18">from_vec</a>(</a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a><a href="../../tools/scanner.rs.html#391">[a]), <span class="self">Self</span>::<a href="#13-18">from_vec</a>(</a><a class="macro" href="https://doc.rust-lang.org/nightly/alloc/macro.vec.html">vec!</a><a href="../../tools/scanner.rs.html#391">[T::one(), -b]))),
+<a href=#648 id=648 data-nosnippet>648</a>            <a href="#640">deg</a>,
+<a href=#649 id=649 data-nosnippet>649</a>        );
+<a href=#650 id=650 data-nosnippet>650</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">f = (<a href="#645">p</a> * <a href="#645">q</a>.<a href="#248-292">inv</a>(<a href="#640">deg</a>)).<a href="#176-179">prefix</a>(<a href="#640">deg</a>);
+<a href=#651 id=651 data-nosnippet>651</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span><a href="../../tools/scanner.rs.html#391">..f.length() {
+<a href=#652 id=652 data-nosnippet>652</a>            f[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= inv_fact(i);
+<a href=#653 id=653 data-nosnippet>653</a>        }
+<a href=#654 id=654 data-nosnippet>654</a>        <a href="#650">f</a>
+<a href=#655 id=655 data-nosnippet>655</a>    }
+<a href=#656 id=656 data-nosnippet>656</a>}
+<a href=#657 id=657 data-nosnippet>657</a>
+<a href=#658 id=658 data-nosnippet>658</a></a><span class="kw">impl</span><a href="../../tools/scanner.rs.html#391">&lt;M, C&gt; <a href="mod.rs.html#12-15">FormalPowerSeries</a>&lt;<a href="../../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;, C&gt;
+<a href=#659 id=659 data-nosnippet>659</a></a><span class="kw">where
+<a href=#660 id=660 data-nosnippet>660</a>    </span><a href="../../tools/scanner.rs.html#391">M: <a href="../../num/mint/mint_base.rs.html#21-25">MIntConvert</a>&lt;<a href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+<a href=#661 id=661 data-nosnippet>661</a>    C: <a href="../convolve_steps.rs.html#1-15">ConvolveSteps</a>&lt;T = <a href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html">Vec</a>&lt;<a href="../../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;&gt;&gt;,
+<a href=#662 id=662 data-nosnippet>662</a>{
+<a href=#663 id=663 data-nosnippet>663</a>    </a><span class="doccomment">/// f(x) &lt;- f(x + a)
+<a href=#664 id=664 data-nosnippet>664</a>    </span><span class="kw">pub fn </span><a href="../../tools/scanner.rs.html#391">taylor_shift(</a><span class="kw-2">mut </span><span class="self">self</span><a href="../../tools/scanner.rs.html#391">, a: <a href="../../num/mint/mint_base.rs.html#13-19">MInt</a>&lt;M&gt;, f: </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391"><a href="../factorial.rs.html#4-10">MemorizedFactorial</a>&lt;M&gt;) -&gt; </a><a class="self" href="../../tools/scanner.rs.html#391">Self </a>{
+<a href=#665 id=665 data-nosnippet>665</a>        <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">n = </a><a class="self" href="#664">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#19-21">length</a>();
+<a href=#666 id=666 data-nosnippet>666</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n {
+<a href=#667 id=667 data-nosnippet>667</a>            </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.data[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= f.fact[i];
+<a href=#668 id=668 data-nosnippet>668</a>        }
+<a href=#669 id=669 data-nosnippet>669</a>        </a><a class="self" href="#664">self</a><a href="../../tools/scanner.rs.html#391">.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.reverse">reverse</a>();
+<a href=#670 id=670 data-nosnippet>670</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">b = <a href="#664">a</a>;
+<a href=#671 id=671 data-nosnippet>671</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">g = <span class="self">Self</span>::<a href="#13-18">from_vec</a>(<a href="#664">f</a>.inv_fact[..<a href="#665">n</a>].<a href="https://doc.rust-lang.org/nightly/alloc/foreigntype.slice.html#method.to_vec">to_vec</a>());
+<a href=#672 id=672 data-nosnippet>672</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">1</span><a href="../../tools/scanner.rs.html#391">..n {
+<a href=#673 id=673 data-nosnippet>673</a>            g[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= b;
+<a href=#674 id=674 data-nosnippet>674</a>            b </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= a;
+<a href=#675 id=675 data-nosnippet>675</a>        }
+<a href=#676 id=676 data-nosnippet>676</a>        </a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#664">self</a> </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= <a href="#671">g</a>;
+<a href=#677 id=677 data-nosnippet>677</a>        </a><a class="self" href="#664">self</a><a href="../../tools/scanner.rs.html#391">.<a href="#22-24">truncate</a>(<a href="#665">n</a>);
+<a href=#678 id=678 data-nosnippet>678</a>        </a><a class="self" href="#664">self</a><a href="../../tools/scanner.rs.html#391">.data.<a href="https://doc.rust-lang.org/nightly/core/foreigntype.slice.html#method.reverse">reverse</a>();
+<a href=#679 id=679 data-nosnippet>679</a>        </a><span class="kw">for </span><a href="../../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span><a href="../../tools/scanner.rs.html#391">..n {
+<a href=#680 id=680 data-nosnippet>680</a>            </a><span class="self">self</span><a href="../../tools/scanner.rs.html#391">.data[i] </a><span class="kw-2">*</span><a href="../../tools/scanner.rs.html#391">= f.inv_fact[i];
+<a href=#681 id=681 data-nosnippet>681</a>        }
+<a href=#682 id=682 data-nosnippet>682</a>        </a><a class="self" href="../../tools/scanner.rs.html#391"><a href="#664">self</a>
+<a href=#683 id=683 data-nosnippet>683</a>    </a>}
+<a href=#684 id=684 data-nosnippet>684</a>}
+<a href=#685 id=685 data-nosnippet>685</a>
+<a href=#686 id=686 data-nosnippet>686</a><span class="attr">#[cfg(test)]
+<a href=#687 id=687 data-nosnippet>687</a></span><span class="kw">mod </span><a href="../../tools/scanner.rs.html#391">tests {
+<a href=#688 id=688 data-nosnippet>688</a>    </a><span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#689 id=689 data-nosnippet>689</a>    <span class="kw">use crate</span><a href="../../tools/scanner.rs.html#391">::{num::mint_basic::Modulo1000000009, rand, tools::Xorshift};
+<a href=#690 id=690 data-nosnippet>690</a>
+<a href=#691 id=691 data-nosnippet>691</a>    </a><span class="attr">#[test]
+<a href=#692 id=692 data-nosnippet>692</a>    </span><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">test_bostan_mori() {
+<a href=#693 id=693 data-nosnippet>693</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rng = Xorshift::default();
+<a href=#694 id=694 data-nosnippet>694</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#695 id=695 data-nosnippet>695</a>            <span class="macro">rand!</span><a href="../../tools/scanner.rs.html#391">(rng, n: </a><span class="number">0</span>..<span class="number">200</span><a href="../../tools/scanner.rs.html#391">, m: </a><span class="number">1</span>..<span class="number">200</span><a href="../../tools/scanner.rs.html#391">, t: </a><span class="number">0usize</span>..=<span class="number">1</span><a href="../../tools/scanner.rs.html#391">, k: </a><span class="number">0</span>..[<span class="number">10</span>, <span class="number">1_000</span><a href="../../tools/scanner.rs.html#391">][t]);
+<a href=#696 id=696 data-nosnippet>696</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+<a href=#697 id=697 data-nosnippet>697</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = Fps998244353::from_vec(rng.random_iter(..).take(m).collect());
+<a href=#698 id=698 data-nosnippet>698</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">expected = f.clone().bostan_mori(g.clone(), k);
+<a href=#699 id=699 data-nosnippet>699</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = (f * g.inv(k + </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">)).data.get(k).cloned().unwrap_or_default();
+<a href=#700 id=700 data-nosnippet>700</a>            </a><span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
+<a href=#701 id=701 data-nosnippet>701</a>
+<a href=#702 id=702 data-nosnippet>702</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps::&lt;Modulo1000000009&gt;::from_vec(rng.random_iter(..).take(n).collect());
+<a href=#703 id=703 data-nosnippet>703</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = Fps::&lt;Modulo1000000009&gt;::from_vec(rng.random_iter(..).take(m).collect());
+<a href=#704 id=704 data-nosnippet>704</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">expected = f.clone().bostan_mori(g.clone(), k);
+<a href=#705 id=705 data-nosnippet>705</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = (f * g.inv(k + </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">)).data.get(k).cloned().unwrap_or_default();
+<a href=#706 id=706 data-nosnippet>706</a>            </a><span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
+<a href=#707 id=707 data-nosnippet>707</a>        }
+<a href=#708 id=708 data-nosnippet>708</a>    }
+<a href=#709 id=709 data-nosnippet>709</a>
+<a href=#710 id=710 data-nosnippet>710</a>    </a><span class="attr">#[test]
+<a href=#711 id=711 data-nosnippet>711</a>    </span><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">test_bostan_mori_msb() {
+<a href=#712 id=712 data-nosnippet>712</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rng = Xorshift::default();
+<a href=#713 id=713 data-nosnippet>713</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#714 id=714 data-nosnippet>714</a>            <span class="macro">rand!</span><a href="../../tools/scanner.rs.html#391">(rng, n: </a><span class="number">2</span>..<span class="number">20</span><a href="../../tools/scanner.rs.html#391">, t: </a><span class="number">0usize</span>..=<span class="number">1</span><a href="../../tools/scanner.rs.html#391">, k: </a><span class="number">0</span>..[<span class="number">10</span>, <span class="number">1_000_000_000</span><a href="../../tools/scanner.rs.html#391">][t]);
+<a href=#715 id=715 data-nosnippet>715</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps998244353::from_vec(rng.random_iter(..).take(n - </a><span class="number">1</span><a href="../../tools/scanner.rs.html#391">).collect());
+<a href=#716 id=716 data-nosnippet>716</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">g = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+<a href=#717 id=717 data-nosnippet>717</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">expected = f.clone().bostan_mori(g.clone(), k);
+<a href=#718 id=718 data-nosnippet>718</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = (f * g.bostan_mori_msb(k))[n - </a><span class="number">2</span>];
+<a href=#719 id=719 data-nosnippet>719</a>            <span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
+<a href=#720 id=720 data-nosnippet>720</a>        }
+<a href=#721 id=721 data-nosnippet>721</a>    }
+<a href=#722 id=722 data-nosnippet>722</a>
+<a href=#723 id=723 data-nosnippet>723</a>    </a><span class="attr">#[test]
+<a href=#724 id=724 data-nosnippet>724</a>    </span><span class="kw">fn </span><a href="../../tools/scanner.rs.html#391">test_pow_mod() {
+<a href=#725 id=725 data-nosnippet>725</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">rng = Xorshift::default();
+<a href=#726 id=726 data-nosnippet>726</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#727 id=727 data-nosnippet>727</a>            <span class="macro">rand!</span><a href="../../tools/scanner.rs.html#391">(rng, n: </a><span class="number">2</span>..<span class="number">20</span><a href="../../tools/scanner.rs.html#391">, t: </a><span class="number">0usize</span>..=<span class="number">1</span><a href="../../tools/scanner.rs.html#391">, k: </a><span class="number">0</span>..[<span class="number">10</span>, <span class="number">1_000_000_000</span><a href="../../tools/scanner.rs.html#391">][t]);
+<a href=#728 id=728 data-nosnippet>728</a>            </a><span class="kw">let </span><a href="../../tools/scanner.rs.html#391">f = Fps998244353::from_vec(rng.random_iter(..).take(n).collect());
+<a href=#729 id=729 data-nosnippet>729</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">expected = Fps998244353::one();
+<a href=#730 id=730 data-nosnippet>730</a>            {
+<a href=#731 id=731 data-nosnippet>731</a>                </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">p = Fps998244353::one() &lt;&lt; </a><span class="number">1</span>;
+<a href=#732 id=732 data-nosnippet>732</a>                <span class="kw">let </span><span class="kw-2">mut </span><a href="../../tools/scanner.rs.html#391">k = k;
+<a href=#733 id=733 data-nosnippet>733</a>                </a><span class="kw">while </span><a href="../../tools/scanner.rs.html#391">k &gt; </a><span class="number">0 </span>{
+<a href=#734 id=734 data-nosnippet>734</a>                    <span class="kw">if </span><a href="../../tools/scanner.rs.html#391">k &amp; </a><span class="number">1 </span>== <span class="number">1 </span><a href="../../tools/scanner.rs.html#391">{
+<a href=#735 id=735 data-nosnippet>735</a>                        expected = (expected * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p) % </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f;
+<a href=#736 id=736 data-nosnippet>736</a>                    }
+<a href=#737 id=737 data-nosnippet>737</a>                    p = (</a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p * </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">p) % </a><span class="kw-2">&amp;</span><a href="../../tools/scanner.rs.html#391">f;
+<a href=#738 id=738 data-nosnippet>738</a>                    k &gt;&gt;= </a><span class="number">1</span>;
+<a href=#739 id=739 data-nosnippet>739</a>                }
+<a href=#740 id=740 data-nosnippet>740</a>            }
+<a href=#741 id=741 data-nosnippet>741</a>
+<a href=#742 id=742 data-nosnippet>742</a>            <span class="kw">let </span><a href="../../tools/scanner.rs.html#391">result = f.pow_mod(k);
+<a href=#743 id=743 data-nosnippet>743</a>            </a><span class="macro">assert_eq!</span><a href="../../tools/scanner.rs.html#391">(result, expected);
+<a href=#744 id=744 data-nosnippet>744</a>        }
+<a href=#745 id=745 data-nosnippet>745</a>    }
+<a href=#746 id=746 data-nosnippet>746</a>}</a></code></pre></div></section></main></body></html>
