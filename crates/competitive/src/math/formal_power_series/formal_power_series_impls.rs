@@ -292,6 +292,31 @@ where
     }
     pub fn exp(&self, deg: usize) -> Self {
         debug_assert!(self[0].is_zero());
+        if self.data.iter().filter(|x| !x.is_zero()).count()
+            <= deg.next_power_of_two().trailing_zeros() as usize * 16
+        {
+            let diff = self.clone().diff();
+            let pos: Vec<_> = diff
+                .data
+                .iter()
+                .enumerate()
+                .filter_map(|(i, x)| if x.is_zero() { None } else { Some(i) })
+                .collect();
+            let mf = T::memorized_factorial(deg);
+            let mut f = Self::zeros(deg);
+            f[0] = T::one();
+            for i in 1..deg {
+                let mut tot = T::zero();
+                for &j in &pos {
+                    if j > i - 1 {
+                        break;
+                    }
+                    tot += f[i - 1 - j].clone() * &diff[j];
+                }
+                f[i] = tot * T::memorized_inv(&mf, i);
+            }
+            return f;
+        }
         let mut f = Self::one();
         let mut i = 1;
         while i < deg {

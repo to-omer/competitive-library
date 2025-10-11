@@ -51,9 +51,22 @@ pub trait FormalPowerSeriesCoefficient:
     + for<'r> DivAssign<&'r Self>
     + Neg<Output = Self>
 {
+    type Base: MIntConvert<usize>;
+    fn memorized_factorial(n: usize) -> MemorizedFactorial<Self::Base> {
+        MemorizedFactorial::new(n)
+    }
+    fn memorized_inv(mf: &MemorizedFactorial<Self::Base>, n: usize) -> Self;
 }
 
-impl<M> FormalPowerSeriesCoefficient for MInt<M> where M: MIntConvert<usize> {}
+impl<M> FormalPowerSeriesCoefficient for MInt<M>
+where
+    M: MIntConvert<usize>,
+{
+    type Base = M;
+    fn memorized_inv(mf: &MemorizedFactorial<Self::Base>, n: usize) -> Self {
+        mf.inv(n)
+    }
+}
 
 pub trait FormalPowerSeriesCoefficientSqrt: FormalPowerSeriesCoefficient {
     fn sqrt_coefficient(&self) -> Option<Self>;
