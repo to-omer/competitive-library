@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["marker"],"struct":["BstEdgeHandle","BstNode","BstNodeRef","WithNoParent","WithParent"],"trait":["BstSpec","ParentStrategy"],"type":["BstDataMutRef","BstImmutRef","BstRoot"]};

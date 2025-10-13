@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/allocator.rs`."><title>allocator.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0-nightly (be0ade2b6 2025-10-11)" data-channel="nightly" data-search-js="search-8d3311b9.js" data-stringdex-js="stringdex-828709d0.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/allocator.rs`."><title>allocator.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.92.0-nightly (2300c2aef 2025-10-12)" data-channel="nightly" data-search-js="search-8d3311b9.js" data-stringdex-js="stringdex-828709d0.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -145,68 +145,75 @@
 <a href=#91 id=91 data-nosnippet>91</a>    }
 <a href=#92 id=92 data-nosnippet>92</a>}
 <a href=#93 id=93 data-nosnippet>93</a>
-<a href=#94 id=94 data-nosnippet>94</a></a><span class="attr">#[derive(<a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">Debug</a>, <a href="#95">Default</a>)]
+<a href=#94 id=94 data-nosnippet>94</a></a><span class="attr">#[derive(<a href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html">Debug</a>)]
 <a href=#95 id=95 data-nosnippet>95</a></span><span class="kw">pub struct </span><a href="../tools/scanner.rs.html#391"><a href="../../../competitive/data_structure/struct.BoxAllocator.html">BoxAllocator</a>&lt;T&gt;(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>&lt;</a><span class="kw">fn</span><a href="../tools/scanner.rs.html#391">() -&gt; T&gt;);
-<a href=#96 id=96 data-nosnippet>96</a></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="#7-10">Allocator</a>&lt;T&gt; </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391"><a href="#95">BoxAllocator</a>&lt;T&gt; {
-<a href=#97 id=97 data-nosnippet>97</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">allocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt; {
-<a href=#98 id=98 data-nosnippet>98</a>        </a><span class="kw">unsafe </span><a href="../tools/scanner.rs.html#391">{ <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>::<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.new_unchecked">new_unchecked</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.leak">leak</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.new">new</a>(<a href="#97">value</a>))) }
-<a href=#99 id=99 data-nosnippet>99</a>    }
-<a href=#100 id=100 data-nosnippet>100</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">deallocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T {
-<a href=#101 id=101 data-nosnippet>101</a>        </a><span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.from_raw">from_raw</a>(<a href="#100">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ptr">as_ptr</a>()) }
-<a href=#102 id=102 data-nosnippet>102</a>    }
-<a href=#103 id=103 data-nosnippet>103</a>}
-<a href=#104 id=104 data-nosnippet>104</a>
-<a href=#105 id=105 data-nosnippet>105</a></a><span class="attr">#[cfg(test)]
-<a href=#106 id=106 data-nosnippet>106</a></span><span class="kw">mod </span><a href="../tools/scanner.rs.html#391">tests {
-<a href=#107 id=107 data-nosnippet>107</a>    </a><span class="kw">use super</span>::<span class="kw-2">*</span>;
-<a href=#108 id=108 data-nosnippet>108</a>    <span class="kw">use </span><a href="../tools/scanner.rs.html#391"><span class="kw">crate</span>::tools::Xorshift;
-<a href=#109 id=109 data-nosnippet>109</a>    </a><span class="kw">use </span><a href="../tools/scanner.rs.html#391">std::cell::RefCell;
-<a href=#110 id=110 data-nosnippet>110</a>
-<a href=#111 id=111 data-nosnippet>111</a>    </a><span class="attr">#[test]
-<a href=#112 id=112 data-nosnippet>112</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_alloc() {
-<a href=#113 id=113 data-nosnippet>113</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">pool = MemoryPool::&lt;usize&gt;::with_capacity(</a><span class="number">2</span>);
-<a href=#114 id=114 data-nosnippet>114</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">a = </a><span class="macro">vec!</span>[];
-<a href=#115 id=115 data-nosnippet>115</a>        <span class="kw">for </span><a href="../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span>..<span class="number">100 </span>{
-<a href=#116 id=116 data-nosnippet>116</a>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = pool.allocate(i);
-<a href=#117 id=117 data-nosnippet>117</a>            a.push(p);
-<a href=#118 id=118 data-nosnippet>118</a>            </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">(i, </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">p) </a><span class="kw">in </span><a href="../tools/scanner.rs.html#391">a.iter().enumerate() {
-<a href=#119 id=119 data-nosnippet>119</a>                </a><span class="macro">assert_eq!</span>(<span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">p.as_ref() }, i);
-<a href=#120 id=120 data-nosnippet>120</a>            }
-<a href=#121 id=121 data-nosnippet>121</a>        }
-<a href=#122 id=122 data-nosnippet>122</a>    }
-<a href=#123 id=123 data-nosnippet>123</a>
-<a href=#124 id=124 data-nosnippet>124</a>    </a><span class="attr">#[test]
-<a href=#125 id=125 data-nosnippet>125</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_drop() {
-<a href=#126 id=126 data-nosnippet>126</a>        </a><span class="attr">#[derive(Debug)]
-<a href=#127 id=127 data-nosnippet>127</a>        </span><span class="kw">struct </span><a href="../tools/scanner.rs.html#391">CheckDrop&lt;T&gt;(T);
-<a href=#128 id=128 data-nosnippet>128</a>        </a><span class="macro">thread_local!</span> {
-<a href=#129 id=129 data-nosnippet>129</a>            <span class="kw">static </span><a href="../tools/scanner.rs.html#391">CNT: RefCell&lt;usize&gt; = </a><span class="kw">const </span><a href="../tools/scanner.rs.html#391">{ RefCell::new(</a><span class="number">0</span>) };
-<a href=#130 id=130 data-nosnippet>130</a>        }
-<a href=#131 id=131 data-nosnippet>131</a>        <span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; Drop </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">CheckDrop&lt;T&gt; {
-<a href=#132 id=132 data-nosnippet>132</a>            </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">drop(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">) {
-<a href=#133 id=133 data-nosnippet>133</a>                CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow_mut() += </a><span class="number">1</span>);
-<a href=#134 id=134 data-nosnippet>134</a>            }
-<a href=#135 id=135 data-nosnippet>135</a>        }
-<a href=#136 id=136 data-nosnippet>136</a>        <span class="kw">const </span><a href="../tools/scanner.rs.html#391">Q: usize = </a><span class="number">100</span>;
-<a href=#137 id=137 data-nosnippet>137</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">cnt = </a><span class="number">0usize</span>;
-<a href=#138 id=138 data-nosnippet>138</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">rng = Xorshift::default();
-<a href=#139 id=139 data-nosnippet>139</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">10 </span>{
-<a href=#140 id=140 data-nosnippet>140</a>            <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">pool = MemoryPool::new();
-<a href=#141 id=141 data-nosnippet>141</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">a = </a><span class="macro">vec!</span>[];
-<a href=#142 id=142 data-nosnippet>142</a>            <span class="kw">for _ in </span><span class="number">0</span><a href="../tools/scanner.rs.html#391">..Q {
-<a href=#143 id=143 data-nosnippet>143</a>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">a.is_empty() || rng.gen_bool(</a><span class="number">0.8</span>) {
-<a href=#144 id=144 data-nosnippet>144</a>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">k = rng.rand(!</a><span class="number">0</span><a href="../tools/scanner.rs.html#391">);
-<a href=#145 id=145 data-nosnippet>145</a>                    a.push(pool.allocate(CheckDrop(k)));
-<a href=#146 id=146 data-nosnippet>146</a>                } </a><span class="kw">else </span>{
-<a href=#147 id=147 data-nosnippet>147</a>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">i = rng.rand(a.len() </a><span class="kw">as _</span>) <span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize;
-<a href=#148 id=148 data-nosnippet>148</a>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = a.swap_remove(i);
-<a href=#149 id=149 data-nosnippet>149</a>                    pool.deallocate(p);
-<a href=#150 id=150 data-nosnippet>150</a>                    cnt += </a><span class="number">1</span>;
-<a href=#151 id=151 data-nosnippet>151</a>                }
-<a href=#152 id=152 data-nosnippet>152</a>                <span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(cnt, CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow()));
-<a href=#153 id=153 data-nosnippet>153</a>            }
-<a href=#154 id=154 data-nosnippet>154</a>            cnt += a.len();
-<a href=#155 id=155 data-nosnippet>155</a>        }
-<a href=#156 id=156 data-nosnippet>156</a>        </a><span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(cnt, CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow()));
-<a href=#157 id=157 data-nosnippet>157</a>    }
-<a href=#158 id=158 data-nosnippet>158</a>}</a></code></pre></div></section></main></body></html>
+<a href=#96 id=96 data-nosnippet>96</a>
+<a href=#97 id=97 data-nosnippet>97</a></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html">Default</a> </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391"><a href="#95">BoxAllocator</a>&lt;T&gt; {
+<a href=#98 id=98 data-nosnippet>98</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">default() -&gt; </a><a class="self" href="../tools/scanner.rs.html#391">Self </a>{
+<a href=#99 id=99 data-nosnippet>99</a>        <span class="self">Self</span><a href="../tools/scanner.rs.html#391">(<a href="https://doc.rust-lang.org/nightly/core/marker/struct.PhantomData.html">PhantomData</a>)
+<a href=#100 id=100 data-nosnippet>100</a>    }
+<a href=#101 id=101 data-nosnippet>101</a>}
+<a href=#102 id=102 data-nosnippet>102</a>
+<a href=#103 id=103 data-nosnippet>103</a></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; <a href="#7-10">Allocator</a>&lt;T&gt; </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391"><a href="#95">BoxAllocator</a>&lt;T&gt; {
+<a href=#104 id=104 data-nosnippet>104</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">allocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, value: T) -&gt; <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt; {
+<a href=#105 id=105 data-nosnippet>105</a>        </a><span class="kw">unsafe </span><a href="../tools/scanner.rs.html#391">{ <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>::<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.new_unchecked">new_unchecked</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.leak">leak</a>(<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.new">new</a>(<a href="#104">value</a>))) }
+<a href=#106 id=106 data-nosnippet>106</a>    }
+<a href=#107 id=107 data-nosnippet>107</a>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">deallocate(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, ptr: <a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html">NonNull</a>&lt;T&gt;) -&gt; T {
+<a href=#108 id=108 data-nosnippet>108</a>        </a><span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../tools/scanner.rs.html#391"><a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html">Box</a>::<a href="https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html#method.from_raw">from_raw</a>(<a href="#107">ptr</a>.<a href="https://doc.rust-lang.org/nightly/core/ptr/non_null/struct.NonNull.html#method.as_ptr">as_ptr</a>()) }
+<a href=#109 id=109 data-nosnippet>109</a>    }
+<a href=#110 id=110 data-nosnippet>110</a>}
+<a href=#111 id=111 data-nosnippet>111</a>
+<a href=#112 id=112 data-nosnippet>112</a></a><span class="attr">#[cfg(test)]
+<a href=#113 id=113 data-nosnippet>113</a></span><span class="kw">mod </span><a href="../tools/scanner.rs.html#391">tests {
+<a href=#114 id=114 data-nosnippet>114</a>    </a><span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#115 id=115 data-nosnippet>115</a>    <span class="kw">use </span><a href="../tools/scanner.rs.html#391"><span class="kw">crate</span>::tools::Xorshift;
+<a href=#116 id=116 data-nosnippet>116</a>    </a><span class="kw">use </span><a href="../tools/scanner.rs.html#391">std::cell::RefCell;
+<a href=#117 id=117 data-nosnippet>117</a>
+<a href=#118 id=118 data-nosnippet>118</a>    </a><span class="attr">#[test]
+<a href=#119 id=119 data-nosnippet>119</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_alloc() {
+<a href=#120 id=120 data-nosnippet>120</a>        </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">pool = MemoryPool::&lt;usize&gt;::with_capacity(</a><span class="number">2</span>);
+<a href=#121 id=121 data-nosnippet>121</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">a = </a><span class="macro">vec!</span>[];
+<a href=#122 id=122 data-nosnippet>122</a>        <span class="kw">for </span><a href="../tools/scanner.rs.html#391">i </a><span class="kw">in </span><span class="number">0</span>..<span class="number">100 </span>{
+<a href=#123 id=123 data-nosnippet>123</a>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = pool.allocate(i);
+<a href=#124 id=124 data-nosnippet>124</a>            a.push(p);
+<a href=#125 id=125 data-nosnippet>125</a>            </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">(i, </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">p) </a><span class="kw">in </span><a href="../tools/scanner.rs.html#391">a.iter().enumerate() {
+<a href=#126 id=126 data-nosnippet>126</a>                </a><span class="macro">assert_eq!</span>(<span class="kw">unsafe </span>{ <span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">p.as_ref() }, i);
+<a href=#127 id=127 data-nosnippet>127</a>            }
+<a href=#128 id=128 data-nosnippet>128</a>        }
+<a href=#129 id=129 data-nosnippet>129</a>    }
+<a href=#130 id=130 data-nosnippet>130</a>
+<a href=#131 id=131 data-nosnippet>131</a>    </a><span class="attr">#[test]
+<a href=#132 id=132 data-nosnippet>132</a>    </span><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">test_drop() {
+<a href=#133 id=133 data-nosnippet>133</a>        </a><span class="attr">#[derive(Debug)]
+<a href=#134 id=134 data-nosnippet>134</a>        </span><span class="kw">struct </span><a href="../tools/scanner.rs.html#391">CheckDrop&lt;T&gt;(T);
+<a href=#135 id=135 data-nosnippet>135</a>        </a><span class="macro">thread_local!</span> {
+<a href=#136 id=136 data-nosnippet>136</a>            <span class="kw">static </span><a href="../tools/scanner.rs.html#391">CNT: RefCell&lt;usize&gt; = </a><span class="kw">const </span><a href="../tools/scanner.rs.html#391">{ RefCell::new(</a><span class="number">0</span>) };
+<a href=#137 id=137 data-nosnippet>137</a>        }
+<a href=#138 id=138 data-nosnippet>138</a>        <span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;T&gt; Drop </a><span class="kw">for </span><a href="../tools/scanner.rs.html#391">CheckDrop&lt;T&gt; {
+<a href=#139 id=139 data-nosnippet>139</a>            </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">drop(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">) {
+<a href=#140 id=140 data-nosnippet>140</a>                CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow_mut() += </a><span class="number">1</span>);
+<a href=#141 id=141 data-nosnippet>141</a>            }
+<a href=#142 id=142 data-nosnippet>142</a>        }
+<a href=#143 id=143 data-nosnippet>143</a>        <span class="kw">const </span><a href="../tools/scanner.rs.html#391">Q: usize = </a><span class="number">100</span>;
+<a href=#144 id=144 data-nosnippet>144</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">cnt = </a><span class="number">0usize</span>;
+<a href=#145 id=145 data-nosnippet>145</a>        <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">rng = Xorshift::default();
+<a href=#146 id=146 data-nosnippet>146</a>        </a><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">10 </span>{
+<a href=#147 id=147 data-nosnippet>147</a>            <span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">pool = MemoryPool::new();
+<a href=#148 id=148 data-nosnippet>148</a>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">a = </a><span class="macro">vec!</span>[];
+<a href=#149 id=149 data-nosnippet>149</a>            <span class="kw">for _ in </span><span class="number">0</span><a href="../tools/scanner.rs.html#391">..Q {
+<a href=#150 id=150 data-nosnippet>150</a>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">a.is_empty() || rng.gen_bool(</a><span class="number">0.8</span>) {
+<a href=#151 id=151 data-nosnippet>151</a>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">k = rng.rand(!</a><span class="number">0</span><a href="../tools/scanner.rs.html#391">);
+<a href=#152 id=152 data-nosnippet>152</a>                    a.push(pool.allocate(CheckDrop(k)));
+<a href=#153 id=153 data-nosnippet>153</a>                } </a><span class="kw">else </span>{
+<a href=#154 id=154 data-nosnippet>154</a>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">i = rng.rand(a.len() </a><span class="kw">as _</span>) <span class="kw">as </span><a href="../tools/scanner.rs.html#391">usize;
+<a href=#155 id=155 data-nosnippet>155</a>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">p = a.swap_remove(i);
+<a href=#156 id=156 data-nosnippet>156</a>                    pool.deallocate(p);
+<a href=#157 id=157 data-nosnippet>157</a>                    cnt += </a><span class="number">1</span>;
+<a href=#158 id=158 data-nosnippet>158</a>                }
+<a href=#159 id=159 data-nosnippet>159</a>                <span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(cnt, CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow()));
+<a href=#160 id=160 data-nosnippet>160</a>            }
+<a href=#161 id=161 data-nosnippet>161</a>            cnt += a.len();
+<a href=#162 id=162 data-nosnippet>162</a>        }
+<a href=#163 id=163 data-nosnippet>163</a>        </a><span class="macro">assert_eq!</span><a href="../tools/scanner.rs.html#391">(cnt, CNT.with(|cnt| </a><span class="kw-2">*</span><a href="../tools/scanner.rs.html#391">cnt.borrow()));
+<a href=#164 id=164 data-nosnippet>164</a>    }
+<a href=#165 id=165 data-nosnippet>165</a>}</a></code></pre></div></section></main></body></html>

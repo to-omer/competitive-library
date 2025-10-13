@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DormantMut","Dying","Left","Owned","Right"],"struct":["DataMut","Immut","Mut"],"trait":["BorrowType","BstDirection"]};
