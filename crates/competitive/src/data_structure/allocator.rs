@@ -91,8 +91,15 @@ impl<T> Allocator<T> for MemoryPool<T> {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct BoxAllocator<T>(PhantomData<fn() -> T>);
+
+impl<T> Default for BoxAllocator<T> {
+    fn default() -> Self {
+        Self(PhantomData)
+    }
+}
+
 impl<T> Allocator<T> for BoxAllocator<T> {
     fn allocate(&mut self, value: T) -> NonNull<T> {
         unsafe { NonNull::new_unchecked(Box::leak(Box::new(value))) }

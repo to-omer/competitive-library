@@ -79,6 +79,8 @@ pub use self::splay_tree::{SplayMap, SplaySequence};
 pub use self::submask_range_query::SubmaskRangeQuery;
 #[codesnip::entry("transducer")]
 pub use self::transducer::*;
+#[codesnip::entry("Treap")]
+pub use self::treap::{Treap, TreapData};
 #[codesnip::entry("Trie")]
 pub use self::trie::Trie;
 #[codesnip::entry("UnionFind")]
@@ -101,6 +103,11 @@ mod allocator;
 mod binary_indexed_tree;
 #[cfg_attr(nightly, codesnip::entry("BinaryIndexedTree2D", include("algebra")))]
 mod binary_indexed_tree_2d;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("binary_search_tree", include("Allocator", "LazyMapMonoid"))
+)]
+pub mod binary_search_tree;
 #[cfg_attr(nightly, codesnip::entry("BitVector"))]
 mod bit_vector;
 #[cfg_attr(nightly, codesnip::entry("BitSet"))]
@@ -204,6 +211,11 @@ pub mod submask_range_query;
     )
 )]
 mod transducer;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Treap", include("binary_search_tree", "Xorshift"))
+)]
+mod treap;
 #[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
 mod trie;
 #[cfg_attr(
