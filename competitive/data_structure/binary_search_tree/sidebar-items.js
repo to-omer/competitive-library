@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["data","node","seeker","split"]};
+window.SIDEBAR_ITEMS = {"mod":["data","node","node_id","seeker","split"]};

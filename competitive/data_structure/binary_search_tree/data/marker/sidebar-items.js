@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Key","LazyMap","MonoidAct","Size"]};
+window.SIDEBAR_ITEMS = {"enum":["Key","LazyMap","MonoidAct","MonoidAgg","Size"]};
