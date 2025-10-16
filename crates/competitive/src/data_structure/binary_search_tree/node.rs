@@ -120,23 +120,12 @@ impl<Data> ParentStrategy for WithParent<Data> {
 }
 
 impl<Data> WithParent<Data> {
-    pub unsafe fn resolve_top_down<Spec>(mut node: NonNull<BstNode<Spec::Data, Spec::Parent>>)
+    pub fn resolve_top_down<Spec>(node: BstNodeRef<marker::DataMut<'_>, Spec>)
     where
         Spec: BstSpec<Data = Data, Parent = Self>,
     {
-        unsafe fn datamut<Spec, Data>(
-            node: &mut NonNull<BstNode<Spec::Data, Spec::Parent>>,
-        ) -> BstNodeRef<marker::DataMut<'_>, Spec>
-        where
-            Spec: BstSpec<Data = Data, Parent = WithParent<Data>>,
-        {
-            BstNodeRef {
-                node: *node,
-                _marker: PhantomData,
-            }
-        }
         unsafe {
-            let (mut node, mut stack) = datamut::<Spec, Data>(&mut node).root_path();
+            let (mut node, mut stack) = node.root_path();
             while let Some(is_left) = stack.pop() {
                 Spec::top_down(node.reborrow_datamut());
                 if is_left {
@@ -146,6 +135,19 @@ impl<Data> WithParent<Data> {
                 }
             }
             Spec::top_down(node.reborrow_datamut());
+        }
+    }
+
+    pub fn resolve_bottom_up<Spec>(mut node: BstNodeRef<marker::DataMut<'_>, Spec>)
+    where
+        Spec: BstSpec<Data = Data, Parent = Self>,
+    {
+        loop {
+            Spec::bottom_up(node.reborrow_datamut());
+            match node.ascend() {
+                Ok(parent) => node = parent,
+                Err(_) => break,
+            }
         }
     }
 }

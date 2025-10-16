@@ -1,7 +1,8 @@
 use super::{
     Allocator, BoxAllocator, LazyMapMonoid, MonoidAct, Xorshift,
     binary_search_tree::{
-        BstDataAccess, BstDataMutRef, BstImmutRef, BstNode, BstRoot, BstSeeker, BstSpec,
+        BstDataAccess, BstDataMutRef, BstNode, BstNodeId, BstNodeIdManager, BstRoot, BstSeeker,
+        BstSpec,
         data::{self, LazyMapElement, MonoidActElement},
         node::WithParent,
         seeker::SeekByKey,
@@ -15,13 +16,12 @@ use std::{
     marker::PhantomData,
     mem::ManuallyDrop,
     ops::{DerefMut, RangeBounds},
-    ptr::NonNull,
 };
 
 type TreapRoot<M, L> = BstRoot<TreapSpec<M, L>>;
 type TreapNode<M, L> = BstNode<TreapData<M, L>, WithParent<TreapData<M, L>>>;
 
-struct TreapSpec<M, L> {
+pub struct TreapSpec<M, L> {
     _marker: PhantomData<(M, L)>,
 }
 
@@ -250,8 +250,7 @@ where
     A: Allocator<TreapNode<M, L>>,
 {
     root: Option<TreapRoot<M, L>>,
-    size: usize,
-    nodes: Vec<Option<NonNull<TreapNode<M, L>>>>,
+    node_id_manager: BstNodeIdManager<TreapSpec<M, L>>,
     rng: Xorshift,
     allocator: ManuallyDrop<A>,
     _marker: PhantomData<(M, L)>,
@@ -267,8 +266,7 @@ where
     fn default() -> Self {
         Self {
             root: None,
-            size: 0,
-            nodes: vec![],
+            node_id_manager: Default::default(),
             rng: Xorshift::new(),
             allocator: ManuallyDrop::new(A::default()),
             _marker: PhantomData,
@@ -312,11 +310,11 @@ where
     A: Allocator<TreapNode<M, L>>,
 {
     pub fn len(&self) -> usize {
-        self.size
+        self.node_id_manager.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.size == 0
+        self.node_id_manager.is_empty()
     }
 
     pub fn clear(&mut self) {
@@ -324,34 +322,45 @@ where
             if let Some(root) = self.root.take() {
                 root.into_dying().drop_all(self.allocator.deref_mut());
             }
-            self.size = 0;
-            self.nodes.clear();
+            self.node_id_manager.clear();
         }
     }
 
-    pub fn kth_inserted(&mut self, k: usize) -> Option<(&M::Key, &L::Key)> {
-        unsafe fn immut<M, L, A>(
-            _treap: &mut Treap<M, L, A>,
-            node: NonNull<TreapNode<M, L>>,
-        ) -> BstImmutRef<'_, TreapSpec<M, L>>
-        where
-            M: MonoidAct,
-            M::Key: Ord,
-            L: LazyMapMonoid,
-            A: Allocator<TreapNode<M, L>>,
-        {
-            unsafe { BstImmutRef::new_unchecked(node) }
+    pub fn get(&mut self, node_id: BstNodeId<TreapSpec<M, L>>) -> Option<(&M::Key, &L::Key)> {
+        if !self.node_id_manager.contains(&node_id) {
+            return None;
         }
-        let node = *self.nodes.get(k)?.as_ref()?;
         unsafe {
-            WithParent::resolve_top_down::<TreapSpec<M, L>>(node);
-            let node = immut(self, node);
-            let data = node.into_data();
+            WithParent::resolve_top_down::<TreapSpec<M, L>>(
+                node_id.reborrow_datamut(&mut self.root),
+            );
+            let data = node_id.reborrow(&self.root).into_data();
             Some((&data.key.key, &data.value.key))
         }
     }
 
-    pub fn insert(&mut self, key: M::Key, value: L::Key) {
+    pub fn change(
+        &mut self,
+        node_id: BstNodeId<TreapSpec<M, L>>,
+        f: impl FnOnce(&mut L::Key),
+    ) -> bool {
+        if !self.node_id_manager.contains(&node_id) {
+            return false;
+        }
+        unsafe {
+            WithParent::resolve_top_down::<TreapSpec<M, L>>(
+                node_id.reborrow_datamut(&mut self.root),
+            );
+            let data = node_id.reborrow_datamut(&mut self.root).into_data_mut();
+            f(&mut data.value.key);
+            WithParent::resolve_bottom_up::<TreapSpec<M, L>>(
+                node_id.reborrow_datamut(&mut self.root),
+            );
+        }
+        true
+    }
+
+    pub fn insert(&mut self, key: M::Key, value: L::Key) -> BstNodeId<TreapSpec<M, L>> {
         let (left, right) = TreapSpec::split(self.root.take(), SeekByKey::new(&key), false);
         let data = TreapData {
             priority: self.rng.rand64(),
@@ -359,9 +368,9 @@ where
             value: LazyMapElement::from_key(value),
         };
         let node = BstRoot::from_data(data, self.allocator.deref_mut());
-        self.nodes.push(Some(node.node));
-        self.size += 1;
+        let node_id = self.node_id_manager.register(&node);
         self.root = TreapSpec::merge(TreapSpec::merge(left, Some(node)), right);
+        node_id
     }
 
     pub fn fold<Q, R>(&mut self, range: R) -> L::Agg
@@ -412,6 +421,7 @@ mod tests {
         const A: i64 = 100;
         let mut rng = Xorshift::default();
         let mut treap = Treap::<FlattenAct<AdditiveOperation<i64>>, RangeSumRangeAdd<i64>>::new();
+        let mut node_ids = vec![];
         let mut data = vec![];
         for _ in 0..10000 {
             let (l, r) = loop {
@@ -423,11 +433,11 @@ mod tests {
             };
             assert_eq!(data.len(), treap.len());
             assert_eq!(data.is_empty(), treap.is_empty());
-            match rng.random(0..5) {
+            match rng.random(0..6) {
                 0 => {
                     let key = rng.random(-A..=A);
                     let value = rng.random(-A..=A);
-                    treap.insert(key, value);
+                    node_ids.push(treap.insert(key, value));
                     data.push((key, value));
                 }
                 1 => {
@@ -457,12 +467,20 @@ mod tests {
                     }
                     treap.update_key(l..r, add);
                 }
-                _ => {
+                4 => {
                     if !data.is_empty() {
                         let k = rng.random(0..data.len());
                         let expected = data[k];
-                        let result = treap.kth_inserted(k).unwrap();
+                        let result = treap.get(node_ids[k]).unwrap();
                         assert_eq!(expected, (*result.0, *result.1));
+                    }
+                }
+                _ => {
+                    if !data.is_empty() {
+                        let k = rng.random(0..data.len());
+                        let add_value = rng.random(-A..=A);
+                        data[k].1 += add_value;
+                        treap.change(node_ids[k], |value| *value += add_value);
                     }
                 }
             }
