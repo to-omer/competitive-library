@@ -35,16 +35,16 @@ where
     pub fn top_down<Spec>(_node: BstDataMutRef<'_, Spec>)
     where
         Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::MonoidAct, Value = Self>,
+        Spec::Data: BstDataAccess<marker::MonoidAgg, Value = Self>,
     {
     }
 
     pub fn bottom_up<Spec>(mut node: BstDataMutRef<'_, Spec>)
     where
         Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::MonoidAct, Value = Self>,
+        Spec::Data: BstDataAccess<marker::MonoidAgg, Value = Self>,
     {
-        let mut agg = M::unit();
+        let mut agg = node.reborrow().into_data().bst_data().agg.clone();
         if let Ok(left) = node.reborrow().left().descend() {
             agg = M::operate(&left.into_data().bst_data().agg, &agg);
         }
@@ -199,6 +199,7 @@ where
 pub mod marker {
     pub enum Key {}
     pub enum Size {}
+    pub enum MonoidAgg {}
     pub enum MonoidAct {}
     pub enum LazyMap {}
 }
