@@ -360,6 +360,30 @@ where
         true
     }
 
+    pub fn change_key_value(
+        &mut self,
+        node_id: BstNodeId<TreapSpec<M, L>>,
+        f: impl FnOnce(&mut M::Key, &mut L::Key),
+    ) -> bool {
+        if !self.node_id_manager.contains(&node_id) {
+            return false;
+        }
+        unsafe {
+            WithParent::resolve_top_down::<TreapSpec<M, L>>(
+                node_id.reborrow_datamut(&mut self.root),
+            );
+            let mut node = if WithParent::is_root(node_id.reborrow(&self.root)) {
+                WithParent::remove_root(&mut self.root).unwrap_unchecked()
+            } else {
+                WithParent::remove_not_root(node_id.reborrow_mut(&mut self.root))
+            };
+            let data = node.borrow_datamut().into_data_mut();
+            f(&mut data.key.key, &mut data.value.key);
+            self.root = TreapSpec::merge_ordered(self.root.take(), Some(node));
+            true
+        }
+    }
+
     pub fn insert(&mut self, key: M::Key, value: L::Key) -> BstNodeId<TreapSpec<M, L>> {
         let (left, right) = TreapSpec::split(self.root.take(), SeekByKey::new(&key), false);
         let data = TreapData {
@@ -371,6 +395,25 @@ where
         let node_id = self.node_id_manager.register(&node);
         self.root = TreapSpec::merge(TreapSpec::merge(left, Some(node)), right);
         node_id
+    }
+
+    pub fn remove(&mut self, node_id: BstNodeId<TreapSpec<M, L>>) -> Option<(M::Key, L::Key)> {
+        if !self.node_id_manager.contains(&node_id) {
+            return None;
+        }
+        unsafe {
+            WithParent::resolve_top_down::<TreapSpec<M, L>>(
+                node_id.reborrow_datamut(&mut self.root),
+            );
+            let node = if WithParent::is_root(node_id.reborrow(&self.root)) {
+                WithParent::remove_root(&mut self.root).unwrap_unchecked()
+            } else {
+                WithParent::remove_not_root(node_id.reborrow_mut(&mut self.root))
+            };
+            self.node_id_manager.unregister(node_id);
+            let data = node.into_dying().into_data(self.allocator.deref_mut());
+            Some((data.key.key, data.value.key))
+        }
     }
 
     pub fn fold<Q, R>(&mut self, range: R) -> L::Agg
@@ -433,7 +476,7 @@ mod tests {
             };
             assert_eq!(data.len(), treap.len());
             assert_eq!(data.is_empty(), treap.is_empty());
-            match rng.random(0..6) {
+            match rng.random(0..8) {
                 0 => {
                     let key = rng.random(-A..=A);
                     let value = rng.random(-A..=A);
@@ -441,6 +484,14 @@ mod tests {
                     data.push((key, value));
                 }
                 1 => {
+                    if !data.is_empty() {
+                        let k = rng.random(0..data.len());
+                        let expected = data.remove(k);
+                        let result = treap.remove(node_ids.remove(k)).unwrap();
+                        assert_eq!(expected, result);
+                    }
+                }
+                2 => {
                     let expected: i64 = data
                         .iter()
                         .filter(|(k, _)| (l..r).contains(k))
@@ -449,7 +500,7 @@ mod tests {
                     let result = treap.fold(l..r).0;
                     assert_eq!(expected, result);
                 }
-                2 => {
+                3 => {
                     let add = rng.random(-A..=A);
                     for (k, v) in data.iter_mut() {
                         if (l..r).contains(k) {
@@ -458,7 +509,7 @@ mod tests {
                     }
                     treap.update_value(l..r, add);
                 }
-                3 => {
+                4 => {
                     let add = rng.random(-A..=A);
                     for (k, _) in data.iter_mut() {
                         if (l..r).contains(k) {
@@ -467,7 +518,7 @@ mod tests {
                     }
                     treap.update_key(l..r, add);
                 }
-                4 => {
+                5 => {
                     if !data.is_empty() {
                         let k = rng.random(0..data.len());
                         let expected = data[k];
@@ -475,12 +526,25 @@ mod tests {
                         assert_eq!(expected, (*result.0, *result.1));
                     }
                 }
-                _ => {
+                6 => {
                     if !data.is_empty() {
                         let k = rng.random(0..data.len());
                         let add_value = rng.random(-A..=A);
                         data[k].1 += add_value;
                         treap.change(node_ids[k], |value| *value += add_value);
+                    }
+                }
+                _ => {
+                    if !data.is_empty() {
+                        let k = rng.random(0..data.len());
+                        let add_key = rng.random(-A..=A);
+                        let add_value = rng.random(-A..=A);
+                        data[k].0 += add_key;
+                        data[k].1 += add_value;
+                        treap.change_key_value(node_ids[k], |key, value| {
+                            *key += add_key;
+                            *value += add_value;
+                        });
                     }
                 }
             }

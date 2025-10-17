@@ -150,6 +150,74 @@ impl<Data> WithParent<Data> {
             }
         }
     }
+
+    pub fn is_root<Spec>(node: BstNodeRef<marker::Immut<'_>, Spec>) -> bool
+    where
+        Spec: BstSpec<Data = Data, Parent = Self>,
+    {
+        unsafe { node.node.as_ref().parent.parent.is_none() }
+    }
+
+    pub unsafe fn remove_root<Spec>(
+        root: &mut Option<BstRoot<Spec>>,
+    ) -> Option<BstNodeRef<marker::Owned, Spec>>
+    where
+        Spec: BstSpec<Data = Data, Parent = Self>,
+    {
+        let mut node = root.take()?;
+        unsafe {
+            let left = node.borrow_mut().left_mut().take();
+            let right = node.borrow_mut().right_mut().take();
+            *root = Spec::merge(left, right);
+            Spec::bottom_up(node.borrow_datamut());
+            Some(node)
+        }
+    }
+
+    pub unsafe fn remove_not_root<Spec>(
+        mut node: BstNodeRef<marker::Mut<'_>, Spec>,
+    ) -> BstNodeRef<marker::Owned, Spec>
+    where
+        Spec: BstSpec<Data = Data, Parent = Self>,
+    {
+        assert!(!Self::is_root(node.reborrow()));
+        unsafe {
+            let left = node.left_mut().take();
+            let right = node.right_mut().take();
+            let merged = Spec::merge(left, right);
+            let node_inner = node.node;
+            let mut parent = node.ascend().unwrap_unchecked();
+            let mut node = if let Some(merged) = merged {
+                let node = if parent
+                    .reborrow()
+                    .left()
+                    .descend()
+                    .map_or(false, |n| n.node == node_inner)
+                {
+                    parent.left_mut().replace(merged)
+                } else {
+                    parent.right_mut().replace(merged)
+                };
+                Self::resolve_bottom_up(parent.reborrow_datamut());
+                node.unwrap_unchecked()
+            } else {
+                let node = if parent
+                    .reborrow()
+                    .left()
+                    .descend()
+                    .map_or(false, |n| n.node == node_inner)
+                {
+                    parent.left_mut().take()
+                } else {
+                    parent.right_mut().take()
+                };
+                Self::resolve_bottom_up(parent.reborrow_datamut());
+                node.unwrap_unchecked()
+            };
+            Spec::bottom_up(node.borrow_datamut());
+            node
+        }
+    }
 }
 
 pub struct BstNodeRef<BorrowType, Spec>
@@ -358,6 +426,26 @@ where
     pub fn reborrow_datamut(&mut self) -> BstNodeRef<marker::DataMut<'_>, Spec> {
         BstNodeRef {
             node: self.node,
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn left_mut(&mut self) -> BstEdgeHandle<BstNodeRef<marker::Mut<'_>, Spec>, marker::Left> {
+        BstEdgeHandle {
+            node: BstNodeRef {
+                node: self.node,
+                _marker: PhantomData,
+            },
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn right_mut(&mut self) -> BstEdgeHandle<BstNodeRef<marker::Mut<'_>, Spec>, marker::Right> {
+        BstEdgeHandle {
+            node: BstNodeRef {
+                node: self.node,
+                _marker: PhantomData,
+            },
             _marker: PhantomData,
         }
     }
