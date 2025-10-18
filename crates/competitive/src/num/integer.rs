@@ -46,6 +46,8 @@ pub trait IntBase:
     fn ilog(self, base: Self) -> u32;
     fn ilog2(self) -> u32;
     fn ilog10(self) -> u32;
+    fn isqrt(self) -> Self;
+    fn midpoint(self, rhs: Self) -> Self;
 }
 macro_rules! impl_int_base {
     ($($t:ty)*) => {
@@ -59,6 +61,8 @@ macro_rules! impl_int_base {
                 fn ilog(self, base: Self) -> u32 { self.ilog(base) }
                 fn ilog2(self) -> u32 { self.ilog2() }
                 fn ilog10(self) -> u32 { self.ilog10() }
+                fn isqrt(self) -> Self { self.isqrt() }
+                fn midpoint(self, rhs: Self) -> Self { self.midpoint(rhs) }
             }
         )*
     };
@@ -78,7 +82,11 @@ pub trait Unsigned: IntBase {
     type Signed: Signed<Unsigned = Self>;
     fn signed(self) -> Self::Signed;
     fn abs_diff(self, other: Self) -> Self;
+    fn div_ceil(self, rhs: Self) -> Self;
+    fn is_power_of_two(self) -> bool;
     fn next_power_of_two(self) -> Self;
+    fn is_multiple_of(self, rhs: Self) -> bool;
+    fn next_multiple_of(self, rhs: Self) -> Self;
     fn gcd(self, other: Self) -> Self;
     fn lcm(self, other: Self) -> Self {
         if self.is_zero() && other.is_zero() {
@@ -187,7 +195,11 @@ macro_rules! impl_unsigned_signed {
             type Signed = $signed;
             fn signed(self) -> Self::Signed { self as Self::Signed }
             fn abs_diff(self, other: Self) -> Self { self.abs_diff(other) }
+            fn div_ceil(self, rhs: Self) -> Self { self.div_ceil(rhs) }
+            fn is_power_of_two(self) -> bool { self.is_power_of_two() }
             fn next_power_of_two(self) -> Self { self.next_power_of_two() }
+            fn is_multiple_of(self, rhs: Self) -> bool { self.is_multiple_of(rhs) }
+            fn next_multiple_of(self, rhs: Self) -> Self { self.next_multiple_of(rhs) }
             fn gcd(self, other: Self) -> Self {
                 let (mut a, mut b) = (self, other);
                 if a.is_zero() || b.is_zero() {
@@ -633,6 +645,8 @@ macro_rules! impl_int_base_for_saturating {
                 fn ilog(self, base: Self) -> u32 { self.0.ilog(base.0) }
                 fn ilog2(self) -> u32 { self.0.ilog2() }
                 fn ilog10(self) -> u32 { self.0.ilog10() }
+                fn isqrt(self) -> Self { Self(self.0.isqrt()) }
+                fn midpoint(self, rhs: Self) -> Self { Self(self.0.midpoint(rhs.0)) }
             }
             impl From<$t> for Saturating<$t> {
                 fn from(t: $t) -> Self {
@@ -651,7 +665,11 @@ macro_rules! impl_unsigned_signed_for_saturating {
                 type Signed = Saturating<$signed>;
                 fn signed(self) -> Self::Signed { Saturating(TryFrom::try_from(self.0).ok().unwrap_or_else($signed::maximum)) }
                 fn abs_diff(self, other: Self) -> Self { Self(self.0.abs_diff(other.0)) }
+                fn div_ceil(self, rhs: Self) -> Self { Self(self.0.div_ceil(rhs.0)) }
+                fn is_power_of_two(self) -> bool { self.0.is_power_of_two() }
                 fn next_power_of_two(self) -> Self { Self(self.0.next_power_of_two()) }
+                fn is_multiple_of(self, rhs: Self) -> bool { self.0.is_multiple_of(rhs.0) }
+                fn next_multiple_of(self, rhs: Self) -> Self { Self(self.0.next_multiple_of(rhs.0)) }
                 fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
                 fn mod_add(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_add(rhs.0, modulo.0)) }
                 fn mod_sub(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_sub(rhs.0, modulo.0)) }
@@ -945,6 +963,8 @@ macro_rules! impl_int_base_for_wrapping {
                 fn ilog(self, base: Self) -> u32 { self.0.ilog(base.0) }
                 fn ilog2(self) -> u32 { self.0.ilog2() }
                 fn ilog10(self) -> u32 { self.0.ilog10() }
+                fn isqrt(self) -> Self { Self(self.0.isqrt()) }
+                fn midpoint(self, rhs: Self) -> Self { Self(self.0.midpoint(rhs.0)) }
             }
             impl From<$t> for Wrapping<$t> {
                 fn from(t: $t) -> Self {
@@ -963,7 +983,11 @@ macro_rules! impl_unsigned_signed_for_wrapping {
                 type Signed = Wrapping<$signed>;
                 fn signed(self) -> Self::Signed { Wrapping(self.0.signed()) }
                 fn abs_diff(self, other: Self) -> Self { Self(self.0.abs_diff(other.0)) }
+                fn div_ceil(self, rhs: Self) -> Self { Self(self.0.div_ceil(rhs.0)) }
+                fn is_power_of_two(self) -> bool { self.0.is_power_of_two() }
                 fn next_power_of_two(self) -> Self { Self(self.0.next_power_of_two()) }
+                fn is_multiple_of(self, rhs: Self) -> bool { self.0.is_multiple_of(rhs.0) }
+                fn next_multiple_of(self, rhs: Self) -> Self { Self(self.0.next_multiple_of(rhs.0)) }
                 fn gcd(self, other: Self) -> Self { Self(self.0.gcd(other.0)) }
                 fn mod_add(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_add(rhs.0, modulo.0)) }
                 fn mod_sub(self, rhs: Self, modulo: Self) -> Self { Self(self.0.mod_sub(rhs.0, modulo.0)) }
@@ -1053,6 +1077,8 @@ mod tests {
                             assert_eq!(<$t as IntBase>::ilog(100 as $t, 10 as $t), 2);
                             assert_eq!(<$t as IntBase>::ilog2(16 as $t), 4);
                             assert_eq!(<$t as IntBase>::ilog10(100 as $t), 2);
+                            assert_eq!(<$t as IntBase>::isqrt(16 as $t), 4 as $t);
+                            assert_eq!(<$t as IntBase>::midpoint(10 as $t, 20 as $t), 15 as $t);
                         }
                     }
                 )*
@@ -1120,7 +1146,13 @@ mod tests {
                         fn test_unsigned() {
                             assert_eq!(<$t as Unsigned>::signed(0), 0);
                             assert_eq!(<$t as Unsigned>::abs_diff(10, 20), 10);
+                            assert_eq!(<$t as Unsigned>::div_ceil(10, 3), 4);
+                            assert_eq!(<$t as Unsigned>::is_power_of_two(16), true);
+                            assert_eq!(<$t as Unsigned>::is_power_of_two(10), false);
                             assert_eq!(<$t as Unsigned>::next_power_of_two(10), 16);
+                            assert_eq!(<$t as Unsigned>::is_multiple_of(20, 5), true);
+                            assert_eq!(<$t as Unsigned>::is_multiple_of(20, 6), false);
+                            assert_eq!(<$t as Unsigned>::next_multiple_of(20, 6), 24);
                             assert_eq!(<$t as Unsigned>::gcd(100, 80), 20);
                             assert_eq!(<$t as Unsigned>::lcm(12, 15), 60);
                             assert_eq!(<$t as Unsigned>::lcm(0, 1), 0);
