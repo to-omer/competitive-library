@@ -101,14 +101,13 @@ where
     }
     pub fn with_factory<F>(self, factory: F) -> Transducerdp<M, A, F::Container>
     where
-        F: ContainerFactory,
-        F::Container: Container<Key = A::State, Value = M::T>,
+        F: ContainerFactory<Container: Container<Key = A::State, Value = M::T>>,
     {
         Transducerdp::new(self.fst, self.init, factory)
     }
     pub fn with_hashmap(self) -> Transducerdp<M, A, HashMap<A::State, M::T>>
     where
-        A::State: Eq + Hash,
+        A: Transducer<State: Eq + Hash>,
     {
         self.with_factory(HashMapFactory::default())
     }
@@ -148,10 +147,8 @@ where
 
 impl<M, T, C> Debug for Transducerdp<M, T, C>
 where
-    M: Monoid,
-    T: Transducer + Debug,
-    T::State: Debug,
-    M::T: Debug,
+    M: Monoid<T: Debug>,
+    T: Transducer<State: Debug> + Debug,
     C: Container<Key = T::State, Value = M::T> + Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -827,8 +824,7 @@ where
 }
 impl<I, A> Clone for IteratorTransducer<I, A>
 where
-    I: Iterator + Clone,
-    I::Item: Clone,
+    I: Iterator<Item: Clone> + Clone,
 {
     fn clone(&self) -> Self {
         Self {
@@ -839,8 +835,7 @@ where
 }
 impl<I, A> Debug for IteratorTransducer<I, A>
 where
-    I: Iterator + Debug,
-    I::Item: Debug,
+    I: Iterator<Item: Debug> + Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("IteratorTransducer")
@@ -865,8 +860,7 @@ where
 }
 impl<I, A> Transducer for IteratorTransducer<I, A>
 where
-    I: Iterator,
-    I::Item: Clone,
+    I: Iterator<Item: Clone>,
 {
     type Input = A;
     type Output = I::Item;
@@ -1373,8 +1367,7 @@ mod tests {
         inputs: impl IntoIterator<Item = T::Input>,
     ) -> Vec<(T::State, T::Output)>
     where
-        T: Transducer,
-        T::State: Clone,
+        T: Transducer<State: Clone>,
     {
         let mut state = fst.start();
         let mut results = vec![];

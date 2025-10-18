@@ -228,16 +228,10 @@ where
     _marker: PhantomData<BorrowType>,
 }
 
-impl<'a, Spec> Copy for BstNodeRef<marker::Immut<'a>, Spec>
-where
-    Spec: BstSpec,
-    Spec::Data: 'a,
-{
-}
+impl<'a, Spec> Copy for BstNodeRef<marker::Immut<'a>, Spec> where Spec: BstSpec<Data: 'a> {}
 impl<'a, Spec> Clone for BstNodeRef<marker::Immut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Data: 'a,
+    Spec: BstSpec<Data: 'a>,
 {
     fn clone(&self) -> Self {
         *self
@@ -355,9 +349,7 @@ where
 
 impl<'a, Spec> BstNodeRef<marker::Immut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Parent: 'a,
-    Spec::Data: 'a,
+    Spec: BstSpec<Parent: 'a, Data: 'a>,
 {
     pub fn into_data(self) -> &'a Spec::Data {
         unsafe { &self.node.as_ref().data }
@@ -365,7 +357,6 @@ where
 
     pub fn traverse<F>(self, f: &mut F)
     where
-        Spec::Data: 'a,
         F: FnMut(Self),
     {
         if let Ok(left) = self.left().descend() {
@@ -411,9 +402,7 @@ where
 
 impl<'a, Spec> BstNodeRef<marker::DataMut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Data: 'a,
-    Spec::Parent: 'a,
+    Spec: BstSpec<Parent: 'a, Data: 'a>,
 {
     pub fn into_data_mut(mut self) -> &'a mut Spec::Data {
         unsafe { &mut self.node.as_mut().data }
@@ -454,8 +443,7 @@ where
 
 impl<'a, Spec> BstNodeRef<marker::Mut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Data: 'a,
+    Spec: BstSpec<Data: 'a>,
 {
     pub fn dormant(self) -> BstNodeRef<marker::DormantMut, Spec> {
         BstNodeRef {

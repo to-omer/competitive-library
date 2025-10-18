@@ -164,9 +164,7 @@ impl SerdeByteStr for DeterministicFiniteAutomaton {
 
 pub struct WeightedFiniteAutomaton<F>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
+    F: Field<Additive: Invertible, Multiplicative: Invertible>,
 {
     pub initial_weights: Matrix<F>,
     pub transitions: Vec<Matrix<F>>,
@@ -175,10 +173,7 @@ where
 
 impl<F> Debug for WeightedFiniteAutomaton<F>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
-    F::T: Debug,
+    F: Field<T: Debug, Additive: Invertible, Multiplicative: Invertible>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("WeightedFiniteAutomaton")
@@ -191,9 +186,7 @@ where
 
 impl<F> Clone for WeightedFiniteAutomaton<F>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
+    F: Field<Additive: Invertible, Multiplicative: Invertible>,
 {
     fn clone(&self) -> Self {
         Self {
@@ -206,9 +199,7 @@ where
 
 impl<F> BlackBoxAutomaton for WeightedFiniteAutomaton<F>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
+    F: Field<Additive: Invertible, Multiplicative: Invertible>,
 {
     type Output = F::T;
 
@@ -235,10 +226,7 @@ where
 
 impl<F> SerdeByteStr for WeightedFiniteAutomaton<F>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
-    F::T: SerdeByteStr,
+    F: Field<T: SerdeByteStr, Additive: Invertible, Multiplicative: Invertible>,
 {
     fn serialize(&self, buf: &mut Vec<u8>) {
         self.initial_weights.serialize(buf);
@@ -430,9 +418,7 @@ where
 
 pub struct WfaLearning<F, A>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
+    F: Field<Additive: Invertible, Multiplicative: Invertible>,
     A: BlackBoxAutomaton<Output = F::T>,
 {
     automaton: A,
@@ -446,10 +432,7 @@ where
 
 impl<F, A> Debug for WfaLearning<F, A>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
-    F::T: Debug,
+    F: Field<T: Debug, Additive: Invertible, Multiplicative: Invertible>,
     A: BlackBoxAutomaton<Output = F::T> + Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -466,9 +449,7 @@ where
 
 impl<F, A> Clone for WfaLearning<F, A>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
+    F: Field<Additive: Invertible, Multiplicative: Invertible>,
     A: BlackBoxAutomaton<Output = F::T> + Clone,
 {
     fn clone(&self) -> Self {
@@ -486,10 +467,7 @@ where
 
 impl<F, A> WfaLearning<F, A>
 where
-    F: Field,
-    F::Additive: Invertible,
-    F::Multiplicative: Invertible,
-    F::T: PartialEq,
+    F: Field<T: PartialEq, Additive: Invertible, Multiplicative: Invertible>,
     A: BlackBoxAutomaton<Output = F::T>,
 {
     pub fn new(automaton: A) -> Self {

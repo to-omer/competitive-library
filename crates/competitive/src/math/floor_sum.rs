@@ -143,8 +143,7 @@ where
 
 impl<R, const X: usize, const Y: usize> FloorSum<R, X, Y>
 where
-    R: Ring,
-    R::Additive: Invertible,
+    R: Ring<Additive: Invertible>,
 {
     fn offset(x: i64, y: i64) -> FloorSumData<R, X, Y> {
         FloorSumData {
@@ -307,7 +306,7 @@ pub fn floor_sum_polynomial_i64<T, const X: usize, const Y: usize>(
 ) -> [[T; Y]; X]
 where
     T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
-    <AddMulOperation<T> as SemiRing>::Additive: Invertible,
+    AddMulOperation<T>: SemiRing<T = T, Additive: Invertible>,
 {
     assert!(l <= r);
     assert!(m > 0);

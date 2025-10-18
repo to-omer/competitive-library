@@ -114,14 +114,12 @@ where
 
 impl<'a, S> Copy for NodeRef<marker::Immut<'a>, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
 }
 impl<'a, S> Clone for NodeRef<marker::Immut<'a>, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
     fn clone(&self) -> Self {
         *self
@@ -172,8 +170,7 @@ where
 
 impl<'a, S> NodeRef<marker::Immut<'a>, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
     pub fn data(&self) -> &'a S::T {
         unsafe { &(*self.as_ptr()).data }
@@ -194,7 +191,7 @@ where
     }
     pub fn traverse<F>(self, f: &mut F)
     where
-        S::T: 'a,
+        S: SplaySpec<T: 'a>,
         F: FnMut(Self),
     {
         if let Some(left) = self.clone().left() {
@@ -209,8 +206,7 @@ where
 
 impl<'a, S> NodeRef<marker::DataMut<'a>, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
     pub fn data(&self) -> &'a S::T {
         unsafe { &(*self.as_ptr()).data }
@@ -242,8 +238,7 @@ where
 
 impl<'a, S> NodeRef<marker::Mut<'a>, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
     pub fn data(self) -> &'a S::T {
         unsafe { &(*self.as_ptr()).data }
@@ -623,8 +618,7 @@ where
 
 impl<S> Debug for Root<S>
 where
-    S: SplaySpec,
-    S::T: Debug,
+    S: SplaySpec<T: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fn fmt_recurse<'a, S>(
@@ -632,8 +626,7 @@ where
             f: &mut fmt::Formatter<'_>,
         ) -> fmt::Result
         where
-            S: SplaySpec,
-            S::T: 'a + Debug,
+            S: SplaySpec<T: 'a + Debug>,
         {
             write!(f, "[")?;
             if let Some(left) = node.left() {
@@ -656,8 +649,7 @@ where
 
 pub struct NodeRange<'a, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
     front: Root<S>,
     back: Root<S>,
@@ -666,8 +658,7 @@ where
 
 impl<'a, S> Debug for NodeRange<'a, S>
 where
-    S: SplaySpec,
-    S::T: 'a + Debug,
+    S: SplaySpec<T: 'a + Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("NodeRange")
@@ -679,8 +670,7 @@ where
 }
 impl<'a, S> NodeRange<'a, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
     pub fn new(root: &'a mut Root<S>) -> Self {
         Self {
@@ -728,8 +718,7 @@ where
 }
 impl<'a, S> Drop for NodeRange<'a, S>
 where
-    S: SplaySpec,
-    S::T: 'a,
+    S: SplaySpec<T: 'a>,
 {
     fn drop(&mut self) {
         swap(self.root, &mut self.front);

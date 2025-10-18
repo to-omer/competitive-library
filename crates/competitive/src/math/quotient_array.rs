@@ -82,8 +82,7 @@ impl<T> QuotientArray<T> {
     pub fn min_25_sieve<R>(&self, mut f: impl FnMut(u64, u32) -> T) -> Self
     where
         T: Clone + One,
-        R: Ring<T = T>,
-        R::Additive: Invertible,
+        R: Ring<T = T, Additive: Invertible>,
     {
         let mut dp = self.clone();
         with_prime_list(self.isqrtn, |pl| {

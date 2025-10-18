@@ -27,9 +27,7 @@ where
 
 impl<R> ConvolveSteps for BitwiseorConvolve<R>
 where
-    R: Ring,
-    R::T: PartialEq,
-    R::Additive: Invertible,
+    R: Ring<T: PartialEq, Additive: Invertible>,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;

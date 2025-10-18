@@ -26,8 +26,7 @@ where
 
 impl<M> Debug for SegmentTree<M>
 where
-    M: Monoid,
-    M::T: Debug,
+    M: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("SegmentTree")

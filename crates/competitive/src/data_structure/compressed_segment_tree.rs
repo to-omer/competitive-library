@@ -64,8 +64,7 @@ where
 
 impl<M> Debug for Tag<M>
 where
-    M: Monoid,
-    M::T: Debug,
+    M: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)

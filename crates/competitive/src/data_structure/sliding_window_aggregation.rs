@@ -23,8 +23,7 @@ where
 
 impl<M> Debug for QueueAggregation<M>
 where
-    M: Monoid,
-    M::T: Debug,
+    M: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("QueueAggregation")
@@ -118,8 +117,7 @@ where
 
 impl<M> Debug for DequeAggregation<M>
 where
-    M: Monoid,
-    M::T: Debug,
+    M: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("DequeAggregation")

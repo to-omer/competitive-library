@@ -27,8 +27,7 @@ pub struct TreapSpec<M, L> {
 
 pub struct TreapData<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     priority: u64,
@@ -38,13 +37,8 @@ where
 
 impl<M, L> Debug for TreapData<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord + Debug,
-    M::Act: Debug,
-    L: LazyMapMonoid,
-    L::Key: Debug,
-    L::Agg: Debug,
-    L::Act: Debug,
+    M: MonoidAct<Key: Ord + Debug, Act: Debug>,
+    L: LazyMapMonoid<Key: Debug, Agg: Debug, Act: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("TreapData")
@@ -57,8 +51,7 @@ where
 
 impl<M, L> BstDataAccess<data::marker::Key> for TreapData<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     type Value = M::Key;
@@ -74,8 +67,7 @@ where
 
 impl<M, L> BstDataAccess<data::marker::MonoidAct> for TreapData<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     type Value = MonoidActElement<M>;
@@ -91,8 +83,7 @@ where
 
 impl<M, L> BstDataAccess<data::marker::LazyMap> for TreapData<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     type Value = LazyMapElement<L>;
@@ -108,8 +99,7 @@ where
 
 impl<M, L> BstSpec for TreapSpec<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     type Parent = WithParent<Self::Data>;
@@ -196,8 +186,7 @@ where
 
 impl<M, L> TreapSpec<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     pub fn merge_ordered(
@@ -244,8 +233,7 @@ where
 
 pub struct Treap<M, L, A = BoxAllocator<TreapNode<M, L>>>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
     A: Allocator<TreapNode<M, L>>,
 {
@@ -258,8 +246,7 @@ where
 
 impl<M, L, A> Default for Treap<M, L, A>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
     A: Allocator<TreapNode<M, L>> + Default,
 {
@@ -276,8 +263,7 @@ where
 
 impl<M, L, A> Drop for Treap<M, L, A>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
     A: Allocator<TreapNode<M, L>>,
 {
@@ -293,8 +279,7 @@ where
 
 impl<M, L> Treap<M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     pub fn new() -> Self {
@@ -304,8 +289,7 @@ where
 
 impl<M, L, A> Treap<M, L, A>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
     A: Allocator<TreapNode<M, L>>,
 {
@@ -418,7 +402,7 @@ where
 
     pub fn range_by_key<Q, R>(&mut self, range: R) -> TreapSplit3<'_, M, L>
     where
-        M::Key: Borrow<Q>,
+        M: MonoidAct<Key: Borrow<Q>>,
         Q: Ord + ?Sized,
         R: RangeBounds<Q>,
     {
@@ -431,7 +415,7 @@ where
 
     pub fn find_by_key<Q>(&mut self, key: &Q) -> Option<BstNodeId<TreapSpec<M, L>>>
     where
-        M::Key: Borrow<Q>,
+        M: MonoidAct<Key: Borrow<Q>>,
         Q: Ord + ?Sized,
     {
         let split = Split::new(
@@ -474,8 +458,7 @@ where
 
 pub struct TreapSplit3<'a, M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     split3: Split3<'a, TreapSpec<M, L>>,
@@ -484,8 +467,7 @@ where
 
 impl<'a, M, L> TreapSplit3<'a, M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     pub fn fold(&self) -> L::Agg {
@@ -512,8 +494,7 @@ where
 
 impl<'a, M, L> Drop for TreapSplit3<'a, M, L>
 where
-    M: MonoidAct,
-    M::Key: Ord,
+    M: MonoidAct<Key: Ord>,
     L: LazyMapMonoid,
 {
     fn drop(&mut self) {
