@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["SeekByAccCond","SeekByKey","SeekBySize","SeekLeft","SeekRight"],"trait":["BstSeeker"]};
+window.SIDEBAR_ITEMS = {"struct":["SeekByAccCond","SeekByKey","SeekByRaccCond","SeekBySize","SeekLeft","SeekRight"],"trait":["BstSeeker"]};
