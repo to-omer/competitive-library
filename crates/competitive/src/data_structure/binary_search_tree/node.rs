@@ -281,8 +281,9 @@ where
     BorrowType: marker::BorrowType,
 {
     pub fn ascend(self) -> Result<BstNodeRef<BorrowType, Spec>, Self> {
-        // const { [()][!BorrowType::TRAVERSAL_PERMIT as usize] };
-        assert!(BorrowType::TRAVERSAL_PERMIT);
+        const {
+            assert!(BorrowType::TRAVERSAL_PERMIT);
+        };
         let parent = unsafe { self.node.as_ref().parent.parent };
         parent
             .map(|node| BstNodeRef {
@@ -516,8 +517,9 @@ where
     Dir: marker::BstDirection,
 {
     pub fn descend(self) -> Result<BstNodeRef<BorrowType, Spec>, Self> {
-        // const { [()][!BorrowType::TRAVERSAL_PERMIT as usize] };
-        assert!(BorrowType::TRAVERSAL_PERMIT);
+        const {
+            assert!(BorrowType::TRAVERSAL_PERMIT);
+        };
         let child = unsafe { self.node.node.as_ref().child.get_unchecked(Dir::IDX) };
         child
             .map(|node| BstNodeRef {
