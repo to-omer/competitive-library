@@ -1081,25 +1081,17 @@ mod counting_operation_impl {
             }
         }
     }
-impl<M> Unital for CountingOperation<M>
-where
-    M: Unital<T: PartialEq> + Idempotent,
+    impl<M> Unital for CountingOperation<M>
+    where
+        M: Unital<T: PartialEq> + Idempotent,
     {
         #[inline]
         fn unit() -> Self::T {
             (M::unit(), 0)
         }
     }
-impl<M> Associative for CountingOperation<M>
-where
-    M: Associative<T: PartialEq> + Idempotent,
-    {
-    }
-impl<M> Commutative for CountingOperation<M>
-where
-    M: Commutative<T: PartialEq> + Idempotent,
-    {
-    }
+    impl<M> Associative for CountingOperation<M> where M: Associative<T: PartialEq> + Idempotent {}
+    impl<M> Commutative for CountingOperation<M> where M: Commutative<T: PartialEq> + Idempotent {}
 
     #[cfg(test)]
     mod tests {

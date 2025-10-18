@@ -49,11 +49,7 @@ where
     }
 }
 
-impl<R> Eq for Matrix<R>
-where
-    R: SemiRing<T: Eq>,
-{
-}
+impl<R> Eq for Matrix<R> where R: SemiRing<T: Eq> {}
 
 impl<R> Matrix<R>
 where

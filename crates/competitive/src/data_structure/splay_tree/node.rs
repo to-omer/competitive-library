@@ -112,11 +112,7 @@ where
     }
 }
 
-impl<'a, S> Copy for NodeRef<marker::Immut<'a>, S>
-where
-    S: SplaySpec<T: 'a>,
-{
-}
+impl<'a, S> Copy for NodeRef<marker::Immut<'a>, S> where S: SplaySpec<T: 'a> {}
 impl<'a, S> Clone for NodeRef<marker::Immut<'a>, S>
 where
     S: SplaySpec<T: 'a>,
