@@ -215,7 +215,7 @@ mod transducer;
     nightly,
     codesnip::entry("Treap", include("binary_search_tree", "Xorshift"))
 )]
-mod treap;
+pub mod treap;
 #[cfg_attr(nightly, codesnip::entry("Trie", include("algebra")))]
 mod trie;
 #[cfg_attr(

@@ -1,10 +1,10 @@
 use super::{
-    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec, data,
+    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec,
+    data::{self},
     seeker::{SeekByKey, SeekBySize},
 };
 use std::{
     borrow::Borrow,
-    mem::ManuallyDrop,
     ops::{Bound, RangeBounds},
 };
 
@@ -47,6 +47,13 @@ where
 
     pub fn right_datamut(&mut self) -> Option<BstDataMutRef<'_, Spec>> {
         self.right.as_mut().map(|node| node.borrow_datamut())
+    }
+
+    pub fn manually_merge<F>(&mut self, mut f: F)
+    where
+        F: FnMut(Option<BstRoot<Spec>>, Option<BstRoot<Spec>>) -> Option<BstRoot<Spec>>,
+    {
+        self.left = f(self.left.take(), self.right.take());
     }
 }
 
@@ -124,13 +131,12 @@ where
         self.right.as_mut().map(|node| node.borrow_datamut())
     }
 
-    pub fn manually_merge<F>(mut self, mut f: F)
+    pub fn manually_merge<F>(&mut self, mut f: F)
     where
         F: FnMut(Option<BstRoot<Spec>>, Option<BstRoot<Spec>>) -> Option<BstRoot<Spec>>,
     {
         let rest = f(self.mid.take(), self.right.take());
-        *self.root = f(self.left.take(), rest);
-        let _ = ManuallyDrop::new(self);
+        self.mid = f(self.left.take(), rest);
     }
 
     pub fn seek_by_key<K, Q, R>(node: &'a mut Option<BstRoot<Spec>>, range: R) -> Self

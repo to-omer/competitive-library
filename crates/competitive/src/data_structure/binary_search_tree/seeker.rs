@@ -134,7 +134,7 @@ where
     }
 }
 
-pub struct SeekByAccCond<Spec, F, L>
+pub struct SeekByAccCond<Spec, L, F>
 where
     L: LazyMapMonoid,
 {
@@ -143,7 +143,7 @@ where
     _marker: PhantomData<fn() -> (Spec, L)>,
 }
 
-impl<Spec, F, L> SeekByAccCond<Spec, F, L>
+impl<Spec, L, F> SeekByAccCond<Spec, L, F>
 where
     L: LazyMapMonoid,
     F: FnMut(&L::Agg) -> bool,
@@ -157,7 +157,7 @@ where
     }
 }
 
-impl<Spec, F, L> BstSeeker for SeekByAccCond<Spec, F, L>
+impl<Spec, L, F> BstSeeker for SeekByAccCond<Spec, L, F>
 where
     Spec: BstSpec,
     Spec::Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>,
@@ -173,13 +173,91 @@ where
             if (self.f)(&nagg) {
                 return Ordering::Greater;
             }
-            self.acc = nagg;
-        }
-        self.acc = L::agg_operate(&self.acc, &node.reborrow().into_data().bst_data().agg);
-        if (self.f)(&self.acc) {
-            Ordering::Equal
+            let nagg = L::agg_operate(
+                &nagg,
+                &L::single_agg(&node.reborrow().into_data().bst_data().key),
+            );
+            if (self.f)(&nagg) {
+                Ordering::Equal
+            } else {
+                self.acc = nagg;
+                Ordering::Less
+            }
         } else {
-            Ordering::Less
+            let nagg = L::agg_operate(
+                &self.acc,
+                &L::single_agg(&node.reborrow().into_data().bst_data().key),
+            );
+            if (self.f)(&nagg) {
+                Ordering::Equal
+            } else {
+                self.acc = nagg;
+                Ordering::Less
+            }
+        }
+    }
+}
+
+pub struct SeekByRaccCond<Spec, L, F>
+where
+    L: LazyMapMonoid,
+{
+    acc: L::Agg,
+    f: F,
+    _marker: PhantomData<fn() -> (Spec, L)>,
+}
+
+impl<Spec, L, F> SeekByRaccCond<Spec, L, F>
+where
+    L: LazyMapMonoid,
+    F: FnMut(&L::Agg) -> bool,
+{
+    pub fn new(f: F) -> Self {
+        Self {
+            acc: L::agg_unit(),
+            f,
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<Spec, L, F> BstSeeker for SeekByRaccCond<Spec, L, F>
+where
+    Spec: BstSpec,
+    Spec::Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>,
+    L: LazyMapMonoid,
+    F: FnMut(&L::Agg) -> bool,
+{
+    type Spec = Spec;
+
+    fn bst_seek(&mut self, node: BstImmutRef<'_, Self::Spec>) -> Ordering {
+        if let Ok(right) = node.reborrow().right().descend() {
+            let right_agg = &right.into_data().bst_data().agg;
+            let nagg = L::agg_operate(right_agg, &self.acc);
+            if (self.f)(&nagg) {
+                return Ordering::Less;
+            }
+            let nagg = L::agg_operate(
+                &L::single_agg(&node.reborrow().into_data().bst_data().key),
+                &nagg,
+            );
+            if (self.f)(&nagg) {
+                Ordering::Equal
+            } else {
+                self.acc = nagg;
+                Ordering::Greater
+            }
+        } else {
+            let nagg = L::agg_operate(
+                &L::single_agg(&node.reborrow().into_data().bst_data().key),
+                &self.acc,
+            );
+            if (self.f)(&nagg) {
+                Ordering::Equal
+            } else {
+                self.acc = nagg;
+                Ordering::Greater
+            }
         }
     }
 }

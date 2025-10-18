@@ -1,6 +1,6 @@
-use super::{BstNode, BstNodeRef, BstRoot, BstSpec, node};
+use super::{BstNode, BstNodePtr, BstNodeRef, BstRoot, BstSpec, node};
 use std::{
-    collections::HashSet,
+    collections::HashMap,
     hash::{Hash, Hasher},
     ptr::NonNull,
     sync::atomic::{self, AtomicU64},
@@ -78,7 +78,7 @@ pub struct BstNodeIdManager<Spec>
 where
     Spec: BstSpec,
 {
-    node_ids: HashSet<BstNodeId<Spec>>,
+    node_ids: HashMap<BstNodePtr<Spec::Data, Spec::Parent>, u64>,
 }
 
 impl<Spec> Default for BstNodeIdManager<Spec>
@@ -109,7 +109,19 @@ where
     }
 
     pub fn contains(&self, node_id: &BstNodeId<Spec>) -> bool {
-        self.node_ids.contains(node_id)
+        self.node_ids
+            .get(&node_id.node)
+            .map_or(false, |&g| g == node_id.generation)
+    }
+
+    pub fn registerd_node_id(
+        &self,
+        node: BstNodeRef<node::marker::Immut<'_>, Spec>,
+    ) -> Option<BstNodeId<Spec>> {
+        self.node_ids.get(&node.node).map(|&generation| BstNodeId {
+            node: node.node,
+            generation,
+        })
     }
 
     pub fn clear(&mut self) {
@@ -125,11 +137,11 @@ where
                 })
                 .expect("Generation counter overflow"),
         };
-        self.node_ids.insert(node_id);
+        self.node_ids.insert(node_id.node, node_id.generation);
         node_id
     }
 
     pub fn unregister(&mut self, node_id: BstNodeId<Spec>) {
-        self.node_ids.remove(&node_id);
+        self.node_ids.remove(&node_id.node);
     }
 }

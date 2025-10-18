@@ -5,8 +5,8 @@ use super::{
         BstSpec,
         data::{self, LazyMapElement, MonoidActElement},
         node::WithParent,
-        seeker::SeekByKey,
-        split::Split3,
+        seeker::{SeekByAccCond, SeekByKey, SeekByRaccCond},
+        split::{Split, Split3},
     },
 };
 use std::{
@@ -416,40 +416,109 @@ where
         }
     }
 
-    pub fn fold<Q, R>(&mut self, range: R) -> L::Agg
+    pub fn range_by_key<Q, R>(&mut self, range: R) -> TreapSplit3<'_, M, L>
     where
         M::Key: Borrow<Q>,
         Q: Ord + ?Sized,
         R: RangeBounds<Q>,
     {
-        if let Some(node) = Split3::seek_by_key(&mut self.root, range).mid() {
+        let split3 = Split3::seek_by_key(&mut self.root, range);
+        TreapSplit3 {
+            split3,
+            key_updated: false,
+        }
+    }
+
+    pub fn find_by_key<Q>(&mut self, key: &Q) -> Option<BstNodeId<TreapSpec<M, L>>>
+    where
+        M::Key: Borrow<Q>,
+        Q: Ord + ?Sized,
+    {
+        let split = Split::new(
+            &mut self.root,
+            SeekByKey::<TreapSpec<M, L>, M::Key, Q>::new(key),
+            false,
+        );
+        let node = split.right()?.leftmost()?;
+        matches!(node.into_data().key.key.borrow().cmp(key), Ordering::Equal)
+            .then(|| self.node_id_manager.registerd_node_id(node))
+            .flatten()
+    }
+
+    pub fn find_by_acc_cond<F>(&mut self, f: F) -> Option<BstNodeId<TreapSpec<M, L>>>
+    where
+        F: FnMut(&L::Agg) -> bool,
+    {
+        let split = Split::new(
+            &mut self.root,
+            SeekByAccCond::<TreapSpec<M, L>, L, F>::new(f),
+            false,
+        );
+        let node = split.right()?.leftmost()?;
+        self.node_id_manager.registerd_node_id(node)
+    }
+
+    pub fn find_by_racc_cond<F>(&mut self, f: F) -> Option<BstNodeId<TreapSpec<M, L>>>
+    where
+        F: FnMut(&L::Agg) -> bool,
+    {
+        let split = Split::new(
+            &mut self.root,
+            SeekByRaccCond::<TreapSpec<M, L>, L, F>::new(f),
+            true,
+        );
+        let node = split.left()?.rightmost()?;
+        self.node_id_manager.registerd_node_id(node)
+    }
+}
+
+pub struct TreapSplit3<'a, M, L>
+where
+    M: MonoidAct,
+    M::Key: Ord,
+    L: LazyMapMonoid,
+{
+    split3: Split3<'a, TreapSpec<M, L>>,
+    key_updated: bool,
+}
+
+impl<'a, M, L> TreapSplit3<'a, M, L>
+where
+    M: MonoidAct,
+    M::Key: Ord,
+    L: LazyMapMonoid,
+{
+    pub fn fold(&self) -> L::Agg {
+        if let Some(node) = self.split3.mid() {
             node.reborrow().into_data().value.agg.clone()
         } else {
             L::agg_unit()
         }
     }
 
-    pub fn update_key<Q, R>(&mut self, range: R, act: M::Act)
-    where
-        M::Key: Borrow<Q>,
-        Q: Ord + ?Sized,
-        R: RangeBounds<Q>,
-    {
-        let mut split = Split3::seek_by_key(&mut self.root, range);
-        if let Some(node) = split.mid_datamut() {
+    pub fn update_key(&mut self, act: M::Act) {
+        if let Some(node) = self.split3.mid_datamut() {
             MonoidActElement::<M>::update_act(node, &act);
+            self.key_updated = true;
         }
-        split.manually_merge(TreapSpec::merge_ordered);
     }
 
-    pub fn update_value<Q, R>(&mut self, range: R, act: L::Act)
-    where
-        M::Key: Borrow<Q>,
-        Q: Ord + ?Sized,
-        R: RangeBounds<Q>,
-    {
-        if let Some(node) = Split3::seek_by_key(&mut self.root, range).mid_datamut() {
+    pub fn update_value(&mut self, act: L::Act) {
+        if let Some(node) = self.split3.mid_datamut() {
             LazyMapElement::<L>::update_act(node, &act);
+        }
+    }
+}
+
+impl<'a, M, L> Drop for TreapSplit3<'a, M, L>
+where
+    M: MonoidAct,
+    M::Key: Ord,
+    L: LazyMapMonoid,
+{
+    fn drop(&mut self) {
+        if self.key_updated {
+            self.split3.manually_merge(TreapSpec::merge_ordered);
         }
     }
 }
@@ -457,13 +526,15 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::algebra::{AdditiveOperation, FlattenAct, RangeSumRangeAdd};
+    use crate::algebra::{
+        AdditiveOperation, EmptyAct, FlattenAct, RangeMaxRangeAdd, RangeSumRangeAdd,
+    };
 
     #[test]
     fn test_treap() {
         const A: i64 = 100;
         let mut rng = Xorshift::default();
-        let mut treap = Treap::<FlattenAct<AdditiveOperation<i64>>, RangeSumRangeAdd<i64>>::new();
+        let mut treap = Treap::<FlattenAct<AdditiveOperation<i64>>, RangeMaxRangeAdd<i64>>::new();
         let mut node_ids = vec![];
         let mut data = vec![];
         for _ in 0..10000 {
@@ -480,8 +551,98 @@ mod tests {
                 0 => {
                     let key = rng.random(-A..=A);
                     let value = rng.random(-A..=A);
-                    node_ids.push(treap.insert(key, value));
-                    data.push((key, value));
+                    let k = data.partition_point(|(k, _)| *k < key);
+                    data.insert(k, (key, value));
+                    node_ids.insert(k, treap.insert(key, value));
+                }
+                1 => {
+                    if !data.is_empty() {
+                        let k = rng.random(0..data.len());
+                        let expected = data.remove(k);
+                        let result = treap.remove(node_ids.remove(k)).unwrap();
+                        assert_eq!(expected, result);
+                    }
+                }
+                2 => {
+                    let expected: i64 = data
+                        .iter()
+                        .filter(|(k, _)| (l..r).contains(k))
+                        .map(|(_, v)| *v)
+                        .max()
+                        .unwrap_or(i64::MIN);
+                    let result = treap.range_by_key(l..r).fold();
+                    assert_eq!(expected, result);
+                }
+                3 => {
+                    let add = rng.random(-A..=A);
+                    for (k, v) in data.iter_mut() {
+                        if (l..r).contains(k) {
+                            *v += add;
+                        }
+                    }
+                    treap.range_by_key(l..r).update_value(add);
+                }
+                4 => {
+                    let add = rng.random(-A..=A);
+                    for (k, _) in data.iter_mut() {
+                        if (l..r).contains(k) {
+                            *k += add;
+                        }
+                    }
+                    treap.range_by_key(l..r).update_key(add);
+                }
+                5 => {
+                    if !data.is_empty() {
+                        let k = rng.random(0..data.len());
+                        let expected = data[k];
+                        let result = treap.get(node_ids[k]).unwrap();
+                        assert_eq!(expected, (*result.0, *result.1));
+                    }
+                }
+                6 => {
+                    if !data.is_empty() {
+                        let k = rng.random(0..data.len());
+                        let x = rng.random(-A..=A);
+                        data[k].1 = x;
+                        treap.change(node_ids[k], |value| *value = x);
+                    }
+                }
+                _ => {
+                    if !data.is_empty() {
+                        let k = rng.random(0..data.len());
+                        let nk = rng.random(-A..=A);
+                        let nv = rng.random(-A..=A);
+                        data[k].0 = nk;
+                        data[k].1 = nv;
+                        treap.change_key_value(node_ids[k], |key, value| {
+                            *key = nk;
+                            *value = nv;
+                        });
+                    }
+                }
+            }
+        }
+
+        let mut treap = Treap::<EmptyAct<i64>, RangeSumRangeAdd<i64>>::new();
+        let mut node_ids = vec![];
+        let mut data = vec![];
+        for _ in 0..10000 {
+            let (l, r) = loop {
+                let l = rng.random(-A..=A);
+                let r = rng.random(-A..=A);
+                if l <= r {
+                    break (l, r);
+                }
+            };
+            assert_eq!(data.len(), treap.len());
+            assert_eq!(data.is_empty(), treap.is_empty());
+            match rng.random(0..10) {
+                0 => {
+                    let key = rng.random(-A..=A);
+                    let value = rng.random(1..=A);
+                    let k = data.partition_point(|(k, _)| *k < key);
+                    data.insert(k, (key, value));
+                    node_ids.insert(k, treap.insert(key, value));
                 }
                 1 => {
                     if !data.is_empty() {
@@ -497,26 +658,17 @@ mod tests {
                         .filter(|(k, _)| (l..r).contains(k))
                         .map(|(_, v)| *v)
                         .sum();
-                    let result = treap.fold(l..r).0;
+                    let result = treap.range_by_key(l..r).fold().0;
                     assert_eq!(expected, result);
                 }
                 3 => {
-                    let add = rng.random(-A..=A);
+                    let add = rng.random(1..=A);
                     for (k, v) in data.iter_mut() {
                         if (l..r).contains(k) {
                             *v += add;
                         }
                     }
-                    treap.update_value(l..r, add);
-                }
-                4 => {
-                    let add = rng.random(-A..=A);
-                    for (k, _) in data.iter_mut() {
-                        if (l..r).contains(k) {
-                            *k += add;
-                        }
-                    }
-                    treap.update_key(l..r, add);
+                    treap.range_by_key(l..r).update_value(add);
                 }
                 5 => {
                     if !data.is_empty() {
@@ -529,23 +681,40 @@ mod tests {
                 6 => {
                     if !data.is_empty() {
                         let k = rng.random(0..data.len());
-                        let add_value = rng.random(-A..=A);
-                        data[k].1 += add_value;
-                        treap.change(node_ids[k], |value| *value += add_value);
+                        let x = rng.random(1..=A);
+                        data[k].1 = x;
+                        treap.change(node_ids[k], |value| *value = x);
                     }
                 }
+                7 => {
+                    let key = rng.random(-A..=A);
+                    let expected = data.iter().find(|(k, _)| *k == key).cloned();
+                    let result = treap.find_by_key(&key).map(|id| treap.get(id).unwrap());
+                    assert_eq!(expected, result.map(|(k, v)| (*k, *v)));
+                }
+                8 => {
+                    let s = rng.random(0..=A);
+                    let mut acc = 0;
+                    let expected = data.iter().find_map(|(k, v)| {
+                        acc += *v;
+                        if acc >= s { Some((*k, *v)) } else { None }
+                    });
+                    let result = treap
+                        .find_by_acc_cond(|agg| agg.0 >= s)
+                        .map(|id| treap.get(id).unwrap());
+                    assert_eq!(expected, result.map(|(k, v)| (*k, *v)));
+                }
                 _ => {
-                    if !data.is_empty() {
-                        let k = rng.random(0..data.len());
-                        let add_key = rng.random(-A..=A);
-                        let add_value = rng.random(-A..=A);
-                        data[k].0 += add_key;
-                        data[k].1 += add_value;
-                        treap.change_key_value(node_ids[k], |key, value| {
-                            *key += add_key;
-                            *value += add_value;
-                        });
-                    }
+                    let s = rng.random(0..=A);
+                    let mut acc = 0;
+                    let expected = data.iter().rev().find_map(|(k, v)| {
+                        acc += *v;
+                        if acc >= s { Some((*k, *v)) } else { None }
+                    });
+                    let result = treap
+                        .find_by_racc_cond(|agg| agg.0 >= s)
+                        .map(|id| treap.get(id).unwrap());
+                    assert_eq!(expected, result.map(|(k, v)| (*k, *v)));
                 }
             }
         }

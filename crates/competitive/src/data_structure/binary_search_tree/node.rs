@@ -569,6 +569,7 @@ where
 pub type BstRoot<Spec> = BstNodeRef<marker::Owned, Spec>;
 pub type BstDataMutRef<'a, Spec> = BstNodeRef<marker::DataMut<'a>, Spec>;
 pub type BstImmutRef<'a, Spec> = BstNodeRef<marker::Immut<'a>, Spec>;
+pub type BstNodePtr<Data, Parent> = NonNull<BstNode<Data, Parent>>;
 
 pub mod marker {
     use std::marker::PhantomData;
