@@ -192,7 +192,7 @@ impl<Data> WithParent<Data> {
                     .reborrow()
                     .left()
                     .descend()
-                    .map_or(false, |n| n.node == node_inner)
+                    .is_ok_and(|n| n.node == node_inner)
                 {
                     parent.left_mut().replace(merged)
                 } else {
@@ -205,7 +205,7 @@ impl<Data> WithParent<Data> {
                     .reborrow()
                     .left()
                     .descend()
-                    .map_or(false, |n| n.node == node_inner)
+                    .is_ok_and(|n| n.node == node_inner)
                 {
                     parent.left_mut().take()
                 } else {
@@ -303,7 +303,7 @@ where
                         node.reborrow()
                             .left()
                             .descend()
-                            .map_or(false, |node| node.node == nn),
+                            .is_ok_and(|node| node.node == nn),
                     );
                     nn = node.node;
                 }

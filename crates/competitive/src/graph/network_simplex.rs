@@ -409,7 +409,7 @@ where
             let mut d = self.depth[par];
             let mut idx = u * 2;
             while idx != u * 2 + 1 {
-                if idx % 2 == 0 {
+                if idx.is_multiple_of(2) {
                     d += 1;
                     self.potentials[idx / 2] += p_diff;
                     self.depth[idx / 2] = d;

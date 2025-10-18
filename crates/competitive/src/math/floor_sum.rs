@@ -9,7 +9,7 @@ use std::{
 };
 
 fn choose2(n: Wrapping<u64>) -> Wrapping<u64> {
-    if n.0 % 2 == 0 {
+    if n.0.is_multiple_of(2) {
         n / 2 * (n - 1)
     } else {
         (n - 1) / 2 * n

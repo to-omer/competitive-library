@@ -206,16 +206,15 @@ where
                 if let Some((score, hash, accept)) =
                     self.state
                         .soft_update(op.clone(), node.score.clone(), node.hash.clone())
+                    && !set.contains(&hash)
                 {
-                    if !set.contains(&hash) {
-                        cands.push(Candidate {
-                            parent: self.cur_node,
-                            op,
-                            score,
-                            hash,
-                            accept,
-                        });
-                    }
+                    cands.push(Candidate {
+                        parent: self.cur_node,
+                        op,
+                        score,
+                        hash,
+                        accept,
+                    });
                 };
             }
         } else {

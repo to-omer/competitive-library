@@ -19,7 +19,7 @@ fn pow(x: u64, mut y: u64, br: &BarrettReduction<u128>) -> u64 {
 
 fn solve_linear_congruence(a: u64, b: u64, m: u64) -> Option<(u64, u64)> {
     let g = gcd(a, m);
-    if b % g != 0 {
+    if !b.is_multiple_of(g) {
         return None;
     }
     let (a, b, m) = (a / g, b / g, m / g);
@@ -39,7 +39,7 @@ where
         }
         let a = a * m0;
         let g = gcd(a, m);
-        if b % g != 0 {
+        if !b.is_multiple_of(g) {
             return None;
         }
         let (a, b, m) = (a / g, b / g, m / g);
@@ -463,7 +463,7 @@ pub fn discrete_logarithm(a: u64, b: u64, n: u64) -> Option<u64> {
         pw = (pw as u128 * a as u128 % n as u128) as u64;
     }
     let g = gcd(pw, n);
-    if b % g != 0 {
+    if !b.is_multiple_of(g) {
         return None;
     }
     let n = n / g;

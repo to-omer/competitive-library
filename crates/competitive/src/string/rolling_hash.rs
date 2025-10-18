@@ -246,10 +246,10 @@ where
         let mut x: Option<HashedRange<'_, Hasher>> = None;
         let mut y: Option<HashedRange<'_, Hasher>> = None;
         loop {
-            if x.map_or(true, |x| x.is_empty()) {
+            if x.is_none_or(|x| x.is_empty()) {
                 x = next!(a);
             }
-            if y.map_or(true, |y| y.is_empty()) {
+            if y.is_none_or(|y| y.is_empty()) {
                 y = next!(b);
             }
             if let (Some(x), Some(y)) = (&mut x, &mut y) {
@@ -292,10 +292,10 @@ where
         let mut x: Option<HashedRange<'_, Hasher>> = None;
         let mut y: Option<HashedRange<'_, Hasher>> = None;
         loop {
-            if x.map_or(true, |x| x.is_empty()) {
+            if x.is_none_or(|x| x.is_empty()) {
                 x = next!(a);
             }
-            if y.map_or(true, |y| y.is_empty()) {
+            if y.is_none_or(|y| y.is_empty()) {
                 y = next!(b);
             }
             if let (Some(x), Some(y)) = (&mut x, &mut y) {
@@ -338,10 +338,10 @@ where
         let mut x: Option<HashedRange<'_, Hasher>> = None;
         let mut y: Option<HashedRange<'_, Hasher>> = None;
         loop {
-            if x.map_or(true, |x| x.is_empty()) {
+            if x.is_none_or(|x| x.is_empty()) {
                 x = next!(a);
             }
-            if y.map_or(true, |y| y.is_empty()) {
+            if y.is_none_or(|y| y.is_empty()) {
                 y = next!(b);
             }
             if let (Some(x), Some(y)) = (&mut x, &mut y) {

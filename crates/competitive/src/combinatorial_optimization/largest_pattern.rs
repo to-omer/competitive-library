@@ -24,7 +24,7 @@ pub fn largest_rectangle(hist: &[usize]) -> usize {
             res = res.max((i - k) * p);
             j = k;
         }
-        if stack.last().map_or(true, |x| x.1 < h) {
+        if stack.last().is_none_or(|x| x.1 < h) {
             stack.push((j, h));
         }
     }

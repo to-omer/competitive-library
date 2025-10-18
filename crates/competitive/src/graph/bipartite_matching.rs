@@ -58,11 +58,11 @@ impl BipartiteMatching {
             }
             while let Some(l) = deq.pop_front() {
                 for &r in &bm.left_graph[l] {
-                    if let Some(nl) = bm.right_match[r] {
-                        if level[nl] == !0 {
-                            deq.push_back(nl);
-                            level[nl] = level[l] + 1;
-                        }
+                    if let Some(nl) = bm.right_match[r]
+                        && level[nl] == !0
+                    {
+                        deq.push_back(nl);
+                        level[nl] = level[l] + 1;
                     }
                 }
             }
@@ -76,10 +76,10 @@ impl BipartiteMatching {
             used[l] = true;
             for i in 0..bm.left_graph[l].len() {
                 let r = bm.left_graph[l][i];
-                if let Some(nl) = bm.right_match[r] {
-                    if used[nl] || level[l] + 1 != level[nl] || !dfs(bm, nl, level, used) {
-                        continue;
-                    }
+                if let Some(nl) = bm.right_match[r]
+                    && (used[nl] || level[l] + 1 != level[nl] || !dfs(bm, nl, level, used))
+                {
+                    continue;
                 }
                 bm.right_match[r] = Some(l);
                 bm.left_match[l] = Some(r);
@@ -222,11 +222,11 @@ impl BipartiteMatching {
                     }
                 }
                 Some(Either::Right(r)) => {
-                    if let Some(l) = self.right_match[r] {
-                        if !left_used[l] {
-                            left_used[l] = true;
-                            deq.push_back(Either::Left(l));
-                        }
+                    if let Some(l) = self.right_match[r]
+                        && !left_used[l]
+                    {
+                        left_used[l] = true;
+                        deq.push_back(Either::Left(l));
                     }
                 }
                 None => break,

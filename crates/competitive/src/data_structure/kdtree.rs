@@ -24,7 +24,7 @@ where
     fn build(data: &mut [(T, U, V)], l: usize, r: usize, depth: usize) {
         if l < r {
             let m = l + (r - l) / 2;
-            if depth % 2 == 0 {
+            if depth.is_multiple_of(2) {
                 data[l..r].sort_by(|p, q| p.0.cmp(&q.0));
             } else {
                 data[l..r].sort_by(|p, q| p.1.cmp(&q.1));
@@ -53,14 +53,14 @@ where
             if range1.contains(t) && range2.contains(u) {
                 res.push(v);
             }
-            if if depth % 2 == 0 {
+            if if depth.is_multiple_of(2) {
                 &range1.start <= t
             } else {
                 &range2.start <= u
             } {
                 self.range_inner(range1, range2, l, m, depth + 1, res);
             }
-            if if depth % 2 == 0 {
+            if if depth.is_multiple_of(2) {
                 t < &range1.end
             } else {
                 u < &range2.end

@@ -2,9 +2,9 @@ pub fn euler_phi(n: usize) -> usize {
     let mut n = n;
     let mut res = n;
     for i in 2..(n as f32).sqrt() as usize + 1 {
-        if n % i == 0 {
+        if n.is_multiple_of(i) {
             res = res / i * (i - 1);
-            while n % i == 0 {
+            while n.is_multiple_of(i) {
                 n /= i;
             }
         }
@@ -45,9 +45,9 @@ pub fn moebius(n: usize) -> std::collections::HashMap<usize, i64> {
     let mut primes = vec![];
     let mut n = n;
     for i in 2..(n as f32).sqrt() as usize + 1 {
-        if n % i == 0 {
+        if n.is_multiple_of(i) {
             primes.push(i);
-            while n % i == 0 {
+            while n.is_multiple_of(i) {
                 n /= i;
             }
         }
