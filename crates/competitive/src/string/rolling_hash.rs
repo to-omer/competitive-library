@@ -165,7 +165,7 @@ where
         let mut ok = 0usize;
         let mut err = n + 1;
         while ok + 1 < err {
-            let mid = (ok + err) / 2;
+            let mid = ok.midpoint(err);
             if self.range(..mid).hash() == other.range(..mid).hash() {
                 ok = mid;
             } else {

@@ -23,7 +23,7 @@ where
     }
     fn build(data: &mut [(T, U, V)], l: usize, r: usize, depth: usize) {
         if l < r {
-            let m = l + (r - l) / 2;
+            let m = l.midpoint(r);
             if depth.is_multiple_of(2) {
                 data[l..r].sort_by(|p, q| p.0.cmp(&q.0));
             } else {
@@ -48,7 +48,7 @@ where
         res: &mut Vec<&'a V>,
     ) {
         if l < r {
-            let m = l + (r - l) / 2;
+            let m = l.midpoint(r);
             let (t, u, v) = &self.data[m];
             if range1.contains(t) && range2.contains(u) {
                 res.push(v);

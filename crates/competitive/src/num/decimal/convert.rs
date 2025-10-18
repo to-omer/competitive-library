@@ -124,7 +124,7 @@ impl Display for Decimal {
             let mut l = 0;
             let mut r = RADIX_LEN;
             while r - l > 1 {
-                let m = (l + r) / 2;
+                let m = l.midpoint(r);
                 if last % POW10[m] == 0 {
                     l = m;
                 } else {
