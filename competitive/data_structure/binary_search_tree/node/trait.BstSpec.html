@@ -95,122 +95,121 @@
 <span data-nosnippet>136</span>            }
 <span data-nosnippet>137</span>            </a><span class="highlight">Spec::top_down</span><a href="../tools/scanner.rs.html#391">(node.reborrow_datamut());
 <span data-nosnippet>138</span>        }
-<span data-nosnippet>139</span>    }</a></code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/treap.rs.html#136&#34;,&#34;line 136&#34;],[[16,16],&#34;../../../../src/competitive/data_structure/treap.rs.html#143&#34;,&#34;line 143&#34;],[[38,38],&#34;../../../../src/competitive/data_structure/treap.rs.html#165&#34;,&#34;line 165&#34;],[[85,85],&#34;../../../../src/competitive/data_structure/treap.rs.html#212&#34;,&#34;line 212&#34;],[[99,99],&#34;../../../../src/competitive/data_structure/treap.rs.html#226&#34;,&#34;line 226&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#136">line 136</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>127</span>    <span class="kw">fn </span><a href="../tools/scanner.rs.html#391">merge(
-<span data-nosnippet>128</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>129</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>130</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
-<span data-nosnippet>131</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
-<span data-nosnippet>132</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
-<span data-nosnippet>133</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
-<span data-nosnippet>134</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
-<span data-nosnippet>135</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
-<span data-nosnippet>136</span>                    </a><span class="highlight focus">TreapSpec::top_down</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
-<span data-nosnippet>137</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
-<span data-nosnippet>138</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = <span class="self">Self</span>::merge(lr, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)).unwrap_unchecked();
-<span data-nosnippet>139</span>                    left.borrow_mut().right().set(lr);
-<span data-nosnippet>140</span>                    TreapSpec::bottom_up(left.borrow_datamut());
-<span data-nosnippet>141</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
-<span data-nosnippet>142</span>                } </a><span class="kw">else </span>{
-<span data-nosnippet>143</span>                    <span class="highlight">TreapSpec::top_down</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
-<span data-nosnippet>144</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
-<span data-nosnippet>145</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = <span class="self">Self</span>::merge(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), rl).unwrap_unchecked();
-<span data-nosnippet>146</span>                    right.borrow_mut().left().set(rl);
-<span data-nosnippet>147</span>                    TreapSpec::bottom_up(right.borrow_datamut());
-<span data-nosnippet>148</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
-<span data-nosnippet>149</span>                }
-<span data-nosnippet>150</span>            },
-<span data-nosnippet>151</span>        }
-<span data-nosnippet>152</span>    }
-<span data-nosnippet>153</span>
-<span data-nosnippet>154</span>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">split&lt;Seeker&gt;(
-<span data-nosnippet>155</span>        node: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>156</span>        </a><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">seeker: Seeker,
-<span data-nosnippet>157</span>        eq_left: bool,
-<span data-nosnippet>158</span>    ) -&gt; (</a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;, </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;)
-<span data-nosnippet>159</span>    </a><span class="kw">where
-<span data-nosnippet>160</span>        </span><a href="../tools/scanner.rs.html#391">Seeker: BstSeeker&lt;Spec = </a><span class="self">Self</span>&gt;,
-<span data-nosnippet>161</span>    {
-<span data-nosnippet>162</span>        <span class="kw">match </span><a href="../tools/scanner.rs.html#391">node {
-<span data-nosnippet>163</span>            </a><span class="prelude-val">None </span>=&gt; (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
-<span data-nosnippet>164</span>            <span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">node) =&gt; {
-<span data-nosnippet>165</span>                </a><span class="highlight"><span class="self">Self</span>::top_down</span><a href="../tools/scanner.rs.html#391">(node.borrow_datamut());
-<span data-nosnippet>166</span>                </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">seek_left = </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">seeker.bst_seek(node.reborrow()) {
-<span data-nosnippet>167</span>                    Ordering::Less =&gt; </a><span class="bool-val">false</span><a href="../tools/scanner.rs.html#391">,
-<span data-nosnippet>168</span>                    Ordering::Equal =&gt; !eq_left,
-<span data-nosnippet>169</span>                    Ordering::Greater =&gt; </a><span class="bool-val">true</span>,
-<span data-nosnippet>170</span>                };
-<span data-nosnippet>171</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">seek_left {
-<span data-nosnippet>172</span>                    </a><span class="kw">unsafe </span>{
-<span data-nosnippet>173</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">left = node.borrow_mut().<a href="magma.rs.html#56">left</a>().take();
-<span data-nosnippet>174</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(left, seeker, eq_left);
-<span data-nosnippet>175</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = r {
-<span data-nosnippet>176</span>                            node.borrow_mut().left().set(r);
+<span data-nosnippet>139</span>    }</a></code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[9,9],&#34;../../../../src/competitive/data_structure/treap.rs.html#126&#34;,&#34;line 126&#34;],[[16,16],&#34;../../../../src/competitive/data_structure/treap.rs.html#133&#34;,&#34;line 133&#34;],[[38,38],&#34;../../../../src/competitive/data_structure/treap.rs.html#155&#34;,&#34;line 155&#34;],[[84,84],&#34;../../../../src/competitive/data_structure/treap.rs.html#201&#34;,&#34;line 201&#34;],[[98,98],&#34;../../../../src/competitive/data_structure/treap.rs.html#215&#34;,&#34;line 215&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#126">line 126</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>117</span>    <span class="kw">fn </span><a href="../tools/scanner.rs.html#391">merge(
+<span data-nosnippet>118</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>119</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>120</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
+<span data-nosnippet>121</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
+<span data-nosnippet>122</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
+<span data-nosnippet>123</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
+<span data-nosnippet>124</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
+<span data-nosnippet>125</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
+<span data-nosnippet>126</span>                    </a><span class="highlight focus">TreapSpec::top_down</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
+<span data-nosnippet>127</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
+<span data-nosnippet>128</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = <span class="self">Self</span>::merge(lr, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)).unwrap_unchecked();
+<span data-nosnippet>129</span>                    left.borrow_mut().right().set(lr);
+<span data-nosnippet>130</span>                    TreapSpec::bottom_up(left.borrow_datamut());
+<span data-nosnippet>131</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
+<span data-nosnippet>132</span>                } </a><span class="kw">else </span>{
+<span data-nosnippet>133</span>                    <span class="highlight">TreapSpec::top_down</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
+<span data-nosnippet>134</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
+<span data-nosnippet>135</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = <span class="self">Self</span>::merge(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), rl).unwrap_unchecked();
+<span data-nosnippet>136</span>                    right.borrow_mut().left().set(rl);
+<span data-nosnippet>137</span>                    TreapSpec::bottom_up(right.borrow_datamut());
+<span data-nosnippet>138</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
+<span data-nosnippet>139</span>                }
+<span data-nosnippet>140</span>            },
+<span data-nosnippet>141</span>        }
+<span data-nosnippet>142</span>    }
+<span data-nosnippet>143</span>
+<span data-nosnippet>144</span>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">split&lt;Seeker&gt;(
+<span data-nosnippet>145</span>        node: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>146</span>        </a><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">seeker: Seeker,
+<span data-nosnippet>147</span>        eq_left: bool,
+<span data-nosnippet>148</span>    ) -&gt; (</a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;, </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;)
+<span data-nosnippet>149</span>    </a><span class="kw">where
+<span data-nosnippet>150</span>        </span><a href="../tools/scanner.rs.html#391">Seeker: BstSeeker&lt;Spec = </a><span class="self">Self</span>&gt;,
+<span data-nosnippet>151</span>    {
+<span data-nosnippet>152</span>        <span class="kw">match </span><a href="../tools/scanner.rs.html#391">node {
+<span data-nosnippet>153</span>            </a><span class="prelude-val">None </span>=&gt; (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
+<span data-nosnippet>154</span>            <span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">node) =&gt; {
+<span data-nosnippet>155</span>                </a><span class="highlight"><span class="self">Self</span>::top_down</span><a href="../tools/scanner.rs.html#391">(node.borrow_datamut());
+<span data-nosnippet>156</span>                </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">seek_left = </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">seeker.bst_seek(node.reborrow()) {
+<span data-nosnippet>157</span>                    Ordering::Less =&gt; </a><span class="bool-val">false</span><a href="../tools/scanner.rs.html#391">,
+<span data-nosnippet>158</span>                    Ordering::Equal =&gt; !eq_left,
+<span data-nosnippet>159</span>                    Ordering::Greater =&gt; </a><span class="bool-val">true</span>,
+<span data-nosnippet>160</span>                };
+<span data-nosnippet>161</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">seek_left {
+<span data-nosnippet>162</span>                    </a><span class="kw">unsafe </span>{
+<span data-nosnippet>163</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">left = node.borrow_mut().left().take();
+<span data-nosnippet>164</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(left, seeker, eq_left);
+<span data-nosnippet>165</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = r {
+<span data-nosnippet>166</span>                            node.borrow_mut().left().set(r);
+<span data-nosnippet>167</span>                        }
+<span data-nosnippet>168</span>                        <span class="self">Self</span>::bottom_up(node.borrow_datamut());
+<span data-nosnippet>169</span>                        (l, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node))
+<span data-nosnippet>170</span>                    }
+<span data-nosnippet>171</span>                } </a><span class="kw">else </span>{
+<span data-nosnippet>172</span>                    <span class="kw">unsafe </span>{
+<span data-nosnippet>173</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">right = node.borrow_mut().right().take();
+<span data-nosnippet>174</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(right, seeker, eq_left);
+<span data-nosnippet>175</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = l {
+<span data-nosnippet>176</span>                            node.borrow_mut().right().set(<a href="lazy_map.rs.html#65">l</a>);
 <span data-nosnippet>177</span>                        }
 <span data-nosnippet>178</span>                        <span class="self">Self</span>::bottom_up(node.borrow_datamut());
-<span data-nosnippet>179</span>                        (l, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node))
+<span data-nosnippet>179</span>                        (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), r)
 <span data-nosnippet>180</span>                    }
-<span data-nosnippet>181</span>                } </a><span class="kw">else </span>{
-<span data-nosnippet>182</span>                    <span class="kw">unsafe </span>{
-<span data-nosnippet>183</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">right = node.borrow_mut().right().take();
-<span data-nosnippet>184</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(right, seeker, eq_left);
-<span data-nosnippet>185</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = l {
-<span data-nosnippet>186</span>                            node.borrow_mut().right().set(l);
-<span data-nosnippet>187</span>                        }
-<span data-nosnippet>188</span>                        <span class="self">Self</span>::bottom_up(node.borrow_datamut());
-<span data-nosnippet>189</span>                        (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), r)
-<span data-nosnippet>190</span>                    }
-<span data-nosnippet>191</span>                }
-<span data-nosnippet>192</span>            }
-<span data-nosnippet>193</span>        }
-<span data-nosnippet>194</span>    }
-<span data-nosnippet>195</span>}
-<span data-nosnippet>196</span>
-<span data-nosnippet>197</span></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;M, L&gt; TreapSpec&lt;M, L&gt;
-<span data-nosnippet>198</span></a><span class="kw">where
-<span data-nosnippet>199</span>    </span><a href="../tools/scanner.rs.html#391">M: MonoidAct,
-<span data-nosnippet>200</span>    M::Key: Ord,
-<span data-nosnippet>201</span>    L: LazyMapMonoid,
-<span data-nosnippet>202</span>{
-<span data-nosnippet>203</span>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">merge_ordered(
-<span data-nosnippet>204</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>205</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>206</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
-<span data-nosnippet>207</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
-<span data-nosnippet>208</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
-<span data-nosnippet>209</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
-<span data-nosnippet>210</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
-<span data-nosnippet>211</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
-<span data-nosnippet>212</span>                    </a><span class="highlight"><span class="self">Self</span>::top_down</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
-<span data-nosnippet>213</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().key.key;
-<span data-nosnippet>214</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(rl, rr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right), SeekByKey::new(key), </a><span class="bool-val">false</span>);
-<span data-nosnippet>215</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">ll = left.borrow_mut().left().take();
-<span data-nosnippet>216</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
-<span data-nosnippet>217</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
-<span data-nosnippet>218</span>                        left.borrow_mut().left().set(l);
-<span data-nosnippet>219</span>                    }
-<span data-nosnippet>220</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
-<span data-nosnippet>221</span>                        left.borrow_mut().right().set(r);
+<span data-nosnippet>181</span>                }
+<span data-nosnippet>182</span>            }
+<span data-nosnippet>183</span>        }
+<span data-nosnippet>184</span>    }
+<span data-nosnippet>185</span>}
+<span data-nosnippet>186</span>
+<span data-nosnippet>187</span></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;M, L&gt; TreapSpec&lt;M, L&gt;
+<span data-nosnippet>188</span></a><span class="kw">where
+<span data-nosnippet>189</span>    </span><a href="../tools/scanner.rs.html#391">M: MonoidAct&lt;Key: Ord&gt;,
+<span data-nosnippet>190</span>    L: LazyMapMonoid,
+<span data-nosnippet>191</span>{
+<span data-nosnippet>192</span>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">merge_ordered(
+<span data-nosnippet>193</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>194</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>195</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
+<span data-nosnippet>196</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
+<span data-nosnippet>197</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
+<span data-nosnippet>198</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
+<span data-nosnippet>199</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
+<span data-nosnippet>200</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
+<span data-nosnippet>201</span>                    </a><span class="highlight"><span class="self">Self</span>::top_down</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
+<span data-nosnippet>202</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().key.key;
+<span data-nosnippet>203</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(rl, rr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right), SeekByKey::new(key), </a><span class="bool-val">false</span>);
+<span data-nosnippet>204</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">ll = left.borrow_mut().left().take();
+<span data-nosnippet>205</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
+<span data-nosnippet>206</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
+<span data-nosnippet>207</span>                        left.borrow_mut().left().set(l);
+<span data-nosnippet>208</span>                    }
+<span data-nosnippet>209</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
+<span data-nosnippet>210</span>                        left.borrow_mut().right().set(r);
+<span data-nosnippet>211</span>                    }
+<span data-nosnippet>212</span>                    <span class="self">Self</span>::bottom_up(left.borrow_datamut());
+<span data-nosnippet>213</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
+<span data-nosnippet>214</span>                } </a><span class="kw">else </span>{
+<span data-nosnippet>215</span>                    <span class="highlight"><span class="self">Self</span>::top_down</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
+<span data-nosnippet>216</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">right.reborrow().into_data().key.key;
+<span data-nosnippet>217</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(ll, lr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), SeekByKey::new(key), </a><span class="bool-val">false</span>);
+<span data-nosnippet>218</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
+<span data-nosnippet>219</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rr = right.borrow_mut().right().take();
+<span data-nosnippet>220</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
+<span data-nosnippet>221</span>                        right.borrow_mut().left().set(l);
 <span data-nosnippet>222</span>                    }
-<span data-nosnippet>223</span>                    <span class="self">Self</span>::bottom_up(left.borrow_datamut());
-<span data-nosnippet>224</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
-<span data-nosnippet>225</span>                } </a><span class="kw">else </span>{
-<span data-nosnippet>226</span>                    <span class="highlight"><span class="self">Self</span>::top_down</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
-<span data-nosnippet>227</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">right.reborrow().into_data().key.key;
-<span data-nosnippet>228</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(ll, lr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), SeekByKey::new(key), </a><span class="bool-val">false</span>);
-<span data-nosnippet>229</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
-<span data-nosnippet>230</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rr = right.borrow_mut().right().take();
-<span data-nosnippet>231</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
-<span data-nosnippet>232</span>                        right.borrow_mut().left().set(<a href="lazy_map.rs.html#126">l</a>);
-<span data-nosnippet>233</span>                    }
-<span data-nosnippet>234</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
-<span data-nosnippet>235</span>                        right.borrow_mut().right().set(r);
-<span data-nosnippet>236</span>                    }
-<span data-nosnippet>237</span>                    <span class="self">Self</span>::bottom_up(right.borrow_datamut());
-<span data-nosnippet>238</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
-<span data-nosnippet>239</span>                }
-<span data-nosnippet>240</span>            },
-<span data-nosnippet>241</span>        }
-<span data-nosnippet>242</span>    }</a></code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.bottom_up" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#10">Source</a><h4 class="code-header">fn <a href="#method.bottom_up" class="fn">bottom_up</a>(_node: <a class="type" href="type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#146&#34;,&#34;line 146&#34;],[[31,31],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#172&#34;,&#34;line 172&#34;],[[76,76],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#217&#34;,&#34;line 217&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_search_tree/node.rs (<a href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#146">line 146</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>141</span>    <span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">resolve_bottom_up&lt;Spec&gt;(</a><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">node: BstNodeRef&lt;marker::DataMut&lt;</a><span class="lifetime">'_</span><a href="../tools/scanner.rs.html#391">&gt;, Spec&gt;)
+<span data-nosnippet>223</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
+<span data-nosnippet>224</span>                        right.borrow_mut().right().set(r);
+<span data-nosnippet>225</span>                    }
+<span data-nosnippet>226</span>                    <span class="self">Self</span>::bottom_up(right.borrow_datamut());
+<span data-nosnippet>227</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
+<span data-nosnippet>228</span>                }
+<span data-nosnippet>229</span>            },
+<span data-nosnippet>230</span>        }
+<span data-nosnippet>231</span>    }</a></code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.bottom_up" class="method"><a class="src rightside" href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#10">Source</a><h4 class="code-header">fn <a href="#method.bottom_up" class="fn">bottom_up</a>(_node: <a class="type" href="type.BstDataMutRef.html" title="type competitive::data_structure::binary_search_tree::node::BstDataMutRef">BstDataMutRef</a>&lt;'_, Self&gt;)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#146&#34;,&#34;line 146&#34;],[[31,31],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#172&#34;,&#34;line 172&#34;],[[76,76],&#34;../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#217&#34;,&#34;line 217&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/binary_search_tree/node.rs (<a href="../../../../src/competitive/data_structure/binary_search_tree/node.rs.html#146">line 146</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>141</span>    <span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">resolve_bottom_up&lt;Spec&gt;(</a><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">node: BstNodeRef&lt;marker::DataMut&lt;</a><span class="lifetime">'_</span><a href="../tools/scanner.rs.html#391">&gt;, Spec&gt;)
 <span data-nosnippet>142</span>    </a><span class="kw">where
 <span data-nosnippet>143</span>        </span><a href="../tools/scanner.rs.html#391">Spec: BstSpec&lt;Data = Data, Parent = </a><span class="self">Self</span>&gt;,
 <span data-nosnippet>144</span>    {
@@ -225,7 +224,7 @@
 <span data-nosnippet>153</span>
 <span data-nosnippet>154</span>    <span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">is_root&lt;Spec&gt;(node: BstNodeRef&lt;marker::Immut&lt;</a><span class="lifetime">'_</span><a href="../tools/scanner.rs.html#391">&gt;, Spec&gt;) -&gt; bool
 <span data-nosnippet>155</span>    </a><span class="kw">where
-<span data-nosnippet>156</span>        </span><a href="../tools/scanner.rs.html#391">Spec: BstSpec&lt;Data = Data, Parent = </a><span class="self">Self</span>&gt;,
+<span data-nosnippet>156</span>        </span><a href="../tools/scanner.rs.html#391">Spec: BstSpec&lt;Data = Data, <a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html">Parent</a> = </a><span class="self">Self</span>&gt;,
 <span data-nosnippet>157</span>    {
 <span data-nosnippet>158</span>        <span class="kw">unsafe </span><a href="../tools/scanner.rs.html#391">{ node.node.as_ref().parent.parent.is_none() }
 <span data-nosnippet>159</span>    }
@@ -264,7 +263,7 @@
 <span data-nosnippet>192</span>                    .reborrow()
 <span data-nosnippet>193</span>                    .left()
 <span data-nosnippet>194</span>                    .descend()
-<span data-nosnippet>195</span>                    .map_or(</a><span class="bool-val">false</span><a href="../tools/scanner.rs.html#391">, |n| n.node == node_inner)
+<span data-nosnippet>195</span>                    .is_ok_and(|n| n.node == node_inner)
 <span data-nosnippet>196</span>                {
 <span data-nosnippet>197</span>                    parent.left_mut().replace(merged)
 <span data-nosnippet>198</span>                } </a><span class="kw">else </span><a href="../tools/scanner.rs.html#391">{
@@ -277,7 +276,7 @@
 <span data-nosnippet>205</span>                    .reborrow()
 <span data-nosnippet>206</span>                    .left()
 <span data-nosnippet>207</span>                    .descend()
-<span data-nosnippet>208</span>                    .map_or(</a><span class="bool-val">false</span><a href="../tools/scanner.rs.html#391">, |n| n.node == node_inner)
+<span data-nosnippet>208</span>                    .is_ok_and(|n| n.node == node_inner)
 <span data-nosnippet>209</span>                {
 <span data-nosnippet>210</span>                    parent.left_mut().take()
 <span data-nosnippet>211</span>                } </a><span class="kw">else </span><a href="../tools/scanner.rs.html#391">{
@@ -289,122 +288,120 @@
 <span data-nosnippet>217</span>            </a><span class="highlight">Spec::bottom_up</span><a href="../tools/scanner.rs.html#391">(node.borrow_datamut());
 <span data-nosnippet>218</span>            node
 <span data-nosnippet>219</span>        }
-<span data-nosnippet>220</span>    }</a></code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[13,13],&#34;../../../../src/competitive/data_structure/treap.rs.html#140&#34;,&#34;line 140&#34;],[[20,20],&#34;../../../../src/competitive/data_structure/treap.rs.html#147&#34;,&#34;line 147&#34;],[[51,51],&#34;../../../../src/competitive/data_structure/treap.rs.html#178&#34;,&#34;line 178&#34;],[[61,61],&#34;../../../../src/competitive/data_structure/treap.rs.html#188&#34;,&#34;line 188&#34;],[[96,96],&#34;../../../../src/competitive/data_structure/treap.rs.html#223&#34;,&#34;line 223&#34;],[[110,110],&#34;../../../../src/competitive/data_structure/treap.rs.html#237&#34;,&#34;line 237&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#140">line 140</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>127</span>    <span class="kw">fn </span><a href="../tools/scanner.rs.html#391">merge(
-<span data-nosnippet>128</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>129</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>130</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
-<span data-nosnippet>131</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
-<span data-nosnippet>132</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
-<span data-nosnippet>133</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
-<span data-nosnippet>134</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
-<span data-nosnippet>135</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
-<span data-nosnippet>136</span>                    TreapSpec::top_down(left.borrow_datamut());
-<span data-nosnippet>137</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
-<span data-nosnippet>138</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = <span class="self">Self</span>::merge(lr, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)).unwrap_unchecked();
-<span data-nosnippet>139</span>                    left.borrow_mut().right().set(lr);
-<span data-nosnippet>140</span>                    </a><span class="highlight focus">TreapSpec::bottom_up</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
-<span data-nosnippet>141</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
-<span data-nosnippet>142</span>                } </a><span class="kw">else </span><a href="../tools/scanner.rs.html#391">{
-<span data-nosnippet>143</span>                    TreapSpec::top_down(right.borrow_datamut());
-<span data-nosnippet>144</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
-<span data-nosnippet>145</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = <span class="self">Self</span>::merge(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), rl).unwrap_unchecked();
-<span data-nosnippet>146</span>                    right.borrow_mut().left().set(rl);
-<span data-nosnippet>147</span>                    </a><span class="highlight">TreapSpec::bottom_up</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
-<span data-nosnippet>148</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
-<span data-nosnippet>149</span>                }
-<span data-nosnippet>150</span>            },
-<span data-nosnippet>151</span>        }
-<span data-nosnippet>152</span>    }
-<span data-nosnippet>153</span>
-<span data-nosnippet>154</span>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">split&lt;Seeker&gt;(
-<span data-nosnippet>155</span>        node: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>156</span>        </a><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">seeker: Seeker,
-<span data-nosnippet>157</span>        eq_left: bool,
-<span data-nosnippet>158</span>    ) -&gt; (</a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;, </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;)
-<span data-nosnippet>159</span>    </a><span class="kw">where
-<span data-nosnippet>160</span>        </span><a href="../tools/scanner.rs.html#391">Seeker: BstSeeker&lt;Spec = </a><span class="self">Self</span>&gt;,
-<span data-nosnippet>161</span>    {
-<span data-nosnippet>162</span>        <span class="kw">match </span><a href="../tools/scanner.rs.html#391">node {
-<span data-nosnippet>163</span>            </a><span class="prelude-val">None </span>=&gt; (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
-<span data-nosnippet>164</span>            <span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">node) =&gt; {
-<span data-nosnippet>165</span>                <span class="self">Self</span>::top_down(node.borrow_datamut());
-<span data-nosnippet>166</span>                </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">seek_left = </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">seeker.bst_seek(node.reborrow()) {
-<span data-nosnippet>167</span>                    Ordering::Less =&gt; </a><span class="bool-val">false</span><a href="../tools/scanner.rs.html#391">,
-<span data-nosnippet>168</span>                    Ordering::Equal =&gt; !eq_left,
-<span data-nosnippet>169</span>                    Ordering::Greater =&gt; </a><span class="bool-val">true</span>,
-<span data-nosnippet>170</span>                };
-<span data-nosnippet>171</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">seek_left {
-<span data-nosnippet>172</span>                    </a><span class="kw">unsafe </span>{
-<span data-nosnippet>173</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">left = node.borrow_mut().<a href="magma.rs.html#56">left</a>().take();
-<span data-nosnippet>174</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(left, seeker, eq_left);
-<span data-nosnippet>175</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = r {
-<span data-nosnippet>176</span>                            node.borrow_mut().left().set(r);
+<span data-nosnippet>220</span>    }</a></code></pre></div></div><details class="toggle more-examples-toggle"><summary class="hideme"><span>More examples</span></summary><div class="hide-more">Hide additional examples</div><div class="more-scraped-examples"><div class="toggle-line"><div class="toggle-line-inner"></div></div><div class="scraped-example" data-locs="[[[13,13],&#34;../../../../src/competitive/data_structure/treap.rs.html#130&#34;,&#34;line 130&#34;],[[20,20],&#34;../../../../src/competitive/data_structure/treap.rs.html#137&#34;,&#34;line 137&#34;],[[51,51],&#34;../../../../src/competitive/data_structure/treap.rs.html#168&#34;,&#34;line 168&#34;],[[61,61],&#34;../../../../src/competitive/data_structure/treap.rs.html#178&#34;,&#34;line 178&#34;],[[95,95],&#34;../../../../src/competitive/data_structure/treap.rs.html#212&#34;,&#34;line 212&#34;],[[109,109],&#34;../../../../src/competitive/data_structure/treap.rs.html#226&#34;,&#34;line 226&#34;]]"><div class="scraped-example-title">crates/competitive/src/data_structure/treap.rs (<a href="../../../../src/competitive/data_structure/treap.rs.html#130">line 130</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>117</span>    <span class="kw">fn </span><a href="../tools/scanner.rs.html#391">merge(
+<span data-nosnippet>118</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>119</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>120</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
+<span data-nosnippet>121</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
+<span data-nosnippet>122</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
+<span data-nosnippet>123</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
+<span data-nosnippet>124</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
+<span data-nosnippet>125</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
+<span data-nosnippet>126</span>                    TreapSpec::top_down(left.borrow_datamut());
+<span data-nosnippet>127</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
+<span data-nosnippet>128</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = <span class="self">Self</span>::merge(lr, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)).unwrap_unchecked();
+<span data-nosnippet>129</span>                    left.borrow_mut().right().set(lr);
+<span data-nosnippet>130</span>                    </a><span class="highlight focus">TreapSpec::bottom_up</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
+<span data-nosnippet>131</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
+<span data-nosnippet>132</span>                } </a><span class="kw">else </span><a href="../tools/scanner.rs.html#391">{
+<span data-nosnippet>133</span>                    TreapSpec::top_down(right.borrow_datamut());
+<span data-nosnippet>134</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
+<span data-nosnippet>135</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = <span class="self">Self</span>::merge(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), rl).unwrap_unchecked();
+<span data-nosnippet>136</span>                    right.borrow_mut().left().set(rl);
+<span data-nosnippet>137</span>                    </a><span class="highlight">TreapSpec::bottom_up</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
+<span data-nosnippet>138</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
+<span data-nosnippet>139</span>                }
+<span data-nosnippet>140</span>            },
+<span data-nosnippet>141</span>        }
+<span data-nosnippet>142</span>    }
+<span data-nosnippet>143</span>
+<span data-nosnippet>144</span>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">split&lt;Seeker&gt;(
+<span data-nosnippet>145</span>        node: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>146</span>        </a><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">seeker: Seeker,
+<span data-nosnippet>147</span>        eq_left: bool,
+<span data-nosnippet>148</span>    ) -&gt; (</a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;, </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;)
+<span data-nosnippet>149</span>    </a><span class="kw">where
+<span data-nosnippet>150</span>        </span><a href="../tools/scanner.rs.html#391">Seeker: BstSeeker&lt;Spec = </a><span class="self">Self</span>&gt;,
+<span data-nosnippet>151</span>    {
+<span data-nosnippet>152</span>        <span class="kw">match </span><a href="../tools/scanner.rs.html#391">node {
+<span data-nosnippet>153</span>            </a><span class="prelude-val">None </span>=&gt; (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
+<span data-nosnippet>154</span>            <span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">node) =&gt; {
+<span data-nosnippet>155</span>                <span class="self">Self</span>::top_down(node.borrow_datamut());
+<span data-nosnippet>156</span>                </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">seek_left = </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">seeker.bst_seek(node.reborrow()) {
+<span data-nosnippet>157</span>                    Ordering::Less =&gt; </a><span class="bool-val">false</span><a href="../tools/scanner.rs.html#391">,
+<span data-nosnippet>158</span>                    Ordering::Equal =&gt; !eq_left,
+<span data-nosnippet>159</span>                    Ordering::Greater =&gt; </a><span class="bool-val">true</span>,
+<span data-nosnippet>160</span>                };
+<span data-nosnippet>161</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">seek_left {
+<span data-nosnippet>162</span>                    </a><span class="kw">unsafe </span>{
+<span data-nosnippet>163</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">left = node.borrow_mut().left().take();
+<span data-nosnippet>164</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(left, seeker, eq_left);
+<span data-nosnippet>165</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = r {
+<span data-nosnippet>166</span>                            node.borrow_mut().left().set(r);
+<span data-nosnippet>167</span>                        }
+<span data-nosnippet>168</span>                        </a><span class="highlight"><span class="self">Self</span>::bottom_up</span><a href="../tools/scanner.rs.html#391">(node.borrow_datamut());
+<span data-nosnippet>169</span>                        (l, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node))
+<span data-nosnippet>170</span>                    }
+<span data-nosnippet>171</span>                } </a><span class="kw">else </span>{
+<span data-nosnippet>172</span>                    <span class="kw">unsafe </span>{
+<span data-nosnippet>173</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">right = node.borrow_mut().right().take();
+<span data-nosnippet>174</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(right, seeker, eq_left);
+<span data-nosnippet>175</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = l {
+<span data-nosnippet>176</span>                            node.borrow_mut().right().set(<a href="lazy_map.rs.html#65">l</a>);
 <span data-nosnippet>177</span>                        }
 <span data-nosnippet>178</span>                        </a><span class="highlight"><span class="self">Self</span>::bottom_up</span><a href="../tools/scanner.rs.html#391">(node.borrow_datamut());
-<span data-nosnippet>179</span>                        (l, </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node))
+<span data-nosnippet>179</span>                        (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), r)
 <span data-nosnippet>180</span>                    }
-<span data-nosnippet>181</span>                } </a><span class="kw">else </span>{
-<span data-nosnippet>182</span>                    <span class="kw">unsafe </span>{
-<span data-nosnippet>183</span>                        <span class="kw">let </span><a href="../tools/scanner.rs.html#391">right = node.borrow_mut().right().take();
-<span data-nosnippet>184</span>                        </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(l, r) = <span class="self">Self</span>::split(right, seeker, eq_left);
-<span data-nosnippet>185</span>                        </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = l {
-<span data-nosnippet>186</span>                            node.borrow_mut().right().set(l);
-<span data-nosnippet>187</span>                        }
-<span data-nosnippet>188</span>                        </a><span class="highlight"><span class="self">Self</span>::bottom_up</span><a href="../tools/scanner.rs.html#391">(node.borrow_datamut());
-<span data-nosnippet>189</span>                        (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), r)
-<span data-nosnippet>190</span>                    }
-<span data-nosnippet>191</span>                }
-<span data-nosnippet>192</span>            }
-<span data-nosnippet>193</span>        }
-<span data-nosnippet>194</span>    }
-<span data-nosnippet>195</span>}
-<span data-nosnippet>196</span>
-<span data-nosnippet>197</span></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;M, L&gt; TreapSpec&lt;M, L&gt;
-<span data-nosnippet>198</span></a><span class="kw">where
-<span data-nosnippet>199</span>    </span><a href="../tools/scanner.rs.html#391">M: MonoidAct,
-<span data-nosnippet>200</span>    M::Key: Ord,
-<span data-nosnippet>201</span>    L: LazyMapMonoid,
-<span data-nosnippet>202</span>{
-<span data-nosnippet>203</span>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">merge_ordered(
-<span data-nosnippet>204</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>205</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
-<span data-nosnippet>206</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
-<span data-nosnippet>207</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
-<span data-nosnippet>208</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
-<span data-nosnippet>209</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
-<span data-nosnippet>210</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
-<span data-nosnippet>211</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
-<span data-nosnippet>212</span>                    <span class="self">Self</span>::top_down(left.borrow_datamut());
-<span data-nosnippet>213</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().key.key;
-<span data-nosnippet>214</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(rl, rr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right), SeekByKey::new(key), </a><span class="bool-val">false</span>);
-<span data-nosnippet>215</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">ll = left.borrow_mut().left().take();
-<span data-nosnippet>216</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
-<span data-nosnippet>217</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
-<span data-nosnippet>218</span>                        left.borrow_mut().left().set(l);
-<span data-nosnippet>219</span>                    }
-<span data-nosnippet>220</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
-<span data-nosnippet>221</span>                        left.borrow_mut().right().set(r);
+<span data-nosnippet>181</span>                }
+<span data-nosnippet>182</span>            }
+<span data-nosnippet>183</span>        }
+<span data-nosnippet>184</span>    }
+<span data-nosnippet>185</span>}
+<span data-nosnippet>186</span>
+<span data-nosnippet>187</span></a><span class="kw">impl</span><a href="../tools/scanner.rs.html#391">&lt;M, L&gt; TreapSpec&lt;M, L&gt;
+<span data-nosnippet>188</span></a><span class="kw">where
+<span data-nosnippet>189</span>    </span><a href="../tools/scanner.rs.html#391">M: MonoidAct&lt;Key: Ord&gt;,
+<span data-nosnippet>190</span>    L: LazyMapMonoid,
+<span data-nosnippet>191</span>{
+<span data-nosnippet>192</span>    </a><span class="kw">pub fn </span><a href="../tools/scanner.rs.html#391">merge_ordered(
+<span data-nosnippet>193</span>        left: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>194</span>        right: </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt;,
+<span data-nosnippet>195</span>    ) -&gt; </a><span class="prelude-ty">Option</span><a href="../tools/scanner.rs.html#391">&lt;TreapRoot&lt;M, L&gt;&gt; {
+<span data-nosnippet>196</span>        </a><span class="kw">match </span><a href="../tools/scanner.rs.html#391">(left, right) {
+<span data-nosnippet>197</span>            (</a><span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
+<span data-nosnippet>198</span>            (<span class="prelude-val">None</span>, <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node)) | (</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node), </a><span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(node),
+<span data-nosnippet>199</span>            (</a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">left), </a><span class="prelude-val">Some</span>(<span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">right)) =&gt; </a><span class="kw">unsafe </span>{
+<span data-nosnippet>200</span>                <span class="kw">if </span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().priority &gt; right.reborrow().into_data().priority {
+<span data-nosnippet>201</span>                    <span class="self">Self</span>::top_down(left.borrow_datamut());
+<span data-nosnippet>202</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">left.reborrow().into_data().key.key;
+<span data-nosnippet>203</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(rl, rr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right), SeekByKey::new(key), </a><span class="bool-val">false</span>);
+<span data-nosnippet>204</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">ll = left.borrow_mut().left().take();
+<span data-nosnippet>205</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">lr = left.borrow_mut().right().take();
+<span data-nosnippet>206</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
+<span data-nosnippet>207</span>                        left.borrow_mut().left().set(l);
+<span data-nosnippet>208</span>                    }
+<span data-nosnippet>209</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
+<span data-nosnippet>210</span>                        left.borrow_mut().right().set(r);
+<span data-nosnippet>211</span>                    }
+<span data-nosnippet>212</span>                    </a><span class="highlight"><span class="self">Self</span>::bottom_up</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
+<span data-nosnippet>213</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
+<span data-nosnippet>214</span>                } </a><span class="kw">else </span><a href="../tools/scanner.rs.html#391">{
+<span data-nosnippet>215</span>                    <span class="self">Self</span>::top_down(right.borrow_datamut());
+<span data-nosnippet>216</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">right.reborrow().into_data().key.key;
+<span data-nosnippet>217</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(ll, lr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), SeekByKey::new(key), </a><span class="bool-val">false</span>);
+<span data-nosnippet>218</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
+<span data-nosnippet>219</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rr = right.borrow_mut().right().take();
+<span data-nosnippet>220</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
+<span data-nosnippet>221</span>                        right.borrow_mut().left().set(l);
 <span data-nosnippet>222</span>                    }
-<span data-nosnippet>223</span>                    </a><span class="highlight"><span class="self">Self</span>::bottom_up</span><a href="../tools/scanner.rs.html#391">(left.borrow_datamut());
-<span data-nosnippet>224</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left)
-<span data-nosnippet>225</span>                } </a><span class="kw">else </span><a href="../tools/scanner.rs.html#391">{
-<span data-nosnippet>226</span>                    <span class="self">Self</span>::top_down(right.borrow_datamut());
-<span data-nosnippet>227</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">key = </a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">right.reborrow().into_data().key.key;
-<span data-nosnippet>228</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">(ll, lr) = <span class="self">Self</span>::split(</a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(left), SeekByKey::new(key), </a><span class="bool-val">false</span>);
-<span data-nosnippet>229</span>                    <span class="kw">let </span><a href="../tools/scanner.rs.html#391">rl = right.borrow_mut().left().take();
-<span data-nosnippet>230</span>                    </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">rr = right.borrow_mut().right().take();
-<span data-nosnippet>231</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(l) = <span class="self">Self</span>::merge_ordered(ll, rl) {
-<span data-nosnippet>232</span>                        right.borrow_mut().left().set(<a href="lazy_map.rs.html#126">l</a>);
-<span data-nosnippet>233</span>                    }
-<span data-nosnippet>234</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
-<span data-nosnippet>235</span>                        right.borrow_mut().right().set(r);
-<span data-nosnippet>236</span>                    }
-<span data-nosnippet>237</span>                    </a><span class="highlight"><span class="self">Self</span>::bottom_up</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
-<span data-nosnippet>238</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
-<span data-nosnippet>239</span>                }
-<span data-nosnippet>240</span>            },
-<span data-nosnippet>241</span>        }
-<span data-nosnippet>242</span>    }</a></code></pre></div></div></div></details></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety", so this trait is not object safe.</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><details class="toggle implementors-toggle"><summary><section id="impl-BstSpec-for-TreapSpec%3CM,+L%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/data_structure/treap.rs.html#109-195">Source</a><a href="#impl-BstSpec-for-TreapSpec%3CM,+L%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M, L&gt; <a class="trait" href="trait.BstSpec.html" title="trait competitive::data_structure::binary_search_tree::node::BstSpec">BstSpec</a> for <a class="struct" href="../../treap/struct.TreapSpec.html" title="struct competitive::data_structure::treap::TreapSpec">TreapSpec</a>&lt;M, L&gt;<div class="where">where
-    M: <a class="trait" href="../../../algebra/trait.MonoidAct.html" title="trait competitive::algebra::MonoidAct">MonoidAct</a>,
-    M::<a class="associatedtype" href="../../../algebra/trait.MonoidAct.html#associatedtype.Key" title="type competitive::algebra::MonoidAct::Key">Key</a>: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>,
-    L: <a class="trait" href="../../../algebra/trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a>,</div></h3></section></summary><div class="impl-items"><section id="associatedtype.Parent-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../../src/competitive/data_structure/treap.rs.html#115">Source</a><a href="#associatedtype.Parent-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Parent" class="associatedtype">Parent</a> = <a class="struct" href="struct.WithParent.html" title="struct competitive::data_structure::binary_search_tree::node::WithParent">WithParent</a>&lt;&lt;<a class="struct" href="../../treap/struct.TreapSpec.html" title="struct competitive::data_structure::treap::TreapSpec">TreapSpec</a>&lt;M, L&gt; as <a class="trait" href="trait.BstSpec.html" title="trait competitive::data_structure::binary_search_tree::node::BstSpec">BstSpec</a>&gt;::<a class="associatedtype" href="trait.BstSpec.html#associatedtype.Data" title="type competitive::data_structure::binary_search_tree::node::BstSpec::Data">Data</a>&gt;</h4></section><section id="associatedtype.Data-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../../src/competitive/data_structure/treap.rs.html#116">Source</a><a href="#associatedtype.Data-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Data" class="associatedtype">Data</a> = <a class="struct" href="../../treap/struct.TreapData.html" title="struct competitive::data_structure::treap::TreapData">TreapData</a>&lt;M, L&gt;</h4></section></div></details></div><script src="../../../../trait.impl/competitive/data_structure/binary_search_tree/node/trait.BstSpec.js" async></script></section></div></main></body></html>
+<span data-nosnippet>223</span>                    </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(r) = <span class="self">Self</span>::merge_ordered(lr, rr) {
+<span data-nosnippet>224</span>                        right.borrow_mut().right().set(r);
+<span data-nosnippet>225</span>                    }
+<span data-nosnippet>226</span>                    </a><span class="highlight"><span class="self">Self</span>::bottom_up</span><a href="../tools/scanner.rs.html#391">(right.borrow_datamut());
+<span data-nosnippet>227</span>                    </a><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">(right)
+<span data-nosnippet>228</span>                }
+<span data-nosnippet>229</span>            },
+<span data-nosnippet>230</span>        }
+<span data-nosnippet>231</span>    }</a></code></pre></div></div></div></details></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/nightly/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety", so this trait is not object safe.</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><details class="toggle implementors-toggle"><summary><section id="impl-BstSpec-for-TreapSpec%3CM,+L%3E" class="impl"><a class="src rightside" href="../../../../src/competitive/data_structure/treap.rs.html#100-185">Source</a><a href="#impl-BstSpec-for-TreapSpec%3CM,+L%3E" class="anchor">§</a><h3 class="code-header">impl&lt;M, L&gt; <a class="trait" href="trait.BstSpec.html" title="trait competitive::data_structure::binary_search_tree::node::BstSpec">BstSpec</a> for <a class="struct" href="../../treap/struct.TreapSpec.html" title="struct competitive::data_structure::treap::TreapSpec">TreapSpec</a>&lt;M, L&gt;<div class="where">where
+    M: <a class="trait" href="../../../algebra/trait.MonoidAct.html" title="trait competitive::algebra::MonoidAct">MonoidAct</a>&lt;Key: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html" title="trait core::cmp::Ord">Ord</a>&gt;,
+    L: <a class="trait" href="../../../algebra/trait.LazyMapMonoid.html" title="trait competitive::algebra::LazyMapMonoid">LazyMapMonoid</a>,</div></h3></section></summary><div class="impl-items"><section id="associatedtype.Parent-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../../src/competitive/data_structure/treap.rs.html#105">Source</a><a href="#associatedtype.Parent-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Parent" class="associatedtype">Parent</a> = <a class="struct" href="struct.WithParent.html" title="struct competitive::data_structure::binary_search_tree::node::WithParent">WithParent</a>&lt;&lt;<a class="struct" href="../../treap/struct.TreapSpec.html" title="struct competitive::data_structure::treap::TreapSpec">TreapSpec</a>&lt;M, L&gt; as <a class="trait" href="trait.BstSpec.html" title="trait competitive::data_structure::binary_search_tree::node::BstSpec">BstSpec</a>&gt;::<a class="associatedtype" href="trait.BstSpec.html#associatedtype.Data" title="type competitive::data_structure::binary_search_tree::node::BstSpec::Data">Data</a>&gt;</h4></section><section id="associatedtype.Data-1" class="associatedtype trait-impl"><a class="src rightside" href="../../../../src/competitive/data_structure/treap.rs.html#106">Source</a><a href="#associatedtype.Data-1" class="anchor">§</a><h4 class="code-header">type <a href="#associatedtype.Data" class="associatedtype">Data</a> = <a class="struct" href="../../treap/struct.TreapData.html" title="struct competitive::data_structure::treap::TreapData">TreapData</a>&lt;M, L&gt;</h4></section></div></details></div><script src="../../../../trait.impl/competitive/data_structure/binary_search_tree/node/trait.BstSpec.js" async></script></section></div></main></body></html>

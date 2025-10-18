@@ -89,42 +89,41 @@
 <span data-nosnippet>206</span>                </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="../tools/scanner.rs.html#391">((score, hash, accept)) =
 <span data-nosnippet>207</span>                    </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.state
 <span data-nosnippet>208</span>                        .</a><span class="highlight focus">soft_update</span><a href="../tools/scanner.rs.html#391">(op.clone(), node.score.clone(), node.hash.clone())
-<span data-nosnippet>209</span>                {
-<span data-nosnippet>210</span>                    </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">!set.contains(</a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">hash) {
-<span data-nosnippet>211</span>                        cands.push(Candidate {
-<span data-nosnippet>212</span>                            parent: </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node,
-<span data-nosnippet>213</span>                            op,
-<span data-nosnippet>214</span>                            score,
-<span data-nosnippet>215</span>                            hash,
-<span data-nosnippet>216</span>                            accept,
-<span data-nosnippet>217</span>                        });
-<span data-nosnippet>218</span>                    }
-<span data-nosnippet>219</span>                };
-<span data-nosnippet>220</span>            }
-<span data-nosnippet>221</span>        } </a><span class="kw">else </span>{
-<span data-nosnippet>222</span>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">node = </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node;
-<span data-nosnippet>223</span>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">child = </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[node].child;
-<span data-nosnippet>224</span>            </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">next_single = single &amp; (</a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].next == !</a><span class="number">0</span>);
-<span data-nosnippet>225</span>
-<span data-nosnippet>226</span>            <span class="kw">loop </span>{
-<span data-nosnippet>227</span>                <span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node = child;
-<span data-nosnippet>228</span>                </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.state.update(</a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].op.clone());
-<span data-nosnippet>229</span>                </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.dfs(cands, set, next_single);
-<span data-nosnippet>230</span>
-<span data-nosnippet>231</span>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">!next_single {
-<span data-nosnippet>232</span>                    </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.state.revert(</a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].op.clone());
-<span data-nosnippet>233</span>                }
-<span data-nosnippet>234</span>                child = </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].next;
-<span data-nosnippet>235</span>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">child == !</a><span class="number">0 </span>{
-<span data-nosnippet>236</span>                    <span class="kw">break</span>;
-<span data-nosnippet>237</span>                }
-<span data-nosnippet>238</span>            }
-<span data-nosnippet>239</span>
-<span data-nosnippet>240</span>            <span class="kw">if </span><a href="../tools/scanner.rs.html#391">!next_single {
-<span data-nosnippet>241</span>                </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node = node;
-<span data-nosnippet>242</span>            }
-<span data-nosnippet>243</span>        }
-<span data-nosnippet>244</span>    }</a></code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update" class="method"><a class="src rightside" href="../../src/competitive/heuristic/beam_search.rs.html#22-24">Source</a><h4 class="code-header">fn <a href="#method.update" class="fn">update</a>(&amp;mut self, op: Self::<a class="associatedtype" href="trait.ModifiableState.html#associatedtype.Operation" title="type competitive::heuristic::ModifiableState::Operation">Operation</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../src/competitive/heuristic/beam_search.rs.html#17&#34;,&#34;line 17&#34;],[[217,217],&#34;../../src/competitive/heuristic/beam_search.rs.html#228&#34;,&#34;line 228&#34;]]"><div class="scraped-example-title">crates/competitive/src/heuristic/beam_search.rs (<a href="../../src/competitive/heuristic/beam_search.rs.html#17">line 17</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>11</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">soft_update(
+<span data-nosnippet>209</span>                    &amp;&amp; !set.contains(</a><span class="kw-2">&amp;</span><a href="../tools/scanner.rs.html#391">hash)
+<span data-nosnippet>210</span>                {
+<span data-nosnippet>211</span>                    cands.push(Candidate {
+<span data-nosnippet>212</span>                        parent: </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node,
+<span data-nosnippet>213</span>                        op,
+<span data-nosnippet>214</span>                        score,
+<span data-nosnippet>215</span>                        hash,
+<span data-nosnippet>216</span>                        accept,
+<span data-nosnippet>217</span>                    });
+<span data-nosnippet>218</span>                };
+<span data-nosnippet>219</span>            }
+<span data-nosnippet>220</span>        } </a><span class="kw">else </span>{
+<span data-nosnippet>221</span>            <span class="kw">let </span><a href="../tools/scanner.rs.html#391">node = </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node;
+<span data-nosnippet>222</span>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="../tools/scanner.rs.html#391">child = </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[node].child;
+<span data-nosnippet>223</span>            </a><span class="kw">let </span><a href="../tools/scanner.rs.html#391">next_single = single &amp; (</a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].next == !</a><span class="number">0</span>);
+<span data-nosnippet>224</span>
+<span data-nosnippet>225</span>            <span class="kw">loop </span>{
+<span data-nosnippet>226</span>                <span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node = child;
+<span data-nosnippet>227</span>                </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.state.update(</a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].op.clone());
+<span data-nosnippet>228</span>                </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.dfs(cands, set, next_single);
+<span data-nosnippet>229</span>
+<span data-nosnippet>230</span>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">!next_single {
+<span data-nosnippet>231</span>                    </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.state.revert(</a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].op.clone());
+<span data-nosnippet>232</span>                }
+<span data-nosnippet>233</span>                child = </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.nodes[child].next;
+<span data-nosnippet>234</span>                </a><span class="kw">if </span><a href="../tools/scanner.rs.html#391">child == !</a><span class="number">0 </span>{
+<span data-nosnippet>235</span>                    <span class="kw">break</span>;
+<span data-nosnippet>236</span>                }
+<span data-nosnippet>237</span>            }
+<span data-nosnippet>238</span>
+<span data-nosnippet>239</span>            <span class="kw">if </span><a href="../tools/scanner.rs.html#391">!next_single {
+<span data-nosnippet>240</span>                </a><span class="self">self</span><a href="../tools/scanner.rs.html#391">.cur_node = node;
+<span data-nosnippet>241</span>            }
+<span data-nosnippet>242</span>        }
+<span data-nosnippet>243</span>    }</a></code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.update" class="method"><a class="src rightside" href="../../src/competitive/heuristic/beam_search.rs.html#22-24">Source</a><h4 class="code-header">fn <a href="#method.update" class="fn">update</a>(&amp;mut self, op: Self::<a class="associatedtype" href="trait.ModifiableState.html#associatedtype.Operation" title="type competitive::heuristic::ModifiableState::Operation">Operation</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../src/competitive/heuristic/beam_search.rs.html#17&#34;,&#34;line 17&#34;],[[216,216],&#34;../../src/competitive/heuristic/beam_search.rs.html#227&#34;,&#34;line 227&#34;]]"><div class="scraped-example-title">crates/competitive/src/heuristic/beam_search.rs (<a href="../../src/competitive/heuristic/beam_search.rs.html#17">line 17</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>11</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">soft_update(
 <span data-nosnippet>12</span>        </a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">,
 <span data-nosnippet>13</span>        op: <span class="self">Self</span>::Operation,
 <span data-nosnippet>14</span>        _score: <span class="self">Self</span>::Score,
@@ -228,7 +227,7 @@
 <span data-nosnippet>112</span>        }
 <span data-nosnippet>113</span>    }
 <span data-nosnippet>114</span>
-<span data-nosnippet>115</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">add_node(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">, op: S::Operation, parent: usize, score: S::Score, <a href="algebra/magma.rs.html#56">hash</a>: S::Hash) {
+<span data-nosnippet>115</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">add_node(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">, op: S::Operation, parent: usize, score: S::Score, hash: S::Hash) {
 <span data-nosnippet>116</span>        </a><span class="kw">let </span><a href="tools/scanner.rs.html#391">next = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[parent].child;
 <span data-nosnippet>117</span>        </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">next != !</a><span class="number">0 </span>{
 <span data-nosnippet>118</span>            <span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[next].prev = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes.len();
@@ -322,42 +321,41 @@
 <span data-nosnippet>206</span>                </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="tools/scanner.rs.html#391">((score, hash, accept)) =
 <span data-nosnippet>207</span>                    </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state
 <span data-nosnippet>208</span>                        .soft_update(op.clone(), node.score.clone(), node.hash.clone())
-<span data-nosnippet>209</span>                {
-<span data-nosnippet>210</span>                    </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">!set.contains(</a><span class="kw-2">&amp;</span><a href="tools/scanner.rs.html#391">hash) {
-<span data-nosnippet>211</span>                        cands.push(Candidate {
-<span data-nosnippet>212</span>                            parent: </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node,
-<span data-nosnippet>213</span>                            op,
-<span data-nosnippet>214</span>                            score,
-<span data-nosnippet>215</span>                            hash,
-<span data-nosnippet>216</span>                            accept,
-<span data-nosnippet>217</span>                        });
-<span data-nosnippet>218</span>                    }
-<span data-nosnippet>219</span>                };
-<span data-nosnippet>220</span>            }
-<span data-nosnippet>221</span>        } </a><span class="kw">else </span>{
-<span data-nosnippet>222</span>            <span class="kw">let </span><a href="tools/scanner.rs.html#391">node = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node;
-<span data-nosnippet>223</span>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="tools/scanner.rs.html#391">child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[node].child;
-<span data-nosnippet>224</span>            </a><span class="kw">let </span><a href="tools/scanner.rs.html#391">next_single = single &amp; (</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next == !</a><span class="number">0</span>);
-<span data-nosnippet>225</span>
-<span data-nosnippet>226</span>            <span class="kw">loop </span>{
-<span data-nosnippet>227</span>                <span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = child;
-<span data-nosnippet>228</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.</a><span class="highlight">update</span>(<span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
-<span data-nosnippet>229</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.dfs(cands, set, next_single);
-<span data-nosnippet>230</span>
-<span data-nosnippet>231</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
-<span data-nosnippet>232</span>                    </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.revert(</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
-<span data-nosnippet>233</span>                }
-<span data-nosnippet>234</span>                child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next;
-<span data-nosnippet>235</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">child == !</a><span class="number">0 </span>{
-<span data-nosnippet>236</span>                    <span class="kw">break</span>;
-<span data-nosnippet>237</span>                }
-<span data-nosnippet>238</span>            }
-<span data-nosnippet>239</span>
-<span data-nosnippet>240</span>            <span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
-<span data-nosnippet>241</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = node;
-<span data-nosnippet>242</span>            }
-<span data-nosnippet>243</span>        }
-<span data-nosnippet>244</span>    }</a></code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.revert" class="method"><a class="src rightside" href="../../src/competitive/heuristic/beam_search.rs.html#25-27">Source</a><h4 class="code-header">fn <a href="#method.revert" class="fn">revert</a>(&amp;mut self, op: Self::<a class="associatedtype" href="trait.ModifiableState.html#associatedtype.Operation" title="type competitive::heuristic::ModifiableState::Operation">Operation</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../src/competitive/heuristic/beam_search.rs.html#19&#34;,&#34;line 19&#34;],[[221,221],&#34;../../src/competitive/heuristic/beam_search.rs.html#232&#34;,&#34;line 232&#34;]]"><div class="scraped-example-title">crates/competitive/src/heuristic/beam_search.rs (<a href="../../src/competitive/heuristic/beam_search.rs.html#19">line 19</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>11</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">soft_update(
+<span data-nosnippet>209</span>                    &amp;&amp; !set.contains(</a><span class="kw-2">&amp;</span><a href="tools/scanner.rs.html#391">hash)
+<span data-nosnippet>210</span>                {
+<span data-nosnippet>211</span>                    cands.push(Candidate {
+<span data-nosnippet>212</span>                        parent: </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node,
+<span data-nosnippet>213</span>                        op,
+<span data-nosnippet>214</span>                        score,
+<span data-nosnippet>215</span>                        hash,
+<span data-nosnippet>216</span>                        accept,
+<span data-nosnippet>217</span>                    });
+<span data-nosnippet>218</span>                };
+<span data-nosnippet>219</span>            }
+<span data-nosnippet>220</span>        } </a><span class="kw">else </span>{
+<span data-nosnippet>221</span>            <span class="kw">let </span><a href="tools/scanner.rs.html#391">node = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node;
+<span data-nosnippet>222</span>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="tools/scanner.rs.html#391">child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[node].child;
+<span data-nosnippet>223</span>            </a><span class="kw">let </span><a href="tools/scanner.rs.html#391">next_single = single &amp; (</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next == !</a><span class="number">0</span>);
+<span data-nosnippet>224</span>
+<span data-nosnippet>225</span>            <span class="kw">loop </span>{
+<span data-nosnippet>226</span>                <span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = child;
+<span data-nosnippet>227</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.</a><span class="highlight">update</span>(<span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
+<span data-nosnippet>228</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.dfs(cands, set, next_single);
+<span data-nosnippet>229</span>
+<span data-nosnippet>230</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
+<span data-nosnippet>231</span>                    </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.revert(</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
+<span data-nosnippet>232</span>                }
+<span data-nosnippet>233</span>                child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next;
+<span data-nosnippet>234</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">child == !</a><span class="number">0 </span>{
+<span data-nosnippet>235</span>                    <span class="kw">break</span>;
+<span data-nosnippet>236</span>                }
+<span data-nosnippet>237</span>            }
+<span data-nosnippet>238</span>
+<span data-nosnippet>239</span>            <span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
+<span data-nosnippet>240</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = node;
+<span data-nosnippet>241</span>            }
+<span data-nosnippet>242</span>        }
+<span data-nosnippet>243</span>    }</a></code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.revert" class="method"><a class="src rightside" href="../../src/competitive/heuristic/beam_search.rs.html#25-27">Source</a><h4 class="code-header">fn <a href="#method.revert" class="fn">revert</a>(&amp;mut self, op: Self::<a class="associatedtype" href="trait.ModifiableState.html#associatedtype.Operation" title="type competitive::heuristic::ModifiableState::Operation">Operation</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[8,8],&#34;../../src/competitive/heuristic/beam_search.rs.html#19&#34;,&#34;line 19&#34;],[[220,220],&#34;../../src/competitive/heuristic/beam_search.rs.html#231&#34;,&#34;line 231&#34;]]"><div class="scraped-example-title">crates/competitive/src/heuristic/beam_search.rs (<a href="../../src/competitive/heuristic/beam_search.rs.html#19">line 19</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>11</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">soft_update(
 <span data-nosnippet>12</span>        </a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">,
 <span data-nosnippet>13</span>        op: <span class="self">Self</span>::Operation,
 <span data-nosnippet>14</span>        _score: <span class="self">Self</span>::Score,
@@ -461,7 +459,7 @@
 <span data-nosnippet>112</span>        }
 <span data-nosnippet>113</span>    }
 <span data-nosnippet>114</span>
-<span data-nosnippet>115</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">add_node(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">, op: S::Operation, parent: usize, score: S::Score, <a href="algebra/magma.rs.html#56">hash</a>: S::Hash) {
+<span data-nosnippet>115</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">add_node(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">, op: S::Operation, parent: usize, score: S::Score, hash: S::Hash) {
 <span data-nosnippet>116</span>        </a><span class="kw">let </span><a href="tools/scanner.rs.html#391">next = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[parent].child;
 <span data-nosnippet>117</span>        </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">next != !</a><span class="number">0 </span>{
 <span data-nosnippet>118</span>            <span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[next].prev = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes.len();
@@ -555,44 +553,43 @@
 <span data-nosnippet>206</span>                </a><span class="kw">if let </span><span class="prelude-val">Some</span><a href="tools/scanner.rs.html#391">((score, hash, accept)) =
 <span data-nosnippet>207</span>                    </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state
 <span data-nosnippet>208</span>                        .soft_update(op.clone(), node.score.clone(), node.hash.clone())
-<span data-nosnippet>209</span>                {
-<span data-nosnippet>210</span>                    </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">!set.contains(</a><span class="kw-2">&amp;</span><a href="tools/scanner.rs.html#391">hash) {
-<span data-nosnippet>211</span>                        cands.push(Candidate {
-<span data-nosnippet>212</span>                            parent: </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node,
-<span data-nosnippet>213</span>                            op,
-<span data-nosnippet>214</span>                            score,
-<span data-nosnippet>215</span>                            hash,
-<span data-nosnippet>216</span>                            accept,
-<span data-nosnippet>217</span>                        });
-<span data-nosnippet>218</span>                    }
-<span data-nosnippet>219</span>                };
-<span data-nosnippet>220</span>            }
-<span data-nosnippet>221</span>        } </a><span class="kw">else </span>{
-<span data-nosnippet>222</span>            <span class="kw">let </span><a href="tools/scanner.rs.html#391">node = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node;
-<span data-nosnippet>223</span>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="tools/scanner.rs.html#391">child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[node].child;
-<span data-nosnippet>224</span>            </a><span class="kw">let </span><a href="tools/scanner.rs.html#391">next_single = single &amp; (</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next == !</a><span class="number">0</span>);
-<span data-nosnippet>225</span>
-<span data-nosnippet>226</span>            <span class="kw">loop </span>{
-<span data-nosnippet>227</span>                <span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = child;
-<span data-nosnippet>228</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.update(</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
-<span data-nosnippet>229</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.dfs(cands, set, next_single);
-<span data-nosnippet>230</span>
-<span data-nosnippet>231</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
-<span data-nosnippet>232</span>                    </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.</a><span class="highlight">revert</span>(<span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
-<span data-nosnippet>233</span>                }
-<span data-nosnippet>234</span>                child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next;
-<span data-nosnippet>235</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">child == !</a><span class="number">0 </span>{
-<span data-nosnippet>236</span>                    <span class="kw">break</span>;
-<span data-nosnippet>237</span>                }
-<span data-nosnippet>238</span>            }
-<span data-nosnippet>239</span>
-<span data-nosnippet>240</span>            <span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
-<span data-nosnippet>241</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = node;
-<span data-nosnippet>242</span>            }
-<span data-nosnippet>243</span>        }
-<span data-nosnippet>244</span>    }</a></code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.change" class="method"><a class="src rightside" href="../../src/competitive/heuristic/beam_search.rs.html#28">Source</a><h4 class="code-header">fn <a href="#method.change" class="fn">change</a>(&amp;mut self, _op: Self::<a class="associatedtype" href="trait.ModifiableState.html#associatedtype.Operation" title="type competitive::heuristic::ModifiableState::Operation">Operation</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/heuristic/beam_search.rs.html#23&#34;,&#34;line 23&#34;],[[4,4],&#34;../../src/competitive/heuristic/beam_search.rs.html#26&#34;,&#34;line 26&#34;]]"><div class="scraped-example-title">crates/competitive/src/heuristic/beam_search.rs (<a href="../../src/competitive/heuristic/beam_search.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>22</span>    <span class="kw">fn </span><a href="tools/scanner.rs.html#391">update(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">, op: <span class="self">Self</span>::Operation) {
-<span data-nosnippet>23</span>        </a><span class="self">self</span>.<span class="highlight focus">change</span><a href="tools/scanner.rs.html#391">(op);
+<span data-nosnippet>209</span>                    &amp;&amp; !set.contains(</a><span class="kw-2">&amp;</span><a href="tools/scanner.rs.html#391">hash)
+<span data-nosnippet>210</span>                {
+<span data-nosnippet>211</span>                    cands.push(Candidate {
+<span data-nosnippet>212</span>                        parent: </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node,
+<span data-nosnippet>213</span>                        op,
+<span data-nosnippet>214</span>                        score,
+<span data-nosnippet>215</span>                        hash,
+<span data-nosnippet>216</span>                        accept,
+<span data-nosnippet>217</span>                    });
+<span data-nosnippet>218</span>                };
+<span data-nosnippet>219</span>            }
+<span data-nosnippet>220</span>        } </a><span class="kw">else </span>{
+<span data-nosnippet>221</span>            <span class="kw">let </span><a href="tools/scanner.rs.html#391">node = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node;
+<span data-nosnippet>222</span>            </a><span class="kw">let </span><span class="kw-2">mut </span><a href="tools/scanner.rs.html#391">child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[node].child;
+<span data-nosnippet>223</span>            </a><span class="kw">let </span><a href="tools/scanner.rs.html#391">next_single = single &amp; (</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next == !</a><span class="number">0</span>);
+<span data-nosnippet>224</span>
+<span data-nosnippet>225</span>            <span class="kw">loop </span>{
+<span data-nosnippet>226</span>                <span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = child;
+<span data-nosnippet>227</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.update(</a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
+<span data-nosnippet>228</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.dfs(cands, set, next_single);
+<span data-nosnippet>229</span>
+<span data-nosnippet>230</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
+<span data-nosnippet>231</span>                    </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.state.</a><span class="highlight">revert</span>(<span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].op.clone());
+<span data-nosnippet>232</span>                }
+<span data-nosnippet>233</span>                child = </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.nodes[child].next;
+<span data-nosnippet>234</span>                </a><span class="kw">if </span><a href="tools/scanner.rs.html#391">child == !</a><span class="number">0 </span>{
+<span data-nosnippet>235</span>                    <span class="kw">break</span>;
+<span data-nosnippet>236</span>                }
+<span data-nosnippet>237</span>            }
+<span data-nosnippet>238</span>
+<span data-nosnippet>239</span>            <span class="kw">if </span><a href="tools/scanner.rs.html#391">!next_single {
+<span data-nosnippet>240</span>                </a><span class="self">self</span><a href="tools/scanner.rs.html#391">.cur_node = node;
+<span data-nosnippet>241</span>            }
+<span data-nosnippet>242</span>        }
+<span data-nosnippet>243</span>    }</a></code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.change" class="method"><a class="src rightside" href="../../src/competitive/heuristic/beam_search.rs.html#28">Source</a><h4 class="code-header">fn <a href="#method.change" class="fn">change</a>(&amp;mut self, _op: Self::<a class="associatedtype" href="trait.ModifiableState.html#associatedtype.Operation" title="type competitive::heuristic::ModifiableState::Operation">Operation</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../src/competitive/heuristic/beam_search.rs.html#23&#34;,&#34;line 23&#34;],[[4,4],&#34;../../src/competitive/heuristic/beam_search.rs.html#26&#34;,&#34;line 26&#34;]]"><div class="scraped-example-title">crates/competitive/src/heuristic/beam_search.rs (<a href="../../src/competitive/heuristic/beam_search.rs.html#23">line 23</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>22</span>    <span class="kw">fn </span><a href="../tools/scanner.rs.html#391">update(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, op: <span class="self">Self</span>::Operation) {
+<span data-nosnippet>23</span>        </a><span class="self">self</span>.<span class="highlight focus">change</span><a href="../tools/scanner.rs.html#391">(op);
 <span data-nosnippet>24</span>    }
-<span data-nosnippet>25</span>    </a><span class="kw">fn </span><a href="tools/scanner.rs.html#391">revert(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="tools/scanner.rs.html#391">, op: <span class="self">Self</span>::Operation) {
-<span data-nosnippet>26</span>        </a><span class="self">self</span>.<span class="highlight">change</span><a href="tools/scanner.rs.html#391">(op);
+<span data-nosnippet>25</span>    </a><span class="kw">fn </span><a href="../tools/scanner.rs.html#391">revert(</a><span class="kw-2">&amp;mut </span><span class="self">self</span><a href="../tools/scanner.rs.html#391">, op: <span class="self">Self</span>::Operation) {
+<span data-nosnippet>26</span>        </a><span class="self">self</span>.<span class="highlight">change</span><a href="../tools/scanner.rs.html#391">(op);
 <span data-nosnippet>27</span>    }</a></code></pre></div></div></div></details></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"></div><script src="../../trait.impl/competitive/heuristic/beam_search/trait.ModifiableState.js" async></script></section></div></main></body></html>
