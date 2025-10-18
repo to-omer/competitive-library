@@ -79,7 +79,7 @@ impl SimuratedAnnealing {
     }
     pub fn is_end(&mut self) -> bool {
         self.iter_count += 1;
-        if self.iter_count % self.update_interval == 0 {
+        if self.iter_count.is_multiple_of(self.update_interval) {
             self.time = self.now.elapsed().as_secs_f64();
             let temp_ratio = (self.end_temp - self.start_temp) / self.time_limit;
             self.temperture = self.start_temp + temp_ratio * self.time;

@@ -18,8 +18,7 @@ pub trait ShortestPathSemiRing {
 pub struct StandardSp<M>(PhantomData<fn() -> M>);
 impl<M> ShortestPathSemiRing for StandardSp<M>
 where
-    M: Monoid,
-    M::T: Bounded + Ord,
+    M: Monoid<T: Bounded + Ord>,
 {
     type T = M::T;
     fn source() -> Self::T {
@@ -44,8 +43,7 @@ where
 pub struct OptionSp<M>(PhantomData<fn() -> M>);
 impl<M> ShortestPathSemiRing for OptionSp<M>
 where
-    M: Monoid,
-    M::T: Ord,
+    M: Monoid<T: Ord>,
 {
     type T = Option<M::T>;
     fn source() -> Self::T {
@@ -82,8 +80,7 @@ where
 pub struct PathFoldingSp<M, S>(PhantomData<fn() -> (M, S)>);
 impl<M, S> ShortestPathSemiRing for PathFoldingSp<M, S>
 where
-    M: Monoid,
-    M::T: Bounded + Ord,
+    M: Monoid<T: Bounded + Ord>,
     S: SemiRing,
 {
     type T = PartialIgnoredOrd<M::T, S::T>;
@@ -115,8 +112,7 @@ pub trait ShortestPathExt: GraphBase {
     fn standard_sp<'a, M>(&'a self) -> ShortestPathBuilder<'a, Self, StandardSp<M>>
     where
         Self: Sized + GraphBase,
-        M: Monoid,
-        M::T: Bounded + Ord,
+        M: Monoid<T: Bounded + Ord>,
     {
         ShortestPathBuilder {
             graph: self,
@@ -140,8 +136,7 @@ pub trait ShortestPathExt: GraphBase {
     fn option_sp<'a, M>(&'a self) -> ShortestPathBuilder<'a, Self, OptionSp<M>>
     where
         Self: Sized + GraphBase,
-        M: Monoid,
-        M::T: Ord,
+        M: Monoid<T: Ord>,
     {
         ShortestPathBuilder {
             graph: self,
@@ -165,8 +160,7 @@ pub trait ShortestPathExt: GraphBase {
     fn path_folding_sp<'a, M, S>(&'a self) -> ShortestPathBuilder<'a, Self, PathFoldingSp<M, S>>
     where
         Self: Sized + GraphBase,
-        M: Monoid,
-        M::T: Bounded + Ord,
+        M: Monoid<T: Bounded + Ord>,
         S: SemiRing,
     {
         ShortestPathBuilder {
@@ -348,10 +342,9 @@ where
     ) -> <G as VertexMap<<G as VertexMap<S::T>>::Vmap>>::Vmap
     where
         G: Vertices
-            + VertexMap<S::T>
+            + VertexMap<S::T, Vmap: Clone>
             + VertexMap<<G as VertexMap<S::T>>::Vmap>
             + AdjacencyView<'a, M, S::T>,
-        <G as VertexMap<S::T>>::Vmap: Clone,
         S: ShortestPathSemiRing,
     {
         let graph = self.graph;

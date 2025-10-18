@@ -27,9 +27,7 @@ where
 
 impl<M> Debug for LazySegmentTree<M>
 where
-    M: LazyMapMonoid,
-    M::Agg: Debug,
-    M::Act: Debug,
+    M: LazyMapMonoid<Agg: Debug, Act: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazySegmentTree")

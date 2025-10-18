@@ -8,8 +8,7 @@ impl EdgeListGraph {
         weight: F,
     ) -> Option<(G::T, Vec<usize>)>
     where
-        G: Group,
-        G::T: Ord,
+        G: Group<T: Ord>,
         F: Fn(usize) -> G::T,
     {
         struct WeightAct<G>(std::marker::PhantomData<fn() -> G>);

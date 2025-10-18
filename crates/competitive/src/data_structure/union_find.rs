@@ -22,14 +22,11 @@ where
 
 impl<U, F, M, P, H> Clone for UnionFindBase<U, F, M, P, H>
 where
-    U: UnionStrategy,
+    U: UnionStrategy<Info: Clone>,
     F: FindStrategy,
-    M: UfMergeSpec + Clone,
+    M: UfMergeSpec<Data: Clone> + Clone,
     P: Monoid,
-    H: UndoStrategy<UfCell<U, M, P>>,
-    U::Info: Clone,
-    M::Data: Clone,
-    H::History: Clone,
+    H: UndoStrategy<UfCell<U, M, P>, History: Clone>,
 {
     fn clone(&self) -> Self {
         Self {
@@ -43,15 +40,11 @@ where
 
 impl<U, F, M, P, H> Debug for UnionFindBase<U, F, M, P, H>
 where
-    U: UnionStrategy,
+    U: UnionStrategy<Info: Debug>,
     F: FindStrategy,
-    M: UfMergeSpec,
-    P: Monoid,
-    H: UndoStrategy<UfCell<U, M, P>>,
-    U::Info: Debug,
-    M::Data: Debug,
-    P::T: Debug,
-    H::History: Debug,
+    M: UfMergeSpec<Data: Debug>,
+    P: Monoid<T: Debug>,
+    H: UndoStrategy<UfCell<U, M, P>, History: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("UnionFindBase")
@@ -73,11 +66,9 @@ where
 
 impl<U, M, P> Clone for UfCell<U, M, P>
 where
-    U: UnionStrategy,
-    M: UfMergeSpec,
+    U: UnionStrategy<Info: Clone>,
+    M: UfMergeSpec<Data: Clone>,
     P: Monoid,
-    U::Info: Clone,
-    M::Data: Clone,
 {
     fn clone(&self) -> Self {
         match self {
@@ -89,12 +80,9 @@ where
 
 impl<U, M, P> Debug for UfCell<U, M, P>
 where
-    U: UnionStrategy,
-    M: UfMergeSpec,
-    P: Monoid,
-    U::Info: Debug,
-    M::Data: Debug,
-    P::T: Debug,
+    U: UnionStrategy<Info: Debug>,
+    M: UfMergeSpec<Data: Debug>,
+    P: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {

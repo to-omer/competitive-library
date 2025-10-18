@@ -57,7 +57,7 @@ where
             Self::one(),
             Self::one(),
             Self::zero(),
-            (M::mod_into() + 1) / 2,
+            M::mod_into().div_ceil(2),
         );
         while e > 0 {
             if e % 2 == 1 {

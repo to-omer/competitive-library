@@ -24,8 +24,7 @@ where
 
 impl<S> Debug for DisjointSparseTable<S>
 where
-    S: SemiGroup,
-    S::T: Debug,
+    S: SemiGroup<T: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("DisjointSparseTable")

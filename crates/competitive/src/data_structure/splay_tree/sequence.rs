@@ -23,10 +23,7 @@ where
 
 impl<T> Debug for LazyAggElement<T>
 where
-    T: LazyMapMonoid,
-    T::Key: Debug,
-    T::Agg: Debug,
-    T::Act: Debug,
+    T: LazyMapMonoid<Key: Debug, Agg: Debug, Act: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazyAggElement")
@@ -240,10 +237,7 @@ where
 
 impl<T, A> Debug for SplaySequence<T, A>
 where
-    T: LazyMapMonoid,
-    T::Key: Debug,
-    T::Agg: Debug,
-    T::Act: Debug,
+    T: LazyMapMonoid<Key: Debug, Agg: Debug, Act: Debug>,
     A: Allocator<Node<LazyAggElement<T>>>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

@@ -192,7 +192,7 @@ impl<Data> WithParent<Data> {
                     .reborrow()
                     .left()
                     .descend()
-                    .map_or(false, |n| n.node == node_inner)
+                    .is_ok_and(|n| n.node == node_inner)
                 {
                     parent.left_mut().replace(merged)
                 } else {
@@ -205,7 +205,7 @@ impl<Data> WithParent<Data> {
                     .reborrow()
                     .left()
                     .descend()
-                    .map_or(false, |n| n.node == node_inner)
+                    .is_ok_and(|n| n.node == node_inner)
                 {
                     parent.left_mut().take()
                 } else {
@@ -228,16 +228,10 @@ where
     _marker: PhantomData<BorrowType>,
 }
 
-impl<'a, Spec> Copy for BstNodeRef<marker::Immut<'a>, Spec>
-where
-    Spec: BstSpec,
-    Spec::Data: 'a,
-{
-}
+impl<'a, Spec> Copy for BstNodeRef<marker::Immut<'a>, Spec> where Spec: BstSpec<Data: 'a> {}
 impl<'a, Spec> Clone for BstNodeRef<marker::Immut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Data: 'a,
+    Spec: BstSpec<Data: 'a>,
 {
     fn clone(&self) -> Self {
         *self
@@ -281,8 +275,9 @@ where
     BorrowType: marker::BorrowType,
 {
     pub fn ascend(self) -> Result<BstNodeRef<BorrowType, Spec>, Self> {
-        // const { [()][!BorrowType::TRAVERSAL_PERMIT as usize] };
-        assert!(BorrowType::TRAVERSAL_PERMIT);
+        const {
+            assert!(BorrowType::TRAVERSAL_PERMIT);
+        };
         let parent = unsafe { self.node.as_ref().parent.parent };
         parent
             .map(|node| BstNodeRef {
@@ -303,7 +298,7 @@ where
                         node.reborrow()
                             .left()
                             .descend()
-                            .map_or(false, |node| node.node == nn),
+                            .is_ok_and(|node| node.node == nn),
                     );
                     nn = node.node;
                 }
@@ -354,9 +349,7 @@ where
 
 impl<'a, Spec> BstNodeRef<marker::Immut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Parent: 'a,
-    Spec::Data: 'a,
+    Spec: BstSpec<Parent: 'a, Data: 'a>,
 {
     pub fn into_data(self) -> &'a Spec::Data {
         unsafe { &self.node.as_ref().data }
@@ -364,7 +357,6 @@ where
 
     pub fn traverse<F>(self, f: &mut F)
     where
-        Spec::Data: 'a,
         F: FnMut(Self),
     {
         if let Ok(left) = self.left().descend() {
@@ -410,9 +402,7 @@ where
 
 impl<'a, Spec> BstNodeRef<marker::DataMut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Data: 'a,
-    Spec::Parent: 'a,
+    Spec: BstSpec<Parent: 'a, Data: 'a>,
 {
     pub fn into_data_mut(mut self) -> &'a mut Spec::Data {
         unsafe { &mut self.node.as_mut().data }
@@ -453,8 +443,7 @@ where
 
 impl<'a, Spec> BstNodeRef<marker::Mut<'a>, Spec>
 where
-    Spec: BstSpec,
-    Spec::Data: 'a,
+    Spec: BstSpec<Data: 'a>,
 {
     pub fn dormant(self) -> BstNodeRef<marker::DormantMut, Spec> {
         BstNodeRef {
@@ -516,8 +505,9 @@ where
     Dir: marker::BstDirection,
 {
     pub fn descend(self) -> Result<BstNodeRef<BorrowType, Spec>, Self> {
-        // const { [()][!BorrowType::TRAVERSAL_PERMIT as usize] };
-        assert!(BorrowType::TRAVERSAL_PERMIT);
+        const {
+            assert!(BorrowType::TRAVERSAL_PERMIT);
+        };
         let child = unsafe { self.node.node.as_ref().child.get_unchecked(Dir::IDX) };
         child
             .map(|node| BstNodeRef {

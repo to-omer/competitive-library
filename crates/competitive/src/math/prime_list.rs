@@ -80,8 +80,8 @@ impl PrimeList {
             return;
         }
 
-        let max_n = (max_n + 1) / 2 * 2; // odd
-        let sqrt_n = ((max_n as f64).sqrt() as usize + 1) / 2 * 2; // even
+        let max_n = max_n.div_ceil(2) * 2; // odd
+        let sqrt_n = ((max_n as f64).sqrt() as usize).div_ceil(2) * 2; // even
         let mut table = Vec::with_capacity(sqrt_n >> 1);
         if self.max_n < sqrt_n as u64 {
             let start = (self.max_n as usize + 1) | 1; // odd
@@ -159,10 +159,10 @@ impl Iterator for PrimeListTrialDivision<'_> {
         loop {
             match self.primes.next() {
                 Some(&p) if p * p <= self.n => {
-                    if self.n % p == 0 {
+                    if self.n.is_multiple_of(p) {
                         let mut cnt = 1u32;
                         self.n /= p;
-                        while self.n % p == 0 {
+                        while self.n.is_multiple_of(p) {
                             cnt += 1;
                             self.n /= p;
                         }
@@ -239,7 +239,7 @@ mod tests {
             }
         }
         for s in (seg_size..=n / 2).step_by(seg_size) {
-            let m = seg_size.min((n + 1) / 2 - s);
+            let m = seg_size.min(n.div_ceil(2) - s);
             table.clear();
             table.resize(m, true);
             let plen = primes[1..]
@@ -258,7 +258,7 @@ mod tests {
     pub fn divisors(n: u64) -> Vec<u64> {
         let mut res = vec![];
         for i in 1..(n as f32).sqrt() as u64 + 1 {
-            if n % i == 0 {
+            if n.is_multiple_of(i) {
                 res.push(i);
                 if i * i != n {
                     res.push(n / i);

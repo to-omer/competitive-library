@@ -82,8 +82,7 @@ where
 
 impl<Spec, K, Q> BstSeeker for SeekByKey<'_, Spec, K, Q>
 where
-    Spec: BstSpec,
-    Spec::Data: BstDataAccess<data::marker::Key, Value = K>,
+    Spec: BstSpec<Data: BstDataAccess<data::marker::Key, Value = K>>,
     K: Borrow<Q>,
     Q: Ord + ?Sized,
 {
@@ -114,8 +113,7 @@ impl<Spec> SeekBySize<Spec> {
 
 impl<Spec> BstSeeker for SeekBySize<Spec>
 where
-    Spec: BstSpec,
-    Spec::Data: BstDataAccess<data::marker::Size, Value = usize>,
+    Spec: BstSpec<Data: BstDataAccess<data::marker::Size, Value = usize>>,
 {
     type Spec = Spec;
 
@@ -159,8 +157,7 @@ where
 
 impl<Spec, L, F> BstSeeker for SeekByAccCond<Spec, L, F>
 where
-    Spec: BstSpec,
-    Spec::Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>,
+    Spec: BstSpec<Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>>,
     L: LazyMapMonoid,
     F: FnMut(&L::Agg) -> bool,
 {
@@ -223,8 +220,7 @@ where
 
 impl<Spec, L, F> BstSeeker for SeekByRaccCond<Spec, L, F>
 where
-    Spec: BstSpec,
-    Spec::Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>,
+    Spec: BstSpec<Data: BstDataAccess<data::marker::LazyMap, Value = LazyMapElement<L>>>,
     L: LazyMapMonoid,
     F: FnMut(&L::Agg) -> bool,
 {

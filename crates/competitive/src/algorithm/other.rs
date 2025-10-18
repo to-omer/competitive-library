@@ -7,11 +7,11 @@ where
 {
     let mut res = Vec::new();
     for a in iter.into_iter() {
-        if let Some((p, len)) = res.last_mut() {
-            if p == &a {
-                *len += 1;
-                continue;
-            }
+        if let Some((p, len)) = res.last_mut()
+            && p == &a
+        {
+            *len += 1;
+            continue;
         }
         res.push((a, 1));
     }

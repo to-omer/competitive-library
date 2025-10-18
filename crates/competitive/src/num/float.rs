@@ -75,6 +75,7 @@ pub trait Float:
     fn to_radians(self) -> Self;
     fn max(self, other: Self) -> Self;
     fn min(self, other: Self) -> Self;
+    fn midpoint(self, other: Self) -> Self;
     fn to_bits(self) -> u64;
     fn from_bits(v: u64) -> Self;
     fn total_cmp(&self, other: &Self) -> Ordering;
@@ -165,6 +166,7 @@ macro_rules! impl_primitive_float {
             fn to_radians(self) -> Self { $t::to_radians(self) }
             fn max(self, other: Self) -> Self { $t::max(self, other) }
             fn min(self, other: Self) -> Self { $t::min(self, other) }
+            fn midpoint(self, other: Self) -> Self { $t::midpoint(self, other) }
             fn to_bits(self) -> u64 { $t::to_bits(self).into() }
             fn from_bits(v: u64) -> Self { $t::from_bits(v.try_into().unwrap()) }
             fn total_cmp(&self, other: &Self) -> Ordering { $t::total_cmp(self, other) }
@@ -348,6 +350,7 @@ macro_rules! impl_ord_float {
             fn to_radians(self) -> Self { Self(<$t as Float>::to_radians(self.0)) }
             fn max(self, other: Self) -> Self { Self(<$t as Float>::max(self.0, other.0)) }
             fn min(self, other: Self) -> Self { Self(<$t as Float>::min(self.0, other.0)) }
+            fn midpoint(self, other: Self) -> Self { Self(<$t as Float>::midpoint(self.0, other.0)) }
             fn to_bits(self) -> u64 { <$t as Float>::to_bits(self.0) }
             fn from_bits(v: u64) -> Self { Self(<$t as Float>::from_bits(v)) }
             fn total_cmp(&self, other: &Self) -> Ordering { <$t as Float>::total_cmp(&self.0, &other.0) }

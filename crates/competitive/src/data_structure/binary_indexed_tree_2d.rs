@@ -25,8 +25,7 @@ where
 
 impl<M> Debug for BinaryIndexedTree2D<M>
 where
-    M: Monoid,
-    M::T: Debug,
+    M: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("BinaryIndexedTree2D")

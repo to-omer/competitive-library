@@ -46,8 +46,7 @@ where
 
 impl<R> Debug for SparseMatrix<R>
 where
-    R: SemiRing,
-    R::T: Debug,
+    R: SemiRing<T: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("SparseMatrix")
@@ -81,7 +80,7 @@ where
     }
     pub fn new_with<F>(shape: (usize, usize), f: F) -> Self
     where
-        R::T: PartialEq,
+        R: SemiRing<T: PartialEq>,
         F: Fn(usize, usize) -> R::T,
     {
         let mut nonzero = vec![];
@@ -102,8 +101,7 @@ where
 
 impl<R> From<Matrix<R>> for SparseMatrix<R>
 where
-    R: SemiRing,
-    R::T: PartialEq,
+    R: SemiRing<T: PartialEq>,
 {
     fn from(mat: Matrix<R>) -> Self {
         let mut nonzero = vec![];

@@ -18,8 +18,7 @@ where
 
 impl<M> Debug for MonoidAggElement<M>
 where
-    M: Monoid,
-    M::T: Debug,
+    M: Monoid<T: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("MonoidAggElement")
@@ -34,15 +33,13 @@ where
 {
     pub fn top_down<Spec>(_node: BstDataMutRef<'_, Spec>)
     where
-        Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::MonoidAgg, Value = Self>,
+        Spec: BstSpec<Data: BstDataAccess<marker::MonoidAgg, Value = Self>>,
     {
     }
 
     pub fn bottom_up<Spec>(mut node: BstDataMutRef<'_, Spec>)
     where
-        Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::MonoidAgg, Value = Self>,
+        Spec: BstSpec<Data: BstDataAccess<marker::MonoidAgg, Value = Self>>,
     {
         let mut agg = node.reborrow().into_data().bst_data().agg.clone();
         if let Ok(left) = node.reborrow().left().descend() {
@@ -65,9 +62,7 @@ where
 
 impl<M> Debug for MonoidActElement<M>
 where
-    M: MonoidAct,
-    M::Key: Debug,
-    M::Act: Debug,
+    M: MonoidAct<Key: Debug, Act: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("MonoidActElement")
@@ -90,8 +85,7 @@ where
 
     pub fn update_act<Spec>(mut node: BstDataMutRef<'_, Spec>, act: &M::Act)
     where
-        Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::MonoidAct, Value = Self>,
+        Spec: BstSpec<Data: BstDataAccess<marker::MonoidAct, Value = Self>>,
     {
         M::operate_assign(&mut node.data_mut().bst_data_mut().act, act);
         M::act_assign(&mut node.data_mut().bst_data_mut().key, act);
@@ -99,8 +93,7 @@ where
 
     pub fn top_down<Spec>(mut node: BstDataMutRef<'_, Spec>)
     where
-        Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::MonoidAct, Value = Self>,
+        Spec: BstSpec<Data: BstDataAccess<marker::MonoidAct, Value = Self>>,
     {
         let act = replace(&mut node.data_mut().bst_data_mut().act, M::unit());
         if let Ok(left) = node.reborrow_datamut().left().descend() {
@@ -123,10 +116,7 @@ where
 
 impl<L> Debug for LazyMapElement<L>
 where
-    L: LazyMapMonoid,
-    L::Key: Debug,
-    L::Agg: Debug,
-    L::Act: Debug,
+    L: LazyMapMonoid<Key: Debug, Agg: Debug, Act: Debug>,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazyMapElement")
@@ -152,8 +142,7 @@ where
 
     pub fn update_act<Spec>(mut node: BstDataMutRef<'_, Spec>, act: &L::Act)
     where
-        Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::LazyMap, Value = Self>,
+        Spec: BstSpec<Data: BstDataAccess<marker::LazyMap, Value = Self>>,
     {
         L::act_operate_assign(&mut node.data_mut().bst_data_mut().act, act);
         node.data_mut().bst_data_mut().key =
@@ -168,8 +157,7 @@ where
 
     pub fn top_down<Spec>(mut node: BstDataMutRef<'_, Spec>)
     where
-        Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::LazyMap, Value = Self>,
+        Spec: BstSpec<Data: BstDataAccess<marker::LazyMap, Value = Self>>,
     {
         let act = replace(&mut node.data_mut().bst_data_mut().act, L::act_unit());
         if let Ok(left) = node.reborrow_datamut().left().descend() {
@@ -182,8 +170,7 @@ where
 
     pub fn bottom_up<Spec>(mut node: BstDataMutRef<'_, Spec>)
     where
-        Spec: BstSpec,
-        Spec::Data: BstDataAccess<marker::LazyMap, Value = Self>,
+        Spec: BstSpec<Data: BstDataAccess<marker::LazyMap, Value = Self>>,
     {
         let mut agg = L::single_agg(&node.reborrow().into_data().bst_data().key);
         if let Ok(left) = node.reborrow().left().descend() {

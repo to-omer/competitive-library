@@ -67,11 +67,11 @@ pub fn prime_factors_flatten(mut n: u64) -> Vec<u64> {
 pub fn prime_factors(n: u64) -> Vec<(u64, u32)> {
     let mut res = Vec::new();
     for a in prime_factors_flatten(n) {
-        if let Some((p, len)) = res.last_mut() {
-            if p == &a {
-                *len += 1;
-                continue;
-            }
+        if let Some((p, len)) = res.last_mut()
+            && p == &a
+        {
+            *len += 1;
+            continue;
         }
         res.push((a, 1));
     }
@@ -102,7 +102,7 @@ mod tests {
     pub fn naive_divisors(n: u64) -> Vec<u64> {
         let mut res = vec![];
         for i in 1..(n as f32).sqrt() as u64 + 1 {
-            if n % i == 0 {
+            if n.is_multiple_of(i) {
                 res.push(i);
                 if i * i != n {
                     res.push(n / i);

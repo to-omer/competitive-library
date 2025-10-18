@@ -42,10 +42,10 @@ impl PrimalDualBuilder {
             graph,
             capacities,
             costs,
-            potential: std::iter::repeat(0).take(vsize).collect(),
+            potential: std::iter::repeat_n(0, vsize).collect(),
             dist: Vec::with_capacity(vsize),
-            prev_vertex: std::iter::repeat(0).take(vsize).collect(),
-            prev_edge: std::iter::repeat(0).take(vsize).collect(),
+            prev_vertex: std::iter::repeat_n(0, vsize).collect(),
+            prev_edge: std::iter::repeat_n(0, vsize).collect(),
             has_negedge,
         }
     }

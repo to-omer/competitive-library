@@ -3,15 +3,14 @@ use std::cmp::Ordering;
 /// binary search helper
 pub trait Bisect: Clone {
     /// Return between two elements if search is not end.
-    fn middle_point(&self, other: &Self) -> Option<Self>;
+    fn bisect_middle_point(&self, other: &Self) -> Option<Self>;
 }
 
 macro_rules! impl_bisect_unsigned {
     ($($t:ty)*) => {
         $(impl Bisect for $t {
-            fn middle_point(&self, other: &Self) -> Option<Self> {
-                let (diff, small) = if self > other { (self - other, other) } else { (other - self, self) };
-                if diff > 1 { Some(small + diff / 2) } else { None }
+            fn bisect_middle_point(&self, other: &Self) -> Option<Self> {
+                if self.abs_diff(*other) > 1 { Some(self.midpoint(*other)) } else { None }
             }
         })*
     };
@@ -19,20 +18,19 @@ macro_rules! impl_bisect_unsigned {
 macro_rules! impl_bisect_signed {
     ($($t:ty)*) => {
         $(impl Bisect for $t {
-            fn middle_point(&self, other: &Self) -> Option<Self> {
+            fn bisect_middle_point(&self, other: &Self) -> Option<Self> {
                 if self.signum() != other.signum() {
                     if match self.cmp(other) {
                         Ordering::Less => self + 1 < *other,
                         Ordering::Equal => false,
                         Ordering::Greater => other + 1 < *self,
                     } {
-                        Some((self + other) / 2)
+                        Some((*self).midpoint(*other))
                     } else {
                         None
                     }
                 } else {
-                    let (diff, small) = if self > other { (self - other, other) } else { (other - self, self) };
-                    if diff > 1 { Some(small + diff / 2) } else { None }
+                    if self.abs_diff(*other) > 1 { Some(self.midpoint(*other)) } else { None }
                 }
             }
         })*
@@ -41,7 +39,7 @@ macro_rules! impl_bisect_signed {
 macro_rules! impl_bisect_float {
     ($({$t:ident $u:ident $i:ident $e:expr})*) => {
         $(impl Bisect for $t {
-            fn middle_point(&self, other: &Self) -> Option<Self> {
+            fn bisect_middle_point(&self, other: &Self) -> Option<Self> {
                 fn to_float_ord(x: $t) -> $i {
                     let a = x.to_bits() as $i;
                     a ^ (((a >> $e) as $u) >> 1) as $i
@@ -49,7 +47,7 @@ macro_rules! impl_bisect_float {
                 fn from_float_ord(a: $i) -> $t {
                     $t::from_bits((a ^ (((a >> $e) as $u) >> 1) as $i) as _)
                 }
-                <$i as Bisect>::middle_point(&to_float_ord(*self), &to_float_ord(*other)).map(from_float_ord)
+                <$i as Bisect>::bisect_middle_point(&to_float_ord(*self), &to_float_ord(*other)).map(from_float_ord)
             }
         })*
     };
@@ -68,7 +66,7 @@ where
     T: Bisect,
     F: FnMut(&T) -> bool,
 {
-    while let Some(m) = ok.middle_point(&err) {
+    while let Some(m) = ok.bisect_middle_point(&err) {
         if f(&m) {
             ok = m;
         } else {
@@ -119,7 +117,7 @@ where
         let m: Vec<_> = ok
             .iter()
             .zip(&err)
-            .map(|(ok, err)| ok.middle_point(err))
+            .map(|(ok, err)| ok.bisect_middle_point(err))
             .collect();
         if m.iter().all(|m| m.is_none()) {
             break;

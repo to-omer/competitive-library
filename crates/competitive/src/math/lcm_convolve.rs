@@ -41,8 +41,7 @@ where
 
 impl<R> ConvolveSteps for LcmConvolve<R>
 where
-    R: Ring,
-    R::Additive: Invertible,
+    R: Ring<Additive: Invertible>,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;
