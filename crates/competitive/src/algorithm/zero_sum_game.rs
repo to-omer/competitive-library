@@ -45,7 +45,8 @@ where
 #[derive(Debug, Clone)]
 pub struct ZeroSumGameAnalyzer<G>
 where
-    G: ZeroSumGame<State: Eq + Hash>,
+    G: ZeroSumGame,
+    G::State: Eq + Hash,
 {
     game: G,
     scores: HashMap<G::State, i64>,
@@ -53,7 +54,8 @@ where
 
 impl<G> ZeroSumGameAnalyzer<G>
 where
-    G: ZeroSumGame<State: Eq + Hash + Clone>,
+    G: ZeroSumGame,
+    G::State: Eq + Hash + Clone,
 {
     pub fn new(game: G) -> Self {
         Self {

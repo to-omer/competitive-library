@@ -20,7 +20,11 @@ where
 
 impl<R> ConvolveSteps for BitwisexorConvolve<R, false>
 where
-    R: Field<T: PartialEq + From<usize>, Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::T: PartialEq,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: From<usize>,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;
@@ -68,7 +72,11 @@ where
 
 impl<R> ConvolveSteps for BitwisexorConvolve<R, true>
 where
-    R: Field<T: PartialEq + TryFrom<usize>, Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::T: PartialEq,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: TryFrom<usize>,
     <R::T as TryFrom<usize>>::Error: Debug,
 {
     type T = Vec<R::T>;

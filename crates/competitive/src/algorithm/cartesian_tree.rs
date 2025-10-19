@@ -17,8 +17,12 @@ impl CartesianTree {
         let mut stack = vec![];
         for i in 0..a.len() {
             let mut prev = !0usize;
-            while let Some(last) = stack.pop_if(|last| a[i] < a[*last]) {
-                prev = last;
+            while let Some(&last) = stack.last() {
+                if a[i] < a[last] {
+                    prev = stack.pop().unwrap();
+                } else {
+                    break;
+                }
             }
             if prev != !0 {
                 parents[prev] = i;

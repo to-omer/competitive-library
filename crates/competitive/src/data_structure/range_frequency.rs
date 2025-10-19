@@ -116,8 +116,8 @@ struct RangeFrequencyProcessor {
 impl RangeFrequencyProcessor {
     fn new(size: usize) -> Self {
         Self {
-            bit: BinaryIndexedTree::new(size.div_ceil(64)),
-            data: vec![0; size.div_ceil(64)],
+            bit: BinaryIndexedTree::new((size + 63) / 64),
+            data: vec![0; (size + 63) / 64],
         }
     }
 

@@ -7,7 +7,7 @@ pub struct PrimeTable {
 
 impl PrimeTable {
     pub fn new(max_n: u32) -> Self {
-        let mut table = vec![1; (max_n as usize).div_ceil(2)];
+        let mut table = vec![1; (max_n as usize + 1) / 2];
         table[0] = 0;
         for i in (3..).step_by(2) {
             let i2 = i * i;
@@ -98,7 +98,7 @@ mod tests {
     pub fn divisors(n: u32) -> Vec<u32> {
         let mut res = vec![];
         for i in 1..(n as f32).sqrt() as u32 + 1 {
-            if n.is_multiple_of(i) {
+            if n % i == 0 {
                 res.push(i);
                 if i * i != n {
                     res.push(n / i);

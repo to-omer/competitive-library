@@ -22,6 +22,7 @@ pub use self::partial_ignored_ord::PartialIgnoredOrd;
 pub use self::random_generator::{NotEmptySegment, RandIter, RandRange, RandomSpec};
 #[codesnip::entry("scanner")]
 pub use self::scanner::*;
+pub use self::slice::GetDistinctMut;
 #[codesnip::entry("TotalOrd")]
 pub use self::totalord::{AsTotalOrd, TotalOrd};
 #[codesnip::entry("Xorshift")]
@@ -70,6 +71,7 @@ mod partial_ignored_ord;
 mod random_generator;
 #[cfg_attr(nightly, codesnip::entry("scanner", include("array")))]
 mod scanner;
+mod slice;
 #[cfg_attr(nightly, codesnip::entry("TotalOrd"))]
 mod totalord;
 #[cfg_attr(nightly, codesnip::entry("Xorshift"))]

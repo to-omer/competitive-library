@@ -22,7 +22,7 @@ pub trait RankSelectDictionaries {
         }
         let (mut l, mut r) = (0, n);
         while r - l > 1 {
-            let m = l.midpoint(r);
+            let m = (l + r) / 2;
             if self.rank1(m) <= k {
                 l = m;
             } else {
@@ -39,7 +39,7 @@ pub trait RankSelectDictionaries {
         }
         let (mut l, mut r) = (0, n);
         while r - l > 1 {
-            let m = l.midpoint(r);
+            let m = (l + r) / 2;
             if self.rank0(m) <= k {
                 l = m;
             } else {
@@ -103,7 +103,7 @@ impl RankSelectDictionaries for BitVector {
             return None;
         }
         while r - l > 1 {
-            let m = l.midpoint(r);
+            let m = (l + r) / 2;
             if self.data[m].1 <= k {
                 l = m;
             } else {
@@ -120,7 +120,7 @@ impl RankSelectDictionaries for BitVector {
             return None;
         }
         while r - l > 1 {
-            let m = l.midpoint(r);
+            let m = (l + r) / 2;
             if m * Self::WORD_SIZE - self.data[m].1 <= k {
                 l = m;
             } else {

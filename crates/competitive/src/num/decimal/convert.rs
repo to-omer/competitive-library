@@ -67,7 +67,7 @@ impl FromStr for Decimal {
         let integer_bytes = integer_str.trim_start_matches('0').as_bytes();
         let decimal_bytes = decimal_str.trim_end_matches('0').as_bytes();
 
-        let mut integer = Vec::with_capacity(integer_bytes.len().div_ceil(RADIX_LEN));
+        let mut integer = Vec::with_capacity((integer_bytes.len() + (RADIX_LEN - 1)) / RADIX_LEN);
         for chunk in integer_bytes.rchunks(18) {
             let chunk = unsafe { std::str::from_utf8_unchecked(chunk) };
             match chunk.parse::<u64>() {
@@ -76,7 +76,7 @@ impl FromStr for Decimal {
             }
         }
 
-        let mut decimal = Vec::with_capacity(decimal_bytes.len().div_ceil(RADIX_LEN));
+        let mut decimal = Vec::with_capacity((decimal_bytes.len() + (RADIX_LEN - 1)) / RADIX_LEN);
         for chunk in decimal_bytes.chunks(18) {
             let chunk = unsafe { std::str::from_utf8_unchecked(chunk) };
             match chunk.parse::<u64>() {
@@ -124,7 +124,7 @@ impl Display for Decimal {
             let mut l = 0;
             let mut r = RADIX_LEN;
             while r - l > 1 {
-                let m = l.midpoint(r);
+                let m = (l + r) / 2;
                 if last % POW10[m] == 0 {
                     l = m;
                 } else {

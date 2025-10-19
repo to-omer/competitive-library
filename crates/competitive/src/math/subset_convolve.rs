@@ -7,7 +7,9 @@ pub struct SubsetConvolve<M> {
 
 impl<R> ConvolveSteps for SubsetConvolve<R>
 where
-    R: Ring<T: PartialEq, Additive: Invertible>,
+    R: Ring,
+    R::T: PartialEq,
+    R::Additive: Invertible,
 {
     type T = Vec<R::T>;
     type F = Vec<Vec<R::T>>;

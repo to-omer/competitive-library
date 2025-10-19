@@ -1,5 +1,6 @@
 use std::{
     collections::{HashMap, HashSet},
+    convert::TryInto,
     hash::{BuildHasherDefault, Hasher},
 };
 
@@ -27,17 +28,15 @@ impl Hasher for FibonacciHasheru32 {
     }
     fn write(&mut self, mut bytes: &[u8]) {
         if bytes.len() % 4 >= 2 {
-            let (chunk, rest) = bytes.split_first_chunk::<2>().unwrap();
-            self.push(u16::from_ne_bytes(*chunk) as u32);
-            bytes = rest;
+            self.push(u16::from_ne_bytes(bytes[..2].try_into().unwrap()) as u32);
+            bytes = &bytes[2..];
         }
         if bytes.len() % 2 >= 1 {
-            let (chunk, rest) = bytes.split_first_chunk::<1>().unwrap();
-            self.push(u8::from_ne_bytes(*chunk) as u32);
-            bytes = rest;
+            self.push(u16::from_ne_bytes(bytes[..1].try_into().unwrap()) as u32);
+            bytes = &bytes[1..];
         }
-        for chunk in bytes.as_chunks::<4>().0 {
-            self.push(u32::from_ne_bytes(*chunk));
+        for chunk in bytes.chunks(4) {
+            self.push(u32::from_ne_bytes(chunk.try_into().unwrap()));
         }
     }
     fn write_u8(&mut self, i: u8) {
@@ -104,22 +103,19 @@ impl Hasher for FibonacciHasheru64 {
     }
     fn write(&mut self, mut bytes: &[u8]) {
         if bytes.len() % 8 >= 4 {
-            let (chunk, rest) = bytes.split_first_chunk::<4>().unwrap();
-            self.push(u32::from_ne_bytes(*chunk) as u64);
-            bytes = rest;
+            self.push(u16::from_ne_bytes(bytes[..4].try_into().unwrap()) as u64);
+            bytes = &bytes[4..];
         }
         if bytes.len() % 4 >= 2 {
-            let (chunk, rest) = bytes.split_first_chunk::<2>().unwrap();
-            self.push(u16::from_ne_bytes(*chunk) as u64);
-            bytes = rest;
+            self.push(u16::from_ne_bytes(bytes[..2].try_into().unwrap()) as u64);
+            bytes = &bytes[2..];
         }
         if bytes.len() % 2 >= 1 {
-            let (chunk, rest) = bytes.split_first_chunk::<1>().unwrap();
-            self.push(u8::from_ne_bytes(*chunk) as u64);
-            bytes = rest;
+            self.push(u16::from_ne_bytes(bytes[..1].try_into().unwrap()) as u64);
+            bytes = &bytes[1..];
         }
-        for chunk in bytes.as_chunks::<8>().0 {
-            self.push(u64::from_ne_bytes(*chunk));
+        for chunk in bytes.chunks(8) {
+            self.push(u64::from_ne_bytes(chunk.try_into().unwrap()));
         }
     }
     fn write_u8(&mut self, i: u8) {
@@ -176,11 +172,7 @@ mod tests {
         let mut rh = HashSet::new();
         for _ in 0..Q {
             let n = rng.random(0..20);
-            let a: Vec<_> = rng
-                .random_iter(0u64..)
-                .take(n)
-                .map(|x| (x, x.to_string()))
-                .collect();
+            let a: Vec<_> = rng.random_iter(0u64..).take(n).collect();
             fh.insert(a.to_vec());
             rh.insert(a.to_vec());
         }

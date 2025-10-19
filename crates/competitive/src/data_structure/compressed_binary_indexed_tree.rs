@@ -1,4 +1,4 @@
-use super::{Monoid, SliceBisectExt};
+use super::{GetDistinctMut, Monoid, SliceBisectExt};
 use std::{
     fmt::{self, Debug},
     marker::PhantomData,
@@ -58,7 +58,8 @@ where
     M: Monoid;
 impl<M> Debug for Tag<M>
 where
-    M: Monoid<T: Debug>,
+    M: Monoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
@@ -112,7 +113,7 @@ macro_rules! impl_compressed_binary_indexed_tree {
             bits[i] = CompressedBinaryIndexedTree::<_, _, impl_compressed_binary_indexed_tree!(@cst $M $($Rest)*)>::from_iter(ps[i].iter().cloned());
             let j = i + (i & (!i + 1));
             if j <= n {
-                let [s, ns] = ps.get_disjoint_mut([i, j]).unwrap();
+                let (s, ns) = ps.get_distinct_mut((i, j));
                 ns.append(s);
             }
         }

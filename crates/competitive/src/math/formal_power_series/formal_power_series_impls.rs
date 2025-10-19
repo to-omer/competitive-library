@@ -343,7 +343,7 @@ where
             );
         }
         if let Some(k) = self.iter().position(|x| !x.is_zero()) {
-            if k >= deg.div_ceil(rhs) {
+            if k >= (deg + rhs - 1) / rhs {
                 Self::zeros(deg)
             } else {
                 let deg = deg - k * rhs;
@@ -489,7 +489,7 @@ where
         let mut q = C::transform(rhs.data, k * 2);
         while n > 0 {
             let t = C::even_mul_normal_neg(&q, &q);
-            p = if n.is_multiple_of(2) {
+            p = if n % 2 == 0 {
                 C::even_mul_normal_neg(&p, &q)
             } else {
                 C::odd_mul_normal_neg(&p, &q)
