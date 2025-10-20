@@ -19,7 +19,9 @@ pub use self::ord_tools::PartialOrdExt;
 #[codesnip::entry("PartialIgnoredOrd")]
 pub use self::partial_ignored_ord::PartialIgnoredOrd;
 #[codesnip::entry("random_generator")]
-pub use self::random_generator::{NotEmptySegment, RandIter, RandRange, RandomSpec};
+pub use self::random_generator::{
+    NotEmptySegment, RandIter, RandRange, RandomSpec, WeightedSampler,
+};
 #[codesnip::entry("scanner")]
 pub use self::scanner::*;
 #[codesnip::entry("TotalOrd")]

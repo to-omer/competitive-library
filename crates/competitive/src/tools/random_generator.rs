@@ -269,6 +269,66 @@ fn randint_uniform(rng: &mut Xorshift, k: u64) -> u64 {
     v
 }
 
+pub struct WeightedSampler {
+    n: usize,
+    prob: Vec<f64>,
+    alias: Vec<usize>,
+}
+
+impl WeightedSampler {
+    pub fn new(weights: &[f64]) -> Self {
+        let n = weights.len();
+        assert!(n > 0, "weights must be non-empty");
+        let mut prob = vec![0.0; n];
+        let mut alias = vec![0; n];
+        let mut sc = vec![0.0; n];
+        let mut small = vec![];
+        let mut large = vec![];
+        let sum: f64 = weights.iter().sum();
+        assert!(sum > 0.0, "sum of weights must be positive");
+        for i in 0..n {
+            assert!(weights[i] >= 0.0, "weights must be non-negative");
+            sc[i] = weights[i] / sum * n as f64;
+            if sc[i] < 1.0 {
+                small.push(i);
+            } else {
+                large.push(i);
+            }
+        }
+        loop {
+            match (small.pop(), large.pop()) {
+                (Some(l), Some(g)) => {
+                    prob[l] = sc[l];
+                    alias[l] = g;
+                    sc[g] -= 1.0 - sc[l];
+                    if sc[g] < 1.0 {
+                        small.push(g);
+                    } else {
+                        large.push(g);
+                    }
+                }
+                (Some(g), None) | (None, Some(g)) => {
+                    prob[g] = 1.0;
+                    alias[g] = g;
+                }
+                (None, None) => break,
+            }
+        }
+        Self { n, prob, alias }
+    }
+}
+
+impl RandomSpec<usize> for WeightedSampler {
+    fn rand(&self, rng: &mut Xorshift) -> usize {
+        let i = rng.rand(self.n as u64) as usize;
+        if rng.randf() < self.prob[i] {
+            i
+        } else {
+            self.alias[i]
+        }
+    }
+}
+
 #[macro_export]
 /// Return a random value using [`RandomSpec`].
 macro_rules! rand_value {
@@ -370,5 +430,22 @@ mod tests {
             _r: (&(..10),&mut (..10)),
             _p: [(1..=10,2..=10); 2]
         );
+    }
+
+    #[test]
+    fn test_weighted_sampler() {
+        let mut rng = Xorshift::default();
+        let weights = vec![1.0, 2.0, 3.0, 4.0];
+        let sampler = WeightedSampler::new(&weights);
+        let mut counts = vec![0; weights.len()];
+        for _ in 0..1_000_000 {
+            let idx = sampler.rand(&mut rng);
+            counts[idx] += 1;
+        }
+        for i in 0..weights.len() {
+            let expected = weights[i] / weights.iter().sum::<f64>();
+            let actual = counts[i] as f64 / 1_000_000.0;
+            assert!((expected - actual).abs() < 0.01);
+        }
     }
 }
