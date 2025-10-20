@@ -1,7 +1,7 @@
 use super::Xorshift;
 
 #[derive(Debug)]
-pub struct SimuratedAnnealing {
+pub struct SimulatedAnnealing {
     pub iter_count: usize,
     pub now: std::time::Instant,
     pub time: f64,
@@ -15,7 +15,7 @@ pub struct SimuratedAnnealing {
     pub time_limit: f64,
     pub update_interval: usize,
 }
-impl Default for SimuratedAnnealing {
+impl Default for SimulatedAnnealing {
     fn default() -> Self {
         let now = std::time::Instant::now();
         let log_table = (0..Self::LOG_TABLE_SIZE)
@@ -36,7 +36,7 @@ impl Default for SimuratedAnnealing {
         }
     }
 }
-impl SimuratedAnnealing {
+impl SimulatedAnnealing {
     pub const LOG_TABLE_SIZE: usize = 0x10000;
     pub const SEED: u64 = 0xbeef_cafe;
 
@@ -76,6 +76,15 @@ impl SimuratedAnnealing {
             || diff
                 > self.log_table[self.rand.rand(Self::LOG_TABLE_SIZE as u64) as usize]
                     * self.temperture
+    }
+    pub fn accepted_score(&mut self, current_score: f64) -> f64 {
+        let bound =
+            self.log_table[self.rand.rand(Self::LOG_TABLE_SIZE as u64) as usize] * self.temperture;
+        if self.is_maximize {
+            current_score + bound
+        } else {
+            current_score - bound
+        }
     }
     pub fn is_end(&mut self) -> bool {
         self.iter_count += 1;
