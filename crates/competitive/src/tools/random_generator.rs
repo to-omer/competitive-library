@@ -276,20 +276,20 @@ pub struct WeightedSampler {
 }
 
 impl WeightedSampler {
-    pub fn new(weights: &[f64]) -> Self {
+    pub fn new(weights: impl IntoIterator<Item = f64>) -> Self {
+        let mut weights: Vec<_> = weights.into_iter().collect();
         let n = weights.len();
         assert!(n > 0, "weights must be non-empty");
         let mut prob = vec![0.0; n];
         let mut alias = vec![0; n];
-        let mut sc = vec![0.0; n];
         let mut small = vec![];
         let mut large = vec![];
         let sum: f64 = weights.iter().sum();
         assert!(sum > 0.0, "sum of weights must be positive");
-        for i in 0..n {
-            assert!(weights[i] >= 0.0, "weights must be non-negative");
-            sc[i] = weights[i] / sum * n as f64;
-            if sc[i] < 1.0 {
+        for (i, weight) in weights.iter_mut().enumerate() {
+            assert!(*weight >= 0.0, "weights must be non-negative");
+            *weight *= n as f64 / sum;
+            if *weight < 1.0 {
                 small.push(i);
             } else {
                 large.push(i);
@@ -298,10 +298,10 @@ impl WeightedSampler {
         loop {
             match (small.pop(), large.pop()) {
                 (Some(l), Some(g)) => {
-                    prob[l] = sc[l];
+                    prob[l] = weights[l];
                     alias[l] = g;
-                    sc[g] -= 1.0 - sc[l];
-                    if sc[g] < 1.0 {
+                    weights[g] -= 1.0 - weights[l];
+                    if weights[g] < 1.0 {
                         small.push(g);
                     } else {
                         large.push(g);
@@ -436,7 +436,7 @@ mod tests {
     fn test_weighted_sampler() {
         let mut rng = Xorshift::default();
         let weights = vec![1.0, 2.0, 3.0, 4.0];
-        let sampler = WeightedSampler::new(&weights);
+        let sampler = WeightedSampler::new(weights.clone());
         let mut counts = vec![0; weights.len()];
         for _ in 0..1_000_000 {
             let idx = sampler.rand(&mut rng);
