@@ -25,6 +25,8 @@ pub trait SliceCombinationsExt<T> {
     fn prev_combination(&mut self, r: usize) -> bool
     where
         T: Ord;
+
+    fn apply_permutation(&mut self, permutation: &[usize]);
 }
 
 impl<T> SliceCombinationsExt<T> for [T]
@@ -294,6 +296,27 @@ where
         let (a, b) = self.split_at_mut(r);
         next_combination_inner(b, a)
     }
+
+    /// Apply a permutation to the elements.
+    /// self[i] <- self[p[i]] for each i
+    fn apply_permutation(&mut self, p: &[usize]) {
+        assert_eq!(self.len(), p.len());
+        let mut visited = vec![false; self.len()];
+        for mut current in 0..self.len() {
+            if visited[current] {
+                continue;
+            }
+            loop {
+                visited[current] = true;
+                let next = p[current];
+                if visited[next] {
+                    break;
+                }
+                self.swap(current, next);
+                current = next;
+            }
+        }
+    }
 }
 
 fn rotate_distinct<'a, T>(mut a: &'a mut [T], mut b: &'a mut [T]) {
@@ -339,6 +362,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tools::Xorshift;
 
     #[test]
     fn test_for_each_product() {
@@ -516,6 +540,21 @@ mod tests {
                 }
                 assert_eq!(a, b);
             }
+        }
+    }
+
+    #[test]
+    fn test_apply_permutation() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(1..100);
+            let a: Vec<_> = rng.random_iter(0..1_000).take(n).collect();
+            let mut p: Vec<usize> = (0..n).collect();
+            rng.shuffle(&mut p);
+            let expected: Vec<_> = p.iter().map(|&i| a[i]).collect();
+            let mut result = a.to_vec();
+            result.apply_permutation(&p);
+            assert_eq!(expected, result);
         }
     }
 }
