@@ -23,5 +23,5 @@ mod levenshtein_distance;
 mod lexicographical_subsequence;
 #[cfg_attr(nightly, codesnip::entry("LongestIncreasingSubsequence"))]
 mod longest_increasing_subsequence;
-#[cfg_attr(nightly, codesnip::entry("SubsetSumProblem"))]
+#[cfg_attr(nightly, codesnip::entry("SubsetSumProblem", include("BitSet")))]
 mod subset_sum_problem;
