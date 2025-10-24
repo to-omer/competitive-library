@@ -1,6 +1,9 @@
-use std::ops::{
-    BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
-    ShrAssign,
+use std::{
+    cmp::Ordering,
+    ops::{
+        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
+        ShrAssign,
+    },
 };
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -62,6 +65,16 @@ impl BitSet {
             *self.bits.last_mut().unwrap() |= (b as u64) << d;
         }
         self.size += 1;
+    }
+
+    pub fn resize(&mut self, new_size: usize) {
+        match self.size.cmp(&new_size) {
+            Ordering::Less => self.bits.resize(new_size.div_ceil(64), 0),
+            Ordering::Equal => {}
+            Ordering::Greater => self.bits.truncate(new_size.div_ceil(64)),
+        }
+        self.size = new_size;
+        self.trim();
     }
 
     fn trim(&mut self) {
@@ -351,6 +364,24 @@ mod tests {
             assert_eq!(bitset.len(), n);
             for (i, &x) in arr.iter().enumerate() {
                 assert_eq!(bitset.get(i), x != 0);
+            }
+        }
+    }
+
+    #[test]
+    fn test_resize() {
+        for _ in 0..100 {
+            let mut rng = Xorshift::default();
+            rand!(rng, n: 1..=200, m: 0..=400, arr: [0..=1u32; n]);
+            let mut bitset: BitSet = arr.iter().map(|&x| x != 0).collect();
+            bitset.resize(m);
+            assert_eq!(bitset.len(), m);
+            for (i, &x) in arr.iter().enumerate() {
+                if i < n {
+                    assert_eq!(bitset.get(i), x != 0);
+                } else {
+                    assert!(!bitset.get(i));
+                }
             }
         }
     }
