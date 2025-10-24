@@ -69,9 +69,9 @@ impl BitSet {
 
     pub fn resize(&mut self, new_size: usize) {
         match self.size.cmp(&new_size) {
-            Ordering::Less => self.bits.resize(new_size.div_ceil(64), 0),
+            Ordering::Less => self.bits.resize((new_size + 63) / 64, 0),
             Ordering::Equal => {}
-            Ordering::Greater => self.bits.truncate(new_size.div_ceil(64)),
+            Ordering::Greater => self.bits.truncate((new_size + 63) / 64),
         }
         self.size = new_size;
         self.trim();
