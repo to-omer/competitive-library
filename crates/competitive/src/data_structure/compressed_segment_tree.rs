@@ -1,4 +1,4 @@
-use super::{Monoid, SliceBisectExt};
+use super::{GetDistinctMut, Monoid, SliceBisectExt};
 use std::{
     fmt::{self, Debug},
     marker::PhantomData,
@@ -64,7 +64,8 @@ where
 
 impl<M> Debug for Tag<M>
 where
-    M: Monoid<T: Debug>,
+    M: Monoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
@@ -119,7 +120,7 @@ macro_rules! impl_compressed_segment_tree {
             segs[i] = CompressedSegmentTree::<_, _, impl_compressed_segment_tree!(@cst $M $($Rest)*)>::from_iter(ps[i].iter().cloned());
         }
         for i in (1..n).rev() {
-            let [p, l, r] = ps.get_disjoint_mut([i, i * 2, i * 2 + 1]).unwrap();
+            let (p, l, r) = ps.get_distinct_mut((i, i * 2, i * 2 + 1));
             swap(p, l);
             p.append(r);
             segs[i] = CompressedSegmentTree::<_, _, impl_compressed_segment_tree!(@cst $M $($Rest)*)>::from_iter(ps[i].iter().cloned());

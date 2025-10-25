@@ -23,7 +23,8 @@ where
 
 impl<M> Debug for BinaryIndexedTree<M>
 where
-    M: Monoid<T: Debug>,
+    M: Monoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("BinaryIndexedTree")
@@ -99,9 +100,9 @@ impl<G: Group> BinaryIndexedTree<G> {
     }
 }
 
-impl<M> BinaryIndexedTree<M>
+impl<M: Monoid> BinaryIndexedTree<M>
 where
-    M: Monoid<T: Ord>,
+    M::T: Ord,
 {
     #[inline]
     pub fn lower_bound(&self, x: M::T) -> usize {

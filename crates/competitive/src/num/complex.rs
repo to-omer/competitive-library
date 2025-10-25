@@ -56,7 +56,8 @@ where
 }
 impl<T> Complex<T>
 where
-    T: Mul<Output: Add>,
+    T: Mul,
+    <T as Mul>::Output: Add,
 {
     pub fn dot(self, rhs: Self) -> <<T as Mul>::Output as Add>::Output {
         self.re * rhs.re + self.im * rhs.im
@@ -64,7 +65,8 @@ where
 }
 impl<T> Complex<T>
 where
-    T: Mul<Output: Sub>,
+    T: Mul,
+    <T as Mul>::Output: Sub,
 {
     pub fn cross(self, rhs: Self) -> <<T as Mul>::Output as Sub>::Output {
         self.re * rhs.im - self.im * rhs.re
@@ -72,7 +74,8 @@ where
 }
 impl<T> Complex<T>
 where
-    T: Mul<Output: Add> + Clone,
+    T: Mul + Clone,
+    <T as Mul>::Output: Add,
 {
     pub fn norm(self) -> <<T as Mul>::Output as Add>::Output {
         self.re.clone() * self.re + self.im.clone() * self.im
@@ -80,7 +83,8 @@ where
 }
 impl<T> Complex<T>
 where
-    T: Zero + Ord + Mul<Output: Ord>,
+    T: Zero + Ord + Mul,
+    <T as Mul>::Output: Ord,
 {
     pub fn cmp_by_arg(self, other: Self) -> Ordering {
         fn pos<T>(c: &Complex<T>) -> bool

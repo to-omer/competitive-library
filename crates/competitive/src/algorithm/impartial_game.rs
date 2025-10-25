@@ -49,7 +49,8 @@ where
 #[derive(Debug, Clone)]
 pub struct ImpartialGameAnalyzer<G>
 where
-    G: ImpartialGame<State: Eq + Hash>,
+    G: ImpartialGame,
+    G::State: Eq + Hash,
 {
     game: G,
     grundy: HashMap<G::State, u64>,
@@ -57,7 +58,8 @@ where
 
 impl<G> ImpartialGameAnalyzer<G>
 where
-    G: ImpartialGame<State: Eq + Hash + Clone>,
+    G: ImpartialGame,
+    G::State: Eq + Hash + Clone,
 {
     pub fn new(game: G) -> Self {
         Self {

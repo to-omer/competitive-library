@@ -134,7 +134,11 @@ where
         };
         end = start;
 
-        while let Some(right) = runs.pop_if(|right| left.start == 0 || right.len <= left.len) {
+        while let Some(&right) = runs.last() {
+            if left.start > 0 && right.len > left.len {
+                break;
+            }
+            runs.pop().unwrap();
             unsafe {
                 merge(
                     &mut v[left.start..right.start + right.len],
