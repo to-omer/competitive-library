@@ -342,10 +342,90 @@ where
     FloorSum::<AddMulOperation<T>, X, Y>::operate(&offset, &data).dp
 }
 
+#[derive(Debug)]
+struct FloorPowerSum<R>
+where
+    R: SemiRing,
+{
+    x: R::T,
+    sum: R::T,
+}
+
+impl<R> Clone for FloorPowerSum<R>
+where
+    R: SemiRing,
+{
+    fn clone(&self) -> Self {
+        Self {
+            x: self.x.clone(),
+            sum: self.sum.clone(),
+        }
+    }
+}
+
+impl<R> FloorPowerSum<R>
+where
+    R: SemiRing,
+{
+    fn to_x(x: R::T) -> Self {
+        Self { x, sum: R::one() }
+    }
+    fn to_y(y: R::T) -> Self {
+        Self {
+            x: y,
+            sum: R::zero(),
+        }
+    }
+}
+
+impl<R> Magma for FloorPowerSum<R>
+where
+    R: SemiRing,
+{
+    type T = Self;
+
+    fn operate(a: &Self::T, b: &Self::T) -> Self::T {
+        Self {
+            x: R::mul(&a.x, &b.x),
+            sum: R::add(&a.sum, &R::mul(&a.x, &b.sum)),
+        }
+    }
+}
+
+impl<R> Unital for FloorPowerSum<R>
+where
+    R: SemiRing,
+{
+    fn unit() -> Self::T {
+        Self {
+            x: R::one(),
+            sum: R::zero(),
+        }
+    }
+}
+
+impl<R> Associative for FloorPowerSum<R> where R: SemiRing {}
+
+/// $$\sum_{i=0}^{n-1}x^iy^{\left\lfloor\frac{a\times i+b}{m}\right\rfloor}$$
+pub fn floor_power_sum<R>(x: R::T, y: R::T, n: u64, a: u64, b: u64, m: u64) -> R::T
+where
+    R: SemiRing,
+{
+    floor_monoid_product::<FloorPowerSum<R>>(
+        FloorPowerSum::<R>::to_x(x),
+        FloorPowerSum::<R>::to_y(y),
+        n,
+        a,
+        b,
+        m,
+    )
+    .sum
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tools::Xorshift;
+    use crate::{num::mint_basic::MInt998244353, tools::Xorshift};
 
     #[test]
     fn test_floor_sum() {
@@ -413,6 +493,26 @@ mod tests {
                 }
             }
             let result = floor_sum_polynomial_i64::<i64, P, P>(l, r, a, b, m);
+            assert_eq!(expected, result);
+        }
+    }
+
+    #[test]
+    fn test_floor_power_sum() {
+        const A: u64 = 1_000;
+        const Q: usize = 1_000;
+        let mut rng = Xorshift::default();
+        for _ in 0..Q {
+            let (n, a, b, m) = rng.random((..A, ..A, ..A, 1..A));
+            let x: MInt998244353 = rng.random(..);
+            let y: MInt998244353 = rng.random(..);
+            let expected: MInt998244353 = (0..n)
+                .map(|i| {
+                    let floor = (a * i + b) / m;
+                    x.pow(i as _) * y.pow(floor as _)
+                })
+                .sum();
+            let result = floor_power_sum::<AddMulOperation<MInt998244353>>(x, y, n, a, b, m);
             assert_eq!(expected, result);
         }
     }
