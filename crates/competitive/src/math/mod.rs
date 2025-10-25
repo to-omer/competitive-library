@@ -36,7 +36,8 @@ pub use self::factorial::MemorizedFactorial;
 pub use self::fast_fourier_transform::ConvolveRealFft;
 #[codesnip::entry("floor_sum")]
 pub use self::floor_sum::{
-    floor_sum, floor_sum_i64, floor_sum_polynomial, floor_sum_polynomial_i64, floor_sum_range_freq,
+    floor_power_sum, floor_sum, floor_sum_i64, floor_sum_polynomial, floor_sum_polynomial_i64,
+    floor_sum_range_freq,
 };
 #[codesnip::entry("FormalPowerSeries")]
 pub use self::formal_power_series::{
