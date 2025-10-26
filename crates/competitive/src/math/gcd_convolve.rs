@@ -41,7 +41,8 @@ where
 
 impl<R> ConvolveSteps for GcdConvolve<R>
 where
-    R: Ring<Additive: Invertible>,
+    R: Ring,
+    R::Additive: Invertible,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;

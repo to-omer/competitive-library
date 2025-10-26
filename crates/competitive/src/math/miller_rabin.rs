@@ -102,16 +102,16 @@ impl_mr!(
 );
 
 pub fn miller_rabin_with_br(n: u64, br: &BarrettReduction<u128>) -> bool {
-    if n.is_multiple_of(2) {
+    if n % 2 == 0 {
         return n == 2;
     }
-    if n.is_multiple_of(3) {
+    if n % 3 == 0 {
         return n == 3;
     }
-    if n.is_multiple_of(5) {
+    if n % 5 == 0 {
         return n == 5;
     }
-    if n.is_multiple_of(7) {
+    if n % 7 == 0 {
         return n == 7;
     }
     if n < 121 { n > 2 } else { mr64(n, br) }

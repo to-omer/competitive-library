@@ -16,7 +16,7 @@ impl BitSet {
     pub fn new(size: usize) -> Self {
         Self {
             size,
-            bits: vec![0; size.div_ceil(64)],
+            bits: vec![0; (size + 63) / 64],
         }
     }
 
@@ -31,7 +31,7 @@ impl BitSet {
     pub fn ones(size: usize) -> Self {
         let mut self_ = Self {
             size,
-            bits: vec![u64::MAX; size.div_ceil(64)],
+            bits: vec![u64::MAX; (size + 63) / 64],
         };
         self_.trim();
         self_
@@ -69,19 +69,19 @@ impl BitSet {
 
     pub fn resize(&mut self, new_size: usize) {
         match self.size.cmp(&new_size) {
-            Ordering::Less => self.bits.resize(new_size.div_ceil(64), 0),
+            Ordering::Less => self.bits.resize((new_size + 63) / 64, 0),
             Ordering::Equal => {}
-            Ordering::Greater => self.bits.truncate(new_size.div_ceil(64)),
+            Ordering::Greater => self.bits.truncate((new_size + 63) / 64),
         }
         self.size = new_size;
         self.trim();
     }
 
     fn trim(&mut self) {
-        if self.size & 63 != 0
-            && let Some(x) = self.bits.last_mut()
-        {
-            *x &= 0xffff_ffff_ffff_ffff >> (64 - (self.size & 63));
+        if self.size & 63 != 0 {
+            if let Some(x) = self.bits.last_mut() {
+                *x &= 0xffff_ffff_ffff_ffff >> (64 - (self.size & 63));
+            }
         }
     }
 

@@ -23,7 +23,8 @@ where
 
 impl<M> Debug for QueueAggregation<M>
 where
-    M: Monoid<T: Debug>,
+    M: Monoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("QueueAggregation")
@@ -117,7 +118,8 @@ where
 
 impl<M> Debug for DequeAggregation<M>
 where
-    M: Monoid<T: Debug>,
+    M: Monoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("DequeAggregation")
@@ -188,7 +190,7 @@ where
         if self.front_stack.is_empty() {
             let n = self.back_stack.len();
             let mut back_stack = std::mem::take(&mut self.back_stack);
-            for x in back_stack.drain(..n.div_ceil(2)).map(|t| t.1).rev() {
+            for x in back_stack.drain(..(n + 1) / 2).map(|t| t.1).rev() {
                 self.push_front(x);
             }
             for x in back_stack.drain(..).map(|t| t.1) {
@@ -201,7 +203,7 @@ where
         if self.back_stack.is_empty() {
             let n = self.front_stack.len();
             let mut front_stack = std::mem::take(&mut self.front_stack);
-            for x in front_stack.drain(..n.div_ceil(2)).map(|t| t.1).rev() {
+            for x in front_stack.drain(..(n + 1) / 2).map(|t| t.1).rev() {
                 self.push_back(x);
             }
             for x in front_stack.drain(..).map(|t| t.1) {

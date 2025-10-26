@@ -16,7 +16,8 @@ where
 
 impl<R> Debug for Matrix<R>
 where
-    R: SemiRing<T: Debug>,
+    R: SemiRing,
+    R::T: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Matrix")
@@ -42,14 +43,20 @@ where
 
 impl<R> PartialEq for Matrix<R>
 where
-    R: SemiRing<T: PartialEq>,
+    R: SemiRing,
+    R::T: PartialEq,
 {
     fn eq(&self, other: &Self) -> bool {
         self.shape == other.shape && self.data == other.data
     }
 }
 
-impl<R> Eq for Matrix<R> where R: SemiRing<T: Eq> {}
+impl<R> Eq for Matrix<R>
+where
+    R: SemiRing,
+    R::T: Eq,
+{
+}
 
 impl<R> Matrix<R>
 where
@@ -145,7 +152,9 @@ where
 #[derive(Debug)]
 pub struct SystemOfLinearEquationsSolution<R>
 where
-    R: Field<Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
 {
     pub particular: Vec<R::T>,
     pub basis: Vec<Vec<R::T>>,
@@ -153,7 +162,10 @@ where
 
 impl<R> Matrix<R>
 where
-    R: Field<T: PartialEq, Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: PartialEq,
 {
     /// f: (row, pivot_row, col)
     pub fn row_reduction_with<F>(&mut self, normalize: bool, mut f: F)
@@ -431,7 +443,7 @@ macro_rules! impl_matrix_pairwise_binop {
 }
 
 impl_matrix_pairwise_binop!(Add, add, AddAssign, add_assign);
-impl_matrix_pairwise_binop!(Sub, sub, SubAssign, sub_assign where [R: SemiRing<Additive: Invertible>]);
+impl_matrix_pairwise_binop!(Sub, sub, SubAssign, sub_assign where [R::Additive: Invertible]);
 
 impl<R> Mul for Matrix<R>
 where
@@ -494,7 +506,8 @@ where
 
 impl<R> Neg for Matrix<R>
 where
-    R: SemiRing<Additive: Invertible>,
+    R: SemiRing,
+    R::Additive: Invertible,
 {
     type Output = Self;
 
@@ -505,7 +518,8 @@ where
 
 impl<R> Neg for &Matrix<R>
 where
-    R: SemiRing<Additive: Invertible>,
+    R: SemiRing,
+    R::Additive: Invertible,
 {
     type Output = Matrix<R>;
 
@@ -535,7 +549,8 @@ where
 
 impl<R> SerdeByteStr for Matrix<R>
 where
-    R: SemiRing<T: SerdeByteStr>,
+    R: SemiRing,
+    R::T: SerdeByteStr,
 {
     fn serialize(&self, buf: &mut Vec<u8>) {
         self.data.serialize(buf);

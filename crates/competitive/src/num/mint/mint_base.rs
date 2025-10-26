@@ -267,7 +267,8 @@ where
 }
 impl<M> Display for MInt<M>
 where
-    M: MIntBase<Inner: Display>,
+    M: MIntBase,
+    M::Inner: Display,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "{}", self.inner())
@@ -275,7 +276,8 @@ where
 }
 impl<M> FromStr for MInt<M>
 where
-    M: MIntConvert + MIntBase<Inner: FromStr>,
+    M: MIntConvert,
+    M::Inner: FromStr,
 {
     type Err = <M::Inner as FromStr>::Err;
     #[inline]
@@ -285,7 +287,8 @@ where
 }
 impl<M> IterScan for MInt<M>
 where
-    M: MIntConvert + MIntBase<Inner: FromStr>,
+    M: MIntConvert,
+    M::Inner: FromStr,
 {
     type Output = Self;
     #[inline]
@@ -295,7 +298,8 @@ where
 }
 impl<M> SerdeByteStr for MInt<M>
 where
-    M: MIntBase<Inner: SerdeByteStr>,
+    M: MIntBase,
+    M::Inner: SerdeByteStr,
 {
     fn serialize(&self, buf: &mut Vec<u8>) {
         self.inner().serialize(buf)
