@@ -17,9 +17,13 @@ pub use self::berlekamp_massey::berlekamp_massey;
 #[codesnip::entry("bitwise_transform")]
 pub use self::bitwise_transform::bitwise_transform;
 #[codesnip::entry("BitwiseandConvolve")]
-pub use self::bitwiseand_convolve::BitwiseandConvolve;
+pub use self::bitwiseand_convolve::{
+    BitwiseandConvolve, OnlineSupersetMobiusTransform, OnlineSupersetZetaTransform,
+};
 #[codesnip::entry("BitwiseorConvolve")]
-pub use self::bitwiseor_convolve::BitwiseorConvolve;
+pub use self::bitwiseor_convolve::{
+    BitwiseorConvolve, OnlineSubsetMobiusTransform, OnlineSubsetZetaTransform,
+};
 #[codesnip::entry("BitwisexorConvolve")]
 pub use self::bitwisexor_convolve::BitwisexorConvolve;
 #[codesnip::entry("BlackBoxMatrix")]
