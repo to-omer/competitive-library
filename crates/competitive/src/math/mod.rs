@@ -68,7 +68,9 @@ pub use self::miller_rabin::{miller_rabin, miller_rabin_with_br};
 #[codesnip::entry("MIntMatrix")]
 pub use self::mint_matrix::MIntMatrix;
 #[codesnip::entry("NumberTheoreticTransform")]
-pub use self::number_theoretic_transform::{Convolve, Convolve998244353, MIntConvolve, NttReuse};
+pub use self::number_theoretic_transform::{
+    Convolve, Convolve998244353, MIntConvolve, NttReuse, U64Convolve,
+};
 pub use self::polynomial::*;
 #[codesnip::entry("PowPrec")]
 pub use self::pow_prec::PowPrec;
