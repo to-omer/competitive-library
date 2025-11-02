@@ -4,6 +4,7 @@ use std::{cell::UnsafeCell, marker::PhantomData};
 pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<Modulo998244353>;
 pub type MIntConvolve<M> = Convolve<(M, (Modulo2013265921, Modulo1811939329, Modulo2113929217))>;
+pub type U64Convolve = Convolve<(u64, (Modulo2013265921, Modulo1811939329, Modulo2113929217))>;
 
 macro_rules! impl_ntt_modulus {
     ($([$name:ident, $g:expr]),*) => {
@@ -267,6 +268,29 @@ where
     }
     c
 }
+
+fn convolve_naive_u64(a: &[u64], b: &[u64]) -> Vec<u64> {
+    if a.is_empty() && b.is_empty() {
+        return Vec::new();
+    }
+    let len = a.len() + b.len() - 1;
+    let mut c = vec![0u64; len];
+    if a.len() < b.len() {
+        for (i, &b) in b.iter().enumerate() {
+            for (a, c) in a.iter().zip(&mut c[i..]) {
+                *c += *a * b;
+            }
+        }
+    } else {
+        for (i, &a) in a.iter().enumerate() {
+            for (b, c) in b.iter().zip(&mut c[i..]) {
+                *c += *b * a;
+            }
+        }
+    }
+    c
+}
+
 impl<M> ConvolveSteps for Convolve<M>
 where
     M: Montgomery32NttModulus,
@@ -332,6 +356,7 @@ where
         Self::inverse_transform(a, len)
     }
 }
+
 type MVec<M> = Vec<MInt<M>>;
 impl<M, N1, N2, N3> ConvolveSteps for Convolve<(M, (N1, N2, N3))>
 where
@@ -401,6 +426,87 @@ where
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
         if Self::length(&a).min(Self::length(&b)) <= 60 {
             return convolve_naive(&a, &b);
+        }
+        let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
+        let mut a = Self::transform(a, len);
+        let b = Self::transform(b, len);
+        Self::multiply(&mut a, &b);
+        Self::inverse_transform(a, len)
+    }
+}
+
+impl<N1, N2, N3> ConvolveSteps for Convolve<(u64, (N1, N2, N3))>
+where
+    N1: Montgomery32NttModulus,
+    N2: Montgomery32NttModulus,
+    N3: Montgomery32NttModulus,
+{
+    type T = Vec<u64>;
+    type F = (MVec<N1>, MVec<N2>, MVec<N3>);
+
+    fn length(t: &Self::T) -> usize {
+        t.len()
+    }
+
+    fn transform(t: Self::T, len: usize) -> Self::F {
+        let npot = len.max(1).next_power_of_two();
+        let mut f = (
+            MVec::<N1>::with_capacity(npot),
+            MVec::<N2>::with_capacity(npot),
+            MVec::<N3>::with_capacity(npot),
+        );
+        for t in t {
+            f.0.push(t.into());
+            f.1.push(t.into());
+            f.2.push(t.into());
+        }
+        f.0.resize_with(npot, Zero::zero);
+        f.1.resize_with(npot, Zero::zero);
+        f.2.resize_with(npot, Zero::zero);
+        ntt(&mut f.0);
+        ntt(&mut f.1);
+        ntt(&mut f.2);
+        f
+    }
+
+    fn inverse_transform(f: Self::F, len: usize) -> Self::T {
+        let t1 = MInt::<N2>::new(N1::get_mod()).inv();
+        let m1 = N1::get_mod() as u64;
+        let m1_3 = MInt::<N3>::new(N1::get_mod());
+        let t2 = (m1_3 * MInt::<N3>::new(N2::get_mod())).inv();
+        let m2 = m1 * N2::get_mod() as u64;
+        Convolve::<N1>::inverse_transform(f.0, len)
+            .into_iter()
+            .zip(Convolve::<N2>::inverse_transform(f.1, len))
+            .zip(Convolve::<N3>::inverse_transform(f.2, len))
+            .map(|((c1, c2), c3)| {
+                let d1 = c1.inner();
+                let d2 = ((c2 - MInt::<N2>::from(d1)) * t1).inner();
+                let x = MInt::<N3>::new(d1) + MInt::<N3>::new(d2) * m1_3;
+                let d3 = ((c3 - x) * t2).inner();
+                d1 as u64 + d2 as u64 * m1 + d3 as u64 * m2
+            })
+            .collect()
+    }
+
+    fn multiply(f: &mut Self::F, g: &Self::F) {
+        assert_eq!(f.0.len(), g.0.len());
+        assert_eq!(f.1.len(), g.1.len());
+        assert_eq!(f.2.len(), g.2.len());
+        for (f, g) in f.0.iter_mut().zip(g.0.iter()) {
+            *f *= *g;
+        }
+        for (f, g) in f.1.iter_mut().zip(g.1.iter()) {
+            *f *= *g;
+        }
+        for (f, g) in f.2.iter_mut().zip(g.2.iter()) {
+            *f *= *g;
+        }
+    }
+
+    fn convolve(a: Self::T, b: Self::T) -> Self::T {
+        if Self::length(&a).min(Self::length(&b)) <= 60 {
+            return convolve_naive_u64(&a, &b);
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let mut a = Self::transform(a, len);
@@ -645,6 +751,27 @@ mod tests {
                 }
             }
             let d = MIntConvolve::<Modulo1000000009>::convolve(a, b);
+            assert_eq!(c, d);
+        }
+    }
+
+    #[test]
+    fn test_convolve_u64() {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(0..=5);
+            let n = if n == 5 { rng.random(70..=100) } else { n };
+            let m = rng.random(0..=5);
+            let m = if m == 5 { rng.random(70..=100) } else { m };
+            let a: Vec<u64> = rng.random_iter(0u64..1 << 24).take(n).collect();
+            let b: Vec<u64> = rng.random_iter(0u64..1 << 24).take(m).collect();
+            let mut c = vec![0; (n + m).saturating_sub(1)];
+            for i in 0..n {
+                for j in 0..m {
+                    c[i + j] += a[i] * b[j];
+                }
+            }
+            let d = U64Convolve::convolve(a, b);
             assert_eq!(c, d);
         }
     }

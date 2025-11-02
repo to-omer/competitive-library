@@ -3,6 +3,7 @@
 use crate::{
     algebra::Monoid,
     graph::UndirectedSparseGraph,
+    math::{ConvolveSteps, U64Convolve},
     tools::{RandomSpec, Xorshift},
 };
 
@@ -15,6 +16,14 @@ pub use self::rerooting::ReRooting;
 pub use self::tree_center::*;
 pub use self::tree_hash::TreeHasher;
 
+#[cfg_attr(
+    nightly,
+    codesnip::entry(
+        "centroid_decomposition",
+        include("SparseGraph", "NumberTheoreticTransform")
+    )
+)]
+mod centroid_decomposition;
 mod depth;
 mod euler_tour;
 #[cfg_attr(
