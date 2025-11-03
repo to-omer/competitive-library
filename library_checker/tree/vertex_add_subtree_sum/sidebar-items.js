@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["vertex_add_subtree_sum"]};
+window.SIDEBAR_ITEMS = {"fn":["test_vertex_add_subtree_sum","vertex_add_subtree_sum"]};

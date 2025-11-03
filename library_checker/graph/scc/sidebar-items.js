@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["scc"]};
+window.SIDEBAR_ITEMS = {"fn":["scc","test_scc"]};

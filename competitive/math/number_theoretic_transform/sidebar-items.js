@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BIT_REVERSE"],"fn":["convolve_naive","convolve_naive_u64","intt","mod_mul","mod_pow","ntt","reduce"],"macro":["impl_ntt_modulus"],"struct":["Convolve","NttInfo"],"trait":["Montgomery32NttModulus","NttReuse"],"type":["Convolve998244353","MIntConvolve","MVec","U64Convolve"]};

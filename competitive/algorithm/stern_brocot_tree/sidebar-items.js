@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["rational_binary_search"],"struct":["SbtNode","SbtPath"],"trait":["SternBrocotTree"]};

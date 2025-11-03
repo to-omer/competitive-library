@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["impl_exp_bits_for_uint","impl_signed_exp_bits_for_sint"],"struct":["Bits"],"trait":["AbelianGroup","AbelianMonoid","Associative","Commutative","ExpBits","Group","Idempotent","IdempotentMonoid","Invertible","Magma","Monoid","SemiGroup","SignedExpBits","Unital"]};

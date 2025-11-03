@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["impl_char_convert_unsigned"],"trait":["CharConvertTryFrom","CharConvertTryInto"]};

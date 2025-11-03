@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["subset_convolution"]};
+window.SIDEBAR_ITEMS = {"fn":["subset_convolution","test_subset_convolution"]};

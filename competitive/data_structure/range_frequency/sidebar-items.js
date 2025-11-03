@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RangeFrequencyQuery"],"struct":["RangeFrequency","RangeFrequencyProcessor"]};

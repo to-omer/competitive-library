@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["impl_to_digit_sequence"],"trait":["ToDigitSequence"]};

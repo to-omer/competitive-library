@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["bitwise_and_convolution","bitwise_or_convolution"]};
+window.SIDEBAR_ITEMS = {"fn":["bitwise_and_convolution","bitwise_or_convolution","test_bitwise_and_convolution","test_bitwise_or_convolution"]};

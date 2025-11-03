@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Modulo1811939329","Modulo2013265921","Modulo2113929217","Modulo998244353"],"macro":["define_montgomery_reduction_32"],"trait":["MontgomeryReduction32"],"type":["MInt1811939329","MInt2013265921","MInt2113929217","MInt998244353"]};

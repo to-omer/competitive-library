@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["dpl_3_c"]};
+window.SIDEBAR_ITEMS = {"fn":["dpl_3_c","test_dpl_3_c"]};

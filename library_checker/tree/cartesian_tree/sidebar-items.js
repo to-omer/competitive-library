@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["cartesian_tree"]};
+window.SIDEBAR_ITEMS = {"fn":["cartesian_tree","test_cartesian_tree"]};

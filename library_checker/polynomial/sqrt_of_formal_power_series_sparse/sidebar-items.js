@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["sqrt_of_formal_power_series_sparse"]};
+window.SIDEBAR_ITEMS = {"fn":["sqrt_of_formal_power_series_sparse","test_sqrt_of_formal_power_series_sparse"]};

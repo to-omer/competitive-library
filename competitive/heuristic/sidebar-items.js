@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["beam_search"],"struct":["SimulatedAnnealing"],"trait":["ModifiableState"]};
+window.SIDEBAR_ITEMS = {"fn":["beam_search"],"mod":["beam_search","simulated_annealing"],"struct":["SimulatedAnnealing"],"trait":["ModifiableState"]};

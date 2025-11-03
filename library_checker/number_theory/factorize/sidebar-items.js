@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["factorize"]};
+window.SIDEBAR_ITEMS = {"fn":["factorize","test_factorize"]};

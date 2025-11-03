@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["binomial_coefficient"]};
+window.SIDEBAR_ITEMS = {"fn":["binomial_coefficient","test_binomial_coefficient"]};

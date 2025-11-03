@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["piecewise_ternary_search","ternary_search"],"trait":["FibonacciSearch","Trisect"]};
+window.SIDEBAR_ITEMS = {"fn":["piecewise_ternary_search","ternary_search"],"macro":["impl_fibonacci_search_unsigned","impl_trisect_float","impl_trisect_signed","impl_trisect_unsigned"],"trait":["FibonacciSearch","Trisect"]};

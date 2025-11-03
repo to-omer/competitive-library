@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["gcd_convolution"]};
+window.SIDEBAR_ITEMS = {"fn":["gcd_convolution","test_gcd_convolution"]};

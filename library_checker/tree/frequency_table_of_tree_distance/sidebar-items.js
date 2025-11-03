@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["frequency_table_of_tree_distance"]};
+window.SIDEBAR_ITEMS = {"fn":["frequency_table_of_tree_distance","test_frequency_table_of_tree_distance"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["rational_approximation"]};
+window.SIDEBAR_ITEMS = {"fn":["rational_approximation","test_rational_approximation"]};

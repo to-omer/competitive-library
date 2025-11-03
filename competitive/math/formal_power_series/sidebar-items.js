@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["formal_power_series_impls","formal_power_series_nums"],"struct":["FormalPowerSeries"],"trait":["FormalPowerSeriesCoefficient","FormalPowerSeriesCoefficientSqrt"],"type":["Fps","Fps998244353"]};

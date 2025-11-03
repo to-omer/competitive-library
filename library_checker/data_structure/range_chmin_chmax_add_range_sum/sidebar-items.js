@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["range_chmin_chmax_add_range_sum"]};
+window.SIDEBAR_ITEMS = {"fn":["range_chmin_chmax_add_range_sum","test_range_chmin_chmax_add_range_sum"]};

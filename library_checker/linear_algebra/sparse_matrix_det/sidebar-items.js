@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["sparse_matrix_det"]};
+window.SIDEBAR_ITEMS = {"fn":["sparse_matrix_det","test_sparse_matrix_det"]};

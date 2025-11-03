@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["impl_rank_select_for_bits"],"struct":["BitVector"],"trait":["RankSelectDictionaries"]};

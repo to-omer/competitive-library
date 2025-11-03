@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["lagrange_interpolation","lagrange_interpolation_polynomial"]};

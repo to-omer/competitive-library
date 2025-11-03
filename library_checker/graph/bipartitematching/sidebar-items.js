@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["bipartitematching","bipartitematching_dinic"]};
+window.SIDEBAR_ITEMS = {"fn":["bipartitematching","bipartitematching_dinic","test_bipartitematching","test_bipartitematching_dinic"]};

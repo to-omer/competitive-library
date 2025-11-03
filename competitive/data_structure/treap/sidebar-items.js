@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Treap","TreapData","TreapSpec","TreapSplit3"]};
+window.SIDEBAR_ITEMS = {"struct":["Treap","TreapData","TreapSpec","TreapSplit3"],"type":["TreapNode","TreapRoot"]};

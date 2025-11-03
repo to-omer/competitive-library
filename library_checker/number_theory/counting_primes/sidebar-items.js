@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["counting_primes"]};
+window.SIDEBAR_ITEMS = {"fn":["counting_primes","test_counting_primes"]};

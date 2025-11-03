@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["wildcard_pattern_matching"],"mod":["rolling_hash"],"struct":["KnuthMorrisPratt","SuffixArray","Zarray"]};
+window.SIDEBAR_ITEMS = {"fn":["wildcard_pattern_matching"],"mod":["knuth_morris_pratt","rolling_hash","suffix_array","wildcard_pattern_matching","z_algorithm"],"struct":["KnuthMorrisPratt","SuffixArray","Zarray"]};

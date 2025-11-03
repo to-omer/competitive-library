@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["euler_phi","highly_composite_number","moebius"],"struct":["EulerPhiTable"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["assignment"]};
+window.SIDEBAR_ITEMS = {"fn":["assignment","test_assignment"]};

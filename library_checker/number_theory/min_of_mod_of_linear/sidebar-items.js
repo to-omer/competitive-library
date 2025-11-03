@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["min_of_mod_of_linear"]};
+window.SIDEBAR_ITEMS = {"fn":["min_of_mod_of_linear","test_min_of_mod_of_linear"]};

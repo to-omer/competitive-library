@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["LazyAggElement","LazyAggSplay","SplaySequence"]};
+window.SIDEBAR_ITEMS = {"struct":["LazyAggElement","LazyAggSplay","SeekByAccCond","SeekByRaccCond","SeekBySize","SplaySequence"]};

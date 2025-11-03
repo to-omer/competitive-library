@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BstNodeId","BstNodeIdManager"]};
+window.SIDEBAR_ITEMS = {"static":["GENERATION"],"struct":["BstNodeId","BstNodeIdManager"]};

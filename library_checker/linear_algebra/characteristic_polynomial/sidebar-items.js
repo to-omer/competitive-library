@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["characteristic_polynomial"]};
+window.SIDEBAR_ITEMS = {"fn":["characteristic_polynomial","test_characteristic_polynomial"]};

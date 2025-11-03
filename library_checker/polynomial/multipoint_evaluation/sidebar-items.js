@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["multipoint_evaluation"]};
+window.SIDEBAR_ITEMS = {"fn":["multipoint_evaluation","test_multipoint_evaluation"]};

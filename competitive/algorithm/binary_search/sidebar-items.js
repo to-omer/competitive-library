@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["binary_search","parallel_binary_search"],"macro":["impl_bisect_float","impl_bisect_signed","impl_bisect_unsigned"],"trait":["Bisect","SliceBisectExt"]};

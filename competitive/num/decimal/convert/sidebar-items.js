@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["ParseDecimalError"]};
+window.SIDEBAR_ITEMS = {"enum":["DecimalErrorKind"],"macro":["impl_from_signed","impl_from_through_string","impl_from_unsigned"],"struct":["ParseDecimalError"]};

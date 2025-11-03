@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["exp_of_formal_power_series_sparse"]};
+window.SIDEBAR_ITEMS = {"fn":["exp_of_formal_power_series_sparse","test_exp_of_formal_power_series_sparse"]};

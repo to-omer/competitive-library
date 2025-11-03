@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["majority_voting"]};
+window.SIDEBAR_ITEMS = {"fn":["majority_voting","test_majority_voting"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["min_cost_b_flow"]};
+window.SIDEBAR_ITEMS = {"fn":["min_cost_b_flow","test_min_cost_b_flow"]};

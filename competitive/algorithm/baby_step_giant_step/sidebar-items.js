@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["baby_step_giant_step"]};

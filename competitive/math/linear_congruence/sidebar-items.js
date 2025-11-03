@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["solve_linear_congruence","solve_simultaneous_linear_congruence"]};

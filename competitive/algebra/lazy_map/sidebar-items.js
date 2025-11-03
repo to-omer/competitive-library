@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["EmptyActLazy","EmptyAggActLazy","FlattenLazy","RangeChminChmaxAdd","RangeMaxRangeAdd","RangeMaxRangeUpdate","RangeMinRangeAdd","RangeMinRangeUpdate","RangeSumRangeAdd","RangeSumRangeChminChmaxAdd","RangeSumRangeLinear","RangeSumRangeUpdate"],"trait":["LazyMapMonoid"]};

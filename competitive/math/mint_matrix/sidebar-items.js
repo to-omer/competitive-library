@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["taylor_shift"],"trait":["MIntMatrix"]};

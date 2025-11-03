@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["solve_linear_diophantine"],"macro":["with_range"],"struct":["Linear","LinearDiophantineSolution"]};

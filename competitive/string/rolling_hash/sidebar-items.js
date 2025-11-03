@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Gf2_63x1","Gf2_63x2","Gf2_63x3","Mersenne61x1","Mersenne61x2","Mersenne61x3"],"struct":["Hashed","HashedRange","HashedRangeChained","HashedSequence"],"trait":["RollingHasher"]};
+window.SIDEBAR_ITEMS = {"enum":["Gf2_63x1","Gf2_63x2","Gf2_63x3","Mersenne61x1","Mersenne61x2","Mersenne61x3"],"fn":["to_range"],"macro":["impl_rolling_hasher"],"struct":["Hashed","HashedRange","HashedRangeChained","HashedSequence","RollingHashPrecalc"],"trait":["RollingHasher"]};

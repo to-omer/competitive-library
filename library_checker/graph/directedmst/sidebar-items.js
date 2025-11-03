@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["directedmst"]};
+window.SIDEBAR_ITEMS = {"fn":["directedmst","test_directedmst"]};

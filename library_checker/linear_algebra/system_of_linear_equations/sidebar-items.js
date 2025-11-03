@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["system_of_linear_equations"]};
+window.SIDEBAR_ITEMS = {"fn":["system_of_linear_equations","test_system_of_linear_equations"]};

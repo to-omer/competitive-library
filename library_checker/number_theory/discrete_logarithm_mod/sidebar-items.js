@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["discrete_logarithm_mod"]};
+window.SIDEBAR_ITEMS = {"fn":["discrete_logarithm_mod","test_discrete_logarithm_mod"]};

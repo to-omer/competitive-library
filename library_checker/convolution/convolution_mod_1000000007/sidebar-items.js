@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["convolution_mod_1000000007"]};
+window.SIDEBAR_ITEMS = {"fn":["convolution_mod_1000000007","test_convolution_mod_1000000007"]};

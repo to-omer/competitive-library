@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CAP"],"struct":["BoxAllocator","MemoryPool"],"trait":["Allocator"]};

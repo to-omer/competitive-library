@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"macro":["impl_approx_zero_for_int"],"struct":["Approx"],"trait":["ApproxOrd"]};

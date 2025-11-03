@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["EmptyAct","FlattenAct","LinearAct","UpdateAct"],"trait":["MonoidAct"]};

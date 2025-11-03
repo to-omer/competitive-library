@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["chromatic_number"]};
+window.SIDEBAR_ITEMS = {"fn":["chromatic_number","test_chromatic_number"]};

@@ -1,0 +1,606 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `NetworkSimplexSolver` struct in crate `competitive`."><title>NetworkSimplexSolver in competitive::graph::network_simplex - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.93.0-nightly (b15a874aa 2025-11-02)" data-channel="nightly" data-search-js="search-5c29b3b5.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector("#settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://github.com/search?q=repo%3Ato-omer%2Fcompetitive_archive+${itemName}&type=code">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc struct"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">NetworkSimplexSolver</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Network<wbr>Simplex<wbr>Solver</a></h2><h3><a href="#fields">Fields</a></h3><ul class="block structfield"><li><a href="#structfield.bucket_size" title="bucket_size">bucket_size</a></li><li><a href="#structfield.candidates" title="candidates">candidates</a></li><li><a href="#structfield.depth" title="depth">depth</a></li><li><a href="#structfield.dss" title="dss">dss</a></li><li><a href="#structfield.edges" title="edges">edges</a></li><li><a href="#structfield.lowers" title="lowers">lowers</a></li><li><a href="#structfield.m" title="m">m</a></li><li><a href="#structfield.minor_limit" title="minor_limit">minor_limit</a></li><li><a href="#structfield.n" title="n">n</a></li><li><a href="#structfield.next" title="next">next</a></li><li><a href="#structfield.parents" title="parents">parents</a></li><li><a href="#structfield.potentials" title="potentials">potentials</a></li><li><a href="#structfield.prev" title="prev">prev</a></li></ul><h3><a href="#implementations">Methods</a></h3><ul class="block method"><li><a href="#method.build" title="build">build</a></li><li><a href="#method.connect" title="connect">connect</a></li><li><a href="#method.generate_solution" title="generate_solution">generate_solution</a></li><li><a href="#method.get_lca" title="get_lca">get_lca</a></li><li><a href="#method.minor" title="minor">minor</a></li><li><a href="#method.push_flow" title="push_flow">push_flow</a></li><li><a href="#method.solve" title="solve">solve</a></li></ul><h3><a href="#trait-implementations">Trait Implementations</a></h3><ul class="block trait-implementation"><li><a href="#impl-Debug-for-NetworkSimplexSolver%3CF,+C%3E" title="Debug">Debug</a></li></ul><h3><a href="#synthetic-implementations">Auto Trait Implementations</a></h3><ul class="block synthetic-implementation"><li><a href="#impl-Freeze-for-NetworkSimplexSolver%3CF,+C%3E" title="Freeze">Freeze</a></li><li><a href="#impl-RefUnwindSafe-for-NetworkSimplexSolver%3CF,+C%3E" title="RefUnwindSafe">RefUnwindSafe</a></li><li><a href="#impl-Send-for-NetworkSimplexSolver%3CF,+C%3E" title="Send">Send</a></li><li><a href="#impl-Sync-for-NetworkSimplexSolver%3CF,+C%3E" title="Sync">Sync</a></li><li><a href="#impl-Unpin-for-NetworkSimplexSolver%3CF,+C%3E" title="Unpin">Unpin</a></li><li><a href="#impl-UnwindSafe-for-NetworkSimplexSolver%3CF,+C%3E" title="UnwindSafe">UnwindSafe</a></li></ul><h3><a href="#blanket-implementations">Blanket Implementations</a></h3><ul class="block blanket-implementation"><li><a href="#impl-Any-for-T" title="Any">Any</a></li><li><a href="#impl-Borrow%3CT%3E-for-T" title="Borrow&#60;T&#62;">Borrow&#60;T&#62;</a></li><li><a href="#impl-BorrowMut%3CT%3E-for-T" title="BorrowMut&#60;T&#62;">BorrowMut&#60;T&#62;</a></li><li><a href="#impl-From%3CT%3E-for-T" title="From&#60;T&#62;">From&#60;T&#62;</a></li><li><a href="#impl-Into%3CU%3E-for-T" title="Into&#60;U&#62;">Into&#60;U&#62;</a></li><li><a href="#impl-TryFrom%3CU%3E-for-T" title="TryFrom&#60;U&#62;">TryFrom&#60;U&#62;</a></li><li><a href="#impl-TryInto%3CU%3E-for-T" title="TryInto&#60;U&#62;">TryInto&#60;U&#62;</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>graph::<wbr>network_<wbr>simplex</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">graph</a>::<wbr><a href="index.html">network_simplex</a></div><h1>Struct <span class="struct">Network<wbr>Simplex<wbr>Solver</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/graph/network_simplex.rs.html#119-134">Source</a> </span></div><pre class="rust item-decl"><code>struct NetworkSimplexSolver&lt;F, C&gt; {<details class="toggle type-contents-toggle"><summary class="hideme"><span>Show 13 fields</span></summary>
+    n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    edges: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.Edge.html" title="struct competitive::graph::network_simplex::Edge">Edge</a>&lt;F, C&gt;&gt;,
+    lowers: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;F&gt;,
+    dss: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;F&gt;,
+    bucket_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    minor_limit: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    potentials: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;C&gt;,
+    parents: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.Parent.html" title="struct competitive::graph::network_simplex::Parent">Parent</a>&lt;F&gt;&gt;,
+    depth: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    next: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    prev: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+    candidates: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;,
+</details>}</code></pre><h2 id="fields" class="fields section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.n" class="structfield section-header"><a href="#structfield.n" class="anchor field">§</a><code>n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.m" class="structfield section-header"><a href="#structfield.m" class="anchor field">§</a><code>m: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.edges" class="structfield section-header"><a href="#structfield.edges" class="anchor field">§</a><code>edges: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.Edge.html" title="struct competitive::graph::network_simplex::Edge">Edge</a>&lt;F, C&gt;&gt;</code></span><span id="structfield.lowers" class="structfield section-header"><a href="#structfield.lowers" class="anchor field">§</a><code>lowers: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;F&gt;</code></span><span id="structfield.dss" class="structfield section-header"><a href="#structfield.dss" class="anchor field">§</a><code>dss: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;F&gt;</code></span><span id="structfield.bucket_size" class="structfield section-header"><a href="#structfield.bucket_size" class="anchor field">§</a><code>bucket_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.minor_limit" class="structfield section-header"><a href="#structfield.minor_limit" class="anchor field">§</a><code>minor_limit: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span id="structfield.potentials" class="structfield section-header"><a href="#structfield.potentials" class="anchor field">§</a><code>potentials: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;C&gt;</code></span><span id="structfield.parents" class="structfield section-header"><a href="#structfield.parents" class="anchor field">§</a><code>parents: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="struct.Parent.html" title="struct competitive::graph::network_simplex::Parent">Parent</a>&lt;F&gt;&gt;</code></span><span id="structfield.depth" class="structfield section-header"><a href="#structfield.depth" class="anchor field">§</a><code>depth: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><span id="structfield.next" class="structfield section-header"><a href="#structfield.next" class="anchor field">§</a><code>next: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><span id="structfield.prev" class="structfield section-header"><a href="#structfield.prev" class="anchor field">§</a><code>prev: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><span id="structfield.candidates" class="structfield section-header"><a href="#structfield.candidates" class="anchor field">§</a><code>candidates: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</code></span><h2 id="implementations" class="section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#136-462">Source</a><a href="#impl-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F, C&gt; <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html" title="trait core::cmp::PartialOrd">PartialOrd</a> + <a class="trait" href="../../num/trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&lt;Output = F&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html" title="trait core::ops::arith::Sub">Sub</a>&lt;Output = F&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html" title="trait core::ops::arith::AddAssign">AddAssign</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.SubAssign.html" title="trait core::ops::arith::SubAssign">SubAssign</a>,
+    C: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html" title="trait core::cmp::PartialOrd">PartialOrd</a> + <a class="trait" href="../../num/trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="../../num/trait.One.html" title="trait competitive::num::One">One</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html" title="trait core::ops::arith::Add">Add</a>&lt;Output = C&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Sub.html" title="trait core::ops::arith::Sub">Sub</a>&lt;Output = C&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html" title="trait core::ops::arith::AddAssign">AddAssign</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.SubAssign.html" title="trait core::ops::arith::SubAssign">SubAssign</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html" title="trait core::ops::arith::Neg">Neg</a>&lt;Output = C&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html" title="trait core::ops::arith::Mul">Mul</a>&lt;Output = C&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;F&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.connect" class="method"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#151-154">Source</a><h4 class="code-header">fn <a href="#method.connect" class="fn">connect</a>(&amp;mut self, a: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, b: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[89,89],&#34;../../../src/competitive/graph/network_simplex.rs.html#245&#34;,&#34;line 245&#34;],[[92,92],&#34;../../../src/competitive/graph/network_simplex.rs.html#248&#34;,&#34;line 248&#34;],[[93,93],&#34;../../../src/competitive/graph/network_simplex.rs.html#249&#34;,&#34;line 249&#34;],[[265,265],&#34;../../../src/competitive/graph/network_simplex.rs.html#421&#34;,&#34;line 421&#34;],[[266,266],&#34;../../../src/competitive/graph/network_simplex.rs.html#422&#34;,&#34;line 422&#34;],[[267,267],&#34;../../../src/competitive/graph/network_simplex.rs.html#423&#34;,&#34;line 423&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/network_simplex.rs (<a href="../../../src/competitive/graph/network_simplex.rs.html#245">line 245</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>156</span>    <span class="kw">fn </span>build(ns: NetworkSimplex&lt;F, C&gt;) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>157</span>        <span class="kw">let </span>NetworkSimplex {
+<span data-nosnippet>158</span>            n,
+<span data-nosnippet>159</span>            <span class="kw-2">mut </span>edges,
+<span data-nosnippet>160</span>            lowers,
+<span data-nosnippet>161</span>            dss,
+<span data-nosnippet>162</span>            bucket_size,
+<span data-nosnippet>163</span>            minor_limit,
+<span data-nosnippet>164</span>        } = ns;
+<span data-nosnippet>165</span>
+<span data-nosnippet>166</span>        <span class="kw">let </span>m = edges.len();
+<span data-nosnippet>167</span>        <span class="kw">let </span>bucket_size =
+<span data-nosnippet>168</span>            bucket_size.unwrap_or_else(|| (((m <span class="kw">as </span>f64).sqrt() * <span class="number">0.2</span>) <span class="kw">as </span>usize).max(<span class="number">10</span>));
+<span data-nosnippet>169</span>        <span class="kw">let </span>minor_limit =
+<span data-nosnippet>170</span>            minor_limit.unwrap_or_else(|| (((bucket_size <span class="kw">as </span>f64) * <span class="number">0.1</span>) <span class="kw">as </span>usize).max(<span class="number">3</span>));
+<span data-nosnippet>171</span>
+<span data-nosnippet>172</span>        <span class="kw">let </span><span class="kw-2">mut </span>potentials = <span class="macro">vec!</span>[C::zero(); n + <span class="number">1</span>];
+<span data-nosnippet>173</span>        <span class="kw">let </span><span class="kw-2">mut </span>parents = <span class="macro">vec!</span>[
+<span data-nosnippet>174</span>            Parent {
+<span data-nosnippet>175</span>                par: <span class="number">0</span>,
+<span data-nosnippet>176</span>                eid: <span class="number">0</span>,
+<span data-nosnippet>177</span>                up: F::zero(),
+<span data-nosnippet>178</span>                down: F::zero(),
+<span data-nosnippet>179</span>            };
+<span data-nosnippet>180</span>            n
+<span data-nosnippet>181</span>        ];
+<span data-nosnippet>182</span>        <span class="kw">let </span>inf_cost = edges.iter().step_by(<span class="number">2</span>).fold(C::one(), |acc, edge| {
+<span data-nosnippet>183</span>            acc + <span class="kw">if </span>edge.cost &gt;= C::zero() {
+<span data-nosnippet>184</span>                edge.cost
+<span data-nosnippet>185</span>            } <span class="kw">else </span>{
+<span data-nosnippet>186</span>                -edge.cost
+<span data-nosnippet>187</span>            }
+<span data-nosnippet>188</span>        });
+<span data-nosnippet>189</span>        edges.reserve(m + n * <span class="number">2</span>);
+<span data-nosnippet>190</span>        <span class="kw">let </span>super_node = n;
+<span data-nosnippet>191</span>        <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>192</span>            <span class="kw">let </span>eid = edges.len();
+<span data-nosnippet>193</span>            <span class="kw">if </span>dss[v] &gt;= F::zero() {
+<span data-nosnippet>194</span>                edges.push(Edge {
+<span data-nosnippet>195</span>                    to: super_node,
+<span data-nosnippet>196</span>                    cap: F::zero(),
+<span data-nosnippet>197</span>                    cost: inf_cost,
+<span data-nosnippet>198</span>                });
+<span data-nosnippet>199</span>                edges.push(Edge {
+<span data-nosnippet>200</span>                    to: v,
+<span data-nosnippet>201</span>                    cap: dss[v],
+<span data-nosnippet>202</span>                    cost: -inf_cost,
+<span data-nosnippet>203</span>                });
+<span data-nosnippet>204</span>                potentials[v] = -inf_cost;
+<span data-nosnippet>205</span>            } <span class="kw">else </span>{
+<span data-nosnippet>206</span>                edges.push(Edge {
+<span data-nosnippet>207</span>                    to: super_node,
+<span data-nosnippet>208</span>                    cap: F::zero() - dss[v],
+<span data-nosnippet>209</span>                    cost: -inf_cost,
+<span data-nosnippet>210</span>                });
+<span data-nosnippet>211</span>                edges.push(Edge {
+<span data-nosnippet>212</span>                    to: v,
+<span data-nosnippet>213</span>                    cap: F::zero(),
+<span data-nosnippet>214</span>                    cost: inf_cost,
+<span data-nosnippet>215</span>                });
+<span data-nosnippet>216</span>                potentials[v] = inf_cost;
+<span data-nosnippet>217</span>            }
+<span data-nosnippet>218</span>            parents[v] = Parent {
+<span data-nosnippet>219</span>                par: super_node,
+<span data-nosnippet>220</span>                eid,
+<span data-nosnippet>221</span>                up: edges[eid].cap,
+<span data-nosnippet>222</span>                down: edges[eid ^ <span class="number">1</span>].cap,
+<span data-nosnippet>223</span>            };
+<span data-nosnippet>224</span>        }
+<span data-nosnippet>225</span>
+<span data-nosnippet>226</span>        <span class="kw">let </span><span class="kw-2">mut </span>depth = <span class="macro">vec!</span>[<span class="number">1</span>; n + <span class="number">1</span>];
+<span data-nosnippet>227</span>        depth[super_node] = <span class="number">0</span>;
+<span data-nosnippet>228</span>
+<span data-nosnippet>229</span>        <span class="kw">let </span><span class="kw-2">mut </span>this = NetworkSimplexSolver {
+<span data-nosnippet>230</span>            n,
+<span data-nosnippet>231</span>            m,
+<span data-nosnippet>232</span>            edges,
+<span data-nosnippet>233</span>            lowers,
+<span data-nosnippet>234</span>            dss,
+<span data-nosnippet>235</span>            bucket_size,
+<span data-nosnippet>236</span>            minor_limit,
+<span data-nosnippet>237</span>            parents,
+<span data-nosnippet>238</span>            depth,
+<span data-nosnippet>239</span>            next: <span class="macro">vec!</span>[<span class="number">0</span>; (n + <span class="number">1</span>) * <span class="number">2</span>],
+<span data-nosnippet>240</span>            prev: <span class="macro">vec!</span>[<span class="number">0</span>; (n + <span class="number">1</span>) * <span class="number">2</span>],
+<span data-nosnippet>241</span>            candidates: Vec::with_capacity(bucket_size),
+<span data-nosnippet>242</span>            potentials,
+<span data-nosnippet>243</span>        };
+<span data-nosnippet>244</span>        <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..=n {
+<span data-nosnippet>245</span>            this.<span class="highlight focus">connect</span>(v * <span class="number">2</span>, v * <span class="number">2 </span>+ <span class="number">1</span>);
+<span data-nosnippet>246</span>        }
+<span data-nosnippet>247</span>        <span class="kw">for </span>v <span class="kw">in </span><span class="number">0</span>..n {
+<span data-nosnippet>248</span>            this.<span class="highlight">connect</span>(v * <span class="number">2 </span>+ <span class="number">1</span>, this.next[super_node * <span class="number">2</span>]);
+<span data-nosnippet>249</span>            this.<span class="highlight">connect</span>(super_node * <span class="number">2</span>, v * <span class="number">2</span>);
+<span data-nosnippet>250</span>        }
+<span data-nosnippet>251</span>        this
+<span data-nosnippet>252</span>    }
+<span data-nosnippet>253</span>
+<span data-nosnippet>254</span>    <span class="kw">fn </span>solve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NetworkSimplexSolution&lt;F, C&gt;&gt; {
+<span data-nosnippet>255</span>        <span class="kw">let </span><span class="kw-2">mut </span>eid = <span class="number">0usize</span>;
+<span data-nosnippet>256</span>        <span class="kw">loop </span>{
+<span data-nosnippet>257</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.minor_limit {
+<span data-nosnippet>258</span>                <span class="macro">if !</span><span class="self">self</span>.minor() {
+<span data-nosnippet>259</span>                    <span class="kw">break</span>;
+<span data-nosnippet>260</span>                }
+<span data-nosnippet>261</span>            }
+<span data-nosnippet>262</span>            <span class="kw">let </span><span class="kw-2">mut </span>best = C::zero();
+<span data-nosnippet>263</span>            <span class="kw">let </span><span class="kw-2">mut </span>best_eid: <span class="prelude-ty">Option</span>&lt;usize&gt; = <span class="prelude-val">None</span>;
+<span data-nosnippet>264</span>            <span class="self">self</span>.candidates.clear();
+<span data-nosnippet>265</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.edges.len() {
+<span data-nosnippet>266</span>                <span class="macro">if !</span><span class="self">self</span>.edges[eid].cap.is_zero() {
+<span data-nosnippet>267</span>                    <span class="kw">let </span>clen = <span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to]
+<span data-nosnippet>268</span>                        - <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid].to];
+<span data-nosnippet>269</span>                    <span class="kw">if </span>clen &lt; C::zero() {
+<span data-nosnippet>270</span>                        <span class="kw">if </span>best_eid.is_none() || clen &lt; best {
+<span data-nosnippet>271</span>                            best = clen;
+<span data-nosnippet>272</span>                            best_eid = <span class="prelude-val">Some</span>(eid);
+<span data-nosnippet>273</span>                        }
+<span data-nosnippet>274</span>                        <span class="self">self</span>.candidates.push(eid);
+<span data-nosnippet>275</span>                        <span class="kw">if </span><span class="self">self</span>.candidates.len() == <span class="self">self</span>.bucket_size {
+<span data-nosnippet>276</span>                            <span class="kw">break</span>;
+<span data-nosnippet>277</span>                        }
+<span data-nosnippet>278</span>                    }
+<span data-nosnippet>279</span>                }
+<span data-nosnippet>280</span>                eid += <span class="number">1</span>;
+<span data-nosnippet>281</span>                <span class="kw">if </span>eid == <span class="self">self</span>.edges.len() {
+<span data-nosnippet>282</span>                    eid = <span class="number">0</span>;
+<span data-nosnippet>283</span>                }
+<span data-nosnippet>284</span>            }
+<span data-nosnippet>285</span>            <span class="kw">if </span><span class="self">self</span>.candidates.is_empty() {
+<span data-nosnippet>286</span>                <span class="kw">break</span>;
+<span data-nosnippet>287</span>            }
+<span data-nosnippet>288</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(be) = best_eid {
+<span data-nosnippet>289</span>                <span class="self">self</span>.push_flow(be);
+<span data-nosnippet>290</span>            }
+<span data-nosnippet>291</span>        }
+<span data-nosnippet>292</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.n {
+<span data-nosnippet>293</span>            <span class="kw">let </span>eid = <span class="self">self</span>.parents[i].eid;
+<span data-nosnippet>294</span>            <span class="self">self</span>.edges[eid].cap = <span class="self">self</span>.parents[i].up;
+<span data-nosnippet>295</span>            <span class="self">self</span>.edges[eid ^ <span class="number">1</span>].cap = <span class="self">self</span>.parents[i].down;
+<span data-nosnippet>296</span>        }
+<span data-nosnippet>297</span>        <span class="self">self</span>.generate_solution()
+<span data-nosnippet>298</span>    }
+<span data-nosnippet>299</span>
+<span data-nosnippet>300</span>    <span class="kw">fn </span>minor(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>301</span>        <span class="kw">if </span><span class="self">self</span>.candidates.is_empty() {
+<span data-nosnippet>302</span>            <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>303</span>        }
+<span data-nosnippet>304</span>        <span class="kw">let </span><span class="kw-2">mut </span>best = C::zero();
+<span data-nosnippet>305</span>        <span class="kw">let </span><span class="kw-2">mut </span>best_eid: <span class="prelude-ty">Option</span>&lt;usize&gt; = <span class="prelude-val">None</span>;
+<span data-nosnippet>306</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0usize</span>;
+<span data-nosnippet>307</span>        <span class="kw">while </span>i &lt; <span class="self">self</span>.candidates.len() {
+<span data-nosnippet>308</span>            <span class="kw">let </span>eid = <span class="self">self</span>.candidates[i];
+<span data-nosnippet>309</span>            <span class="kw">if </span><span class="self">self</span>.edges[eid].cap.is_zero() {
+<span data-nosnippet>310</span>                <span class="self">self</span>.candidates.swap_remove(i);
+<span data-nosnippet>311</span>                <span class="kw">continue</span>;
+<span data-nosnippet>312</span>            }
+<span data-nosnippet>313</span>            <span class="kw">let </span>clen = <span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to]
+<span data-nosnippet>314</span>                - <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid].to];
+<span data-nosnippet>315</span>            <span class="kw">if </span>clen &gt;= C::zero() {
+<span data-nosnippet>316</span>                <span class="self">self</span>.candidates.swap_remove(i);
+<span data-nosnippet>317</span>                <span class="kw">continue</span>;
+<span data-nosnippet>318</span>            }
+<span data-nosnippet>319</span>            <span class="kw">if </span>best_eid.is_none() || clen &lt; best {
+<span data-nosnippet>320</span>                best = clen;
+<span data-nosnippet>321</span>                best_eid = <span class="prelude-val">Some</span>(eid);
+<span data-nosnippet>322</span>            }
+<span data-nosnippet>323</span>            i += <span class="number">1</span>;
+<span data-nosnippet>324</span>        }
+<span data-nosnippet>325</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(best_eid) = best_eid {
+<span data-nosnippet>326</span>            <span class="self">self</span>.push_flow(best_eid);
+<span data-nosnippet>327</span>            <span class="bool-val">true
+<span data-nosnippet>328</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>329</span>            <span class="bool-val">false
+<span data-nosnippet>330</span>        </span>}
+<span data-nosnippet>331</span>    }
+<span data-nosnippet>332</span>
+<span data-nosnippet>333</span>    <span class="kw">fn </span>get_lca(
+<span data-nosnippet>334</span>        <span class="kw-2">&amp;</span><span class="self">self</span>,
+<span data-nosnippet>335</span>        <span class="kw-2">mut </span>u: usize,
+<span data-nosnippet>336</span>        <span class="kw-2">mut </span>v: usize,
+<span data-nosnippet>337</span>        flow: <span class="kw-2">&amp;mut </span>F,
+<span data-nosnippet>338</span>        del_u_side: <span class="kw-2">&amp;mut </span>bool,
+<span data-nosnippet>339</span>        del_u: <span class="kw-2">&amp;mut </span>usize,
+<span data-nosnippet>340</span>    ) -&gt; usize {
+<span data-nosnippet>341</span>        <span class="kw">if </span><span class="self">self</span>.depth[u] &gt;= <span class="self">self</span>.depth[v] {
+<span data-nosnippet>342</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.depth[u] - <span class="self">self</span>.depth[v] {
+<span data-nosnippet>343</span>                <span class="kw">if </span><span class="self">self</span>.parents[u].down &lt; <span class="kw-2">*</span>flow {
+<span data-nosnippet>344</span>                    <span class="kw-2">*</span>flow = <span class="self">self</span>.parents[u].down;
+<span data-nosnippet>345</span>                    <span class="kw-2">*</span>del_u = u;
+<span data-nosnippet>346</span>                    <span class="kw-2">*</span>del_u_side = <span class="bool-val">true</span>;
+<span data-nosnippet>347</span>                }
+<span data-nosnippet>348</span>                u = <span class="self">self</span>.parents[u].par;
+<span data-nosnippet>349</span>            }
+<span data-nosnippet>350</span>        } <span class="kw">else </span>{
+<span data-nosnippet>351</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.depth[v] - <span class="self">self</span>.depth[u] {
+<span data-nosnippet>352</span>                <span class="kw">if </span><span class="self">self</span>.parents[v].up &lt;= <span class="kw-2">*</span>flow {
+<span data-nosnippet>353</span>                    <span class="kw-2">*</span>flow = <span class="self">self</span>.parents[v].up;
+<span data-nosnippet>354</span>                    <span class="kw-2">*</span>del_u = v;
+<span data-nosnippet>355</span>                    <span class="kw-2">*</span>del_u_side = <span class="bool-val">false</span>;
+<span data-nosnippet>356</span>                }
+<span data-nosnippet>357</span>                v = <span class="self">self</span>.parents[v].par;
+<span data-nosnippet>358</span>            }
+<span data-nosnippet>359</span>        }
+<span data-nosnippet>360</span>        <span class="kw">while </span><span class="macro">u !</span>= v {
+<span data-nosnippet>361</span>            <span class="kw">if </span><span class="self">self</span>.parents[u].down &lt; <span class="kw-2">*</span>flow {
+<span data-nosnippet>362</span>                <span class="kw-2">*</span>flow = <span class="self">self</span>.parents[u].down;
+<span data-nosnippet>363</span>                <span class="kw-2">*</span>del_u = u;
+<span data-nosnippet>364</span>                <span class="kw-2">*</span>del_u_side = <span class="bool-val">true</span>;
+<span data-nosnippet>365</span>            }
+<span data-nosnippet>366</span>            u = <span class="self">self</span>.parents[u].par;
+<span data-nosnippet>367</span>            <span class="kw">if </span><span class="self">self</span>.parents[v].up &lt;= <span class="kw-2">*</span>flow {
+<span data-nosnippet>368</span>                <span class="kw-2">*</span>flow = <span class="self">self</span>.parents[v].up;
+<span data-nosnippet>369</span>                <span class="kw-2">*</span>del_u = v;
+<span data-nosnippet>370</span>                <span class="kw-2">*</span>del_u_side = <span class="bool-val">false</span>;
+<span data-nosnippet>371</span>            }
+<span data-nosnippet>372</span>            v = <span class="self">self</span>.parents[v].par;
+<span data-nosnippet>373</span>        }
+<span data-nosnippet>374</span>        u
+<span data-nosnippet>375</span>    }
+<span data-nosnippet>376</span>
+<span data-nosnippet>377</span>    <span class="kw">fn </span>push_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eid: usize) {
+<span data-nosnippet>378</span>        <span class="kw">let </span>u0 = <span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to;
+<span data-nosnippet>379</span>        <span class="kw">let </span>v0 = <span class="self">self</span>.edges[eid].to;
+<span data-nosnippet>380</span>        <span class="kw">let </span><span class="kw-2">mut </span>del_u = v0;
+<span data-nosnippet>381</span>        <span class="kw">let </span><span class="kw-2">mut </span>flow = <span class="self">self</span>.edges[eid].cap;
+<span data-nosnippet>382</span>        <span class="kw">let </span><span class="kw-2">mut </span>del_u_side = <span class="bool-val">true</span>;
+<span data-nosnippet>383</span>        <span class="kw">let </span>lca = <span class="self">self</span>.get_lca(u0, v0, <span class="kw-2">&amp;mut </span>flow, <span class="kw-2">&amp;mut </span>del_u_side, <span class="kw-2">&amp;mut </span>del_u);
+<span data-nosnippet>384</span>        <span class="macro">if !</span>flow.is_zero() {
+<span data-nosnippet>385</span>            <span class="kw">let </span><span class="kw-2">mut </span>u = u0;
+<span data-nosnippet>386</span>            <span class="kw">let </span><span class="kw-2">mut </span>v = v0;
+<span data-nosnippet>387</span>            <span class="kw">while </span><span class="macro">u !</span>= lca {
+<span data-nosnippet>388</span>                <span class="self">self</span>.parents[u].up += flow;
+<span data-nosnippet>389</span>                <span class="self">self</span>.parents[u].down -= flow;
+<span data-nosnippet>390</span>                u = <span class="self">self</span>.parents[u].par;
+<span data-nosnippet>391</span>            }
+<span data-nosnippet>392</span>            <span class="kw">while </span><span class="macro">v !</span>= lca {
+<span data-nosnippet>393</span>                <span class="self">self</span>.parents[v].up -= flow;
+<span data-nosnippet>394</span>                <span class="self">self</span>.parents[v].down += flow;
+<span data-nosnippet>395</span>                v = <span class="self">self</span>.parents[v].par;
+<span data-nosnippet>396</span>            }
+<span data-nosnippet>397</span>        }
+<span data-nosnippet>398</span>        <span class="kw">let </span><span class="kw-2">mut </span>u = u0;
+<span data-nosnippet>399</span>        <span class="kw">let </span><span class="kw-2">mut </span>par = v0;
+<span data-nosnippet>400</span>        <span class="kw">let </span><span class="kw-2">mut </span>p_caps = (<span class="self">self</span>.edges[eid].cap - flow, <span class="self">self</span>.edges[<a href="../num/zero_one.rs.html#15-28">eid</a> ^ <span class="number">1</span>].cap + flow);
+<span data-nosnippet>401</span>        <span class="kw">let </span><span class="kw-2">mut </span>p_diff = -(<span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[u0] - <span class="self">self</span>.potentials[v0]);
+<span data-nosnippet>402</span>        <span class="macro">if !</span>del_u_side {
+<span data-nosnippet>403</span>            swap(<span class="kw-2">&amp;mut </span>u, <span class="kw-2">&amp;mut </span>par);
+<span data-nosnippet>404</span>            swap(<span class="kw-2">&amp;mut </span>p_caps.<span class="number">0</span>, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">1</span>);
+<span data-nosnippet>405</span>            p_diff = -p_diff;
+<span data-nosnippet>406</span>        }
+<span data-nosnippet>407</span>        <span class="kw">let </span><span class="kw-2">mut </span>par_eid = eid ^ <span class="kw">if </span>del_u_side { <span class="number">0 </span>} <span class="kw">else </span>{ <span class="number">1 </span>};
+<span data-nosnippet>408</span>        <span class="kw">while </span><span class="macro">par !</span>= del_u {
+<span data-nosnippet>409</span>            <span class="kw">let </span><span class="kw-2">mut </span>d = <span class="self">self</span>.depth[par];
+<span data-nosnippet>410</span>            <span class="kw">let </span><span class="kw-2">mut </span>idx = u * <span class="number">2</span>;
+<span data-nosnippet>411</span>            <span class="kw">while </span><span class="macro">idx !</span>= u * <span class="number">2 </span>+ <span class="number">1 </span>{
+<span data-nosnippet>412</span>                <span class="kw">if </span>idx.is_multiple_of(<span class="number">2</span>) {
+<span data-nosnippet>413</span>                    d += <span class="number">1</span>;
+<span data-nosnippet>414</span>                    <span class="self">self</span>.potentials[idx / <span class="number">2</span>] += p_diff;
+<span data-nosnippet>415</span>                    <span class="self">self</span>.depth[idx / <span class="number">2</span>] = d;
+<span data-nosnippet>416</span>                } <span class="kw">else </span>{
+<span data-nosnippet>417</span>                    d -= <span class="number">1</span>;
+<span data-nosnippet>418</span>                }
+<span data-nosnippet>419</span>                idx = <span class="self">self</span>.next[idx];
+<span data-nosnippet>420</span>            }
+<span data-nosnippet>421</span>            <span class="self">self</span>.<span class="highlight">connect</span>(<span class="self">self</span>.prev[u * <span class="number">2</span>], <span class="self">self</span>.next[u * <span class="number">2 </span>+ <span class="number">1</span>]);
+<span data-nosnippet>422</span>            <span class="self">self</span>.<span class="highlight">connect</span>(u * <span class="number">2 </span>+ <span class="number">1</span>, <span class="self">self</span>.next[par * <span class="number">2</span>]);
+<span data-nosnippet>423</span>            <span class="self">self</span>.<span class="highlight">connect</span>(par * <span class="number">2</span>, u * <span class="number">2</span>);
+<span data-nosnippet>424</span>            swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.parents[u].eid, <span class="kw-2">&amp;mut </span>par_eid);
+<span data-nosnippet>425</span>            par_eid ^= <span class="number">1</span>;
+<span data-nosnippet>426</span>            swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.parents[u].up, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">0</span>);
+<span data-nosnippet>427</span>            swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.parents[u].down, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">1</span>);
+<span data-nosnippet>428</span>            swap(<span class="kw-2">&amp;mut </span>p_caps.<span class="number">0</span>, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">1</span>);
+<span data-nosnippet>429</span>            <span class="kw">let </span>next_u = <span class="self">self</span>.parents[u].par;
+<span data-nosnippet>430</span>            <span class="self">self</span>.parents[u].par = par;
+<span data-nosnippet>431</span>            par = u;
+<span data-nosnippet>432</span>            u = next_u;
+<span data-nosnippet>433</span>        }
+<span data-nosnippet>434</span>        <span class="self">self</span>.edges[par_eid].cap = p_caps.<span class="number">0</span>;
+<span data-nosnippet>435</span>        <span class="self">self</span>.edges[par_eid ^ <span class="number">1</span>].cap = p_caps.<span class="number">1</span>;
+<span data-nosnippet>436</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.build" class="method"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#156-252">Source</a><h4 class="code-header">fn <a href="#method.build" class="fn">build</a>(ns: <a class="struct" href="../struct.NetworkSimplex.html" title="struct competitive::graph::NetworkSimplex">NetworkSimplex</a>&lt;F, C&gt;) -&gt; Self</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/graph/network_simplex.rs.html#92&#34;,&#34;line 92&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/network_simplex.rs (<a href="../../../src/competitive/graph/network_simplex.rs.html#92">line 92</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>91</span>    <span class="kw">pub fn </span>solve_minimize(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NetworkSimplexSolution&lt;F, C&gt;&gt; {
+<span data-nosnippet>92</span>        <span class="highlight focus">NetworkSimplexSolver::build</span>(<span class="self">self</span>).solve()
+<span data-nosnippet>93</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.solve" class="method"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#254-298">Source</a><h4 class="code-header">fn <a href="#method.solve" class="fn">solve</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.NetworkSimplexSolution.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolution">NetworkSimplexSolution</a>&lt;F, C&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[1,1],&#34;../../../src/competitive/graph/network_simplex.rs.html#92&#34;,&#34;line 92&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/network_simplex.rs (<a href="../../../src/competitive/graph/network_simplex.rs.html#92">line 92</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>91</span>    <span class="kw">pub fn </span>solve_minimize(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NetworkSimplexSolution&lt;F, C&gt;&gt; {
+<span data-nosnippet>92</span>        NetworkSimplexSolver::build(<span class="self">self</span>).<span class="highlight focus">solve</span>()
+<span data-nosnippet>93</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.minor" class="method"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#300-331">Source</a><h4 class="code-header">fn <a href="#method.minor" class="fn">minor</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-3"><a href="#scraped-examples-3">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[4,4],&#34;../../../src/competitive/graph/network_simplex.rs.html#258&#34;,&#34;line 258&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/network_simplex.rs (<a href="../../../src/competitive/graph/network_simplex.rs.html#258">line 258</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>254</span>    <span class="kw">fn </span>solve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NetworkSimplexSolution&lt;F, C&gt;&gt; {
+<span data-nosnippet>255</span>        <span class="kw">let </span><span class="kw-2">mut </span>eid = <span class="number">0usize</span>;
+<span data-nosnippet>256</span>        <span class="kw">loop </span>{
+<span data-nosnippet>257</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.minor_limit {
+<span data-nosnippet>258</span>                <span class="macro">if !</span><span class="self">self</span>.<span class="highlight focus">minor</span>() {
+<span data-nosnippet>259</span>                    <span class="kw">break</span>;
+<span data-nosnippet>260</span>                }
+<span data-nosnippet>261</span>            }
+<span data-nosnippet>262</span>            <span class="kw">let </span><span class="kw-2">mut </span>best = C::zero();
+<span data-nosnippet>263</span>            <span class="kw">let </span><span class="kw-2">mut </span>best_eid: <span class="prelude-ty">Option</span>&lt;usize&gt; = <span class="prelude-val">None</span>;
+<span data-nosnippet>264</span>            <span class="self">self</span>.candidates.clear();
+<span data-nosnippet>265</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.edges.len() {
+<span data-nosnippet>266</span>                <span class="macro">if !</span><span class="self">self</span>.edges[eid].cap.is_zero() {
+<span data-nosnippet>267</span>                    <span class="kw">let </span>clen = <span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to]
+<span data-nosnippet>268</span>                        - <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid].to];
+<span data-nosnippet>269</span>                    <span class="kw">if </span>clen &lt; C::zero() {
+<span data-nosnippet>270</span>                        <span class="kw">if </span>best_eid.is_none() || clen &lt; best {
+<span data-nosnippet>271</span>                            best = clen;
+<span data-nosnippet>272</span>                            best_eid = <span class="prelude-val">Some</span>(eid);
+<span data-nosnippet>273</span>                        }
+<span data-nosnippet>274</span>                        <span class="self">self</span>.candidates.push(eid);
+<span data-nosnippet>275</span>                        <span class="kw">if </span><span class="self">self</span>.candidates.len() == <span class="self">self</span>.bucket_size {
+<span data-nosnippet>276</span>                            <span class="kw">break</span>;
+<span data-nosnippet>277</span>                        }
+<span data-nosnippet>278</span>                    }
+<span data-nosnippet>279</span>                }
+<span data-nosnippet>280</span>                eid += <span class="number">1</span>;
+<span data-nosnippet>281</span>                <span class="kw">if </span>eid == <span class="self">self</span>.edges.len() {
+<span data-nosnippet>282</span>                    eid = <span class="number">0</span>;
+<span data-nosnippet>283</span>                }
+<span data-nosnippet>284</span>            }
+<span data-nosnippet>285</span>            <span class="kw">if </span><span class="self">self</span>.candidates.is_empty() {
+<span data-nosnippet>286</span>                <span class="kw">break</span>;
+<span data-nosnippet>287</span>            }
+<span data-nosnippet>288</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(be) = best_eid {
+<span data-nosnippet>289</span>                <span class="self">self</span>.push_flow(be);
+<span data-nosnippet>290</span>            }
+<span data-nosnippet>291</span>        }
+<span data-nosnippet>292</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.n {
+<span data-nosnippet>293</span>            <span class="kw">let </span>eid = <span class="self">self</span>.parents[i].eid;
+<span data-nosnippet>294</span>            <span class="self">self</span>.edges[eid].cap = <span class="self">self</span>.parents[i].up;
+<span data-nosnippet>295</span>            <span class="self">self</span>.edges[eid ^ <span class="number">1</span>].cap = <span class="self">self</span>.parents[i].down;
+<span data-nosnippet>296</span>        }
+<span data-nosnippet>297</span>        <span class="self">self</span>.generate_solution()
+<span data-nosnippet>298</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.get_lca" class="method"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#333-375">Source</a><h4 class="code-header">fn <a href="#method.get_lca" class="fn">get_lca</a>(
+    &amp;self,
+    u: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    v: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+    flow: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut F</a>,
+    del_u_side: &amp;mut <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    del_u: &amp;mut <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>,
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-4"><a href="#scraped-examples-4">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[6,6],&#34;../../../src/competitive/graph/network_simplex.rs.html#383&#34;,&#34;line 383&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/network_simplex.rs (<a href="../../../src/competitive/graph/network_simplex.rs.html#383">line 383</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>377</span>    <span class="kw">fn </span>push_flow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eid: usize) {
+<span data-nosnippet>378</span>        <span class="kw">let </span>u0 = <span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to;
+<span data-nosnippet>379</span>        <span class="kw">let </span>v0 = <span class="self">self</span>.edges[eid].to;
+<span data-nosnippet>380</span>        <span class="kw">let </span><span class="kw-2">mut </span>del_u = v0;
+<span data-nosnippet>381</span>        <span class="kw">let </span><span class="kw-2">mut </span>flow = <span class="self">self</span>.edges[eid].cap;
+<span data-nosnippet>382</span>        <span class="kw">let </span><span class="kw-2">mut </span>del_u_side = <span class="bool-val">true</span>;
+<span data-nosnippet>383</span>        <span class="kw">let </span>lca = <span class="self">self</span>.<span class="highlight focus">get_lca</span>(u0, v0, <span class="kw-2">&amp;mut </span>flow, <span class="kw-2">&amp;mut </span>del_u_side, <span class="kw-2">&amp;mut </span>del_u);
+<span data-nosnippet>384</span>        <span class="macro">if !</span>flow.is_zero() {
+<span data-nosnippet>385</span>            <span class="kw">let </span><span class="kw-2">mut </span>u = u0;
+<span data-nosnippet>386</span>            <span class="kw">let </span><span class="kw-2">mut </span>v = v0;
+<span data-nosnippet>387</span>            <span class="kw">while </span><span class="macro">u !</span>= lca {
+<span data-nosnippet>388</span>                <span class="self">self</span>.parents[u].up += flow;
+<span data-nosnippet>389</span>                <span class="self">self</span>.parents[u].down -= flow;
+<span data-nosnippet>390</span>                u = <span class="self">self</span>.parents[u].par;
+<span data-nosnippet>391</span>            }
+<span data-nosnippet>392</span>            <span class="kw">while </span><span class="macro">v !</span>= lca {
+<span data-nosnippet>393</span>                <span class="self">self</span>.parents[v].up -= flow;
+<span data-nosnippet>394</span>                <span class="self">self</span>.parents[v].down += flow;
+<span data-nosnippet>395</span>                v = <span class="self">self</span>.parents[v].par;
+<span data-nosnippet>396</span>            }
+<span data-nosnippet>397</span>        }
+<span data-nosnippet>398</span>        <span class="kw">let </span><span class="kw-2">mut </span>u = u0;
+<span data-nosnippet>399</span>        <span class="kw">let </span><span class="kw-2">mut </span>par = v0;
+<span data-nosnippet>400</span>        <span class="kw">let </span><span class="kw-2">mut </span>p_caps = (<span class="self">self</span>.edges[eid].cap - flow, <span class="self">self</span>.edges[<a href="../num/zero_one.rs.html#15-28">eid</a> ^ <span class="number">1</span>].cap + flow);
+<span data-nosnippet>401</span>        <span class="kw">let </span><span class="kw-2">mut </span>p_diff = -(<span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[u0] - <span class="self">self</span>.potentials[v0]);
+<span data-nosnippet>402</span>        <span class="macro">if !</span>del_u_side {
+<span data-nosnippet>403</span>            swap(<span class="kw-2">&amp;mut </span>u, <span class="kw-2">&amp;mut </span>par);
+<span data-nosnippet>404</span>            swap(<span class="kw-2">&amp;mut </span>p_caps.<span class="number">0</span>, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">1</span>);
+<span data-nosnippet>405</span>            p_diff = -p_diff;
+<span data-nosnippet>406</span>        }
+<span data-nosnippet>407</span>        <span class="kw">let </span><span class="kw-2">mut </span>par_eid = eid ^ <span class="kw">if </span>del_u_side { <span class="number">0 </span>} <span class="kw">else </span>{ <span class="number">1 </span>};
+<span data-nosnippet>408</span>        <span class="kw">while </span><span class="macro">par !</span>= del_u {
+<span data-nosnippet>409</span>            <span class="kw">let </span><span class="kw-2">mut </span>d = <span class="self">self</span>.depth[par];
+<span data-nosnippet>410</span>            <span class="kw">let </span><span class="kw-2">mut </span>idx = u * <span class="number">2</span>;
+<span data-nosnippet>411</span>            <span class="kw">while </span><span class="macro">idx !</span>= u * <span class="number">2 </span>+ <span class="number">1 </span>{
+<span data-nosnippet>412</span>                <span class="kw">if </span>idx.is_multiple_of(<span class="number">2</span>) {
+<span data-nosnippet>413</span>                    d += <span class="number">1</span>;
+<span data-nosnippet>414</span>                    <span class="self">self</span>.potentials[idx / <span class="number">2</span>] += p_diff;
+<span data-nosnippet>415</span>                    <span class="self">self</span>.depth[idx / <span class="number">2</span>] = d;
+<span data-nosnippet>416</span>                } <span class="kw">else </span>{
+<span data-nosnippet>417</span>                    d -= <span class="number">1</span>;
+<span data-nosnippet>418</span>                }
+<span data-nosnippet>419</span>                idx = <span class="self">self</span>.next[idx];
+<span data-nosnippet>420</span>            }
+<span data-nosnippet>421</span>            <span class="self">self</span>.connect(<span class="self">self</span>.prev[u * <span class="number">2</span>], <span class="self">self</span>.next[u * <span class="number">2 </span>+ <span class="number">1</span>]);
+<span data-nosnippet>422</span>            <span class="self">self</span>.connect(u * <span class="number">2 </span>+ <span class="number">1</span>, <span class="self">self</span>.next[par * <span class="number">2</span>]);
+<span data-nosnippet>423</span>            <span class="self">self</span>.connect(par * <span class="number">2</span>, u * <span class="number">2</span>);
+<span data-nosnippet>424</span>            swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.parents[u].eid, <span class="kw-2">&amp;mut </span>par_eid);
+<span data-nosnippet>425</span>            par_eid ^= <span class="number">1</span>;
+<span data-nosnippet>426</span>            swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.parents[u].up, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">0</span>);
+<span data-nosnippet>427</span>            swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.parents[u].down, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">1</span>);
+<span data-nosnippet>428</span>            swap(<span class="kw-2">&amp;mut </span>p_caps.<span class="number">0</span>, <span class="kw-2">&amp;mut </span>p_caps.<span class="number">1</span>);
+<span data-nosnippet>429</span>            <span class="kw">let </span>next_u = <span class="self">self</span>.parents[u].par;
+<span data-nosnippet>430</span>            <span class="self">self</span>.parents[u].par = par;
+<span data-nosnippet>431</span>            par = u;
+<span data-nosnippet>432</span>            u = next_u;
+<span data-nosnippet>433</span>        }
+<span data-nosnippet>434</span>        <span class="self">self</span>.edges[par_eid].cap = p_caps.<span class="number">0</span>;
+<span data-nosnippet>435</span>        <span class="self">self</span>.edges[par_eid ^ <span class="number">1</span>].cap = p_caps.<span class="number">1</span>;
+<span data-nosnippet>436</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.push_flow" class="method"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#377-436">Source</a><h4 class="code-header">fn <a href="#method.push_flow" class="fn">push_flow</a>(&amp;mut self, eid: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>)</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-5"><a href="#scraped-examples-5">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[35,35],&#34;../../../src/competitive/graph/network_simplex.rs.html#289&#34;,&#34;line 289&#34;],[[72,72],&#34;../../../src/competitive/graph/network_simplex.rs.html#326&#34;,&#34;line 326&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/network_simplex.rs (<a href="../../../src/competitive/graph/network_simplex.rs.html#289">line 289</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>254</span>    <span class="kw">fn </span>solve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NetworkSimplexSolution&lt;F, C&gt;&gt; {
+<span data-nosnippet>255</span>        <span class="kw">let </span><span class="kw-2">mut </span>eid = <span class="number">0usize</span>;
+<span data-nosnippet>256</span>        <span class="kw">loop </span>{
+<span data-nosnippet>257</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.minor_limit {
+<span data-nosnippet>258</span>                <span class="macro">if !</span><span class="self">self</span>.minor() {
+<span data-nosnippet>259</span>                    <span class="kw">break</span>;
+<span data-nosnippet>260</span>                }
+<span data-nosnippet>261</span>            }
+<span data-nosnippet>262</span>            <span class="kw">let </span><span class="kw-2">mut </span>best = C::zero();
+<span data-nosnippet>263</span>            <span class="kw">let </span><span class="kw-2">mut </span>best_eid: <span class="prelude-ty">Option</span>&lt;usize&gt; = <span class="prelude-val">None</span>;
+<span data-nosnippet>264</span>            <span class="self">self</span>.candidates.clear();
+<span data-nosnippet>265</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.edges.len() {
+<span data-nosnippet>266</span>                <span class="macro">if !</span><span class="self">self</span>.edges[eid].cap.is_zero() {
+<span data-nosnippet>267</span>                    <span class="kw">let </span>clen = <span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to]
+<span data-nosnippet>268</span>                        - <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid].to];
+<span data-nosnippet>269</span>                    <span class="kw">if </span>clen &lt; C::zero() {
+<span data-nosnippet>270</span>                        <span class="kw">if </span>best_eid.is_none() || clen &lt; best {
+<span data-nosnippet>271</span>                            best = clen;
+<span data-nosnippet>272</span>                            best_eid = <span class="prelude-val">Some</span>(eid);
+<span data-nosnippet>273</span>                        }
+<span data-nosnippet>274</span>                        <span class="self">self</span>.candidates.push(eid);
+<span data-nosnippet>275</span>                        <span class="kw">if </span><span class="self">self</span>.candidates.len() == <span class="self">self</span>.bucket_size {
+<span data-nosnippet>276</span>                            <span class="kw">break</span>;
+<span data-nosnippet>277</span>                        }
+<span data-nosnippet>278</span>                    }
+<span data-nosnippet>279</span>                }
+<span data-nosnippet>280</span>                eid += <span class="number">1</span>;
+<span data-nosnippet>281</span>                <span class="kw">if </span>eid == <span class="self">self</span>.edges.len() {
+<span data-nosnippet>282</span>                    eid = <span class="number">0</span>;
+<span data-nosnippet>283</span>                }
+<span data-nosnippet>284</span>            }
+<span data-nosnippet>285</span>            <span class="kw">if </span><span class="self">self</span>.candidates.is_empty() {
+<span data-nosnippet>286</span>                <span class="kw">break</span>;
+<span data-nosnippet>287</span>            }
+<span data-nosnippet>288</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(be) = best_eid {
+<span data-nosnippet>289</span>                <span class="self">self</span>.<span class="highlight focus">push_flow</span>(be);
+<span data-nosnippet>290</span>            }
+<span data-nosnippet>291</span>        }
+<span data-nosnippet>292</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.n {
+<span data-nosnippet>293</span>            <span class="kw">let </span>eid = <span class="self">self</span>.parents[i].eid;
+<span data-nosnippet>294</span>            <span class="self">self</span>.edges[eid].cap = <span class="self">self</span>.parents[i].up;
+<span data-nosnippet>295</span>            <span class="self">self</span>.edges[eid ^ <span class="number">1</span>].cap = <span class="self">self</span>.parents[i].down;
+<span data-nosnippet>296</span>        }
+<span data-nosnippet>297</span>        <span class="self">self</span>.generate_solution()
+<span data-nosnippet>298</span>    }
+<span data-nosnippet>299</span>
+<span data-nosnippet>300</span>    <span class="kw">fn </span>minor(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; bool {
+<span data-nosnippet>301</span>        <span class="kw">if </span><span class="self">self</span>.candidates.is_empty() {
+<span data-nosnippet>302</span>            <span class="kw">return </span><span class="bool-val">false</span>;
+<span data-nosnippet>303</span>        }
+<span data-nosnippet>304</span>        <span class="kw">let </span><span class="kw-2">mut </span>best = C::zero();
+<span data-nosnippet>305</span>        <span class="kw">let </span><span class="kw-2">mut </span>best_eid: <span class="prelude-ty">Option</span>&lt;usize&gt; = <span class="prelude-val">None</span>;
+<span data-nosnippet>306</span>        <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0usize</span>;
+<span data-nosnippet>307</span>        <span class="kw">while </span>i &lt; <span class="self">self</span>.candidates.len() {
+<span data-nosnippet>308</span>            <span class="kw">let </span>eid = <span class="self">self</span>.candidates[i];
+<span data-nosnippet>309</span>            <span class="kw">if </span><span class="self">self</span>.edges[eid].cap.is_zero() {
+<span data-nosnippet>310</span>                <span class="self">self</span>.candidates.swap_remove(i);
+<span data-nosnippet>311</span>                <span class="kw">continue</span>;
+<span data-nosnippet>312</span>            }
+<span data-nosnippet>313</span>            <span class="kw">let </span>clen = <span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to]
+<span data-nosnippet>314</span>                - <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid].to];
+<span data-nosnippet>315</span>            <span class="kw">if </span>clen &gt;= C::zero() {
+<span data-nosnippet>316</span>                <span class="self">self</span>.candidates.swap_remove(i);
+<span data-nosnippet>317</span>                <span class="kw">continue</span>;
+<span data-nosnippet>318</span>            }
+<span data-nosnippet>319</span>            <span class="kw">if </span>best_eid.is_none() || clen &lt; best {
+<span data-nosnippet>320</span>                best = clen;
+<span data-nosnippet>321</span>                best_eid = <span class="prelude-val">Some</span>(eid);
+<span data-nosnippet>322</span>            }
+<span data-nosnippet>323</span>            i += <span class="number">1</span>;
+<span data-nosnippet>324</span>        }
+<span data-nosnippet>325</span>        <span class="kw">if let </span><span class="prelude-val">Some</span>(best_eid) = best_eid {
+<span data-nosnippet>326</span>            <span class="self">self</span>.<span class="highlight">push_flow</span>(best_eid);
+<span data-nosnippet>327</span>            <span class="bool-val">true
+<span data-nosnippet>328</span>        </span>} <span class="kw">else </span>{
+<span data-nosnippet>329</span>            <span class="bool-val">false
+<span data-nosnippet>330</span>        </span>}
+<span data-nosnippet>331</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.generate_solution" class="method"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#438-461">Source</a><h4 class="code-header">fn <a href="#method.generate_solution" class="fn">generate_solution</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.NetworkSimplexSolution.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolution">NetworkSimplexSolution</a>&lt;F, C&gt;&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-6"><a href="#scraped-examples-6">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[43,43],&#34;../../../src/competitive/graph/network_simplex.rs.html#297&#34;,&#34;line 297&#34;]]"><div class="scraped-example-title">crates/competitive/src/graph/network_simplex.rs (<a href="../../../src/competitive/graph/network_simplex.rs.html#297">line 297</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>254</span>    <span class="kw">fn </span>solve(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NetworkSimplexSolution&lt;F, C&gt;&gt; {
+<span data-nosnippet>255</span>        <span class="kw">let </span><span class="kw-2">mut </span>eid = <span class="number">0usize</span>;
+<span data-nosnippet>256</span>        <span class="kw">loop </span>{
+<span data-nosnippet>257</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.minor_limit {
+<span data-nosnippet>258</span>                <span class="macro">if !</span><span class="self">self</span>.minor() {
+<span data-nosnippet>259</span>                    <span class="kw">break</span>;
+<span data-nosnippet>260</span>                }
+<span data-nosnippet>261</span>            }
+<span data-nosnippet>262</span>            <span class="kw">let </span><span class="kw-2">mut </span>best = C::zero();
+<span data-nosnippet>263</span>            <span class="kw">let </span><span class="kw-2">mut </span>best_eid: <span class="prelude-ty">Option</span>&lt;usize&gt; = <span class="prelude-val">None</span>;
+<span data-nosnippet>264</span>            <span class="self">self</span>.candidates.clear();
+<span data-nosnippet>265</span>            <span class="kw">for _ in </span><span class="number">0</span>..<span class="self">self</span>.edges.len() {
+<span data-nosnippet>266</span>                <span class="macro">if !</span><span class="self">self</span>.edges[eid].cap.is_zero() {
+<span data-nosnippet>267</span>                    <span class="kw">let </span>clen = <span class="self">self</span>.edges[eid].cost + <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid ^ <span class="number">1</span>].to]
+<span data-nosnippet>268</span>                        - <span class="self">self</span>.potentials[<span class="self">self</span>.edges[eid].to];
+<span data-nosnippet>269</span>                    <span class="kw">if </span>clen &lt; C::zero() {
+<span data-nosnippet>270</span>                        <span class="kw">if </span>best_eid.is_none() || clen &lt; best {
+<span data-nosnippet>271</span>                            best = clen;
+<span data-nosnippet>272</span>                            best_eid = <span class="prelude-val">Some</span>(eid);
+<span data-nosnippet>273</span>                        }
+<span data-nosnippet>274</span>                        <span class="self">self</span>.candidates.push(eid);
+<span data-nosnippet>275</span>                        <span class="kw">if </span><span class="self">self</span>.candidates.len() == <span class="self">self</span>.bucket_size {
+<span data-nosnippet>276</span>                            <span class="kw">break</span>;
+<span data-nosnippet>277</span>                        }
+<span data-nosnippet>278</span>                    }
+<span data-nosnippet>279</span>                }
+<span data-nosnippet>280</span>                eid += <span class="number">1</span>;
+<span data-nosnippet>281</span>                <span class="kw">if </span>eid == <span class="self">self</span>.edges.len() {
+<span data-nosnippet>282</span>                    eid = <span class="number">0</span>;
+<span data-nosnippet>283</span>                }
+<span data-nosnippet>284</span>            }
+<span data-nosnippet>285</span>            <span class="kw">if </span><span class="self">self</span>.candidates.is_empty() {
+<span data-nosnippet>286</span>                <span class="kw">break</span>;
+<span data-nosnippet>287</span>            }
+<span data-nosnippet>288</span>            <span class="kw">if let </span><span class="prelude-val">Some</span>(be) = best_eid {
+<span data-nosnippet>289</span>                <span class="self">self</span>.push_flow(be);
+<span data-nosnippet>290</span>            }
+<span data-nosnippet>291</span>        }
+<span data-nosnippet>292</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.n {
+<span data-nosnippet>293</span>            <span class="kw">let </span>eid = <span class="self">self</span>.parents[i].eid;
+<span data-nosnippet>294</span>            <span class="self">self</span>.edges[eid].cap = <span class="self">self</span>.parents[i].up;
+<span data-nosnippet>295</span>            <span class="self">self</span>.edges[eid ^ <span class="number">1</span>].cap = <span class="self">self</span>.parents[i].down;
+<span data-nosnippet>296</span>        }
+<span data-nosnippet>297</span>        <span class="self">self</span>.<span class="highlight focus">generate_solution</span>()
+<span data-nosnippet>298</span>    }</code></pre></div></div></div></details></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#118">Source</a><a href="#impl-Debug-for-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>, C: <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a>&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../../src/competitive/graph/network_simplex.rs.html#118">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a href="#impl-Freeze-for-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F, C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;</h3></section><section id="impl-RefUnwindSafe-for-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a href="#impl-RefUnwindSafe-for-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F, C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,
+    C: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a>,</div></h3></section><section id="impl-Send-for-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a href="#impl-Send-for-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F, C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a>,
+    C: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a>,</div></h3></section><section id="impl-Sync-for-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a href="#impl-Sync-for-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F, C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a>,
+    C: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a>,</div></h3></section><section id="impl-Unpin-for-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a href="#impl-Unpin-for-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F, C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a>,
+    C: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a>,</div></h3></section><section id="impl-UnwindSafe-for-NetworkSimplexSolver%3CF,+C%3E" class="impl"><a href="#impl-UnwindSafe-for-NetworkSimplexSolver%3CF,+C%3E" class="anchor">§</a><h3 class="code-header">impl&lt;F, C&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.NetworkSimplexSolver.html" title="struct competitive::graph::network_simplex::NetworkSimplexSolver">NetworkSimplexSolver</a>&lt;F, C&gt;<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a>,
+    C: <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a>,</div></h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#138">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
+    T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#139">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#212">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#214">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#221">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where
+    T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow_mut" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#222">Source</a><a href="#method.borrow_mut" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut" class="fn">borrow_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut T</a></h4></section></summary><div class='docblock'>Mutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html#tymethod.borrow_mut">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-From%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#785">Source</a><a href="#impl-From%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for T</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#788">Source</a><a href="#method.from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html#tymethod.from" class="fn">from</a>(t: T) -&gt; T</h4></section></summary><div class="docblock"><p>Returns the argument unchanged.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Into%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#767-769">Source</a><a href="#impl-Into%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#777">Source</a><a href="#method.into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html#tymethod.into" class="fn">into</a>(self) -&gt; U</h4></section></summary><div class="docblock"><p>Calls <code>U::from(self)</code>.</p>
+<p>That is, this conversion is whatever the implementation of
+<code><a href="https://doc.rust-lang.org/nightly/core/convert/trait.From.html" title="trait core::convert::From">From</a>&lt;T&gt; for U</code> chooses to do.</p>
+</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryFrom%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#827-829">Source</a><a href="#impl-TryFrom%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error-1" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#831">Source</a><a href="#associatedtype.Error-1" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" class="associatedtype">Error</a> = <a class="enum" href="https://doc.rust-lang.org/nightly/core/convert/enum.Infallible.html" title="enum core::convert::Infallible">Infallible</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_from" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#834">Source</a><a href="#method.try_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#tymethod.try_from" class="fn">try_from</a>(value: U) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, &lt;T as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;U&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-TryInto%3CU%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#811-813">Source</a><a href="#impl-TryInto%3CU%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T, U&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html" title="trait core::convert::TryInto">TryInto</a>&lt;U&gt; for T<div class="where">where
+    U: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;,</div></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Error" class="associatedtype trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#815">Source</a><a href="#associatedtype.Error" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#associatedtype.Error" class="associatedtype">Error</a> = &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a></h4></section></summary><div class='docblock'>The type returned in the event of a conversion error.</div></details><details class="toggle method-toggle" open><summary><section id="method.try_into" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/convert/mod.rs.html#818">Source</a><a href="#method.try_into" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/convert/trait.TryInto.html#tymethod.try_into" class="fn">try_into</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;U, &lt;U as <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html" title="trait core::convert::TryFrom">TryFrom</a>&lt;T&gt;&gt;::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/convert/trait.TryFrom.html#associatedtype.Error" title="type core::convert::TryFrom::Error">Error</a>&gt;</h4></section></summary><div class='docblock'>Performs the conversion.</div></details></div></details></div></section></div></main></body></html>

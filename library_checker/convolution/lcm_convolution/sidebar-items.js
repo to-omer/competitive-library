@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["lcm_convolution"]};
+window.SIDEBAR_ITEMS = {"fn":["lcm_convolution","test_lcm_convolution"]};

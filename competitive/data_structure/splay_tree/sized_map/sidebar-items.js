@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Iter","SplayMap"]};
+window.SIDEBAR_ITEMS = {"struct":["Iter","SeekByKey","SeekBySize","SizedSplay","SplayMap"]};

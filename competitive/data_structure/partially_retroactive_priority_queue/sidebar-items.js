@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Changed","PartiallyRetroactivePriorityQueue"]};
+window.SIDEBAR_ITEMS = {"struct":["Changed","PartiallyRetroactivePriorityQueue","SumMinimum"]};

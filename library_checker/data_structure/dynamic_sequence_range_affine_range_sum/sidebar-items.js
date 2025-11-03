@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["dynamic_sequence_range_affine_range_sum"]};
+window.SIDEBAR_ITEMS = {"fn":["dynamic_sequence_range_affine_range_sum","test_dynamic_sequence_range_affine_range_sum"]};

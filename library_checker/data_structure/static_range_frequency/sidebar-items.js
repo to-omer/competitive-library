@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["static_range_frequency"]};
+window.SIDEBAR_ITEMS = {"fn":["static_range_frequency","test_static_range_frequency"]};

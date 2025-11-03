@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["QueryKind"],"struct":["SubmaskRangeQuery","SubmaskRangeQueryBuilder"]};
+window.SIDEBAR_ITEMS = {"enum":["Query","QueryKind"],"struct":["SubmaskRangeQuery","SubmaskRangeQueryBuilder"]};
