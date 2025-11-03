@@ -351,6 +351,9 @@ where
         }
     }
     fn convolve(mut a: Self::T, mut b: Self::T) -> Self::T {
+        if Self::length(&a).max(Self::length(&b)) <= 100 {
+            return convolve_karatsuba(&a, &b);
+        }
         if Self::length(&a).min(Self::length(&b)) <= 60 {
             return convolve_naive(&a, &b);
         }
@@ -454,8 +457,11 @@ where
         }
     }
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
-        if Self::length(&a).min(Self::length(&b)) <= 100 {
+        if Self::length(&a).max(Self::length(&b)) <= 300 {
             return convolve_karatsuba(&a, &b);
+        }
+        if Self::length(&a).min(Self::length(&b)) <= 60 {
+            return convolve_naive(&a, &b);
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let mut a = Self::transform(a, len);
@@ -535,8 +541,11 @@ where
     }
 
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
-        if Self::length(&a).min(Self::length(&b)) <= 100 {
+        if Self::length(&a).max(Self::length(&b)) <= 300 {
             return convolve_karatsuba(&a, &b);
+        }
+        if Self::length(&a).min(Self::length(&b)) <= 60 {
+            return convolve_naive(&a, &b);
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let mut a = Self::transform(a, len);
@@ -774,9 +783,9 @@ mod tests {
         let mut rng = Xorshift::default();
         for t in 0..1000 {
             let n: usize = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=100) } else { n };
+            let n = if n == 5 { rng.random(70..=120) } else { n };
             let m: usize = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=100) } else { m };
+            let m = if m == 5 { rng.random(70..=120) } else { m };
             let (n, m) = if t % 100 != 0 {
                 (n, m)
             } else {
@@ -807,9 +816,9 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..1000 {
             let n = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=200) } else { n };
+            let n = if n == 5 { rng.random(70..=400) } else { n };
             let m = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=200) } else { m };
+            let m = if m == 5 { rng.random(70..=400) } else { m };
             let a: Vec<M> = rng.random_iter(..).take(n).collect();
             let b: Vec<M> = rng.random_iter(..).take(m).collect();
             let mut c = vec![M::zero(); (n + m).saturating_sub(1)];
@@ -828,9 +837,9 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..1000 {
             let n = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=200) } else { n };
+            let n = if n == 5 { rng.random(70..=400) } else { n };
             let m = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=200) } else { m };
+            let m = if m == 5 { rng.random(70..=400) } else { m };
             let a: Vec<u64> = rng.random_iter(0u64..1 << 24).take(n).collect();
             let b: Vec<u64> = rng.random_iter(0u64..1 << 24).take(m).collect();
             let mut c = vec![0; (n + m).saturating_sub(1)];
