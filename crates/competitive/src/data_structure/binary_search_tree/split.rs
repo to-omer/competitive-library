@@ -1,7 +1,7 @@
 use super::{
-    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec,
     data::{self},
     seeker::{SeekByKey, SeekBySize},
+    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec,
 };
 use std::{
     borrow::Borrow,

@@ -97,7 +97,11 @@ impl<T> SliceBisectExt<T> for [T] {
     }
     fn rfind_bisect(&self, f: impl FnMut(&T) -> bool) -> Option<&T> {
         let pos = self.rposition_bisect(f);
-        if pos == 0 { None } else { self.get(pos - 1) }
+        if pos == 0 {
+            None
+        } else {
+            self.get(pos - 1)
+        }
     }
     fn position_bisect(&self, mut f: impl FnMut(&T) -> bool) -> usize {
         binary_search(|i| f(&self[*i as usize]), self.len() as i64, -1) as usize

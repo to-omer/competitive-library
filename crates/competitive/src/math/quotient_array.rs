@@ -1,4 +1,4 @@
-use super::{Group, Invertible, One, Ring, Zero, with_prime_list};
+use super::{with_prime_list, Group, Invertible, One, Ring, Zero};
 use std::ops::{Index, IndexMut};
 
 /// store with index $\{\lfloor\frac{n}{i}\rfloor \mid i=1,2,\ldots,n\}$

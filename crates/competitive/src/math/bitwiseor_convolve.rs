@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Group, Invertible, Monoid, Ring, bitwise_transform};
+use super::{bitwise_transform, ConvolveSteps, Group, Invertible, Monoid, Ring};
 use std::marker::PhantomData;
 
 pub struct BitwiseorConvolve<M> {

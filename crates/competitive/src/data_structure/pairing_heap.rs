@@ -1,4 +1,4 @@
-use super::{Comparator, EmptyAct, MonoidAct, Unital, comparator::Less};
+use super::{comparator::Less, Comparator, EmptyAct, MonoidAct, Unital};
 use std::{
     cmp::Ordering,
     fmt::{self, Debug, Formatter},
@@ -414,7 +414,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{AdditiveOperation, FlattenAct},
-        tools::{Xorshift, comparator::Greater},
+        tools::{comparator::Greater, Xorshift},
     };
     use std::{cmp::Reverse, collections::BinaryHeap};
 

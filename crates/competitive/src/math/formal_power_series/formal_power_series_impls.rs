@@ -3,7 +3,7 @@ use std::{
     cmp::Reverse,
     collections::BinaryHeap,
     iter::repeat_with,
-    iter::{FromIterator, once},
+    iter::{once, FromIterator},
     marker::PhantomData,
     ops::{Index, IndexMut},
     slice::{Iter, IterMut},

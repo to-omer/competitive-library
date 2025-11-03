@@ -1,11 +1,11 @@
-use crate::{BoxResult, ProblemNotFound, TestCase, VerifyStatus, app_cache_directory};
+use crate::{app_cache_directory, BoxResult, ProblemNotFound, TestCase, VerifyStatus};
 use fd_lock::RwLock;
 use serde::{Deserialize, Serialize};
 use std::{
     env::consts::OS,
     error::Error,
     fmt::{self, Display},
-    fs::{File, create_dir, read_dir, read_to_string, remove_dir_all},
+    fs::{create_dir, read_dir, read_to_string, remove_dir_all, File},
     path::{Path, PathBuf},
     process::Command,
 };

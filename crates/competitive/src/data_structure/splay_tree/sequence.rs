@@ -1,12 +1,12 @@
 use super::{
+    node::{marker, Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec},
     Allocator, LazyMapMonoid, MemoryPool,
-    node::{Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec, marker},
 };
 use std::{
     cmp::Ordering,
     fmt::{self, Debug},
     marker::PhantomData,
-    mem::{ManuallyDrop, replace},
+    mem::{replace, ManuallyDrop},
     ops::{Bound, DerefMut, RangeBounds},
 };
 

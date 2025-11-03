@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero, montgomery::*};
+use super::{montgomery::*, ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero};
 use std::{cell::UnsafeCell, marker::PhantomData};
 
 pub struct Convolve<M>(PhantomData<fn() -> M>);

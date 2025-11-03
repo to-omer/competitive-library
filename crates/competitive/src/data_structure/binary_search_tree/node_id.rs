@@ -1,4 +1,4 @@
-use super::{BstNode, BstNodePtr, BstNodeRef, BstRoot, BstSpec, node};
+use super::{node, BstNode, BstNodePtr, BstNodeRef, BstRoot, BstSpec};
 use std::{
     collections::HashMap,
     hash::{Hash, Hasher},

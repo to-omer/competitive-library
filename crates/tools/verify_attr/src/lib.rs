@@ -3,11 +3,11 @@ use crate::proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
 use syn::{
-    Expr, ExprLit, Ident, ItemFn, Lit, LitFloat, LitStr, Meta, Token,
     parse::{Parse, Parser},
     parse_macro_input,
     punctuated::Punctuated,
     spanned::Spanned,
+    Expr, ExprLit, Ident, ItemFn, Lit, LitFloat, LitStr, Meta, Token,
 };
 
 struct VerifyAttribute {

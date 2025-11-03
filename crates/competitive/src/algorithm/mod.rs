@@ -1,7 +1,7 @@
 //! algorithm
 
 use crate::algebra::{Field, Invertible, Magma, Monoid, Unital};
-use crate::data_structure::{BitSet, UnionFindBase, union_find};
+use crate::data_structure::{union_find, BitSet, UnionFindBase};
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero};
 use crate::tools::{RandomSpec, SerdeByteStr, Xorshift};
@@ -11,7 +11,7 @@ pub use self::automata_learning::*;
 #[cfg_attr(nightly, codesnip::entry("baby_step_giant_step"))]
 pub use self::baby_step_giant_step::baby_step_giant_step;
 #[cfg_attr(nightly, codesnip::entry("binary_search"))]
-pub use self::binary_search::{Bisect, SliceBisectExt, binary_search, parallel_binary_search};
+pub use self::binary_search::{binary_search, parallel_binary_search, Bisect, SliceBisectExt};
 #[codesnip::entry("BitDp")]
 pub use self::bitdp::{BitDpExt, Combinations, Subsets};
 #[codesnip::entry("CartesianTree")]
@@ -40,7 +40,7 @@ pub use self::sqrt_decomposition::{
     RangeUpdateRangeFoldSqrtDecomposition, SqrtDecomposition, SqrtDecompositionBuckets,
 };
 #[codesnip::entry("stern_brocot_tree")]
-pub use self::stern_brocot_tree::{SbtNode, SbtPath, SternBrocotTree, rational_binary_search};
+pub use self::stern_brocot_tree::{rational_binary_search, SbtNode, SbtPath, SternBrocotTree};
 #[codesnip::entry("ternary_search")]
 pub use self::ternary_search::{piecewise_ternary_search, ternary_search};
 #[codesnip::entry("XorBasis")]

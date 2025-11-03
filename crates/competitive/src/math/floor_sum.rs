@@ -1,6 +1,6 @@
 use super::{
-    AddMulOperation, Associative, BarrettReduction, Group, Invertible, Magma, Monoid, One, Ring,
-    SemiRing, Unital, Wrapping, Zero, array,
+    array, AddMulOperation, Associative, BarrettReduction, Group, Invertible, Magma, Monoid, One,
+    Ring, SemiRing, Unital, Wrapping, Zero,
 };
 use std::{
     marker::PhantomData,

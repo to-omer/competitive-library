@@ -3,7 +3,7 @@ pub use self::associated_value::AssociatedValue;
 #[codesnip::entry("char_convert")]
 pub use self::char_convert::{CharConvertTryFrom, CharConvertTryInto};
 #[codesnip::entry("coding")]
-pub use self::coding::{SerdeByteStr, unescape};
+pub use self::coding::{unescape, SerdeByteStr};
 #[codesnip::entry("Comparator")]
 pub use self::comparator::Comparator;
 #[codesnip::entry("digit_sequence")]

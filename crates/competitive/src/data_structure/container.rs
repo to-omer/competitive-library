@@ -1,6 +1,6 @@
 use std::{
     cmp::Ord,
-    collections::{BTreeMap, HashMap, btree_map, hash_map},
+    collections::{btree_map, hash_map, BTreeMap, HashMap},
     hash::Hash,
     iter::FusedIterator,
     marker::PhantomData,

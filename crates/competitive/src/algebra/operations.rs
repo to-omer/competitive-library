@@ -1,6 +1,6 @@
 //! binary operaions
 
-use super::{Bounded, One, Zero, magma::*};
+use super::{magma::*, Bounded, One, Zero};
 
 #[codesnip::entry("MaxOperation")]
 pub use self::max_operation_impl::MaxOperation;

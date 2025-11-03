@@ -6,7 +6,7 @@ use crate::algebra::{
 };
 use crate::algorithm::{BitDpExt, SliceBisectExt};
 use crate::num::{Bounded, RangeBoundsExt};
-use crate::tools::{Comparator, GetDistinctMut, Xorshift, comparator};
+use crate::tools::{comparator, Comparator, GetDistinctMut, Xorshift};
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};

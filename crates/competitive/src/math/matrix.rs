@@ -569,7 +569,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::AddMulOperation,
-        num::{One, Zero, mint_basic::DynMIntU32},
+        num::{mint_basic::DynMIntU32, One, Zero},
         rand, rand_value,
         tools::Xorshift,
     };

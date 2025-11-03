@@ -1,4 +1,4 @@
-use super::{BstDataAccess, BstImmutRef, BstSpec, LazyMapMonoid, data, data::LazyMapElement};
+use super::{data, data::LazyMapElement, BstDataAccess, BstImmutRef, BstSpec, LazyMapMonoid};
 use std::{borrow::Borrow, cmp::Ordering, marker::PhantomData};
 
 pub trait BstSeeker {

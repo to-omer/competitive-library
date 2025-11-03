@@ -1,4 +1,4 @@
-use super::{Convolve, ConvolveSteps, Zero, montgomery};
+use super::{montgomery, Convolve, ConvolveSteps, Zero};
 
 pub fn wildcard_pattern_matching(p: &[u8], s: &[u8]) -> Vec<bool> {
     type M = montgomery::MInt2013265921;

@@ -1,13 +1,13 @@
 use super::{
-    Allocator, BoxAllocator, LazyMapMonoid, MonoidAct, Xorshift,
     binary_search_tree::{
-        BstDataAccess, BstDataMutRef, BstNode, BstNodeId, BstNodeIdManager, BstRoot, BstSeeker,
-        BstSpec,
         data::{self, LazyMapElement, MonoidActElement},
         node::WithParent,
         seeker::{SeekByAccCond, SeekByKey, SeekByRaccCond},
         split::{Split, Split3},
+        BstDataAccess, BstDataMutRef, BstNode, BstNodeId, BstNodeIdManager, BstRoot, BstSeeker,
+        BstSpec,
     },
+    Allocator, BoxAllocator, LazyMapMonoid, MonoidAct, Xorshift,
 };
 use std::{
     borrow::Borrow,
@@ -697,7 +697,11 @@ mod tests {
                     let mut acc = 0;
                     let expected = data.iter().find_map(|(k, v)| {
                         acc += *v;
-                        if acc >= s { Some((*k, *v)) } else { None }
+                        if acc >= s {
+                            Some((*k, *v))
+                        } else {
+                            None
+                        }
                     });
                     let result = treap
                         .find_by_acc_cond(|agg| agg.0 >= s)
@@ -709,7 +713,11 @@ mod tests {
                     let mut acc = 0;
                     let expected = data.iter().rev().find_map(|(k, v)| {
                         acc += *v;
-                        if acc >= s { Some((*k, *v)) } else { None }
+                        if acc >= s {
+                            Some((*k, *v))
+                        } else {
+                            None
+                        }
                     });
                     let result = treap
                         .find_by_racc_cond(|agg| agg.0 >= s)

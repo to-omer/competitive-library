@@ -33,7 +33,11 @@ impl XorBasis {
     /// Return coordinate if element can be consisted by current basis.
     pub fn find(&self, x: u64) -> Option<u64> {
         let (y, coord) = self.reduce(x);
-        if y == 0 { Some(coord) } else { None }
+        if y == 0 {
+            Some(coord)
+        } else {
+            None
+        }
     }
     /// Return coordinate if element can be consisted by current basis.
     pub fn basis(&self, x: u64) -> Option<Vec<u64>> {

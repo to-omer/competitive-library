@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Field, Group, Invertible, bitwise_transform};
+use super::{bitwise_transform, ConvolveSteps, Field, Group, Invertible};
 use std::{fmt::Debug, marker::PhantomData};
 
 pub struct BitwisexorConvolve<M, const TRY: bool = false> {

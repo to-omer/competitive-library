@@ -744,7 +744,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::AddMulOperation,
-        num::{One as _, Zero as _, mint_basic::MInt998244353},
+        num::{mint_basic::MInt998244353, One as _, Zero as _},
     };
     use std::collections::{HashSet, VecDeque};
 

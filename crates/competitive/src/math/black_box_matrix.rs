@@ -1,6 +1,6 @@
 use super::{
-    AddMulOperation, ConvolveSteps, FormalPowerSeries, MInt, MIntBase, MIntConvert, Matrix, One,
-    SemiRing, Xorshift, Zero, berlekamp_massey,
+    berlekamp_massey, AddMulOperation, ConvolveSteps, FormalPowerSeries, MInt, MIntBase,
+    MIntConvert, Matrix, One, SemiRing, Xorshift, Zero,
 };
 use std::{
     fmt::{self, Debug},

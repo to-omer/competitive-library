@@ -1,4 +1,4 @@
-use super::{EdgeListGraph, Group, MergingUnionFind, MonoidAct, PairingHeap, comparator::Less};
+use super::{comparator::Less, EdgeListGraph, Group, MergingUnionFind, MonoidAct, PairingHeap};
 
 impl EdgeListGraph {
     /// tarjan
