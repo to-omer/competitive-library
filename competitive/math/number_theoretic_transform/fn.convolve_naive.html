@@ -52,117 +52,284 @@
   });
 </script>
 
-</head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">convolve_naive</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">convolve_<wbr>naive</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#247-270">Source</a> </span></div><pre class="rust item-decl"><code>fn convolve_naive&lt;M&gt;(a: &amp;[<a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;], b: &amp;[<a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;]) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../../num/struct.MInt.html" title="struct competitive::num::MInt">MInt</a>&lt;M&gt;&gt;<div class="where">where
-    M: <a class="trait" href="../../num/trait.MIntBase.html" title="trait competitive::num::MIntBase">MIntBase</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[2,2],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#325&#34;,&#34;line 325&#34;],[[105,105],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#428&#34;,&#34;line 428&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#325">line 325</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>323</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span>a: <span class="self">Self</span>::T, <span class="kw-2">mut </span>b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>324</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
-<span data-nosnippet>325</span>            <span class="kw">return </span><span class="highlight focus">convolve_naive</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>326</span>        }
-<span data-nosnippet>327</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
-<span data-nosnippet>328</span>        <span class="kw">let </span>size = len.max(<span class="number">1</span>).next_power_of_two();
-<span data-nosnippet>329</span>        <span class="kw">if </span>len &lt;= size / <span class="number">2 </span>+ <span class="number">2 </span>{
-<span data-nosnippet>330</span>            <span class="kw">let </span>xa = a.pop().unwrap();
-<span data-nosnippet>331</span>            <span class="kw">let </span>xb = b.pop().unwrap();
-<span data-nosnippet>332</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); len];
-<span data-nosnippet>333</span>            <span class="kw-2">*</span>c.last_mut().unwrap() = xa * xb;
-<span data-nosnippet>334</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span>a.iter().zip(<span class="kw-2">&amp;mut </span>c[b.len()..]) {
-<span data-nosnippet>335</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span>a * xb;
-<span data-nosnippet>336</span>            }
-<span data-nosnippet>337</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>b.iter().zip(<span class="kw-2">&amp;mut </span>c[a.len()..]) {
-<span data-nosnippet>338</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span>b * xa;
-<span data-nosnippet>339</span>            }
-<span data-nosnippet>340</span>            <span class="kw">let </span>d = <span class="self">Self</span>::convolve(a, b);
-<span data-nosnippet>341</span>            <span class="kw">for </span>(d, c) <span class="kw">in </span>d.into_iter().zip(<span class="kw-2">&amp;mut </span>c) {
-<span data-nosnippet>342</span>                <span class="kw-2">*</span>c += d;
-<span data-nosnippet>343</span>            }
-<span data-nosnippet>344</span>            <span class="kw">return </span>c;
-<span data-nosnippet>345</span>        }
-<span data-nosnippet>346</span>        <span class="kw">let </span>same = a == b;
-<span data-nosnippet>347</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
-<span data-nosnippet>348</span>        <span class="kw">if </span>same {
-<span data-nosnippet>349</span>            <span class="kw">for </span>a <span class="kw">in </span>a.iter_mut() {
-<span data-nosnippet>350</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>a;
-<span data-nosnippet>351</span>            }
-<span data-nosnippet>352</span>        } <span class="kw">else </span>{
-<span data-nosnippet>353</span>            <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
-<span data-nosnippet>354</span>            <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>355</span>        }
-<span data-nosnippet>356</span>        <span class="self">Self</span>::inverse_transform(a, len)
-<span data-nosnippet>357</span>    }
-<span data-nosnippet>358</span>}
-<span data-nosnippet>359</span>
-<span data-nosnippet>360</span><span class="kw">type </span>MVec&lt;M&gt; = Vec&lt;MInt&lt;M&gt;&gt;;
-<span data-nosnippet>361</span><span class="kw">impl</span>&lt;M, N1, N2, N3&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;(M, (N1, N2, N3))&gt;
-<span data-nosnippet>362</span><span class="kw">where
-<span data-nosnippet>363</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
-<span data-nosnippet>364</span>    N1: Montgomery32NttModulus,
-<span data-nosnippet>365</span>    N2: Montgomery32NttModulus,
-<span data-nosnippet>366</span>    N3: Montgomery32NttModulus,
-<span data-nosnippet>367</span>{
-<span data-nosnippet>368</span>    <span class="kw">type </span>T = MVec&lt;M&gt;;
-<span data-nosnippet>369</span>    <span class="kw">type </span>F = (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;);
-<span data-nosnippet>370</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
-<span data-nosnippet>371</span>        t.len()
-<span data-nosnippet>372</span>    }
-<span data-nosnippet>373</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
-<span data-nosnippet>374</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
-<span data-nosnippet>375</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (
-<span data-nosnippet>376</span>            MVec::&lt;N1&gt;::with_capacity(npot),
-<span data-nosnippet>377</span>            MVec::&lt;N2&gt;::with_capacity(npot),
-<span data-nosnippet>378</span>            MVec::&lt;N3&gt;::with_capacity(npot),
-<span data-nosnippet>379</span>        );
-<span data-nosnippet>380</span>        <span class="kw">for </span>t <span class="kw">in </span>t {
-<span data-nosnippet>381</span>            f.<span class="number">0</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
-<span data-nosnippet>382</span>            f.<span class="number">1</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
-<span data-nosnippet>383</span>            f.<span class="number">2</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
-<span data-nosnippet>384</span>        }
-<span data-nosnippet>385</span>        f.<span class="number">0</span>.resize_with(npot, Zero::zero);
-<span data-nosnippet>386</span>        f.<span class="number">1</span>.resize_with(npot, Zero::zero);
-<span data-nosnippet>387</span>        f.<span class="number">2</span>.resize_with(npot, Zero::zero);
-<span data-nosnippet>388</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>);
-<span data-nosnippet>389</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>);
-<span data-nosnippet>390</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>);
-<span data-nosnippet>391</span>        f
-<span data-nosnippet>392</span>    }
-<span data-nosnippet>393</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>394</span>        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
-<span data-nosnippet>395</span>        <span class="kw">let </span>m1 = MInt::&lt;M&gt;::from(N1::get_mod());
-<span data-nosnippet>396</span>        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
-<span data-nosnippet>397</span>        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
-<span data-nosnippet>398</span>        <span class="kw">let </span>m2 = m1 * MInt::&lt;M&gt;::from(N2::get_mod());
-<span data-nosnippet>399</span>        Convolve::&lt;N1&gt;::inverse_transform(f.<span class="number">0</span>, len)
-<span data-nosnippet>400</span>            .into_iter()
-<span data-nosnippet>401</span>            .zip(Convolve::&lt;N2&gt;::inverse_transform(f.<span class="number">1</span>, len))
-<span data-nosnippet>402</span>            .zip(Convolve::&lt;N3&gt;::inverse_transform(f.<span class="number">2</span>, len))
-<span data-nosnippet>403</span>            .map(|((c1, c2), c3)| {
-<span data-nosnippet>404</span>                <span class="kw">let </span>d1 = c1.inner();
-<span data-nosnippet>405</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
-<span data-nosnippet>406</span>                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
-<span data-nosnippet>407</span>                <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
-<span data-nosnippet>408</span>                MInt::&lt;M&gt;::from(d1) + MInt::&lt;M&gt;::from(d2) * m1 + MInt::&lt;M&gt;::from(d3) * m2
-<span data-nosnippet>409</span>            })
-<span data-nosnippet>410</span>            .collect()
-<span data-nosnippet>411</span>    }
-<span data-nosnippet>412</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
-<span data-nosnippet>413</span>        <span class="macro">assert_eq!</span>(f.<span class="number">0</span>.len(), g.<span class="number">0</span>.len());
-<span data-nosnippet>414</span>        <span class="macro">assert_eq!</span>(f.<span class="number">1</span>.len(), g.<span class="number">1</span>.len());
-<span data-nosnippet>415</span>        <span class="macro">assert_eq!</span>(f.<span class="number">2</span>.len(), g.<span class="number">2</span>.len());
-<span data-nosnippet>416</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">0</span>.iter_mut().zip(g.<span class="number">0</span>.iter()) {
-<span data-nosnippet>417</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
-<span data-nosnippet>418</span>        }
-<span data-nosnippet>419</span>        <span class="kw">for </span>(f, <a href="#409">g</a>) <span class="kw">in </span>f.<span class="number">1</span>.iter_mut().zip(g.<span class="number">1</span>.iter()) {
-<span data-nosnippet>420</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
-<span data-nosnippet>421</span>        }
-<span data-nosnippet>422</span>        <span class="kw">for </span>(<a href="#409">f</a>, g) <span class="kw">in </span>f.<span class="number">2</span>.iter_mut().zip(g.<span class="number">2</span>.iter()) {
-<span data-nosnippet>423</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
-<span data-nosnippet>424</span>        }
+</head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">convolve_naive</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../index.html">competitive</a>::<wbr><a href="../index.html">math</a>::<wbr><a href="index.html">number_theoretic_transform</a></div><h1>Function <span class="fn">convolve_<wbr>naive</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../src/competitive/math/number_theoretic_transform.rs.html#251-274">Source</a> </span></div><pre class="rust item-decl"><code>fn convolve_naive&lt;T&gt;(a: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>, b: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;T&gt;<div class="where">where
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> + <a class="trait" href="../../num/trait.Zero.html" title="trait competitive::num::Zero">Zero</a> + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.AddAssign.html" title="trait core::ops::arith::AddAssign">AddAssign</a>&lt;T&gt; + <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Mul.html" title="trait core::ops::arith::Mul">Mul</a>&lt;Output = T&gt;,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[5,5],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#281&#34;,&#34;line 281&#34;],[[82,82],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#358&#34;,&#34;line 358&#34;],[[188,188],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#464&#34;,&#34;line 464&#34;],[[272,272],&#34;../../../src/competitive/math/number_theoretic_transform.rs.html#548&#34;,&#34;line 548&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../src/competitive/math/number_theoretic_transform.rs.html#281">line 281</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>276</span><span class="kw">fn </span>convolve_karatsuba&lt;T&gt;(a: <span class="kw-2">&amp;</span>[T], b: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;T&gt;
+<span data-nosnippet>277</span><span class="kw">where
+<span data-nosnippet>278</span>    </span>T: Copy + Zero + AddAssign&lt;T&gt; + SubAssign&lt;T&gt; + Mul&lt;Output = T&gt;,
+<span data-nosnippet>279</span>{
+<span data-nosnippet>280</span>    <span class="kw">if </span>a.len().min(b.len()) &lt;= <span class="number">30 </span>{
+<span data-nosnippet>281</span>        <span class="kw">return </span><span class="highlight focus">convolve_naive</span>(a, b);
+<span data-nosnippet>282</span>    }
+<span data-nosnippet>283</span>    <span class="kw">let </span>m = a.len().max(b.len()).div_ceil(<span class="number">2</span>);
+<span data-nosnippet>284</span>    <span class="kw">let </span>(a0, a1) = <span class="kw">if </span>a.len() &lt;= m {
+<span data-nosnippet>285</span>        (a, <span class="kw-2">&amp;</span>[][..])
+<span data-nosnippet>286</span>    } <span class="kw">else </span>{
+<span data-nosnippet>287</span>        a.split_at(m)
+<span data-nosnippet>288</span>    };
+<span data-nosnippet>289</span>    <span class="kw">let </span>(b0, b1) = <span class="kw">if </span>b.len() &lt;= m {
+<span data-nosnippet>290</span>        (b, <span class="kw-2">&amp;</span>[][..])
+<span data-nosnippet>291</span>    } <span class="kw">else </span>{
+<span data-nosnippet>292</span>        b.split_at(m)
+<span data-nosnippet>293</span>    };
+<span data-nosnippet>294</span>    <span class="kw">let </span>f00 = convolve_karatsuba(a0, b0);
+<span data-nosnippet>295</span>    <span class="kw">let </span>f11 = convolve_karatsuba(a1, b1);
+<span data-nosnippet>296</span>    <span class="kw">let </span><span class="kw-2">mut </span>a0a1 = a0.to_vec();
+<span data-nosnippet>297</span>    <span class="kw">for </span>(a0a1, <span class="kw-2">&amp;</span>a1) <span class="kw">in </span>a0a1.iter_mut().zip(a1) {
+<span data-nosnippet>298</span>        <span class="kw-2">*</span>a0a1 += a1;
+<span data-nosnippet>299</span>    }
+<span data-nosnippet>300</span>    <span class="kw">let </span><span class="kw-2">mut </span>b0b1 = b0.to_vec();
+<span data-nosnippet>301</span>    <span class="kw">for </span>(b0b1, <span class="kw-2">&amp;</span>b1) <span class="kw">in </span>b0b1.iter_mut().zip(b1) {
+<span data-nosnippet>302</span>        <span class="kw-2">*</span>b0b1 += b1;
+<span data-nosnippet>303</span>    }
+<span data-nosnippet>304</span>    <span class="kw">let </span><span class="kw-2">mut </span>f01 = convolve_karatsuba(<span class="kw-2">&amp;</span>a0a1, <span class="kw-2">&amp;</span>b0b1);
+<span data-nosnippet>305</span>    <span class="kw">for </span>(f01, <span class="kw-2">&amp;</span>f00) <span class="kw">in </span>f01.iter_mut().zip(<span class="kw-2">&amp;</span>f00) {
+<span data-nosnippet>306</span>        <span class="kw-2">*</span>f01 -= f00;
+<span data-nosnippet>307</span>    }
+<span data-nosnippet>308</span>    <span class="kw">for </span>(f01, <span class="kw-2">&amp;</span>f11) <span class="kw">in </span>f01.iter_mut().zip(<span class="kw-2">&amp;</span>f11) {
+<span data-nosnippet>309</span>        <span class="kw-2">*</span>f01 -= f11;
+<span data-nosnippet>310</span>    }
+<span data-nosnippet>311</span>    <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[T::zero(); a.len() + b.len() - <span class="number">1</span>];
+<span data-nosnippet>312</span>    <span class="kw">for </span>(<a href="#239">c</a>, <span class="kw-2">&amp;</span>f00) <span class="kw">in </span>c.iter_mut().zip(<span class="kw-2">&amp;</span>f00) {
+<span data-nosnippet>313</span>        <span class="kw-2">*</span>c += f00;
+<span data-nosnippet>314</span>    }
+<span data-nosnippet>315</span>    <span class="kw">for </span>(c, <span class="kw-2">&amp;</span>f01) <span class="kw">in </span>c[m..].iter_mut().zip(<span class="kw-2">&amp;</span>f01) {
+<span data-nosnippet>316</span>        <span class="kw-2">*</span>c += f01;
+<span data-nosnippet>317</span>    }
+<span data-nosnippet>318</span>    <span class="kw">for </span>(c, <span class="kw-2">&amp;</span>f11) <span class="kw">in </span>c[m &lt;&lt; <span class="number">1</span>..].iter_mut().zip(<span class="kw-2">&amp;</span>f11) {
+<span data-nosnippet>319</span>        <span class="kw-2">*</span>c += f11;
+<span data-nosnippet>320</span>    }
+<span data-nosnippet>321</span>    c
+<span data-nosnippet>322</span>}
+<span data-nosnippet>323</span>
+<span data-nosnippet>324</span><span class="kw">impl</span>&lt;M&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;M&gt;
+<span data-nosnippet>325</span><span class="kw">where
+<span data-nosnippet>326</span>    </span>M: Montgomery32NttModulus,
+<span data-nosnippet>327</span>{
+<span data-nosnippet>328</span>    <span class="kw">type </span>T = Vec&lt;MInt&lt;M&gt;&gt;;
+<span data-nosnippet>329</span>    <span class="kw">type </span>F = Vec&lt;MInt&lt;M&gt;&gt;;
+<span data-nosnippet>330</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
+<span data-nosnippet>331</span>        t.len()
+<span data-nosnippet>332</span>    }
+<span data-nosnippet>333</span>    <span class="kw">fn </span>transform(<span class="kw-2">mut </span>t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>334</span>        t.resize_with(len.max(<span class="number">1</span>).next_power_of_two(), Zero::zero);
+<span data-nosnippet>335</span>        ntt(<span class="kw-2">&amp;mut </span>t);
+<span data-nosnippet>336</span>        t
+<span data-nosnippet>337</span>    }
+<span data-nosnippet>338</span>    <span class="kw">fn </span>inverse_transform(<span class="kw-2">mut </span>f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>339</span>        intt(<span class="kw-2">&amp;mut </span>f);
+<span data-nosnippet>340</span>        f.truncate(len);
+<span data-nosnippet>341</span>        <span class="kw">let </span>inv = MInt::from(len.max(<span class="number">1</span>).next_power_of_two() <span class="kw">as </span>u32).inv();
+<span data-nosnippet>342</span>        <span class="kw">for </span>f <span class="kw">in </span>f.iter_mut() {
+<span data-nosnippet>343</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= inv;
+<span data-nosnippet>344</span>        }
+<span data-nosnippet>345</span>        f
+<span data-nosnippet>346</span>    }
+<span data-nosnippet>347</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>348</span>        <span class="macro">assert_eq!</span>(f.len(), g.len());
+<span data-nosnippet>349</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.iter_mut().zip(g.iter()) {
+<span data-nosnippet>350</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
+<span data-nosnippet>351</span>        }
+<span data-nosnippet>352</span>    }
+<span data-nosnippet>353</span>    <span class="kw">fn </span>convolve(<span class="kw-2">mut </span>a: <span class="self">Self</span>::T, <span class="kw-2">mut </span>b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>354</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">100 </span>{
+<span data-nosnippet>355</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>356</span>        }
+<span data-nosnippet>357</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
+<span data-nosnippet>358</span>            <span class="kw">return </span><span class="highlight">convolve_naive</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>359</span>        }
+<span data-nosnippet>360</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>361</span>        <span class="kw">let </span>size = len.max(<span class="number">1</span>).next_power_of_two();
+<span data-nosnippet>362</span>        <span class="kw">if </span>len &lt;= size / <span class="number">2 </span>+ <span class="number">2 </span>{
+<span data-nosnippet>363</span>            <span class="kw">let </span>xa = a.pop().unwrap();
+<span data-nosnippet>364</span>            <span class="kw">let </span>xb = b.pop().unwrap();
+<span data-nosnippet>365</span>            <span class="kw">let </span><span class="kw-2">mut </span>c = <span class="macro">vec!</span>[MInt::&lt;M&gt;::zero(); len];
+<span data-nosnippet>366</span>            <span class="kw-2">*</span>c.last_mut().unwrap() = xa * xb;
+<span data-nosnippet>367</span>            <span class="kw">for </span>(a, c) <span class="kw">in </span>a.iter().zip(<span class="kw-2">&amp;mut </span>c[b.len()..]) {
+<span data-nosnippet>368</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span><a href="#318">a</a> * xb;
+<span data-nosnippet>369</span>            }
+<span data-nosnippet>370</span>            <span class="kw">for </span>(b, c) <span class="kw">in </span>b.iter().zip(<span class="kw-2">&amp;mut </span>c[a.len()..]) {
+<span data-nosnippet>371</span>                <span class="kw-2">*</span>c += <span class="kw-2">*</span>b * xa;
+<span data-nosnippet>372</span>            }
+<span data-nosnippet>373</span>            <span class="kw">let </span>d = <span class="self">Self</span>::convolve(a, b);
+<span data-nosnippet>374</span>            <span class="kw">for </span>(d, c) <span class="kw">in </span>d.into_iter().zip(<span class="kw-2">&amp;mut </span>c) {
+<span data-nosnippet>375</span>                <span class="kw-2">*</span>c += d;
+<span data-nosnippet>376</span>            }
+<span data-nosnippet>377</span>            <span class="kw">return </span>c;
+<span data-nosnippet>378</span>        }
+<span data-nosnippet>379</span>        <span class="kw">let </span>same = a == b;
+<span data-nosnippet>380</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
+<span data-nosnippet>381</span>        <span class="kw">if </span>same {
+<span data-nosnippet>382</span>            <span class="kw">for </span>a <span class="kw">in </span>a.iter_mut() {
+<span data-nosnippet>383</span>                <span class="kw-2">*</span>a <span class="kw-2">*</span>= <span class="kw-2">*</span>a;
+<span data-nosnippet>384</span>            }
+<span data-nosnippet>385</span>        } <span class="kw">else </span>{
+<span data-nosnippet>386</span>            <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
+<span data-nosnippet>387</span>            <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>388</span>        }
+<span data-nosnippet>389</span>        <span class="self">Self</span>::inverse_transform(a, len)
+<span data-nosnippet>390</span>    }
+<span data-nosnippet>391</span>}
+<span data-nosnippet>392</span>
+<span data-nosnippet>393</span><span class="kw">type </span>MVec&lt;M&gt; = Vec&lt;MInt&lt;M&gt;&gt;;
+<span data-nosnippet>394</span><span class="kw">impl</span>&lt;M, N1, N2, N3&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;(M, (N1, N2, N3))&gt;
+<span data-nosnippet>395</span><span class="kw">where
+<span data-nosnippet>396</span>    </span>M: MIntConvert + MIntConvert&lt;u32&gt;,
+<span data-nosnippet>397</span>    N1: Montgomery32NttModulus,
+<span data-nosnippet>398</span>    N2: Montgomery32NttModulus,
+<span data-nosnippet>399</span>    N3: Montgomery32NttModulus,
+<span data-nosnippet>400</span>{
+<span data-nosnippet>401</span>    <span class="kw">type </span>T = MVec&lt;M&gt;;
+<span data-nosnippet>402</span>    <span class="kw">type </span>F = (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;);
+<span data-nosnippet>403</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
+<span data-nosnippet>404</span>        t.len()
+<span data-nosnippet>405</span>    }
+<span data-nosnippet>406</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, <a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">len</a>: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>407</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
+<span data-nosnippet>408</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (
+<span data-nosnippet>409</span>            MVec::&lt;N1&gt;::with_capacity(npot),
+<span data-nosnippet>410</span>            MVec::&lt;N2&gt;::with_capacity(npot),
+<span data-nosnippet>411</span>            MVec::&lt;N3&gt;::with_capacity(npot),
+<span data-nosnippet>412</span>        );
+<span data-nosnippet>413</span>        <span class="kw">for </span>t <span class="kw">in </span>t {
+<span data-nosnippet>414</span>            f.<span class="number">0</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
+<span data-nosnippet>415</span>            f.<span class="number">1</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
+<span data-nosnippet>416</span>            f.<span class="number">2</span>.push(&lt;M <span class="kw">as </span>MIntConvert&lt;u32&gt;&gt;::into(t.inner()).into());
+<span data-nosnippet>417</span>        }
+<span data-nosnippet>418</span>        f.<span class="number">0</span>.resize_with(npot, Zero::zero);
+<span data-nosnippet>419</span>        f.<span class="number">1</span>.resize_with(npot, Zero::zero);
+<span data-nosnippet>420</span>        f.<span class="number">2</span>.resize_with(npot, Zero::zero);
+<span data-nosnippet>421</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>);
+<span data-nosnippet>422</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>);
+<span data-nosnippet>423</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>);
+<span data-nosnippet>424</span>        f
 <span data-nosnippet>425</span>    }
-<span data-nosnippet>426</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
-<span data-nosnippet>427</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
-<span data-nosnippet>428</span>            <span class="kw">return </span><span class="highlight">convolve_naive</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>429</span>        }
-<span data-nosnippet>430</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
-<span data-nosnippet>431</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
-<span data-nosnippet>432</span>        <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
-<span data-nosnippet>433</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
-<span data-nosnippet>434</span>        <span class="self">Self</span>::inverse_transform(a, len)
-<span data-nosnippet>435</span>    }</code></pre></div></div></div></section></div></main></body></html>
+<span data-nosnippet>426</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>427</span>        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
+<span data-nosnippet>428</span>        <span class="kw">let </span>m1 = MInt::&lt;M&gt;::from(N1::get_mod());
+<span data-nosnippet>429</span>        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
+<span data-nosnippet>430</span>        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
+<span data-nosnippet>431</span>        <span class="kw">let </span>m2 = m1 * MInt::&lt;M&gt;::from(N2::get_mod());
+<span data-nosnippet>432</span>        Convolve::&lt;N1&gt;::inverse_transform(f.<span class="number">0</span>, len)
+<span data-nosnippet>433</span>            .into_iter()
+<span data-nosnippet>434</span>            .zip(Convolve::&lt;N2&gt;::inverse_transform(f.<span class="number">1</span>, len))
+<span data-nosnippet>435</span>            .zip(Convolve::&lt;N3&gt;::inverse_transform(f.<span class="number">2</span>, len))
+<span data-nosnippet>436</span>            .map(|((c1, c2), c3)| {
+<span data-nosnippet>437</span>                <span class="kw">let </span>d1 = c1.inner();
+<span data-nosnippet>438</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
+<span data-nosnippet>439</span>                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+<span data-nosnippet>440</span>                <span class="kw">let </span>d3 = ((c3 - <a href="#409">x</a>) * t2).inner();
+<span data-nosnippet>441</span>                MInt::&lt;M&gt;::from(d1) + MInt::&lt;M&gt;::from(d2) * m1 + MInt::&lt;M&gt;::from(d3) * m2
+<span data-nosnippet>442</span>            })
+<span data-nosnippet>443</span>            .collect()
+<span data-nosnippet>444</span>    }
+<span data-nosnippet>445</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::F, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>446</span>        <span class="macro">assert_eq!</span>(f.<span class="number">0</span>.len(), g.<span class="number">0</span>.len());
+<span data-nosnippet>447</span>        <span class="macro">assert_eq!</span>(f.<span class="number">1</span>.len(), g.<span class="number">1</span>.len());
+<span data-nosnippet>448</span>        <span class="macro">assert_eq!</span>(f.<span class="number">2</span>.len(), g.<span class="number">2</span>.len());
+<span data-nosnippet>449</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">0</span>.iter_mut().zip(g.<span class="number">0</span>.iter()) {
+<span data-nosnippet>450</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
+<span data-nosnippet>451</span>        }
+<span data-nosnippet>452</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">1</span>.iter_mut().zip(g.<span class="number">1</span>.iter()) {
+<span data-nosnippet>453</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
+<span data-nosnippet>454</span>        }
+<span data-nosnippet>455</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">2</span>.iter_mut().zip(g.<span class="number">2</span>.iter()) {
+<span data-nosnippet>456</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
+<span data-nosnippet>457</span>        }
+<span data-nosnippet>458</span>    }
+<span data-nosnippet>459</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>460</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).<a href="https://doc.rust-lang.org/nightly/core/ops/arith/trait.Add.html">max</a>(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">300 </span>{
+<span data-nosnippet>461</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>462</span>        }
+<span data-nosnippet>463</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
+<span data-nosnippet>464</span>            <span class="kw">return </span><span class="highlight">convolve_naive</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>465</span>        }
+<span data-nosnippet>466</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>467</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
+<span data-nosnippet>468</span>        <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
+<span data-nosnippet>469</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>470</span>        <span class="self">Self</span>::inverse_transform(a, len)
+<span data-nosnippet>471</span>    }
+<span data-nosnippet>472</span>}
+<span data-nosnippet>473</span>
+<span data-nosnippet>474</span><span class="kw">impl</span>&lt;N1, N2, N3&gt; ConvolveSteps <span class="kw">for </span>Convolve&lt;(u64, (N1, N2, N3))&gt;
+<span data-nosnippet>475</span><span class="kw">where
+<span data-nosnippet>476</span>    </span>N1: Montgomery32NttModulus,
+<span data-nosnippet>477</span>    N2: Montgomery32NttModulus,
+<span data-nosnippet>478</span>    N3: Montgomery32NttModulus,
+<span data-nosnippet>479</span>{
+<span data-nosnippet>480</span>    <span class="kw">type </span>T = Vec&lt;u64&gt;;
+<span data-nosnippet>481</span>    <span class="kw">type </span>F = (MVec&lt;N1&gt;, MVec&lt;N2&gt;, MVec&lt;N3&gt;);
+<span data-nosnippet>482</span>
+<span data-nosnippet>483</span>    <span class="kw">fn </span>length(t: <span class="kw-2">&amp;</span><span class="self">Self</span>::T) -&gt; usize {
+<span data-nosnippet>484</span>        t.len()
+<span data-nosnippet>485</span>    }
+<span data-nosnippet>486</span>
+<span data-nosnippet>487</span>    <span class="kw">fn </span>transform(t: <span class="self">Self</span>::T, len: usize) -&gt; <span class="self">Self</span>::F {
+<span data-nosnippet>488</span>        <span class="kw">let </span>npot = len.max(<span class="number">1</span>).next_power_of_two();
+<span data-nosnippet>489</span>        <span class="kw">let </span><span class="kw-2">mut </span>f = (
+<span data-nosnippet>490</span>            MVec::&lt;N1&gt;::with_capacity(npot),
+<span data-nosnippet>491</span>            MVec::&lt;N2&gt;::with_capacity(npot),
+<span data-nosnippet>492</span>            MVec::&lt;N3&gt;::with_capacity(npot),
+<span data-nosnippet>493</span>        );
+<span data-nosnippet>494</span>        <span class="kw">for </span>t <span class="kw">in </span>t {
+<span data-nosnippet>495</span>            f.<span class="number">0</span>.push(t.into());
+<span data-nosnippet>496</span>            f.<span class="number">1</span>.push(t.into());
+<span data-nosnippet>497</span>            f.<span class="number">2</span>.push(t.into());
+<span data-nosnippet>498</span>        }
+<span data-nosnippet>499</span>        f.<span class="number">0</span>.resize_with(npot, Zero::zero);
+<span data-nosnippet>500</span>        f.<span class="number">1</span>.resize_with(npot, Zero::zero);
+<span data-nosnippet>501</span>        f.<span class="number">2</span>.resize_with(npot, Zero::zero);
+<span data-nosnippet>502</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">0</span>);
+<span data-nosnippet>503</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">1</span>);
+<span data-nosnippet>504</span>        ntt(<span class="kw-2">&amp;mut </span>f.<span class="number">2</span>);
+<span data-nosnippet>505</span>        f
+<span data-nosnippet>506</span>    }
+<span data-nosnippet>507</span>
+<span data-nosnippet>508</span>    <span class="kw">fn </span>inverse_transform(f: <span class="self">Self</span>::F, len: usize) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>509</span>        <span class="kw">let </span>t1 = MInt::&lt;N2&gt;::new(N1::get_mod()).inv();
+<span data-nosnippet>510</span>        <span class="kw">let </span>m1 = N1::get_mod() <span class="kw">as </span>u64;
+<span data-nosnippet>511</span>        <span class="kw">let </span>m1_3 = MInt::&lt;N3&gt;::new(N1::get_mod());
+<span data-nosnippet>512</span>        <span class="kw">let </span>t2 = (m1_3 * MInt::&lt;N3&gt;::new(N2::get_mod())).inv();
+<span data-nosnippet>513</span>        <span class="kw">let </span>m2 = m1 * N2::get_mod() <span class="kw">as </span>u64;
+<span data-nosnippet>514</span>        Convolve::&lt;N1&gt;::inverse_transform(f.<span class="number">0</span>, len)
+<span data-nosnippet>515</span>            .into_iter()
+<span data-nosnippet>516</span>            .zip(Convolve::&lt;N2&gt;::inverse_transform(f.<span class="number">1</span>, <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html#tymethod.max">len</a>))
+<span data-nosnippet>517</span>            .zip(Convolve::&lt;N3&gt;::inverse_transform(f.<span class="number">2</span>, len))
+<span data-nosnippet>518</span>            .map(|((c1, c2), c3)| {
+<span data-nosnippet>519</span>                <span class="kw">let </span>d1 = c1.inner();
+<span data-nosnippet>520</span>                <span class="kw">let </span>d2 = ((c2 - MInt::&lt;N2&gt;::from(d1)) * t1).inner();
+<span data-nosnippet>521</span>                <span class="kw">let </span>x = MInt::&lt;N3&gt;::new(d1) + MInt::&lt;N3&gt;::new(d2) * m1_3;
+<span data-nosnippet>522</span>                <span class="kw">let </span>d3 = ((c3 - x) * t2).inner();
+<span data-nosnippet>523</span>                d1 <span class="kw">as </span>u64 + d2 <span class="kw">as </span>u64 * m1 + d3 <span class="kw">as </span>u64 * m2
+<span data-nosnippet>524</span>            })
+<span data-nosnippet>525</span>            .collect()
+<span data-nosnippet>526</span>    }
+<span data-nosnippet>527</span>
+<span data-nosnippet>528</span>    <span class="kw">fn </span>multiply(f: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::<a href="#543">F</a>, g: <span class="kw-2">&amp;</span><span class="self">Self</span>::F) {
+<span data-nosnippet>529</span>        <span class="macro">assert_eq!</span>(f.<span class="number">0</span>.len(), g.<span class="number">0</span>.len());
+<span data-nosnippet>530</span>        <span class="macro">assert_eq!</span>(f.<span class="number">1</span>.len(), g.<span class="number">1</span>.len());
+<span data-nosnippet>531</span>        <span class="macro">assert_eq!</span>(f.<span class="number">2</span>.len(), g.<span class="number">2</span>.len());
+<span data-nosnippet>532</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">0</span>.iter_mut().zip(g.<span class="number">0</span>.iter()) {
+<span data-nosnippet>533</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
+<span data-nosnippet>534</span>        }
+<span data-nosnippet>535</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">1</span>.iter_mut().zip(g.<span class="number">1</span>.iter()) {
+<span data-nosnippet>536</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
+<span data-nosnippet>537</span>        }
+<span data-nosnippet>538</span>        <span class="kw">for </span>(f, g) <span class="kw">in </span>f.<span class="number">2</span>.iter_mut().zip(g.<span class="number">2</span>.iter()) {
+<span data-nosnippet>539</span>            <span class="kw-2">*</span>f <span class="kw-2">*</span>= <span class="kw-2">*</span>g;
+<span data-nosnippet>540</span>        }
+<span data-nosnippet>541</span>    }
+<span data-nosnippet>542</span>
+<span data-nosnippet>543</span>    <span class="kw">fn </span>convolve(a: <span class="self">Self</span>::T, b: <span class="self">Self</span>::T) -&gt; <span class="self">Self</span>::T {
+<span data-nosnippet>544</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).max(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">300 </span>{
+<span data-nosnippet>545</span>            <span class="kw">return </span>convolve_karatsuba(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>546</span>        }
+<span data-nosnippet>547</span>        <span class="kw">if </span><span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a).min(<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)) &lt;= <span class="number">60 </span>{
+<span data-nosnippet>548</span>            <span class="kw">return </span><span class="highlight">convolve_naive</span>(<span class="kw-2">&amp;</span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>549</span>        }
+<span data-nosnippet>550</span>        <span class="kw">let </span>len = (<span class="self">Self</span>::length(<span class="kw-2">&amp;</span>a) + <span class="self">Self</span>::length(<span class="kw-2">&amp;</span>b)).saturating_sub(<span class="number">1</span>);
+<span data-nosnippet>551</span>        <span class="kw">let </span><span class="kw-2">mut </span>a = <span class="self">Self</span>::transform(a, len);
+<span data-nosnippet>552</span>        <span class="kw">let </span>b = <span class="self">Self</span>::transform(b, len);
+<span data-nosnippet>553</span>        <span class="self">Self</span>::multiply(<span class="kw-2">&amp;mut </span>a, <span class="kw-2">&amp;</span>b);
+<span data-nosnippet>554</span>        <span class="self">Self</span>::inverse_transform(a, len)
+<span data-nosnippet>555</span>    }</code></pre></div></div></div></section></div></main></body></html>

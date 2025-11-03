@@ -144,7 +144,7 @@
 <span data-nosnippet>82</span>{
 <span data-nosnippet>83</span>    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>84</span>        <span class="self">Self </span>{
-<span data-nosnippet>85</span>            data: Vec::with_capacity(<span class="number">1 </span>&lt;&lt; size),
+<span data-nosnippet>85</span>            data: Vec::with_capacity(size),
 <span data-nosnippet>86</span>        }
 <span data-nosnippet>87</span>    }
 <span data-nosnippet>88</span>
@@ -192,7 +192,7 @@
 <span data-nosnippet>130</span>{
 <span data-nosnippet>131</span>    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>132</span>        <span class="self">Self </span>{
-<span data-nosnippet>133</span>            data: Vec::with_capacity(<span class="number">1 </span>&lt;&lt; size),
+<span data-nosnippet>133</span>            data: Vec::with_capacity(size),
 <span data-nosnippet>134</span>        }
 <span data-nosnippet>135</span>    }
 <span data-nosnippet>136</span>
@@ -223,7 +223,7 @@
 <span data-nosnippet>161</span>                <span class="kw">if </span>((index ^ base) &gt;&gt; d).count_ones() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
 <span data-nosnippet>162</span>                    s = <span class="highlight">M::rinv_operate</span>(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span><span class="self">self</span>.data[j]);
 <span data-nosnippet>163</span>                } <span class="kw">else </span>{
-<span data-nosnippet>164</span>                    s = M::operate(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span><span class="self">self</span>.data[j]);
+<span data-nosnippet>164</span>                    <a href="algebra/lazy_map.rs.html#19">s</a> = M::operate(<span class="kw-2">&amp;</span>s, <span class="kw-2">&amp;</span><span class="self">self</span>.data[j]);
 <span data-nosnippet>165</span>                }
 <span data-nosnippet>166</span>            }
 <span data-nosnippet>167</span>            cur = base;
@@ -291,7 +291,7 @@
 <span data-nosnippet>82</span>{
 <span data-nosnippet>83</span>    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>84</span>        <span class="self">Self </span>{
-<span data-nosnippet>85</span>            data: Vec::with_capacity(<span class="number">1 </span>&lt;&lt; size),
+<span data-nosnippet>85</span>            data: Vec::with_capacity(size),
 <span data-nosnippet>86</span>        }
 <span data-nosnippet>87</span>    }
 <span data-nosnippet>88</span>
@@ -303,7 +303,7 @@
 <span data-nosnippet>94</span>            <span class="kw">let </span>size = <span class="number">1 </span>&lt;&lt; k;
 <span data-nosnippet>95</span>            <span class="kw">let </span>chunk = <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i - (size * <span class="number">2 </span>- <span class="number">1</span>)..];
 <span data-nosnippet>96</span>            <span class="kw">let </span>(x, y) = chunk.split_at_mut(size);
-<span data-nosnippet>97</span>            <span class="kw">for </span>(<a href="algebra/action.rs.html#23">x</a>, <a href="algebra/action.rs.html#23">y</a>) <span class="kw">in </span>x.iter().zip(y.iter_mut()) {
+<span data-nosnippet>97</span>            <span class="kw">for </span>(x, y) <span class="kw">in </span>x.iter().zip(y.iter_mut()) {
 <span data-nosnippet>98</span>                <span class="kw-2">*</span>y = M::operate(x, y);
 <span data-nosnippet>99</span>            }
 <span data-nosnippet>100</span>            k += <span class="number">1</span>;
@@ -339,7 +339,7 @@
 <span data-nosnippet>130</span>{
 <span data-nosnippet>131</span>    <span class="kw">pub fn </span>new(size: usize) -&gt; <span class="self">Self </span>{
 <span data-nosnippet>132</span>        <span class="self">Self </span>{
-<span data-nosnippet>133</span>            data: Vec::with_capacity(<span class="number">1 </span>&lt;&lt; size),
+<span data-nosnippet>133</span>            data: Vec::with_capacity(size),
 <span data-nosnippet>134</span>        }
 <span data-nosnippet>135</span>    }
 <span data-nosnippet>136</span>
@@ -352,7 +352,7 @@
 <span data-nosnippet>143</span>            <span class="kw">let </span>chunk = <span class="kw-2">&amp;mut </span><span class="self">self</span>.data[i - (size * <span class="number">2 </span>- <span class="number">1</span>)..];
 <span data-nosnippet>144</span>            <span class="kw">let </span>(x, y) = chunk.split_at_mut(size);
 <span data-nosnippet>145</span>            <span class="kw">for </span>(x, y) <span class="kw">in </span>x.iter().zip(y.iter_mut()) {
-<span data-nosnippet>146</span>                <span class="kw-2">*</span>y = <span class="highlight">M::rinv_operate</span>(y, x);
+<span data-nosnippet>146</span>                <span class="kw-2">*</span>y = <span class="highlight"><a href="algebra/action.rs.html#86">M</a>::rinv_operate</span>(y, x);
 <span data-nosnippet>147</span>            }
 <span data-nosnippet>148</span>            k += <span class="number">1</span>;
 <span data-nosnippet>149</span>        }
