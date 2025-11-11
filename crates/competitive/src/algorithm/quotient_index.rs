@@ -1,4 +1,7 @@
-use std::ops::RangeInclusive;
+use std::{
+    iter::{ExactSizeIterator, FusedIterator},
+    ops::RangeInclusive,
+};
 
 /// sorted({ floor(n/k) | k in \[1, n\] })
 pub struct FloorQuotientIndex {
@@ -13,6 +16,23 @@ impl FloorQuotientIndex {
         let sqrt = num.isqrt();
         let pivot = num / sqrt;
         Self { num, sqrt, pivot }
+    }
+
+    pub fn values(&self) -> impl ExactSizeIterator<Item = usize> + FusedIterator + '_ {
+        let len = self.len();
+        (0..len).map(move |index| unsafe { self.index_to_value_unchecked(index) })
+    }
+
+    pub fn key_values(
+        &self,
+    ) -> impl ExactSizeIterator<Item = (RangeInclusive<usize>, usize)> + FusedIterator + '_ {
+        let len = self.len();
+        (0..len).map(move |index| unsafe {
+            (
+                self.index_to_key_unchecked(index),
+                self.index_to_value_unchecked(index),
+            )
+        })
     }
 
     #[allow(clippy::len_without_is_empty)]
@@ -68,9 +88,11 @@ impl FloorQuotientIndex {
     /// # Safety
     /// `index` must satisfy `index < self.len()`.
     pub unsafe fn index_to_key_unchecked(&self, index: usize) -> RangeInclusive<usize> {
-        unsafe {
-            let value = self.index_to_value_unchecked(index);
-            self.value_to_key_unchecked(value)
+        if index < self.sqrt {
+            self.num / (index + 2) + 1..=self.num / (index + 1)
+        } else {
+            let key = self.len() - index;
+            key..=key
         }
     }
 
@@ -108,9 +130,11 @@ impl FloorQuotientIndex {
     /// # Safety
     /// `key` must satisfy `1 <= key && key <= self.num`.
     pub unsafe fn key_to_index_unchecked(&self, key: usize) -> usize {
-        unsafe {
-            let value = self.key_to_value_unchecked(key);
-            self.value_to_index_unchecked(value)
+        let len = self.len();
+        if key <= len - self.sqrt {
+            len - key
+        } else {
+            self.num / key - 1
         }
     }
 
@@ -134,6 +158,23 @@ impl CeilQuotientIndex {
         let sqrt = num.isqrt();
         let pivot = num.div_ceil(sqrt);
         Self { num, sqrt, pivot }
+    }
+
+    pub fn values(&self) -> impl ExactSizeIterator<Item = usize> + FusedIterator + '_ {
+        let len = self.len();
+        (0..len).map(move |index| unsafe { self.index_to_value_unchecked(index) })
+    }
+
+    pub fn key_values(
+        &self,
+    ) -> impl ExactSizeIterator<Item = (RangeInclusive<usize>, usize)> + FusedIterator + '_ {
+        let len = self.len();
+        (0..len).map(move |index| unsafe {
+            (
+                self.index_to_key_unchecked(index),
+                self.index_to_value_unchecked(index),
+            )
+        })
     }
 
     #[allow(clippy::len_without_is_empty)]
@@ -191,9 +232,16 @@ impl CeilQuotientIndex {
     /// # Safety
     /// `index` must satisfy `index < self.len()`.
     pub unsafe fn index_to_key_unchecked(&self, index: usize) -> RangeInclusive<usize> {
-        unsafe {
-            let value = self.index_to_value_unchecked(index);
-            self.value_to_key_unchecked(value)
+        if index < self.pivot {
+            if index == 0 {
+                return self.num..=self.num;
+            }
+            let start = self.num.div_ceil(index + 1);
+            let end = (self.num - 1) / index;
+            start..=end
+        } else {
+            let key = self.len() - index;
+            key..=key
         }
     }
 
@@ -231,9 +279,10 @@ impl CeilQuotientIndex {
     /// # Safety
     /// `key` must satisfy `1 <= key && key <= self.num`.
     pub unsafe fn key_to_index_unchecked(&self, key: usize) -> usize {
-        unsafe {
-            let value = self.key_to_value_unchecked(key);
-            self.value_to_index_unchecked(value)
+        if key < self.sqrt {
+            self.len() - key
+        } else {
+            self.num.div_ceil(key) - 1
         }
     }
 
@@ -254,12 +303,19 @@ mod tests {
         let mut rng = Xorshift::default();
         for n in (1..=2000).chain(rng.random_iter(1..=200_000).take(100)) {
             let qi = FloorQuotientIndex::new(n);
-            let mut a: Vec<_> = (1..=n).rev().map(|key| n / key).collect();
-            a.dedup();
-            assert_eq!(qi.len(), a.len());
+            let mut expected_values: Vec<_> = (1..=n).rev().map(|key| n / key).collect();
+            expected_values.dedup();
+            assert_eq!(qi.len(), expected_values.len());
+            let values: Vec<_> = qi.values().collect();
+            assert_eq!(values, expected_values);
+            let expected_key_values: Vec<_> = (0..qi.len())
+                .map(|index| (qi.index_to_key(index), qi.index_to_value(index)))
+                .collect();
+            let key_values: Vec<_> = qi.key_values().collect();
+            assert_eq!(key_values, expected_key_values);
             let mut count = 0;
             let mut is_value = vec![false; n + 1];
-            for (index, &value) in a.iter().enumerate() {
+            for (index, &value) in values.iter().enumerate() {
                 assert_eq!(qi.index_to_value(index), value);
                 assert_eq!(qi.value_to_index(value), index);
                 assert_eq!(qi.index_to_key(index), qi.value_to_key(value));
@@ -305,13 +361,19 @@ mod tests {
         let mut rng = Xorshift::default();
         for n in (1..=2000).chain(rng.random_iter(1..=200_000).take(100)) {
             let qi = CeilQuotientIndex::new(n);
-            let mut a: Vec<_> = (1..=n).map(|key| n.div_ceil(key)).collect();
-            a.sort();
-            a.dedup();
-            assert_eq!(qi.len(), a.len());
+            let mut expected_values: Vec<_> = (1..=n).rev().map(|key| n.div_ceil(key)).collect();
+            expected_values.dedup();
+            assert_eq!(qi.len(), expected_values.len());
+            let values: Vec<_> = qi.values().collect();
+            assert_eq!(values, expected_values);
+            let expected_key_values: Vec<_> = (0..qi.len())
+                .map(|index| (qi.index_to_key(index), qi.index_to_value(index)))
+                .collect();
+            let key_values: Vec<_> = qi.key_values().collect();
+            assert_eq!(key_values, expected_key_values);
             let mut count = 0;
             let mut is_value = vec![false; n + 1];
-            for (index, &value) in a.iter().enumerate() {
+            for (index, &value) in values.iter().enumerate() {
                 assert_eq!(qi.index_to_value(index), value);
                 assert_eq!(qi.value_to_index(value), index);
                 assert_eq!(qi.index_to_key(index), qi.value_to_key(value));
