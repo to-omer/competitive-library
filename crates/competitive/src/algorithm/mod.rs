@@ -29,6 +29,8 @@ pub use self::impartial_game::{ImpartialGame, ImpartialGameAnalyzer, ImpartialGa
 pub use self::other::*;
 #[codesnip::entry("PartisanGame")]
 pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer};
+#[codesnip::entry("QuotientIndex")]
+pub use self::quotient_index::QuotientIndex;
 #[codesnip::entry("RhoPath")]
 pub use self::rho_path::RhoPath;
 #[codesnip::entry("01_on_tree")]
@@ -82,6 +84,8 @@ mod mo_algorithm;
 mod other;
 #[cfg_attr(nightly, codesnip::entry("PartisanGame"))]
 mod partisan_game;
+#[cfg_attr(nightly, codesnip::entry("QuotientIndex"))]
+mod quotient_index;
 #[cfg_attr(nightly, codesnip::entry("RhoPath"))]
 mod rho_path;
 #[cfg_attr(nightly, codesnip::entry("01_on_tree", include("UnionFind")))]
