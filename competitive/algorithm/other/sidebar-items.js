@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["floor_kernel","run_length_encoding"]};
+window.SIDEBAR_ITEMS = {"fn":["run_length_encoding"]};
