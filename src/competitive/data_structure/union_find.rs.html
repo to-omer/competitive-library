@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/union_find.rs`."><title>union_find.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.93.0-nightly (b01cc1cf0 2025-11-05)" data-channel="nightly" data-search-js="search-5c29b3b5.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/competitive/src/data_structure/union_find.rs`."><title>union_find.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.93.0-nightly (29a69716f 2025-11-10)" data-channel="nightly" data-search-js="search-8e3fad08.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ce535bd0.js"></script><script defer src="../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -583,7 +583,7 @@
 <a href=#529 id=529 data-nosnippet>529</a>        vis[u] = <span class="bool-val">true</span>;
 <a href=#530 id=530 data-nosnippet>530</a>        f(u);
 <a href=#531 id=531 data-nosnippet>531</a>        <span class="kw">for </span>a <span class="kw">in </span>g.adjacencies(u) {
-<a href=#532 id=532 data-nosnippet>532</a>            <span class="macro">if !</span>vis[a.to] {
+<a href=#532 id=532 data-nosnippet>532</a>            <span class="kw">if </span>!vis[a.to] {
 <a href=#533 id=533 data-nosnippet>533</a>                f2(u, a.to, a.id);
 <a href=#534 id=534 data-nosnippet>534</a>                dfs(g, a.to, vis, f, f2);
 <a href=#535 id=535 data-nosnippet>535</a>            }
@@ -599,7 +599,7 @@
 <a href=#545 id=545 data-nosnippet>545</a>            <span class="kw">let </span>edges = distinct_edges(<span class="kw-2">&amp;mut </span>rng, n, m);
 <a href=#546 id=546 data-nosnippet>546</a>
 <a href=#547 id=547 data-nosnippet>547</a>            <span class="macro">macro_rules!</span> test_uf {
-<a href=#548 id=548 data-nosnippet>548</a>                (<span class="macro-nonterminal">$</span><span class="kw">union</span>:<span class="macro-nonterminal">ty</span>, <span class="macro-nonterminal">$find</span>:ty) =&gt; {{
+<a href=#548 id=548 data-nosnippet>548</a>                (<span class="macro-nonterminal">$union</span>:ty, <span class="macro-nonterminal">$find</span>:ty) =&gt; {{
 <a href=#549 id=549 data-nosnippet>549</a>                    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFindBase::&lt;<span class="macro-nonterminal">$union</span>, <span class="macro-nonterminal">$find</span>, FnMerger&lt;Vec&lt;usize&gt;, <span class="kw">_</span>&gt;, (), ()&gt;::new_with_merger(n, |i| <span class="macro">vec!</span>[i], |x, y| x.append(y));
 <a href=#550 id=550 data-nosnippet>550</a>                    <span class="kw">for </span><span class="kw-2">&amp;</span>(x, y) <span class="kw">in </span><span class="kw-2">&amp;</span>edges {
 <a href=#551 id=551 data-nosnippet>551</a>                        uf.unite(x, y);
@@ -656,7 +656,7 @@
 <a href=#602 id=602 data-nosnippet>602</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..=N, g: MixedTree(n), p: [(.., ..); n - <span class="number">1</span>], k: <span class="number">0</span>..n);
 <a href=#603 id=603 data-nosnippet>603</a>
 <a href=#604 id=604 data-nosnippet>604</a>            <span class="macro">macro_rules!</span> test_uf {
-<a href=#605 id=605 data-nosnippet>605</a>                (<span class="macro-nonterminal">$</span><span class="kw">union</span>:<span class="macro-nonterminal">ty</span>, <span class="macro-nonterminal">$find</span>:ty) =&gt; {{
+<a href=#605 id=605 data-nosnippet>605</a>                (<span class="macro-nonterminal">$union</span>:ty, <span class="macro-nonterminal">$find</span>:ty) =&gt; {{
 <a href=#606 id=606 data-nosnippet>606</a>                    <span class="kw">let </span><span class="kw-2">mut </span>uf = UnionFindBase::&lt;<span class="macro-nonterminal">$union</span>, <span class="macro-nonterminal">$find</span>, (), G, ()&gt;::new(n);
 <a href=#607 id=607 data-nosnippet>607</a>                    <span class="kw">for </span>(i, <span class="kw-2">&amp;</span>(u, v)) <span class="kw">in </span>g.edges.iter().enumerate().take(k) {
 <a href=#608 id=608 data-nosnippet>608</a>                        uf.unite_with(u, v, p[i]);
@@ -701,7 +701,7 @@
 <a href=#647 id=647 data-nosnippet>647</a>            <span class="macro">rand!</span>(rng, n: <span class="number">1</span>..=N, m: <span class="number">1</span>..=M, g: MixedTree(m), p: [(<span class="number">0</span>..n, <span class="number">0</span>..n); m]);
 <a href=#648 id=648 data-nosnippet>648</a>
 <a href=#649 id=649 data-nosnippet>649</a>            <span class="macro">macro_rules!</span> test_uf {
-<a href=#650 id=650 data-nosnippet>650</a>                (<span class="macro-nonterminal">$</span><span class="kw">union</span>:<span class="macro-nonterminal">ty</span>, <span class="macro-nonterminal">$find</span>:ty) =&gt; {{
+<a href=#650 id=650 data-nosnippet>650</a>                (<span class="macro-nonterminal">$union</span>:ty, <span class="macro-nonterminal">$find</span>:ty) =&gt; {{
 <a href=#651 id=651 data-nosnippet>651</a>                    <span class="kw">let </span>uf = UnionFind::new(n);
 <a href=#652 id=652 data-nosnippet>652</a>                    <span class="kw">let </span><span class="kw-2">mut </span>uf2 = UnionFindBase::&lt;<span class="macro-nonterminal">$union</span>, <span class="macro-nonterminal">$find</span>, (), (), Undoable&gt;::new(n);
 <a href=#653 id=653 data-nosnippet>653</a>                    <span class="kw">fn </span>dfs(
@@ -720,7 +720,7 @@
 <a href=#666 id=666 data-nosnippet>666</a>                            }
 <a href=#667 id=667 data-nosnippet>667</a>                        }
 <a href=#668 id=668 data-nosnippet>668</a>                        <span class="kw">for </span>a <span class="kw">in </span>g.adjacencies(u) {
-<a href=#669 id=669 data-nosnippet>669</a>                            <span class="macro">if !</span>vis[a.to] {
+<a href=#669 id=669 data-nosnippet>669</a>                            <span class="kw">if </span>!vis[a.to] {
 <a href=#670 id=670 data-nosnippet>670</a>                                <span class="kw">let </span>(x, y) = p[a.id];
 <a href=#671 id=671 data-nosnippet>671</a>                                <span class="kw">let </span><span class="kw-2">mut </span>uf = uf.clone();
 <a href=#672 id=672 data-nosnippet>672</a>                                uf.unite(x, y);
