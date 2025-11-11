@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     math::Fps998244353,
-    num::{One, montgomery::MInt998244353},
+    num::{montgomery::MInt998244353, One},
 };
 
 #[verify::library_checker("kth_term_of_linearly_recurrent_sequence")]

@@ -95,7 +95,8 @@ impl<Hasher> Eq for HashedRange<'_, Hasher> where Hasher: RollingHasher + ?Sized
 
 impl<Hasher> PartialOrd for HashedRange<'_, Hasher>
 where
-    Hasher: RollingHasher<Hash: PartialOrd> + ?Sized,
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: PartialOrd,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         let n = self.longest_common_prefix(other);
@@ -112,7 +113,8 @@ where
 
 impl<Hasher> Ord for HashedRange<'_, Hasher>
 where
-    Hasher: RollingHasher<Hash: Ord> + ?Sized,
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: Ord,
 {
     fn cmp(&self, other: &Self) -> Ordering {
         let n = self.longest_common_prefix(other);
@@ -163,7 +165,7 @@ where
         let mut ok = 0usize;
         let mut err = n + 1;
         while ok + 1 < err {
-            let mid = ok.midpoint(err);
+            let mid = (ok + err) / 2;
             if self.range(..mid).hash() == other.range(..mid).hash() {
                 ok = mid;
             } else {
@@ -187,7 +189,8 @@ where
 
 impl<Hasher: Debug> Debug for HashedRangeChained<'_, Hasher>
 where
-    Hasher: RollingHasher<Hash: Debug> + ?Sized,
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("HashedRangeChained")
@@ -243,10 +246,10 @@ where
         let mut x: Option<HashedRange<'_, Hasher>> = None;
         let mut y: Option<HashedRange<'_, Hasher>> = None;
         loop {
-            if x.is_none_or(|x| x.is_empty()) {
+            if x.map_or(true, |x| x.is_empty()) {
                 x = next!(a);
             }
-            if y.is_none_or(|y| y.is_empty()) {
+            if y.map_or(true, |y| y.is_empty()) {
                 y = next!(b);
             }
             if let (Some(x), Some(y)) = (&mut x, &mut y) {
@@ -267,7 +270,8 @@ impl<Hasher> Eq for HashedRangeChained<'_, Hasher> where Hasher: RollingHasher +
 
 impl<Hasher> PartialOrd for HashedRangeChained<'_, Hasher>
 where
-    Hasher: RollingHasher<Hash: PartialOrd> + ?Sized,
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: PartialOrd,
 {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         let mut a = self.chained.iter().cloned();
@@ -288,10 +292,10 @@ where
         let mut x: Option<HashedRange<'_, Hasher>> = None;
         let mut y: Option<HashedRange<'_, Hasher>> = None;
         loop {
-            if x.is_none_or(|x| x.is_empty()) {
+            if x.map_or(true, |x| x.is_empty()) {
                 x = next!(a);
             }
-            if y.is_none_or(|y| y.is_empty()) {
+            if y.map_or(true, |y| y.is_empty()) {
                 y = next!(b);
             }
             if let (Some(x), Some(y)) = (&mut x, &mut y) {
@@ -312,7 +316,8 @@ where
 
 impl<Hasher> Ord for HashedRangeChained<'_, Hasher>
 where
-    Hasher: RollingHasher<Hash: Ord> + ?Sized,
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: Ord,
 {
     fn cmp(&self, other: &Self) -> Ordering {
         let mut a = self.chained.iter().cloned();
@@ -333,10 +338,10 @@ where
         let mut x: Option<HashedRange<'_, Hasher>> = None;
         let mut y: Option<HashedRange<'_, Hasher>> = None;
         loop {
-            if x.is_none_or(|x| x.is_empty()) {
+            if x.map_or(true, |x| x.is_empty()) {
                 x = next!(a);
             }
-            if y.is_none_or(|y| y.is_empty()) {
+            if y.map_or(true, |y| y.is_empty()) {
                 y = next!(b);
             }
             if let (Some(x), Some(y)) = (&mut x, &mut y) {
@@ -409,7 +414,8 @@ where
 
 impl<Hasher> std::hash::Hash for Hashed<Hasher>
 where
-    Hasher: RollingHasher<Hash: std::hash::Hash> + ?Sized,
+    Hasher: RollingHasher + ?Sized,
+    Hasher::Hash: std::hash::Hash,
 {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.len.hash(state);
@@ -480,7 +486,8 @@ where
 
 impl<R> Default for RollingHashPrecalc<R>
 where
-    R: SemiRing<T: Default>,
+    R: SemiRing,
+    R::T: Default,
 {
     fn default() -> Self {
         Self {
@@ -492,7 +499,8 @@ where
 
 impl<R> RollingHashPrecalc<R>
 where
-    R: SemiRing<Additive: Invertible>,
+    R: SemiRing,
+    R::Additive: Invertible,
 {
     fn new(base: R::T) -> Self {
         Self {

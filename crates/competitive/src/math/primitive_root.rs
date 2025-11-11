@@ -1,4 +1,4 @@
-use super::{BarrettReduction, prime_factors};
+use super::{prime_factors, BarrettReduction};
 
 pub fn primitive_root(p: u64) -> u64 {
     if p == 2 {

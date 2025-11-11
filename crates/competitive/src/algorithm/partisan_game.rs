@@ -59,7 +59,8 @@ where
 #[derive(Debug, Clone)]
 pub struct PartisanGameAnalyzer<G>
 where
-    G: PartisanGame<State: Eq + Hash>,
+    G: PartisanGame,
+    G::State: Eq + Hash,
 {
     game: G,
     number: HashMap<G::State, i64>,
@@ -67,7 +68,8 @@ where
 
 impl<G> PartisanGameAnalyzer<G>
 where
-    G: PartisanGame<State: Eq + Hash + Clone>,
+    G: PartisanGame,
+    G::State: Eq + Hash + Clone,
 {
     pub fn new(game: G) -> Self {
         Self {

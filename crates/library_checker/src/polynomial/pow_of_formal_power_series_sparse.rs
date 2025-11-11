@@ -1,6 +1,6 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
-pub use competitive::{math::Fps998244353, num::Zero as _, num::montgomery::MInt998244353};
+pub use competitive::{math::Fps998244353, num::montgomery::MInt998244353, num::Zero as _};
 
 #[verify::library_checker("pow_of_formal_power_series_sparse")]
 pub fn pow_of_formal_power_series_sparse(reader: impl Read, mut writer: impl Write) {

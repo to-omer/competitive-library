@@ -5,8 +5,8 @@ use crate::algebra::{
 };
 use crate::array;
 use crate::num::{
-    BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, One, RangeBoundsExt,
-    Signed, Unsigned, Wrapping, Zero, montgomery,
+    montgomery, BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, One,
+    RangeBoundsExt, Signed, Unsigned, Wrapping, Zero,
 };
 use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift};
 
@@ -78,7 +78,7 @@ pub use self::prime::*;
 #[codesnip::entry("prime_factors")]
 pub use self::prime_factors::{divisors, prime_factors, prime_factors_flatten};
 #[codesnip::entry("PrimeList")]
-pub use self::prime_list::{PrimeList, with_prime_list};
+pub use self::prime_list::{with_prime_list, PrimeList};
 #[codesnip::entry("PrimeTable")]
 pub use self::prime_table::PrimeTable;
 #[codesnip::entry("primitive_root")]

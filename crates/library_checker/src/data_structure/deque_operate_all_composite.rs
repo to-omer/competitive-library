@@ -3,7 +3,7 @@ use competitive::prelude::*;
 pub use competitive::{
     algebra::LinearOperation,
     data_structure::DequeAggregation,
-    num::{MInt, mint_basic::MInt998244353},
+    num::{mint_basic::MInt998244353, MInt},
 };
 
 #[verify::library_checker("deque_operate_all_composite")]

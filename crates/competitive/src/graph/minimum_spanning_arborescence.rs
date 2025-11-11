@@ -1,4 +1,4 @@
-use super::{EdgeListGraph, Group, MergingUnionFind, MonoidAct, PairingHeap, comparator::Less};
+use super::{comparator::Less, EdgeListGraph, Group, MergingUnionFind, MonoidAct, PairingHeap};
 
 impl EdgeListGraph {
     /// tarjan
@@ -8,7 +8,8 @@ impl EdgeListGraph {
         weight: F,
     ) -> Option<(G::T, Vec<usize>)>
     where
-        G: Group<T: Ord>,
+        G: Group,
+        G::T: Ord,
         F: Fn(usize) -> G::T,
     {
         struct WeightAct<G>(std::marker::PhantomData<fn() -> G>);

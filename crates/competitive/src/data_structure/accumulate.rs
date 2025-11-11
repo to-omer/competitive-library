@@ -15,7 +15,8 @@ where
 
 impl<M> Debug for Accumulate<M>
 where
-    M: Monoid<T: Debug>,
+    M: Monoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("Accumulate")
@@ -93,7 +94,8 @@ where
 
 impl<M> Debug for Accumulate2d<M>
 where
-    M: AbelianMonoid<T: Debug>,
+    M: AbelianMonoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("Accumulate2d")
@@ -209,7 +211,8 @@ where
 
 impl<const K: usize, M> Debug for AccumulateKd<K, M>
 where
-    M: AbelianMonoid<T: Debug>,
+    M: AbelianMonoid,
+    M::T: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("AccumulateKd")

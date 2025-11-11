@@ -1,4 +1,4 @@
-use super::{BstNode, BstNodePtr, BstNodeRef, BstRoot, BstSpec, node};
+use super::{node, BstNode, BstNodePtr, BstNodeRef, BstRoot, BstSpec};
 use std::{
     collections::HashMap,
     hash::{Hash, Hasher},
@@ -111,7 +111,7 @@ where
     pub fn contains(&self, node_id: &BstNodeId<Spec>) -> bool {
         self.node_ids
             .get(&node_id.node)
-            .is_some_and(|&g| g == node_id.generation)
+            .map_or(false, |&g| g == node_id.generation)
     }
 
     pub fn registerd_node_id(

@@ -117,7 +117,11 @@ where
         self.out_edges.set(i, (x.clone(), i));
         self.out_edges.clear(k);
         self.in_edges.set(k, (min.clone(), Reverse(k)));
-        if min == T::minimum() { None } else { Some(min) }
+        if min == T::minimum() {
+            None
+        } else {
+            Some(min)
+        }
     }
     pub unsafe fn unset_pop_unchecked(&mut self, i: usize) -> Option<T> {
         assert!(i < self.n);
@@ -143,7 +147,11 @@ where
         self.in_edges.clear(i);
         self.out_edges.clear(k);
         self.in_edges.set(k, (min.clone(), Reverse(k)));
-        if min == T::minimum() { None } else { Some(min) }
+        if min == T::minimum() {
+            None
+        } else {
+            Some(min)
+        }
     }
     pub unsafe fn set_pop_unchecked(&mut self, i: usize) -> Option<T> {
         assert!(i < self.n);
@@ -194,7 +202,11 @@ where
         self.out_edges.clear(i);
         self.in_edges.clear(k);
         self.out_edges.set(k, (max.clone(), k));
-        if max == T::minimum() { None } else { Some(max) }
+        if max == T::minimum() {
+            None
+        } else {
+            Some(max)
+        }
     }
     pub fn set_no_op(&mut self, i: usize) -> Changed<T> {
         assert!(i < self.n);

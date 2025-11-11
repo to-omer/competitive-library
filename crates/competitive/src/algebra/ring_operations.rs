@@ -78,7 +78,11 @@ mod mersenne61 {
     impl Commutative for Mersenne61Add {}
     impl Invertible for Mersenne61Add {
         fn inverse(x: &Self::T) -> Self::T {
-            if *x == 0 { 0 } else { Mersenne61::MOD - x }
+            if *x == 0 {
+                0
+            } else {
+                Mersenne61::MOD - x
+            }
         }
     }
 

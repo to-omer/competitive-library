@@ -1,7 +1,7 @@
 use super::{
-    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec,
     data::{self},
     seeker::{SeekByKey, SeekBySize},
+    BstDataAccess, BstDataMutRef, BstImmutRef, BstRoot, BstSeeker, BstSpec,
 };
 use std::{
     borrow::Borrow,
@@ -141,7 +141,7 @@ where
 
     pub fn seek_by_key<K, Q, R>(node: &'a mut Option<BstRoot<Spec>>, range: R) -> Self
     where
-        Spec: BstSpec<Data: BstDataAccess<data::marker::Key, Value = K>>,
+        Spec::Data: BstDataAccess<data::marker::Key, Value = K>,
         K: Borrow<Q>,
         Q: Ord + ?Sized,
         R: RangeBounds<Q>,
@@ -161,7 +161,7 @@ where
 
     pub fn seek_by_size<R>(node: &'a mut Option<BstRoot<Spec>>, range: R) -> Self
     where
-        Spec: BstSpec<Data: BstDataAccess<data::marker::Size, Value = usize>>,
+        Spec::Data: BstDataAccess<data::marker::Size, Value = usize>,
         R: RangeBounds<usize>,
     {
         let start = match range.start_bound() {

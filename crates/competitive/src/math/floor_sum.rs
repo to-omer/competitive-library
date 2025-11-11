@@ -1,6 +1,6 @@
 use super::{
-    AddMulOperation, Associative, BarrettReduction, Group, Invertible, Magma, Monoid, One, Ring,
-    SemiRing, Unital, Wrapping, Zero, array,
+    array, AddMulOperation, Associative, BarrettReduction, Group, Invertible, Magma, Monoid, One,
+    Ring, SemiRing, Unital, Wrapping, Zero,
 };
 use std::{
     marker::PhantomData,
@@ -9,7 +9,7 @@ use std::{
 };
 
 fn choose2(n: Wrapping<u64>) -> Wrapping<u64> {
-    if n.0.is_multiple_of(2) {
+    if n.0 % 2 == 0 {
         n / 2 * (n - 1)
     } else {
         (n - 1) / 2 * n
@@ -143,7 +143,8 @@ where
 
 impl<R, const X: usize, const Y: usize> FloorSum<R, X, Y>
 where
-    R: Ring<Additive: Invertible>,
+    R: Ring,
+    R::Additive: Invertible,
 {
     fn offset(x: i64, y: i64) -> FloorSumData<R, X, Y> {
         FloorSumData {
@@ -306,7 +307,7 @@ pub fn floor_sum_polynomial_i64<T, const X: usize, const Y: usize>(
 ) -> [[T; Y]; X]
 where
     T: Clone + Zero + One + Add<Output = T> + Mul<Output = T>,
-    AddMulOperation<T>: SemiRing<T = T, Additive: Invertible>,
+    <AddMulOperation<T> as SemiRing>::Additive: Invertible,
 {
     assert!(l <= r);
     assert!(m > 0);

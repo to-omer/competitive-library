@@ -227,7 +227,11 @@ impl MIntBase for Modulo2 {
     }
     #[inline]
     fn mod_pow(x: Self::Inner, y: usize) -> Self::Inner {
-        if y == 0 { 1 } else { x }
+        if y == 0 {
+            1
+        } else {
+            x
+        }
     }
 }
 macro_rules! impl_to_mint_base_for_modulo2 {
@@ -251,9 +255,7 @@ macro_rules! impl_to_mint_base_for_modulo2 {
 impl_to_mint_base_for_modulo2!(
     Modulo2,
     u32,
-    [
-        u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
-    ]
+    [u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize]
 );
 pub type MInt2 = MInt<Modulo2>;
 

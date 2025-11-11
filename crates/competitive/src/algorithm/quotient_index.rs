@@ -10,7 +10,19 @@ pub struct FloorQuotientIndex {
 impl FloorQuotientIndex {
     pub fn new(num: usize) -> Self {
         assert!(num > 0, "num must be positive");
-        let sqrt = num.isqrt();
+        let sqrt = {
+            let mut ok = 1;
+            let mut ng = num.saturating_add(1);
+            while ng - ok > 1 {
+                let mid = ok + (ng - ok) / 2;
+                if mid.checked_mul(mid).map_or(false, |x| x <= num) {
+                    ok = mid;
+                } else {
+                    ng = mid;
+                }
+            }
+            ok
+        };
         let pivot = num / sqrt;
         Self { num, sqrt, pivot }
     }
@@ -131,8 +143,20 @@ pub struct CeilQuotientIndex {
 impl CeilQuotientIndex {
     pub fn new(num: usize) -> Self {
         assert!(num > 0, "num must be positive");
-        let sqrt = num.isqrt();
-        let pivot = num.div_ceil(sqrt);
+        let sqrt = {
+            let mut ok = 1;
+            let mut ng = num.saturating_add(1);
+            while ng - ok > 1 {
+                let mid = ok + (ng - ok) / 2;
+                if mid.checked_mul(mid).map_or(false, |x| x <= num) {
+                    ok = mid;
+                } else {
+                    ng = mid;
+                }
+            }
+            ok
+        };
+        let pivot = div_ceil(num, sqrt);
         Self { num, sqrt, pivot }
     }
 
@@ -152,7 +176,7 @@ impl CeilQuotientIndex {
         if value == 1 {
             return true;
         }
-        let start = self.num.div_ceil(value);
+        let start = div_ceil(self.num, value);
         let end = (self.num - 1) / (value - 1);
         start <= end
     }
@@ -203,7 +227,7 @@ impl CeilQuotientIndex {
         if index < self.pivot {
             index + 1
         } else {
-            self.num.div_ceil(self.len() - index)
+            div_ceil(self.num, self.len() - index)
         }
     }
 
@@ -223,7 +247,7 @@ impl CeilQuotientIndex {
         if value == 1 {
             return self.num..=self.num;
         }
-        let start = self.num.div_ceil(value);
+        let start = div_ceil(self.num, value);
         let end = (self.num - 1) / (value - 1);
         start..=end
     }
@@ -240,7 +264,16 @@ impl CeilQuotientIndex {
     /// # Safety
     /// `key` must satisfy `1 <= key && key <= self.num`.
     pub unsafe fn key_to_value_unchecked(&self, key: usize) -> usize {
-        self.num.div_ceil(key)
+        div_ceil(self.num, key)
+    }
+}
+
+fn div_ceil(a: usize, b: usize) -> usize {
+    let (q, r) = (a / b, a % b);
+    if r > 0 {
+        q + 1
+    } else {
+        q
     }
 }
 

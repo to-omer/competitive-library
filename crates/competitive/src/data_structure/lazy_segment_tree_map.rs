@@ -8,7 +8,8 @@ use std::{
 
 pub struct LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Act: PartialEq>,
+    M: LazyMapMonoid,
+    M::Act: PartialEq,
 {
     n: usize,
     seg: HashMap<usize, (M::Agg, M::Act)>,
@@ -16,7 +17,8 @@ where
 
 impl<M> Clone for LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Act: PartialEq>,
+    M: LazyMapMonoid,
+    M::Act: PartialEq,
 {
     fn clone(&self) -> Self {
         Self {
@@ -28,7 +30,9 @@ where
 
 impl<M> Debug for LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Agg: Debug, Act: PartialEq + Debug>,
+    M: LazyMapMonoid,
+    M::Agg: Debug,
+    M::Act: PartialEq + Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("LazySegmentTreeMap")
@@ -40,7 +44,8 @@ where
 
 impl<M> LazySegmentTreeMap<M>
 where
-    M: LazyMapMonoid<Act: PartialEq>,
+    M: LazyMapMonoid,
+    M::Act: PartialEq,
 {
     pub fn new(n: usize) -> Self {
         Self {

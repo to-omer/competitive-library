@@ -1,4 +1,4 @@
-use super::{Group, Invertible, One, Ring, Zero, with_prime_list};
+use super::{with_prime_list, Group, Invertible, One, Ring, Zero};
 use std::ops::{Index, IndexMut};
 
 /// store with index $\{\lfloor\frac{n}{i}\rfloor \mid i=1,2,\ldots,n\}$
@@ -82,7 +82,8 @@ impl<T> QuotientArray<T> {
     pub fn min_25_sieve<R>(&self, mut f: impl FnMut(u64, u32) -> T) -> Self
     where
         T: Clone + One,
-        R: Ring<T = T, Additive: Invertible>,
+        R: Ring<T = T>,
+        R::Additive: Invertible,
     {
         let mut dp = self.clone();
         with_prime_list(self.isqrtn, |pl| {

@@ -38,7 +38,11 @@ impl<T> RhoPath<T> {
         let (n, m) = (self.f.len(), self.g.len());
         RhoPath::build(init, |x| {
             let y = next(x);
-            if y < n { y } else { (y - n) % m + n }
+            if y < n {
+                y
+            } else {
+                (y - n) % m + n
+            }
         })
     }
     /// get i-th value of rho path

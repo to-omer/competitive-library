@@ -1,4 +1,4 @@
-use super::{MInt, MIntBase, One, Zero, binary_search};
+use super::{binary_search, MInt, MIntBase, One, Zero};
 
 #[derive(Debug, Clone)]
 pub struct IndependentSubSet<M>
