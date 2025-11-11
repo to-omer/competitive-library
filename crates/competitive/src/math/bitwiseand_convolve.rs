@@ -84,7 +84,7 @@ where
 {
     pub fn new(size: usize) -> Self {
         Self {
-            data: Vec::with_capacity(1 << size),
+            data: Vec::with_capacity(size),
         }
     }
 
@@ -132,7 +132,7 @@ where
 {
     pub fn new(size: usize) -> Self {
         Self {
-            data: Vec::with_capacity(1 << size),
+            data: Vec::with_capacity(size),
         }
     }
 

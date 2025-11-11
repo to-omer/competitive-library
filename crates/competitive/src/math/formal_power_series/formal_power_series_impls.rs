@@ -653,6 +653,21 @@ where
         }
         f
     }
+    /// sum_i (a_i x)^j
+    pub fn sum_of_powers<I>(iter: I, deg: usize) -> Self
+    where
+        I: IntoIterator<Item = T>,
+    {
+        let mut n = T::zero();
+        let prod = Self::product_all(
+            iter.into_iter().map(|a| {
+                n += T::one();
+                Self::from_vec(vec![T::one(), -a])
+            }),
+            deg,
+        );
+        (-prod.log(deg).diff() << 1) + Self::from_vec(vec![n])
+    }
 }
 
 impl<M, C> FormalPowerSeries<MInt<M>, C>
@@ -741,6 +756,23 @@ mod tests {
 
             let result = f.pow_mod(k);
             assert_eq!(result, expected);
+        }
+    }
+
+    #[test]
+    fn test_sum_of_powers() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 0..100, m: 0..10);
+            let a: Vec<_> = rng.random_iter(..).take(n).collect();
+            let result = Fps998244353::sum_of_powers(a.iter().cloned(), m + 1);
+            for k in 0..=m {
+                let mut expected = MInt998244353::zero();
+                for &x in &a {
+                    expected += x.pow(k);
+                }
+                assert_eq!(result[k], expected);
+            }
         }
     }
 }

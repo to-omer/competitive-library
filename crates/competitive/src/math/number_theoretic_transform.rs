@@ -1,5 +1,9 @@
 use super::{montgomery::*, ConvolveSteps, MInt, MIntBase, MIntConvert, One, Zero};
-use std::{cell::UnsafeCell, marker::PhantomData};
+use std::{
+    cell::UnsafeCell,
+    marker::PhantomData,
+    ops::{AddAssign, Mul, SubAssign},
+};
 
 pub struct Convolve<M>(PhantomData<fn() -> M>);
 pub type Convolve998244353 = Convolve<Modulo998244353>;
@@ -244,15 +248,15 @@ crate::avx_helper!(
     }
 );
 
-fn convolve_naive<M>(a: &[MInt<M>], b: &[MInt<M>]) -> Vec<MInt<M>>
+fn convolve_naive<T>(a: &[T], b: &[T]) -> Vec<T>
 where
-    M: MIntBase,
+    T: Copy + Zero + AddAssign<T> + Mul<Output = T>,
 {
     if a.is_empty() && b.is_empty() {
         return Vec::new();
     }
     let len = a.len() + b.len() - 1;
-    let mut c = vec![MInt::<M>::zero(); len];
+    let mut c = vec![T::zero(); len];
     if a.len() < b.len() {
         for (i, &b) in b.iter().enumerate() {
             for (a, c) in a.iter().zip(&mut c[i..]) {
@@ -269,24 +273,50 @@ where
     c
 }
 
-fn convolve_naive_u64(a: &[u64], b: &[u64]) -> Vec<u64> {
-    if a.is_empty() && b.is_empty() {
-        return Vec::new();
+fn convolve_karatsuba<T>(a: &[T], b: &[T]) -> Vec<T>
+where
+    T: Copy + Zero + AddAssign<T> + SubAssign<T> + Mul<Output = T>,
+{
+    if a.len().min(b.len()) <= 30 {
+        return convolve_naive(a, b);
     }
-    let len = a.len() + b.len() - 1;
-    let mut c = vec![0u64; len];
-    if a.len() < b.len() {
-        for (i, &b) in b.iter().enumerate() {
-            for (a, c) in a.iter().zip(&mut c[i..]) {
-                *c += *a * b;
-            }
-        }
+    let m = a.len().max(b.len()).div_ceil(2);
+    let (a0, a1) = if a.len() <= m {
+        (a, &[][..])
     } else {
-        for (i, &a) in a.iter().enumerate() {
-            for (b, c) in b.iter().zip(&mut c[i..]) {
-                *c += *b * a;
-            }
-        }
+        a.split_at(m)
+    };
+    let (b0, b1) = if b.len() <= m {
+        (b, &[][..])
+    } else {
+        b.split_at(m)
+    };
+    let f00 = convolve_karatsuba(a0, b0);
+    let f11 = convolve_karatsuba(a1, b1);
+    let mut a0a1 = a0.to_vec();
+    for (a0a1, &a1) in a0a1.iter_mut().zip(a1) {
+        *a0a1 += a1;
+    }
+    let mut b0b1 = b0.to_vec();
+    for (b0b1, &b1) in b0b1.iter_mut().zip(b1) {
+        *b0b1 += b1;
+    }
+    let mut f01 = convolve_karatsuba(&a0a1, &b0b1);
+    for (f01, &f00) in f01.iter_mut().zip(&f00) {
+        *f01 -= f00;
+    }
+    for (f01, &f11) in f01.iter_mut().zip(&f11) {
+        *f01 -= f11;
+    }
+    let mut c = vec![T::zero(); a.len() + b.len() - 1];
+    for (c, &f00) in c.iter_mut().zip(&f00) {
+        *c += f00;
+    }
+    for (c, &f01) in c[m..].iter_mut().zip(&f01) {
+        *c += f01;
+    }
+    for (c, &f11) in c[m << 1..].iter_mut().zip(&f11) {
+        *c += f11;
     }
     c
 }
@@ -321,6 +351,9 @@ where
         }
     }
     fn convolve(mut a: Self::T, mut b: Self::T) -> Self::T {
+        if Self::length(&a).max(Self::length(&b)) <= 100 {
+            return convolve_karatsuba(&a, &b);
+        }
         if Self::length(&a).min(Self::length(&b)) <= 60 {
             return convolve_naive(&a, &b);
         }
@@ -424,6 +457,9 @@ where
         }
     }
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
+        if Self::length(&a).max(Self::length(&b)) <= 300 {
+            return convolve_karatsuba(&a, &b);
+        }
         if Self::length(&a).min(Self::length(&b)) <= 60 {
             return convolve_naive(&a, &b);
         }
@@ -505,8 +541,11 @@ where
     }
 
     fn convolve(a: Self::T, b: Self::T) -> Self::T {
+        if Self::length(&a).max(Self::length(&b)) <= 300 {
+            return convolve_karatsuba(&a, &b);
+        }
         if Self::length(&a).min(Self::length(&b)) <= 60 {
-            return convolve_naive_u64(&a, &b);
+            return convolve_naive(&a, &b);
         }
         let len = (Self::length(&a) + Self::length(&b)).saturating_sub(1);
         let mut a = Self::transform(a, len);
@@ -702,13 +741,51 @@ mod tests {
     use crate::tools::Xorshift;
 
     #[test]
+    fn test_convolve_naive() {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(0..=60);
+            let m = rng.random(0..=60);
+            let a: Vec<u32> = rng.random_iter(0u32..1000).take(n).collect();
+            let b: Vec<u32> = rng.random_iter(0u32..1000).take(m).collect();
+            let mut c = vec![0u32; (n + m).saturating_sub(1)];
+            for i in 0..n {
+                for j in 0..m {
+                    c[i + j] += a[i] * b[j];
+                }
+            }
+            let d = convolve_naive(&a, &b);
+            assert_eq!(c, d);
+        }
+    }
+
+    #[test]
+    fn test_convolve_karatsuba() {
+        let mut rng = Xorshift::default();
+        for _ in 0..1000 {
+            let n = rng.random(0..=200);
+            let m = rng.random(0..=200);
+            let a: Vec<u32> = rng.random_iter(0u32..1000).take(n).collect();
+            let b: Vec<u32> = rng.random_iter(0u32..1000).take(m).collect();
+            let mut c = vec![0u32; (n + m).saturating_sub(1)];
+            for i in 0..n {
+                for j in 0..m {
+                    c[i + j] += a[i] * b[j];
+                }
+            }
+            let d = convolve_karatsuba(&a, &b);
+            assert_eq!(c, d);
+        }
+    }
+
+    #[test]
     fn test_ntt998244353() {
         let mut rng = Xorshift::default();
         for t in 0..1000 {
             let n: usize = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=100) } else { n };
+            let n = if n == 5 { rng.random(70..=120) } else { n };
             let m: usize = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=100) } else { m };
+            let m = if m == 5 { rng.random(70..=120) } else { m };
             let (n, m) = if t % 100 != 0 {
                 (n, m)
             } else {
@@ -739,9 +816,9 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..1000 {
             let n = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=100) } else { n };
+            let n = if n == 5 { rng.random(70..=400) } else { n };
             let m = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=100) } else { m };
+            let m = if m == 5 { rng.random(70..=400) } else { m };
             let a: Vec<M> = rng.random_iter(..).take(n).collect();
             let b: Vec<M> = rng.random_iter(..).take(m).collect();
             let mut c = vec![M::zero(); (n + m).saturating_sub(1)];
@@ -760,9 +837,9 @@ mod tests {
         let mut rng = Xorshift::default();
         for _ in 0..1000 {
             let n = rng.random(0..=5);
-            let n = if n == 5 { rng.random(70..=100) } else { n };
+            let n = if n == 5 { rng.random(70..=400) } else { n };
             let m = rng.random(0..=5);
-            let m = if m == 5 { rng.random(70..=100) } else { m };
+            let m = if m == 5 { rng.random(70..=400) } else { m };
             let a: Vec<u64> = rng.random_iter(0u64..1 << 24).take(n).collect();
             let b: Vec<u64> = rng.random_iter(0u64..1 << 24).take(m).collect();
             let mut c = vec![0; (n + m).saturating_sub(1)];

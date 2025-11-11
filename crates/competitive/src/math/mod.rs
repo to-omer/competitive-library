@@ -85,6 +85,8 @@ pub use self::prime_table::PrimeTable;
 pub use self::primitive_root::{check_primitive_root, primitive_root};
 #[codesnip::entry("QuotientArray")]
 pub use self::quotient_array::QuotientArray;
+#[codesnip::entry("RelaxedConvolution")]
+pub use self::relaxed_convolution::RelaxedConvolution;
 #[codesnip::entry("SubsetConvolve")]
 pub use self::subset_convolve::SubsetConvolve;
 
@@ -234,6 +236,11 @@ mod primitive_root;
     codesnip::entry("QuotientArray", include("algebra", "ring", "PrimeList"))
 )]
 mod quotient_array;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("RelaxedConvolution", include("ConvolveSteps", "zero_one"))
+)]
+mod relaxed_convolution;
 #[cfg_attr(
     nightly,
     codesnip::entry("SubsetConvolve", include("BitwiseorConvolve"))
