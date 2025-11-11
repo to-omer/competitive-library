@@ -280,7 +280,7 @@ where
     if a.len().min(b.len()) <= 30 {
         return convolve_naive(a, b);
     }
-    let m = a.len().max(b.len()).div_ceil(2);
+    let m = (a.len().max(b.len()) + 1) / 2;
     let (a0, a1) = if a.len() <= m {
         (a, &[][..])
     } else {
