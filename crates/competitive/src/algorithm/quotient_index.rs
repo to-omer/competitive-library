@@ -1,13 +1,13 @@
 use std::ops::RangeInclusive;
 
 /// sorted({ floor(n/k) | k in \[1, n\] })
-pub struct QuotientIndex {
+pub struct FloorQuotientIndex {
     num: usize,
     sqrt: usize,
     pivot: usize,
 }
 
-impl QuotientIndex {
+impl FloorQuotientIndex {
     pub fn new(num: usize) -> Self {
         assert!(num > 0, "num must be positive");
         let sqrt = num.isqrt();
@@ -121,6 +121,129 @@ impl QuotientIndex {
     }
 }
 
+/// sorted({ ceil(n/k) | k in \[1, n\] })
+pub struct CeilQuotientIndex {
+    num: usize,
+    sqrt: usize,
+    pivot: usize,
+}
+
+impl CeilQuotientIndex {
+    pub fn new(num: usize) -> Self {
+        assert!(num > 0, "num must be positive");
+        let sqrt = num.isqrt();
+        let pivot = num.div_ceil(sqrt);
+        Self { num, sqrt, pivot }
+    }
+
+    #[allow(clippy::len_without_is_empty)]
+    pub fn len(&self) -> usize {
+        self.sqrt + self.pivot - 1
+    }
+
+    pub fn contains_key(&self, key: usize) -> bool {
+        (1..=self.num).contains(&key)
+    }
+
+    pub fn contains_value(&self, value: usize) -> bool {
+        if value == 0 || value > self.num {
+            return false;
+        }
+        if value == 1 {
+            return true;
+        }
+        let start = self.num.div_ceil(value);
+        let end = (self.num - 1) / (value - 1);
+        start <= end
+    }
+
+    pub fn index_to_key(&self, index: usize) -> RangeInclusive<usize> {
+        assert!(index < self.len(), "index out of bounds");
+        unsafe { self.index_to_key_unchecked(index) }
+    }
+
+    pub fn index_to_value(&self, index: usize) -> usize {
+        assert!(index < self.len(), "index out of bounds");
+        unsafe { self.index_to_value_unchecked(index) }
+    }
+
+    pub fn value_to_index(&self, value: usize) -> usize {
+        assert!(self.contains_value(value), "value is not present");
+        unsafe { self.value_to_index_unchecked(value) }
+    }
+
+    pub fn value_to_key(&self, value: usize) -> RangeInclusive<usize> {
+        assert!(self.contains_value(value), "value is not present");
+        unsafe { self.value_to_key_unchecked(value) }
+    }
+
+    pub fn key_to_index(&self, key: usize) -> usize {
+        assert!(self.contains_key(key), "key out of bounds");
+        let value = self.key_to_value(key);
+        unsafe { self.value_to_index_unchecked(value) }
+    }
+
+    pub fn key_to_value(&self, key: usize) -> usize {
+        assert!(self.contains_key(key), "key out of bounds");
+        unsafe { self.key_to_value_unchecked(key) }
+    }
+
+    /// # Safety
+    /// `index` must satisfy `index < self.len()`.
+    pub unsafe fn index_to_key_unchecked(&self, index: usize) -> RangeInclusive<usize> {
+        unsafe {
+            let value = self.index_to_value_unchecked(index);
+            self.value_to_key_unchecked(value)
+        }
+    }
+
+    /// # Safety
+    /// `index` must satisfy `index < self.len()`.
+    pub unsafe fn index_to_value_unchecked(&self, index: usize) -> usize {
+        if index < self.pivot {
+            index + 1
+        } else {
+            self.num.div_ceil(self.len() - index)
+        }
+    }
+
+    /// # Safety
+    /// `value` must satisfy `self.contains_value(value)`.
+    pub unsafe fn value_to_index_unchecked(&self, value: usize) -> usize {
+        if value <= self.pivot {
+            value - 1
+        } else {
+            self.len() - (self.num - 1) / (value - 1)
+        }
+    }
+
+    /// # Safety
+    /// `value` must satisfy `self.contains_value(value)`.
+    pub unsafe fn value_to_key_unchecked(&self, value: usize) -> RangeInclusive<usize> {
+        if value == 1 {
+            return self.num..=self.num;
+        }
+        let start = self.num.div_ceil(value);
+        let end = (self.num - 1) / (value - 1);
+        start..=end
+    }
+
+    /// # Safety
+    /// `key` must satisfy `1 <= key && key <= self.num`.
+    pub unsafe fn key_to_index_unchecked(&self, key: usize) -> usize {
+        unsafe {
+            let value = self.key_to_value_unchecked(key);
+            self.value_to_index_unchecked(value)
+        }
+    }
+
+    /// # Safety
+    /// `key` must satisfy `1 <= key && key <= self.num`.
+    pub unsafe fn key_to_value_unchecked(&self, key: usize) -> usize {
+        self.num.div_ceil(key)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -130,7 +253,7 @@ mod tests {
     fn test_quotient_index() {
         let mut rng = Xorshift::default();
         for n in (1..=2000).chain(rng.random_iter(1..=200_000).take(100)) {
-            let qi = QuotientIndex::new(n);
+            let qi = FloorQuotientIndex::new(n);
             let mut a: Vec<_> = (1..=n).rev().map(|key| n / key).collect();
             a.dedup();
             assert_eq!(qi.len(), a.len());
@@ -158,7 +281,59 @@ mod tests {
             .into_iter()
             .chain(rng.random_iter(1..=!0).take(100))
         {
-            let qi = QuotientIndex::new(n);
+            let qi = FloorQuotientIndex::new(n);
+            let len = qi.len();
+            for index in (0..len.min(1000)).chain(len.saturating_sub(1000)..len) {
+                let value = qi.index_to_value(index);
+                assert_eq!(qi.index_to_value(index), value);
+                assert_eq!(qi.value_to_index(value), index);
+                assert_eq!(qi.index_to_key(index), qi.value_to_key(value));
+                for key in qi
+                    .index_to_key(index)
+                    .take(1)
+                    .chain(qi.index_to_key(index).rev().take(1))
+                {
+                    assert_eq!(qi.key_to_value(key), value);
+                    assert_eq!(qi.key_to_index(key), index);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_ceil_quotient_index() {
+        let mut rng = Xorshift::default();
+        for n in (1..=2000).chain(rng.random_iter(1..=200_000).take(100)) {
+            let qi = CeilQuotientIndex::new(n);
+            let mut a: Vec<_> = (1..=n).map(|key| n.div_ceil(key)).collect();
+            a.sort();
+            a.dedup();
+            assert_eq!(qi.len(), a.len());
+            let mut count = 0;
+            let mut is_value = vec![false; n + 1];
+            for (index, &value) in a.iter().enumerate() {
+                assert_eq!(qi.index_to_value(index), value);
+                assert_eq!(qi.value_to_index(value), index);
+                assert_eq!(qi.index_to_key(index), qi.value_to_key(value));
+                for key in qi.index_to_key(index) {
+                    assert_eq!(qi.key_to_value(key), value);
+                    assert_eq!(qi.key_to_index(key), index);
+                    count += 1;
+                }
+                is_value[value] = true;
+            }
+            assert_eq!(count, n);
+            for (value, &present) in is_value.iter().enumerate() {
+                assert_eq!(qi.contains_value(value), present);
+            }
+            assert!(!qi.contains_key(!0));
+        }
+
+        for n in [usize::MAX]
+            .into_iter()
+            .chain(rng.random_iter(1..=!0).take(100))
+        {
+            let qi = CeilQuotientIndex::new(n);
             let len = qi.len();
             for index in (0..len.min(1000)).chain(len.saturating_sub(1000)..len) {
                 let value = qi.index_to_value(index);

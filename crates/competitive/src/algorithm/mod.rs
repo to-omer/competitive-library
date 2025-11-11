@@ -30,7 +30,7 @@ pub use self::other::*;
 #[codesnip::entry("PartisanGame")]
 pub use self::partisan_game::{PartisanGame, PartisanGameAnalyzer, PartisanGamer};
 #[codesnip::entry("QuotientIndex")]
-pub use self::quotient_index::QuotientIndex;
+pub use self::quotient_index::{CeilQuotientIndex, FloorQuotientIndex};
 #[codesnip::entry("RhoPath")]
 pub use self::rho_path::RhoPath;
 #[codesnip::entry("01_on_tree")]
