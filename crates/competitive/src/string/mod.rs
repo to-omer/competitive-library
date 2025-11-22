@@ -15,6 +15,8 @@ pub use self::rolling_hash::{
 };
 #[codesnip::entry("SuffixArray")]
 pub use self::suffix_array::SuffixArray;
+#[codesnip::entry("SuffixAutomaton")]
+pub use self::suffix_automaton::SuffixAutomaton;
 #[codesnip::entry("wildcard_pattern_matching")]
 pub use self::wildcard_pattern_matching::wildcard_pattern_matching;
 #[codesnip::entry("ZAlgorithm")]
@@ -32,6 +34,8 @@ mod knuth_morris_pratt;
 pub mod rolling_hash;
 #[cfg_attr(nightly, codesnip::entry("SuffixArray", include("binary_search")))]
 mod suffix_array;
+#[cfg_attr(nightly, codesnip::entry("SuffixAutomaton"))]
+mod suffix_automaton;
 #[cfg_attr(nightly, codesnip::entry(include("NumberTheoreticTransform")))]
 mod wildcard_pattern_matching;
 #[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]
