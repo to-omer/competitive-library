@@ -260,7 +260,7 @@ impl CeilQuotientIndex {
             if index == 0 {
                 return self.num..=self.num;
             }
-            let start = self.num.div_ceil(index + 1);
+            let start = div_ceil(self.num, index + 1);
             let end = (self.num - 1) / index;
             start..=end
         } else {
@@ -306,7 +306,7 @@ impl CeilQuotientIndex {
         if key < self.sqrt {
             self.len() - key
         } else {
-            self.num.div_ceil(key) - 1
+            div_ceil(self.num, key) - 1
         }
     }
 
