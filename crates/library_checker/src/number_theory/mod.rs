@@ -1,6 +1,7 @@
 pub mod counting_primes;
 pub mod discrete_logarithm_mod;
 pub mod enumerate_primes;
+pub mod enumerate_quotients;
 pub mod factorize;
 pub mod min_of_mod_of_linear;
 pub mod rational_approximation;

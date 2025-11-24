@@ -24,6 +24,8 @@ pub use self::combinations::SliceCombinationsExt;
 pub use self::convex_hull_trick::ConvexHullTrick;
 #[codesnip::entry("esper")]
 pub use self::esper::{EsperEstimator, EsperSolver};
+#[codesnip::entry("HornSatisfiability")]
+pub use self::horn_satisfiability::HornSatisfiability;
 #[codesnip::entry("ImpartialGame")]
 pub use self::impartial_game::{ImpartialGame, ImpartialGameAnalyzer, ImpartialGamer};
 pub use self::other::*;
@@ -77,6 +79,8 @@ mod combinations;
 mod convex_hull_trick;
 #[cfg_attr(nightly, codesnip::entry("esper", include("Matrix")))]
 mod esper;
+#[cfg_attr(nightly, codesnip::entry("HornSatisfiability"))]
+mod horn_satisfiability;
 #[cfg_attr(nightly, codesnip::entry("ImpartialGame"))]
 mod impartial_game;
 #[cfg_attr(nightly, codesnip::entry)]
