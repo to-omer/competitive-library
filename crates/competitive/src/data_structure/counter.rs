@@ -1,6 +1,6 @@
 use std::{
     borrow::Borrow,
-    collections::{BTreeMap, HashMap, btree_map, hash_map},
+    collections::{btree_map, hash_map, BTreeMap, HashMap},
     fmt::{self, Debug},
     hash::Hash,
     iter::{Extend, FromIterator},

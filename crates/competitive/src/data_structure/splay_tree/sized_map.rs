@@ -1,6 +1,6 @@
 use super::{
+    node::{marker, Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec},
     Allocator, MemoryPool,
-    node::{Node, NodeRange, NodeRef, Root, SplaySeeker, SplaySpec, marker},
 };
 use std::{
     borrow::Borrow,
@@ -8,7 +8,7 @@ use std::{
     fmt::{self, Debug},
     iter::FusedIterator,
     marker::PhantomData,
-    mem::{ManuallyDrop, replace},
+    mem::{replace, ManuallyDrop},
     ops::{Bound, DerefMut, RangeBounds},
 };
 

@@ -1,4 +1,4 @@
-use super::{UnionFindBase, union_find};
+use super::{union_find, UnionFindBase};
 use std::{cmp::Ordering, collections::BinaryHeap, ops::AddAssign};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]

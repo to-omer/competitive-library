@@ -14,7 +14,7 @@ fn centroid_decomposition_dfs(
     let mut size = vec![1; n];
     let mut c = !0;
     for i in (0..n).rev() {
-        if size[i] >= n.div_ceil(2) {
+        if size[i] >= (n + 1) / 2 {
             c = i;
             break;
         }

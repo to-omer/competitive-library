@@ -223,7 +223,11 @@ pub trait Group: Monoid + Invertible {
     {
         let (neg, exp) = E::neg_and_bits(exp);
         let res = Self::pow(x, exp);
-        if neg { Self::inverse(&res) } else { res }
+        if neg {
+            Self::inverse(&res)
+        } else {
+            res
+        }
     }
 }
 

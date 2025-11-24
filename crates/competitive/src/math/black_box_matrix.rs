@@ -1,6 +1,6 @@
 use super::{
-    AddMulOperation, ConvolveSteps, FormalPowerSeries, MInt, MIntBase, MIntConvert, Matrix, One,
-    SemiRing, Xorshift, Zero, berlekamp_massey,
+    berlekamp_massey, AddMulOperation, ConvolveSteps, FormalPowerSeries, MInt, MIntBase,
+    MIntConvert, Matrix, One, SemiRing, Xorshift, Zero,
 };
 use std::{
     fmt::{self, Debug},
@@ -46,7 +46,8 @@ where
 
 impl<R> Debug for SparseMatrix<R>
 where
-    R: SemiRing<T: Debug>,
+    R: SemiRing,
+    R::T: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("SparseMatrix")
@@ -80,7 +81,7 @@ where
     }
     pub fn new_with<F>(shape: (usize, usize), f: F) -> Self
     where
-        R: SemiRing<T: PartialEq>,
+        R::T: PartialEq,
         F: Fn(usize, usize) -> R::T,
     {
         let mut nonzero = vec![];
@@ -101,7 +102,8 @@ where
 
 impl<R> From<Matrix<R>> for SparseMatrix<R>
 where
-    R: SemiRing<T: PartialEq>,
+    R: SemiRing,
+    R::T: PartialEq,
 {
     fn from(mat: Matrix<R>) -> Self {
         let mut nonzero = vec![];

@@ -6,7 +6,7 @@ use crate::algebra::{
 };
 use crate::algorithm::{BitDpExt, SliceBisectExt};
 use crate::num::{Bounded, RangeBoundsExt};
-use crate::tools::{Comparator, Xorshift, comparator};
+use crate::tools::{comparator, Comparator, GetDistinctMut, Xorshift};
 
 #[codesnip::entry("Accumulate")]
 pub use self::accumulate::{Accumulate, Accumulate2d, AccumulateKd};
@@ -116,12 +116,18 @@ mod bitset;
 mod compress;
 #[cfg_attr(
     nightly,
-    codesnip::entry("CompressedBinaryIndexedTree", include("algebra", "binary_search"))
+    codesnip::entry(
+        "CompressedBinaryIndexedTree",
+        include("algebra", "binary_search", "GetDistinctMut")
+    )
 )]
 mod compressed_binary_indexed_tree;
 #[cfg_attr(
     nightly,
-    codesnip::entry("CompressedSegmentTree", include("algebra", "binary_search"))
+    codesnip::entry(
+        "CompressedSegmentTree",
+        include("algebra", "binary_search", "GetDistinctMut")
+    )
 )]
 mod compressed_segment_tree;
 #[cfg_attr(nightly, codesnip::entry("container"))]

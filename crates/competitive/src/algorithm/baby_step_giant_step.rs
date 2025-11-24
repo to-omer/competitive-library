@@ -4,7 +4,8 @@ use std::{collections::HashSet, hash::Hash};
 /// $\min\{0\le i < n | x^i=y\}$
 pub fn baby_step_giant_step<M>(x: M::T, y: M::T, n: usize) -> Option<usize>
 where
-    M: Monoid<T: Eq + Hash>,
+    M: Monoid,
+    M::T: Eq + Hash,
 {
     if M::is_unit(&y) {
         return Some(0);

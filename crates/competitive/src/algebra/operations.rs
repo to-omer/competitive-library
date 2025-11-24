@@ -1,6 +1,6 @@
 //! binary operaions
 
-use super::{Bounded, One, Zero, magma::*};
+use super::{magma::*, Bounded, One, Zero};
 
 #[codesnip::entry("MaxOperation")]
 pub use self::max_operation_impl::MaxOperation;
@@ -1067,7 +1067,8 @@ mod counting_operation_impl {
     }
     impl<M> Magma for CountingOperation<M>
     where
-        M: Magma<T: PartialEq> + Idempotent,
+        M: Magma + Idempotent,
+        M::T: PartialEq,
     {
         type T = (M::T, usize);
         #[inline]
@@ -1083,15 +1084,26 @@ mod counting_operation_impl {
     }
     impl<M> Unital for CountingOperation<M>
     where
-        M: Unital<T: PartialEq> + Idempotent,
+        M: Unital + Idempotent,
+        M::T: PartialEq,
     {
         #[inline]
         fn unit() -> Self::T {
             (M::unit(), 0)
         }
     }
-    impl<M> Associative for CountingOperation<M> where M: Associative<T: PartialEq> + Idempotent {}
-    impl<M> Commutative for CountingOperation<M> where M: Commutative<T: PartialEq> + Idempotent {}
+    impl<M> Associative for CountingOperation<M>
+    where
+        M: Associative + Idempotent,
+        M::T: PartialEq,
+    {
+    }
+    impl<M> Commutative for CountingOperation<M>
+    where
+        M: Commutative + Idempotent,
+        M::T: PartialEq,
+    {
+    }
 
     #[cfg(test)]
     mod tests {

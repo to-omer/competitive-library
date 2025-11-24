@@ -16,8 +16,8 @@ impl SlopeTrick {
     /// f(x) = max(n(x-a), n(a-x))
     pub fn valley(a: i64, n: usize) -> Self {
         let mut self_: Self = Default::default();
-        self_.left.extend(std::iter::repeat_n(a, n));
-        self_.right.extend(std::iter::repeat_n(a, n));
+        self_.left.extend(std::iter::repeat(a).take(n));
+        self_.right.extend(std::iter::repeat(a).take(n));
         self_
     }
     fn push_left(&mut self, x: i64) {

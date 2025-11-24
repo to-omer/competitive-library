@@ -48,7 +48,10 @@ pub trait SemiRing {
     }
 }
 
-pub trait Ring: SemiRing<Additive: Invertible> {
+pub trait Ring: SemiRing
+where
+    Self::Additive: Invertible,
+{
     /// additive inverse: $-$
     fn neg(x: &Self::T) -> Self::T {
         <Self::Additive as Invertible>::inverse(x)
@@ -63,9 +66,18 @@ pub trait Ring: SemiRing<Additive: Invertible> {
     }
 }
 
-impl<R> Ring for R where R: SemiRing<Additive: Invertible> {}
+impl<R> Ring for R
+where
+    R: SemiRing,
+    R::Additive: Invertible,
+{
+}
 
-pub trait Field: Ring<Multiplicative: Invertible> {
+pub trait Field: Ring
+where
+    Self::Additive: Invertible,
+    Self::Multiplicative: Invertible,
+{
     /// multiplicative inverse: $-$
     fn inv(x: &Self::T) -> Self::T {
         <Self::Multiplicative as Invertible>::inverse(x)
@@ -80,7 +92,13 @@ pub trait Field: Ring<Multiplicative: Invertible> {
     }
 }
 
-impl<F> Field for F where F: Ring<Multiplicative: Invertible> {}
+impl<F> Field for F
+where
+    F: Ring,
+    F::Additive: Invertible,
+    F::Multiplicative: Invertible,
+{
+}
 
 /// $+,\times$
 pub struct AddMulOperation<T>

@@ -1,4 +1,4 @@
-use super::{MInt, MIntConvert, One, prime_factors};
+use super::{prime_factors, MInt, MIntConvert, One};
 
 #[derive(Debug, Clone)]
 pub struct PowPrec<M>
@@ -74,8 +74,8 @@ mod tests {
     use super::*;
     use crate::{
         num::{
-            Unsigned,
             mint_basic::{DynMIntU32, MInt998244353},
+            Unsigned,
         },
         tools::Xorshift,
     };

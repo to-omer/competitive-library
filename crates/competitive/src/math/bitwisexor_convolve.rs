@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Field, Group, Invertible, bitwise_transform};
+use super::{bitwise_transform, ConvolveSteps, Field, Group, Invertible};
 use std::{fmt::Debug, marker::PhantomData};
 
 pub struct BitwisexorConvolve<M, const TRY: bool = false> {
@@ -20,7 +20,11 @@ where
 
 impl<R> ConvolveSteps for BitwisexorConvolve<R, false>
 where
-    R: Field<T: PartialEq + From<usize>, Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::T: PartialEq,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: From<usize>,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;
@@ -68,7 +72,11 @@ where
 
 impl<R> ConvolveSteps for BitwisexorConvolve<R, true>
 where
-    R: Field<T: PartialEq + TryFrom<usize>, Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::T: PartialEq,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: TryFrom<usize>,
     <R::T as TryFrom<usize>>::Error: Debug,
 {
     type T = Vec<R::T>;

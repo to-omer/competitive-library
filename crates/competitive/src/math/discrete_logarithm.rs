@@ -1,6 +1,6 @@
 use super::{
-    BarrettReduction, PrimeList, Xorshift, check_primitive_root, gcd, lcm, modinv, prime_factors,
-    primitive_root,
+    check_primitive_root, gcd, lcm, modinv, prime_factors, primitive_root, BarrettReduction,
+    PrimeList, Xorshift,
 };
 use std::{cell::UnsafeCell, collections::HashMap};
 
@@ -19,7 +19,7 @@ fn pow(x: u64, mut y: u64, br: &BarrettReduction<u128>) -> u64 {
 
 fn solve_linear_congruence(a: u64, b: u64, m: u64) -> Option<(u64, u64)> {
     let g = gcd(a, m);
-    if !b.is_multiple_of(g) {
+    if b % g != 0 {
         return None;
     }
     let (a, b, m) = (a / g, b / g, m / g);
@@ -39,7 +39,7 @@ where
         }
         let a = a * m0;
         let g = gcd(a, m);
-        if !b.is_multiple_of(g) {
+        if b % g != 0 {
             return None;
         }
         let (a, b, m) = (a / g, b / g, m / g);
@@ -416,7 +416,11 @@ fn discrete_logarithm_prime_power(a: u64, b: u64, p: u64, e: u32) -> Option<(u64
                 _ => None,
             }
         } else if a == 1 {
-            if b == 1 { Some((0, 1)) } else { None }
+            if b == 1 {
+                Some((0, 1))
+            } else {
+                None
+            }
         } else {
             assert_eq!(a, 3);
             if b == 1 {
@@ -463,7 +467,7 @@ pub fn discrete_logarithm(a: u64, b: u64, n: u64) -> Option<u64> {
         pw = (pw as u128 * a as u128 % n as u128) as u64;
     }
     let g = gcd(pw, n);
-    if !b.is_multiple_of(g) {
+    if b % g != 0 {
         return None;
     }
     let n = n / g;

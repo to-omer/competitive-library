@@ -1,4 +1,4 @@
-use super::{Comparator, EmptyAct, MonoidAct, Unital, comparator::Less};
+use super::{comparator::Less, Comparator, EmptyAct, MonoidAct, Unital};
 use std::{
     cmp::Ordering,
     fmt::{self, Debug, Formatter},
@@ -10,7 +10,8 @@ use std::{
 #[derive(Clone)]
 struct Node<T, A>
 where
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     value: T,
     first_child: Option<Box<Node<T, A>>>,
@@ -20,7 +21,8 @@ where
 
 impl<T, A> Node<T, A>
 where
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn new(value: T) -> Self {
         Self {
@@ -52,7 +54,9 @@ where
 impl<T, A> Debug for Node<T, A>
 where
     T: Debug,
-    A: MonoidAct<Key = T, Act: PartialEq + Debug>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
+    A::Act: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("Node")
@@ -67,7 +71,8 @@ where
 #[derive(Clone)]
 pub struct PairingHeap<T, C = Less, A = EmptyAct<T>>
 where
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     root: Option<Box<Node<T, A>>>,
     len: usize,
@@ -77,7 +82,8 @@ where
 impl<T, C, A> PairingHeap<T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     pub fn with_comparator(cmp: C) -> Self {
         Self {
@@ -206,7 +212,8 @@ where
 impl<T, C, A> Default for PairingHeap<T, C, A>
 where
     C: Comparator<T> + Default,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn default() -> Self {
         Self::with_comparator(C::default())
@@ -216,7 +223,8 @@ where
 impl<T, A> PairingHeap<T, Less, A>
 where
     T: Ord,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     pub fn new() -> Self {
         Self::default()
@@ -227,7 +235,9 @@ impl<T, C, A> Debug for PairingHeap<T, C, A>
 where
     T: Debug,
     C: Debug + Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq + Debug>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
+    A::Act: Debug,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.debug_struct("PairingHeap")
@@ -241,7 +251,8 @@ where
 impl<T, C, A> Extend<T> for PairingHeap<T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
         for value in iter {
@@ -253,7 +264,8 @@ where
 impl<T, C, A> FromIterator<T> for PairingHeap<T, C, A>
 where
     C: Comparator<T> + Default,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let mut heap = Self::default();
@@ -265,7 +277,8 @@ where
 pub struct PeekMut<'a, T, C = Less, A = EmptyAct<T>>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     heap: &'a mut PairingHeap<T, C, A>,
     node: Option<Box<Node<T, A>>>,
@@ -274,7 +287,8 @@ where
 impl<'a, T, C, A> PeekMut<'a, T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     pub fn pop(mut this: Self) -> T {
         this.heap.len -= 1;
@@ -287,7 +301,8 @@ where
 impl<'a, T, C, A> Deref for PeekMut<'a, T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     type Target = T;
 
@@ -299,7 +314,8 @@ where
 impl<'a, T, C, A> DerefMut for PeekMut<'a, T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.node.as_mut().expect("PeekMut already consumed").value
@@ -309,7 +325,8 @@ where
 impl<'a, T, C, A> Drop for PeekMut<'a, T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn drop(&mut self) {
         if let Some(mut node) = self.node.take() {
@@ -324,7 +341,8 @@ where
 pub struct IntoIter<T, C = Less, A = EmptyAct<T>>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     heap: PairingHeap<T, C, A>,
 }
@@ -332,7 +350,8 @@ where
 impl<T, C, A> IntoIter<T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn new(heap: PairingHeap<T, C, A>) -> Self {
         Self { heap }
@@ -342,7 +361,8 @@ where
 impl<T, C, A> Iterator for IntoIter<T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     type Item = T;
 
@@ -359,7 +379,8 @@ where
 impl<T, C, A> ExactSizeIterator for IntoIter<T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     fn len(&self) -> usize {
         self.heap.len()
@@ -369,14 +390,16 @@ where
 impl<T, C, A> FusedIterator for IntoIter<T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
 }
 
 impl<T, C, A> IntoIterator for PairingHeap<T, C, A>
 where
     C: Comparator<T>,
-    A: MonoidAct<Key = T, Act: PartialEq>,
+    A: MonoidAct<Key = T>,
+    A::Act: PartialEq,
 {
     type Item = T;
     type IntoIter = IntoIter<T, C, A>;
@@ -391,7 +414,7 @@ mod tests {
     use super::*;
     use crate::{
         algebra::{AdditiveOperation, FlattenAct},
-        tools::{Xorshift, comparator::Greater},
+        tools::{comparator::Greater, Xorshift},
     };
     use std::{cmp::Reverse, collections::BinaryHeap};
 

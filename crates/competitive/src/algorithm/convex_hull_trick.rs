@@ -78,31 +78,36 @@ where
     pub fn add_line(&mut self, a: T, b: T) {
         if self.deq.is_empty() {
             self.deq.push_back(ChtLine::new(a, b));
-        } else if let Some(l) = self.deq.back()
-            && l.slope >= a
-        {
-            let line = ChtLine::new(a, b);
-            while {
-                let k = self.deq.len();
-                k > 1 && self.deq[k - 2].check(&self.deq[k - 1], &line)
-            } {
-                self.deq.pop_back();
-            }
-            self.deq.push_back(line);
-        } else if let Some(l) = self.deq.front()
-            && l.slope <= a
-        {
-            let line = ChtLine::new(a, b);
-            while {
-                let k = self.deq.len();
-                k > 1 && line.check(&self.deq[0], &self.deq[1])
-            } {
-                self.deq.pop_front();
-            }
-            self.deq.push_front(line);
-        } else {
-            panic!("a must be monotonic");
+            return;
         }
+        if let Some(l) = self.deq.back() {
+            if l.slope >= a {
+                let line = ChtLine::new(a, b);
+                while {
+                    let k = self.deq.len();
+                    k > 1 && self.deq[k - 2].check(&self.deq[k - 1], &line)
+                } {
+                    self.deq.pop_back();
+                }
+                self.deq.push_back(line);
+                return;
+            }
+        }
+        if let Some(l) = self.deq.front() {
+            if l.slope <= a {
+                let line = ChtLine::new(a, b);
+                while {
+                    let k = self.deq.len();
+                    k > 1 && line.check(&self.deq[0], &self.deq[1])
+                } {
+                    self.deq.pop_front();
+                }
+                self.deq.push_front(line);
+                return;
+            }
+        }
+
+        panic!("a must be monotonic");
     }
 
     pub fn query_min(&mut self, x: T) -> T {

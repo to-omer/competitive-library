@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Group, Invertible, Monoid, Ring, bitwise_transform};
+use super::{bitwise_transform, ConvolveSteps, Group, Invertible, Monoid, Ring};
 use std::marker::PhantomData;
 
 pub struct BitwiseandConvolve<M> {
@@ -27,7 +27,9 @@ where
 
 impl<R> ConvolveSteps for BitwiseandConvolve<R>
 where
-    R: Ring<T: PartialEq, Additive: Invertible>,
+    R: Ring,
+    R::T: PartialEq,
+    R::Additive: Invertible,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;

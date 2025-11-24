@@ -113,7 +113,8 @@ where
 
 impl<G> Debug for SubmaskRangeQueryBuilder<G>
 where
-    G: Group<T: Debug>,
+    G: Group,
+    G::T: Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("SubmaskRangeQueryBuilder")

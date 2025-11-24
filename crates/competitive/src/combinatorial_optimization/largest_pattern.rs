@@ -19,11 +19,12 @@ pub fn largest_rectangle(hist: &[usize]) -> usize {
     let mut res = 0;
     for (i, h) in hist.iter().cloned().enumerate() {
         let mut j = i;
-        while let Some((k, p)) = stack.pop_if(|x| x.1 > h) {
+        while stack.last().is_some_and(|x| x.1 > h) {
+            let (k, p) = stack.pop().unwrap();
             res = res.max((i - k) * p);
             j = k;
         }
-        if stack.last().is_none_or(|x| x.1 < h) {
+        if stack.last().map_or(true, |x| x.1 < h) {
             stack.push((j, h));
         }
     }

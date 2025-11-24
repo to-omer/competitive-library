@@ -1,4 +1,4 @@
-use super::{BarrettReduction, Unsigned, prime_factors, solve_simultaneous_linear_congruence};
+use super::{prime_factors, solve_simultaneous_linear_congruence, BarrettReduction, Unsigned};
 
 fn pow64(x: u64, mut y: u64, br: &BarrettReduction<u128>) -> u64 {
     let mut x = x as u128;

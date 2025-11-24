@@ -205,7 +205,7 @@ where
         if count.is_zero() {
             return;
         }
-        if self.path.len().is_multiple_of(2) {
+        if self.path.len() % 2 == 0 {
             if let Some(last) = self.path.last_mut() {
                 *last += count;
             } else {
@@ -221,7 +221,7 @@ where
         if count.is_zero() {
             return;
         }
-        if self.path.len().is_multiple_of(2) {
+        if self.path.len() % 2 == 0 {
             self.path.push(count);
         } else {
             *self.path.last_mut().unwrap() += count;

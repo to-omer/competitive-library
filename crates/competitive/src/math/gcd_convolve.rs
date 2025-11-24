@@ -1,4 +1,4 @@
-use super::{ConvolveSteps, Group, Invertible, Monoid, Ring, with_prime_list};
+use super::{with_prime_list, ConvolveSteps, Group, Invertible, Monoid, Ring};
 use std::marker::PhantomData;
 
 pub struct GcdConvolve<M> {
@@ -41,7 +41,8 @@ where
 
 impl<R> ConvolveSteps for GcdConvolve<R>
 where
-    R: Ring<Additive: Invertible>,
+    R: Ring,
+    R::Additive: Invertible,
 {
     type T = Vec<R::T>;
     type F = Vec<R::T>;

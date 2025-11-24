@@ -21,7 +21,9 @@ impl<T> Default for SystemOfLinearEquation<T> {
 #[derive(Debug, Clone)]
 pub struct EsperEstimator<R, Input, Class, FC, FF>
 where
-    R: Field<Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
     FF: Fn(&Input) -> Vec<R::T>,
@@ -35,7 +37,9 @@ where
 #[derive(Debug, Clone)]
 pub struct EsperSolver<R, Input, Class, FC, FF>
 where
-    R: Field<Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
     FF: Fn(&Input) -> Vec<R::T>,
@@ -48,7 +52,9 @@ where
 
 impl<R, Input, Class, FC, FF> EsperEstimator<R, Input, Class, FC, FF>
 where
-    R: Field<Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
     FF: Fn(&Input) -> Vec<R::T>,
@@ -73,7 +79,10 @@ where
 
 impl<R, Input, Class, FC, FF> EsperEstimator<R, Input, Class, FC, FF>
 where
-    R: Field<T: PartialEq, Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
+    R::T: PartialEq,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
     FF: Fn(&Input) -> Vec<R::T>,
@@ -102,7 +111,7 @@ where
     pub fn solve_checked(self) -> EsperSolver<R, Input, Class, FC, FF>
     where
         Class: Debug,
-        R: Field<T: Debug, Additive: Invertible, Multiplicative: Invertible>,
+        R::T: Debug,
     {
         let data: HashMap<_, _> = self
             .data
@@ -132,7 +141,9 @@ where
 
 impl<R, Input, Class, FC, FF> EsperSolver<R, Input, Class, FC, FF>
 where
-    R: Field<Additive: Invertible, Multiplicative: Invertible>,
+    R: Field,
+    R::Additive: Invertible,
+    R::Multiplicative: Invertible,
     Class: Eq + Hash,
     FC: Fn(&Input) -> Class,
     FF: Fn(&Input) -> Vec<R::T>,
