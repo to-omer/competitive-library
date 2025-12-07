@@ -71,6 +71,10 @@ where
     pub fn from_edges(vsize: usize, edges: Vec<(usize, usize)>) -> Self {
         D::construct_graph(vsize, edges)
     }
+    pub fn reverse_graph(&self) -> SparseGraph<D> {
+        let edges = self.edges.iter().map(|&(from, to)| (to, from)).collect();
+        D::construct_graph(self.vsize, edges)
+    }
 }
 
 impl SparseGraphConstruction for DirectedEdge {
