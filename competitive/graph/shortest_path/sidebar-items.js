@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["OptionSp","PathFoldingSp","ShortestPathBuilder","StandardSp"],"trait":["ShortestPathExt","ShortestPathSemiRing"]};
+window.SIDEBAR_ITEMS = {"enum":["NoParent"],"struct":["OptionSp","PathFoldingSp","RecordParent","ShortestPathBuilder","ShortestPathWithParent","StandardSp"],"trait":["ParentPolicy","ShortestPathExt","ShortestPathSemiRing"]};
