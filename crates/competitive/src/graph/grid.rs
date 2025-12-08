@@ -336,7 +336,7 @@ mod tests {
                 (0..w)
                     .map(|j| {
                         g.standard_sp_additive()
-                            .dijkstra_ss((i, j), &|dir| weight[dir as usize])
+                            .dijkstra([(i, j)], &|dir| weight[dir as usize])
                     })
                     .collect()
             })
@@ -352,7 +352,7 @@ mod tests {
                 (0..w)
                     .map(|j| {
                         g.standard_sp_additive()
-                            .dijkstra_ss((i, j), &|dir| weight[dir as usize])
+                            .dijkstra([(i, j)], &|dir| weight[dir as usize])
                     })
                     .collect()
             })

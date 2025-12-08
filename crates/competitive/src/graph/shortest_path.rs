@@ -2,7 +2,6 @@ use super::*;
 use std::{
     cmp::{Ordering, Reverse},
     collections::{BinaryHeap, VecDeque},
-    iter::once,
     marker::PhantomData,
     ops::{Add, Mul},
 };
@@ -391,18 +390,7 @@ where
         }
     }
 
-    pub fn bfs_distance_ss<M>(
-        &self,
-        source: G::VIndex,
-        weight: &'a M,
-    ) -> <G as VertexMap<S::T>>::Vmap
-    where
-        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-    {
-        self.bfs_distance_ms::<M, _>(once(source), weight)
-    }
-
-    pub fn bfs_distance_ms<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
+    pub fn bfs_distance<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
     where
         G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         I: IntoIterator<Item = G::VIndex>,
@@ -410,14 +398,7 @@ where
         self.bfs_distance_core::<M, I>(sources, weight).dist
     }
 
-    pub fn dijkstra_ss<M>(&self, source: G::VIndex, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
-    where
-        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-    {
-        self.dijkstra_ms::<M, _>(once(source), weight)
-    }
-
-    pub fn dijkstra_ms<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
+    pub fn dijkstra<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
     where
         G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         I: IntoIterator<Item = G::VIndex>,
@@ -425,19 +406,7 @@ where
         self.dijkstra_core::<M, I>(sources, weight).dist
     }
 
-    pub fn bellman_ford_ss<M>(
-        &self,
-        source: G::VIndex,
-        weight: &'a M,
-        check: bool,
-    ) -> Option<<G as VertexMap<S::T>>::Vmap>
-    where
-        G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
-    {
-        self.bellman_ford_ms::<M, _>(once(source), weight, check)
-    }
-
-    pub fn bellman_ford_ms<M, I>(
+    pub fn bellman_ford<M, I>(
         &self,
         sources: I,
         weight: &'a M,
@@ -493,18 +462,7 @@ where
     G: GraphBase + VertexMap<Option<<G as GraphBase>::VIndex>>,
     S: ShortestPathSemiRing,
 {
-    pub fn bfs_distance_ss<M>(
-        &self,
-        source: G::VIndex,
-        weight: &'a M,
-    ) -> ShortestPathWithParent<G, S>
-    where
-        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-    {
-        self.bfs_distance_ms::<M, _>(once(source), weight)
-    }
-
-    pub fn bfs_distance_ms<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S>
+    pub fn bfs_distance<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S>
     where
         G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         I: IntoIterator<Item = G::VIndex>,
@@ -512,14 +470,7 @@ where
         self.bfs_distance_core::<M, I>(sources, weight)
     }
 
-    pub fn dijkstra_ss<M>(&self, source: G::VIndex, weight: &'a M) -> ShortestPathWithParent<G, S>
-    where
-        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-    {
-        self.dijkstra_ms::<M, _>(once(source), weight)
-    }
-
-    pub fn dijkstra_ms<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S>
+    pub fn dijkstra<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S>
     where
         G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
         I: IntoIterator<Item = G::VIndex>,
@@ -527,19 +478,7 @@ where
         self.dijkstra_core::<M, I>(sources, weight)
     }
 
-    pub fn bellman_ford_ss<M>(
-        &self,
-        source: G::VIndex,
-        weight: &'a M,
-        check: bool,
-    ) -> Option<ShortestPathWithParent<G, S>>
-    where
-        G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
-    {
-        self.bellman_ford_ms::<M, _>(once(source), weight, check)
-    }
-
-    pub fn bellman_ford_ms<M, I>(
+    pub fn bellman_ford<M, I>(
         &self,
         sources: I,
         weight: &'a M,
@@ -570,12 +509,12 @@ mod tests {
             rand!(rng, n: 1..100, m: 1..200, edges: [(0..n, 0..n); m], w: [0..100_000i64; m]);
             let g = DirectedSparseGraph::from_edges(n, edges);
             let dijkstra: Vec<_> = (0..n)
-                .map(|src| g.option_sp_additive().dijkstra_ss(src, &|eid| Some(w[eid])))
+                .map(|src| g.option_sp_additive().dijkstra([src], &|eid| Some(w[eid])))
                 .collect();
             let bellman_ford: Vec<_> = (0..n)
                 .map(|src| {
                     g.option_sp_additive()
-                        .bellman_ford_ss(src, &|eid| Some(w[eid]), false)
+                        .bellman_ford([src], &|eid| Some(w[eid]), false)
                         .unwrap()
                 })
                 .collect();
@@ -596,7 +535,7 @@ mod tests {
             let bfs: Vec<_> = (0..n)
                 .map(|src| {
                     g.option_sp_additive()
-                        .bfs_distance_ss(src, &|eid| Some(w[eid]))
+                        .bfs_distance([src], &|eid| Some(w[eid]))
                 })
                 .collect();
             let warshall_floyd = g
@@ -620,17 +559,17 @@ mod tests {
                 let bfs = g
                     .option_sp_additive()
                     .with_parent()
-                    .bfs_distance_ss(src, &|eid| Some(w[eid]));
+                    .bfs_distance([src], &|eid| Some(w[eid]));
                 let dijkstra = g
                     .option_sp_additive()
                     .with_parent()
-                    .dijkstra_ss(src, &|eid| Some(w[eid]));
+                    .dijkstra([src], &|eid| Some(w[eid]));
                 let bellman_ford = g
                     .option_sp_additive()
                     .with_parent()
-                    .bellman_ford_ss(src, &|eid| Some(w[eid]), false)
+                    .bellman_ford([src], &|eid| Some(w[eid]), false)
                     .unwrap();
-                let dist = g.option_sp_additive().dijkstra_ss(src, &|eid| Some(w[eid]));
+                let dist = g.option_sp_additive().dijkstra([src], &|eid| Some(w[eid]));
                 assert_eq!(bfs.dist, dist);
                 assert_eq!(dijkstra.dist, dist);
                 assert_eq!(bellman_ford.dist, dist);
@@ -687,17 +626,16 @@ mod tests {
             let g = DirectedSparseGraph::from_edges(n, edges);
             let dijkstra: Vec<_> = (0..n)
                 .map(|src| {
-                    g.path_folding_sp_additive_addmul()
-                        .dijkstra_ss(src, &|eid| {
-                            PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
-                        })
+                    g.path_folding_sp_additive_addmul().dijkstra([src], &|eid| {
+                        PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one())
+                    })
                 })
                 .collect();
             let bellman_ford: Vec<_> = (0..n)
                 .map(|src| {
                     g.path_folding_sp_additive_addmul()
-                        .bellman_ford_ss(
-                            src,
+                        .bellman_ford(
+                            [src],
                             &|eid| PartialIgnoredOrd(Saturating(w[eid]), MInt998244353::one()),
                             false,
                         )

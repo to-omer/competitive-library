@@ -9,7 +9,7 @@ pub fn grl_1_b(reader: impl Read, mut writer: impl Write) {
     scan!(scanner, vs, es, r, (graph, d): @DirectedGraphScanner::<usize, i64>::new(vs, es));
     let cost = graph
         .option_sp_additive()
-        .bellman_ford_ss(r, &|eid| Some(d[eid]), true);
+        .bellman_ford([r], &|eid| Some(d[eid]), true);
     if let Some(cost) = cost {
         for u in graph.vertices() {
             match cost[u] {

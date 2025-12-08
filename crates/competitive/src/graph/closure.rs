@@ -289,10 +289,10 @@ mod tests {
                 }
                 let cost1 = g1
                     .standard_sp_additive()
-                    .dijkstra_ss(g.flat((i, j)), &|dir| weight[dir as usize]);
+                    .dijkstra([g.flat((i, j))], &|dir| weight[dir as usize]);
                 let cost2 = g2
                     .standard_sp_additive()
-                    .dijkstra_ss((i, j), &|dir| weight[dir as usize]);
+                    .dijkstra([(i, j)], &|dir| weight[dir as usize]);
                 for ni in 0..h {
                     for nj in 0..w {
                         assert_eq!(
@@ -322,7 +322,7 @@ mod tests {
                 (0..w)
                     .map(|j| {
                         g.standard_sp_additive()
-                            .dijkstra_ss((i, j), &|dir| weight[dir as usize])
+                            .dijkstra([(i, j)], &|dir| weight[dir as usize])
                     })
                     .collect()
             })
