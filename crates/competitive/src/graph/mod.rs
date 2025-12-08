@@ -33,7 +33,7 @@ pub use self::network_simplex::NetworkSimplex;
 #[codesnip::entry("ProjectSelectionProblem")]
 pub use self::project_selection_problem::ProjectSelectionProblem;
 #[codesnip::entry("shortest_path")]
-pub use self::shortest_path::*;
+pub use self::shortest_path::{ShortestPathExt, ShortestPathSemiRing};
 #[codesnip::entry("SparseGraph")]
 pub use self::sparse_graph::*;
 #[codesnip::entry("steiner_tree")]
@@ -99,7 +99,7 @@ mod project_selection_problem;
         include("GraphBase", "ring", "PartialIgnoredOrd", "bounded")
     )
 )]
-mod shortest_path;
+pub mod shortest_path;
 #[cfg_attr(
     nightly,
     codesnip::entry("SparseGraph", include("scanner", "GraphBase"))

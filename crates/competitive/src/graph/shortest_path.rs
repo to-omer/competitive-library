@@ -108,6 +108,70 @@ where
     }
 }
 
+pub trait ParentPolicy<G>
+where
+    G: GraphBase,
+{
+    type State;
+    fn init(graph: &G) -> Self::State;
+    fn save_parent(graph: &G, state: &mut Self::State, from: G::VIndex, to: G::VIndex);
+}
+
+pub enum NoParent {}
+impl<G> ParentPolicy<G> for NoParent
+where
+    G: GraphBase,
+{
+    type State = ();
+    fn init(_graph: &G) {}
+    fn save_parent(_graph: &G, _state: &mut Self::State, _from: G::VIndex, _to: G::VIndex) {}
+}
+
+pub struct RecordParent;
+impl<G> ParentPolicy<G> for RecordParent
+where
+    G: GraphBase + VertexMap<Option<<G as GraphBase>::VIndex>>,
+{
+    type State = <G as VertexMap<Option<<G as GraphBase>::VIndex>>>::Vmap;
+    fn init(graph: &G) -> Self::State {
+        graph.construct_vmap(|| None)
+    }
+    fn save_parent(graph: &G, state: &mut Self::State, from: G::VIndex, to: G::VIndex) {
+        *graph.vmap_get_mut(state, to) = Some(from);
+    }
+}
+
+pub struct ShortestPathWithParent<G, S, P = RecordParent>
+where
+    G: GraphBase + VertexMap<S::T>,
+    S: ShortestPathSemiRing,
+    P: ParentPolicy<G>,
+{
+    pub dist: <G as VertexMap<S::T>>::Vmap,
+    pub parent: P::State,
+}
+
+impl<G, S> ShortestPathWithParent<G, S, RecordParent>
+where
+    G: GraphBase + VertexMap<S::T> + VertexMap<Option<<G as GraphBase>::VIndex>>,
+    S: ShortestPathSemiRing,
+{
+    pub fn path_to(&self, graph: &G, target: G::VIndex) -> Option<Vec<G::VIndex>> {
+        let dist: &S::T = graph.vmap_get(&self.dist, target);
+        if dist == &S::inf() {
+            return None;
+        }
+        let mut cur = target;
+        let mut path = vec![cur];
+        while let &Some(p) = graph.vmap_get(&self.parent, cur) {
+            path.push(p);
+            cur = p;
+        }
+        path.reverse();
+        Some(path)
+    }
+}
+
 pub trait ShortestPathExt: GraphBase {
     fn standard_sp<'a, M>(&'a self) -> ShortestPathBuilder<'a, Self, StandardSp<M>>
     where
@@ -185,43 +249,33 @@ pub trait ShortestPathExt: GraphBase {
 }
 impl<G> ShortestPathExt for G where G: GraphBase {}
 
-pub struct ShortestPathBuilder<'a, G, S>
+pub struct ShortestPathBuilder<'a, G, S, P = NoParent>
 where
     G: GraphBase,
     S: ShortestPathSemiRing,
+    P: ParentPolicy<G>,
 {
     graph: &'a G,
-    _marker: PhantomData<fn() -> S>,
+    _marker: PhantomData<fn() -> (S, P)>,
 }
 
-impl<'a, G, S> ShortestPathBuilder<'a, G, S>
+impl<'a, G, S, P> ShortestPathBuilder<'a, G, S, P>
 where
     G: GraphBase,
     S: ShortestPathSemiRing,
+    P: ParentPolicy<G>,
 {
-    pub fn bfs_distance_ss<M>(
-        &self,
-        source: G::VIndex,
-        weight: &'a M,
-    ) -> <G as VertexMap<S::T>>::Vmap
+    fn bfs_distance_core<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S, P>
     where
         G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-        S: ShortestPathSemiRing,
-    {
-        self.bfs_distance_ms::<M, _>(once(source), weight)
-    }
-
-    pub fn bfs_distance_ms<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
-    where
-        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-        S: ShortestPathSemiRing,
         I: IntoIterator<Item = G::VIndex>,
     {
         let graph = self.graph;
-        let mut cost = graph.construct_vmap(S::inf);
+        let mut dist = graph.construct_vmap(S::inf);
+        let mut parent = P::init(graph);
         let mut deq = VecDeque::new();
         for source in sources.into_iter() {
-            *graph.vmap_get_mut(&mut cost, source) = S::source();
+            *graph.vmap_get_mut(&mut dist, source) = S::source();
             deq.push_back(source);
         }
         let zero = S::source();
@@ -229,8 +283,9 @@ where
             for a in graph.aviews(weight, u) {
                 let v = a.vindex();
                 let w = a.avalue();
-                let nd = S::mul(graph.vmap_get(&cost, u), &w);
-                if S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd) {
+                let nd = S::mul(graph.vmap_get(&dist, u), &w);
+                if S::add_assign(graph.vmap_get_mut(&mut dist, v), &nd) {
+                    P::save_parent(graph, &mut parent, u, v);
                     if w == zero {
                         deq.push_front(v);
                     } else {
@@ -239,13 +294,125 @@ where
                 }
             }
         }
-        cost
+        ShortestPathWithParent { dist, parent }
+    }
+
+    fn dijkstra_core<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S, P>
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        I: IntoIterator<Item = G::VIndex>,
+    {
+        let graph = self.graph;
+        let mut dist = graph.construct_vmap(S::inf);
+        let mut parent = P::init(graph);
+        let mut heap = BinaryHeap::new();
+        for source in sources.into_iter() {
+            *graph.vmap_get_mut(&mut dist, source) = S::source();
+            heap.push(PartialIgnoredOrd(Reverse(S::source()), source));
+        }
+        while let Some(PartialIgnoredOrd(Reverse(d), u)) = heap.pop() {
+            if graph.vmap_get(&dist, u) != &d {
+                continue;
+            }
+            let d = graph.vmap_get(&dist, u).clone();
+            for a in graph.aviews(weight, u) {
+                let v = a.vindex();
+                let nd = S::mul(&d, &a.avalue());
+                if S::add_assign(graph.vmap_get_mut(&mut dist, v), &nd) {
+                    P::save_parent(graph, &mut parent, u, v);
+                    heap.push(PartialIgnoredOrd(Reverse(nd), v));
+                }
+            }
+        }
+        ShortestPathWithParent { dist, parent }
+    }
+
+    fn bellman_ford_core<M, I>(
+        &self,
+        sources: I,
+        weight: &'a M,
+        check: bool,
+    ) -> Option<ShortestPathWithParent<G, S, P>>
+    where
+        G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
+        I: IntoIterator<Item = G::VIndex>,
+        P: ParentPolicy<G>,
+    {
+        let graph = self.graph;
+        let mut dist = graph.construct_vmap(S::inf);
+        let mut parent = P::init(graph);
+        for source in sources.into_iter() {
+            *graph.vmap_get_mut(&mut dist, source) = S::source();
+        }
+        let vsize = graph.vsize();
+        for _ in 1..vsize {
+            let mut updated = false;
+            for u in graph.vertices() {
+                for a in graph.aviews(weight, u) {
+                    let v = a.vindex();
+                    let nd = S::mul(graph.vmap_get(&dist, u), &a.avalue());
+                    if S::add_assign(graph.vmap_get_mut(&mut dist, v), &nd) {
+                        P::save_parent(graph, &mut parent, u, v);
+                        updated = true;
+                    }
+                }
+            }
+            if !updated {
+                break;
+            }
+        }
+        if check {
+            for u in graph.vertices() {
+                for a in graph.aviews(weight, u) {
+                    let v = a.vindex();
+                    let nd = S::mul(graph.vmap_get(&dist, u), &a.avalue());
+                    if S::add_assign(graph.vmap_get_mut(&mut dist, v), &nd) {
+                        return None;
+                    }
+                }
+            }
+        }
+        Some(ShortestPathWithParent { dist, parent })
+    }
+}
+
+impl<'a, G, S> ShortestPathBuilder<'a, G, S, NoParent>
+where
+    G: GraphBase,
+    S: ShortestPathSemiRing,
+{
+    pub fn with_parent(self) -> ShortestPathBuilder<'a, G, S, RecordParent>
+    where
+        G: VertexMap<Option<<G as GraphBase>::VIndex>>,
+    {
+        ShortestPathBuilder {
+            graph: self.graph,
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn bfs_distance_ss<M>(
+        &self,
+        source: G::VIndex,
+        weight: &'a M,
+    ) -> <G as VertexMap<S::T>>::Vmap
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+    {
+        self.bfs_distance_ms::<M, _>(once(source), weight)
+    }
+
+    pub fn bfs_distance_ms<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        I: IntoIterator<Item = G::VIndex>,
+    {
+        self.bfs_distance_core::<M, I>(sources, weight).dist
     }
 
     pub fn dijkstra_ss<M>(&self, source: G::VIndex, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
     where
         G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-        S: ShortestPathSemiRing,
     {
         self.dijkstra_ms::<M, _>(once(source), weight)
     }
@@ -253,30 +420,9 @@ where
     pub fn dijkstra_ms<M, I>(&self, sources: I, weight: &'a M) -> <G as VertexMap<S::T>>::Vmap
     where
         G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
-        S: ShortestPathSemiRing,
         I: IntoIterator<Item = G::VIndex>,
     {
-        let graph = self.graph;
-        let mut cost = graph.construct_vmap(S::inf);
-        let mut heap = BinaryHeap::new();
-        for source in sources.into_iter() {
-            *graph.vmap_get_mut(&mut cost, source) = S::source();
-            heap.push(PartialIgnoredOrd(Reverse(S::source()), source));
-        }
-        while let Some(PartialIgnoredOrd(Reverse(d), u)) = heap.pop() {
-            if graph.vmap_get(&cost, u) != &d {
-                continue;
-            }
-            let d = graph.vmap_get(&cost, u).clone();
-            for a in graph.aviews(weight, u) {
-                let v = a.vindex();
-                let nd = S::mul(&d, &a.avalue());
-                if S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd) {
-                    heap.push(PartialIgnoredOrd(Reverse(nd), v));
-                }
-            }
-        }
-        cost
+        self.dijkstra_core::<M, I>(sources, weight).dist
     }
 
     pub fn bellman_ford_ss<M>(
@@ -287,7 +433,6 @@ where
     ) -> Option<<G as VertexMap<S::T>>::Vmap>
     where
         G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
-        S: ShortestPathSemiRing,
     {
         self.bellman_ford_ms::<M, _>(once(source), weight, check)
     }
@@ -300,40 +445,10 @@ where
     ) -> Option<<G as VertexMap<S::T>>::Vmap>
     where
         G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
-        S: ShortestPathSemiRing,
         I: IntoIterator<Item = G::VIndex>,
     {
-        let graph = self.graph;
-        let mut cost = graph.construct_vmap(S::inf);
-        for source in sources.into_iter() {
-            *graph.vmap_get_mut(&mut cost, source) = S::source();
-        }
-        let vsize = graph.vsize();
-        for _ in 1..vsize {
-            let mut updated = false;
-            for u in graph.vertices() {
-                for a in graph.aviews(weight, u) {
-                    let v = a.vindex();
-                    let nd = S::mul(graph.vmap_get(&cost, u), &a.avalue());
-                    updated |= S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd);
-                }
-            }
-            if !updated {
-                break;
-            }
-        }
-        if check {
-            for u in graph.vertices() {
-                for a in graph.aviews(weight, u) {
-                    let v = a.vindex();
-                    let nd = S::mul(graph.vmap_get(&cost, u), &a.avalue());
-                    if S::add_assign(graph.vmap_get_mut(&mut cost, v), &nd) {
-                        return None;
-                    }
-                }
-            }
-        }
-        Some(cost)
+        self.bellman_ford_core::<M, I>(sources, weight, check)
+            .map(|sp| sp.dist)
     }
 
     pub fn warshall_floyd_ap<M>(
@@ -345,17 +460,16 @@ where
             + VertexMap<S::T, Vmap: Clone>
             + VertexMap<<G as VertexMap<S::T>>::Vmap>
             + AdjacencyView<'a, M, S::T>,
-        S: ShortestPathSemiRing,
     {
         let graph = self.graph;
-        let mut cost = graph.construct_vmap(|| graph.construct_vmap(S::inf));
+        let mut dist = graph.construct_vmap(|| graph.construct_vmap(S::inf));
         for u in graph.vertices() {
-            *graph.vmap_get_mut(graph.vmap_get_mut(&mut cost, u), u) = S::source();
+            *graph.vmap_get_mut(graph.vmap_get_mut(&mut dist, u), u) = S::source();
         }
         for u in graph.vertices() {
             for a in graph.aviews(weight, u) {
                 S::add_assign(
-                    graph.vmap_get_mut(graph.vmap_get_mut(&mut cost, u), a.vindex()),
+                    graph.vmap_get_mut(graph.vmap_get_mut(&mut dist, u), a.vindex()),
                     &a.avalue(),
                 );
             }
@@ -363,14 +477,79 @@ where
         for k in graph.vertices() {
             for i in graph.vertices() {
                 for j in graph.vertices() {
-                    let d1 = graph.vmap_get(graph.vmap_get(&cost, i), k);
-                    let d2 = graph.vmap_get(graph.vmap_get(&cost, k), j);
+                    let d1 = graph.vmap_get(graph.vmap_get(&dist, i), k);
+                    let d2 = graph.vmap_get(graph.vmap_get(&dist, k), j);
                     let nd = S::mul(d1, d2);
-                    S::add_assign(graph.vmap_get_mut(graph.vmap_get_mut(&mut cost, i), j), &nd);
+                    S::add_assign(graph.vmap_get_mut(graph.vmap_get_mut(&mut dist, i), j), &nd);
                 }
             }
         }
-        cost
+        dist
+    }
+}
+
+impl<'a, G, S> ShortestPathBuilder<'a, G, S, RecordParent>
+where
+    G: GraphBase + VertexMap<Option<<G as GraphBase>::VIndex>>,
+    S: ShortestPathSemiRing,
+{
+    pub fn bfs_distance_ss<M>(
+        &self,
+        source: G::VIndex,
+        weight: &'a M,
+    ) -> ShortestPathWithParent<G, S>
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+    {
+        self.bfs_distance_ms::<M, _>(once(source), weight)
+    }
+
+    pub fn bfs_distance_ms<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S>
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        I: IntoIterator<Item = G::VIndex>,
+    {
+        self.bfs_distance_core::<M, I>(sources, weight)
+    }
+
+    pub fn dijkstra_ss<M>(&self, source: G::VIndex, weight: &'a M) -> ShortestPathWithParent<G, S>
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+    {
+        self.dijkstra_ms::<M, _>(once(source), weight)
+    }
+
+    pub fn dijkstra_ms<M, I>(&self, sources: I, weight: &'a M) -> ShortestPathWithParent<G, S>
+    where
+        G: VertexMap<S::T> + AdjacencyView<'a, M, S::T>,
+        I: IntoIterator<Item = G::VIndex>,
+    {
+        self.dijkstra_core::<M, I>(sources, weight)
+    }
+
+    pub fn bellman_ford_ss<M>(
+        &self,
+        source: G::VIndex,
+        weight: &'a M,
+        check: bool,
+    ) -> Option<ShortestPathWithParent<G, S>>
+    where
+        G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
+    {
+        self.bellman_ford_ms::<M, _>(once(source), weight, check)
+    }
+
+    pub fn bellman_ford_ms<M, I>(
+        &self,
+        sources: I,
+        weight: &'a M,
+        check: bool,
+    ) -> Option<ShortestPathWithParent<G, S>>
+    where
+        G: Vertices + VertexMap<S::T> + AdjacencyView<'a, M, S::T> + VertexSize,
+        I: IntoIterator<Item = G::VIndex>,
+    {
+        self.bellman_ford_core::<M, I>(sources, weight, check)
     }
 }
 
@@ -380,8 +559,9 @@ mod tests {
     use crate::{
         num::{Saturating, mint_basic::MInt998244353},
         rand,
-        tools::Xorshift,
+        tools::{PartialOrdExt, Xorshift},
     };
+    use std::collections::HashMap;
 
     #[test]
     fn test_shortest_path() {
@@ -423,6 +603,79 @@ mod tests {
                 .option_sp_additive()
                 .warshall_floyd_ap(&|eid| Some(w[eid]));
             assert_eq!(bfs, warshall_floyd);
+        }
+    }
+
+    #[test]
+    fn test_shortest_path_with_parent() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            rand!(rng, n: 1..100, m: 1..200, edges: [(0..n, 0..n); m], ub: 0..=1i64, w: [0..=ub * 100_000i64; m]);
+            let mut cost: HashMap<_, _> = HashMap::new();
+            for (&(u, v), &w) in edges.iter().zip(w.iter()) {
+                cost.entry((u, v)).or_insert(w).chmin(w);
+            }
+            let g = DirectedSparseGraph::from_edges(n, edges);
+            for src in 0..n {
+                let bfs = g
+                    .option_sp_additive()
+                    .with_parent()
+                    .bfs_distance_ss(src, &|eid| Some(w[eid]));
+                let dijkstra = g
+                    .option_sp_additive()
+                    .with_parent()
+                    .dijkstra_ss(src, &|eid| Some(w[eid]));
+                let bellman_ford = g
+                    .option_sp_additive()
+                    .with_parent()
+                    .bellman_ford_ss(src, &|eid| Some(w[eid]), false)
+                    .unwrap();
+                let dist = g.option_sp_additive().dijkstra_ss(src, &|eid| Some(w[eid]));
+                assert_eq!(bfs.dist, dist);
+                assert_eq!(dijkstra.dist, dist);
+                assert_eq!(bellman_ford.dist, dist);
+                for (target, &dist) in dist.iter().enumerate() {
+                    match dist {
+                        None => {
+                            assert!(bfs.path_to(&g, target).is_none());
+                            assert!(dijkstra.path_to(&g, target).is_none());
+                            assert!(bellman_ford.path_to(&g, target).is_none());
+                        }
+                        Some(dist) => {
+                            let path_bfs = bfs.path_to(&g, target).unwrap();
+                            assert_eq!(*path_bfs.first().unwrap(), src);
+                            assert_eq!(*path_bfs.last().unwrap(), target);
+                            assert_eq!(
+                                path_bfs
+                                    .windows(2)
+                                    .map(|w| cost[&(w[0], w[1])])
+                                    .sum::<i64>(),
+                                dist
+                            );
+                            let path_dijkstra = dijkstra.path_to(&g, target).unwrap();
+                            assert_eq!(*path_dijkstra.first().unwrap(), src);
+                            assert_eq!(*path_dijkstra.last().unwrap(), target);
+                            assert_eq!(
+                                path_dijkstra
+                                    .windows(2)
+                                    .map(|w| cost[&(w[0], w[1])])
+                                    .sum::<i64>(),
+                                dist
+                            );
+                            let path_bellman_ford = bellman_ford.path_to(&g, target).unwrap();
+                            assert_eq!(*path_bellman_ford.first().unwrap(), src);
+                            assert_eq!(*path_bellman_ford.last().unwrap(), target);
+                            assert_eq!(
+                                path_bellman_ford
+                                    .windows(2)
+                                    .map(|w| cost[&(w[0], w[1])])
+                                    .sum::<i64>(),
+                                dist
+                            );
+                        }
+                    }
+                }
+            }
         }
     }
 
