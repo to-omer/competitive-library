@@ -1,5 +1,8 @@
 use super::binary_search;
-use std::{cmp::Ordering, ops::Range};
+use std::{
+    cmp::Ordering,
+    ops::{Index, Range},
+};
 
 #[derive(Clone, Debug)]
 pub struct SuffixArray<T> {
@@ -7,6 +10,7 @@ pub struct SuffixArray<T> {
     sa: Vec<usize>,
     rank: Vec<usize>,
 }
+
 impl<T: Ord> SuffixArray<T> {
     pub fn new(pat: Vec<T>) -> Self {
         let n = pat.len();
@@ -38,6 +42,7 @@ impl<T: Ord> SuffixArray<T> {
         }
         Self { pat, sa, rank }
     }
+
     pub fn longest_common_prefix_array(&self) -> Vec<usize> {
         let n = self.pat.len();
         let mut h = 0usize;
@@ -52,6 +57,7 @@ impl<T: Ord> SuffixArray<T> {
         }
         lcp
     }
+
     pub fn range(&self, t: &[T], next: impl Fn(&T) -> T) -> Range<usize> {
         let l = binary_search(
             |&i| {
@@ -96,9 +102,49 @@ impl<T: Ord> SuffixArray<T> {
         l..r
     }
 }
-impl<T> std::ops::Index<usize> for SuffixArray<T> {
+
+impl<T> Index<usize> for SuffixArray<T> {
     type Output = usize;
     fn index(&self, index: usize) -> &Self::Output {
         &self.sa[index]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::Xorshift;
+
+    #[test]
+    fn test_suffix_array() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(1..=100);
+            let s: Vec<_> = rng.random_iter(1..=100).take(n).collect();
+            let sa = SuffixArray::new(s.to_vec());
+            let mut suffixes: Vec<_> = (0..=n).collect();
+            suffixes.sort_unstable_by_key(|&i| &s[i..]);
+            assert_eq!(sa.sa, suffixes);
+        }
+    }
+
+    #[test]
+    fn test_longest_common_prefix_array() {
+        let mut rng = Xorshift::default();
+        for _ in 0..100 {
+            let n = rng.random(1..=100);
+            let s: Vec<_> = rng.random_iter(1..=100).take(n).collect();
+            let sa = SuffixArray::new(s.to_vec());
+            let lcp = sa.longest_common_prefix_array();
+            for i in 1..lcp.len() {
+                let x = sa.sa[i - 1];
+                let y = sa.sa[i];
+                let mut h = 0;
+                while x + h < s.len() && y + h < s.len() && s[x + h] == s[y + h] {
+                    h += 1;
+                }
+                assert_eq!(lcp[i - 1], h);
+            }
+        }
     }
 }
