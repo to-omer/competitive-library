@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Delimited"],"struct":["DelimitedPattern","MultipleStringSearch","StringSearch"],"trait":["Pattern"]};

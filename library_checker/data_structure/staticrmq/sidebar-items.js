@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["staticrmq_disjoint_sparse_table","staticrmq_segment_tree","test_staticrmq_disjoint_sparse_table","test_staticrmq_segment_tree"]};
+window.SIDEBAR_ITEMS = {"fn":["staticrmq_disjoint_sparse_table","staticrmq_range_minimum_query","staticrmq_segment_tree","test_staticrmq_disjoint_sparse_table","test_staticrmq_range_minimum_query","test_staticrmq_segment_tree"]};

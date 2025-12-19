@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["SuffixArray"]};
+window.SIDEBAR_ITEMS = {"fn":["induced_sort","sa_is"],"struct":["SuffixArray"]};
