@@ -1,5 +1,5 @@
 const BLOCK_SIZE: usize = 64;
-const BLOCK_SHIFT: usize = 6;
+const BLOCK_SHIFT: usize = BLOCK_SIZE.trailing_zeros() as usize;
 const BLOCK_MASK: usize = BLOCK_SIZE - 1;
 
 #[derive(Clone, Debug)]
@@ -36,13 +36,7 @@ where
                 mask[i] = prev_mask | 1u64 << (i - start);
                 stack.push(i);
             }
-            let mut min_idx = start;
-            for i in start + 1..end {
-                if data[i] < data[min_idx] {
-                    min_idx = i;
-                }
-            }
-            *min_slot = min_idx;
+            *min_slot = (start..end).min_by_key(|&i| &data[i]).unwrap();
         }
 
         let mut total = 0usize;
@@ -112,7 +106,7 @@ where
     fn argmin_blocks(&self, l_block: usize, r_block: usize) -> usize {
         debug_assert!(l_block < r_block);
         let len = r_block - l_block;
-        let k = usize::BITS as usize - 1 - len.leading_zeros() as usize;
+        let k = len.ilog2() as usize;
         let offset = self.sparse_offset[k];
         let left = self.sparse[offset + l_block];
         let right = self.sparse[offset + r_block - (1usize << k)];
