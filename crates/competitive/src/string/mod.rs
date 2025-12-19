@@ -13,7 +13,7 @@ pub use self::rolling_hash::{
     Gf2_63x1, Gf2_63x2, Gf2_63x3, HashedRangeChained, Mersenne61x1, Mersenne61x2, Mersenne61x3,
     RollingHasher,
 };
-pub use self::string_search::StringSearch;
+pub use self::string_search::{MultipleStringSearch, StringSearch};
 #[codesnip::entry("SuffixArray")]
 pub use self::suffix_array::SuffixArray;
 #[codesnip::entry("SuffixAutomaton")]

@@ -1,6 +1,59 @@
 use super::{RangeMinimumQuery, SuffixArray};
 use std::{cmp::Ordering, ops::Range};
 
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+enum Delimited<T> {
+    Separator(usize),
+    Value(T),
+}
+
+trait Pattern<T> {
+    fn len(&self) -> usize;
+    fn eq_text(&self, index: usize, text: &T) -> bool;
+    fn cmp_text(&self, index: usize, text: &T) -> Ordering;
+}
+
+impl<T> Pattern<T> for [T]
+where
+    T: Ord,
+{
+    fn len(&self) -> usize {
+        self.len()
+    }
+
+    fn eq_text(&self, index: usize, text: &T) -> bool {
+        text == &self[index]
+    }
+
+    fn cmp_text(&self, index: usize, text: &T) -> Ordering {
+        text.cmp(&self[index])
+    }
+}
+
+struct DelimitedPattern<'a, T> {
+    pattern: &'a [T],
+}
+
+impl<T> Pattern<Delimited<T>> for DelimitedPattern<'_, T>
+where
+    T: Ord,
+{
+    fn len(&self) -> usize {
+        self.pattern.len()
+    }
+
+    fn eq_text(&self, index: usize, text: &Delimited<T>) -> bool {
+        matches!(text, Delimited::Value(value) if value == &self.pattern[index])
+    }
+
+    fn cmp_text(&self, index: usize, text: &Delimited<T>) -> Ordering {
+        match text {
+            Delimited::Separator(_) => Ordering::Less,
+            Delimited::Value(value) => value.cmp(&self.pattern[index]),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct StringSearch<T> {
     text: Vec<T>,
@@ -88,6 +141,12 @@ where
         left..right
     }
 
+    pub fn positions(&self, range: Range<usize>) -> impl DoubleEndedIterator<Item = usize> + '_ {
+        debug_assert!(range.start <= range.end);
+        debug_assert!(range.end <= self.text.len() + 1);
+        range.map(move |i| self.suffix_array[i])
+    }
+
     fn lcp_suffix(&self, a: usize, b: usize) -> usize {
         self.lcp_sa(self.rank[a], self.rank[b])
     }
@@ -100,16 +159,19 @@ where
         self.rmq.fold(l, r)
     }
 
-    fn compare_suffix_pattern(
+    fn compare_suffix_pattern<P>(
         &self,
         suffix_start: usize,
-        pattern: &[T],
+        pattern: &P,
         start: usize,
-    ) -> (Ordering, usize) {
+    ) -> (Ordering, usize)
+    where
+        P: Pattern<T> + ?Sized,
+    {
         let n = self.text.len();
         let m = pattern.len();
         let mut i = start;
-        while i < m && suffix_start + i < n && self.text[suffix_start + i] == pattern[i] {
+        while i < m && suffix_start + i < n && pattern.eq_text(i, &self.text[suffix_start + i]) {
             i += 1;
         }
         let ord = if i == m {
@@ -117,13 +179,16 @@ where
         } else if suffix_start + i == n {
             Ordering::Less
         } else {
-            self.text[suffix_start + i].cmp(&pattern[i])
+            pattern.cmp_text(i, &self.text[suffix_start + i])
         };
         (ord, i)
     }
 
-    fn bound_prefix(&self, pattern: &[T], upper: bool) -> usize {
-        if pattern.is_empty() {
+    fn bound_prefix<P>(&self, pattern: &P, upper: bool) -> usize
+    where
+        P: Pattern<T> + ?Sized,
+    {
+        if pattern.len() == 0 {
             return if upper { self.text.len() + 1 } else { 0 };
         }
         let pred = |ord: Ordering| {
@@ -162,6 +227,102 @@ where
     }
 }
 
+#[derive(Debug)]
+pub struct MultipleStringSearch<T> {
+    texts: Vec<Vec<T>>,
+    offsets: Vec<usize>,
+    position_map: Vec<(usize, usize)>,
+    search: StringSearch<Delimited<T>>,
+}
+
+impl<T> MultipleStringSearch<T>
+where
+    T: Ord + Clone,
+{
+    pub fn new(texts: Vec<Vec<T>>) -> Self {
+        assert!(!texts.is_empty());
+        let total_len: usize = texts.iter().map(|text| text.len() + 1).sum();
+        let mut concat = Vec::with_capacity(total_len - 1);
+        let mut offsets = Vec::with_capacity(texts.len());
+        let mut position_map = Vec::with_capacity(total_len);
+        for (i, text) in texts.iter().enumerate() {
+            offsets.push(concat.len());
+            for (pos, value) in text.iter().cloned().enumerate() {
+                concat.push(Delimited::Value(value));
+                position_map.push((i, pos));
+            }
+            if i + 1 < texts.len() {
+                concat.push(Delimited::Separator(!i));
+            }
+            position_map.push((i, text.len()));
+        }
+        let search = StringSearch::new(concat);
+        Self {
+            texts,
+            offsets,
+            position_map,
+            search,
+        }
+    }
+
+    pub fn texts(&self) -> &[Vec<T>] {
+        &self.texts
+    }
+
+    pub fn suffix_array(&self) -> &SuffixArray {
+        self.search.suffix_array()
+    }
+
+    pub fn lcp_array(&self) -> &[usize] {
+        self.search.lcp_array()
+    }
+
+    pub fn rank(&self) -> &[usize] {
+        self.search.rank()
+    }
+
+    pub fn longest_common_prefix(
+        &self,
+        a: (usize, Range<usize>),
+        b: (usize, Range<usize>),
+    ) -> usize {
+        let a = self.to_global_range(a);
+        let b = self.to_global_range(b);
+        self.search.longest_common_prefix(a, b)
+    }
+
+    pub fn compare(&self, a: (usize, Range<usize>), b: (usize, Range<usize>)) -> Ordering {
+        let a = self.to_global_range(a);
+        let b = self.to_global_range(b);
+        self.search.compare(a, b)
+    }
+
+    pub fn range(&self, pattern: &[T]) -> Range<usize> {
+        let pattern = DelimitedPattern { pattern };
+        let left = self.search.bound_prefix(&pattern, false);
+        let right = self.search.bound_prefix(&pattern, true);
+        left..right
+    }
+
+    pub fn positions(
+        &self,
+        range: Range<usize>,
+    ) -> impl DoubleEndedIterator<Item = (usize, usize)> + '_ {
+        debug_assert!(range.start <= range.end);
+        debug_assert!(range.end <= self.position_map.len());
+        range.map(move |i| self.position_map[self.search.suffix_array[i]])
+    }
+
+    fn to_global_range(&self, part: (usize, Range<usize>)) -> Range<usize> {
+        let (index, range) = part;
+        debug_assert!(index < self.texts.len());
+        let len = self.texts[index].len();
+        debug_assert!(range.start <= range.end && range.end <= len);
+        let base = self.offsets[index];
+        (base + range.start)..(base + range.end)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -177,7 +338,7 @@ mod tests {
             let search = StringSearch::new(s.to_vec());
             assert_eq!(search.text(), s.as_slice());
             assert_eq!(search.rank().len(), s.len() + 1);
-            let mut sa = (0..=n).collect::<Vec<_>>();
+            let mut sa: Vec<_> = (0..=n).collect();
             sa.sort_unstable_by_key(|&i| &s[i..]);
             for (i, &pos) in sa.iter().enumerate() {
                 assert_eq!(search.suffix_array()[i], pos);
@@ -234,12 +395,12 @@ mod tests {
             let csize = rng.random(1..=20);
             let s: Vec<usize> = rng.random_iter(0..csize).take(n).collect();
             let search = StringSearch::new(s.clone());
-            let mut sa = (0..=n).collect::<Vec<_>>();
+            let mut sa: Vec<_> = (0..=n).collect();
             sa.sort_unstable_by_key(|&i| &s[i..]);
             for _ in 0..200 {
                 let pattern = if n == 0 || rng.random(0..=1) == 0 {
                     let m = rng.random(0..=n + 2);
-                    rng.random_iter(0..csize).take(m).collect::<Vec<_>>()
+                    rng.random_iter(0..csize).take(m).collect()
                 } else {
                     let (l, r) = rng.random(Wes(n));
                     s[l..r].to_vec()
@@ -259,7 +420,91 @@ mod tests {
                     .iter()
                     .rposition(|&pos| cmp(pos) != Ordering::Greater)
                     .map_or(left, |i| i + 1);
-                assert_eq!(search.range(&pattern), left..right);
+                let range = search.range(&pattern);
+                assert_eq!(range, left..right);
+                let positions: Vec<_> = search.positions(range).collect();
+                assert_eq!(positions, sa[left..right]);
+            }
+        }
+    }
+
+    #[test]
+    fn test_multiple_longest_common_prefix_and_compare() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let k = rng.random(1..=6);
+            let csize = rng.random(1..=20);
+            let mut texts = Vec::with_capacity(k);
+            for _ in 0..k {
+                let n = rng.random(0..=40);
+                let s: Vec<_> = rng.random_iter(0..csize).take(n).collect();
+                texts.push(s);
+            }
+            let search = MultipleStringSearch::new(texts.clone());
+            for _ in 0..200 {
+                let i = rng.random(0..k);
+                let j = rng.random(0..k);
+                let (al, ar) = rng.random(Wes(texts[i].len()));
+                let (bl, br) = rng.random(Wes(texts[j].len()));
+                let lcp = texts[i][al..ar]
+                    .iter()
+                    .zip(texts[j][bl..br].iter())
+                    .take_while(|(x, y)| x == y)
+                    .count();
+                assert_eq!(search.longest_common_prefix((i, al..ar), (j, bl..br)), lcp);
+                assert_eq!(
+                    search.compare((i, al..ar), (j, bl..br)),
+                    texts[i][al..ar].cmp(&texts[j][bl..br])
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_multiple_range() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let k = rng.random(1..=6);
+            let csize = rng.random(1..=20);
+            let mut texts = Vec::with_capacity(k);
+            for _ in 0..k {
+                let n = rng.random(0..=40);
+                let s: Vec<_> = rng.random_iter(0..csize).take(n).collect();
+                texts.push(s);
+            }
+            let search = MultipleStringSearch::new(texts.clone());
+            let mut sa: Vec<_> = (0..k)
+                .flat_map(|i| (0..=texts[i].len()).map(move |pos| (i, pos)))
+                .collect();
+            sa.sort_unstable_by_key(|&(i, pos)| (&texts[i][pos..], !i));
+            for _ in 0..200 {
+                let pattern = if rng.random(0..=1) == 0 {
+                    let m = rng.random(0..=50);
+                    rng.random_iter(0..csize).take(m).collect()
+                } else {
+                    let idx = rng.random(0..k);
+                    let (l, r) = rng.random(Wes(texts[idx].len()));
+                    texts[idx][l..r].to_vec()
+                };
+                let cmp = |i: usize, pos: usize| {
+                    if texts[i][pos..].starts_with(&pattern) {
+                        Ordering::Equal
+                    } else {
+                        texts[i][pos..].cmp(&pattern)
+                    }
+                };
+                let left = sa
+                    .iter()
+                    .position(|&(i, pos)| cmp(i, pos) != Ordering::Less)
+                    .unwrap_or(sa.len());
+                let right = sa
+                    .iter()
+                    .rposition(|&(i, pos)| cmp(i, pos) != Ordering::Greater)
+                    .map_or(left, |idx| idx + 1);
+                let range = search.range(&pattern);
+                assert_eq!(range, left..right);
+                let positions: Vec<_> = search.positions(range).collect();
+                assert_eq!(positions, sa[left..right]);
             }
         }
     }
