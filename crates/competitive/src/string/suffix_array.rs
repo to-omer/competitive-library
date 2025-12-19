@@ -1,102 +1,30 @@
-use super::binary_search;
-use std::{
-    cmp::Ordering,
-    ops::{Index, Range},
-};
+use std::ops::Index;
 
 #[derive(Clone, Debug)]
-pub struct SuffixArray<T> {
-    pat: Vec<T>,
+pub struct SuffixArray {
     sa: Vec<usize>,
 }
 
-impl<T: Ord> SuffixArray<T> {
-    pub fn new(pat: Vec<T>) -> Self {
-        let n = pat.len();
+impl SuffixArray {
+    pub fn new<T: Ord>(text: &[T]) -> Self {
+        let n = text.len();
         let mut ord: Vec<_> = (0..n).collect();
-        ord.sort_unstable_by_key(|&i| &pat[i]);
+        ord.sort_unstable_by_key(|&i| &text[i]);
         let mut s = vec![0usize; n + 1];
         let mut upper = 0usize;
         for (k, &i) in ord.iter().enumerate() {
-            if k == 0 || pat[ord[k - 1]] != pat[i] {
+            if k == 0 || text[ord[k - 1]] != text[i] {
                 upper += 1;
             }
             s[i] = upper;
         }
         s[n] = 0;
         let sa = sa_is(&s, upper);
-        Self { pat, sa }
-    }
-
-    pub fn longest_common_prefix_array(&self) -> Vec<usize> {
-        let n = self.pat.len();
-        let mut rank = vec![0usize; n + 1];
-        for (i, &v) in self.sa.iter().enumerate() {
-            rank[v] = i;
-        }
-
-        let mut h = 0usize;
-        let mut lcp = vec![0usize; n];
-        for (i, &r) in rank.iter().enumerate().take(n) {
-            if r == 0 {
-                continue;
-            }
-            let j = self.sa[r - 1];
-            while i + h < n && j + h < n && self.pat[i + h] == self.pat[j + h] {
-                h += 1;
-            }
-            lcp[r - 1] = h;
-            h = h.saturating_sub(1);
-        }
-        lcp
-    }
-
-    pub fn range(&self, t: &[T], next: impl Fn(&T) -> T) -> Range<usize> {
-        let l = binary_search(
-            |&i| {
-                let mut si = self.sa[i as usize];
-                let mut ti = 0;
-                while si < self.pat.len() && ti < t.len() {
-                    match self.pat[si].cmp(&t[ti]) {
-                        Ordering::Less => return false,
-                        Ordering::Greater => return true,
-                        Ordering::Equal => {}
-                    }
-                    si += 1;
-                    ti += 1;
-                }
-                !(si >= self.pat.len() && ti < t.len())
-            },
-            self.sa.len() as isize,
-            -1,
-        ) as usize;
-        let r = binary_search(
-            |&i| {
-                let mut si = self.sa[i as usize];
-                let mut ti = 0;
-                while si < self.pat.len() && ti < t.len() {
-                    match if ti + 1 == t.len() {
-                        self.pat[si].cmp(&next(&t[ti]))
-                    } else {
-                        self.pat[si].cmp(&t[ti])
-                    } {
-                        Ordering::Less => return false,
-                        Ordering::Greater => return true,
-                        Ordering::Equal => {}
-                    }
-                    si += 1;
-                    ti += 1;
-                }
-                !(si >= self.pat.len() && ti < t.len())
-            },
-            self.sa.len() as isize,
-            l as isize - 1,
-        ) as usize;
-        l..r
+        Self { sa }
     }
 }
 
-impl<T> Index<usize> for SuffixArray<T> {
+impl Index<usize> for SuffixArray {
     type Output = usize;
     fn index(&self, index: usize) -> &Self::Output {
         &self.sa[index]
@@ -265,31 +193,10 @@ mod tests {
             let n = rng.random(0..=100);
             let m = rng.random(1..=100);
             let s: Vec<_> = rng.random_iter(1..=m).take(n).collect();
-            let sa = SuffixArray::new(s.to_vec());
+            let sa = SuffixArray::new(&s);
             let mut suffixes: Vec<_> = (0..=n).collect();
             suffixes.sort_unstable_by_key(|&i| &s[i..]);
             assert_eq!(sa.sa, suffixes);
-        }
-    }
-
-    #[test]
-    fn test_longest_common_prefix_array() {
-        let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(0..=100);
-            let m = rng.random(1..=100);
-            let s: Vec<_> = rng.random_iter(1..=m).take(n).collect();
-            let sa = SuffixArray::new(s.to_vec());
-            let lcp = sa.longest_common_prefix_array();
-            for i in 1..lcp.len() {
-                let x = sa.sa[i - 1];
-                let y = sa.sa[i];
-                let mut h = 0;
-                while x + h < s.len() && y + h < s.len() && s[x + h] == s[y + h] {
-                    h += 1;
-                }
-                assert_eq!(lcp[i - 1], h);
-            }
         }
     }
 }

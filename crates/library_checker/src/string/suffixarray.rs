@@ -8,6 +8,6 @@ pub fn suffixarray(reader: impl Read, mut writer: impl Write) {
     let mut scanner = Scanner::new(&s);
     scan!(scanner, s: Chars);
     let n = s.len();
-    let sa = SuffixArray::new(s);
+    let sa = SuffixArray::new(&s);
     iter_print!(writer, @it (1..=n).map(|i| sa[i]));
 }

@@ -1,7 +1,7 @@
 //! string algorithms
 
 use crate::algebra::{Gf2_63, Invertible, Mersenne61, Monoid, Ring, SemiRing};
-use crate::algorithm::binary_search;
+use crate::data_structure::RangeMinimumQuery;
 use crate::math::{Convolve, ConvolveSteps};
 use crate::num::{Zero, montgomery};
 use crate::tools::Xorshift;
@@ -13,6 +13,7 @@ pub use self::rolling_hash::{
     Gf2_63x1, Gf2_63x2, Gf2_63x3, HashedRangeChained, Mersenne61x1, Mersenne61x2, Mersenne61x3,
     RollingHasher,
 };
+pub use self::string_search::StringSearch;
 #[codesnip::entry("SuffixArray")]
 pub use self::suffix_array::SuffixArray;
 #[codesnip::entry("SuffixAutomaton")]
@@ -32,6 +33,7 @@ mod knuth_morris_pratt;
     )
 )]
 pub mod rolling_hash;
+mod string_search;
 #[cfg_attr(nightly, codesnip::entry("SuffixArray", include("binary_search")))]
 mod suffix_array;
 #[cfg_attr(nightly, codesnip::entry("SuffixAutomaton"))]

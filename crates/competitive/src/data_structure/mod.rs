@@ -61,10 +61,10 @@ pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriority
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 #[codesnip::entry("RangeFrequency")]
 pub use self::range_frequency::RangeFrequency;
-#[codesnip::entry("RangeMinimumQuery")]
-pub use self::range_minimum_query::RangeMinimumQuery;
 #[codesnip::entry("RangeMap")]
 pub use self::range_map::{RangeMap, RangeSet};
+#[codesnip::entry("RangeMinimumQuery")]
+pub use self::range_minimum_query::RangeMinimumQuery;
 #[codesnip::entry("SegmentTree")]
 pub use self::segment_tree::SegmentTree;
 #[codesnip::entry("SegmentTreeMap")]

@@ -222,6 +222,21 @@ where
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+/// Left-close Right-open Segment
+pub struct WithEmptySegment<T>(pub T);
+impl<T> RandomSpec<(usize, usize)> for WithEmptySegment<T>
+where
+    T: RandomSpec<usize>,
+{
+    fn rand(&self, rng: &mut Xorshift) -> (usize, usize) {
+        let n = rng.random(&self.0) as u64;
+        let k = randint_uniform(rng, n + 1);
+        let l = randint_uniform(rng, n - k + 1) as usize;
+        (l, l + k as usize)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RandRange<Q, T> {
     data: Q,
     _marker: PhantomData<fn() -> T>,
