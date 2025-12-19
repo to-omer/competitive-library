@@ -13,6 +13,7 @@ pub use self::rolling_hash::{
     Gf2_63x1, Gf2_63x2, Gf2_63x3, HashedRangeChained, Mersenne61x1, Mersenne61x2, Mersenne61x3,
     RollingHasher,
 };
+#[codesnip::entry("StringSearch")]
 pub use self::string_search::{MultipleStringSearch, StringSearch};
 #[codesnip::entry("SuffixArray")]
 pub use self::suffix_array::SuffixArray;
@@ -33,6 +34,10 @@ mod knuth_morris_pratt;
     )
 )]
 pub mod rolling_hash;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("StringSearch", include("SuffixArray", "RangeMinimumQuery"))
+)]
 mod string_search;
 #[cfg_attr(nightly, codesnip::entry("SuffixArray", include("binary_search")))]
 mod suffix_array;
