@@ -2,7 +2,7 @@ use competitive::prelude::*;
 #[doc(no_inline)]
 pub use competitive::{
     algebra::MinOperation,
-    data_structure::{DisjointSparseTable, SegmentTree},
+    data_structure::{DisjointSparseTable, RangeMinimumQuery, SegmentTree},
 };
 
 #[verify::library_checker("staticrmq")]
@@ -24,5 +24,16 @@ pub fn staticrmq_segment_tree(reader: impl Read, mut writer: impl Write) {
     let seg = SegmentTree::<MinOperation<_>>::from_vec(a);
     for (l, r) in lr.take(q) {
         writeln!(writer, "{}", seg.fold(l..r)).ok();
+    }
+}
+
+#[verify::library_checker("staticrmq")]
+pub fn staticrmq_range_minimum_query(reader: impl Read, mut writer: impl Write) {
+    let s = read_all_unchecked(reader);
+    let mut scanner = Scanner::new(&s);
+    scan!(scanner, n, q, a: [u64; n], lr: [(usize, usize)]);
+    let rmq = RangeMinimumQuery::new(a);
+    for (l, r) in lr.take(q) {
+        writeln!(writer, "{}", rmq.fold(l, r)).ok();
     }
 }

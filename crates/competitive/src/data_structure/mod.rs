@@ -61,6 +61,8 @@ pub use self::partially_retroactive_priority_queue::PartiallyRetroactivePriority
 pub use self::range_ap_add::RangeArithmeticProgressionAdd;
 #[codesnip::entry("RangeFrequency")]
 pub use self::range_frequency::RangeFrequency;
+#[codesnip::entry("RangeMinimumQuery")]
+pub use self::range_minimum_query::RangeMinimumQuery;
 #[codesnip::entry("RangeMap")]
 pub use self::range_map::{RangeMap, RangeSet};
 #[codesnip::entry("SegmentTree")]
@@ -168,6 +170,8 @@ mod range_ap_add;
 mod range_frequency;
 #[cfg_attr(nightly, codesnip::entry("RangeMap"))]
 mod range_map;
+#[cfg_attr(nightly, codesnip::entry("RangeMinimumQuery"))]
+mod range_minimum_query;
 #[cfg_attr(
     nightly,
     codesnip::entry("SegmentTree", include("algebra", "discrete_steps"))
