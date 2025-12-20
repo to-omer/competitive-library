@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Delimited"],"struct":["DelimitedPattern","MultipleStringSearch","StringSearch"],"trait":["Pattern"]};
+window.SIDEBAR_ITEMS = {"enum":["Delimited"],"struct":["DelimitedPattern","KthSubstrings","MultipleKthSubstrings","MultipleStringSearch","StringSearch"],"trait":["Pattern"]};
