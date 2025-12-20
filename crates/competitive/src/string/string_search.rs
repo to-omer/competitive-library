@@ -147,6 +147,10 @@ where
         range.map(move |i| self.suffix_array[i])
     }
 
+    pub fn kth_substrings(&self) -> KthSubstrings<'_, T> {
+        KthSubstrings::new(self)
+    }
+
     fn lcp_suffix(&self, a: usize, b: usize) -> usize {
         self.lcp_sa(self.rank[a], self.rank[b])
     }
@@ -228,6 +232,40 @@ where
 }
 
 #[derive(Debug)]
+pub struct KthSubstrings<'a, T> {
+    search: &'a StringSearch<T>,
+    prefix: Vec<u64>,
+}
+
+impl<'a, T> KthSubstrings<'a, T>
+where
+    T: Ord,
+{
+    fn new(search: &'a StringSearch<T>) -> Self {
+        let n = search.text.len();
+        let mut prefix = Vec::with_capacity(n + 1);
+        prefix.push(0);
+        let mut total = 0u64;
+        for i in 1..=n {
+            total += (n - search.suffix_array[i] - search.lcp_array[i - 1]) as u64;
+            prefix.push(total);
+        }
+        Self { search, prefix }
+    }
+
+    pub fn kth_distinct_substring(&self, k: u64) -> Option<Range<usize>> {
+        let idx = self.prefix.partition_point(|&x| x <= k);
+        if idx == self.prefix.len() {
+            return None;
+        }
+        debug_assert!(idx > 0);
+        let start = self.search.suffix_array[idx];
+        let len = self.search.lcp_array[idx - 1] + (k - self.prefix[idx - 1]) as usize + 1;
+        Some(start..start + len)
+    }
+}
+
+#[derive(Debug)]
 pub struct MultipleStringSearch<T> {
     texts: Vec<Vec<T>>,
     offsets: Vec<usize>,
@@ -269,18 +307,6 @@ where
         &self.texts
     }
 
-    pub fn suffix_array(&self) -> &SuffixArray {
-        self.search.suffix_array()
-    }
-
-    pub fn lcp_array(&self) -> &[usize] {
-        self.search.lcp_array()
-    }
-
-    pub fn rank(&self) -> &[usize] {
-        self.search.rank()
-    }
-
     pub fn longest_common_prefix(
         &self,
         a: (usize, Range<usize>),
@@ -313,13 +339,57 @@ where
         range.map(move |i| self.position_map[self.search.suffix_array[i]])
     }
 
-    fn to_global_range(&self, part: (usize, Range<usize>)) -> Range<usize> {
-        let (index, range) = part;
+    pub fn kth_substrings(&self) -> MultipleKthSubstrings<'_, T> {
+        MultipleKthSubstrings::new(self)
+    }
+
+    fn to_global_range(&self, (index, range): (usize, Range<usize>)) -> Range<usize> {
         debug_assert!(index < self.texts.len());
         let len = self.texts[index].len();
         debug_assert!(range.start <= range.end && range.end <= len);
         let base = self.offsets[index];
-        (base + range.start)..(base + range.end)
+        base + range.start..base + range.end
+    }
+
+    fn suffix_len(&self, a: usize) -> usize {
+        let (text_idx, pos) = self.position_map[self.search.suffix_array[a]];
+        self.texts[text_idx].len() - pos
+    }
+}
+
+#[derive(Debug)]
+pub struct MultipleKthSubstrings<'a, T> {
+    search: &'a MultipleStringSearch<T>,
+    prefix: Vec<u64>,
+}
+
+impl<'a, T> MultipleKthSubstrings<'a, T>
+where
+    T: Ord + Clone,
+{
+    fn new(search: &'a MultipleStringSearch<T>) -> Self {
+        let n = search.search.text.len();
+        let mut prefix = Vec::with_capacity(n);
+        prefix.push(0);
+        let mut total = 0u64;
+        for i in 1..=n {
+            let len = search.suffix_len(i);
+            let prev_len = search.suffix_len(i - 1);
+            let lcp_prev = search.search.lcp_array[i - 1].min(len).min(prev_len);
+            total += (len - lcp_prev) as u64;
+            prefix.push(total);
+        }
+        Self { search, prefix }
+    }
+
+    pub fn kth_distinct_substring(&self, k: u64) -> Option<(usize, Range<usize>)> {
+        let idx = self.prefix.partition_point(|&x| x <= k);
+        if idx == self.prefix.len() {
+            return None;
+        }
+        let (text_idx, pos) = self.search.position_map[self.search.search.suffix_array[idx]];
+        let len = self.search.suffix_len(idx) - (self.prefix[idx] - k) as usize + 1;
+        Some((text_idx, pos..pos + len))
     }
 }
 
@@ -429,6 +499,30 @@ mod tests {
     }
 
     #[test]
+    fn test_kth_substring() {
+        let mut rng = Xorshift::default();
+        for _ in 0..500 {
+            let n = rng.random(0..=80);
+            let csize = rng.random(1..=20);
+            let s: Vec<usize> = rng.random_iter(0..csize).take(n).collect();
+            let search = StringSearch::new(s.clone());
+            let kth = search.kth_substrings();
+            let mut set = std::collections::BTreeSet::new();
+            for i in 0..n {
+                for j in i + 1..=n {
+                    set.insert(s[i..j].to_vec());
+                }
+            }
+            let substrings: Vec<_> = set.into_iter().collect();
+            for (k, expected) in substrings.iter().enumerate() {
+                let range = kth.kth_distinct_substring(k as u64).unwrap();
+                assert_eq!(&s[range], expected.as_slice());
+            }
+            assert_eq!(kth.kth_distinct_substring(substrings.len() as u64), None);
+        }
+    }
+
+    #[test]
     fn test_multiple_longest_common_prefix_and_compare() {
         let mut rng = Xorshift::default();
         for _ in 0..200 {
@@ -506,6 +600,37 @@ mod tests {
                 let positions: Vec<_> = search.positions(range).collect();
                 assert_eq!(positions, sa[left..right]);
             }
+        }
+    }
+
+    #[test]
+    fn test_multiple_kth_substring() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let k = rng.random(1..=6);
+            let csize = rng.random(1..=20);
+            let mut texts = Vec::with_capacity(k);
+            for _ in 0..k {
+                let n = rng.random(0..=40);
+                let s: Vec<_> = rng.random_iter(0..csize).take(n).collect();
+                texts.push(s);
+            }
+            let search = MultipleStringSearch::new(texts.clone());
+            let kth = search.kth_substrings();
+            let mut set = std::collections::BTreeSet::new();
+            for text in &texts {
+                for i in 0..text.len() {
+                    for j in i + 1..=text.len() {
+                        set.insert(text[i..j].to_vec());
+                    }
+                }
+            }
+            let substrings: Vec<_> = set.into_iter().collect();
+            for (idx, expected) in substrings.iter().enumerate() {
+                let (text_idx, range) = kth.kth_distinct_substring(idx as u64).unwrap();
+                assert_eq!(&texts[text_idx][range], expected.as_slice());
+            }
+            assert_eq!(kth.kth_distinct_substring(substrings.len() as u64), None);
         }
     }
 }
