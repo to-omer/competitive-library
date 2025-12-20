@@ -141,35 +141,35 @@ where
 /// ELEMENT :=
 /// - `$ty`: IterScan
 /// - `@$expr`: MarkedIterScan
+/// - `$ty = $expr`: MarkedIterScan
 /// - `[ELEMENT; $expr]`: vector
 /// - `[ELEMENT; const $expr]`: array
 /// - `[ELEMENT]`: iterator
 /// - `($(ELEMENT)*,)`: tuple
 #[macro_export]
 macro_rules! scan_value {
-    (@repeat $scanner:expr, [$($t:tt)*] $($len:expr)?)                                    => { ::std::iter::repeat_with(|| $crate::scan_value!(@inner $scanner, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
-    (@array $scanner:expr, [$($t:tt)*] $len:expr)                                         => { $crate::array![|| $crate::scan_value!(@inner $scanner, [] $($t)*); $len] };
-    (@tuple $scanner:expr, [$([$($args:tt)*])*])                                          => { ($($($args)*,)*) };
-    (@$tag:ident $scanner:expr, [[$($args:tt)*]])                                         => { $($args)* };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr)                                  => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]]) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr, $($t:tt)*)                       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)                 => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@tuple $scanner, [] $($tuple)*)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [@$e:expr; const $len:expr] $($t:tt)*)     => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [@$e] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [@$e:expr; $len:expr] $($t:tt)*)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [@$e] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [[$($tt:tt)*]; const $len:expr] $($t:tt)*) => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [[$($tt)*]] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [[$($tt:tt)*]; $len:expr] $($t:tt)*)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [[$($tt)*]] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [($($tt:tt)*); const $len:expr] $($t:tt)*) => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [($($tt)*)] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [($($tt:tt)*); $len:expr] $($t:tt)*)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [($($tt)*)] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [$ty:ty; const $len:expr] $($t:tt)*)       => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@array $scanner, [$ty] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [$ty:ty; $len:expr] $($t:tt)*)             => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [$ty] $len)]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)                    => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@repeat $scanner, [$($tt)*])]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty)                                    => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]]) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty, $($t:tt)*)                         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                               => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
-    (@$tag:ident $scanner:expr, [$($args:tt)*])                                           => { ::std::compile_error!(::std::stringify!($($args)*)) };
-    (src = $src:expr, $($t:tt)*)                                                          => { { let mut __scanner = Scanner::new($src); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
-    (iter = $iter:expr, $($t:tt)*)                                                        => { { let mut __scanner = Scanner::new_from_iter($iter); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
-    ($scanner:expr, $($t:tt)*)                                                            => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
+    (@repeat $scanner:expr, [$($t:tt)*] $($len:expr)?)                           => { ::std::iter::repeat_with(|| $crate::scan_value!(@inner $scanner, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
+    (@array $scanner:expr, [$($t:tt)*] $len:expr)                                => { $crate::array![|| $crate::scan_value!(@inner $scanner, [] $($t)*); $len] };
+    (@tuple $scanner:expr, [$([$($args:tt)*])*])                                 => { ($($($args)*,)*) };
+    (@sparen $scanner:expr, [] @$e:expr; $($t:tt)*)                              => { $crate::scan_value!(@sparen $scanner, [@$e] $($t)*) };
+    (@sparen $scanner:expr, [] ($($tt:tt)*); $($t:tt)*)                          => { $crate::scan_value!(@sparen $scanner, [($($tt)*)] $($t)*) };
+    (@sparen $scanner:expr, [] [$($tt:tt)*]; $($t:tt)*)                          => { $crate::scan_value!(@sparen $scanner, [[$($tt)*]] $($t)*) };
+    (@sparen $scanner:expr, [] $ty:ty = $e:expr; $($t:tt)*)                      => { $crate::scan_value!(@sparen $scanner, [$ty = $e] $($t)*) };
+    (@sparen $scanner:expr, [] $ty:ty; $($t:tt)*)                                => { $crate::scan_value!(@sparen $scanner, [$ty] $($t)*) };
+    (@sparen $scanner:expr, [] $($args:tt)*)                                     => { $crate::scan_value!(@repeat $scanner, [$($args)*]) };
+    (@sparen $scanner:expr, [$($args:tt)+] const $len:expr)                      => { $crate::scan_value!(@array $scanner, [$($args)+] $len) };
+    (@sparen $scanner:expr, [$($args:tt)+] $len:expr)                            => { $crate::scan_value!(@repeat $scanner, [$($args)+] $len) };
+    (@$tag:ident $scanner:expr, [[$($args:tt)*]])                                => { $($args)* };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] @$e:expr $(, $($t:tt)*)?)         => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.mscan($e)]] $(, $($t)*)?) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)        => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@tuple $scanner, [] $($tuple)*)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$crate::scan_value!(@sparen $scanner, [] $($tt)*)]] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty = $e:expr $(, $($t:tt)*)?) => { $crate::scan_value!(@$tag $scanner, [$($args)* [{ let _tmp: $ty = $scanner.mscan($e); _tmp }]] $(, $($t)*)?) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] $ty:ty $(, $($t:tt)*)?)           => { $crate::scan_value!(@$tag $scanner, [$($args)* [$scanner.scan::<$ty>()]] $(, $($t)*)?) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                      => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
+    (@$tag:ident $scanner:expr, [$($args:tt)*])                                  => { ::std::compile_error!(::std::stringify!($($args)*)) };
+    (src = $src:expr, $($t:tt)*)                                                 => { { let mut __scanner = Scanner::new($src); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
+    (iter = $iter:expr, $($t:tt)*)                                               => { { let mut __scanner = Scanner::new_from_iter($iter); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
+    ($scanner:expr, $($t:tt)*)                                                   => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
 }
 
 /// scan and bind values with Scanner
@@ -179,22 +179,21 @@ macro_rules! scan_value {
 macro_rules! scan {
     (@assert $p:pat) => {};
     (@assert $($p:tt)*) => { ::std::compile_error!(::std::concat!("expected pattern, found `", ::std::stringify!($($p)*), "`")); };
-    (@pat $scanner:expr, [] [])                                          => {};
-    (@pat $scanner:expr, [] [] , $($t:tt)*)                              => { $crate::scan!(@pat $scanner, [] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] $x:ident $($t:tt)*)              => { $crate::scan!(@pat $scanner, [$($p)* $x] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] :: $($t:tt)*)                    => { $crate::scan!(@pat $scanner, [$($p)* ::] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] & $($t:tt)*)                     => { $crate::scan!(@pat $scanner, [$($p)* &] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] ($($x:tt)*) $($t:tt)*)           => { $crate::scan!(@pat $scanner, [$($p)* ($($x)*)] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] [$($x:tt)*] $($t:tt)*)           => { $crate::scan!(@pat $scanner, [$($p)* [$($x)*]] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] {$($x:tt)*} $($t:tt)*)           => { $crate::scan!(@pat $scanner, [$($p)* {$($x)*}] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] : $($t:tt)*)                     => { $crate::scan!(@ty  $scanner, [$($p)*] [] $($t)*) };
-    (@pat $scanner:expr, [$($p:tt)*] [] $($t:tt)*)                       => { $crate::scan!(@let $scanner, [$($p)*] [usize] $($t)*) };
-    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] @$e:expr)              => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* @$e]) };
-    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] @$e:expr, $($t:tt)*)   => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* @$e], $($t)*) };
-    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] ($($x:tt)*) $($t:tt)*) => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* ($($x)*)] $($t)*) };
-    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] [$($x:tt)*] $($t:tt)*) => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* [$($x)*]] $($t)*) };
-    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $ty:ty)                => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* $ty]) };
-    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $ty:ty, $($t:tt)*)     => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* $ty], $($t)*) };
+    (@pat $scanner:expr, [] [])                                                     => {};
+    (@pat $scanner:expr, [] [] , $($t:tt)*)                                         => { $crate::scan!(@pat $scanner, [] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] $x:ident $($t:tt)*)                         => { $crate::scan!(@pat $scanner, [$($p)* $x] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] :: $($t:tt)*)                               => { $crate::scan!(@pat $scanner, [$($p)* ::] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] & $($t:tt)*)                                => { $crate::scan!(@pat $scanner, [$($p)* &] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] ($($x:tt)*) $($t:tt)*)                      => { $crate::scan!(@pat $scanner, [$($p)* ($($x)*)] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] [$($x:tt)*] $($t:tt)*)                      => { $crate::scan!(@pat $scanner, [$($p)* [$($x)*]] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] {$($x:tt)*} $($t:tt)*)                      => { $crate::scan!(@pat $scanner, [$($p)* {$($x)*}] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] : $($t:tt)*)                                => { $crate::scan!(@ty  $scanner, [$($p)*] [] $($t)*) };
+    (@pat $scanner:expr, [$($p:tt)*] [] $($t:tt)*)                                  => { $crate::scan!(@let $scanner, [$($p)*] [usize] $($t)*) };
+    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] @$e:expr $(, $($t:tt)*)?)         => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* @$e] $(, $($t)*)?) };
+    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] ($($x:tt)*) $($t:tt)*)            => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* ($($x)*)] $($t)*) };
+    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] [$($x:tt)*] $($t:tt)*)            => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* [$($x)*]] $($t)*) };
+    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $ty:ty = $e:expr $(, $($t:tt)*)?) => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* $ty = $e] $(, $($t)*)?) };
+    (@ty  $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $ty:ty $(, $($t:tt)*)?)           => { $crate::scan!(@let $scanner, [$($p)*] [$($tt)* $ty] $(, $($t)*)?) };
     (@let $scanner:expr, [$($p:tt)*] [$($tt:tt)*] $($t:tt)*) => {
         $crate::scan!{@assert $($p)*}
         let $($p)* = $crate::scan_value!($scanner, $($tt)*);
@@ -203,6 +202,92 @@ macro_rules! scan {
     (src = $src:expr, $($t:tt)*)   => { let mut __scanner = Scanner::new($src); $crate::scan!(@pat __scanner, [] [] $($t)*) };
     (iter = $iter:expr, $($t:tt)*) => { let mut __scanner = Scanner::new_from_iter($iter); $crate::scan!(@pat __scanner, [] [] $($t)*) };
     ($scanner:expr, $($t:tt)*) => { $crate::scan!(@pat $scanner, [] [] $($t)*) }
+}
+
+/// define enum scan rules
+///
+/// # Example
+/// ```rust
+/// # use competitive::{define_enum_scan, tools::{CharsWithBase, IterScan, Scanner, Usize1}};
+/// define_enum_scan! {
+///   enum Query: u8 {
+///     0 => Noop,
+///     1 => Args { i: Usize1, s: char },
+///     9 => Complex { n: usize, c: [(usize, Vec<usize> = CharsWithBase('a')); n] },
+///   }
+/// }
+/// ```
+#[macro_export]
+macro_rules! define_enum_scan {
+    (@field_ty @repeat [$($t:tt)*] $($len:expr)?)                           => { Vec<$crate::define_enum_scan!(@field_ty $($t)*)> };
+    (@field_ty @array [$($t:tt)*] $len:expr)                                => { [$crate::define_enum_scan!(@field_ty $($t)*); $len] };
+    (@field_ty @tuple [$([$($args:tt)*])*])                                 => { ($( $($args)* ,)*) };
+    (@field_ty @sparen [] ($($tt:tt)*); $($t:tt)*)                          => { $crate::define_enum_scan!(@field_ty @sparen [($($tt)*)] $($t)*) };
+    (@field_ty @sparen [] [$($tt:tt)*]; $($t:tt)*)                          => { $crate::define_enum_scan!(@field_ty @sparen [[$($tt)*]] $($t)*) };
+    (@field_ty @sparen [] $ty:ty = $e:expr; $($t:tt)*)                      => { $crate::define_enum_scan!(@field_ty @sparen [$ty = $e] $($t)*) };
+    (@field_ty @sparen [] $ty:ty; $($t:tt)*)                                => { $crate::define_enum_scan!(@field_ty @sparen [$ty] $($t)*) };
+    (@field_ty @sparen [] $($args:tt)*)                                     => { $crate::define_enum_scan!(@field_ty @repeat [$($args)*]) };
+    (@field_ty @sparen [$($args:tt)+] const $len:expr)                      => { $crate::define_enum_scan!(@field_ty @array [$($args)+] $len) };
+    (@field_ty @sparen [$($args:tt)+] $len:expr)                            => { $crate::define_enum_scan!(@field_ty @repeat [$($args)+] $len) };
+    (@field_ty @$tag:ident [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)        => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [$crate::define_enum_scan!(@field_ty @tuple [] $($tuple)*)]] $($t)*) };
+    (@field_ty @$tag:ident [$($args:tt)*] [$($tt:tt)*] $($t:tt)*)           => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [$crate::define_enum_scan!(@field_ty @sparen [] $($tt)*)]] $($t)*) };
+    (@field_ty @$tag:ident [$($args:tt)*] $ty:ty = $e:expr $(, $($t:tt)*)?) => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [$ty]] $(, $($t)*)?) };
+    (@field_ty @$tag:ident [$($args:tt)*] $ty:ty $(, $($t:tt)*)?)           => { $crate::define_enum_scan!(@field_ty @$tag [$($args)* [<$ty as IterScan>::Output]] $(, $($t)*)?) };
+    (@field_ty @$tag:ident [$($args:tt)*] , $($t:tt)*)                      => { $crate::define_enum_scan!(@field_ty @$tag [$($args)*] $($t)*) };
+    (@field_ty @$tag:ident [[$($args:tt)*]])                                => { $($args)* };
+    (@field_ty @$tag:ident [$($args:tt)*])                                  => { ::std::compile_error!(::std::stringify!($($args)*)) };
+    (@field_ty $($t:tt)*) => { $crate::define_enum_scan!(@field_ty @inner [] $($t)*) };
+
+    (@variant ([$($attr:tt)*] $vis:vis $T:ident $d:ty) [$($vars:tt)*]) => { $crate::define_enum_scan!(@def $($attr)* $vis enum $T : $d { $($vars)* }) };
+    (@variant $ctx:tt [$($vars:tt)*] $p:pat => $v:ident { $($fs:tt)* } $($rest:tt)*) => { $crate::define_enum_scan!(@field   $ctx [$($vars)*] $p => $v [] $($fs)* ; $($rest)*) };
+    (@variant $ctx:tt [$($vars:tt)*] $p:pat => $v:ident $($rest:tt)*)                    => { $crate::define_enum_scan!(@variant $ctx [$($vars)* $p => $v ,] $($rest)*) };
+    (@variant $ctx:tt [$($vars:tt)*] , $($rest:tt)*)                                     => { $crate::define_enum_scan!(@variant $ctx [$($vars)*] $($rest)*) };
+    (@endfield $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] [$f:ident : $($spec:tt)*] , $($rest:tt)*) => { $crate::define_enum_scan!(@field $ctx [$($vars)*] $p => $v [$($fs)* [$f : $($spec)*]] $($rest)*) };
+    (@endfield $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] [$f:ident : $($spec:tt)*] ; $($rest:tt)*) => { $crate::define_enum_scan!(@variant $ctx [$($vars)* $p => $v { $($fs)* [$f : $($spec)*] } ,] $($rest)*) };
+    (@field $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] ; $($rest:tt)*)                                  => { $crate::define_enum_scan!(@variant $ctx [$($vars)* $p => $v { $($fs)* } ,] $($rest)*) };
+    (@field $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] $f:ident : ($($tuple:tt)*) $sep:tt $($rest:tt)*) => { $crate::define_enum_scan!(@endfield $ctx [$($vars)*] $p => $v [$($fs)*] [$f : ($($tuple)*)] $sep $($rest)*) };
+    (@field $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] $f:ident : [$($x:tt)*] $sep:tt $($rest:tt)*)     => { $crate::define_enum_scan!(@endfield $ctx [$($vars)*] $p => $v [$($fs)*] [$f : [$($x)*]] $sep $($rest)*) };
+    (@field $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] $f:ident : $ty:ty = $e:expr , $($rest:tt)*)      => { $crate::define_enum_scan!(@endfield $ctx [$($vars)*] $p => $v [$($fs)*] [$f : $ty = $e] , $($rest)*) };
+    (@field $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] $f:ident : $ty:ty ; $($rest:tt)*)                => { $crate::define_enum_scan!(@endfield $ctx [$($vars)*] $p => $v [$($fs)*] [$f : $ty] ; $($rest)*) };
+    (@field $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] $f:ident : $ty:ty = $e:expr ; $($rest:tt)*)      => { $crate::define_enum_scan!(@endfield $ctx [$($vars)*] $p => $v [$($fs)*] [$f : $ty = $e] ; $($rest)*) };
+    (@field $ctx:tt [$($vars:tt)*] $p:pat => $v:ident [$($fs:tt)*] $f:ident : $ty:ty , $($rest:tt)*)                => { $crate::define_enum_scan!(@endfield $ctx [$($vars)*] $p => $v [$($fs)*] [$f : $ty] , $($rest)*) };
+    (
+        @def
+        $(#[$attr:meta])*
+        $vis:vis enum $T:ident : $d:ty {
+            $( $p:pat => $v:ident $( { $( [$f:ident : $($spec:tt)*] )* } )?, )*
+        }
+    ) => {
+        $(#[$attr])*
+        $vis enum $T {
+            $( $v $( { $( $f : $crate::define_enum_scan!(@field_ty $($spec)* ) ),* } )? ),*
+        }
+        impl IterScan for $T {
+            type Output = Self;
+            fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
+                let tag = <$d as IterScan>::scan(iter)?;
+                match tag {
+                    $(
+                        $p => {
+                            $($(
+                                let $f = $crate::scan_value!(iter = &mut *iter, $($spec)* );
+                            )*)?
+                            Some($T::$v $( { $( $f ),* } )?)
+                        }
+                    ),*
+                    _ => None,
+                }
+            }
+        }
+    };
+    (
+        $(#[$attr:meta])*
+        $vis:vis enum $T:ident : $d:ty {
+            $($body:tt)*
+        }
+    ) => {
+        $crate::define_enum_scan!(@variant ([$(#[$attr])*] $vis $T $d) [] $($body)*);
+    };
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -401,6 +486,10 @@ mod tests {
         assert_eq!(d, vec![1, 1]);
         assert_eq!(e, [2, 3]);
 
+        scan!(src = "12 34", c: Vec<usize> = CharsWithBase('0'), d: [Vec<usize> = CharsWithBase('0'); 1]);
+        assert_eq!(c, vec![1, 2]);
+        assert_eq!(d, vec![vec![3, 4]]);
+
         scan!(src = "1", x);
         assert_eq!(x, 1);
         assert_eq!(scan_value!(src = "1", usize), 1);
@@ -408,5 +497,37 @@ mod tests {
         scan!(iter = "1".split_ascii_whitespace(), x);
         assert_eq!(x, 1);
         assert_eq!(scan_value!(iter = "1".split_ascii_whitespace(), usize), 1);
+    }
+
+    #[test]
+    fn test_define_enum_scan() {
+        define_enum_scan! {
+            enum Query: u8 {
+                0 => Noop,
+                1 => Args { i: Usize1, s: char },
+                9 => Complex { n: usize, c: [(usize, Vec<usize> = CharsWithBase('a')); n] },
+            }
+        }
+
+        let mut s = Scanner::new("0   1 2 a  9 2 3 ab 2 ab");
+        scan!(s, q1: Query, q2: Query, q3: Query);
+        match q1 {
+            Query::Noop => {}
+            _ => panic!("unexpected"),
+        }
+        match q2 {
+            Query::Args { i, s } => {
+                assert_eq!(i, 1);
+                assert_eq!(s, 'a');
+            }
+            _ => panic!("unexpected"),
+        }
+        match q3 {
+            Query::Complex { n, c } => {
+                assert_eq!(n, 2);
+                assert_eq!(c, vec![(3, vec![0, 1]), (2, vec![0, 1])]);
+            }
+            _ => panic!("unexpected"),
+        }
     }
 }
