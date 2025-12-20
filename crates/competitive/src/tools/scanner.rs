@@ -39,30 +39,31 @@ pub trait MarkedIterScan: Sized {
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output>;
 }
 #[derive(Clone, Debug)]
-pub struct Scanner<'a> {
-    iter: std::str::SplitAsciiWhitespace<'a>,
+pub struct Scanner<'a, I: Iterator<Item = &'a str> = std::str::SplitAsciiWhitespace<'a>> {
+    iter: I,
 }
 impl<'a> Scanner<'a> {
-    #[inline]
     pub fn new(s: &'a str) -> Self {
         let iter = s.split_ascii_whitespace();
         Self { iter }
     }
-    #[inline]
+}
+impl<'a, I: Iterator<Item = &'a str>> Scanner<'a, I> {
+    pub fn new_from_iter(iter: I) -> Self {
+        Self { iter }
+    }
     pub fn scan<T>(&mut self) -> <T as IterScan>::Output
     where
         T: IterScan,
     {
         <T as IterScan>::scan(&mut self.iter).expect("scan error")
     }
-    #[inline]
     pub fn mscan<T>(&mut self, marker: T) -> <T as MarkedIterScan>::Output
     where
         T: MarkedIterScan,
     {
         marker.mscan(&mut self.iter).expect("scan error")
     }
-    #[inline]
     pub fn scan_vec<T>(&mut self, size: usize) -> Vec<<T as IterScan>::Output>
     where
         T: IterScan,
@@ -72,7 +73,7 @@ impl<'a> Scanner<'a> {
             .collect()
     }
     #[inline]
-    pub fn iter<'b, T>(&'b mut self) -> ScannerIter<'a, 'b, T>
+    pub fn iter<'b, T>(&'b mut self) -> ScannerIter<'a, 'b, I, T>
     where
         T: IterScan,
     {
@@ -87,7 +88,6 @@ macro_rules! impl_iter_scan {
     ($($t:ty)*) => {$(
         impl IterScan for $t {
             type Output = Self;
-            #[inline]
             fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self> {
                 iter.next()?.parse::<$t>().ok()
             }
@@ -100,7 +100,6 @@ macro_rules! impl_iter_scan_tuple {
     (@impl $($T:ident)*) => {
         impl<$($T: IterScan),*> IterScan for ($($T,)*) {
             type Output = ($(<$T as IterScan>::Output,)*);
-            #[inline]
             fn scan<'a, It: Iterator<Item = &'a str>>(_iter: &mut It) -> Option<Self::Output> {
                 Some(($(<$T as IterScan>::scan(_iter)?,)*))
             }
@@ -119,12 +118,13 @@ macro_rules! impl_iter_scan_tuple {
 }
 impl_iter_scan_tuple!(A B C D E F G H I J K);
 
-pub struct ScannerIter<'a, 'b, T> {
-    inner: &'b mut Scanner<'a>,
+pub struct ScannerIter<'a, 'b, I: Iterator<Item = &'a str>, T> {
+    inner: &'b mut Scanner<'a, I>,
     _marker: std::marker::PhantomData<fn() -> T>,
 }
-impl<T> Iterator for ScannerIter<'_, '_, T>
+impl<'a, I, T> Iterator for ScannerIter<'a, '_, I, T>
 where
+    I: Iterator<Item = &'a str>,
     T: IterScan,
 {
     type Item = <T as IterScan>::Output;
@@ -168,6 +168,7 @@ macro_rules! scan_value {
     (@$tag:ident $scanner:expr, [$($args:tt)*] , $($t:tt)*)                               => { $crate::scan_value!(@$tag $scanner, [$($args)*] $($t)*) };
     (@$tag:ident $scanner:expr, [$($args:tt)*])                                           => { ::std::compile_error!(::std::stringify!($($args)*)) };
     (src = $src:expr, $($t:tt)*)                                                          => { { let mut __scanner = Scanner::new($src); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
+    (iter = $iter:expr, $($t:tt)*)                                                        => { { let mut __scanner = Scanner::new_from_iter($iter); $crate::scan_value!(@inner __scanner, [] $($t)*) } };
     ($scanner:expr, $($t:tt)*)                                                            => { $crate::scan_value!(@inner $scanner, [] $($t)*) }
 }
 
@@ -199,7 +200,8 @@ macro_rules! scan {
         let $($p)* = $crate::scan_value!($scanner, $($tt)*);
         $crate::scan!(@pat $scanner, [] [] $($t)*)
     };
-    (src = $src:expr, $($t:tt)*) => { let mut __scanner = Scanner::new($src); $crate::scan!(@pat __scanner, [] [] $($t)*) };
+    (src = $src:expr, $($t:tt)*)   => { let mut __scanner = Scanner::new($src); $crate::scan!(@pat __scanner, [] [] $($t)*) };
+    (iter = $iter:expr, $($t:tt)*) => { let mut __scanner = Scanner::new_from_iter($iter); $crate::scan!(@pat __scanner, [] [] $($t)*) };
     ($scanner:expr, $($t:tt)*) => { $crate::scan!(@pat $scanner, [] [] $($t)*) }
 }
 
@@ -207,7 +209,6 @@ macro_rules! scan {
 pub enum Usize1 {}
 impl IterScan for Usize1 {
     type Output = usize;
-    #[inline]
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
         <usize as IterScan>::scan(iter)?.checked_sub(1)
     }
@@ -216,7 +217,6 @@ impl IterScan for Usize1 {
 pub struct CharWithBase(pub char);
 impl MarkedIterScan for CharWithBase {
     type Output = usize;
-    #[inline]
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
         Some((<char as IterScan>::scan(iter)? as u8 - self.0 as u8) as usize)
     }
@@ -225,7 +225,6 @@ impl MarkedIterScan for CharWithBase {
 pub enum Chars {}
 impl IterScan for Chars {
     type Output = Vec<char>;
-    #[inline]
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
         Some(iter.next()?.chars().collect())
     }
@@ -234,7 +233,6 @@ impl IterScan for Chars {
 pub struct CharsWithBase(pub char);
 impl MarkedIterScan for CharsWithBase {
     type Output = Vec<usize>;
-    #[inline]
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
         Some(
             iter.next()?
@@ -248,7 +246,6 @@ impl MarkedIterScan for CharsWithBase {
 pub enum Byte1 {}
 impl IterScan for Byte1 {
     type Output = u8;
-    #[inline]
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
         let bytes = iter.next()?.as_bytes();
         assert_eq!(bytes.len(), 1);
@@ -259,7 +256,6 @@ impl IterScan for Byte1 {
 pub struct ByteWithBase(pub u8);
 impl MarkedIterScan for ByteWithBase {
     type Output = usize;
-    #[inline]
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
         Some((<char as IterScan>::scan(iter)? as u8 - self.0) as usize)
     }
@@ -268,7 +264,6 @@ impl MarkedIterScan for ByteWithBase {
 pub enum Bytes {}
 impl IterScan for Bytes {
     type Output = Vec<u8>;
-    #[inline]
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
         Some(iter.next()?.bytes().collect())
     }
@@ -277,7 +272,6 @@ impl IterScan for Bytes {
 pub struct BytesWithBase(pub u8);
 impl MarkedIterScan for BytesWithBase {
     type Output = Vec<usize>;
-    #[inline]
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
         Some(
             iter.next()?
@@ -314,7 +308,6 @@ where
     B: FromIterator<<T as IterScan>::Output>,
 {
     type Output = B;
-    #[inline]
     fn mscan<'a, I: Iterator<Item = &'a str>>(self, iter: &mut I) -> Option<Self::Output> {
         repeat_with(|| <T as IterScan>::scan(iter))
             .take(self.size)
@@ -335,7 +328,6 @@ where
     B: FromIterator<<T as IterScan>::Output>,
 {
     type Output = B;
-    #[inline]
     fn scan<'a, I: Iterator<Item = &'a str>>(iter: &mut I) -> Option<Self::Output> {
         let size = usize::scan(iter)?;
         repeat_with(|| <T as IterScan>::scan(iter))
@@ -412,5 +404,9 @@ mod tests {
         scan!(src = "1", x);
         assert_eq!(x, 1);
         assert_eq!(scan_value!(src = "1", usize), 1);
+
+        scan!(iter = "1".split_ascii_whitespace(), x);
+        assert_eq!(x, 1);
+        assert_eq!(scan_value!(iter = "1".split_ascii_whitespace(), usize), 1);
     }
 }
