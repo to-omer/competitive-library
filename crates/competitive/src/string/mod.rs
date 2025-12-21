@@ -20,7 +20,7 @@ pub use self::suffix_array::SuffixArray;
 #[codesnip::entry("SuffixAutomaton")]
 pub use self::suffix_automaton::SuffixAutomaton;
 #[codesnip::entry("SuffixTree")]
-pub use self::suffix_tree::SuffixTree;
+pub use self::suffix_tree::{MultipleSuffixTree, SuffixTree};
 #[codesnip::entry("wildcard_pattern_matching")]
 pub use self::wildcard_pattern_matching::wildcard_pattern_matching;
 #[codesnip::entry("ZAlgorithm")]

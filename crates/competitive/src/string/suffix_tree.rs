@@ -1,6 +1,12 @@
 use super::SuffixArray;
 use std::ops::Range;
 
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum Delimited<T> {
+    Separator(usize),
+    Value(T),
+}
+
 #[derive(Debug)]
 pub struct STNode {
     pub parent: usize,
@@ -237,6 +243,93 @@ where
     }
 }
 
+pub struct MultipleSuffixTree<T>
+where
+    T: Ord + Clone,
+{
+    texts: Vec<Vec<T>>,
+    tree: SuffixTree<Delimited<T>>,
+    position_map: Vec<(usize, usize)>,
+}
+
+impl<T> MultipleSuffixTree<T>
+where
+    T: Ord + Clone,
+{
+    pub fn new(texts: Vec<Vec<T>>) -> Self {
+        assert!(!texts.is_empty());
+        let total_len: usize = texts.iter().map(|text| text.len() + 1).sum();
+        let mut concat = Vec::with_capacity(total_len - 1);
+        let mut position_map = Vec::with_capacity(total_len);
+        for (i, text) in texts.iter().enumerate() {
+            for (pos, value) in text.iter().cloned().enumerate() {
+                concat.push(Delimited::Value(value));
+                position_map.push((i, pos));
+            }
+            if i + 1 < texts.len() {
+                concat.push(Delimited::Separator(!i));
+            }
+            position_map.push((i, text.len()));
+        }
+
+        let mut tree = SuffixTree::new(concat);
+        for node_id in 0..tree.node_size() {
+            if tree.children(node_id).is_empty() {
+                let node = tree.node(node_id);
+                let (text_idx, pos) = position_map[tree.suffix_array()[node.sa_range.start]];
+                tree.nodes[node_id].depth = texts[text_idx].len() - pos;
+            }
+        }
+
+        Self {
+            texts,
+            tree,
+            position_map,
+        }
+    }
+
+    pub fn texts(&self) -> &[Vec<T>] {
+        &self.texts
+    }
+
+    pub fn suffix_array(&self) -> &[usize] {
+        self.tree.suffix_array()
+    }
+
+    pub fn lcp_array(&self) -> &[usize] {
+        self.tree.lcp_array()
+    }
+
+    pub fn rank(&self) -> &[usize] {
+        self.tree.rank()
+    }
+
+    pub fn node_size(&self) -> usize {
+        self.tree.node_size()
+    }
+
+    pub fn node(&self, node_id: usize) -> &STNode {
+        self.tree.node(node_id)
+    }
+
+    pub fn children(&self, node_id: usize) -> &[usize] {
+        self.tree.children(node_id)
+    }
+
+    pub fn position_map(&self) -> &[(usize, usize)] {
+        &self.position_map
+    }
+
+    pub fn depth_range(&self, node_id: usize) -> Range<usize> {
+        let node = self.tree.node(node_id);
+        if node.parent == !0 {
+            return 0..0;
+        }
+        let parent_depth = self.tree.node(node.parent).depth;
+        parent_depth + 1..node.depth + 1
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -317,6 +410,114 @@ mod tests {
             assert_eq!(substrings.len(), expected.len());
             for (a, &b) in substrings.iter().zip(expected.iter()) {
                 assert_eq!(&s[a.clone()], b);
+            }
+        }
+    }
+
+    #[test]
+    fn test_multiple_suffix_tree_substrings() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let k = rng.random(1usize..=6);
+            let csize = rng.random(1usize..=10);
+            let mut texts = Vec::with_capacity(k);
+            for _ in 0..k {
+                let n = rng.random(0usize..=40);
+                let s: Vec<_> = rng.random_iter(0usize..csize).take(n).collect();
+                texts.push(s);
+            }
+            let st = MultipleSuffixTree::new(texts.clone());
+
+            let mut substrings = vec![];
+            assert_eq!(st.node(0).parent, !0);
+            for node_id in 0..st.node_size() {
+                let node = st.node(node_id);
+                if node.parent != !0 {
+                    let parent_depth = st.node(node.parent).depth;
+                    assert!(parent_depth <= node.depth);
+                }
+                for depth in st.depth_range(node_id) {
+                    for sa_idx in node.sa_range.clone() {
+                        let start = st.suffix_array()[sa_idx];
+                        let (text_idx, pos) = st.position_map()[start];
+                        assert!(pos + depth <= texts[text_idx].len());
+                        substrings.push((text_idx, pos..pos + depth));
+                    }
+                }
+                for &child_id in st.children(node_id) {
+                    assert_eq!(st.node(child_id).parent, node_id);
+                }
+            }
+            assert!(
+                substrings
+                    .iter()
+                    .map(|(i, r)| &texts[*i][r.clone()])
+                    .is_sorted()
+            );
+            let mut expected = vec![];
+            for (i, text) in texts.iter().enumerate() {
+                for l in 0..text.len() {
+                    for r in l + 1..=text.len() {
+                        expected.push((i, l..r));
+                    }
+                }
+            }
+            expected.sort_unstable_by_key(|(i, r)| (&texts[*i][r.clone()], *i, r.start, r.end));
+            substrings.sort_unstable_by_key(|(i, r)| (&texts[*i][r.clone()], *i, r.start, r.end));
+            assert_eq!(substrings, expected);
+        }
+    }
+
+    #[test]
+    fn test_multiple_suffix_tree_distinct_substrings() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let k = rng.random(1usize..=6);
+            let csize = rng.random(1usize..=10);
+            let mut texts = Vec::with_capacity(k);
+            for _ in 0..k {
+                let n = rng.random(0usize..=40);
+                let s: Vec<_> = rng.random_iter(0usize..csize).take(n).collect();
+                texts.push(s);
+            }
+            let st = MultipleSuffixTree::new(texts.clone());
+
+            let mut substrings = vec![];
+            assert_eq!(st.node(0).parent, !0);
+            for node_id in 0..st.node_size() {
+                let node = st.node(node_id);
+                if node.parent != !0 {
+                    let parent_depth = st.node(node.parent).depth;
+                    assert!(parent_depth <= node.depth);
+                }
+                for depth in st.depth_range(node_id) {
+                    let sa_idx = node.sa_range.start;
+                    let start = st.suffix_array()[sa_idx];
+                    let (text_idx, pos) = st.position_map()[start];
+                    assert!(pos + depth <= texts[text_idx].len());
+                    substrings.push((text_idx, pos..pos + depth));
+                }
+                for &child_id in st.children(node_id) {
+                    assert_eq!(st.node(child_id).parent, node_id);
+                }
+            }
+            assert!(
+                substrings
+                    .iter()
+                    .map(|(i, r)| &texts[*i][r.clone()])
+                    .is_sorted()
+            );
+            let mut expected = BTreeSet::new();
+            for text in &texts {
+                for i in 0..text.len() {
+                    for j in i + 1..=text.len() {
+                        expected.insert(text[i..j].to_vec());
+                    }
+                }
+            }
+            assert_eq!(substrings.len(), expected.len());
+            for (a, b) in substrings.iter().zip(expected.iter()) {
+                assert_eq!(&texts[a.0][a.1.clone()], b.as_slice());
             }
         }
     }
