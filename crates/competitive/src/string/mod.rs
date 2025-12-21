@@ -19,6 +19,8 @@ pub use self::string_search::{MultipleStringSearch, StringSearch};
 pub use self::suffix_array::SuffixArray;
 #[codesnip::entry("SuffixAutomaton")]
 pub use self::suffix_automaton::SuffixAutomaton;
+#[codesnip::entry("SuffixTree")]
+pub use self::suffix_tree::SuffixTree;
 #[codesnip::entry("wildcard_pattern_matching")]
 pub use self::wildcard_pattern_matching::wildcard_pattern_matching;
 #[codesnip::entry("ZAlgorithm")]
@@ -43,6 +45,8 @@ mod string_search;
 mod suffix_array;
 #[cfg_attr(nightly, codesnip::entry("SuffixAutomaton"))]
 mod suffix_automaton;
+#[cfg_attr(nightly, codesnip::entry("SuffixTree", include("SuffixArray")))]
+mod suffix_tree;
 #[cfg_attr(nightly, codesnip::entry(include("NumberTheoreticTransform")))]
 mod wildcard_pattern_matching;
 #[cfg_attr(nightly, codesnip::entry("ZAlgorithm"))]

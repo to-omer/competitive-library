@@ -68,26 +68,9 @@ where
     T: Ord,
 {
     pub fn new(text: Vec<T>) -> Self {
-        let n = text.len();
         let suffix_array = SuffixArray::new(&text);
 
-        let mut rank = vec![0usize; n + 1];
-        for i in 0..=n {
-            rank[suffix_array[i]] = i;
-        }
-
-        let mut h = 0usize;
-        let mut lcp_array = vec![0usize; n];
-        for i in 0..n {
-            let r = rank[i] - 1;
-            let j = suffix_array[r];
-            while i + h < n && j + h < n && text[i + h] == text[j + h] {
-                h += 1;
-            }
-            lcp_array[r] = h;
-            h = h.saturating_sub(1);
-        }
-
+        let (lcp_array, rank) = suffix_array.lcp_array_with_rank(&text);
         let rmq = RangeMinimumQuery::new(lcp_array.clone());
 
         Self {
@@ -397,37 +380,6 @@ where
 mod tests {
     use super::*;
     use crate::tools::{WithEmptySegment as Wes, Xorshift};
-
-    #[test]
-    fn test_lcp_array() {
-        let mut rng = Xorshift::default();
-        for _ in 0..500 {
-            let n = rng.random(0..=80);
-            let m = rng.random(1..=20);
-            let s: Vec<_> = rng.random_iter(0..m).take(n).collect();
-            let search = StringSearch::new(s.to_vec());
-            assert_eq!(search.text(), s.as_slice());
-            assert_eq!(search.rank().len(), s.len() + 1);
-            let mut sa: Vec<_> = (0..=n).collect();
-            sa.sort_unstable_by_key(|&i| &s[i..]);
-            for (i, &pos) in sa.iter().enumerate() {
-                assert_eq!(search.suffix_array()[i], pos);
-            }
-            let lcp = search.lcp_array();
-            if n == 0 {
-                assert!(lcp.is_empty());
-                continue;
-            }
-            for i in 1..=n {
-                let h = s[sa[i - 1]..]
-                    .iter()
-                    .zip(s[sa[i]..].iter())
-                    .take_while(|(a, b)| a == b)
-                    .count();
-                assert_eq!(lcp[i - 1], h);
-            }
-        }
-    }
 
     #[test]
     fn test_longest_common_prefix_and_compare() {

@@ -6,7 +6,10 @@ pub struct SuffixArray {
 }
 
 impl SuffixArray {
-    pub fn new<T: Ord>(text: &[T]) -> Self {
+    pub fn new<T>(text: &[T]) -> Self
+    where
+        T: Ord,
+    {
         let n = text.len();
         let mut ord: Vec<_> = (0..n).collect();
         ord.sort_unstable_by_key(|&i| &text[i]);
@@ -21,6 +24,41 @@ impl SuffixArray {
         s[n] = 0;
         let sa = sa_is(&s, upper);
         Self { sa }
+    }
+
+    pub fn into_inner(self) -> Vec<usize> {
+        self.sa
+    }
+
+    pub fn lcp_array_with_rank<T>(&self, text: &[T]) -> (Vec<usize>, Vec<usize>)
+    where
+        T: PartialEq,
+    {
+        let n = self.sa.len() - 1;
+        let mut rank = vec![0usize; n + 1];
+        for i in 0..=n {
+            rank[self.sa[i]] = i;
+        }
+
+        let mut h = 0usize;
+        let mut lcp_array = vec![0usize; n];
+        for i in 0..n {
+            let r = rank[i] - 1;
+            let j = self.sa[r];
+            while i + h < n && j + h < n && text[i + h] == text[j + h] {
+                h += 1;
+            }
+            lcp_array[r] = h;
+            h = h.saturating_sub(1);
+        }
+        (lcp_array, rank)
+    }
+
+    pub fn lcp_array<T>(&self, text: &[T]) -> Vec<usize>
+    where
+        T: PartialEq,
+    {
+        self.lcp_array_with_rank(text).0
     }
 }
 
@@ -197,6 +235,36 @@ mod tests {
             let mut suffixes: Vec<_> = (0..=n).collect();
             suffixes.sort_unstable_by_key(|&i| &s[i..]);
             assert_eq!(sa.sa, suffixes);
+        }
+    }
+
+    #[test]
+    fn test_lcp_array() {
+        let mut rng = Xorshift::default();
+        for _ in 0..500 {
+            let n = rng.random(0..=80);
+            let m = rng.random(1..=20);
+            let s: Vec<_> = rng.random_iter(0..m).take(n).collect();
+            let suffix_array = SuffixArray::new(&s);
+            let (lcp_array, rank) = suffix_array.lcp_array_with_rank(&s);
+            assert_eq!(rank.len(), s.len() + 1);
+            let mut sa: Vec<_> = (0..=n).collect();
+            sa.sort_unstable_by_key(|&i| &s[i..]);
+            for (i, &pos) in sa.iter().enumerate() {
+                assert_eq!(suffix_array[i], pos);
+            }
+            if n == 0 {
+                assert!(lcp_array.is_empty());
+                continue;
+            }
+            for i in 1..=n {
+                let h = s[sa[i - 1]..]
+                    .iter()
+                    .zip(s[sa[i]..].iter())
+                    .take_while(|(a, b)| a == b)
+                    .count();
+                assert_eq!(lcp_array[i - 1], h);
+            }
         }
     }
 }
