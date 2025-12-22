@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SuffixArray` struct in crate `competitive`."><title>SuffixArray in competitive::string - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-80aa586b.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.0-nightly (24139cf84 2025-12-20)" data-channel="nightly" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-a3946164.js" data-settings-js="settings-c38705f0.js" ><script src="../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-3e30299d.js"></script><script defer src="../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `SuffixArray` struct in crate `competitive`."><title>SuffixArray in competitive::string - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-80aa586b.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.0-nightly (a6525d526 2025-12-21)" data-channel="nightly" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-a3946164.js" data-settings-js="settings-c38705f0.js" ><script src="../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-3e30299d.js"></script><script defer src="../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
   integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
   integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
@@ -75,107 +75,121 @@
 <span data-nosnippet>80</span>            rank,
 <span data-nosnippet>81</span>            rmq,
 <span data-nosnippet>82</span>        }
-<span data-nosnippet>83</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[2,2],&#34;../../src/competitive/string/suffix_tree.rs.html#152&#34;,&#34;line 152&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_tree.rs (<a href="../../src/competitive/string/suffix_tree.rs.html#152">line 152</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>150</span>    <span class="kw">pub fn </span>new(text: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>151</span>        <span class="kw">let </span>n = text.len();
-<span data-nosnippet>152</span>        <span class="kw">let </span>suffix_array = <span class="highlight focus">SuffixArray::new</span>(<span class="kw-2">&amp;</span>text);
-<span data-nosnippet>153</span>        <span class="kw">let </span>(lcp_array, rank) = suffix_array.lcp_array_with_rank(<span class="kw-2">&amp;</span>text);
-<span data-nosnippet>154</span>        <span class="kw">let </span><span class="kw-2">mut </span>builder = SuffixTreeBuilder::with_capacity(n * <span class="number">2</span>);
-<span data-nosnippet>155</span>        builder.push_node(<span class="number">0</span>, <span class="number">0</span>);
-<span data-nosnippet>156</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::with_capacity(n);
-<span data-nosnippet>157</span>        stack.push(<span class="number">0</span>);
-<span data-nosnippet>158</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
-<span data-nosnippet>159</span>            <span class="kw">let </span>lcp = lcp_array[i - <span class="number">1</span>];
-<span data-nosnippet>160</span>            <span class="kw">let </span><span class="kw-2">mut </span>last_popped = !<span class="number">0</span>;
-<span data-nosnippet>161</span>            <span class="kw">while </span>builder.nodes[stack.last().cloned().unwrap()].depth &gt; lcp {
-<span data-nosnippet>162</span>                last_popped = stack.pop().unwrap();
-<span data-nosnippet>163</span>                builder.nodes[last_popped].sa_range.end = i;
-<span data-nosnippet>164</span>            }
-<span data-nosnippet>165</span>
-<span data-nosnippet>166</span>            <span class="comment">// internal node
-<span data-nosnippet>167</span>            </span><span class="kw">if </span>builder.nodes[stack.last().cloned().unwrap()].depth &lt; lcp {
-<span data-nosnippet>168</span>                <span class="kw">let </span>parent = stack.last().cloned().unwrap();
-<span data-nosnippet>169</span>                <span class="kw">let </span>internal = builder.nodes.len();
-<span data-nosnippet>170</span>                builder.push_node(lcp, builder.nodes[last_popped].sa_range.start);
-<span data-nosnippet>171</span>                builder.detach_last_child(parent, last_popped);
-<span data-nosnippet>172</span>                builder.attach_child(parent, internal);
-<span data-nosnippet>173</span>                builder.attach_child(internal, last_popped);
-<span data-nosnippet>174</span>                stack.push(internal);
-<span data-nosnippet>175</span>            }
-<span data-nosnippet>176</span>
-<span data-nosnippet>177</span>            <span class="comment">// leaf node
-<span data-nosnippet>178</span>            </span><span class="kw">let </span>parent = stack.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">last</a>().cloned().unwrap();
-<span data-nosnippet>179</span>            <span class="kw">let </span>leaf = builder.nodes.len();
-<span data-nosnippet>180</span>            builder.push_node(n - suffix_array[i], i);
-<span data-nosnippet>181</span>            builder.attach_child(parent, leaf);
-<span data-nosnippet>182</span>            stack.push(leaf);
-<span data-nosnippet>183</span>        }
-<span data-nosnippet>184</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
-<span data-nosnippet>185</span>            builder.nodes[node].sa_range.end = n + <span class="number">1</span>;
-<span data-nosnippet>186</span>        }
-<span data-nosnippet>187</span>
-<span data-nosnippet>188</span>        builder.reindex();
-<span data-nosnippet>189</span>        <span class="kw">let </span>children = builder.build_children();
-<span data-nosnippet>190</span>        <span class="kw">let </span>nodes = builder.nodes;
-<span data-nosnippet>191</span>
-<span data-nosnippet>192</span>        <span class="self">Self </span>{
-<span data-nosnippet>193</span>            text,
-<span data-nosnippet>194</span>            suffix_array: suffix_array.into_inner(),
-<span data-nosnippet>195</span>            lcp_array,
-<span data-nosnippet>196</span>            rank,
-<span data-nosnippet>197</span>            nodes,
-<span data-nosnippet>198</span>            children,
-<span data-nosnippet>199</span>        }
-<span data-nosnippet>200</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.into_inner" class="method"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#29-31">Source</a><h4 class="code-header">pub fn <a href="#method.into_inner" class="fn">into_inner</a>(self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[44,44],&#34;../../src/competitive/string/suffix_tree.rs.html#194&#34;,&#34;line 194&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_tree.rs (<a href="../../src/competitive/string/suffix_tree.rs.html#194">line 194</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>150</span>    <span class="kw">pub fn </span>new(text: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>151</span>        <span class="kw">let </span>n = text.len();
-<span data-nosnippet>152</span>        <span class="kw">let </span>suffix_array = SuffixArray::new(<span class="kw-2">&amp;</span>text);
-<span data-nosnippet>153</span>        <span class="kw">let </span>(lcp_array, rank) = suffix_array.lcp_array_with_rank(<span class="kw-2">&amp;</span>text);
-<span data-nosnippet>154</span>        <span class="kw">let </span><span class="kw-2">mut </span>builder = SuffixTreeBuilder::with_capacity(n * <span class="number">2</span>);
-<span data-nosnippet>155</span>        builder.push_node(<span class="number">0</span>, <span class="number">0</span>);
-<span data-nosnippet>156</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::with_capacity(n);
-<span data-nosnippet>157</span>        stack.push(<span class="number">0</span>);
-<span data-nosnippet>158</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
-<span data-nosnippet>159</span>            <span class="kw">let </span>lcp = lcp_array[i - <span class="number">1</span>];
-<span data-nosnippet>160</span>            <span class="kw">let </span><span class="kw-2">mut </span>last_popped = !<span class="number">0</span>;
-<span data-nosnippet>161</span>            <span class="kw">while </span>builder.nodes[stack.last().cloned().unwrap()].depth &gt; lcp {
-<span data-nosnippet>162</span>                last_popped = stack.pop().unwrap();
-<span data-nosnippet>163</span>                builder.nodes[last_popped].sa_range.end = i;
-<span data-nosnippet>164</span>            }
-<span data-nosnippet>165</span>
-<span data-nosnippet>166</span>            <span class="comment">// internal node
-<span data-nosnippet>167</span>            </span><span class="kw">if </span>builder.nodes[stack.last().cloned().unwrap()].depth &lt; lcp {
-<span data-nosnippet>168</span>                <span class="kw">let </span>parent = stack.last().cloned().unwrap();
-<span data-nosnippet>169</span>                <span class="kw">let </span>internal = builder.nodes.len();
-<span data-nosnippet>170</span>                builder.push_node(lcp, builder.nodes[last_popped].sa_range.start);
-<span data-nosnippet>171</span>                builder.detach_last_child(parent, last_popped);
-<span data-nosnippet>172</span>                builder.attach_child(parent, internal);
-<span data-nosnippet>173</span>                builder.attach_child(internal, last_popped);
-<span data-nosnippet>174</span>                stack.push(internal);
-<span data-nosnippet>175</span>            }
-<span data-nosnippet>176</span>
-<span data-nosnippet>177</span>            <span class="comment">// leaf node
-<span data-nosnippet>178</span>            </span><span class="kw">let </span>parent = stack.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">last</a>().cloned().unwrap();
-<span data-nosnippet>179</span>            <span class="kw">let </span>leaf = builder.nodes.len();
-<span data-nosnippet>180</span>            builder.push_node(n - suffix_array[i], i);
-<span data-nosnippet>181</span>            builder.attach_child(parent, leaf);
-<span data-nosnippet>182</span>            stack.push(leaf);
-<span data-nosnippet>183</span>        }
-<span data-nosnippet>184</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
-<span data-nosnippet>185</span>            builder.nodes[node].sa_range.end = n + <span class="number">1</span>;
-<span data-nosnippet>186</span>        }
-<span data-nosnippet>187</span>
-<span data-nosnippet>188</span>        builder.reindex();
-<span data-nosnippet>189</span>        <span class="kw">let </span>children = builder.build_children();
-<span data-nosnippet>190</span>        <span class="kw">let </span>nodes = builder.nodes;
-<span data-nosnippet>191</span>
-<span data-nosnippet>192</span>        <span class="self">Self </span>{
-<span data-nosnippet>193</span>            text,
-<span data-nosnippet>194</span>            suffix_array: suffix_array.<span class="highlight focus">into_inner</span>(),
-<span data-nosnippet>195</span>            lcp_array,
-<span data-nosnippet>196</span>            rank,
-<span data-nosnippet>197</span>            nodes,
-<span data-nosnippet>198</span>            children,
-<span data-nosnippet>199</span>        }
-<span data-nosnippet>200</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.lcp_array_with_rank" class="method"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#33-55">Source</a><h4 class="code-header">pub fn <a href="#method.lcp_array_with_rank" class="fn">lcp_array_with_rank</a>&lt;T&gt;(&amp;self, text: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; (<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;)<div class="where">where
+<span data-nosnippet>83</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[2,2],&#34;../../src/competitive/string/suffix_tree.rs.html#203&#34;,&#34;line 203&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_tree.rs (<a href="../../src/competitive/string/suffix_tree.rs.html#203">line 203</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>201</span>    <span class="kw">pub fn </span>new(text: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>202</span>        <span class="kw">let </span>n = text.len();
+<span data-nosnippet>203</span>        <span class="kw">let </span>suffix_array = <span class="highlight focus">SuffixArray::new</span>(<span class="kw-2">&amp;</span>text);
+<span data-nosnippet>204</span>        <span class="kw">let </span>(lcp_array, rank) = suffix_array.lcp_array_with_rank(<span class="kw-2">&amp;</span>text);
+<span data-nosnippet>205</span>        <span class="kw">let </span><span class="kw-2">mut </span>builder = SuffixTreeBuilder::with_capacity(n * <span class="number">2</span>);
+<span data-nosnippet>206</span>        builder.push_node(<span class="number">0</span>, <span class="number">0</span>);
+<span data-nosnippet>207</span>        <span class="kw">let </span><span class="kw-2">mut </span>leafs = <span class="macro">vec!</span>[!<span class="number">0</span>; n + <span class="number">1</span>];
+<span data-nosnippet>208</span>        leafs[<span class="number">0</span>] = <span class="number">0</span>;
+<span data-nosnippet>209</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::with_capacity(n);
+<span data-nosnippet>210</span>        stack.push(<span class="number">0</span>);
+<span data-nosnippet>211</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
+<span data-nosnippet>212</span>            <span class="kw">let </span>lcp = lcp_array[i - <span class="number">1</span>];
+<span data-nosnippet>213</span>            <span class="kw">let </span><span class="kw-2">mut </span>last_popped = !<span class="number">0</span>;
+<span data-nosnippet>214</span>            <span class="kw">while </span>builder.nodes[stack.last().cloned().unwrap()].depth &gt; lcp {
+<span data-nosnippet>215</span>                last_popped = stack.pop().unwrap();
+<span data-nosnippet>216</span>                builder.nodes[last_popped].sa_range.end = i;
+<span data-nosnippet>217</span>            }
+<span data-nosnippet>218</span>
+<span data-nosnippet>219</span>            <span class="comment">// internal node
+<span data-nosnippet>220</span>            </span><span class="kw">if </span>builder.nodes[stack.last().cloned().unwrap()].depth &lt; lcp {
+<span data-nosnippet>221</span>                <span class="kw">let </span>parent = stack.last().cloned().unwrap();
+<span data-nosnippet>222</span>                <span class="kw">let </span>internal = builder.nodes.len();
+<span data-nosnippet>223</span>                builder.push_node(lcp, builder.nodes[last_popped].sa_range.start);
+<span data-nosnippet>224</span>                builder.detach_last_child(parent, last_popped);
+<span data-nosnippet>225</span>                builder.attach_child(parent, internal);
+<span data-nosnippet>226</span>                builder.attach_child(internal, last_popped);
+<span data-nosnippet>227</span>                stack.push(internal);
+<span data-nosnippet>228</span>            }
+<span data-nosnippet>229</span>
+<span data-nosnippet>230</span>            <span class="comment">// leaf node
+<span data-nosnippet>231</span>            </span><span class="kw">let </span>parent = stack.last().cloned().unwrap();
+<span data-nosnippet>232</span>            <span class="kw">let </span>leaf = builder.nodes.len();
+<span data-nosnippet>233</span>            builder.push_node(n - suffix_array[i], i);
+<span data-nosnippet>234</span>            builder.attach_child(parent, leaf);
+<span data-nosnippet>235</span>            stack.push(leaf);
+<span data-nosnippet>236</span>            leafs[i] = leaf;
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
+<span data-nosnippet>239</span>            builder.nodes[node].sa_range.end = n + <span class="number">1</span>;
+<span data-nosnippet>240</span>        }
+<span data-nosnippet>241</span>
+<span data-nosnippet>242</span>        builder.reindex(<span class="kw-2">&amp;mut </span>leafs[<span class="number">1</span>..]);
+<span data-nosnippet>243</span>        <span class="kw">let </span>children = builder.build_children();
+<span data-nosnippet>244</span>        <span class="kw">let </span>inv = builder.build_aux(<span class="kw-2">&amp;</span>children);
+<span data-nosnippet>245</span>        <span class="kw">let </span>nodes = builder.nodes;
+<span data-nosnippet>246</span>        <span class="kw">let </span>suffix_array = suffix_array.into_inner();
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>        <span class="self">Self </span>{
+<span data-nosnippet>249</span>            text,
+<span data-nosnippet>250</span>            suffix_array,
+<span data-nosnippet>251</span>            lcp_array,
+<span data-nosnippet>252</span>            rank,
+<span data-nosnippet>253</span>            nodes,
+<span data-nosnippet>254</span>            children,
+<span data-nosnippet>255</span>            leafs,
+<span data-nosnippet>256</span>            inv,
+<span data-nosnippet>257</span>        }
+<span data-nosnippet>258</span>    }</code></pre></div></div></div></details></div></details><details class="toggle method-toggle" open><summary><section id="method.into_inner" class="method"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#29-31">Source</a><h4 class="code-header">pub fn <a href="#method.into_inner" class="fn">into_inner</a>(self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;</h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-1"><a href="#scraped-examples-1">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[45,45],&#34;../../src/competitive/string/suffix_tree.rs.html#246&#34;,&#34;line 246&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_tree.rs (<a href="../../src/competitive/string/suffix_tree.rs.html#246">line 246</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>201</span>    <span class="kw">pub fn </span>new(text: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>202</span>        <span class="kw">let </span>n = text.len();
+<span data-nosnippet>203</span>        <span class="kw">let </span>suffix_array = SuffixArray::new(<span class="kw-2">&amp;</span>text);
+<span data-nosnippet>204</span>        <span class="kw">let </span>(lcp_array, rank) = suffix_array.lcp_array_with_rank(<span class="kw-2">&amp;</span>text);
+<span data-nosnippet>205</span>        <span class="kw">let </span><span class="kw-2">mut </span>builder = SuffixTreeBuilder::with_capacity(n * <span class="number">2</span>);
+<span data-nosnippet>206</span>        builder.push_node(<span class="number">0</span>, <span class="number">0</span>);
+<span data-nosnippet>207</span>        <span class="kw">let </span><span class="kw-2">mut </span>leafs = <span class="macro">vec!</span>[!<span class="number">0</span>; n + <span class="number">1</span>];
+<span data-nosnippet>208</span>        leafs[<span class="number">0</span>] = <span class="number">0</span>;
+<span data-nosnippet>209</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::with_capacity(n);
+<span data-nosnippet>210</span>        stack.push(<span class="number">0</span>);
+<span data-nosnippet>211</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
+<span data-nosnippet>212</span>            <span class="kw">let </span>lcp = lcp_array[i - <span class="number">1</span>];
+<span data-nosnippet>213</span>            <span class="kw">let </span><span class="kw-2">mut </span>last_popped = !<span class="number">0</span>;
+<span data-nosnippet>214</span>            <span class="kw">while </span>builder.nodes[stack.last().cloned().unwrap()].depth &gt; lcp {
+<span data-nosnippet>215</span>                last_popped = stack.pop().unwrap();
+<span data-nosnippet>216</span>                builder.nodes[last_popped].sa_range.end = i;
+<span data-nosnippet>217</span>            }
+<span data-nosnippet>218</span>
+<span data-nosnippet>219</span>            <span class="comment">// internal node
+<span data-nosnippet>220</span>            </span><span class="kw">if </span>builder.nodes[stack.last().cloned().unwrap()].depth &lt; lcp {
+<span data-nosnippet>221</span>                <span class="kw">let </span>parent = stack.last().cloned().unwrap();
+<span data-nosnippet>222</span>                <span class="kw">let </span>internal = builder.nodes.len();
+<span data-nosnippet>223</span>                builder.push_node(lcp, builder.nodes[last_popped].sa_range.start);
+<span data-nosnippet>224</span>                builder.detach_last_child(parent, last_popped);
+<span data-nosnippet>225</span>                builder.attach_child(parent, internal);
+<span data-nosnippet>226</span>                builder.attach_child(internal, last_popped);
+<span data-nosnippet>227</span>                stack.push(internal);
+<span data-nosnippet>228</span>            }
+<span data-nosnippet>229</span>
+<span data-nosnippet>230</span>            <span class="comment">// leaf node
+<span data-nosnippet>231</span>            </span><span class="kw">let </span>parent = stack.last().cloned().unwrap();
+<span data-nosnippet>232</span>            <span class="kw">let </span>leaf = builder.nodes.len();
+<span data-nosnippet>233</span>            builder.push_node(n - suffix_array[i], i);
+<span data-nosnippet>234</span>            builder.attach_child(parent, leaf);
+<span data-nosnippet>235</span>            stack.push(leaf);
+<span data-nosnippet>236</span>            leafs[i] = leaf;
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
+<span data-nosnippet>239</span>            builder.nodes[node].sa_range.end = n + <span class="number">1</span>;
+<span data-nosnippet>240</span>        }
+<span data-nosnippet>241</span>
+<span data-nosnippet>242</span>        builder.reindex(<span class="kw-2">&amp;mut </span>leafs[<span class="number">1</span>..]);
+<span data-nosnippet>243</span>        <span class="kw">let </span>children = builder.build_children();
+<span data-nosnippet>244</span>        <span class="kw">let </span>inv = builder.build_aux(<span class="kw-2">&amp;</span>children);
+<span data-nosnippet>245</span>        <span class="kw">let </span>nodes = builder.nodes;
+<span data-nosnippet>246</span>        <span class="kw">let </span>suffix_array = suffix_array.<span class="highlight focus">into_inner</span>();
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>        <span class="self">Self </span>{
+<span data-nosnippet>249</span>            text,
+<span data-nosnippet>250</span>            suffix_array,
+<span data-nosnippet>251</span>            lcp_array,
+<span data-nosnippet>252</span>            rank,
+<span data-nosnippet>253</span>            nodes,
+<span data-nosnippet>254</span>            children,
+<span data-nosnippet>255</span>            leafs,
+<span data-nosnippet>256</span>            inv,
+<span data-nosnippet>257</span>        }
+<span data-nosnippet>258</span>    }</code></pre></div></div></div></details><details class="toggle method-toggle" open><summary><section id="method.lcp_array_with_rank" class="method"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#33-55">Source</a><h4 class="code-header">pub fn <a href="#method.lcp_array_with_rank" class="fn">lcp_array_with_rank</a>&lt;T&gt;(&amp;self, text: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; (<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;)<div class="where">where
     T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>,</div></h4></section></summary><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples-2"><a href="#scraped-examples-2">Examples found in repository</a><a class="scrape-help" href="../../scrape-examples-help.html">?</a></h5><div class="scraped-example expanded" data-locs="[[[4,4],&#34;../../src/competitive/string/suffix_array.rs.html#61&#34;,&#34;line 61&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_array.rs (<a href="../../src/competitive/string/suffix_array.rs.html#61">line 61</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>57</span>    <span class="kw">pub fn </span>lcp_array&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>[T]) -&gt; Vec&lt;usize&gt;
 <span data-nosnippet>58</span>    <span class="kw">where
 <span data-nosnippet>59</span>        </span>T: PartialEq,
@@ -194,57 +208,64 @@
 <span data-nosnippet>80</span>            rank,
 <span data-nosnippet>81</span>            rmq,
 <span data-nosnippet>82</span>        }
-<span data-nosnippet>83</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/competitive/string/suffix_tree.rs.html#153&#34;,&#34;line 153&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_tree.rs (<a href="../../src/competitive/string/suffix_tree.rs.html#153">line 153</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>150</span>    <span class="kw">pub fn </span>new(text: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
-<span data-nosnippet>151</span>        <span class="kw">let </span>n = text.len();
-<span data-nosnippet>152</span>        <span class="kw">let </span>suffix_array = SuffixArray::new(<span class="kw-2">&amp;</span>text);
-<span data-nosnippet>153</span>        <span class="kw">let </span>(lcp_array, rank) = suffix_array.<span class="highlight focus">lcp_array_with_rank</span>(<span class="kw-2">&amp;</span>text);
-<span data-nosnippet>154</span>        <span class="kw">let </span><span class="kw-2">mut </span>builder = SuffixTreeBuilder::with_capacity(n * <span class="number">2</span>);
-<span data-nosnippet>155</span>        builder.push_node(<span class="number">0</span>, <span class="number">0</span>);
-<span data-nosnippet>156</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::with_capacity(n);
-<span data-nosnippet>157</span>        stack.push(<span class="number">0</span>);
-<span data-nosnippet>158</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
-<span data-nosnippet>159</span>            <span class="kw">let </span>lcp = lcp_array[i - <span class="number">1</span>];
-<span data-nosnippet>160</span>            <span class="kw">let </span><span class="kw-2">mut </span>last_popped = !<span class="number">0</span>;
-<span data-nosnippet>161</span>            <span class="kw">while </span>builder.nodes[stack.last().cloned().unwrap()].depth &gt; lcp {
-<span data-nosnippet>162</span>                last_popped = stack.pop().unwrap();
-<span data-nosnippet>163</span>                builder.nodes[last_popped].sa_range.end = i;
-<span data-nosnippet>164</span>            }
-<span data-nosnippet>165</span>
-<span data-nosnippet>166</span>            <span class="comment">// internal node
-<span data-nosnippet>167</span>            </span><span class="kw">if </span>builder.nodes[stack.last().cloned().unwrap()].depth &lt; lcp {
-<span data-nosnippet>168</span>                <span class="kw">let </span>parent = stack.last().cloned().unwrap();
-<span data-nosnippet>169</span>                <span class="kw">let </span>internal = builder.nodes.len();
-<span data-nosnippet>170</span>                builder.push_node(lcp, builder.nodes[last_popped].sa_range.start);
-<span data-nosnippet>171</span>                builder.detach_last_child(parent, last_popped);
-<span data-nosnippet>172</span>                builder.attach_child(parent, internal);
-<span data-nosnippet>173</span>                builder.attach_child(internal, last_popped);
-<span data-nosnippet>174</span>                stack.push(internal);
-<span data-nosnippet>175</span>            }
-<span data-nosnippet>176</span>
-<span data-nosnippet>177</span>            <span class="comment">// leaf node
-<span data-nosnippet>178</span>            </span><span class="kw">let </span>parent = stack.<a href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html#variant.Some">last</a>().cloned().unwrap();
-<span data-nosnippet>179</span>            <span class="kw">let </span>leaf = builder.nodes.len();
-<span data-nosnippet>180</span>            builder.push_node(n - suffix_array[i], i);
-<span data-nosnippet>181</span>            builder.attach_child(parent, leaf);
-<span data-nosnippet>182</span>            stack.push(leaf);
-<span data-nosnippet>183</span>        }
-<span data-nosnippet>184</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
-<span data-nosnippet>185</span>            builder.nodes[node].sa_range.end = n + <span class="number">1</span>;
-<span data-nosnippet>186</span>        }
-<span data-nosnippet>187</span>
-<span data-nosnippet>188</span>        builder.reindex();
-<span data-nosnippet>189</span>        <span class="kw">let </span>children = builder.build_children();
-<span data-nosnippet>190</span>        <span class="kw">let </span>nodes = builder.nodes;
-<span data-nosnippet>191</span>
-<span data-nosnippet>192</span>        <span class="self">Self </span>{
-<span data-nosnippet>193</span>            text,
-<span data-nosnippet>194</span>            suffix_array: suffix_array.into_inner(),
-<span data-nosnippet>195</span>            lcp_array,
-<span data-nosnippet>196</span>            rank,
-<span data-nosnippet>197</span>            nodes,
-<span data-nosnippet>198</span>            children,
-<span data-nosnippet>199</span>        }
-<span data-nosnippet>200</span>    }</code></pre></div></div></div></details></div></details><section id="method.lcp_array" class="method"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#57-62">Source</a><h4 class="code-header">pub fn <a href="#method.lcp_array" class="fn">lcp_array</a>&lt;T&gt;(&amp;self, text: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;<div class="where">where
+<span data-nosnippet>83</span>    }</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/competitive/string/suffix_tree.rs.html#204&#34;,&#34;line 204&#34;]]"><div class="scraped-example-title">crates/competitive/src/string/suffix_tree.rs (<a href="../../src/competitive/string/suffix_tree.rs.html#204">line 204</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>201</span>    <span class="kw">pub fn </span>new(text: Vec&lt;T&gt;) -&gt; <span class="self">Self </span>{
+<span data-nosnippet>202</span>        <span class="kw">let </span>n = text.len();
+<span data-nosnippet>203</span>        <span class="kw">let </span>suffix_array = SuffixArray::new(<span class="kw-2">&amp;</span>text);
+<span data-nosnippet>204</span>        <span class="kw">let </span>(lcp_array, rank) = suffix_array.<span class="highlight focus">lcp_array_with_rank</span>(<span class="kw-2">&amp;</span>text);
+<span data-nosnippet>205</span>        <span class="kw">let </span><span class="kw-2">mut </span>builder = SuffixTreeBuilder::with_capacity(n * <span class="number">2</span>);
+<span data-nosnippet>206</span>        builder.push_node(<span class="number">0</span>, <span class="number">0</span>);
+<span data-nosnippet>207</span>        <span class="kw">let </span><span class="kw-2">mut </span>leafs = <span class="macro">vec!</span>[!<span class="number">0</span>; n + <span class="number">1</span>];
+<span data-nosnippet>208</span>        leafs[<span class="number">0</span>] = <span class="number">0</span>;
+<span data-nosnippet>209</span>        <span class="kw">let </span><span class="kw-2">mut </span>stack = Vec::with_capacity(n);
+<span data-nosnippet>210</span>        stack.push(<span class="number">0</span>);
+<span data-nosnippet>211</span>        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..=n {
+<span data-nosnippet>212</span>            <span class="kw">let </span>lcp = lcp_array[i - <span class="number">1</span>];
+<span data-nosnippet>213</span>            <span class="kw">let </span><span class="kw-2">mut </span>last_popped = !<span class="number">0</span>;
+<span data-nosnippet>214</span>            <span class="kw">while </span>builder.nodes[stack.last().cloned().unwrap()].depth &gt; lcp {
+<span data-nosnippet>215</span>                last_popped = stack.pop().unwrap();
+<span data-nosnippet>216</span>                builder.nodes[last_popped].sa_range.end = i;
+<span data-nosnippet>217</span>            }
+<span data-nosnippet>218</span>
+<span data-nosnippet>219</span>            <span class="comment">// internal node
+<span data-nosnippet>220</span>            </span><span class="kw">if </span>builder.nodes[stack.last().cloned().unwrap()].depth &lt; lcp {
+<span data-nosnippet>221</span>                <span class="kw">let </span>parent = stack.last().cloned().unwrap();
+<span data-nosnippet>222</span>                <span class="kw">let </span>internal = builder.nodes.len();
+<span data-nosnippet>223</span>                builder.push_node(lcp, builder.nodes[last_popped].sa_range.start);
+<span data-nosnippet>224</span>                builder.detach_last_child(parent, last_popped);
+<span data-nosnippet>225</span>                builder.attach_child(parent, internal);
+<span data-nosnippet>226</span>                builder.attach_child(internal, last_popped);
+<span data-nosnippet>227</span>                stack.push(internal);
+<span data-nosnippet>228</span>            }
+<span data-nosnippet>229</span>
+<span data-nosnippet>230</span>            <span class="comment">// leaf node
+<span data-nosnippet>231</span>            </span><span class="kw">let </span>parent = stack.last().cloned().unwrap();
+<span data-nosnippet>232</span>            <span class="kw">let </span>leaf = builder.nodes.len();
+<span data-nosnippet>233</span>            builder.push_node(n - suffix_array[i], i);
+<span data-nosnippet>234</span>            builder.attach_child(parent, leaf);
+<span data-nosnippet>235</span>            stack.push(leaf);
+<span data-nosnippet>236</span>            leafs[i] = leaf;
+<span data-nosnippet>237</span>        }
+<span data-nosnippet>238</span>        <span class="kw">while let </span><span class="prelude-val">Some</span>(node) = stack.pop() {
+<span data-nosnippet>239</span>            builder.nodes[node].sa_range.end = n + <span class="number">1</span>;
+<span data-nosnippet>240</span>        }
+<span data-nosnippet>241</span>
+<span data-nosnippet>242</span>        builder.reindex(<span class="kw-2">&amp;mut </span>leafs[<span class="number">1</span>..]);
+<span data-nosnippet>243</span>        <span class="kw">let </span>children = builder.build_children();
+<span data-nosnippet>244</span>        <span class="kw">let </span>inv = builder.build_aux(<span class="kw-2">&amp;</span>children);
+<span data-nosnippet>245</span>        <span class="kw">let </span>nodes = builder.nodes;
+<span data-nosnippet>246</span>        <span class="kw">let </span>suffix_array = suffix_array.into_inner();
+<span data-nosnippet>247</span>
+<span data-nosnippet>248</span>        <span class="self">Self </span>{
+<span data-nosnippet>249</span>            text,
+<span data-nosnippet>250</span>            suffix_array,
+<span data-nosnippet>251</span>            lcp_array,
+<span data-nosnippet>252</span>            rank,
+<span data-nosnippet>253</span>            nodes,
+<span data-nosnippet>254</span>            children,
+<span data-nosnippet>255</span>            leafs,
+<span data-nosnippet>256</span>            inv,
+<span data-nosnippet>257</span>        }
+<span data-nosnippet>258</span>    }</code></pre></div></div></div></details></div></details><section id="method.lcp_array" class="method"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#57-62">Source</a><h4 class="code-header">pub fn <a href="#method.lcp_array" class="fn">lcp_array</a>&lt;T&gt;(&amp;self, text: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[T]</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt;<div class="where">where
     T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a>,</div></h4></section></div></details></div><h2 id="trait-implementations" class="section-header">Trait Implementations<a href="#trait-implementations" class="anchor">§</a></h2><div id="trait-implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Clone-for-SuffixArray" class="impl"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#3">Source</a><a href="#impl-Clone-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.clone" class="method trait-impl"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#3">Source</a><a href="#method.clone" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone" class="fn">clone</a>(&amp;self) -&gt; <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h4></section></summary><div class='docblock'>Returns a duplicate of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></div></details><details class="toggle method-toggle" open><summary><section id="method.clone_from" class="method trait-impl"><span class="rightside"><span class="since" title="Stable since Rust version 1.0.0">1.0.0</span> · <a class="src" href="https://doc.rust-lang.org/nightly/src/core/clone.rs.html#245-247">Source</a></span><a href="#method.clone_from" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from" class="fn">clone_from</a>(&amp;mut self, source: &amp;Self)</h4></section></summary><div class='docblock'>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Debug-for-SuffixArray" class="impl"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#3">Source</a><a href="#impl-Debug-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.fmt" class="method trait-impl"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#3">Source</a><a href="#method.fmt" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt" class="fn">fmt</a>(&amp;self, f: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>&lt;'_&gt;) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></h4></section></summary><div class='docblock'>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></div></details></div></details><details class="toggle implementors-toggle" open><summary><section id="impl-Index%3Cusize%3E-for-SuffixArray" class="impl"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#65-70">Source</a><a href="#impl-Index%3Cusize%3E-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html" title="trait core::ops::index::Index">Index</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>&gt; for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section></summary><div class="impl-items"><details class="toggle" open><summary><section id="associatedtype.Output" class="associatedtype trait-impl"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#66">Source</a><a href="#associatedtype.Output" class="anchor">§</a><h4 class="code-header">type <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#associatedtype.Output" class="associatedtype">Output</a> = <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></h4></section></summary><div class='docblock'>The returned type after indexing.</div></details><details class="toggle method-toggle" open><summary><section id="method.index" class="method trait-impl"><a class="src rightside" href="../../src/competitive/string/suffix_array.rs.html#67-69">Source</a><a href="#method.index" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#tymethod.index" class="fn">index</a>(&amp;self, index: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; &amp;Self::<a class="associatedtype" href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#associatedtype.Output" title="type core::ops::index::Index::Output">Output</a></h4></section></summary><div class='docblock'>Performs the indexing (<code>container[index]</code>) operation. <a href="https://doc.rust-lang.org/nightly/core/ops/index/trait.Index.html#tymethod.index">Read more</a></div></details></div></details></div><h2 id="synthetic-implementations" class="section-header">Auto Trait Implementations<a href="#synthetic-implementations" class="anchor">§</a></h2><div id="synthetic-implementations-list"><section id="impl-Freeze-for-SuffixArray" class="impl"><a href="#impl-Freeze-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Freeze.html" title="trait core::marker::Freeze">Freeze</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section><section id="impl-RefUnwindSafe-for-SuffixArray" class="impl"><a href="#impl-RefUnwindSafe-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.RefUnwindSafe.html" title="trait core::panic::unwind_safe::RefUnwindSafe">RefUnwindSafe</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section><section id="impl-Send-for-SuffixArray" class="impl"><a href="#impl-Send-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Send.html" title="trait core::marker::Send">Send</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section><section id="impl-Sync-for-SuffixArray" class="impl"><a href="#impl-Sync-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html" title="trait core::marker::Sync">Sync</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section><section id="impl-Unpin-for-SuffixArray" class="impl"><a href="#impl-Unpin-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Unpin.html" title="trait core::marker::Unpin">Unpin</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section><section id="impl-UnwindSafe-for-SuffixArray" class="impl"><a href="#impl-UnwindSafe-for-SuffixArray" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/panic/unwind_safe/trait.UnwindSafe.html" title="trait core::panic::unwind_safe::UnwindSafe">UnwindSafe</a> for <a class="struct" href="struct.SuffixArray.html" title="struct competitive::string::SuffixArray">SuffixArray</a></h3></section></div><h2 id="blanket-implementations" class="section-header">Blanket Implementations<a href="#blanket-implementations" class="anchor">§</a></h2><div id="blanket-implementations-list"><details class="toggle implementors-toggle"><summary><section id="impl-Any-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#138">Source</a><a href="#impl-Any-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html" title="trait core::any::Any">Any</a> for T<div class="where">where
     T: 'static + ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.type_id" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/any.rs.html#139">Source</a><a href="#method.type_id" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id" class="fn">type_id</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/any/struct.TypeId.html" title="struct core::any::TypeId">TypeId</a></h4></section></summary><div class='docblock'>Gets the <code>TypeId</code> of <code>self</code>. <a href="https://doc.rust-lang.org/nightly/core/any/trait.Any.html#tymethod.type_id">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-Borrow%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#212">Source</a><a href="#impl-Borrow%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html" title="trait core::borrow::Borrow">Borrow</a>&lt;T&gt; for T<div class="where">where
     T: ?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.borrow" class="method trait-impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#214">Source</a><a href="#method.borrow" class="anchor">§</a><h4 class="code-header">fn <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow" class="fn">borrow</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;T</a></h4></section></summary><div class='docblock'>Immutably borrows from an owned value. <a href="https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html#tymethod.borrow">Read more</a></div></details></div></details><details class="toggle implementors-toggle"><summary><section id="impl-BorrowMut%3CT%3E-for-T" class="impl"><a class="src rightside" href="https://doc.rust-lang.org/nightly/src/core/borrow.rs.html#221">Source</a><a href="#impl-BorrowMut%3CT%3E-for-T" class="anchor">§</a><h3 class="code-header">impl&lt;T&gt; <a class="trait" href="https://doc.rust-lang.org/nightly/core/borrow/trait.BorrowMut.html" title="trait core::borrow::BorrowMut">BorrowMut</a>&lt;T&gt; for T<div class="where">where

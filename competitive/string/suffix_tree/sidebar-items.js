@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Link","STNode","SuffixTree","SuffixTreeBuilder"]};
+window.SIDEBAR_ITEMS = {"enum":["Delimited"],"struct":["KthSubstrings","Link","MultipleKthSubstrings","MultipleSuffixTree","STNode","SuffixTree","SuffixTreeBuilder"]};
