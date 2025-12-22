@@ -212,6 +212,23 @@ where
         }
         r
     }
+
+    fn geq_suffix(&self, range: Range<usize>) -> usize {
+        let n = self.text.len();
+        debug_assert!(range.start <= range.end && range.end <= n);
+        let mut l = 0usize;
+        let mut r = n;
+        while r - l > 1 {
+            let m = (l + r) >> 1;
+            let ord = self.compare(self.suffix_array[m]..n, range.start..range.end);
+            if matches!(ord, Ordering::Less) {
+                l = m;
+            } else {
+                r = m;
+            }
+        }
+        r
+    }
 }
 
 #[derive(Debug)]
@@ -245,6 +262,13 @@ where
         let start = self.search.suffix_array[idx];
         let len = self.search.lcp_array[idx - 1] + (k - self.prefix[idx - 1]) as usize + 1;
         Some(start..start + len)
+    }
+
+    pub fn index_of_distinct_substring(&self, range: Range<usize>) -> u64 {
+        debug_assert!(range.start < range.end && range.end <= self.search.text.len());
+        let m = range.len();
+        let idx = self.search.geq_suffix(range);
+        self.prefix[idx - 1] + (m - self.search.lcp_array[idx - 1] - 1) as u64
     }
 }
 
@@ -374,12 +398,25 @@ where
         let len = self.search.suffix_len(idx) - (self.prefix[idx] - k) as usize + 1;
         Some((text_idx, pos..pos + len))
     }
+
+    pub fn index_of_distinct_substring(&self, (text_idx, range): (usize, Range<usize>)) -> u64 {
+        debug_assert!(text_idx < self.search.texts.len());
+        debug_assert!(range.start < range.end && range.end <= self.search.texts[text_idx].len());
+        let m = range.len();
+        let range = self.search.to_global_range((text_idx, range));
+        let idx = self.search.search.geq_suffix(range);
+        let len = self.search.suffix_len(idx);
+        let prev_len = self.search.suffix_len(idx - 1);
+        let lcp_prev = self.search.search.lcp_array[idx - 1].min(len).min(prev_len);
+        self.prefix[idx - 1] + (m - lcp_prev - 1) as u64
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::tools::{WithEmptySegment as Wes, Xorshift};
+    use std::collections::{BTreeMap, BTreeSet};
 
     #[test]
     fn test_longest_common_prefix_and_compare() {
@@ -459,7 +496,7 @@ mod tests {
             let s: Vec<usize> = rng.random_iter(0..csize).take(n).collect();
             let search = StringSearch::new(s.clone());
             let kth = search.kth_substrings();
-            let mut set = std::collections::BTreeSet::new();
+            let mut set = BTreeSet::new();
             for i in 0..n {
                 for j in i + 1..=n {
                     set.insert(s[i..j].to_vec());
@@ -468,9 +505,21 @@ mod tests {
             let substrings: Vec<_> = set.into_iter().collect();
             for (k, expected) in substrings.iter().enumerate() {
                 let range = kth.kth_distinct_substring(k as u64).unwrap();
-                assert_eq!(&s[range], expected.as_slice());
+                assert_eq!(&s[range.clone()], expected.as_slice());
+                assert_eq!(kth.index_of_distinct_substring(range), k as u64);
             }
             assert_eq!(kth.kth_distinct_substring(substrings.len() as u64), None);
+            let mut index_map = BTreeMap::new();
+            for (idx, substring) in substrings.iter().enumerate() {
+                index_map.insert(substring.clone(), idx as _);
+            }
+            for i in 0..n {
+                for j in i + 1..=n {
+                    let key = s[i..j].to_vec();
+                    let expected = *index_map.get(&key).unwrap();
+                    assert_eq!(kth.index_of_distinct_substring(i..j), expected);
+                }
+            }
         }
     }
 
@@ -569,7 +618,7 @@ mod tests {
             }
             let search = MultipleStringSearch::new(texts.clone());
             let kth = search.kth_substrings();
-            let mut set = std::collections::BTreeSet::new();
+            let mut set = BTreeSet::new();
             for text in &texts {
                 for i in 0..text.len() {
                     for j in i + 1..=text.len() {
@@ -580,9 +629,23 @@ mod tests {
             let substrings: Vec<_> = set.into_iter().collect();
             for (idx, expected) in substrings.iter().enumerate() {
                 let (text_idx, range) = kth.kth_distinct_substring(idx as u64).unwrap();
-                assert_eq!(&texts[text_idx][range], expected.as_slice());
+                assert_eq!(&texts[text_idx][range.clone()], expected.as_slice());
+                assert_eq!(kth.index_of_distinct_substring((text_idx, range)), idx as _);
             }
             assert_eq!(kth.kth_distinct_substring(substrings.len() as u64), None);
+            let mut index_map = BTreeMap::new();
+            for (idx, substring) in substrings.iter().enumerate() {
+                index_map.insert(substring.clone(), idx as u64);
+            }
+            for (text_idx, text) in texts.iter().enumerate() {
+                for i in 0..text.len() {
+                    for j in i + 1..=text.len() {
+                        let key = text[i..j].to_vec();
+                        let expected = *index_map.get(&key).unwrap();
+                        assert_eq!(kth.index_of_distinct_substring((text_idx, i..j)), expected);
+                    }
+                }
+            }
         }
     }
 }
