@@ -8,6 +8,8 @@ pub use self::coding::{SerdeByteStr, unescape};
 pub use self::comparator::Comparator;
 #[codesnip::entry("digit_sequence")]
 pub use self::digit_sequence::ToDigitSequence;
+#[codesnip::entry("fastio")]
+pub use self::fastio::{FastInput, FastOutput};
 #[codesnip::entry("IdGenerator")]
 pub use self::id_generator::IdGenerator;
 #[codesnip::entry("_iter_print")]
@@ -47,6 +49,8 @@ mod coding;
 pub mod comparator;
 #[cfg_attr(nightly, codesnip::entry("digit_sequence"))]
 mod digit_sequence;
+#[cfg_attr(nightly, codesnip::entry("fastio"))]
+mod fastio;
 #[cfg_attr(nightly, codesnip::entry("IdGenerator"))]
 mod id_generator;
 #[cfg_attr(nightly, codesnip::entry)]
