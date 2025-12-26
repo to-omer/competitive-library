@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["mmap"],"static":["DIGIT4"],"struct":["FastInput","FastOutput"]};
