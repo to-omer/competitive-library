@@ -193,7 +193,7 @@ impl FastInput {
                     }
                     let x = (y & 0xf0) == 0;
                     if x {
-                        res = res.wrapping_mul(10).wrapping_add((y & 0xff) as u64)
+                        res = res.wrapping_mul(10).wrapping_add(y & 0xff);
                     }
                     self.ptr = self.ptr.add(x as usize + 1);
                 }
@@ -239,7 +239,7 @@ impl FastInput {
                     rem >>= 32;
                     x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff00ff;
                     x = x.wrapping_mul(100).wrapping_add(x >> 16) & 0x0000ffff;
-                    res2 = x as u64;
+                    res2 = x;
                     pow = 10000;
                     self.ptr = self.ptr.add(4);
                 }
@@ -257,7 +257,7 @@ impl FastInput {
             {
                 let x = (rem & 0xf0) == 0;
                 if x {
-                    res2 = res2.wrapping_mul(10).wrapping_add((rem & 0xff) as u64);
+                    res2 = res2.wrapping_mul(10).wrapping_add(rem & 0xff);
                     pow = pow.wrapping_mul(10);
                 }
                 self.ptr = self.ptr.add(x as usize + 1);
