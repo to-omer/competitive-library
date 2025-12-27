@@ -2,12 +2,12 @@
 
 use crate::{
     algebra::Monoid,
+    data_structure::RangeMinimumQuery,
     graph::UndirectedSparseGraph,
     math::{ConvolveSteps, U64Convolve},
     tools::{RandomSpec, Xorshift},
 };
 
-pub use self::euler_tour::*;
 #[codesnip::entry("tree_generator")]
 pub use self::generator::*;
 #[codesnip::entry("HeavyLightDecomposition")]
@@ -25,6 +25,10 @@ pub use self::tree_hash::TreeHasher;
 )]
 mod centroid_decomposition;
 mod depth;
+#[cfg_attr(
+    nightly,
+    codesnip::entry("EulerTour", include("RangeMinimumQuery", "SparseGraph", "tree_depth"))
+)]
 mod euler_tour;
 #[cfg_attr(
     nightly,

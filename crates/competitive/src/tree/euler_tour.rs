@@ -1,211 +1,472 @@
-use crate::algebra::{Associative, Magma};
-use crate::data_structure::DisjointSparseTable;
-use crate::graph::UndirectedSparseGraph;
+use super::{RangeMinimumQuery, UndirectedSparseGraph};
+use std::{marker::PhantomData, mem::swap, ops::Range};
 
-#[codesnip::entry("EulerTourForEdge", include("SparseGraph"))]
-#[derive(Clone, Debug)]
-pub struct EulerTourForEdge<'a> {
-    graph: &'a UndirectedSparseGraph,
-    pub eidx: Vec<(usize, usize)>,
-    pub par: Vec<usize>,
-    epos: usize,
-}
-#[codesnip::entry("EulerTourForEdge")]
-impl<'a> EulerTourForEdge<'a> {
-    pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
-        let mut self_ = Self {
-            graph,
-            eidx: vec![(0, 0); graph.vertices_size() - 1],
-            par: vec![usize::MAX; graph.vertices_size()],
-            epos: 0,
-        };
-        self_.edge_tour(root, usize::MAX);
-        self_
-    }
-    pub fn length(&self) -> usize {
-        self.epos
-    }
-    fn edge_tour(&mut self, u: usize, p: usize) {
-        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
-            self.par[a.to] = a.id;
-            self.eidx[a.id].0 = self.epos;
-            self.epos += 1;
-            self.edge_tour(a.to, u);
-            self.eidx[a.id].1 = self.epos;
-            self.epos += 1;
+pub trait EulerTourKind {
+    const USE_LAST: bool = false;
+    const USE_VISIT: bool = false;
+
+    fn size(n: usize) -> usize {
+        if Self::USE_VISIT {
+            2 * n - 1
+        } else if Self::USE_LAST {
+            2 * n
+        } else {
+            n
         }
     }
 }
 
-#[codesnip::entry("EulerTourForVertex", include("SparseGraph"))]
-#[derive(Clone, Debug)]
-pub struct EulerTourForVertex<'a> {
-    graph: &'a UndirectedSparseGraph,
-    pub vidx: Vec<(usize, usize)>,
-    vpos: usize,
+mod marker {
+    use super::EulerTourKind;
+
+    #[derive(Debug, Clone)]
+    pub enum First {}
+    #[derive(Debug, Clone)]
+    pub enum FirstLast {}
+    #[derive(Debug, Clone)]
+    pub enum Visit {}
+
+    impl EulerTourKind for First {}
+    impl EulerTourKind for FirstLast {
+        const USE_LAST: bool = true;
+    }
+    impl EulerTourKind for Visit {
+        const USE_VISIT: bool = true;
+    }
 }
-#[codesnip::entry("EulerTourForVertex")]
-impl<'a> EulerTourForVertex<'a> {
-    pub fn new(graph: &'a UndirectedSparseGraph) -> Self {
+
+#[derive(Debug)]
+pub struct EulerTourBuilder<'a, K>
+where
+    K: EulerTourKind,
+{
+    tree: &'a UndirectedSparseGraph,
+    root: usize,
+    vidx: Vec<[usize; 2]>,
+    eidx: Vec<[usize; 2]>,
+    pos: usize,
+    _marker: PhantomData<fn() -> K>,
+}
+
+#[derive(Debug, Clone)]
+pub struct EulerTour<K>
+where
+    K: EulerTourKind,
+{
+    pub root: usize,
+    pub vidx: Vec<[usize; 2]>,
+    pub eidx: Vec<[usize; 2]>,
+    pub size: usize,
+    _marker: PhantomData<fn() -> K>,
+}
+
+impl<'a, K> EulerTourBuilder<'a, K>
+where
+    K: EulerTourKind,
+{
+    pub fn new(tree: &'a UndirectedSparseGraph, root: usize) -> Self {
+        let n = tree.vertices_size();
         Self {
-            graph,
-            vidx: vec![(0, 0); graph.vertices_size()],
-            vpos: 0,
+            tree,
+            root,
+            vidx: vec![[0usize; 2]; n],
+            eidx: vec![[0usize; 2]; n - 1],
+            pos: 0,
+            _marker: PhantomData,
         }
     }
-    pub fn length(&self) -> usize {
-        self.vpos
-    }
-    pub fn subtree_vertex_tour(&mut self, u: usize, p: usize) {
-        self.vidx[u].0 = self.vpos;
-        self.vpos += 1;
-        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
-            self.subtree_vertex_tour(a.to, u);
+
+    pub fn build_with_trace(mut self, mut trace: impl FnMut(usize)) -> EulerTour<K> {
+        self.dfs(self.root, !0, &mut trace);
+        EulerTour {
+            root: self.root,
+            vidx: self.vidx,
+            eidx: self.eidx,
+            size: self.pos,
+            _marker: PhantomData,
         }
-        self.vidx[u].1 = self.vpos;
     }
-    pub fn path_vertex_tour(&mut self, u: usize, p: usize) {
-        self.vidx[u].0 = self.vpos;
-        self.vpos += 1;
-        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
-            self.path_vertex_tour(a.to, u);
+
+    pub fn build(self) -> EulerTour<K> {
+        self.build_with_trace(|_u| {})
+    }
+
+    fn dfs(&mut self, u: usize, parent: usize, trace: &mut impl FnMut(usize)) {
+        self.vidx[u][0] = self.pos;
+        trace(u);
+        self.pos += 1;
+        for a in self.tree.adjacencies(u) {
+            if a.to != parent {
+                self.eidx[a.id][0] = self.pos;
+                self.dfs(a.to, u, trace);
+                self.eidx[a.id][1] = self.pos;
+                if K::USE_VISIT {
+                    trace(u);
+                    self.pos += 1;
+                }
+            }
         }
-        self.vidx[u].1 = self.vpos;
-        self.vpos += 1;
+        self.vidx[u][1] = self.pos;
+        if K::USE_LAST {
+            trace(u);
+            self.pos += 1;
+        }
     }
-    pub fn subtree_query<T, F: FnMut(usize, usize) -> T>(&self, u: usize, mut f: F) -> T {
-        let (l, r) = self.vidx[u];
-        f(l, r)
+}
+
+impl EulerTourBuilder<'_, marker::First> {
+    pub fn build_with_rearrange<T>(self, s: &[T]) -> (EulerTour<marker::First>, Vec<T>)
+    where
+        T: Clone,
+    {
+        assert_eq!(s.len(), self.tree.vertices_size());
+        let mut trace = Vec::with_capacity(marker::First::size(s.len()));
+        let tour = self.build_with_trace(|u| {
+            trace.push(s[u].clone());
+        });
+        (tour, trace)
     }
-    pub fn subtree_update<T, F: FnMut(usize, T)>(&self, u: usize, x: T, mut f: F) {
-        let (l, _r) = self.vidx[u];
+}
+
+impl EulerTourBuilder<'_, marker::FirstLast> {
+    pub fn build_with_rearrange<T>(
+        self,
+        s: &[T],
+        mut inverse: impl FnMut(T) -> T,
+    ) -> (EulerTour<marker::FirstLast>, Vec<T>)
+    where
+        T: Clone,
+    {
+        assert_eq!(s.len(), self.tree.vertices_size());
+        let mut visited = vec![false; s.len()];
+        let mut trace = Vec::with_capacity(marker::FirstLast::size(s.len()));
+        let tour = self.build_with_trace(|u| {
+            if !visited[u] {
+                trace.push(s[u].clone());
+                visited[u] = true;
+            } else {
+                trace.push(inverse(s[u].clone()));
+            }
+        });
+        (tour, trace)
+    }
+}
+
+impl EulerTourBuilder<'_, marker::Visit> {
+    pub fn build_with_rearrange<T>(self, s: &[T]) -> (EulerTour<marker::Visit>, Vec<T>)
+    where
+        T: Clone,
+    {
+        assert_eq!(s.len(), self.tree.vertices_size());
+        let mut trace = Vec::with_capacity(marker::Visit::size(s.len()));
+        let tour = self.build_with_trace(|u| {
+            trace.push(s[u].clone());
+        });
+        (tour, trace)
+    }
+}
+
+impl UndirectedSparseGraph {
+    pub fn subtree_euler_tour_builder<'a>(
+        &'a self,
+        root: usize,
+    ) -> EulerTourBuilder<'a, marker::First> {
+        EulerTourBuilder::new(self, root)
+    }
+
+    pub fn path_euler_tour_builder<'a>(
+        &'a self,
+        root: usize,
+    ) -> EulerTourBuilder<'a, marker::FirstLast> {
+        EulerTourBuilder::new(self, root)
+    }
+
+    pub fn full_euler_tour_builder<'a>(
+        &'a self,
+        root: usize,
+    ) -> EulerTourBuilder<'a, marker::Visit> {
+        EulerTourBuilder::new(self, root)
+    }
+
+    pub fn lca(&self, root: usize) -> LowestCommonAncestor {
+        let depth = self.tree_depth(root);
+        let mut trace = Vec::with_capacity(2 * self.vertices_size() - 1);
+        let mut depth_trace = Vec::with_capacity(2 * self.vertices_size() - 1);
+        let euler_tour = self.full_euler_tour_builder(root).build_with_trace(|u| {
+            trace.push(u);
+            depth_trace.push(depth[u]);
+        });
+        let rmq = RangeMinimumQuery::new(depth_trace);
+        LowestCommonAncestor {
+            euler_tour,
+            trace,
+            rmq,
+        }
+    }
+}
+
+impl EulerTour<marker::First> {
+    pub fn get<T>(&self, u: usize, mut f: impl FnMut(usize) -> T) -> T {
+        let [l, _] = self.vidx[u];
+        f(l)
+    }
+
+    pub fn update<T>(&self, u: usize, x: T, mut f: impl FnMut(usize, T)) {
+        let [l, _] = self.vidx[u];
         f(l, x);
     }
-    pub fn path_query<T, F: FnMut(usize, usize) -> T>(&self, u: usize, v: usize, mut f: F) -> T {
-        let (mut l, mut r) = (self.vidx[u].0, self.vidx[v].0);
-        if l > r {
-            std::mem::swap(&mut l, &mut r);
-        }
-        f(l, r + 1)
+
+    pub fn fold<T>(&self, u: usize, mut f: impl FnMut(Range<usize>) -> T) -> T {
+        let [l, r] = self.vidx[u];
+        f(l..r)
     }
-    pub fn path_update<T, F: FnMut(usize, T)>(&self, u: usize, x: T, invx: T, mut f: F) {
-        let (l, r) = self.vidx[u];
+
+    pub fn range_update<T>(&self, u: usize, x: T, mut f: impl FnMut(Range<usize>, T)) {
+        let [l, r] = self.vidx[u];
+        f(l..r, x);
+    }
+}
+
+impl EulerTour<marker::FirstLast> {
+    pub fn get<T>(&self, u: usize, mut f: impl FnMut(usize) -> T) -> T {
+        let [l, _] = self.vidx[u];
+        f(l)
+    }
+
+    pub fn update<T>(&self, u: usize, x: T, invx: T, mut f: impl FnMut(usize, T)) {
+        let [l, r] = self.vidx[u];
         f(l, x);
         f(r, invx);
     }
-}
 
-#[codesnip::entry("EulerTourForRichVertex", include("SparseGraph"))]
-#[derive(Clone, Debug)]
-pub struct EulerTourForRichVertex<'a> {
-    graph: &'a UndirectedSparseGraph,
-    pub root: usize,
-    pub vidx: Vec<(usize, usize)>,
-    vtrace: Vec<usize>,
-}
-#[codesnip::entry("EulerTourForRichVertex")]
-impl<'a> EulerTourForRichVertex<'a> {
-    pub fn new(root: usize, graph: &'a UndirectedSparseGraph) -> Self {
-        let mut self_ = Self {
-            graph,
-            root,
-            vidx: vec![(0, 0); graph.vertices_size()],
-            vtrace: vec![],
-        };
-        self_.vertex_tour(root, usize::MAX);
-        self_
-    }
-    pub fn length(&self) -> usize {
-        self.vtrace.len()
-    }
-    fn vertex_tour(&mut self, u: usize, p: usize) {
-        self.vidx[u].0 = self.vtrace.len();
-        self.vtrace.push(u);
-        for a in self.graph.adjacencies(u).filter(|a| a.to != p) {
-            self.vertex_tour(a.to, u);
-            self.vtrace.push(u);
-        }
-        self.vidx[u].1 = self.vtrace.len() - 1;
-    }
-    pub fn query<T, F: FnMut(usize, usize) -> T>(&self, u: usize, v: usize, mut f: F) -> T {
-        let (mut l, mut r) = (self.vidx[u].0, self.vidx[v].0);
-        if l > r {
-            std::mem::swap(&mut l, &mut r);
-        }
-        f(l, r + 1)
+    // f: accumulate
+    pub fn fold<T>(&self, u: usize, mut f: impl FnMut(usize) -> T) -> T {
+        f(self.vidx[u][0])
     }
 }
 
-#[codesnip::entry("LowestCommonAncestor")]
-impl<'a> EulerTourForRichVertex<'a> {
-    pub fn gen_lca<D: LcaMonoidDispatch>(&'a self) -> LowestCommonAncestor<'a, D> {
-        D::set_depth(self.graph.tree_depth(self.root));
-        let dst = DisjointSparseTable::<LcaMonoid<D>>::new(self.vtrace.clone());
-        LowestCommonAncestor { euler: self, dst }
-    }
+#[derive(Debug)]
+pub struct LowestCommonAncestor {
+    euler_tour: EulerTour<marker::Visit>,
+    trace: Vec<usize>,
+    rmq: RangeMinimumQuery<u64>,
 }
-#[codesnip::entry(
-    "LowestCommonAncestor",
-    include(
-        "algebra",
-        "DisjointSparseTable",
-        "EulerTourForRichVertex",
-        "SparseGraph",
-        "tree_depth"
-    )
-)]
-#[derive(Clone, Debug)]
-pub struct LowestCommonAncestor<'a, D: LcaMonoidDispatch> {
-    euler: &'a EulerTourForRichVertex<'a>,
-    dst: DisjointSparseTable<LcaMonoid<D>>,
-}
-#[codesnip::entry("LowestCommonAncestor")]
-impl<D: LcaMonoidDispatch> LowestCommonAncestor<'_, D> {
+
+impl LowestCommonAncestor {
     pub fn lca(&self, u: usize, v: usize) -> usize {
-        self.euler.query(u, v, |l, r| self.dst.fold(l, r))
+        let mut l = self.euler_tour.vidx[u][0];
+        let mut r = self.euler_tour.vidx[v][0];
+        if l > r {
+            swap(&mut l, &mut r);
+        }
+        let idx = self.rmq.argmin(l, r + 1);
+        self.trace[idx]
     }
 }
-#[codesnip::entry("LowestCommonAncestor")]
-pub trait LcaMonoidDispatch {
-    fn vsize() -> usize;
-    fn depth(u: usize) -> u64;
-    fn set_depth(depth: Vec<u64>);
-}
-#[codesnip::entry("LowestCommonAncestor")]
-pub enum LcaMonoidDefaultId {}
-#[codesnip::entry("LowestCommonAncestor")]
-#[derive(Clone, Debug)]
-pub struct LcaMonoid<D: LcaMonoidDispatch = LcaMonoidDefaultId> {
-    _marker: std::marker::PhantomData<fn() -> D>,
-}
-#[codesnip::entry("LowestCommonAncestor")]
-pub mod impl_lcam {
+
+#[cfg(test)]
+mod tests {
     use super::*;
-    thread_local! {
-        static DEPTH: std::cell::Cell<Vec<u64>> = const { std::cell::Cell::new(Vec::new()) };
-    }
-    impl LcaMonoidDispatch for LcaMonoidDefaultId {
-        fn vsize() -> usize {
-            DEPTH.with(|c| unsafe { (*c.as_ptr()).len() })
-        }
-        fn depth(u: usize) -> u64 {
-            DEPTH.with(|c| unsafe { (&*c.as_ptr())[u] })
-        }
-        fn set_depth(depth: Vec<u64>) {
-            DEPTH.with(|c| c.set(depth))
-        }
-    }
-    impl<D: LcaMonoidDispatch> Magma for LcaMonoid<D> {
-        type T = usize;
-        fn operate(&x: &Self::T, &y: &Self::T) -> Self::T {
-            if x >= D::vsize() {
-                y
-            } else if y >= D::vsize() || D::depth(x) < D::depth(y) {
-                x
-            } else {
-                y
+    use crate::{
+        algebra::{AdditiveOperation, RangeSumRangeAdd},
+        crecurse,
+        data_structure::{LazySegmentTree, SegmentTree},
+        tools::Xorshift,
+        tree::MixedTree,
+    };
+
+    #[test]
+    fn test_builder() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let n = rng.random(1..=200);
+            let tree = rng.random(MixedTree(n));
+            let root = rng.random(0..n);
+            let et1 = tree.subtree_euler_tour_builder(root).build();
+            let et2 = tree.path_euler_tour_builder(root).build();
+            let et3 = tree.full_euler_tour_builder(root).build();
+            assert_eq!(et1.size, marker::First::size(n));
+            assert_eq!(et2.size, marker::FirstLast::size(n));
+            assert_eq!(et3.size, marker::Visit::size(n));
+            for u in 0..n {
+                assert!(et1.vidx[u][0] < et1.vidx[u][1]);
+                assert!(et1.vidx[u][1] <= marker::First::size(n));
+                assert!(et2.vidx[u][0] < et2.vidx[u][1]);
+                assert!(et2.vidx[u][1] < marker::FirstLast::size(n));
+                assert!(et3.vidx[u][0] < et3.vidx[u][1]);
+                assert!(et3.vidx[u][1] <= marker::Visit::size(n));
             }
         }
     }
-    impl<D: LcaMonoidDispatch> Associative for LcaMonoid<D> {}
+
+    #[test]
+    fn test_subtree_euler_tour() {
+        const A: i64 = 1_000_000;
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let n = rng.random(1..=200);
+            let tree = rng.random(MixedTree(n));
+            let root = rng.random(0..n);
+            let mut a: Vec<_> = rng.random_iter(0..A).take(n).collect();
+            let (et, arr) = tree
+                .subtree_euler_tour_builder(root)
+                .build_with_rearrange(&a);
+            let mut seg = LazySegmentTree::<RangeSumRangeAdd<i64>>::from_keys(arr.into_iter());
+            for _ in 0..200 {
+                match rng.random(0..4) {
+                    0 => {
+                        let u = rng.random(0..n);
+                        let result = et.get(u, |idx| seg.get(idx)).0;
+                        let expected = a[u];
+                        assert_eq!(result, expected);
+                    }
+                    1 => {
+                        let u = rng.random(0..n);
+                        let x = rng.random(0..A);
+                        et.update(u, x, |i, x| seg.update(i..=i, x));
+                        a[u] += x;
+                    }
+                    2 => {
+                        let u = rng.random(0..n);
+                        let result = et.fold(u, |r| seg.fold(r)).0;
+                        let mut expected = 0;
+                        crecurse!(
+                            unsafe fn dfs(v: usize, p: usize, b: bool) {
+                                let b = b || v == u;
+                                if b {
+                                    expected += a[v];
+                                }
+                                for a in tree.adjacencies(v) {
+                                    if a.to != p {
+                                        dfs!(a.to, v, b);
+                                    }
+                                }
+                            }
+                        )(root, !0, false);
+                        assert_eq!(result, expected);
+                    }
+                    _ => {
+                        let u = rng.random(0..n);
+                        let x = rng.random(0..A);
+                        et.range_update(u, x, |r, x| seg.update(r, x));
+                        crecurse!(
+                            unsafe fn dfs(v: usize, p: usize, b: bool) {
+                                let b = b || v == u;
+                                if b {
+                                    a[v] += x;
+                                }
+                                for a in tree.adjacencies(v) {
+                                    if a.to != p {
+                                        dfs!(a.to, v, b);
+                                    }
+                                }
+                            }
+                        )(root, !0, false);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_path_euler_tour() {
+        const A: i64 = 1_000_000;
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let n = rng.random(1..=200);
+            let tree = rng.random(MixedTree(n));
+            let root = rng.random(0..n);
+            let mut a: Vec<_> = rng.random_iter(0..A).take(n).collect();
+            let (et, arr) = tree
+                .path_euler_tour_builder(root)
+                .build_with_rearrange(&a, |x| -x);
+            let mut seg = SegmentTree::<AdditiveOperation<i64>>::from_vec(arr);
+            for _ in 0..200 {
+                match rng.random(0..3) {
+                    0 => {
+                        let u = rng.random(0..n);
+                        let result = et.get(u, |idx| seg.get(idx));
+                        let expected = a[u];
+                        assert_eq!(result, expected);
+                    }
+                    1 => {
+                        let u = rng.random(0..n);
+                        let x = rng.random(0..A);
+                        let invx = -x;
+                        et.update(u, x, invx, |i, x| seg.update(i, x));
+                        a[u] += x;
+                    }
+                    _ => {
+                        let u = rng.random(0..n);
+                        let result = et.fold(u, |k| seg.fold(0..=k));
+                        let mut expected = 0;
+                        crecurse!(
+                            unsafe fn dfs(v: usize, p: usize) -> bool {
+                                if v == u {
+                                    expected += a[v];
+                                    return true;
+                                }
+                                for adj in tree.adjacencies(v) {
+                                    if adj.to != p && dfs!(adj.to, v) {
+                                        expected += a[v];
+                                        return true;
+                                    }
+                                }
+                                false
+                            }
+                        )(root, !0);
+                        assert_eq!(result, expected);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_lca() {
+        let mut rng = Xorshift::default();
+        for _ in 0..200 {
+            let n = rng.random(1..=200);
+            let tree = rng.random(MixedTree(n));
+            let root = rng.random(0..n);
+            let lca = tree.lca(root);
+            for _ in 0..200 {
+                let u = rng.random(0..n);
+                let v = rng.random(0..n);
+                let result = lca.lca(u, v);
+                let expected = crecurse!(
+                    unsafe fn dfs(w: usize, p: usize) -> Result<usize, [bool; 2]> {
+                        let mut found = [false; 2];
+                        if w == u {
+                            found[0] = true;
+                        }
+                        if w == v {
+                            found[1] = true;
+                        }
+                        for adj in tree.adjacencies(w) {
+                            if adj.to != p {
+                                match dfs!(adj.to, w) {
+                                    Ok(lca) => return Ok(lca),
+                                    Err(res) => {
+                                        for i in 0..2 {
+                                            if res[i] {
+                                                found[i] = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if found[0] && found[1] {
+                            Ok(w)
+                        } else {
+                            Err(found)
+                        }
+                    }
+                )(root, !0)
+                .unwrap();
+                assert_eq!(result, expected);
+            }
+        }
+    }
 }

@@ -1,10 +1,6 @@
 use competitive::prelude::*;
 #[doc(no_inline)]
-pub use competitive::{
-    graph::UndirectedSparseGraph,
-    tools::SizedCollect,
-    tree::{EulerTourForRichVertex, LcaMonoidDefaultId},
-};
+pub use competitive::{graph::UndirectedSparseGraph, tools::SizedCollect};
 
 #[verify::aizu_online_judge("GRL_5_C")]
 pub fn grl_5_c(reader: impl Read, mut writer: impl Write) {
@@ -16,9 +12,8 @@ pub fn grl_5_c(reader: impl Read, mut writer: impl Write) {
         .enumerate()
         .flat_map(|(u, it)| it.into_iter().map(move |v| (u, v)))
         .collect();
-    let graph = UndirectedSparseGraph::from_edges(n, edges);
-    let et = EulerTourForRichVertex::new(0, &graph);
-    let lca = et.gen_lca::<LcaMonoidDefaultId>();
+    let tree = UndirectedSparseGraph::from_edges(n, edges);
+    let lca = tree.lca(0);
     scan!(scanner, q, uv: [(usize, usize)]);
     for (u, v) in uv.take(q) {
         writeln!(writer, "{}", lca.lca(u, v)).ok();
