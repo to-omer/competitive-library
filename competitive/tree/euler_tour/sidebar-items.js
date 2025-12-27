@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["LcaMonoidDefaultId"],"mod":["impl_lcam"],"struct":["EulerTourForEdge","EulerTourForRichVertex","EulerTourForVertex","LcaMonoid","LowestCommonAncestor"],"trait":["LcaMonoidDispatch"]};
+window.SIDEBAR_ITEMS = {"mod":["marker"],"struct":["EulerTour","EulerTourBuilder","LowestCommonAncestor"],"trait":["EulerTourKind"]};
