@@ -40,6 +40,8 @@ mod generator;
     codesnip::entry("HeavyLightDecomposition", include("algebra", "SparseGraph"))
 )]
 mod heavy_light_decomposition;
+#[cfg_attr(nightly, codesnip::entry("LevelAncestor", include("SparseGraph")))]
+mod level_ancestor;
 mod rerooting;
 mod tree_center;
 #[cfg_attr(nightly, codesnip::entry("tree_centroid", include("SparseGraph")))]
