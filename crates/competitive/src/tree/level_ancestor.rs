@@ -11,7 +11,8 @@ pub struct LevelAncestor {
 struct LevelAncestorBatch<'a> {
     tree: &'a UndirectedSparseGraph,
     path: Vec<usize>,
-    queries: Vec<Vec<(usize, usize)>>,
+    start: Vec<usize>,
+    queries: Vec<(usize, usize)>,
     results: Vec<Option<usize>>,
 }
 
@@ -61,14 +62,24 @@ impl UndirectedSparseGraph {
         queries: impl IntoIterator<Item = (usize, usize)>,
     ) -> Vec<Option<usize>> {
         let n = self.vertices_size();
-        let mut batch = vec![vec![]; n];
-        for (i, (u, k)) in queries.into_iter().enumerate() {
-            batch[u].push((k, i));
+        let mut start = vec![0; n + 1];
+        let queries: Vec<(usize, usize)> = queries.into_iter().collect();
+        for &(u, _) in &queries {
+            start[u] += 1;
         }
-        let qsize: usize = batch.iter().map(|v| v.len()).sum();
+        for d in 0..n {
+            start[d + 1] += start[d];
+        }
+        let qsize = queries.len();
+        let mut batch = vec![(0, 0); qsize];
+        for (i, &(u, k)) in queries.iter().enumerate() {
+            start[u] -= 1;
+            batch[start[u]] = (k, i);
+        }
         let mut la = LevelAncestorBatch {
             tree: self,
             path: Vec::with_capacity(n),
+            start,
             queries: batch,
             results: vec![None; qsize],
         };
@@ -87,12 +98,16 @@ impl LevelAncestor {
         let idx = slice.partition_point(|&v| v > self.vidx[u]);
         Some(self.inv_vidx[slice[idx]])
     }
+
+    pub fn depth(&self, u: usize) -> usize {
+        self.depth[u]
+    }
 }
 
 impl<'a> LevelAncestorBatch<'a> {
     fn dfs(&mut self, u: usize, p: usize) {
         self.path.push(u);
-        for &(k, qi) in &self.queries[u] {
+        for &(k, qi) in &self.queries[self.start[u]..self.start[u + 1]] {
             let depth = self.path.len() - 1;
             if k <= depth {
                 self.results[qi] = Some(self.path[depth - k]);
