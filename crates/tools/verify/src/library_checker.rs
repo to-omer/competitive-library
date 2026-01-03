@@ -52,6 +52,38 @@ impl Display for CheckerBinaryNotFound {
     }
 }
 
+#[derive(Debug)]
+struct TestcaseGenerationFailed {
+    status: Option<i32>,
+    stderr: String,
+}
+
+impl Error for TestcaseGenerationFailed {}
+impl Display for TestcaseGenerationFailed {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.status {
+            Some(code) => write!(f, "testcase generation failed with exit code {}", code)?,
+            None => f.write_str("testcase generation failed with signal")?,
+        }
+        if !self.stderr.is_empty() {
+            write!(f, ": {}", self.stderr.trim_end())?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug)]
+struct TestcaseFileNotFound {
+    path: PathBuf,
+}
+
+impl Error for TestcaseFileNotFound {}
+impl Display for TestcaseFileNotFound {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "testcase file not found: {}", self.path.display())
+    }
+}
+
 impl CheckerBinary {
     pub fn check(
         &self,
@@ -162,10 +194,29 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         }
     }
 
-    Command::new(option_env!("PYTHON").unwrap_or("python3"))
+    let output = Command::new(option_env!("PYTHON").unwrap_or("python3"))
         .arg(rootdir.join("generate.py"))
         .arg(problem.problemdir.join("info.toml"))
         .output()?;
+    if !output.status.success() {
+        return Err(TestcaseGenerationFailed {
+            status: output.status.code(),
+            stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
+        })?;
+    }
+
+    for case in &cases {
+        if !case.input.is_file() {
+            return Err(TestcaseFileNotFound {
+                path: case.input.clone(),
+            })?;
+        }
+        if !case.output.is_file() {
+            return Err(TestcaseFileNotFound {
+                path: case.output.clone(),
+            })?;
+        }
+    }
 
     let checker = problem
         .problemdir
