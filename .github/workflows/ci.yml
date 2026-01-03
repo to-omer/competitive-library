@@ -59,7 +59,9 @@ jobs:
         run: cargo build --workspace --all-targets
 
       - name: cargo-test
-        run: cargo test --workspace --all-targets --no-fail-fast
+        run: |
+          ulimit -s unlimited
+          cargo test --workspace --all-targets --no-fail-fast
 
   snippet:
     name: Snippet
@@ -222,7 +224,9 @@ jobs:
           tool: cargo-llvm-cov
 
       - name: cargo llvm-cov html
-        run: cargo +nightly llvm-cov --workspace --all-targets --branch --html
+        run: |
+          ulimit -s unlimited
+          cargo +nightly llvm-cov --workspace --all-targets --branch --html
 
       - name: Coverage report summary
         run: |
