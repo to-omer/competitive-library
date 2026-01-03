@@ -199,6 +199,21 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         .arg(problem.problemdir.join("info.toml"))
         .output()?;
     if !output.status.success() {
+        log::error!(
+            "Testcase generation failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        // Debug
+        for case in &cases {
+            log::info!(
+                "Input: {} ({} bytes), Output: {} ({} bytes)",
+                case.input.display(),
+                case.input.metadata().map(|m| m.len()).unwrap_or(0),
+                case.output.display(),
+                case.output.metadata().map(|m| m.len()).unwrap_or(0),
+            );
+        }
+
         Err(TestcaseGenerationFailed {
             status: output.status.code(),
             stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
