@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["compositional_inverse_of_formal_power_series","test_compositional_inverse_of_formal_power_series"]};

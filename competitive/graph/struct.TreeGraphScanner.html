@@ -85,7 +85,52 @@
 <span data-nosnippet>15</span>        .max()
 <span data-nosnippet>16</span>        .unwrap();
 <span data-nosnippet>17</span>    <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans).ok();
-<span data-nosnippet>18</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#12&#34;,&#34;line 12&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#12">line 12</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>18</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/library_checker/tree/jump_on_tree.rs.html#9&#34;,&#34;line 9&#34;],[[26,26],&#34;../../src/library_checker/tree/jump_on_tree.rs.html#32&#34;,&#34;line 32&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/jump_on_tree.rs (<a href="../../src/library_checker/tree/jump_on_tree.rs.html#9">line 9</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>6</span><span class="kw">pub fn </span>jump_on_tree(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>7</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>8</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>9</span>    <span class="macro">scan!</span>(scanner, n, q, (g, <span class="kw">_</span>): @<span class="highlight focus">TreeGraphScanner::&lt;usize&gt;::new</span>(n));
+<span data-nosnippet>10</span>    <span class="kw">let </span>la = g.level_ancestor(<span class="number">0</span>);
+<span data-nosnippet>11</span>    <span class="kw">let </span>lca = g.lca(<span class="number">0</span>);
+<span data-nosnippet>12</span>    <span class="kw">for _ in </span><span class="number">0</span>..q {
+<span data-nosnippet>13</span>        <span class="macro">scan!</span>(scanner, s, t, i);
+<span data-nosnippet>14</span>        <span class="kw">let </span>l = lca.lca(s, t);
+<span data-nosnippet>15</span>        <span class="kw">let </span>ds = la.depth(s) - la.depth(l);
+<span data-nosnippet>16</span>        <span class="kw">let </span>dt = la.depth(t) - la.depth(l);
+<span data-nosnippet>17</span>        <span class="kw">let </span>ans = <span class="kw">if </span>i &lt;= ds {
+<span data-nosnippet>18</span>            la.la(s, i)
+<span data-nosnippet>19</span>        } <span class="kw">else if </span>i &lt;= ds + dt {
+<span data-nosnippet>20</span>            la.la(t, ds + dt - i)
+<span data-nosnippet>21</span>        } <span class="kw">else </span>{
+<span data-nosnippet>22</span>            <span class="prelude-val">None
+<span data-nosnippet>23</span>        </span>};
+<span data-nosnippet>24</span>        <span class="macro">writeln!</span>(writer, <span class="string">"{}"</span>, ans.unwrap_or(!<span class="number">0</span>) <span class="kw">as </span>isize).ok();
+<span data-nosnippet>25</span>    }
+<span data-nosnippet>26</span>}
+<span data-nosnippet>27</span>
+<span data-nosnippet>28</span><span class="attr">#[verify::library_checker(<span class="string">"jump_on_tree"</span>)]
+<span data-nosnippet>29</span></span><span class="kw">pub fn </span>jump_on_tree_batch(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
+<span data-nosnippet>30</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
+<span data-nosnippet>31</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
+<span data-nosnippet>32</span>    <span class="macro">scan!</span>(scanner, n, q, (g, <span class="kw">_</span>): @<span class="highlight">TreeGraphScanner::&lt;usize&gt;::new</span>(n), queries: [(usize, usize, usize)]);
+<span data-nosnippet>33</span>    <span class="kw">let </span>lca = g.lca(<span class="number">0</span>);
+<span data-nosnippet>34</span>    <span class="kw">let </span>depth = g.tree_depth(<span class="number">0</span>);
+<span data-nosnippet>35</span>    <span class="kw">let </span>results = g.level_ancestor_batch(
+<span data-nosnippet>36</span>        <span class="number">0</span>,
+<span data-nosnippet>37</span>        queries.take(q).map(|(s, t, i)| {
+<span data-nosnippet>38</span>            <span class="kw">let </span>l = lca.lca(s, t);
+<span data-nosnippet>39</span>            <span class="kw">let </span>ds = (depth[s] - depth[l]) <span class="kw">as </span>usize;
+<span data-nosnippet>40</span>            <span class="kw">let </span>dt = (depth[t] - depth[l]) <span class="kw">as </span>usize;
+<span data-nosnippet>41</span>            <span class="kw">if </span>i &lt;= ds {
+<span data-nosnippet>42</span>                (s, i)
+<span data-nosnippet>43</span>            } <span class="kw">else if </span>i &lt;= ds + dt {
+<span data-nosnippet>44</span>                (t, ds + dt - i)
+<span data-nosnippet>45</span>            } <span class="kw">else </span>{
+<span data-nosnippet>46</span>                (<span class="number">0</span>, n)
+<span data-nosnippet>47</span>            }
+<span data-nosnippet>48</span>        }),
+<span data-nosnippet>49</span>    );
+<span data-nosnippet>50</span>    <span class="macro">iter_print!</span>(writer, @lf @it results.iter().map(|<span class="kw-2">&amp;</span>v| v.unwrap_or(!<span class="number">0</span>) <span class="kw">as </span>isize));
+<span data-nosnippet>51</span>}</code></pre></div></div><div class="scraped-example" data-locs="[[[3,3],&#34;../../src/library_checker/tree/vertex_add_path_sum.rs.html#12&#34;,&#34;line 12&#34;]]"><div class="scraped-example-title">crates/library_checker/src/tree/vertex_add_path_sum.rs (<a href="../../src/library_checker/tree/vertex_add_path_sum.rs.html#12">line 12</a>)</div><div class="example-wrap digits-2"><pre class="rust"><code><span data-nosnippet>9</span><span class="kw">pub fn </span>vertex_add_path_sum(reader: <span class="kw">impl </span>Read, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>Write) {
 <span data-nosnippet>10</span>    <span class="kw">let </span>s = read_all_unchecked(reader);
 <span data-nosnippet>11</span>    <span class="kw">let </span><span class="kw-2">mut </span>scanner = Scanner::new(<span class="kw-2">&amp;</span>s);
 <span data-nosnippet>12</span>    <span class="macro">scan!</span>(scanner, n, q, a: [i64; n], (<span class="kw-2">mut </span>graph, <span class="kw">_</span>): @<span class="highlight focus">TreeGraphScanner::&lt;usize, ()&gt;::new</span>(n));
