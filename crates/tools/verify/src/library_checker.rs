@@ -199,7 +199,7 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
         .arg(problem.problemdir.join("info.toml"))
         .output()?;
     if !output.status.success() {
-        return Err(TestcaseGenerationFailed {
+        Err(TestcaseGenerationFailed {
             status: output.status.code(),
             stderr: String::from_utf8_lossy(&output.stderr).into_owned(),
         })?;
@@ -207,12 +207,12 @@ pub fn get_testcases_and_checker(problem_id: &str) -> BoxResult<(Vec<TestCase>, 
 
     for case in &cases {
         if !case.input.is_file() {
-            return Err(TestcaseFileNotFound {
+            Err(TestcaseFileNotFound {
                 path: case.input.clone(),
             })?;
         }
         if !case.output.is_file() {
-            return Err(TestcaseFileNotFound {
+            Err(TestcaseFileNotFound {
                 path: case.output.clone(),
             })?;
         }
