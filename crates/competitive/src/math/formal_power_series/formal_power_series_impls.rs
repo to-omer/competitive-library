@@ -668,6 +668,151 @@ where
         );
         (-prod.log(deg).diff() << 1) + Self::from_vec(vec![n])
     }
+
+    fn convolve_2d(a: &[Vec<T>], b: &[Vec<T>], n: usize, y_limit: usize) -> (Vec<T>, usize) {
+        let ay = a.len();
+        let by = b.len();
+        if ay == 0 || by == 0 || y_limit == 0 {
+            return (Vec::new(), 0);
+        }
+        let y_len = (ay + by - 1).min(y_limit);
+        let base = n * 2;
+        let mut fa = vec![T::zero(); base * ay];
+        for (y, row) in a.iter().enumerate() {
+            let offset = base * y;
+            for (x, v) in row.iter().enumerate().take(n) {
+                fa[offset + x] = v.clone();
+            }
+        }
+        let mut fb = vec![T::zero(); base * by];
+        for (y, row) in b.iter().enumerate() {
+            let offset = base * y;
+            for (x, v) in row.iter().enumerate().take(n) {
+                fb[offset + x] = v.clone();
+            }
+        }
+        let mut fc = C::convolve(fa, fb);
+        let need = base * y_len;
+        if fc.len() < need {
+            fc.resize_with(need, T::zero);
+        } else if fc.len() > need {
+            fc.truncate(need);
+        }
+        (fc, y_len)
+    }
+
+    pub fn power_projection(&self, w: &[T], m: usize) -> Self {
+        if w.is_empty() {
+            return Self::zeros(m);
+        }
+        if m <= 1 {
+            return Self::from_vec(vec![w[0].clone(); m]);
+        }
+
+        let n0 = w.len();
+        let mut n = n0.next_power_of_two();
+        let mut f = self.prefix_ref(n);
+        f.resize(n);
+
+        let mut g = vec![T::zero(); n];
+        for (i, wi) in w.iter().enumerate() {
+            g[n - 1 - i] = wi.clone();
+        }
+
+        let mut p: Vec<Vec<T>> = vec![g];
+        let mut q: Vec<Vec<T>> = vec![vec![T::zero(); n]; 2];
+        q[0][0] = T::one();
+        q[1] = f.iter().map(|x| -x.clone()).collect();
+
+        let y_limit = m;
+        while n > 1 {
+            let base = n * 2;
+            let r: Vec<Vec<T>> = q
+                .iter()
+                .map(|row| {
+                    row.iter()
+                        .enumerate()
+                        .map(|(i, v)| if i & 1 == 1 { -v.clone() } else { v.clone() })
+                        .collect()
+                })
+                .collect();
+
+            let (pr, py) = Self::convolve_2d(&p, &r, n, y_limit);
+            let (qr, qy) = Self::convolve_2d(&q, &r, n, y_limit);
+
+            let n2 = n / 2;
+            let mut p_next = vec![vec![T::zero(); n2]; py];
+            for (y, row) in p_next.iter_mut().enumerate() {
+                let mut idx = base * y + 1;
+                for cell in row.iter_mut().take(n2) {
+                    if idx < pr.len() {
+                        *cell = pr[idx].clone();
+                    }
+                    idx += 2;
+                }
+            }
+            let mut q_next = vec![vec![T::zero(); n2]; qy];
+            for (y, row) in q_next.iter_mut().enumerate() {
+                let mut idx = base * y;
+                for cell in row.iter_mut().take(n2) {
+                    if idx < qr.len() {
+                        *cell = qr[idx].clone();
+                    }
+                    idx += 2;
+                }
+            }
+
+            p = p_next;
+            q = q_next;
+            n = n2;
+        }
+
+        let p_y: Vec<_> = p.into_iter().map(|row| row[0].clone()).collect();
+        let q_y: Vec<_> = q.into_iter().map(|row| row[0].clone()).collect();
+        (Self::from_vec(p_y) * Self::from_vec(q_y).inv(m)).prefix(m)
+    }
+
+    pub fn compositional_inverse(&self, deg: usize) -> Self {
+        if deg == 0 {
+            return Self::zero();
+        }
+        if deg == 1 {
+            return Self::from_vec(vec![T::zero()]);
+        }
+        debug_assert!(self[0].is_zero());
+        debug_assert!(!self[1].is_zero());
+
+        let mut f = self.prefix_ref(deg);
+        f.resize(deg);
+        let c = f[1].clone();
+        f /= c.clone();
+
+        let mut w = vec![T::zero(); deg];
+        w[deg - 1] = T::one();
+        let s = f.power_projection(&w, deg);
+
+        let n = deg - 1;
+        let n_t = T::from(n);
+        let mut h = vec![T::zero(); n];
+        for i in 1..=n {
+            h[n - i] = s[i].clone() * &n_t / T::from(i);
+        }
+
+        let h_fps = Self::from_vec(h);
+        let inv_n = T::one() / n_t;
+        let mut t = h_fps.log(n);
+        t *= -inv_n;
+        let g_over_x = t.exp(n);
+        let mut g = (g_over_x << 1).prefix(deg);
+
+        let inv_c = T::one() / c;
+        let mut pow = T::one();
+        for coef in g.iter_mut() {
+            *coef *= pow.clone();
+            pow *= inv_c.clone();
+        }
+        g
+    }
 }
 
 impl<M, C> FormalPowerSeries<MInt<M>, C>
