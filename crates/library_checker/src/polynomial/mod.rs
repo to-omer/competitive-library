@@ -1,4 +1,5 @@
 pub mod compositional_inverse_of_formal_power_series;
+pub mod compositional_inverse_of_formal_power_series_large;
 pub mod exp_of_formal_power_series;
 pub mod exp_of_formal_power_series_sparse;
 pub mod inv_of_formal_power_series;

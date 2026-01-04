@@ -669,39 +669,10 @@ where
         (-prod.log(deg).diff() << 1) + Self::from_vec(vec![n])
     }
 
-    fn convolve_2d(a: &[Vec<T>], b: &[Vec<T>], n: usize, y_limit: usize) -> (Vec<T>, usize) {
-        let ay = a.len();
-        let by = b.len();
-        if ay == 0 || by == 0 || y_limit == 0 {
-            return (Vec::new(), 0);
-        }
-        let y_len = (ay + by - 1).min(y_limit);
-        let base = n * 2;
-        let mut fa = vec![T::zero(); base * ay];
-        for (y, row) in a.iter().enumerate() {
-            let offset = base * y;
-            for (x, v) in row.iter().enumerate().take(n) {
-                fa[offset + x] = v.clone();
-            }
-        }
-        let mut fb = vec![T::zero(); base * by];
-        for (y, row) in b.iter().enumerate() {
-            let offset = base * y;
-            for (x, v) in row.iter().enumerate().take(n) {
-                fb[offset + x] = v.clone();
-            }
-        }
-        let mut fc = C::convolve(fa, fb);
-        let need = base * y_len;
-        if fc.len() < need {
-            fc.resize_with(need, T::zero);
-        } else if fc.len() > need {
-            fc.truncate(need);
-        }
-        (fc, y_len)
-    }
-
-    pub fn power_projection(&self, w: &[T], m: usize) -> Self {
+    pub fn power_projection(&self, w: &[T], m: usize) -> Self
+    where
+        C: NttReuse<T = Vec<T>>,
+    {
         if w.is_empty() {
             return Self::zeros(m);
         }
@@ -714,65 +685,93 @@ where
         let mut f = self.prefix_ref(n);
         f.resize(n);
 
-        let mut g = vec![T::zero(); n];
+        let base = n * 2;
+        let mut p_flat = vec![T::zero(); base];
         for (i, wi) in w.iter().enumerate() {
-            g[n - 1 - i] = wi.clone();
+            p_flat[n - 1 - i] = wi.clone();
         }
-
-        let mut p: Vec<Vec<T>> = vec![g];
-        let mut q: Vec<Vec<T>> = vec![vec![T::zero(); n]; 2];
-        q[0][0] = T::one();
-        q[1] = f.iter().map(|x| -x.clone()).collect();
+        let mut q_flat = vec![T::zero(); base * 2];
+        q_flat[0] = T::one();
+        let q_offset = base;
+        for (i, fi) in f.iter().enumerate() {
+            q_flat[q_offset + i] = -fi.clone();
+        }
+        let mut py = 1usize;
+        let mut qy = 2usize;
 
         let y_limit = m;
         while n > 1 {
             let base = n * 2;
-            let r: Vec<Vec<T>> = q
-                .iter()
-                .map(|row| {
-                    row.iter()
-                        .enumerate()
-                        .map(|(i, v)| if i & 1 == 1 { -v.clone() } else { v.clone() })
-                        .collect()
-                })
-                .collect();
+            let len_p = base * py;
+            let len_q = base * qy;
+            let len = (len_p + len_q - 1).max(len_q + len_q - 1);
+            let len_pot = len.max(1).next_power_of_two();
+            let half = len_pot / 2;
 
-            let (pr, py) = Self::convolve_2d(&p, &r, n, y_limit);
-            let (qr, qy) = Self::convolve_2d(&q, &r, n, y_limit);
+            let p_fft = C::transform(p_flat, len);
+            let q_fft = C::transform(q_flat, len);
+            let pr_fft = C::odd_mul_normal_neg(&p_fft, &q_fft);
+            let qr_fft = C::even_mul_normal_neg(&q_fft, &q_fft);
+            let mut pr = C::inverse_transform(pr_fft, half);
+            let mut qr = C::inverse_transform(qr_fft, half);
+
+            let new_py = (py + qy - 1).min(y_limit);
+            let new_qy = (qy + qy - 1).min(y_limit);
+            let new_base = n;
+            let need_p = new_base * new_py;
+            if pr.len() < need_p {
+                pr.resize_with(need_p, T::zero);
+            } else if pr.len() > need_p {
+                pr.truncate(need_p);
+            }
+            let need_q = new_base * new_qy;
+            if qr.len() < need_q {
+                qr.resize_with(need_q, T::zero);
+            } else if qr.len() > need_q {
+                qr.truncate(need_q);
+            }
 
             let n2 = n / 2;
-            let mut p_next = vec![vec![T::zero(); n2]; py];
-            for (y, row) in p_next.iter_mut().enumerate() {
-                let mut idx = base * y + 1;
-                for cell in row.iter_mut().take(n2) {
-                    if idx < pr.len() {
-                        *cell = pr[idx].clone();
+            if n2 < new_base {
+                for y in 0..new_py {
+                    let start = y * new_base + n2;
+                    let end = y * new_base + new_base;
+                    for v in pr[start..end].iter_mut() {
+                        *v = T::zero();
                     }
-                    idx += 2;
                 }
-            }
-            let mut q_next = vec![vec![T::zero(); n2]; qy];
-            for (y, row) in q_next.iter_mut().enumerate() {
-                let mut idx = base * y;
-                for cell in row.iter_mut().take(n2) {
-                    if idx < qr.len() {
-                        *cell = qr[idx].clone();
+                for y in 0..new_qy {
+                    let start = y * new_base + n2;
+                    let end = y * new_base + new_base;
+                    for v in qr[start..end].iter_mut() {
+                        *v = T::zero();
                     }
-                    idx += 2;
                 }
             }
 
-            p = p_next;
-            q = q_next;
+            p_flat = pr;
+            q_flat = qr;
+            py = new_py;
+            qy = new_qy;
             n = n2;
         }
 
-        let p_y: Vec<_> = p.into_iter().map(|row| row[0].clone()).collect();
-        let q_y: Vec<_> = q.into_iter().map(|row| row[0].clone()).collect();
+        let base = 2;
+        let mut p_y = Vec::with_capacity(py);
+        for y in 0..py {
+            p_y.push(p_flat[base * y].clone());
+        }
+        let mut q_y = Vec::with_capacity(qy);
+        for y in 0..qy {
+            q_y.push(q_flat[base * y].clone());
+        }
         (Self::from_vec(p_y) * Self::from_vec(q_y).inv(m)).prefix(m)
     }
 
-    pub fn compositional_inverse(&self, deg: usize) -> Self {
+    pub fn compositional_inverse(&self, deg: usize) -> Self
+    where
+        C: NttReuse<T = Vec<T>>,
+    {
         if deg == 0 {
             return Self::zero();
         }
