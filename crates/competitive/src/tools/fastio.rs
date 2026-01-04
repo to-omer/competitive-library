@@ -234,15 +234,13 @@ impl FastInput {
             let mut x = ptr::read_unaligned(self.ptr as *const u64);
             x ^= 0x3030303030303030;
             let mut rem = x;
-            {
-                if (x & 0xf0f0f0f0) == 0 {
-                    rem >>= 32;
-                    x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff00ff;
-                    x = x.wrapping_mul(100).wrapping_add(x >> 16) & 0x0000ffff;
-                    res2 = x;
-                    pow = 10000;
-                    self.ptr = self.ptr.add(4);
-                }
+            if (x & 0xf0f0f0f0) == 0 {
+                rem >>= 32;
+                x = x.wrapping_mul(10).wrapping_add(x >> 8) & 0x00ff00ff;
+                x = x.wrapping_mul(100).wrapping_add(x >> 16) & 0x0000ffff;
+                res2 = x;
+                pow = 10000;
+                self.ptr = self.ptr.add(4);
             }
             {
                 let mut x = (rem & 0xffff) as u16;
