@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["LAZY_THRESHOLD"],"fn":["add_vec_avx2","add_vec_avx512","intt_avx2","intt_avx512","mul_vec_avx2","mul_vec_avx512","normalize_avx2","normalize_avx512","ntt_avx2","ntt_avx512","sub_vec_avx2","sub_vec_avx512"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {};
+window.SIDEBAR_ITEMS = {"enum":["SimdBackend"],"fn":["avx512_enabled","disable_avx512","enable_avx512","simd_backend"],"static":["AVX512_ENABLED"]};

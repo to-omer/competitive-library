@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `add_vec_avx2` fn in crate `competitive`."><title>add_vec_avx2 in competitive::math::number_theoretic_transform::ntt_simd - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-2eb46af5.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="competitive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.0-nightly (7ecabfaaf 2026-01-03)" data-channel="nightly" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../../../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../../../static.files/main-7bab91a1.js"></script><script defer src="../../../../static.files/scrape-examples-2bbcccac.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-044be391.svg"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css"
+  integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"
+  integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+  integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ]
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const parser = new DOMParser();
+    const parse = s => parser.parseFromString(s, "text/html").body.firstChild;
+
+    const addArchiveLinkSetting = () => {
+      const settings = document.querySelector("#settings .settings");
+      if (!settings) return;
+      if (document.getElementById("generate-hidden-archive-link")) return;
+
+      const checked = localStorage.getItem("generate-hidden-archive-link") === "true";
+      const archiveLinkSetting = parse(`<div class="setting-line"><label class="setting-check"><input type="checkbox" id="generate-hidden-archive-link" ${checked ? "checked" : ""} /><span>Generate hidden archive link</span></label></div>`);
+      settings.appendChild(archiveLinkSetting);
+      document.getElementById("generate-hidden-archive-link").addEventListener("change", e => {
+        if (e.target.checked) {
+          localStorage.setItem("generate-hidden-archive-link", "true");
+        } else {
+          localStorage.removeItem("generate-hidden-archive-link");
+        }
+      });
+    };
+    addArchiveLinkSetting();
+    const settingsMenu = document.querySelector("#settings-menu a");
+    settingsMenu?.addEventListener("click", addArchiveLinkSetting);
+
+    const addArchiveLink = () => {
+      if (localStorage.getItem("generate-hidden-archive-link") !== "true") return;
+      const subHeading = document.querySelector("#main-content .main-heading .sub-heading");
+      const itemName = document.querySelector("#main-content .main-heading h1 span")?.textContent;
+      const isCompetitive = document.querySelector("#main-content .main-heading .rustdoc-breadcrumbs a")?.textContent?.startsWith("competitive");
+      if (!itemName || !isCompetitive) return;
+      const archiveLink = parse(`<a class="src" href="https://github.com/search?q=repo%3Ato-omer%2Fcompetitive_archive+${itemName}&type=code">Archives</a>`);
+      subHeading.appendChild(archiveLink);
+    };
+    addArchiveLink();
+  });
+</script>
+
+</head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">add_vec_avx2</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../../../competitive/index.html">competitive</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><div id="rustdoc-modnav"><h2><a href="index.html">In competitive::<wbr>math::<wbr>number_<wbr>theoretic_<wbr>transform::<wbr>ntt_<wbr>simd</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../../../index.html">competitive</a>::<wbr><a href="../../index.html">math</a>::<wbr><a href="../index.html">number_theoretic_transform</a>::<wbr><a href="index.html">ntt_simd</a></div><h1>Function <span class="fn">add_<wbr>vec_<wbr>avx2</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../../../src/competitive/math/number_theoretic_transform.rs.html#342-357">Source</a> </span></div><pre class="rust item-decl"><code>unsafe fn add_vec_avx2&lt;M&gt;(
+    a: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
+    b: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
+    mod_vec: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
+    mod2_vec: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
+    sign: <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a>,
+) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/core/core_arch/x86/struct.__m256i.html" title="struct core::core_arch::x86::__m256i">__m256i</a><div class="where">where
+    M: <a class="trait" href="../trait.Montgomery32NttModulus.html" title="trait competitive::math::number_theoretic_transform::Montgomery32NttModulus">Montgomery32NttModulus</a>,</div></code></pre><div class="docblock scraped-example-list"><span></span><h5 id="scraped-examples"><a href="#scraped-examples">Examples found in repository</a><a class="scrape-help" href="../../../../scrape-examples-help.html">?</a></h5><div class="scraped-example" data-locs="[[[45,45],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#482&#34;,&#34;line 482&#34;],[[47,47],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#484&#34;,&#34;line 484&#34;],[[51,51],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#488&#34;,&#34;line 488&#34;],[[53,53],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#490&#34;,&#34;line 490&#34;],[[147,147],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#584&#34;,&#34;line 584&#34;],[[149,149],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#586&#34;,&#34;line 586&#34;],[[153,153],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#590&#34;,&#34;line 590&#34;],[[154,154],&#34;../../../../src/competitive/math/number_theoretic_transform.rs.html#591&#34;,&#34;line 591&#34;]]"><div class="scraped-example-title">crates/competitive/src/math/number_theoretic_transform.rs (<a href="../../../../src/competitive/math/number_theoretic_transform.rs.html#482">line 482</a>)</div><div class="example-wrap digits-3"><pre class="rust"><code><span data-nosnippet>437</span>    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe fn </span>ntt_avx2&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span data-nosnippet>438</span>    <span class="kw">where
+<span data-nosnippet>439</span>        </span>M: Montgomery32NttModulus,
+<span data-nosnippet>440</span>    {
+<span data-nosnippet>441</span>        <span class="kw">let </span>n = a.len();
+<span data-nosnippet>442</span>        <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+<span data-nosnippet>443</span>            <span class="kw">return</span>;
+<span data-nosnippet>444</span>        }
+<span data-nosnippet>445</span>        <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
+<span data-nosnippet>446</span>        <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, n);
+<span data-nosnippet>447</span>        <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
+<span data-nosnippet>448</span>        <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(<a href="#409">M</a>::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
+<span data-nosnippet>449</span>        <span class="kw">let </span>r_vec = _mm256_set1_epi32(M::R.wrapping_neg() <span class="kw">as </span>i32);
+<span data-nosnippet>450</span>        <span class="kw">let </span>sign = _mm256_set1_epi32(<span class="number">0x8000_0000u32 </span><span class="kw">as </span>i32);
+<span data-nosnippet>451</span>        <span class="kw">let </span>imag = M::INFO.root[<span class="number">2</span>];
+<span data-nosnippet>452</span>        <span class="kw">let </span>imag_vec = _mm256_set1_epi32(imag <span class="kw">as </span>i32);
+<span data-nosnippet>453</span>
+<span data-nosnippet>454</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <a href="#409">n</a> / <span class="number">2</span>;
+<span data-nosnippet>455</span>        <span class="kw">while </span>v &gt; <span class="number">1 </span>{
+<span data-nosnippet>456</span>            <span class="kw">let </span>half = v &gt;&gt; <span class="number">1</span>;
+<span data-nosnippet>457</span>            <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>458</span>            <span class="kw">for </span>(s, block) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">1</span>).enumerate() {
+<span data-nosnippet>459</span>                <span class="kw">let </span>base = block.as_mut_ptr();
+<span data-nosnippet>460</span>                <span class="kw">let </span>ll = base;
+<span data-nosnippet>461</span>                <span class="kw">let </span>lr = base.add(half);
+<span data-nosnippet>462</span>                <span class="kw">let </span>rl = base.add(v);
+<span data-nosnippet>463</span>                <span class="kw">let </span>rr = base.add(v + half);
+<span data-nosnippet>464</span>
+<span data-nosnippet>465</span>                <span class="kw">let </span>w2 = M::mod_mul(w1, w1);
+<span data-nosnippet>466</span>                <span class="kw">let </span>w3 = M::mod_mul(w2, w1);
+<span data-nosnippet>467</span>                <span class="kw">let </span>w1v = _mm256_set1_epi32(w1 <span class="kw">as </span>i32);
+<span data-nosnippet>468</span>                <span class="kw">let </span>w2v = _mm256_set1_epi32(w2 <span class="kw">as </span>i32);
+<span data-nosnippet>469</span>                <span class="kw">let </span>w3v = _mm256_set1_epi32(w3 <span class="kw">as </span>i32);
+<span data-nosnippet>470</span>
+<span data-nosnippet>471</span>                <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>472</span>                <span class="kw">while </span>i + <span class="number">8 </span>&lt;= half {
+<span data-nosnippet>473</span>                    <span class="kw">let </span>x0 = _mm256_loadu_si256(ll.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>474</span>                    <span class="kw">let </span>x1 = _mm256_loadu_si256(lr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>475</span>                    <span class="kw">let </span>x2 = _mm256_loadu_si256(rl.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>476</span>                    <span class="kw">let </span>x3 = _mm256_loadu_si256(rr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>477</span>
+<span data-nosnippet>478</span>                    <span class="kw">let </span>a1 = mul_vec_avx2::&lt;M&gt;(x1, w1v, r_vec, mod_vec, sign);
+<span data-nosnippet>479</span>                    <span class="kw">let </span>a2 = mul_vec_avx2::&lt;M&gt;(x2, w2v, r_vec, mod_vec, sign);
+<span data-nosnippet>480</span>                    <span class="kw">let </span>a3 = mul_vec_avx2::&lt;M&gt;(x3, w3v, r_vec, mod_vec, sign);
+<span data-nosnippet>481</span>
+<span data-nosnippet>482</span>                    <span class="kw">let </span>a0pa2 = <span class="highlight focus">add_vec_avx2::&lt;M&gt;</span>(x0, a2, mod_vec, mod2_vec, sign);
+<span data-nosnippet>483</span>                    <span class="kw">let </span>a0na2 = sub_vec_avx2::&lt;M&gt;(x0, a2, mod_vec, mod2_vec, sign);
+<span data-nosnippet>484</span>                    <span class="kw">let </span>a1pa3 = <span class="highlight">add_vec_avx2::&lt;M&gt;</span>(a1, a3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>485</span>                    <span class="kw">let </span>a1na3 = sub_vec_avx2::&lt;M&gt;(a1, a3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>486</span>                    <span class="kw">let </span>a1na3imag = mul_vec_avx2::&lt;M&gt;(a1na3, imag_vec, r_vec, mod_vec, sign);
+<span data-nosnippet>487</span>
+<span data-nosnippet>488</span>                    <span class="kw">let </span>y0 = <span class="highlight">add_vec_avx2::&lt;M&gt;</span>(a0pa2, a1pa3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>489</span>                    <span class="kw">let </span>y1 = sub_vec_avx2::&lt;M&gt;(a0pa2, a1pa3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>490</span>                    <span class="kw">let </span>y2 = <span class="highlight">add_vec_avx2::&lt;<a href="#499">M</a>&gt;</span>(a0na2, a1na3imag, mod_vec, mod2_vec, sign);
+<span data-nosnippet>491</span>                    <span class="kw">let </span>y3 = sub_vec_avx2::&lt;M&gt;(a0na2, a1na3imag, mod_vec, mod2_vec, sign);
+<span data-nosnippet>492</span>
+<span data-nosnippet>493</span>                    _mm256_storeu_si256(ll.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y0);
+<span data-nosnippet>494</span>                    _mm256_storeu_si256(lr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y1);
+<span data-nosnippet>495</span>                    _mm256_storeu_si256(rl.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y2);
+<span data-nosnippet>496</span>                    _mm256_storeu_si256(rr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y3);
+<span data-nosnippet>497</span>                    i += <span class="number">8</span>;
+<span data-nosnippet>498</span>                }
+<span data-nosnippet>499</span>                <span class="kw">while </span>i &lt; half {
+<span data-nosnippet>500</span>                    <span class="kw">let </span>a0 = <span class="kw-2">*</span>ll.<a href="../num/zero_one.rs.html#16">add</a>(i);
+<span data-nosnippet>501</span>                    <span class="kw">let </span>a1 = M::mod_mul(<span class="kw-2">*</span>lr.add(i), w1);
+<span data-nosnippet>502</span>                    <span class="kw">let </span>a2 = M::mod_mul(<span class="kw-2">*</span>rl.add(i), w2);
+<span data-nosnippet>503</span>                    <span class="kw">let </span>a3 = <a href="#525">M</a>::mod_mul(<span class="kw-2">*</span>rr.add(i), w3);
+<span data-nosnippet>504</span>                    <span class="kw">let </span>a0pa2 = M::mod_add(a0, a2);
+<span data-nosnippet>505</span>                    <span class="kw">let </span>a0na2 = M::mod_sub(a0, a2);
+<span data-nosnippet>506</span>                    <span class="kw">let </span>a1pa3 = M::mod_add(a1, a3);
+<span data-nosnippet>507</span>                    <span class="kw">let </span>a1na3 = M::mod_sub(a1, a3);
+<span data-nosnippet>508</span>                    <span class="kw">let </span>a1na3imag = M::mod_mul(a1na3, imag);
+<span data-nosnippet>509</span>                    <span class="kw-2">*</span>ll.add(i) = M::mod_add(a0pa2, a1pa3);
+<span data-nosnippet>510</span>                    <span class="kw-2">*</span>lr.add(i) = M::mod_sub(a0pa2, a1pa3);
+<span data-nosnippet>511</span>                    <span class="kw-2">*</span>rl.<a href="#534">add</a>(i) = M::mod_add(a0na2, a1na3imag);
+<span data-nosnippet>512</span>                    <span class="kw-2">*</span>rr.add(i) = M::mod_sub(a0na2, a1na3imag);
+<span data-nosnippet>513</span>                    i += <span class="number">1</span>;
+<span data-nosnippet>514</span>                }
+<span data-nosnippet>515</span>                w1 = M::mod_mul(w1, M::INFO.rate3[s.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>516</span>            }
+<span data-nosnippet>517</span>            v &gt;&gt;= <span class="number">2</span>;
+<span data-nosnippet>518</span>        }
+<span data-nosnippet>519</span>        <span class="kw">if </span>v == <span class="number">1 </span>{
+<span data-nosnippet>520</span>            <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>521</span>            <span class="kw">for </span>(s, block) <span class="kw">in </span><a href="#543">a</a>.chunks_exact_mut(<span class="number">2</span>).enumerate() {
+<span data-nosnippet>522</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>block.get_unchecked(<span class="number">0</span>);
+<span data-nosnippet>523</span>                <span class="kw">let </span>a1 = M::mod_mul(<span class="kw-2">*</span>block.get_unchecked(<span class="number">1</span>), w1);
+<span data-nosnippet>524</span>                <span class="kw-2">*</span>block.get_unchecked_mut(<span class="number">0</span>) = M::mod_add(a0, a1);
+<span data-nosnippet>525</span>                <span class="kw-2">*</span>block.get_unchecked_mut(<span class="number">1</span>) = M::mod_sub(a0, a1);
+<span data-nosnippet>526</span>                w1 = M::mod_mul(w1, M::INFO.rate2[s.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>527</span>            }
+<span data-nosnippet>528</span>        }
+<span data-nosnippet>529</span>        normalize_avx2::&lt;M&gt;(a);
+<span data-nosnippet>530</span>    }
+<span data-nosnippet>531</span>
+<span data-nosnippet>532</span>    <span class="attr">#[target_feature(enable = <span class="string">"avx2"</span>)]
+<span data-nosnippet>533</span>    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe fn </span>intt_avx2&lt;M&gt;(a: <span class="kw-2">&amp;mut </span>[MInt&lt;M&gt;])
+<span data-nosnippet>534</span>    <span class="kw">where
+<span data-nosnippet>535</span>        </span>M: Montgomery32NttModulus,
+<span data-nosnippet>536</span>    {
+<span data-nosnippet>537</span>        <span class="kw">let </span>n = a.len();
+<span data-nosnippet>538</span>        <span class="kw">if </span>n &lt;= <span class="number">1 </span>{
+<span data-nosnippet>539</span>            <span class="kw">return</span>;
+<span data-nosnippet>540</span>        }
+<span data-nosnippet>541</span>        <span class="kw">let </span>ptr = a.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>u32;
+<span data-nosnippet>542</span>        <span class="kw">let </span>a = std::slice::from_raw_parts_mut(ptr, n);
+<span data-nosnippet>543</span>        <span class="kw">let </span>mod_vec = _mm256_set1_epi32(M::MOD <span class="kw">as </span>i32);
+<span data-nosnippet>544</span>        <span class="kw">let </span>mod2_vec = _mm256_set1_epi32(M::MOD.wrapping_add(M::MOD) <span class="kw">as </span>i32);
+<span data-nosnippet>545</span>        <span class="kw">let </span>r_vec = _mm256_set1_epi32(M::R.wrapping_neg() <span class="kw">as </span>i32);
+<span data-nosnippet>546</span>        <span class="kw">let </span>sign = _mm256_set1_epi32(<span class="number">0x8000_0000u32 </span><span class="kw">as </span>i32);
+<span data-nosnippet>547</span>        <span class="kw">let </span>iimag = M::INFO.inv_root[<span class="number">2</span>];
+<span data-nosnippet>548</span>        <span class="kw">let </span>iimag_vec = _mm256_set1_epi32(iimag <span class="kw">as </span>i32);
+<span data-nosnippet>549</span>
+<span data-nosnippet>550</span>        <span class="kw">let </span><span class="kw-2">mut </span>v = <span class="number">1</span>;
+<span data-nosnippet>551</span>        <span class="kw">if </span>n.trailing_zeros() &amp; <span class="number">1 </span>== <span class="number">1 </span>{
+<span data-nosnippet>552</span>            <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>553</span>            <span class="kw">for </span>(s, block) <span class="kw">in </span>a.chunks_exact_mut(<span class="number">2</span>).enumerate() {
+<span data-nosnippet>554</span>                <span class="kw">let </span>a0 = <span class="kw-2">*</span>block.get_unchecked(<span class="number">0</span>);
+<span data-nosnippet>555</span>                <span class="kw">let </span>a1 = <span class="kw-2">*</span>block.get_unchecked(<span class="number">1</span>);
+<span data-nosnippet>556</span>                <span class="kw-2">*</span>block.get_unchecked_mut(<span class="number">0</span>) = M::mod_add(a0, a1);
+<span data-nosnippet>557</span>                <span class="kw-2">*</span>block.get_unchecked_mut(<span class="number">1</span>) = M::mod_mul(M::mod_sub(a0, a1), w1);
+<span data-nosnippet>558</span>                w1 = M::mod_mul(w1, M::INFO.inv_rate2[s.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>559</span>            }
+<span data-nosnippet>560</span>            v &lt;&lt;= <span class="number">1</span>;
+<span data-nosnippet>561</span>        }
+<span data-nosnippet>562</span>        <span class="kw">while </span>v &lt; n {
+<span data-nosnippet>563</span>            <span class="kw">let </span><span class="kw-2">mut </span>w1 = M::N1;
+<span data-nosnippet>564</span>            <span class="kw">for </span>(s, block) <span class="kw">in </span>a.chunks_exact_mut(v &lt;&lt; <span class="number">2</span>).enumerate() {
+<span data-nosnippet>565</span>                <span class="kw">let </span>base = block.as_mut_ptr();
+<span data-nosnippet>566</span>                <span class="kw">let </span>ll = base;
+<span data-nosnippet>567</span>                <span class="kw">let </span>lr = base.add(v);
+<span data-nosnippet>568</span>                <span class="kw">let </span>rl = base.add(v &lt;&lt; <span class="number">1</span>);
+<span data-nosnippet>569</span>                <span class="kw">let </span>rr = base.add(v * <span class="number">3</span>);
+<span data-nosnippet>570</span>
+<span data-nosnippet>571</span>                <span class="kw">let </span>w2 = M::mod_mul(w1, w1);
+<span data-nosnippet>572</span>                <span class="kw">let </span>w3 = M::mod_mul(w2, w1);
+<span data-nosnippet>573</span>                <span class="kw">let </span>w1v = _mm256_set1_epi32(w1 <span class="kw">as </span>i32);
+<span data-nosnippet>574</span>                <span class="kw">let </span>w2v = _mm256_set1_epi32(w2 <span class="kw">as </span>i32);
+<span data-nosnippet>575</span>                <span class="kw">let </span>w3v = _mm256_set1_epi32(w3 <span class="kw">as </span>i32);
+<span data-nosnippet>576</span>
+<span data-nosnippet>577</span>                <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
+<span data-nosnippet>578</span>                <span class="kw">while </span>i + <span class="number">8 </span>&lt;= v {
+<span data-nosnippet>579</span>                    <span class="kw">let </span>x0 = _mm256_loadu_si256(ll.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>580</span>                    <span class="kw">let </span>x1 = _mm256_loadu_si256(lr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>581</span>                    <span class="kw">let </span>x2 = _mm256_loadu_si256(rl.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>582</span>                    <span class="kw">let </span>x3 = _mm256_loadu_si256(rr.add(i) <span class="kw">as </span><span class="kw-2">*const </span>__m256i);
+<span data-nosnippet>583</span>
+<span data-nosnippet>584</span>                    <span class="kw">let </span>a0pa1 = <span class="highlight">add_vec_avx2::&lt;M&gt;</span>(x0, x1, mod_vec, mod2_vec, sign);
+<span data-nosnippet>585</span>                    <span class="kw">let </span>a0na1 = sub_vec_avx2::&lt;M&gt;(x0, x1, mod_vec, mod2_vec, sign);
+<span data-nosnippet>586</span>                    <span class="kw">let </span>a2pa3 = <span class="highlight">add_vec_avx2::&lt;M&gt;</span>(x2, x3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>587</span>                    <span class="kw">let </span>a2na3 = sub_vec_avx2::&lt;M&gt;(x2, x3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>588</span>                    <span class="kw">let </span>a2na3iimag = mul_vec_avx2::&lt;M&gt;(a2na3, iimag_vec, r_vec, mod_vec, sign);
+<span data-nosnippet>589</span>
+<span data-nosnippet>590</span>                    <span class="kw">let </span>y0 = <span class="highlight">add_vec_avx2::&lt;M&gt;</span>(a0pa1, a2pa3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>591</span>                    <span class="kw">let </span>y1 = <span class="highlight">add_vec_avx2::&lt;M&gt;</span>(a0na1, a2na3iimag, mod_vec, mod2_vec, sign);
+<span data-nosnippet>592</span>                    <span class="kw">let </span>y2 = sub_vec_avx2::&lt;M&gt;(a0pa1, a2pa3, mod_vec, mod2_vec, sign);
+<span data-nosnippet>593</span>                    <span class="kw">let </span>y3 = sub_vec_avx2::&lt;M&gt;(a0na1, a2na3iimag, mod_vec, mod2_vec, sign);
+<span data-nosnippet>594</span>
+<span data-nosnippet>595</span>                    <span class="kw">let </span>y1 = mul_vec_avx2::&lt;M&gt;(y1, w1v, r_vec, mod_vec, sign);
+<span data-nosnippet>596</span>                    <span class="kw">let </span>y2 = mul_vec_avx2::&lt;M&gt;(y2, w2v, r_vec, mod_vec, sign);
+<span data-nosnippet>597</span>                    <span class="kw">let </span>y3 = mul_vec_avx2::&lt;M&gt;(y3, w3v, r_vec, mod_vec, sign);
+<span data-nosnippet>598</span>
+<span data-nosnippet>599</span>                    _mm256_storeu_si256(ll.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y0);
+<span data-nosnippet>600</span>                    _mm256_storeu_si256(lr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y1);
+<span data-nosnippet>601</span>                    _mm256_storeu_si256(rl.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y2);
+<span data-nosnippet>602</span>                    _mm256_storeu_si256(rr.add(i) <span class="kw">as </span><span class="kw-2">*mut </span>__m256i, y3);
+<span data-nosnippet>603</span>                    i += <span class="number">8</span>;
+<span data-nosnippet>604</span>                }
+<span data-nosnippet>605</span>                <span class="kw">while </span>i &lt; v {
+<span data-nosnippet>606</span>                    <span class="kw">let </span>a0 = <span class="kw-2">*</span>ll.add(i);
+<span data-nosnippet>607</span>                    <span class="kw">let </span>a1 = <span class="kw-2">*</span>lr.add(i);
+<span data-nosnippet>608</span>                    <span class="kw">let </span>a2 = <span class="kw-2">*</span>rl.add(i);
+<span data-nosnippet>609</span>                    <span class="kw">let </span>a3 = <span class="kw-2">*</span>rr.add(i);
+<span data-nosnippet>610</span>                    <span class="kw">let </span>a0pa1 = M::mod_add(a0, a1);
+<span data-nosnippet>611</span>                    <span class="kw">let </span>a0na1 = M::mod_sub(a0, a1);
+<span data-nosnippet>612</span>                    <span class="kw">let </span>a2pa3 = M::mod_add(a2, a3);
+<span data-nosnippet>613</span>                    <span class="kw">let </span>a2na3iimag = M::mod_mul(M::mod_sub(a2, a3), iimag);
+<span data-nosnippet>614</span>                    <span class="kw-2">*</span>ll.add(i) = M::mod_add(a0pa1, a2pa3);
+<span data-nosnippet>615</span>                    <span class="kw-2">*</span>lr.add(i) = M::mod_mul(M::mod_add(a0na1, a2na3iimag), w1);
+<span data-nosnippet>616</span>                    <span class="kw-2">*</span>rl.add(i) = M::mod_mul(M::mod_sub(a0pa1, a2pa3), w2);
+<span data-nosnippet>617</span>                    <span class="kw-2">*</span>rr.add(i) = M::mod_mul(M::mod_sub(a0na1, a2na3iimag), w3);
+<span data-nosnippet>618</span>                    i += <span class="number">1</span>;
+<span data-nosnippet>619</span>                }
+<span data-nosnippet>620</span>                w1 = M::mod_mul(w1, M::INFO.inv_rate3[s.trailing_ones() <span class="kw">as </span>usize]);
+<span data-nosnippet>621</span>            }
+<span data-nosnippet>622</span>            v &lt;&lt;= <span class="number">2</span>;
+<span data-nosnippet>623</span>        }
+<span data-nosnippet>624</span>        normalize_avx2::&lt;M&gt;(a);
+<span data-nosnippet>625</span>    }</code></pre></div></div></div></section></div></main></body></html>
