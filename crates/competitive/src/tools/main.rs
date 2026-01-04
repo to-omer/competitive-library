@@ -4,7 +4,7 @@
 #[codesnip::skip]
 use crate::tools::{Scanner, read_stdin_all_unchecked};
 
-#[cfg_attr(any(), rust_minify::skip)]
+#[cfg_attr(nightly, rust_minify::skip)]
 pub fn solve() {
     crate::prepare!();
     sc!(_n);
