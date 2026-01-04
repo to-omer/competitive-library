@@ -1,3 +1,49 @@
+use std::sync::atomic::{AtomicBool, Ordering};
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum SimdBackend {
+    Scalar,
+    Avx2,
+    Avx512,
+}
+
+static AVX512_ENABLED: AtomicBool = AtomicBool::new(true);
+
+#[inline]
+pub fn disable_avx512() {
+    AVX512_ENABLED.store(false, Ordering::Relaxed);
+}
+
+#[inline]
+pub fn enable_avx512() {
+    AVX512_ENABLED.store(true, Ordering::Relaxed);
+}
+
+#[inline]
+pub fn avx512_enabled() -> bool {
+    AVX512_ENABLED.load(Ordering::Relaxed)
+}
+
+#[inline]
+pub fn simd_backend() -> SimdBackend {
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    {
+        if avx512_enabled()
+            && is_x86_feature_detected!("avx512f")
+            && is_x86_feature_detected!("avx512dq")
+            && is_x86_feature_detected!("avx512cd")
+            && is_x86_feature_detected!("avx512bw")
+            && is_x86_feature_detected!("avx512vl")
+        {
+            return SimdBackend::Avx512;
+        }
+        if is_x86_feature_detected!("avx2") {
+            return SimdBackend::Avx2;
+        }
+    }
+    SimdBackend::Scalar
+}
+
 #[macro_export]
 macro_rules! avx_helper {
     (@avx512 $(#[$meta:meta])* $vis:vis fn $name:ident$(<$($T:ident),+>)?($($i:ident: $t:ty),*) -> $ret:ty where [$($clauses:tt)*] $body:block) => {

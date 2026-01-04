@@ -8,7 +8,9 @@ use crate::num::{
     BarrettReduction, Complex, ExtendedGcd, MInt, MIntBase, MIntConvert, One, RangeBoundsExt,
     Signed, Unsigned, Wrapping, Zero, montgomery,
 };
-use crate::tools::{AssociatedValue, PartialIgnoredOrd, SerdeByteStr, Xorshift};
+use crate::tools::{
+    AssociatedValue, PartialIgnoredOrd, SerdeByteStr, SimdBackend, Xorshift, simd_backend,
+};
 
 #[codesnip::entry("ArbitraryModBinomial")]
 pub use self::arbitrary_mod_binomial::ArbitraryModBinomial;
