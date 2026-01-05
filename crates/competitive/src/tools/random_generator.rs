@@ -349,7 +349,7 @@ impl RandomSpec<usize> for WeightedSampler {
 macro_rules! rand_value {
     (@repeat $rng:expr, [$($t:tt)*] $($len:expr)?)                                    => { ::std::iter::repeat_with(|| $crate::rand_value!(@inner $rng, [] $($t)*)) $(.take($len).collect::<Vec<_>>())? };
     (@array $rng:expr, [$($t:tt)*] $len:expr)                                         => { $crate::array![|| $crate::rand_value!(@inner $rng, [] $($t)*); $len] };
-    (@tuple $rng:expr, [$([$($args:tt)*])*])                                          => { ($($($args)*,)*) };
+    (@tuple $rng:expr, [$([$($args:tt)*])*])                                          => { ($($($args)*),*) };
     (@$tag:ident $rng:expr, [[$($args:tt)*]])                                         => { $($args)* };
     (@$tag:ident $rng:expr, [$($args:tt)*] ($($tuple:tt)*) $($t:tt)*)                 => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@tuple $rng, [] $($tuple)*)]] $($t)*) };
     (@$tag:ident $rng:expr, [$($args:tt)*] [[$($tt:tt)*]; const $len:expr] $($t:tt)*) => { $crate::rand_value!(@$tag $rng, [$($args)* [$crate::rand_value!(@array $rng, [[$($tt)*]] $len)]] $($t)*) };
