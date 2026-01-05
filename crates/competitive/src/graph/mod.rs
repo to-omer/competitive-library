@@ -20,6 +20,8 @@ pub use self::dulmage_mendelsohn_decomposition::dulmage_mendelsohn_decomposition
 pub use self::edge_list::{EdgeListGraph, EdgeListGraphScanner};
 #[codesnip::entry("GeneralMatching")]
 pub use self::general_matching::GeneralMatching;
+#[codesnip::entry("GeneralWeightedMatching")]
+pub use self::general_weighted_matching::GeneralWeightedMatching;
 #[codesnip::entry("GraphBase")]
 pub use self::graph_base::*;
 #[codesnip::entry("GridGraph")]
@@ -63,6 +65,8 @@ mod dulmage_mendelsohn_decomposition;
 mod edge_list;
 #[cfg_attr(nightly, codesnip::entry("GeneralMatching"))]
 mod general_matching;
+#[cfg_attr(nightly, codesnip::entry("GeneralWeightedMatching"))]
+mod general_weighted_matching;
 #[cfg_attr(nightly, codesnip::entry("GraphBase"))]
 mod graph_base;
 #[cfg_attr(nightly, codesnip::entry("graphvis", include("SparseGraph")))]
