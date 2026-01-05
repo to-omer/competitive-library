@@ -18,6 +18,8 @@ pub use self::closure::{ClosureGraph, UsizeGraph};
 pub use self::dulmage_mendelsohn_decomposition::dulmage_mendelsohn_decomposition;
 #[codesnip::entry("EdgeListGraph")]
 pub use self::edge_list::{EdgeListGraph, EdgeListGraphScanner};
+#[codesnip::entry("GeneralMatching")]
+pub use self::general_matching::GeneralMatching;
 #[codesnip::entry("GraphBase")]
 pub use self::graph_base::*;
 #[codesnip::entry("GridGraph")]
@@ -59,6 +61,8 @@ mod closure;
 mod dulmage_mendelsohn_decomposition;
 #[cfg_attr(nightly, codesnip::entry("EdgeListGraph", include("scanner")))]
 mod edge_list;
+#[cfg_attr(nightly, codesnip::entry("GeneralMatching"))]
+mod general_matching;
 #[cfg_attr(nightly, codesnip::entry("GraphBase"))]
 mod graph_base;
 #[cfg_attr(nightly, codesnip::entry("graphvis", include("SparseGraph")))]
