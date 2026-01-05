@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["NEG_INF"],"struct":["BlossomMatching","GeneralWeightedMatching"]};
