@@ -4,6 +4,7 @@ pub mod enumerate_primes;
 pub mod enumerate_quotients;
 pub mod factorize;
 pub mod min_of_mod_of_linear;
+pub mod primality_test;
 pub mod rational_approximation;
 pub mod sqrt_mod;
 pub mod stern_brocot_tree;
