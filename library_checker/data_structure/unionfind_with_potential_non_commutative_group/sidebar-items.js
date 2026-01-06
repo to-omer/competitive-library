@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["test_unionfind_with_potential_non_commutative_group","unionfind_with_potential_non_commutative_group"],"struct":["Sl2"]};

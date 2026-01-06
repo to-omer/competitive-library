@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["counting_primes","discrete_logarithm_mod","enumerate_primes","enumerate_quotients","factorize","min_of_mod_of_linear","rational_approximation","sqrt_mod","stern_brocot_tree","sum_of_floor_of_linear","sum_of_totient_function"]};
+window.SIDEBAR_ITEMS = {"mod":["counting_primes","discrete_logarithm_mod","enumerate_primes","enumerate_quotients","factorize","min_of_mod_of_linear","primality_test","rational_approximation","sqrt_mod","stern_brocot_tree","sum_of_floor_of_linear","sum_of_totient_function"]};

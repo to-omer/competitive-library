@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["inverse_matrix","test_inverse_matrix"]};

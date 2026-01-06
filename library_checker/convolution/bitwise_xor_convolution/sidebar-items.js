@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["bitwise_xor_convolution","test_bitwise_xor_convolution"]};

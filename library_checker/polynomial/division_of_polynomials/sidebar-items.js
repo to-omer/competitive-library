@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["division_of_polynomials","test_division_of_polynomials"]};
