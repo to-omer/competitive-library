@@ -22,9 +22,6 @@ RUN groupadd -g ${GID} rustdev \
     && mkdir -p /tmp/target /cache \
     && chown -R rustdev:rustdev /usr/local/cargo /usr/local/rustup /tmp/target /cache
 
-# Ensure initial named volumes inherit ownership
-VOLUME ["/tmp/target", "/cache"]
-
 WORKDIR /workspace
 
 USER rustdev

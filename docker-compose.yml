@@ -10,19 +10,13 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     working_dir: /workspace
     environment:
-      - CARGO_TARGET_DIR=/tmp/target
-      - XDG_CACHE_HOME=/cache
+      - CARGO_TARGET_DIR=/workspace/target/docker-target
       - RUST_BACKTRACE=1
       - RUST_MIN_STACK=268435456
       - RUST_LOG=verify=info
     volumes:
       - ./:/workspace
-      - target-cache:/tmp/target
-      - cache:/cache
+      - ${HOME}/.cache/competitive-library:/home/rustdev/.cache/competitive-library
       - ${HOME}/.cargo/registry:/usr/local/cargo/registry
       - ${HOME}/.cargo/git:/usr/local/cargo/git
     command: ["bash"]
-
-volumes:
-  target-cache:
-  cache:
