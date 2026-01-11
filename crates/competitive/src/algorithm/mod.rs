@@ -1,10 +1,12 @@
 //! algorithm
 
-use crate::algebra::{Field, Invertible, Magma, Monoid, Unital};
+use crate::algebra::{Field, Group, Invertible, Magma, Monoid, Unital};
 use crate::data_structure::{BitSet, UnionFindBase, union_find};
+use crate::graph::UndirectedSparseGraph;
 use crate::math::Matrix;
 use crate::num::{MInt, MIntBase, One, RangeBoundsExt, URational, Unsigned, Zero};
 use crate::tools::{RandomSpec, SerdeByteStr, Xorshift};
+use crate::tree::LevelAncestor;
 
 #[cfg_attr(nightly, codesnip::entry("automata_learning"))]
 pub use self::automata_learning::*;
@@ -23,7 +25,7 @@ pub use self::combinations::SliceCombinationsExt;
 #[codesnip::entry("ConvexHullTrick")]
 pub use self::convex_hull_trick::ConvexHullTrick;
 #[codesnip::entry("Doubling")]
-pub use self::doubling::Doubling;
+pub use self::doubling::{Doubling, FunctionalGraphDoubling};
 #[codesnip::entry("esper")]
 pub use self::esper::{EsperEstimator, EsperSolver};
 #[codesnip::entry("HornSatisfiability")]
@@ -79,7 +81,10 @@ mod chromatic_number;
 mod combinations;
 #[cfg_attr(nightly, codesnip::entry("ConvexHullTrick"))]
 mod convex_hull_trick;
-#[cfg_attr(nightly, codesnip::entry("Doubling", include("algebra")))]
+#[cfg_attr(
+    nightly,
+    codesnip::entry("Doubling", include("LevelAncestor", "SparseGraph", "algebra"))
+)]
 mod doubling;
 #[cfg_attr(nightly, codesnip::entry("esper", include("Matrix")))]
 mod esper;

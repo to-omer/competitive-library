@@ -1,4 +1,5 @@
-use super::Monoid;
+use super::{Group, LevelAncestor, Monoid, UndirectedSparseGraph};
+use std::collections::VecDeque;
 
 pub struct Doubling<M>
 where
@@ -161,11 +162,207 @@ where
     }
 }
 
+pub struct FunctionalGraphDoubling<M>
+where
+    M: Group,
+{
+    depth_to_cycle: Vec<usize>,
+    cycle_entry: Vec<usize>,
+    cycle_id: Vec<usize>,
+    cycle_pos: Vec<usize>,
+    cycles: Vec<Vec<usize>>,
+    cycle_prefix: Vec<Vec<M::T>>,
+    prefix_up: Vec<M::T>,
+    la: LevelAncestor,
+}
+
+impl<M> FunctionalGraphDoubling<M>
+where
+    M: Group,
+{
+    pub fn new(size: usize, f: impl Fn(usize) -> (usize, M::T)) -> Self {
+        let (next, value): (Vec<_>, Vec<_>) = (0..size).map(f).unzip();
+
+        let mut indeg = vec![0usize; size];
+        for &to in &next {
+            indeg[to] += 1;
+        }
+        let mut in_cycle = vec![true; size];
+        let mut deq = VecDeque::new();
+        for (u, &deg) in indeg.iter().enumerate() {
+            if deg == 0 {
+                deq.push_back(u);
+            }
+        }
+        while let Some(u) = deq.pop_front() {
+            in_cycle[u] = false;
+            indeg[next[u]] -= 1;
+            if indeg[next[u]] == 0 {
+                deq.push_back(next[u]);
+            }
+        }
+
+        let mut cycle_id = vec![!0; size];
+        let mut cycle_pos = vec![!0; size];
+        let mut cycles = Vec::new();
+        for i in 0..size {
+            if in_cycle[i] && cycle_id[i] == !0 {
+                let mut cycle = Vec::new();
+                let mut u = i;
+                loop {
+                    cycle_id[u] = cycles.len();
+                    cycle_pos[u] = cycle.len();
+                    cycle.push(u);
+                    u = next[u];
+                    if u == i {
+                        break;
+                    }
+                }
+                cycles.push(cycle);
+            }
+        }
+
+        let mut rev = vec![Vec::new(); size];
+        for u in 0..size {
+            rev[next[u]].push(u);
+        }
+
+        let mut depth_to_cycle = vec![0usize; size];
+        let mut cycle_entry = vec![!0; size];
+        let mut prefix_up = Vec::with_capacity(size);
+        prefix_up.resize_with(size, M::unit);
+        let mut q = VecDeque::new();
+        for i in 0..size {
+            if in_cycle[i] {
+                cycle_entry[i] = i;
+                prefix_up[i] = M::operate(&value[i], &M::unit());
+                q.push_back(i);
+            }
+        }
+        while let Some(u) = q.pop_front() {
+            for &v in &rev[u] {
+                if in_cycle[v] || cycle_entry[v] != !0 {
+                    continue;
+                }
+                cycle_entry[v] = cycle_entry[u];
+                depth_to_cycle[v] = depth_to_cycle[u] + 1;
+                cycle_id[v] = cycle_id[u];
+                prefix_up[v] = M::operate(&value[v], &prefix_up[u]);
+                q.push_back(v);
+            }
+        }
+
+        let mut cycle_prefix = Vec::with_capacity(cycles.len());
+        for cycle in &cycles {
+            let len = cycle.len();
+            let mut pref = Vec::with_capacity(2 * len + 1);
+            pref.push(M::unit());
+            for i in 0..2 * len {
+                let v = cycle[i % len];
+                let next_val = M::operate(pref.last().unwrap(), &value[v]);
+                pref.push(next_val);
+            }
+            cycle_prefix.push(pref);
+        }
+
+        let root = size;
+        let mut edges = Vec::with_capacity(size);
+        for u in 0..size {
+            if in_cycle[u] {
+                edges.push((u, root));
+            } else {
+                edges.push((u, next[u]));
+            }
+        }
+        let graph = UndirectedSparseGraph::from_edges(size + 1, edges);
+        let la = graph.level_ancestor(root);
+
+        Self {
+            depth_to_cycle,
+            cycle_entry,
+            cycle_id,
+            cycle_pos,
+            cycles,
+            cycle_prefix,
+            prefix_up,
+            la,
+        }
+    }
+
+    fn acc_to_ancestor(&self, u: usize, ancestor: usize) -> M::T {
+        let inv = M::inverse(&self.prefix_up[ancestor]);
+        M::operate(&self.prefix_up[u], &inv)
+    }
+
+    fn cycle_segment(&self, cycle_id: usize, start: usize, len: usize) -> M::T {
+        if len == 0 {
+            return M::unit();
+        }
+        let pref = &self.cycle_prefix[cycle_id];
+        let inv = M::inverse(&pref[start]);
+        M::operate(&inv, &pref[start + len])
+    }
+
+    fn cycle_acc_from(&self, entry: usize, steps: usize) -> M::T {
+        if steps == 0 {
+            return M::unit();
+        }
+        let cycle_id = self.cycle_id[entry];
+        let start = self.cycle_pos[entry];
+        let len = self.cycles[cycle_id].len();
+        let q = steps / len;
+        let r = steps % len;
+        let rem = self.cycle_segment(cycle_id, start, r);
+        if q == 0 {
+            return rem;
+        }
+        let full = self.cycle_segment(cycle_id, start, len);
+        let pow = M::pow(full, q);
+        M::operate(&pow, &rem)
+    }
+
+    fn cycle_jump_from(&self, entry: usize, steps: usize) -> usize {
+        if steps == 0 {
+            return entry;
+        }
+        let cycle_id = self.cycle_id[entry];
+        let start = self.cycle_pos[entry];
+        let len = self.cycles[cycle_id].len();
+        let idx = (start + steps % len) % len;
+        self.cycles[cycle_id][idx]
+    }
+
+    pub fn kth(&self, u: usize, k: usize) -> (usize, M::T) {
+        let depth = self.depth_to_cycle[u];
+        if k <= depth {
+            let ancestor = self.la.la(u, k).unwrap();
+            let acc = self.acc_to_ancestor(u, ancestor);
+            return (ancestor, acc);
+        }
+        let entry = self.cycle_entry[u];
+        let acc_tree = self.acc_to_ancestor(u, entry);
+        let steps = k - depth;
+        let pos = self.cycle_jump_from(entry, steps);
+        let acc_cycle = self.cycle_acc_from(entry, steps);
+        let acc = M::operate(&acc_tree, &acc_cycle);
+        (pos, acc)
+    }
+
+    /// queries: (pos, k)
+    /// Return: (pos, acc)
+    pub fn kth_multiple(
+        &self,
+        queries: impl IntoIterator<Item = (usize, usize)>,
+    ) -> Vec<(usize, M::T)> {
+        queries.into_iter().map(|(u, k)| self.kth(u, k)).collect()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::{
-        algebra::AdditiveOperation,
+        algebra::{AdditiveOperation, LinearOperation, Magma as _, Unital as _},
         num::{Zero as _, mint_basic::MInt998244353},
         tools::Xorshift,
     };
@@ -233,6 +430,36 @@ mod tests {
                 }
                 assert_eq!(doubling.find_first(s, |_, &v| v > 1_000_000), None);
             }
+        }
+    }
+
+    #[test]
+    fn test_functional_graph_doubling_kth() {
+        let mut rng = Xorshift::default();
+        type M = LinearOperation<MInt998244353>;
+        for _ in 0..200 {
+            let n = rng.random(1usize..50);
+            let to: Vec<_> = rng.random_iter(0..n).take(n).collect();
+            let w: Vec<_> = rng
+                .random_iter((1..MInt998244353::get_mod(), 0..MInt998244353::get_mod()))
+                .take(n)
+                .map(|(a, b)| (MInt998244353::new(a), MInt998244353::new(b)))
+                .collect();
+            let doubling = FunctionalGraphDoubling::<M>::new(n, |i| (to[i], w[i]));
+            let mut queries = vec![];
+            let mut results = vec![];
+            for s in 0..n {
+                let mut pos = s;
+                let mut acc = M::unit();
+                for k in 0..200 {
+                    assert_eq!(doubling.kth(s, k), (pos, acc));
+                    queries.push((s, k));
+                    results.push((pos, acc));
+                    acc = M::operate(&acc, &w[pos]);
+                    pos = to[pos];
+                }
+            }
+            assert_eq!(doubling.kth_multiple(queries), results);
         }
     }
 }

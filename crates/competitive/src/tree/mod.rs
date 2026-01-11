@@ -12,6 +12,8 @@ use crate::{
 pub use self::generator::*;
 #[codesnip::entry("HeavyLightDecomposition")]
 pub use self::heavy_light_decomposition::HeavyLightDecomposition;
+#[codesnip::entry("LevelAncestor")]
+pub use self::level_ancestor::LevelAncestor;
 pub use self::rerooting::ReRooting;
 pub use self::tree_center::*;
 pub use self::tree_hash::TreeHasher;
